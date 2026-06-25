@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>eh</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Urbanist:wght@400;500;700&family=Noto+Sans+SC:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        * { box-sizing: border-box; }
+        body { background-color: #0f172a; color: #f5f5f5; margin: 0; padding: 20px 0; display: grid; place-items: center; font-family: 'Urbanist', 'Noto Sans SC', sans-serif; min-height: 100vh; transition: background-color 0.5s ease; }
+        .dashboard-container { width: 1280px; background-color: #000; border-radius: 12px; box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5); padding: 40px 60px; display: flex; flex-direction: column; position: relative; transition: opacity 0.5s ease, filter 0.5s ease; }
+        #network-loader { position: absolute; top: 0; left: 0; height: 3px; background: #deff9a; width: 0%; transition: width 0.2s ease, opacity 0.3s ease; opacity: 0; border-top-left-radius: 12px; border-top-right-radius: 12px; z-index: 10; }
+        
+        .title-area { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 40px; }
+        .title { font-size: 42px; font-weight: 700; margin: 0; letter-spacing: 1px; }
+        .title span { color: #deff9a; }
+        .status-indicator { font-size: 14px; font-weight: 400; color: #64748b; margin-top: 10px; text-align: right; }
+
+        .countdown-box { background: rgba(222, 255, 154, 0.05); border: 1px solid rgba(222, 255, 154, 0.2); padding: 12px 24px; border-radius: 12px; display: flex; align-items: center; gap: 20px; }
+        .cd-text { display: flex; flex-direction: column; align-items: center; }
+        .cd-label { font-size: 13px; color: #94a3b8; margin-bottom: 4px; }
+        .cd-value { font-size: 28px; font-weight: 700; color: #deff9a; line-height: 1; }
+
+        .layout-grid { display: grid; grid-template-columns: 1fr 1.5fr; gap: 40px; }
+        .progress-panel { display: flex; flex-direction: column; gap: 24px; }
+        
+        .card { background: #1e293b; border-radius: 16px; padding: 24px; border: 1px solid rgba(222, 255, 154, 0.1); }
+        .metric-row { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 16px; }
+        .metric-name { font-size: 16px; color: #94a3b8; }
+        .metric-val { font-size: 32px; font-weight: 700; color: #deff9a; line-height: 1; transition: all 0.3s; }
+        .bar-bg { height: 10px; background: #0f172a; border-radius: 5px; overflow: hidden; margin-bottom: 8px; }
+        .bar-fill { height: 100%; background: #deff9a; width: 0%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
+        .metric-sub { display: flex; justify-content: space-between; font-size: 14px; color: #64748b; }
+
+        .controls-panel { display: flex; flex-direction: column; gap: 24px; }
+        .btn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .action-btn { background: #334155; border: 1px solid transparent; border-radius: 12px; padding: 24px 16px; cursor: pointer; color: #f5f5f5; display: flex; flex-direction: column; align-items: center; gap: 12px; transition: all 0.2s ease; }
+        .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+        .action-btn i { font-size: 28px; }
+        .action-btn span { font-size: 16px; font-weight: 700; }
+        .action-btn:hover:not(:disabled) { background: #475569; }
+        .action-btn.active { background: rgba(222, 255, 154, 0.1); border-color: #deff9a; color: #deff9a; box-shadow: 0 0 15px rgba(222, 255, 154, 0.15); }
+
+        .stop-btn { padding: 16px; background: #ef4444; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; display: none; text-align: center; transition: background 0.2s; }
+        .stop-btn:hover { background: #dc2626; }
+        .stop-btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        .dom-chart-card { background: #1e293b; border-radius: 16px; padding: 24px; flex-grow: 1; display: flex; flex-direction: column; justify-content: center; }
+        .dom-chart-title { color: #94a3b8; font-size: 14px; margin-bottom: 20px; text-align: center; }
+        .stacked-bar { display: flex; height: 24px; width: 100%; border-radius: 12px; overflow: hidden; background: #0f172a; }
+        .segment { height: 100%; transition: width 0.5s ease; position: relative; }
+        .segment:hover::after { content: attr(data-tooltip); position: absolute; bottom: 120%; left: 50%; transform: translateX(-50%); background: #000; padding: 6px 12px; border-radius: 4px; font-size: 12px; white-space: nowrap; z-index: 10; pointer-events: none; }
+        .legend-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(100px, 1fr)); gap: 16px; margin-top: 24px; }
+        .legend-item { display: flex; align-items: center; gap: 8px; font-size: 14px; color: #cbd5e1; }
+        .legend-color { width: 12px; height: 12px; border-radius: 3px; }
+
+        .bottom-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-top: 24px; }
+        
+        .heatmap-card { background: #1e293b; border-radius: 16px; padding: 20px 24px; border: 1px solid rgba(222, 255, 154, 0.1); width: 100%; }
+        .heatmap-header { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 14px; color: #94a3b8; }
+        .heatmap-grid { display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, 1fr); gap: 6px; overflow-x: auto; padding-bottom: 10px; }
+        .heatmap-cell { width: 14px; height: 14px; border-radius: 3px; background: #334155; position: relative; cursor: crosshair; transition: transform 0.1s; }
+        .heatmap-cell:hover { transform: scale(1.2); z-index: 2; border: 1px solid #fff; }
+        .heatmap-cell.level-1 { background: #65a30d; } .heatmap-cell.level-2 { background: #84cc16; } .heatmap-cell.level-3 { background: #bef264; } .heatmap-cell.level-4 { background: #deff9a; }
+        .heatmap-cell:hover::after { content: attr(data-info); position: absolute; bottom: 150%; left: 50%; transform: translateX(-50%); background: #000; padding: 6px 10px; border-radius: 6px; font-size: 12px; white-space: nowrap; color: #fff; pointer-events: none; }
+
+        .log-card { background: #1e293b; border-radius: 16px; padding: 20px 24px; border: 1px solid rgba(222, 255, 154, 0.1); width: 100%; max-height: 250px; overflow-y: auto; }
+        .log-header { font-size: 14px; color: #94a3b8; margin-bottom: 15px; }
+        .log-item { display: grid; grid-template-columns: 100px 80px 80px 1fr; gap: 10px; padding: 10px 0; border-bottom: 1px solid rgba(255,255,255,0.05); font-size: 13px; color: #cbd5e1; }
+        .log-item:last-child { border-bottom: none; }
+        .log-cat { color: #deff9a; font-weight: 700; }
+        
+        body.zen-active { background-color: #000; }
+        body.zen-active .dashboard-container { opacity: 0.05; filter: blur(5px); pointer-events: none; }
+        #zen-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.5s ease; }
+        body.zen-active #zen-overlay { opacity: 1; pointer-events: auto; }
+        #zen-title { font-size: 32px; color: #94a3b8; margin-bottom: 20px; font-weight: 500; }
+        #zen-timer { font-size: 120px; font-weight: 700; color: #deff9a; font-family: monospace; line-height: 1; text-shadow: 0 0 40px rgba(222, 255, 154, 0.2); }
+        .zen-pulse { animation: pulse 2s infinite; }
+        #zen-stop-btn { margin-top: 60px; padding: 20px 50px; background: #ef4444; color: white; border: none; border-radius: 40px; font-size: 24px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3); }
+        #zen-stop-btn:hover { background: #dc2626; transform: translateY(-3px); }
+
+        #django-context { display: none; }
+        @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+        .is-loading { animation: pulse 1.5s infinite; pointer-events: none; }
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 3px; }
+    </style>
+</head>
+<body>
+
+<div class="dashboard-container">
+    <div id="network-loader"></div>
+    
+    <div class="title-area">
+        <div>
+            <h1 class="title">Academic <span>Analytics</span></h1>
+            <div class="status-indicator" id="system-status">系统就绪</div>
+        </div>
+        
+        <div class="countdown-box">
+            <div class="cd-text">
+                <span class="cd-label">距离考研仅剩</span>
+                <span class="cd-value"><span id="cd-days">--</span> <span style="font-size:16px;">天</span></span>
+            </div>
+        </div>
+    </div>
+
+    <div class="layout-grid">
+        <div class="progress-panel">
+            <div class="card">
+                <div class="metric-row">
+                    <span class="metric-name">今日有效时间</span>
+                    <span class="metric-val" id="today-val">0h</span>
+                </div>
+                <div class="bar-bg"><div class="bar-fill" id="today-bar"></div></div>
+                <div class="metric-sub">
+                    <span>目标: 6.0h / 日</span>
+                    <span id="today-pct" style="color:#deff9a;">0%</span>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="metric-row">
+                    <span class="metric-name">本周有效时间 (周日起始)</span>
+                    <span class="metric-val" id="week-val">0h</span>
+                </div>
+                <div class="bar-bg"><div class="bar-fill" id="week-bar"></div></div>
+                <div class="metric-sub">
+                    <span>目标: 42.0h / 周</span>
+                    <span id="week-pct" style="color:#deff9a;">0%</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls-panel">
+            <div class="btn-grid">
+                <button class="action-btn" id="btn-math" onclick="triggerAction('start', 'math')">
+                    <i class="fa-solid fa-calculator"></i><span>数学</span>
+                </button>
+                <button class="action-btn" id="btn-english" onclick="triggerAction('start', 'english')">
+                    <i class="fa-solid fa-language"></i><span>外语</span>
+                </button>
+                <button class="action-btn" id="btn-major" onclick="triggerAction('start', 'major')">
+                    <i class="fa-solid fa-book-bookmark"></i><span>专业</span>
+                </button>
+            </div>
+
+            <button class="stop-btn" id="btn-stop" onclick="handleStop()">
+                <i class="fa-solid fa-stop"></i> 结算当前任务
+            </button>
+
+            <div class="dom-chart-card">
+                <div class="dom-chart-title">各科时间配置比例</div>
+                <div class="stacked-bar" id="dom-stacked-bar"></div>
+                <div class="legend-grid" id="dom-legend"></div>
+            </div>
+            
+            <div style="margin-top: 10px; text-align: right;">
+                <button class="action-btn" style="padding: 12px 24px; display: inline-block; flex-direction: row; font-size: 14px;" onclick="setAuthToken()">eh专用</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="bottom-grid">
+        <div class="heatmap-card">
+            <div class="heatmap-header">
+                <span>持续性矩阵 (90 日)</span>
+                <span></span>
+            </div>
+            <div class="heatmap-grid" id="heatmap-grid"></div>
+        </div>
+
+        <div class="log-card">
+            <div class="log-header">最近记录预览</div>
+            <div id="log-list"></div>
+        </div>
+    </div>
+</div>
+
+<div id="zen-overlay">
+    <div id="zen-title">进入深度工作状态</div>
+    <div id="zen-timer" class="zen-pulse">00:00:00</div>
+    <button id="zen-stop-btn" onclick="handleStop()">
+        <i class="fa-solid fa-stop"></i> 结束记录
+    </button>
+</div>
+
+<div id="django-context">
+    <span id="data-chart">{{ chart_data|safe }}</span>
+    <span id="data-active">{{ active_category }}</span>
+    <span id="data-active-elapsed">{{ active_elapsed }}</span>
+    <span id="data-daily">{{ daily_stats|safe }}</span>
+    <span id="data-recent">{{ recent_logs|safe }}</span>
+    <span id="data-today">{{ today_str }}</span>
+</div>
+
+<script>
+    const TARGET_DAY_MINUTES = 360; 
+    const TARGET_WEEK_MINUTES = 2520;
+    let zenTimerInterval = null;
+    let localSeconds = 0;
+
+    function setAuthToken() {
+        const token = prompt("符咒交出来");
+        if (token) {
+            localStorage.setItem('auth_token', token);
+            alert("不是成龙");
+        }
+    }
+
+    function getCsrfToken() {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.startsWith('csrftoken=')) return decodeURIComponent(cookie.substring('csrftoken='.length));
+        }
+        return '';
+    }
+
+    function setNetworkState(isActive, msg = "") {
+        const loader = document.getElementById('network-loader');
+        const statusText = document.getElementById('system-status');
+        const buttons = document.querySelectorAll('.action-btn, .stop-btn, #zen-stop-btn');
+        
+        if (isActive) {
+            loader.style.opacity = '1'; loader.style.width = '50%';
+            statusText.innerText = '同步中...';
+            buttons.forEach(b => b.disabled = true);
+            document.body.classList.add('is-loading');
+        } else {
+            loader.style.width = '100%';
+            statusText.innerText = msg || '系统就绪';
+            setTimeout(() => { loader.style.opacity = '0'; loader.style.width = '0%'; }, 500);
+            buttons.forEach(b => b.disabled = false);
+            document.body.classList.remove('is-loading');
+        }
+    }
+
+    async function softReloadDashboard() {
+        try {
+            const response = await fetch(window.location.href);
+            const htmlText = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(htmlText, 'text/html');
+            
+            ['data-chart', 'data-active', 'data-active-elapsed', 'data-daily', 'data-recent', 'data-today'].forEach(id => {
+                document.getElementById(id).innerText = doc.getElementById(id).innerText;
+            });
+            initViewEngine();
+        } catch (error) {
+            window.location.reload(); 
+        }
+    }
+
+    function handleStop() {
+        if (localSeconds < 25 * 60) {
+            const confirmDiscard = confirm("本次时长不足 25 分钟，结算将被自动销毁记录。确认停止？");
+            if (!confirmDiscard) return;
+            triggerAction('stop', null, '');
+            return;
+        }
+        const note = prompt("请输入本次记录摘要：");
+        if (note === null) return; 
+        triggerAction('stop', null, note);
+    }
+
+    async function triggerAction(action, category = null, note = '') {
+        const myToken = localStorage.getItem('auth_token');
+        setNetworkState(true);
+        try {
+            const res = await fetch('/api/action/', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() ,'Authorization': myToken },
+                body: JSON.stringify({ action: action, category: category, note: note })
+            });
+            const data = await res.json();
+            
+            if (data.status === 'success') {
+                await softReloadDashboard();
+                setNetworkState(false, data.msg);
+            } else {
+                alert(data.msg || "nmsl");
+                await softReloadDashboard(); 
+                setNetworkState(false, '操作中止');
+            }
+        } catch(error) {
+            alert("网络通讯故障，请检查连接");
+            setNetworkState(false, '离线状态');
+        }
+    }
+
+    function initCountdown() {
+        const targetDate = new Date('2026-12-26T00:00:00');
+        const diff = targetDate - new Date();
+        document.getElementById('cd-days').innerText = Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
+    }
+
+    function renderHeatmap(dailyStats, todayStr) {
+        const container = document.getElementById('heatmap-grid');
+        container.innerHTML = '';
+        const todayObj = new Date(todayStr);
+        for(let i = 89; i >= 0; i--) {
+            const cursorDate = new Date(todayObj);
+            cursorDate.setDate(todayObj.getDate() - i);
+            const dateKey = cursorDate.toISOString().split('T')[0];
+            const mins = dailyStats[dateKey] || 0;
+            const hours = (mins / 60).toFixed(1);
+            let level = mins > 0 ? 1 : 0;
+            if (mins >= 120) level = 2; if (mins >= 240) level = 3; if (mins >= 360) level = 4; 
+            const cell = document.createElement('div');
+            cell.className = `heatmap-cell level-${level}`;
+            cell.setAttribute('data-info', `${dateKey} | 学习: ${hours}h`);
+            container.appendChild(cell);
+        }
+    }
+
+    function renderLogs(logs) {
+        const container = document.getElementById('log-list');
+        container.innerHTML = logs.map(log => `
+            <div class="log-item">
+                <span>${log.date}</span>
+                <span class="log-cat">${log.category}</span>
+                <span>${log.duration} min</span>
+                <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${log.note}">${log.note}</span>
+            </div>
+        `).join('');
+    }
+
+    function formatTime(totalSeconds) {
+        const h = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
+        const m = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
+        const s = String(totalSeconds % 60).padStart(2, '0');
+        return `${h}:${m}:${s}`;
+    }
+
+    function toggleZenMode(activeCat, elapsedSecs) {
+        if (zenTimerInterval) clearInterval(zenTimerInterval);
+        
+        if (activeCat !== 'None' && activeCat.trim() !== '') {
+            document.body.classList.add('zen-active');
+            const catNames = { 'math': '数学', 'english': '外语', 'major': '专业课' };
+            document.getElementById('zen-title').innerText = `正在运行: ${catNames[activeCat] || activeCat}`;
+            
+            // 使用后端下发的时间偏移保证同步
+            localSeconds = parseInt(elapsedSecs) || 0;
+            document.getElementById('zen-timer').innerText = formatTime(localSeconds);
+            zenTimerInterval = setInterval(() => {
+                localSeconds++;
+                document.getElementById('zen-timer').innerText = formatTime(localSeconds);
+            }, 1000);
+        } else {
+            document.body.classList.remove('zen-active');
+        }
+    }
+
+    function initViewEngine() {
+        const ctx = {
+            chartData: JSON.parse(document.getElementById('data-chart').innerText || '[]'),
+            activeCat: document.getElementById('data-active').innerText || 'None',
+            activeElapsed: document.getElementById('data-active-elapsed').innerText || '0',
+            dailyStats: JSON.parse(document.getElementById('data-daily').innerText || '{}'),
+            recentLogs: JSON.parse(document.getElementById('data-recent').innerText || '[]'),
+            todayStr: document.getElementById('data-today').innerText || new Date().toISOString().split('T')[0]
+        };
+
+        document.querySelectorAll('.action-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById('btn-stop').style.display = 'none';
+
+        if (ctx.activeCat !== 'None' && ctx.activeCat.trim() !== '') {
+            const btn = document.getElementById(`btn-${ctx.activeCat}`);
+            if(btn) btn.classList.add('active');
+            document.getElementById('btn-stop').style.display = 'block';
+        }
+
+        initCountdown();
+        
+        const todayMin = ctx.dailyStats[ctx.todayStr] || 0;
+        const hours = (todayMin / 60).toFixed(2);
+        const ratio = Math.min(100, (todayMin / TARGET_DAY_MINUTES * 100));
+        document.getElementById('today-val').innerText = `${hours}h`;
+        document.getElementById('today-bar').style.width = `${ratio.toFixed(1)}%`;
+        document.getElementById('today-pct').innerText = `${ratio.toFixed(1)}%`;
+
+        const todayObj = new Date(ctx.todayStr);
+        let weekTotal = 0;
+        for (let i = 0; i <= todayObj.getDay(); i++) {
+            const cursorDate = new Date(todayObj);
+            cursorDate.setDate(todayObj.getDate() - i);
+            weekTotal += (ctx.dailyStats[cursorDate.toISOString().split('T')[0]] || 0);
+        }
+        const wHours = (weekTotal / 60).toFixed(2);
+        const wRatio = Math.min(100, (weekTotal / TARGET_WEEK_MINUTES * 100));
+        document.getElementById('week-val').innerText = `${wHours}h`;
+        document.getElementById('week-bar').style.width = `${wRatio.toFixed(1)}%`;
+        document.getElementById('week-pct').innerText = `${wRatio.toFixed(1)}%`;
+
+        const totalMinutes = ctx.chartData.reduce((sum, item) => sum + item.value, 0);
+        if (totalMinutes === 0) {
+            document.getElementById('dom-stacked-bar').innerHTML = '<div style="width:100%;text-align:center;line-height:24px;color:#64748b;font-size:12px;">暂无数据</div>';
+            document.getElementById('dom-legend').innerHTML = '';
+        } else {
+            const palette = ['#deff9a', '#86efac', '#34d399', '#38bdf8', '#818cf8'];
+            let barHtml = '', legendHtml = '';
+            ctx.chartData.forEach((item, index) => {
+                const pct = (item.value / totalMinutes * 100).toFixed(2);
+                const color = palette[index % palette.length];
+                const h = (item.value / 60).toFixed(1);
+                barHtml += `<div class="segment" style="width: ${pct}%; background-color: ${color};" data-tooltip="${item.name}: ${h}h (${pct}%)"></div>`;
+                legendHtml += `<div class="legend-item"><div class="legend-color" style="background-color: ${color};"></div><span>${item.name} <strong style="color:#fff;margin-left:4px">${h}h</strong></span></div>`;
+            });
+            document.getElementById('dom-stacked-bar').innerHTML = barHtml;
+            document.getElementById('dom-legend').innerHTML = legendHtml;
+        }
+
+        renderHeatmap(ctx.dailyStats, ctx.todayStr);
+        renderLogs(ctx.recentLogs);
+        toggleZenMode(ctx.activeCat, ctx.activeElapsed);
+    }
+
+    window.addEventListener('DOMContentLoaded', initViewEngine);
+</script>
+</body>
+</html>
