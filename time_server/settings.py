@@ -17,6 +17,13 @@ from pathlib import Path
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 
+def env_int(name, default):
+    try:
+        return int(os.environ.get(name, default))
+    except (TypeError, ValueError):
+        return default
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -133,3 +140,6 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 TRACKER_API_TOKEN = os.environ.get('TRACKER_API_TOKEN', 'eH_')
+TRACKER_DAILY_TARGET_MINUTES = env_int('TRACKER_DAILY_TARGET_MINUTES', 360)
+TRACKER_WEEKLY_TARGET_MINUTES = env_int('TRACKER_WEEKLY_TARGET_MINUTES', 2520)
+TRACKER_EXAM_DATE = os.environ.get('TRACKER_EXAM_DATE', '2026-12-26')

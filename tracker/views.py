@@ -1,12 +1,16 @@
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.conf import settings
 from django.shortcuts import render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 import json
 import datetime
+import csv
 from .models import TimeLog
 from functools import wraps
+
+VALID_CATEGORIES = {choice[0] for choice in TimeLog.CATEGORY_CHOICES}
+CATEGORY_LABELS = dict(TimeLog.CATEGORY_CHOICES)
 
 def token_required(view_func):
     @wraps(view_func)
@@ -96,6 +100,9 @@ def dashboard_view(request):
         'daily_stats': json.dumps(daily_stats),
         'recent_logs': json.dumps(recent_logs),
         'today_str': today_str,
+        'daily_target_minutes': settings.TRACKER_DAILY_TARGET_MINUTES,
+        'weekly_target_minutes': settings.TRACKER_WEEKLY_TARGET_MINUTES,
+        'exam_date': settings.TRACKER_EXAM_DATE,
     }
     return render(request, 'dashboard.html', context)
 
@@ -119,8 +126,7 @@ def api_action(request):
         if active_log:
             return JsonResponse({'status': 'error', 'msg': '已有任务运行中'}, status=400)
 
-        valid_categories = {choice[0] for choice in TimeLog.CATEGORY_CHOICES}
-        if category not in valid_categories:
+        if category not in VALID_CATEGORIES:
             return JsonResponse({'status': 'error', 'msg': '无效任务分类'}, status=400)
         
         msg_prefix = "前次任务超时 6 小时已作废。 " if was_cleaned else ""
@@ -146,3 +152,36 @@ def api_action(request):
         return JsonResponse({'status': 'success', 'msg': f'结算成功: {int(duration_mins)} 分钟'})
 
     return JsonResponse({'status': 'error', 'msg': '未知指令'}, status=400)
+
+@token_required
+def export_logs_csv(request):
+    try:
+        days = int(request.GET.get('days', '90'))
+    except ValueError:
+        return JsonResponse({'status': 'error', 'msg': 'days 必须是数字'}, status=400)
+
+    days = max(1, min(days, 3650))
+    start_date = _get_safe_now() - datetime.timedelta(days=days)
+    logs = TimeLog.objects.filter(
+        start_time__gte=start_date,
+        end_time__isnull=False,
+    ).order_by('-start_time')
+
+    response = HttpResponse(content_type='text/csv; charset=utf-8')
+    response['Content-Disposition'] = 'attachment; filename="time_logs.csv"'
+    writer = csv.writer(response)
+    writer.writerow(['start_time', 'end_time', 'category', 'category_label', 'duration_minutes', 'note'])
+
+    for log in logs:
+        start_time = timezone.localtime(log.start_time) if timezone.is_aware(log.start_time) else log.start_time
+        end_time = timezone.localtime(log.end_time) if timezone.is_aware(log.end_time) else log.end_time
+        writer.writerow([
+            start_time.strftime('%Y-%m-%d %H:%M:%S'),
+            end_time.strftime('%Y-%m-%d %H:%M:%S'),
+            log.category,
+            CATEGORY_LABELS.get(log.category, log.category),
+            log.duration_minutes,
+            log.note or '',
+        ])
+
+    return response

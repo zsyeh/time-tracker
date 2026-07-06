@@ -36,7 +36,7 @@
         .metric-sub { display: flex; justify-content: space-between; font-size: 14px; color: #64748b; }
 
         .controls-panel { display: flex; flex-direction: column; gap: 24px; }
-        .btn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+        .btn-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
         .action-btn { background: #334155; border: 1px solid transparent; border-radius: 12px; padding: 24px 16px; cursor: pointer; color: #f5f5f5; display: flex; flex-direction: column; align-items: center; gap: 12px; transition: all 0.2s ease; }
         .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .action-btn i { font-size: 28px; }
@@ -119,7 +119,7 @@
                 </div>
                 <div class="bar-bg"><div class="bar-fill" id="today-bar"></div></div>
                 <div class="metric-sub">
-                    <span>目标: 6.0h / 日</span>
+                    <span id="today-target-label">目标: 6.0h / 日</span>
                     <span id="today-pct" style="color:#deff9a;">0%</span>
                 </div>
             </div>
@@ -131,7 +131,7 @@
                 </div>
                 <div class="bar-bg"><div class="bar-fill" id="week-bar"></div></div>
                 <div class="metric-sub">
-                    <span>目标: 42.0h / 周</span>
+                    <span id="week-target-label">目标: 42.0h / 周</span>
                     <span id="week-pct" style="color:#deff9a;">0%</span>
                 </div>
             </div>
@@ -148,6 +148,9 @@
                 <button class="action-btn" id="btn-major" onclick="triggerAction('start', 'major')">
                     <i class="fa-solid fa-book-bookmark"></i><span>专业</span>
                 </button>
+                <button class="action-btn" id="btn-training" onclick="triggerAction('start', 'training')">
+                    <i class="fa-solid fa-dumbbell"></i><span>训练</span>
+                </button>
             </div>
 
             <button class="stop-btn" id="btn-stop" onclick="handleStop()">
@@ -162,6 +165,9 @@
             
             <div style="margin-top: 10px; text-align: right;">
                 <button class="action-btn" style="padding: 12px 24px; display: inline-block; flex-direction: row; font-size: 14px;" onclick="setAuthToken()">eh专用</button>
+                <button class="action-btn" style="padding: 12px 24px; display: inline-block; flex-direction: row; font-size: 14px;" onclick="exportLogsCsv()">
+                    <i class="fa-solid fa-file-arrow-down"></i> 导出CSV
+                </button>
             </div>
         </div>
     </div>
@@ -197,11 +203,14 @@
     <span id="data-daily">{{ daily_stats|safe }}</span>
     <span id="data-recent">{{ recent_logs|safe }}</span>
     <span id="data-today">{{ today_str }}</span>
+    <span id="data-daily-target">{{ daily_target_minutes }}</span>
+    <span id="data-weekly-target">{{ weekly_target_minutes }}</span>
+    <span id="data-exam-date">{{ exam_date }}</span>
 </div>
 
 <script>
-    const TARGET_DAY_MINUTES = 360; 
-    const TARGET_WEEK_MINUTES = 2520;
+    let targetDayMinutes = 360;
+    let targetWeekMinutes = 2520;
     let zenTimerInterval = null;
     let localSeconds = 0;
 
@@ -248,7 +257,7 @@
             const parser = new DOMParser();
             const doc = parser.parseFromString(htmlText, 'text/html');
             
-            ['data-chart', 'data-active', 'data-active-elapsed', 'data-daily', 'data-recent', 'data-today'].forEach(id => {
+            ['data-chart', 'data-active', 'data-active-elapsed', 'data-daily', 'data-recent', 'data-today', 'data-daily-target', 'data-weekly-target', 'data-exam-date'].forEach(id => {
                 document.getElementById(id).innerText = doc.getElementById(id).innerText;
             });
             initViewEngine();
@@ -294,8 +303,40 @@
         }
     }
 
+    async function exportLogsCsv() {
+        const myToken = localStorage.getItem('auth_token');
+        if (!myToken) {
+            alert("请先设置令牌");
+            return;
+        }
+
+        setNetworkState(true);
+        try {
+            const res = await fetch('/api/export.csv?days=365', {
+                headers: { 'Authorization': myToken }
+            });
+            if (!res.ok) {
+                const text = await res.text();
+                throw new Error(text || '导出失败');
+            }
+            const blob = await res.blob();
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'time_logs.csv';
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+            URL.revokeObjectURL(link.href);
+            setNetworkState(false, 'CSV 已导出');
+        } catch(error) {
+            alert("导出失败，请检查令牌或网络");
+            setNetworkState(false, '导出失败');
+        }
+    }
+
     function initCountdown() {
-        const targetDate = new Date('2026-12-26T00:00:00');
+        const examDate = document.getElementById('data-exam-date').innerText || '2026-12-26';
+        const targetDate = new Date(`${examDate}T00:00:00`);
         const diff = targetDate - new Date();
         document.getElementById('cd-days').innerText = Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
     }
@@ -323,12 +364,22 @@
         const container = document.getElementById('log-list');
         container.innerHTML = logs.map(log => `
             <div class="log-item">
-                <span>${log.date}</span>
-                <span class="log-cat">${log.category}</span>
-                <span>${log.duration} min</span>
-                <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${log.note}">${log.note}</span>
+                <span>${escapeHtml(log.date)}</span>
+                <span class="log-cat">${escapeHtml(log.category)}</span>
+                <span>${Number(log.duration) || 0} min</span>
+                <span style="white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="${escapeHtml(log.note)}">${escapeHtml(log.note)}</span>
             </div>
         `).join('');
+    }
+
+    function escapeHtml(value) {
+        return String(value ?? '').replace(/[&<>"']/g, char => ({
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#039;'
+        }[char]));
     }
 
     function formatTime(totalSeconds) {
@@ -343,7 +394,7 @@
         
         if (activeCat !== 'None' && activeCat.trim() !== '') {
             document.body.classList.add('zen-active');
-            const catNames = { 'math': '数学', 'english': '外语', 'major': '专业课' };
+            const catNames = { 'math': '数学', 'english': '外语', 'major': '专业课', 'training': '训练' };
             document.getElementById('zen-title').innerText = `正在运行: ${catNames[activeCat] || activeCat}`;
             
             // 使用后端下发的时间偏移保证同步
@@ -367,6 +418,10 @@
             recentLogs: JSON.parse(document.getElementById('data-recent').innerText || '[]'),
             todayStr: document.getElementById('data-today').innerText || new Date().toISOString().split('T')[0]
         };
+        targetDayMinutes = parseInt(document.getElementById('data-daily-target').innerText, 10) || 360;
+        targetWeekMinutes = parseInt(document.getElementById('data-weekly-target').innerText, 10) || 2520;
+        document.getElementById('today-target-label').innerText = `目标: ${(targetDayMinutes / 60).toFixed(1)}h / 日`;
+        document.getElementById('week-target-label').innerText = `目标: ${(targetWeekMinutes / 60).toFixed(1)}h / 周`;
 
         document.querySelectorAll('.action-btn').forEach(btn => btn.classList.remove('active'));
         document.getElementById('btn-stop').style.display = 'none';
@@ -381,7 +436,7 @@
         
         const todayMin = ctx.dailyStats[ctx.todayStr] || 0;
         const hours = (todayMin / 60).toFixed(2);
-        const ratio = Math.min(100, (todayMin / TARGET_DAY_MINUTES * 100));
+        const ratio = Math.min(100, (todayMin / targetDayMinutes * 100));
         document.getElementById('today-val').innerText = `${hours}h`;
         document.getElementById('today-bar').style.width = `${ratio.toFixed(1)}%`;
         document.getElementById('today-pct').innerText = `${ratio.toFixed(1)}%`;
@@ -394,7 +449,7 @@
             weekTotal += (ctx.dailyStats[cursorDate.toISOString().split('T')[0]] || 0);
         }
         const wHours = (weekTotal / 60).toFixed(2);
-        const wRatio = Math.min(100, (weekTotal / TARGET_WEEK_MINUTES * 100));
+        const wRatio = Math.min(100, (weekTotal / targetWeekMinutes * 100));
         document.getElementById('week-val').innerText = `${wHours}h`;
         document.getElementById('week-bar').style.width = `${wRatio.toFixed(1)}%`;
         document.getElementById('week-pct').innerText = `${wRatio.toFixed(1)}%`;

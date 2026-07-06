@@ -2,6 +2,15 @@
 
 A small Django time-tracking dashboard for study sessions.
 
+## Features
+
+- Dashboard for daily and weekly study time progress.
+- Categories for math, English, major course, and training sessions.
+- Active-session full-screen focus timer.
+- Recent record preview and 90-day heatmap.
+- CSV export for completed time logs.
+- Environment-based token, host, goal, and exam-date configuration.
+
 ## Setup
 
 Python 3.8+ is supported.
@@ -25,6 +34,9 @@ Environment variables:
 - `DJANGO_DEBUG`: `true` or `false`. Defaults to `false`.
 - `DJANGO_ALLOWED_HOSTS`: comma-separated host list.
 - `TRACKER_API_TOKEN`: token used by `/api/action/`.
+- `TRACKER_DAILY_TARGET_MINUTES`: daily target minutes shown on the dashboard.
+- `TRACKER_WEEKLY_TARGET_MINUTES`: weekly target minutes shown on the dashboard.
+- `TRACKER_EXAM_DATE`: countdown target date, formatted as `YYYY-MM-DD`.
 
 ## Commands
 
@@ -45,6 +57,26 @@ Show statistics:
 ```bash
 python manage.py stats --days 7
 ```
+
+## CSV Export
+
+Set the token in the dashboard first, then use the `导出CSV` button.
+
+The backend endpoint is:
+
+```text
+GET /api/export.csv?days=365
+Authorization: <TRACKER_API_TOKEN>
+```
+
+The exported columns are:
+
+- `start_time`
+- `end_time`
+- `category`
+- `category_label`
+- `duration_minutes`
+- `note`
 
 ## Maintenance
 
