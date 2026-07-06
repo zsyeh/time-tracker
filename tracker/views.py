@@ -1,6 +1,6 @@
-# tracker/views.py
-from django.shortcuts import render
 from django.http import JsonResponse
+from django.conf import settings
+from django.shortcuts import render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 import json
@@ -8,13 +8,11 @@ import datetime
 from .models import TimeLog
 from functools import wraps
 
-SECRET_TOKEN = "eH_"
-
 def token_required(view_func):
     @wraps(view_func)
     def _wrapped_view(request, *args, **kwargs):
         token = request.headers.get('Authorization')
-        if token == SECRET_TOKEN:
+        if token and token == settings.TRACKER_API_TOKEN:
             return view_func(request, *args, **kwargs)
         return JsonResponse({'status': 'error', 'msg': '鉴权失败，请检查你的令牌'}, status=403)
     return _wrapped_view
@@ -120,6 +118,10 @@ def api_action(request):
     if action == 'start':
         if active_log:
             return JsonResponse({'status': 'error', 'msg': '已有任务运行中'}, status=400)
+
+        valid_categories = {choice[0] for choice in TimeLog.CATEGORY_CHOICES}
+        if category not in valid_categories:
+            return JsonResponse({'status': 'error', 'msg': '无效任务分类'}, status=400)
         
         msg_prefix = "前次任务超时 6 小时已作废。 " if was_cleaned else ""
         TimeLog.objects.create(category=category)
