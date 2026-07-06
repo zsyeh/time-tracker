@@ -73,7 +73,7 @@
 
         .bottom-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(20px, 3vw, 40px); margin-top: 24px; align-items: start; }
         
-        .heatmap-card { background: #1e293b; border-radius: 16px; padding: 20px 24px; border: 1px solid rgba(222, 255, 154, 0.1); width: 100%; }
+        .heatmap-card { background: #1e293b; border-radius: 16px; padding: 20px 24px; border: 1px solid rgba(222, 255, 154, 0.1); width: 100%; min-width: 0; }
         .heatmap-header { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 14px; color: #94a3b8; }
         .heatmap-wrap { display: grid; grid-template-columns: 28px max-content; gap: 8px; overflow-x: auto; padding-bottom: 10px; }
         .heatmap-months { grid-column: 2; display: grid; grid-auto-flow: column; grid-auto-columns: 16px; gap: 4px; min-height: 16px; color: #64748b; font-size: 11px; }
@@ -138,6 +138,8 @@
             .utility-btn { flex: 1 1 140px; }
             .heatmap-card,
             .log-card { padding: 18px 14px; }
+            .heatmap-card { max-width: 100%; overflow: hidden; }
+            .heatmap-wrap { width: 100%; max-width: 100%; grid-template-columns: 24px max-content; }
             .heatmap-header { gap: 12px; flex-wrap: wrap; }
             .log-item { grid-template-columns: 78px 54px 64px; gap: 8px; }
             .log-item span:last-child { grid-column: 1 / -1; min-width: 0; }
