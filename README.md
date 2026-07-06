@@ -5,10 +5,10 @@ A small Django time-tracking dashboard for study sessions.
 ## Features
 
 - Dashboard for daily and weekly study time progress.
-- Categories for math, English, major course, and training sessions.
+- Categories for math, English, and major course sessions.
 - Active-session full-screen focus timer.
-- Recent record preview and 90-day heatmap.
-- Recent 30-day and all-time aggregate statistics.
+- Recent record preview and 180-day GitHub-style heatmap.
+- Recent 30-day, all-time, active-day, best-day, and streak statistics.
 - CSV export for completed time logs.
 - Environment-based token, host, goal, and exam-date configuration.
 

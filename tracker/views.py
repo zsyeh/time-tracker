@@ -47,27 +47,63 @@ def _execute_lazy_garbage_collection():
 def _build_period_summary(logs):
     total_minutes = 0
     category_totals = {}
+    daily_totals = {}
 
     for log in logs:
         minutes = log.duration_minutes
         total_minutes += minutes
         label = CATEGORY_LABELS.get(log.category, log.category)
         category_totals[label] = category_totals.get(label, 0) + minutes
+        local_start = timezone.localtime(log.start_time) if timezone.is_aware(log.start_time) else log.start_time
+        day_key = str(local_start.date())
+        daily_totals[day_key] = daily_totals.get(day_key, 0) + minutes
 
     top_category = None
     if category_totals:
         top_category = max(category_totals.items(), key=lambda item: item[1])[0]
+    best_day = None
+    best_day_minutes = 0
+    if daily_totals:
+        best_day, best_day_minutes = max(daily_totals.items(), key=lambda item: item[1])
 
     return {
         'total_minutes': total_minutes,
         'total_hours': round(total_minutes / 60, 2),
         'session_count': len(logs),
         'average_minutes': int(total_minutes / len(logs)) if logs else 0,
+        'active_days': len(daily_totals),
+        'best_day': best_day or '暂无',
+        'best_day_minutes': best_day_minutes,
         'top_category': top_category or '暂无',
         'category_totals': [
             {'name': name, 'value': minutes}
             for name, minutes in sorted(category_totals.items(), key=lambda item: item[1], reverse=True)
         ],
+    }
+
+def _build_streak_summary(daily_totals, today_date):
+    active_dates = {datetime.date.fromisoformat(day) for day, minutes in daily_totals.items() if minutes > 0}
+    current_streak = 0
+    cursor = today_date
+    while cursor in active_dates:
+        current_streak += 1
+        cursor -= datetime.timedelta(days=1)
+
+    longest_streak = 0
+    running = 0
+    previous = None
+    for day in sorted(active_dates):
+        if previous and day == previous + datetime.timedelta(days=1):
+            running += 1
+        else:
+            running = 1
+        longest_streak = max(longest_streak, running)
+        previous = day
+
+    return {
+        'current_streak': current_streak,
+        'longest_streak': longest_streak,
+        'active_days': len(active_dates),
     }
 
 def dashboard_view(request):
@@ -91,7 +127,8 @@ def dashboard_view(request):
     for log in week_logs:
         label = dict(TimeLog.CATEGORY_CHOICES).get(log.category, log.category)
         stats[label] = stats.get(label, 0) + log.duration_minutes
-        
+
+    for log in completed_logs:
         local_start = timezone.localtime(log.start_time) if timezone.is_aware(log.start_time) else log.start_time
         log_date_str = str(local_start.date())
         daily_stats[log_date_str] = daily_stats.get(log_date_str, 0) + log.duration_minutes
@@ -130,6 +167,7 @@ def dashboard_view(request):
         'recent_logs': json.dumps(recent_logs),
         'month_summary': json.dumps(_build_period_summary(month_logs)),
         'all_time_summary': json.dumps(_build_period_summary(completed_logs)),
+        'streak_summary': json.dumps(_build_streak_summary(daily_stats, timezone.localtime(now).date())),
         'today_str': today_str,
         'daily_target_minutes': settings.TRACKER_DAILY_TARGET_MINUTES,
         'weekly_target_minutes': settings.TRACKER_WEEKLY_TARGET_MINUTES,

@@ -40,9 +40,13 @@
         .summary-hours { color: #deff9a; font-size: 30px; font-weight: 700; line-height: 1; margin-bottom: 14px; }
         .summary-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; color: #cbd5e1; font-size: 13px; }
         .summary-meta span { color: #64748b; display: block; font-size: 12px; margin-bottom: 3px; }
+        .streak-strip { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+        .streak-item { background: #1e293b; border: 1px solid rgba(222, 255, 154, 0.1); border-radius: 10px; padding: 14px; }
+        .streak-item span { display: block; color: #64748b; font-size: 12px; margin-bottom: 6px; }
+        .streak-item strong { color: #deff9a; font-size: 22px; line-height: 1; }
 
         .controls-panel { display: flex; flex-direction: column; gap: 24px; }
-        .btn-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+        .btn-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
         .action-btn { background: #334155; border: 1px solid transparent; border-radius: 12px; padding: 24px 16px; cursor: pointer; color: #f5f5f5; display: flex; flex-direction: column; align-items: center; gap: 12px; transition: all 0.2s ease; }
         .action-btn:disabled { opacity: 0.5; cursor: not-allowed; }
         .action-btn i { font-size: 28px; }
@@ -67,11 +71,17 @@
         
         .heatmap-card { background: #1e293b; border-radius: 16px; padding: 20px 24px; border: 1px solid rgba(222, 255, 154, 0.1); width: 100%; }
         .heatmap-header { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 14px; color: #94a3b8; }
-        .heatmap-grid { display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, 1fr); gap: 6px; overflow-x: auto; padding-bottom: 10px; }
-        .heatmap-cell { width: 14px; height: 14px; border-radius: 3px; background: #334155; position: relative; cursor: crosshair; transition: transform 0.1s; }
-        .heatmap-cell:hover { transform: scale(1.2); z-index: 2; border: 1px solid #fff; }
-        .heatmap-cell.level-1 { background: #65a30d; } .heatmap-cell.level-2 { background: #84cc16; } .heatmap-cell.level-3 { background: #bef264; } .heatmap-cell.level-4 { background: #deff9a; }
-        .heatmap-cell:hover::after { content: attr(data-info); position: absolute; bottom: 150%; left: 50%; transform: translateX(-50%); background: #000; padding: 6px 10px; border-radius: 6px; font-size: 12px; white-space: nowrap; color: #fff; pointer-events: none; }
+        .heatmap-wrap { display: grid; grid-template-columns: 28px 1fr; gap: 8px; overflow-x: auto; padding-bottom: 10px; }
+        .heatmap-months { grid-column: 2; display: grid; grid-auto-flow: column; grid-auto-columns: 16px; gap: 4px; min-height: 16px; color: #64748b; font-size: 11px; }
+        .heatmap-weekdays { grid-column: 1; display: grid; grid-template-rows: repeat(7, 16px); gap: 4px; color: #64748b; font-size: 11px; line-height: 16px; }
+        .heatmap-grid { grid-column: 2; display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, 16px); grid-auto-columns: 16px; gap: 4px; }
+        .heatmap-cell { width: 16px; height: 16px; border-radius: 3px; background: #0f172a; border: 1px solid rgba(255,255,255,0.04); position: relative; cursor: crosshair; transition: transform 0.1s, border-color 0.1s; }
+        .heatmap-cell:hover { transform: scale(1.25); z-index: 2; border-color: #fff; }
+        .heatmap-cell.level-1 { background: #14532d; } .heatmap-cell.level-2 { background: #15803d; } .heatmap-cell.level-3 { background: #22c55e; } .heatmap-cell.level-4 { background: #86efac; }
+        .heatmap-cell:hover::after { content: attr(data-info); position: absolute; bottom: 150%; left: 50%; transform: translateX(-50%); background: #020617; border: 1px solid rgba(255,255,255,0.12); padding: 6px 10px; border-radius: 6px; font-size: 12px; white-space: nowrap; color: #fff; pointer-events: none; }
+        .heatmap-legend { display: flex; align-items: center; justify-content: flex-end; gap: 6px; color: #64748b; font-size: 12px; margin-top: 8px; }
+        .legend-square { width: 12px; height: 12px; border-radius: 2px; background: #0f172a; border: 1px solid rgba(255,255,255,0.04); }
+        .legend-square.level-1 { background: #14532d; } .legend-square.level-2 { background: #15803d; } .legend-square.level-3 { background: #22c55e; } .legend-square.level-4 { background: #86efac; }
 
         .log-card { background: #1e293b; border-radius: 16px; padding: 20px 24px; border: 1px solid rgba(222, 255, 154, 0.1); width: 100%; max-height: 250px; overflow-y: auto; }
         .log-header { font-size: 14px; color: #94a3b8; margin-bottom: 15px; }
@@ -151,6 +161,8 @@
                         <div><span>平均单次</span><strong id="month-average">0m</strong></div>
                         <div><span>累计分钟</span><strong id="month-total-minutes">0m</strong></div>
                         <div><span>最高分类</span><strong id="month-top-category">暂无</strong></div>
+                        <div><span>活跃天数</span><strong id="month-active-days">0</strong></div>
+                        <div><span>最佳单日</span><strong id="month-best-day">暂无</strong></div>
                     </div>
                 </div>
                 <div class="summary-card">
@@ -161,8 +173,15 @@
                         <div><span>平均单次</span><strong id="all-average">0m</strong></div>
                         <div><span>累计分钟</span><strong id="all-total-minutes">0m</strong></div>
                         <div><span>最高分类</span><strong id="all-top-category">暂无</strong></div>
+                        <div><span>活跃天数</span><strong id="all-active-days">0</strong></div>
+                        <div><span>最佳单日</span><strong id="all-best-day">暂无</strong></div>
                     </div>
                 </div>
+            </div>
+            <div class="streak-strip">
+                <div class="streak-item"><span>当前连续</span><strong id="current-streak">0 天</strong></div>
+                <div class="streak-item"><span>最长连续</span><strong id="longest-streak">0 天</strong></div>
+                <div class="streak-item"><span>总活跃日</span><strong id="total-active-days">0 天</strong></div>
             </div>
         </div>
 
@@ -176,9 +195,6 @@
                 </button>
                 <button class="action-btn" id="btn-major" onclick="triggerAction('start', 'major')">
                     <i class="fa-solid fa-book-bookmark"></i><span>专业</span>
-                </button>
-                <button class="action-btn" id="btn-training" onclick="triggerAction('start', 'training')">
-                    <i class="fa-solid fa-dumbbell"></i><span>训练</span>
                 </button>
             </div>
 
@@ -204,10 +220,25 @@
     <div class="bottom-grid">
         <div class="heatmap-card">
             <div class="heatmap-header">
-                <span>持续性矩阵 (90 日)</span>
-                <span></span>
+                <span>持续性矩阵 (180 日)</span>
+                <span>GitHub 风格</span>
             </div>
-            <div class="heatmap-grid" id="heatmap-grid"></div>
+            <div class="heatmap-wrap">
+                <div class="heatmap-months" id="heatmap-months"></div>
+                <div class="heatmap-weekdays">
+                    <span></span><span>一</span><span></span><span>三</span><span></span><span>五</span><span></span>
+                </div>
+                <div class="heatmap-grid" id="heatmap-grid"></div>
+            </div>
+            <div class="heatmap-legend">
+                <span>少</span>
+                <span class="legend-square"></span>
+                <span class="legend-square level-1"></span>
+                <span class="legend-square level-2"></span>
+                <span class="legend-square level-3"></span>
+                <span class="legend-square level-4"></span>
+                <span>多</span>
+            </div>
         </div>
 
         <div class="log-card">
@@ -233,6 +264,7 @@
     <span id="data-recent">{{ recent_logs|safe }}</span>
     <span id="data-month-summary">{{ month_summary|safe }}</span>
     <span id="data-all-time-summary">{{ all_time_summary|safe }}</span>
+    <span id="data-streak-summary">{{ streak_summary|safe }}</span>
     <span id="data-today">{{ today_str }}</span>
     <span id="data-daily-target">{{ daily_target_minutes }}</span>
     <span id="data-weekly-target">{{ weekly_target_minutes }}</span>
@@ -288,7 +320,7 @@
             const parser = new DOMParser();
             const doc = parser.parseFromString(htmlText, 'text/html');
             
-            ['data-chart', 'data-active', 'data-active-elapsed', 'data-daily', 'data-recent', 'data-month-summary', 'data-all-time-summary', 'data-today', 'data-daily-target', 'data-weekly-target', 'data-exam-date'].forEach(id => {
+            ['data-chart', 'data-active', 'data-active-elapsed', 'data-daily', 'data-recent', 'data-month-summary', 'data-all-time-summary', 'data-streak-summary', 'data-today', 'data-daily-target', 'data-weekly-target', 'data-exam-date'].forEach(id => {
                 document.getElementById(id).innerText = doc.getElementById(id).innerText;
             });
             initViewEngine();
@@ -374,9 +406,13 @@
 
     function renderHeatmap(dailyStats, todayStr) {
         const container = document.getElementById('heatmap-grid');
+        const monthContainer = document.getElementById('heatmap-months');
         container.innerHTML = '';
+        monthContainer.innerHTML = '';
         const todayObj = new Date(todayStr);
-        for(let i = 89; i >= 0; i--) {
+        const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+        let lastMonth = -1;
+        for(let i = 179; i >= 0; i--) {
             const cursorDate = new Date(todayObj);
             cursorDate.setDate(todayObj.getDate() - i);
             const dateKey = cursorDate.toISOString().split('T')[0];
@@ -388,6 +424,15 @@
             cell.className = `heatmap-cell level-${level}`;
             cell.setAttribute('data-info', `${dateKey} | 学习: ${hours}h`);
             container.appendChild(cell);
+
+            if ((179 - i) % 7 === 0) {
+                const monthLabel = document.createElement('span');
+                if (cursorDate.getMonth() !== lastMonth) {
+                    monthLabel.innerText = monthNames[cursorDate.getMonth()];
+                    lastMonth = cursorDate.getMonth();
+                }
+                monthContainer.appendChild(monthLabel);
+            }
         }
     }
 
@@ -409,6 +454,15 @@
         document.getElementById(`${prefix}-average`).innerText = `${Number(summary.average_minutes || 0)}m`;
         document.getElementById(`${prefix}-total-minutes`).innerText = `${Number(summary.total_minutes || 0)}m`;
         document.getElementById(`${prefix}-top-category`).innerText = summary.top_category || '暂无';
+        document.getElementById(`${prefix}-active-days`).innerText = Number(summary.active_days || 0);
+        const bestDay = summary.best_day && summary.best_day !== '暂无' ? `${summary.best_day.slice(5)} (${Number(summary.best_day_minutes || 0)}m)` : '暂无';
+        document.getElementById(`${prefix}-best-day`).innerText = bestDay;
+    }
+
+    function renderStreakSummary(summary) {
+        document.getElementById('current-streak').innerText = `${Number(summary.current_streak || 0)} 天`;
+        document.getElementById('longest-streak').innerText = `${Number(summary.longest_streak || 0)} 天`;
+        document.getElementById('total-active-days').innerText = `${Number(summary.active_days || 0)} 天`;
     }
 
     function escapeHtml(value) {
@@ -433,7 +487,7 @@
         
         if (activeCat !== 'None' && activeCat.trim() !== '') {
             document.body.classList.add('zen-active');
-            const catNames = { 'math': '数学', 'english': '外语', 'major': '专业课', 'training': '训练' };
+            const catNames = { 'math': '数学', 'english': '外语', 'major': '专业课' };
             document.getElementById('zen-title').innerText = `正在运行: ${catNames[activeCat] || activeCat}`;
             
             // 使用后端下发的时间偏移保证同步
@@ -457,6 +511,7 @@
             recentLogs: JSON.parse(document.getElementById('data-recent').innerText || '[]'),
             monthSummary: JSON.parse(document.getElementById('data-month-summary').innerText || '{}'),
             allTimeSummary: JSON.parse(document.getElementById('data-all-time-summary').innerText || '{}'),
+            streakSummary: JSON.parse(document.getElementById('data-streak-summary').innerText || '{}'),
             todayStr: document.getElementById('data-today').innerText || new Date().toISOString().split('T')[0]
         };
         targetDayMinutes = parseInt(document.getElementById('data-daily-target').innerText, 10) || 360;
@@ -517,6 +572,7 @@
         renderLogs(ctx.recentLogs);
         renderSummary('month', ctx.monthSummary);
         renderSummary('all', ctx.allTimeSummary);
+        renderStreakSummary(ctx.streakSummary);
         toggleZenMode(ctx.activeCat, ctx.activeElapsed);
     }
 
