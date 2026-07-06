@@ -89,3 +89,26 @@ class ApiActionTests(TestCase):
         self.assertIn('category_label', body)
         self.assertIn('english', body)
         self.assertIn('vocabulary', body)
+
+    def test_dashboard_contains_month_and_all_time_summaries(self):
+        now = timezone.now()
+        TimeLog.objects.create(
+            category='math',
+            start_time=now - datetime.timedelta(days=3, minutes=30),
+            end_time=now - datetime.timedelta(days=3),
+        )
+        TimeLog.objects.create(
+            category='english',
+            start_time=now - datetime.timedelta(days=60, minutes=60),
+            end_time=now - datetime.timedelta(days=60),
+        )
+
+        response = self.client.get(reverse('dashboard'))
+
+        self.assertEqual(response.status_code, 200)
+        month_summary = json.loads(response.context['month_summary'])
+        all_time_summary = json.loads(response.context['all_time_summary'])
+        self.assertEqual(month_summary['total_minutes'], 30)
+        self.assertEqual(month_summary['session_count'], 1)
+        self.assertEqual(all_time_summary['total_minutes'], 90)
+        self.assertEqual(all_time_summary['session_count'], 2)

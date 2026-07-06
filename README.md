@@ -8,6 +8,7 @@ A small Django time-tracking dashboard for study sessions.
 - Categories for math, English, major course, and training sessions.
 - Active-session full-screen focus timer.
 - Recent record preview and 90-day heatmap.
+- Recent 30-day and all-time aggregate statistics.
 - CSV export for completed time logs.
 - Environment-based token, host, goal, and exam-date configuration.
 
@@ -92,3 +93,6 @@ For deployment, collect static files locally on the target machine:
 ```bash
 python manage.py collectstatic --noinput
 ```
+
+See [MIGRATION.md](MIGRATION.md) for moving the project and SQLite data to a
+new server.

@@ -34,6 +34,12 @@
         .bar-bg { height: 10px; background: #0f172a; border-radius: 5px; overflow: hidden; margin-bottom: 8px; }
         .bar-fill { height: 100%; background: #deff9a; width: 0%; transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1); }
         .metric-sub { display: flex; justify-content: space-between; font-size: 14px; color: #64748b; }
+        .summary-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
+        .summary-card { background: #1e293b; border-radius: 12px; padding: 18px; border: 1px solid rgba(222, 255, 154, 0.1); }
+        .summary-title { color: #94a3b8; font-size: 13px; margin-bottom: 12px; }
+        .summary-hours { color: #deff9a; font-size: 30px; font-weight: 700; line-height: 1; margin-bottom: 14px; }
+        .summary-meta { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 12px; color: #cbd5e1; font-size: 13px; }
+        .summary-meta span { color: #64748b; display: block; font-size: 12px; margin-bottom: 3px; }
 
         .controls-panel { display: flex; flex-direction: column; gap: 24px; }
         .btn-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
@@ -135,6 +141,29 @@
                     <span id="week-pct" style="color:#deff9a;">0%</span>
                 </div>
             </div>
+
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-title">最近 30 天</div>
+                    <div class="summary-hours" id="month-total-hours">0.00h</div>
+                    <div class="summary-meta">
+                        <div><span>记录次数</span><strong id="month-session-count">0</strong></div>
+                        <div><span>平均单次</span><strong id="month-average">0m</strong></div>
+                        <div><span>累计分钟</span><strong id="month-total-minutes">0m</strong></div>
+                        <div><span>最高分类</span><strong id="month-top-category">暂无</strong></div>
+                    </div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-title">开服以来</div>
+                    <div class="summary-hours" id="all-total-hours">0.00h</div>
+                    <div class="summary-meta">
+                        <div><span>记录次数</span><strong id="all-session-count">0</strong></div>
+                        <div><span>平均单次</span><strong id="all-average">0m</strong></div>
+                        <div><span>累计分钟</span><strong id="all-total-minutes">0m</strong></div>
+                        <div><span>最高分类</span><strong id="all-top-category">暂无</strong></div>
+                    </div>
+                </div>
+            </div>
         </div>
 
         <div class="controls-panel">
@@ -202,6 +231,8 @@
     <span id="data-active-elapsed">{{ active_elapsed }}</span>
     <span id="data-daily">{{ daily_stats|safe }}</span>
     <span id="data-recent">{{ recent_logs|safe }}</span>
+    <span id="data-month-summary">{{ month_summary|safe }}</span>
+    <span id="data-all-time-summary">{{ all_time_summary|safe }}</span>
     <span id="data-today">{{ today_str }}</span>
     <span id="data-daily-target">{{ daily_target_minutes }}</span>
     <span id="data-weekly-target">{{ weekly_target_minutes }}</span>
@@ -257,7 +288,7 @@
             const parser = new DOMParser();
             const doc = parser.parseFromString(htmlText, 'text/html');
             
-            ['data-chart', 'data-active', 'data-active-elapsed', 'data-daily', 'data-recent', 'data-today', 'data-daily-target', 'data-weekly-target', 'data-exam-date'].forEach(id => {
+            ['data-chart', 'data-active', 'data-active-elapsed', 'data-daily', 'data-recent', 'data-month-summary', 'data-all-time-summary', 'data-today', 'data-daily-target', 'data-weekly-target', 'data-exam-date'].forEach(id => {
                 document.getElementById(id).innerText = doc.getElementById(id).innerText;
             });
             initViewEngine();
@@ -372,6 +403,14 @@
         `).join('');
     }
 
+    function renderSummary(prefix, summary) {
+        document.getElementById(`${prefix}-total-hours`).innerText = `${Number(summary.total_hours || 0).toFixed(2)}h`;
+        document.getElementById(`${prefix}-session-count`).innerText = Number(summary.session_count || 0);
+        document.getElementById(`${prefix}-average`).innerText = `${Number(summary.average_minutes || 0)}m`;
+        document.getElementById(`${prefix}-total-minutes`).innerText = `${Number(summary.total_minutes || 0)}m`;
+        document.getElementById(`${prefix}-top-category`).innerText = summary.top_category || '暂无';
+    }
+
     function escapeHtml(value) {
         return String(value ?? '').replace(/[&<>"']/g, char => ({
             '&': '&amp;',
@@ -416,6 +455,8 @@
             activeElapsed: document.getElementById('data-active-elapsed').innerText || '0',
             dailyStats: JSON.parse(document.getElementById('data-daily').innerText || '{}'),
             recentLogs: JSON.parse(document.getElementById('data-recent').innerText || '[]'),
+            monthSummary: JSON.parse(document.getElementById('data-month-summary').innerText || '{}'),
+            allTimeSummary: JSON.parse(document.getElementById('data-all-time-summary').innerText || '{}'),
             todayStr: document.getElementById('data-today').innerText || new Date().toISOString().split('T')[0]
         };
         targetDayMinutes = parseInt(document.getElementById('data-daily-target').innerText, 10) || 360;
@@ -474,6 +515,8 @@
 
         renderHeatmap(ctx.dailyStats, ctx.todayStr);
         renderLogs(ctx.recentLogs);
+        renderSummary('month', ctx.monthSummary);
+        renderSummary('all', ctx.allTimeSummary);
         toggleZenMode(ctx.activeCat, ctx.activeElapsed);
     }
 

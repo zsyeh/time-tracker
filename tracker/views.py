@@ -44,6 +44,32 @@ def _execute_lazy_garbage_collection():
             return True
     return False
 
+def _build_period_summary(logs):
+    total_minutes = 0
+    category_totals = {}
+
+    for log in logs:
+        minutes = log.duration_minutes
+        total_minutes += minutes
+        label = CATEGORY_LABELS.get(log.category, log.category)
+        category_totals[label] = category_totals.get(label, 0) + minutes
+
+    top_category = None
+    if category_totals:
+        top_category = max(category_totals.items(), key=lambda item: item[1])[0]
+
+    return {
+        'total_minutes': total_minutes,
+        'total_hours': round(total_minutes / 60, 2),
+        'session_count': len(logs),
+        'average_minutes': int(total_minutes / len(logs)) if logs else 0,
+        'top_category': top_category or '暂无',
+        'category_totals': [
+            {'name': name, 'value': minutes}
+            for name, minutes in sorted(category_totals.items(), key=lambda item: item[1], reverse=True)
+        ],
+    }
+
 def dashboard_view(request):
     _execute_lazy_garbage_collection()
     now = _get_safe_now()
@@ -55,6 +81,9 @@ def dashboard_view(request):
         start_time__gte=start_of_week_dt, 
         end_time__isnull=False
     )
+    completed_logs = list(TimeLog.objects.filter(end_time__isnull=False).order_by('-start_time'))
+    month_start = now - datetime.timedelta(days=30)
+    month_logs = [log for log in completed_logs if log.start_time >= month_start]
 
     stats = {}
     daily_stats = {} 
@@ -99,6 +128,8 @@ def dashboard_view(request):
         'active_elapsed': active_elapsed,
         'daily_stats': json.dumps(daily_stats),
         'recent_logs': json.dumps(recent_logs),
+        'month_summary': json.dumps(_build_period_summary(month_logs)),
+        'all_time_summary': json.dumps(_build_period_summary(completed_logs)),
         'today_str': today_str,
         'daily_target_minutes': settings.TRACKER_DAILY_TARGET_MINUTES,
         'weekly_target_minutes': settings.TRACKER_WEEKLY_TARGET_MINUTES,
