@@ -270,7 +270,7 @@
     <div class="bottom-grid">
         <div class="heatmap-card">
             <div class="heatmap-header">
-                <span>持续性矩阵 (180 日)</span>
+                <span>持续性矩阵 (6月起)</span>
                 <span>GitHub 风格</span>
             </div>
             <div class="heatmap-wrap">
@@ -459,12 +459,18 @@
         const monthContainer = document.getElementById('heatmap-months');
         container.innerHTML = '';
         monthContainer.innerHTML = '';
-        const todayObj = new Date(todayStr);
+        const todayObj = new Date(`${todayStr}T00:00:00Z`);
         const monthNames = ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'];
+        const firstTrackedDate = new Date(Date.UTC(todayObj.getUTCFullYear(), 5, 1));
+        if (firstTrackedDate > todayObj) {
+            firstTrackedDate.setUTCFullYear(todayObj.getUTCFullYear() - 1);
+        }
+        const dayMs = 24 * 60 * 60 * 1000;
+        const visibleDays = Math.min(179, Math.max(0, Math.floor((todayObj - firstTrackedDate) / dayMs)));
         let lastMonth = -1;
-        for(let i = 179; i >= 0; i--) {
+        for(let i = visibleDays; i >= 0; i--) {
             const cursorDate = new Date(todayObj);
-            cursorDate.setDate(todayObj.getDate() - i);
+            cursorDate.setUTCDate(todayObj.getUTCDate() - i);
             const dateKey = cursorDate.toISOString().split('T')[0];
             const mins = dailyStats[dateKey] || 0;
             const hours = (mins / 60).toFixed(1);
@@ -475,11 +481,11 @@
             cell.setAttribute('data-info', `${dateKey} | 学习: ${hours}h`);
             container.appendChild(cell);
 
-            if ((179 - i) % 7 === 0) {
+            if ((visibleDays - i) % 7 === 0) {
                 const monthLabel = document.createElement('span');
-                if (cursorDate.getMonth() !== lastMonth) {
-                    monthLabel.innerText = monthNames[cursorDate.getMonth()];
-                    lastMonth = cursorDate.getMonth();
+                if (cursorDate.getUTCMonth() !== lastMonth) {
+                    monthLabel.innerText = monthNames[cursorDate.getUTCMonth()];
+                    lastMonth = cursorDate.getUTCMonth();
                 }
                 monthContainer.appendChild(monthLabel);
             }
