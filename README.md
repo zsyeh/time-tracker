@@ -10,6 +10,8 @@ A small Django time-tracking dashboard for study sessions.
 - Recent record preview and 180-day GitHub-style heatmap.
 - Recent 30-day, all-time, active-day, best-day, and streak statistics.
 - CSV export for completed time logs.
+- Button-triggered, responsive summer schedule with timeline, training, quota,
+  and rule views.
 - Environment-based token, host, goal, and exam-date configuration.
 
 ## Setup
@@ -78,6 +80,14 @@ The exported columns are:
 - `category_label`
 - `duration_minutes`
 - `note`
+
+## Summer Schedule
+
+The schedule shown by the `暑假作息` dialog is maintained in
+`tracker/schedule.py`. Its timeline, weekly training, study quotas, and rules
+are structured separately, so later adjustments only require editing that
+configuration module; the dashboard template and JavaScript do not need to be
+rewritten.
 
 ## Maintenance
 

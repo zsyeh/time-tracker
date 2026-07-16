@@ -6,6 +6,7 @@ from django.urls import reverse
 from django.utils import timezone
 
 from .models import TimeLog
+from .schedule import get_summer_schedule
 
 
 @override_settings(TRACKER_API_TOKEN='test-token')
@@ -117,3 +118,37 @@ class ApiActionTests(TestCase):
         self.assertEqual(all_time_summary['session_count'], 2)
         self.assertEqual(all_time_summary['active_days'], 2)
         self.assertEqual(streak_summary['active_days'], 2)
+
+
+class DashboardScheduleTests(TestCase):
+    def test_dashboard_receives_complete_summer_schedule(self):
+        response = self.client.get(reverse('dashboard'))
+
+        self.assertEqual(response.status_code, 200)
+        schedule = response.context['summer_schedule']
+        self.assertEqual(schedule['timeline'][0]['time'], '06:30')
+        self.assertEqual(schedule['timeline'][-1]['time'], '23:00')
+        self.assertEqual(len(schedule['timeline']), 15)
+        self.assertEqual(len(schedule['weekly_training']), 7)
+        self.assertEqual(len(schedule['study_quotas']), 3)
+        self.assertEqual(len(schedule['rules']), 6)
+
+    def test_dashboard_renders_hidden_responsive_schedule_dialog(self):
+        response = self.client.get(reverse('dashboard'))
+
+        self.assertContains(response, 'id="open-study-plan"')
+        self.assertContains(response, 'id="study-plan-dialog"')
+        self.assertContains(response, 'aria-label="关闭暑假作息计划"')
+        self.assertContains(response, 'data-plan-tab="timeline"')
+        self.assertContains(response, 'data-plan-tab="training"')
+        self.assertContains(response, 'data-plan-tab="quota"')
+        self.assertContains(response, 'data-plan-tab="rules"')
+        self.assertContains(response, '低刺激放松')
+        self.assertContains(response, '睡眠少于 6 小时')
+
+    def test_schedule_accessor_returns_an_isolated_copy(self):
+        first = get_summer_schedule()
+        first['timeline'][0]['title'] = 'changed'
+
+        second = get_summer_schedule()
+        self.assertEqual(second['timeline'][0]['title'], '起床')

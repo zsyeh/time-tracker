@@ -7,6 +7,7 @@ import json
 import datetime
 import csv
 from .models import TimeLog
+from .schedule import get_summer_schedule
 from functools import wraps
 
 VALID_CATEGORIES = {choice[0] for choice in TimeLog.CATEGORY_CHOICES}
@@ -172,6 +173,7 @@ def dashboard_view(request):
         'daily_target_minutes': settings.TRACKER_DAILY_TARGET_MINUTES,
         'weekly_target_minutes': settings.TRACKER_WEEKLY_TARGET_MINUTES,
         'exam_date': settings.TRACKER_EXAM_DATE,
+        'summer_schedule': get_summer_schedule(),
     }
     return render(request, 'dashboard.html', context)
 

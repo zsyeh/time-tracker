@@ -103,8 +103,64 @@
         #zen-stop-btn { margin-top: 60px; padding: 20px 50px; background: #ef4444; color: white; border: none; border-radius: 40px; font-size: 24px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3); }
         #zen-stop-btn:hover { background: #dc2626; transform: translateY(-3px); }
 
+        body.plan-open { overflow: hidden; }
+        .plan-dialog { width: min(960px, calc(100vw - 32px)); height: min(760px, calc(100dvh - 48px)); max-width: none; max-height: none; margin: auto; padding: 0; color: #f8fafc; background: #0b1120; border: 1px solid rgba(222, 255, 154, 0.24); border-radius: 22px; box-shadow: 0 30px 90px rgba(0, 0, 0, 0.72); overflow: hidden; }
+        .plan-dialog:not([open]) { display: none; }
+        .plan-dialog[open] { display: grid; grid-template-rows: auto auto minmax(0, 1fr); animation: plan-dialog-in 0.2s ease-out; }
+        .plan-dialog::backdrop { background: rgba(2, 6, 23, 0.82); backdrop-filter: blur(7px); }
+        .plan-header { padding: 24px 28px 20px; background: radial-gradient(circle at top right, rgba(222, 255, 154, 0.13), transparent 38%), linear-gradient(135deg, #111827, #0f172a); border-bottom: 1px solid rgba(148, 163, 184, 0.12); }
+        .plan-title-row { display: flex; justify-content: space-between; align-items: flex-start; gap: 24px; }
+        .plan-kicker { margin: 0 0 5px; color: #deff9a; font-size: 12px; font-weight: 700; letter-spacing: 0.14em; text-transform: uppercase; }
+        .plan-header h2 { margin: 0; font-size: clamp(25px, 4vw, 34px); line-height: 1.12; }
+        .plan-subtitle { margin: 8px 0 0; color: #94a3b8; font-size: 14px; }
+        .plan-close { flex: 0 0 44px; width: 44px; height: 44px; display: grid; place-items: center; color: #cbd5e1; background: rgba(148, 163, 184, 0.1); border: 1px solid rgba(148, 163, 184, 0.14); border-radius: 50%; cursor: pointer; transition: color 0.2s, background 0.2s, transform 0.2s; }
+        .plan-close span { font-size: 25px; line-height: 1; }
+        .plan-close:hover { color: #fff; background: rgba(148, 163, 184, 0.2); transform: rotate(6deg); }
+        .plan-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+        .plan-meta-item { display: inline-flex; align-items: center; gap: 7px; min-height: 34px; padding: 7px 11px; color: #cbd5e1; background: rgba(15, 23, 42, 0.72); border: 1px solid rgba(148, 163, 184, 0.14); border-radius: 999px; font-size: 12px; }
+        .plan-meta-item i { color: #deff9a; }
+        .plan-principle { margin: 14px 0 0; color: #deff9a; font-size: 13px; }
+        .plan-tabs { display: flex; gap: 6px; padding: 11px 28px; background: #0f172a; border-bottom: 1px solid rgba(148, 163, 184, 0.12); overflow-x: auto; scrollbar-width: none; }
+        .plan-tabs::-webkit-scrollbar { display: none; }
+        .plan-tab { flex: 0 0 auto; min-height: 40px; padding: 9px 14px; color: #94a3b8; background: transparent; border: 1px solid transparent; border-radius: 10px; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; white-space: nowrap; transition: color 0.2s, background 0.2s, border-color 0.2s; }
+        .plan-tab:hover { color: #e2e8f0; background: rgba(148, 163, 184, 0.08); }
+        .plan-tab[aria-selected="true"] { color: #deff9a; background: rgba(222, 255, 154, 0.09); border-color: rgba(222, 255, 154, 0.24); }
+        .plan-body { min-height: 0; padding: 24px 28px 30px; overflow-y: auto; overscroll-behavior: contain; }
+        .plan-panel[hidden] { display: none; }
+        .plan-section-heading { display: flex; justify-content: space-between; align-items: baseline; gap: 16px; margin-bottom: 20px; }
+        .plan-section-heading h3 { margin: 0; font-size: 19px; }
+        .plan-section-heading span { color: #64748b; font-size: 12px; }
+        .plan-timeline { list-style: none; margin: 0; padding: 0; }
+        .plan-timeline-item { display: grid; grid-template-columns: 118px 18px minmax(0, 1fr); gap: 14px; min-height: 64px; }
+        .plan-time { padding-top: 2px; color: #94a3b8; font-size: 13px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+        .plan-marker { position: relative; width: 12px; height: 12px; margin-top: 4px; background: #334155; border: 2px solid #64748b; border-radius: 50%; }
+        .plan-marker::after { content: ''; position: absolute; top: 12px; left: 3px; width: 2px; height: calc(100% + 42px); background: #1e293b; }
+        .plan-timeline-item:last-child .plan-marker::after { display: none; }
+        .plan-timeline-item[data-kind="study"] .plan-marker { background: #deff9a; border-color: #deff9a; box-shadow: 0 0 0 4px rgba(222, 255, 154, 0.08); }
+        .plan-timeline-item[data-kind="training"] .plan-marker { background: #38bdf8; border-color: #38bdf8; }
+        .plan-timeline-item[data-kind="sleep"] .plan-marker { background: #818cf8; border-color: #818cf8; }
+        .plan-timeline-copy { padding: 0 0 18px; }
+        .plan-timeline-copy strong { display: block; color: #f8fafc; font-size: 15px; line-height: 1.35; }
+        .plan-timeline-copy p { margin: 5px 0 0; color: #94a3b8; font-size: 13px; line-height: 1.55; }
+        .plan-training-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+        .plan-training-card { display: grid; grid-template-columns: 50px minmax(0, 1fr); gap: 12px; align-items: start; padding: 16px; background: #111827; border: 1px solid rgba(148, 163, 184, 0.12); border-radius: 13px; }
+        .plan-training-card strong { color: #deff9a; font-size: 14px; }
+        .plan-training-card span { color: #cbd5e1; font-size: 13px; line-height: 1.55; }
+        .plan-quota-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+        .plan-quota-card { min-width: 0; padding: 20px; background: linear-gradient(145deg, #111827, #0f172a); border: 1px solid rgba(222, 255, 154, 0.12); border-radius: 15px; }
+        .plan-quota-card h4 { margin: 0 0 14px; color: #f8fafc; font-size: 17px; }
+        .plan-quota-duration { display: block; margin-bottom: 8px; color: #deff9a; font-size: 24px; font-weight: 700; }
+        .plan-quota-focus { color: #94a3b8; font-size: 13px; line-height: 1.5; }
+        .plan-rules { margin: 0; padding: 0; list-style: none; counter-reset: plan-rule; display: grid; gap: 12px; }
+        .plan-rule { counter-increment: plan-rule; display: grid; grid-template-columns: 34px minmax(0, 1fr); gap: 13px; align-items: start; padding: 15px 16px; color: #cbd5e1; background: #111827; border: 1px solid rgba(148, 163, 184, 0.12); border-radius: 13px; font-size: 14px; line-height: 1.65; }
+        .plan-rule::before { content: counter(plan-rule); width: 30px; height: 30px; display: grid; place-items: center; color: #0f172a; background: #deff9a; border-radius: 9px; font-size: 13px; font-weight: 700; }
+        .plan-close:focus-visible,
+        .plan-tab:focus-visible,
+        .plan-panel:focus-visible { outline: 3px solid rgba(222, 255, 154, 0.42); outline-offset: 2px; }
+
         #django-context { display: none; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
+        @keyframes plan-dialog-in { from { opacity: 0; transform: translateY(12px) scale(0.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
         .is-loading { animation: pulse 1.5s infinite; pointer-events: none; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -144,6 +200,13 @@
             .log-item { grid-template-columns: 78px 54px 64px; gap: 8px; }
             .log-item span:last-child { grid-column: 1 / -1; min-width: 0; }
             #zen-stop-btn { margin-top: 40px; padding: 16px 34px; border-radius: 28px; font-size: 18px; }
+            .plan-dialog { width: 100%; height: 92dvh; margin: auto 0 0; border-right: 0; border-bottom: 0; border-left: 0; border-radius: 20px 20px 0 0; }
+            .plan-header { padding: 21px 18px 17px; }
+            .plan-title-row { gap: 14px; }
+            .plan-tabs { padding: 9px 14px; }
+            .plan-body { padding: 21px 18px calc(28px + env(safe-area-inset-bottom)); }
+            .plan-training-grid { grid-template-columns: 1fr; }
+            .plan-quota-grid { grid-template-columns: 1fr; }
         }
 
         @media (max-width: 420px) {
@@ -154,6 +217,17 @@
             .log-item { grid-template-columns: 1fr 52px; }
             .log-item span:nth-child(3),
             .log-item span:last-child { grid-column: 1 / -1; }
+            .plan-meta-item { flex: 1 1 100%; border-radius: 10px; }
+            .plan-section-heading { align-items: flex-start; flex-direction: column; gap: 5px; }
+            .plan-timeline-item { grid-template-columns: 1fr; gap: 4px; min-height: 0; padding: 0 0 18px 14px; border-left: 2px solid #1e293b; }
+            .plan-time { color: #deff9a; }
+            .plan-marker { display: none; }
+            .plan-timeline-copy { padding: 0; }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            .plan-dialog[open] { animation: none; }
+            .plan-close { transition: none; }
         }
     </style>
 </head>
@@ -185,7 +259,7 @@
                 </div>
                 <div class="bar-bg"><div class="bar-fill" id="today-bar"></div></div>
                 <div class="metric-sub">
-                    <span id="today-target-label">目标: 10.0h / 日</span>
+                    <span id="today-target-label">目标: 6.0h / 日</span>
                     <span id="today-pct" style="color:#deff9a;">0%</span>
                 </div>
             </div>
@@ -259,6 +333,9 @@
             </div>
             
             <div class="utility-actions">
+                <button type="button" class="action-btn utility-btn" id="open-study-plan" onclick="openStudyPlan()" aria-haspopup="dialog" aria-controls="study-plan-dialog">
+                    <i class="fa-solid fa-calendar-days"></i> 暑假作息
+                </button>
                 <button class="action-btn utility-btn" onclick="setAuthToken()">eh专用</button>
                 <button class="action-btn utility-btn" onclick="exportLogsCsv()">
                     <i class="fa-solid fa-file-arrow-down"></i> 导出CSV
@@ -298,6 +375,97 @@
     </div>
 </div>
 
+<dialog id="study-plan-dialog" class="plan-dialog" aria-labelledby="study-plan-title">
+    <header class="plan-header">
+        <div class="plan-title-row">
+            <div>
+                <p class="plan-kicker">{{ summer_schedule.version }}</p>
+                <h2 id="study-plan-title">{{ summer_schedule.title }}</h2>
+                <p class="plan-subtitle">{{ summer_schedule.subtitle }}</p>
+            </div>
+            <button type="button" class="plan-close" onclick="closeStudyPlan()" aria-label="关闭暑假作息计划">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+        <div class="plan-meta">
+            <span class="plan-meta-item"><i class="fa-regular fa-moon" aria-hidden="true"></i> 睡眠 {{ summer_schedule.sleep_window }}</span>
+            <span class="plan-meta-item"><i class="fa-solid fa-book-open" aria-hidden="true"></i> {{ summer_schedule.daily_study_target }}</span>
+        </div>
+        <p class="plan-principle"><i class="fa-solid fa-compass" aria-hidden="true"></i> {{ summer_schedule.principle }}</p>
+    </header>
+
+    <div class="plan-tabs" role="tablist" aria-label="作息计划分区">
+        <button type="button" class="plan-tab" id="plan-tab-timeline" role="tab" aria-selected="true" aria-controls="plan-panel-timeline" data-plan-tab="timeline">每日时间轴</button>
+        <button type="button" class="plan-tab" id="plan-tab-training" role="tab" aria-selected="false" aria-controls="plan-panel-training" data-plan-tab="training" tabindex="-1">每周训练</button>
+        <button type="button" class="plan-tab" id="plan-tab-quota" role="tab" aria-selected="false" aria-controls="plan-panel-quota" data-plan-tab="quota" tabindex="-1">学习配额</button>
+        <button type="button" class="plan-tab" id="plan-tab-rules" role="tab" aria-selected="false" aria-controls="plan-panel-rules" data-plan-tab="rules" tabindex="-1">执行规则</button>
+    </div>
+
+    <div class="plan-body">
+        <section class="plan-panel" id="plan-panel-timeline" role="tabpanel" aria-labelledby="plan-tab-timeline" data-plan-panel="timeline" tabindex="0">
+            <div class="plan-section-heading">
+                <h3>每日时间轴</h3>
+                <span>学习块之间预留恢复与切换时间</span>
+            </div>
+            <ol class="plan-timeline">
+                {% for item in summer_schedule.timeline %}
+                <li class="plan-timeline-item" data-kind="{{ item.kind }}">
+                    <time class="plan-time">{{ item.time }}</time>
+                    <span class="plan-marker" aria-hidden="true"></span>
+                    <div class="plan-timeline-copy">
+                        <strong>{{ item.title }}</strong>
+                        {% if item.detail %}<p>{{ item.detail }}</p>{% endif %}
+                    </div>
+                </li>
+                {% endfor %}
+            </ol>
+        </section>
+
+        <section class="plan-panel" id="plan-panel-training" role="tabpanel" aria-labelledby="plan-tab-training" data-plan-panel="training" tabindex="0" hidden>
+            <div class="plan-section-heading">
+                <h3>每周训练结构</h3>
+                <span>跑步与低容量力量并行</span>
+            </div>
+            <div class="plan-training-grid">
+                {% for item in summer_schedule.weekly_training %}
+                <div class="plan-training-card">
+                    <strong>{{ item.day }}</strong>
+                    <span>{{ item.activity }}</span>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="plan-panel" id="plan-panel-quota" role="tabpanel" aria-labelledby="plan-tab-quota" data-plan-panel="quota" tabindex="0" hidden>
+            <div class="plan-section-heading">
+                <h3>学习配额</h3>
+                <span>按净学习口径安排</span>
+            </div>
+            <div class="plan-quota-grid">
+                {% for item in summer_schedule.study_quotas %}
+                <article class="plan-quota-card">
+                    <h4>{{ item.subject }}</h4>
+                    <span class="plan-quota-duration">{{ item.duration }}</span>
+                    <span class="plan-quota-focus">{{ item.focus }}</span>
+                </article>
+                {% endfor %}
+            </div>
+        </section>
+
+        <section class="plan-panel" id="plan-panel-rules" role="tabpanel" aria-labelledby="plan-tab-rules" data-plan-panel="rules" tabindex="0" hidden>
+            <div class="plan-section-heading">
+                <h3>执行规则</h3>
+                <span>稳定与安全优先</span>
+            </div>
+            <ol class="plan-rules">
+                {% for rule in summer_schedule.rules %}
+                <li class="plan-rule">{{ rule }}</li>
+                {% endfor %}
+            </ol>
+        </section>
+    </div>
+</dialog>
+
 <div id="zen-overlay">
     <div id="zen-title">进入深度工作状态</div>
     <div id="zen-timer" class="zen-pulse">00:00:00</div>
@@ -322,10 +490,90 @@
 </div>
 
 <script>
-    let targetDayMinutes = 600;
+    let targetDayMinutes = 360;
     let targetWeekMinutes = 2520;
     let zenTimerInterval = null;
     let localSeconds = 0;
+    let studyPlanTrigger = null;
+
+    function selectStudyPlanTab(tabName, moveFocus = false) {
+        const tabs = Array.from(document.querySelectorAll('[data-plan-tab]'));
+        const panels = document.querySelectorAll('[data-plan-panel]');
+        const selectedTab = tabs.find(tab => tab.dataset.planTab === tabName);
+        if (!selectedTab) return;
+
+        tabs.forEach(tab => {
+            const selected = tab === selectedTab;
+            tab.setAttribute('aria-selected', String(selected));
+            tab.tabIndex = selected ? 0 : -1;
+        });
+        panels.forEach(panel => {
+            panel.hidden = panel.dataset.planPanel !== tabName;
+        });
+
+        if (moveFocus) selectedTab.focus();
+        const body = document.querySelector('.plan-body');
+        if (body) body.scrollTop = 0;
+    }
+
+    function openStudyPlan() {
+        const dialog = document.getElementById('study-plan-dialog');
+        if (!dialog || dialog.open || dialog.hasAttribute('open')) return;
+        studyPlanTrigger = document.activeElement;
+        document.body.classList.add('plan-open');
+        if (typeof dialog.showModal === 'function') {
+            dialog.showModal();
+        } else {
+            dialog.setAttribute('open', '');
+        }
+    }
+
+    function finishStudyPlanClose() {
+        document.body.classList.remove('plan-open');
+        if (studyPlanTrigger && typeof studyPlanTrigger.focus === 'function') {
+            studyPlanTrigger.focus();
+        }
+        studyPlanTrigger = null;
+    }
+
+    function closeStudyPlan() {
+        const dialog = document.getElementById('study-plan-dialog');
+        if (!dialog || (!dialog.open && !dialog.hasAttribute('open'))) return;
+        if (typeof dialog.close === 'function') {
+            dialog.close();
+        } else {
+            dialog.removeAttribute('open');
+            finishStudyPlanClose();
+        }
+    }
+
+    function initStudyPlanDialog() {
+        const dialog = document.getElementById('study-plan-dialog');
+        const tabs = Array.from(document.querySelectorAll('[data-plan-tab]'));
+        if (!dialog || tabs.length === 0) return;
+
+        tabs.forEach((tab, index) => {
+            tab.addEventListener('click', () => selectStudyPlanTab(tab.dataset.planTab));
+            tab.addEventListener('keydown', event => {
+                let nextIndex = null;
+                if (event.key === 'ArrowRight') nextIndex = (index + 1) % tabs.length;
+                if (event.key === 'ArrowLeft') nextIndex = (index - 1 + tabs.length) % tabs.length;
+                if (event.key === 'Home') nextIndex = 0;
+                if (event.key === 'End') nextIndex = tabs.length - 1;
+                if (nextIndex === null) return;
+                event.preventDefault();
+                selectStudyPlanTab(tabs[nextIndex].dataset.planTab, true);
+            });
+        });
+
+        dialog.addEventListener('click', event => {
+            if (event.target === dialog) closeStudyPlan();
+        });
+        dialog.addEventListener('close', () => {
+            finishStudyPlanClose();
+        });
+        selectStudyPlanTab('timeline');
+    }
 
     function setAuthToken() {
         const token = prompt("符咒交出来");
@@ -542,6 +790,7 @@
         if (zenTimerInterval) clearInterval(zenTimerInterval);
         
         if (activeCat !== 'None' && activeCat.trim() !== '') {
+            closeStudyPlan();
             document.body.classList.add('zen-active');
             const catNames = { 'math': '数学', 'english': '外语', 'major': '专业课' };
             document.getElementById('zen-title').innerText = `正在运行: ${catNames[activeCat] || activeCat}`;
@@ -570,7 +819,7 @@
             streakSummary: JSON.parse(document.getElementById('data-streak-summary').innerText || '{}'),
             todayStr: document.getElementById('data-today').innerText || new Date().toISOString().split('T')[0]
         };
-        targetDayMinutes = parseInt(document.getElementById('data-daily-target').innerText, 10) || 600;
+        targetDayMinutes = parseInt(document.getElementById('data-daily-target').innerText, 10) || 360;
         targetWeekMinutes = parseInt(document.getElementById('data-weekly-target').innerText, 10) || 2520;
         document.getElementById('today-target-label').innerText = `目标: ${(targetDayMinutes / 60).toFixed(1)}h / 日`;
         document.getElementById('week-target-label').innerText = `目标: ${(targetWeekMinutes / 60).toFixed(1)}h / 周`;
@@ -632,7 +881,10 @@
         toggleZenMode(ctx.activeCat, ctx.activeElapsed);
     }
 
-    window.addEventListener('DOMContentLoaded', initViewEngine);
+    window.addEventListener('DOMContentLoaded', () => {
+        initStudyPlanDialog();
+        initViewEngine();
+    });
 </script>
 </body>
 </html>
