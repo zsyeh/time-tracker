@@ -185,7 +185,7 @@
                 </div>
                 <div class="bar-bg"><div class="bar-fill" id="today-bar"></div></div>
                 <div class="metric-sub">
-                    <span id="today-target-label">目标: 6.0h / 日</span>
+                    <span id="today-target-label">目标: 10.0h / 日</span>
                     <span id="today-pct" style="color:#deff9a;">0%</span>
                 </div>
             </div>
@@ -322,7 +322,7 @@
 </div>
 
 <script>
-    let targetDayMinutes = 360;
+    let targetDayMinutes = 600;
     let targetWeekMinutes = 2520;
     let zenTimerInterval = null;
     let localSeconds = 0;
@@ -570,7 +570,7 @@
             streakSummary: JSON.parse(document.getElementById('data-streak-summary').innerText || '{}'),
             todayStr: document.getElementById('data-today').innerText || new Date().toISOString().split('T')[0]
         };
-        targetDayMinutes = parseInt(document.getElementById('data-daily-target').innerText, 10) || 360;
+        targetDayMinutes = parseInt(document.getElementById('data-daily-target').innerText, 10) || 600;
         targetWeekMinutes = parseInt(document.getElementById('data-weekly-target').innerText, 10) || 2520;
         document.getElementById('today-target-label').innerText = `目标: ${(targetDayMinutes / 60).toFixed(1)}h / 日`;
         document.getElementById('week-target-label').innerText = `目标: ${(targetWeekMinutes / 60).toFixed(1)}h / 周`;
