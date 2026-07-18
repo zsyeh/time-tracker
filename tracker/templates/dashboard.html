@@ -99,13 +99,14 @@
         .log-cat { color: #deff9a; font-weight: 700; }
         
         body.zen-active { background-color: #000; }
-        body.zen-active .dashboard-container { opacity: 0.05; filter: blur(5px); pointer-events: none; }
-        #zen-overlay { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; display: flex; flex-direction: column; align-items: center; justify-content: center; z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.5s ease; }
-        body.zen-active #zen-overlay { opacity: 1; pointer-events: auto; }
-        #zen-title { font-size: clamp(22px, 5vw, 32px); color: #94a3b8; margin-bottom: 20px; font-weight: 500; text-align: center; padding: 0 16px; }
-        #zen-timer { font-size: clamp(44px, 16vw, 120px); font-weight: 700; color: #deff9a; font-family: monospace; line-height: 1; text-shadow: 0 0 40px rgba(222, 255, 154, 0.2); max-width: 100vw; overflow-wrap: anywhere; }
-        .zen-pulse { animation: pulse 2s infinite; }
-        #zen-stop-btn { margin-top: 60px; padding: 20px 50px; background: #ef4444; color: white; border: none; border-radius: 40px; font-size: 24px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3); }
+        body.zen-active .dashboard-container { opacity: 0; pointer-events: none; }
+        #zen-overlay { position: fixed; inset: 0; width: 100vw; height: 100vh; padding: 24px; display: flex; visibility: hidden; flex-direction: column; align-items: center; justify-content: center; z-index: 100; opacity: 0; pointer-events: none; transition: opacity 0.35s ease, visibility 0s linear 0.35s; }
+        body.zen-active #zen-overlay { visibility: visible; opacity: 1; pointer-events: auto; transition-delay: 0s; }
+        #zen-subject { margin: 0 0 36px; padding: 0 16px; color: #deff9a; font-size: clamp(32px, 8vw, 56px); font-weight: 700; line-height: 1.1; text-align: center; }
+        .zen-clock-block { text-align: center; }
+        .zen-clock-label { display: block; margin-bottom: 8px; color: #64748b; font-size: 13px; letter-spacing: 0.16em; }
+        #zen-clock { display: block; color: #f8fafc; font-family: monospace; font-size: clamp(52px, 17vw, 104px); font-weight: 700; font-variant-numeric: tabular-nums; line-height: 1; }
+        #zen-stop-btn { margin-top: 56px; padding: 20px 50px; background: #ef4444; color: white; border: none; border-radius: 40px; font-size: 24px; font-weight: 700; cursor: pointer; transition: all 0.3s; box-shadow: 0 10px 30px rgba(239, 68, 68, 0.3); }
         #zen-stop-btn:hover { background: #dc2626; transform: translateY(-3px); }
 
         body.plan-open { overflow: hidden; }
@@ -485,11 +486,14 @@
     </div>
 </dialog>
 
-<div id="zen-overlay">
-    <div id="zen-title">进入深度工作状态</div>
-    <div id="zen-timer" class="zen-pulse">00:00:00</div>
+<div id="zen-overlay" aria-hidden="true">
+    <h2 id="zen-subject">学习</h2>
+    <div class="zen-clock-block">
+        <span class="zen-clock-label">上海时间</span>
+        <time id="zen-clock" aria-live="off">--:--</time>
+    </div>
     <button id="zen-stop-btn" onclick="handleStop()">
-        <i class="fa-solid fa-stop"></i> 结束记录
+        <i class="fa-solid fa-stop"></i> 结束学习
     </button>
 </div>
 
@@ -512,9 +516,16 @@
 <script>
     let targetDayMinutes = 360;
     let targetWeekMinutes = 2520;
-    let zenTimerInterval = null;
-    let localSeconds = 0;
+    let activeElapsedBaseSeconds = 0;
+    let activeElapsedBaseTime = 0;
+    let shanghaiClockInterval = null;
     let studyPlanTrigger = null;
+    const shanghaiTimeFormatter = new Intl.DateTimeFormat('zh-CN', {
+        timeZone: 'Asia/Shanghai',
+        hour: '2-digit',
+        minute: '2-digit',
+        hourCycle: 'h23'
+    });
 
     function selectStudyPlanTab(tabName, moveFocus = false) {
         const tabs = Array.from(document.querySelectorAll('[data-plan-tab]'));
@@ -648,7 +659,7 @@
     }
 
     function handleStop() {
-        if (localSeconds < 25 * 60) {
+        if (getActiveElapsedSeconds() < 25 * 60) {
             const confirmDiscard = confirm("本次时长不足 25 分钟，结算将被自动销毁记录。确认停止？");
             if (!confirmDiscard) return;
             triggerAction('stop', null, '');
@@ -801,31 +812,47 @@
         }[char]));
     }
 
-    function formatTime(totalSeconds) {
-        const h = String(Math.floor(totalSeconds / 3600)).padStart(2, '0');
-        const m = String(Math.floor((totalSeconds % 3600) / 60)).padStart(2, '0');
-        const s = String(totalSeconds % 60).padStart(2, '0');
-        return `${h}:${m}:${s}`;
+    function updateShanghaiClock() {
+        const clock = document.getElementById('zen-clock');
+        if (!clock) return;
+        const now = new Date();
+        clock.innerText = shanghaiTimeFormatter.format(now);
+        clock.setAttribute('datetime', now.toISOString());
+    }
+
+    function getActiveElapsedSeconds() {
+        if (!activeElapsedBaseTime) return activeElapsedBaseSeconds;
+        const elapsedSinceSync = Math.max(0, Math.floor((Date.now() - activeElapsedBaseTime) / 1000));
+        return activeElapsedBaseSeconds + elapsedSinceSync;
     }
 
     function toggleZenMode(activeCat, elapsedSecs) {
-        if (zenTimerInterval) clearInterval(zenTimerInterval);
+        if (shanghaiClockInterval) clearInterval(shanghaiClockInterval);
+        shanghaiClockInterval = null;
+        const overlay = document.getElementById('zen-overlay');
+        const dashboard = document.querySelector('.dashboard-container');
         
         if (activeCat !== 'None' && activeCat.trim() !== '') {
             closeStudyPlan();
             document.body.classList.add('zen-active');
-            const catNames = { 'math': '数学', 'english': '外语', 'major': '专业课' };
-            document.getElementById('zen-title').innerText = `正在运行: ${catNames[activeCat] || activeCat}`;
-            
-            // 使用后端下发的时间偏移保证同步
-            localSeconds = parseInt(elapsedSecs) || 0;
-            document.getElementById('zen-timer').innerText = formatTime(localSeconds);
-            zenTimerInterval = setInterval(() => {
-                localSeconds++;
-                document.getElementById('zen-timer').innerText = formatTime(localSeconds);
-            }, 1000);
+            overlay.setAttribute('aria-hidden', 'false');
+            dashboard.setAttribute('aria-hidden', 'true');
+            dashboard.inert = true;
+            const catNames = { 'math': '数学', 'english': '外语', 'major': '专业课', 'training': '训练' };
+            document.getElementById('zen-subject').innerText = catNames[activeCat] || activeCat;
+
+            // 仅保留隐藏的时长基准，用于 25 分钟停止保护，不在界面展示。
+            activeElapsedBaseSeconds = parseInt(elapsedSecs, 10) || 0;
+            activeElapsedBaseTime = Date.now();
+            updateShanghaiClock();
+            shanghaiClockInterval = setInterval(updateShanghaiClock, 15000);
         } else {
             document.body.classList.remove('zen-active');
+            overlay.setAttribute('aria-hidden', 'true');
+            dashboard.removeAttribute('aria-hidden');
+            dashboard.inert = false;
+            activeElapsedBaseSeconds = 0;
+            activeElapsedBaseTime = 0;
         }
     }
 

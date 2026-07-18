@@ -8,7 +8,8 @@ A small Django time-tracking dashboard for study sessions.
 - Daily study history page with session count, first start time, effective time,
   and target progress.
 - Categories for math, English, and major course sessions.
-- Active-session full-screen focus timer.
+- Distraction-free full-screen focus view with only the subject, Shanghai time,
+  and an end-session control.
 - Recent record preview and 180-day GitHub-style heatmap.
 - Recent 30-day, all-time, active-day, best-day, and streak statistics.
 - CSV export for completed time logs.

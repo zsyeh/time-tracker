@@ -83,6 +83,38 @@ class ApiActionTests(TestCase):
         self.assertEqual(stat.first_start_time, start)
         self.assertEqual(stat.total_minutes, 30)
 
+    def test_stop_deletes_log_just_before_25_minute_boundary(self):
+        now = shanghai_datetime(2026, 7, 18, 10, 0)
+        TimeLog.objects.create(
+            category='math',
+            start_time=now - datetime.timedelta(minutes=24, seconds=59),
+        )
+
+        with mock.patch('tracker.views._get_safe_now', return_value=now):
+            response = self.post_action({'action': 'stop', 'note': 'too short'})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['status'], 'error')
+        self.assertFalse(TimeLog.objects.exists())
+        self.assertFalse(DailyStudyStat.objects.exists())
+
+    def test_stop_keeps_log_at_25_minute_boundary(self):
+        now = shanghai_datetime(2026, 7, 18, 10, 0)
+        start = now - datetime.timedelta(minutes=25)
+        TimeLog.objects.create(category='math', start_time=start)
+
+        with mock.patch('tracker.views._get_safe_now', return_value=now):
+            response = self.post_action({'action': 'stop', 'note': 'boundary'})
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['status'], 'success')
+        log = TimeLog.objects.get()
+        self.assertEqual(log.end_time, now)
+        self.assertEqual(log.note, 'boundary')
+        stat = DailyStudyStat.objects.get(date=datetime.date(2026, 7, 18))
+        self.assertEqual(stat.study_count, 1)
+        self.assertEqual(stat.total_minutes, 25)
+
     def test_export_requires_token(self):
         response = self.client.get(reverse('export_logs_csv'))
 
@@ -330,6 +362,32 @@ class DashboardScheduleTests(TestCase):
 
         second = get_summer_schedule()
         self.assertEqual(second['timeline'][0]['title'], '起床')
+
+
+class DashboardFocusModeTests(TestCase):
+    def test_focus_overlay_hides_elapsed_duration_and_shows_shanghai_clock(self):
+        response = self.client.get(reverse('dashboard'))
+
+        self.assertContains(response, 'id="zen-subject"')
+        self.assertContains(response, 'id="zen-clock"')
+        self.assertContains(response, '上海时间')
+        self.assertContains(response, "timeZone: 'Asia/Shanghai'")
+        self.assertContains(response, '结束学习')
+        self.assertNotContains(response, 'id="zen-timer"')
+        self.assertNotContains(response, 'function formatTime')
+        html = response.content.decode('utf-8')
+        focus_markup = html.split('<div id="zen-overlay"', 1)[1].split(
+            '<div id="django-context">', 1
+        )[0]
+        self.assertNotIn('00:00:00', focus_markup)
+
+    def test_focus_mode_keeps_hidden_elapsed_guard_for_short_sessions(self):
+        response = self.client.get(reverse('dashboard'))
+
+        self.assertContains(response, 'getActiveElapsedSeconds() < 25 * 60')
+        self.assertContains(response, 'activeElapsedBaseSeconds + elapsedSinceSync')
+        self.assertContains(response, 'id="data-active-elapsed"')
+        self.assertContains(response, 'dashboard.inert = true')
 
 
 @override_settings(TIME_ZONE='Asia/Shanghai', USE_TZ=True)
