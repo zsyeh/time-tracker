@@ -13,7 +13,7 @@ class Command(BaseCommand):
 
     def handle(self, *args, **options):
         days = options['days']
-        now = timezone.now()
+        now = timezone.localtime(timezone.now())
         # 设定统计时间窗口的起始零点
         start_date = now.replace(hour=0, minute=0, second=0, microsecond=0) - datetime.timedelta(days=days-1)
 
@@ -30,7 +30,12 @@ class Command(BaseCommand):
         # 1. 打印最近 10 条历史流水记录
         self.stdout.write(self.style.SUCCESS(f"\n=== 历史流水 (Recent History - Top 10) ==="))
         for log in list(logs)[:10]:
-            start_str = log.start_time.strftime('%m-%d %H:%M')
+            local_start = (
+                timezone.localtime(log.start_time)
+                if timezone.is_aware(log.start_time)
+                else log.start_time
+            )
+            start_str = local_start.strftime('%m-%d %H:%M')
             # 获取枚举对应的中文标签
             cat_display = dict(TimeLog.CATEGORY_CHOICES).get(log.category, log.category)
             self.stdout.write(f"[{start_str}] {cat_display:<6} : {log.duration_minutes:>3} min")

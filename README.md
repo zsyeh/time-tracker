@@ -5,11 +5,15 @@ A small Django time-tracking dashboard for study sessions.
 ## Features
 
 - Dashboard for daily and weekly study time progress.
+- Daily study history page with session count, first start time, effective time,
+  and target progress.
 - Categories for math, English, and major course sessions.
 - Active-session full-screen focus timer.
 - Recent record preview and 180-day GitHub-style heatmap.
 - Recent 30-day, all-time, active-day, best-day, and streak statistics.
 - CSV export for completed time logs.
+- Denormalized daily statistics that are backfilled by migration and kept in sync
+  when completed logs are saved, moved, or deleted.
 - Button-triggered, responsive summer schedule with timeline, training, quota,
   and rule views.
 - Environment-based token, host, goal, and exam-date configuration.
@@ -28,6 +32,8 @@ python manage.py runserver 0.0.0.0:8000
 ```
 
 Open `http://127.0.0.1:8000/`.
+
+The complete daily history is available at `http://127.0.0.1:8000/daily-stats/`.
 
 ## Configuration
 
@@ -60,6 +66,24 @@ Show statistics:
 ```bash
 python manage.py stats --days 7
 ```
+
+Rebuild the derived daily statistics after a manual or bulk database change:
+
+```bash
+python manage.py rebuild_daily_stats
+```
+
+## Daily Statistics
+
+`DailyStudyStat` stores one derived row per active study date. Its study count,
+first start time, and total effective minutes are calculated from completed
+`TimeLog` records using the configured `Asia/Shanghai` timezone. A session that
+crosses midnight belongs to the date on which it started.
+
+Migration `0004_dailystudystat` automatically backfills all existing completed
+records. Normal model saves and deletes then keep the derived rows synchronized.
+Because bulk SQL updates bypass Django signals, run `rebuild_daily_stats` after
+any such maintenance.
 
 ## CSV Export
 
@@ -97,6 +121,9 @@ Run checks and tests:
 python manage.py check
 python manage.py test
 ```
+
+Always run `python manage.py migrate` during deployment. The daily-statistics
+migration performs the one-time historical backfill on the target database.
 
 For deployment, collect static files locally on the target machine:
 

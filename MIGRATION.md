@@ -34,6 +34,7 @@ Push the latest source code before moving servers:
 ```bash
 git pull --ff-only
 git push origin master
+git push github master
 ```
 
 ## Install On New Server
@@ -54,6 +55,7 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 python manage.py migrate
+python manage.py rebuild_daily_stats
 python manage.py collectstatic --noinput
 ```
 
@@ -92,8 +94,15 @@ Open the dashboard and verify:
 - today and weekly totals are visible;
 - recent 30-day statistics are visible;
 - all-time statistics include older records;
+- the daily statistics page includes historical counts and first start times;
+- dashboard today metrics match the daily statistics page;
 - the latest records list shows expected history;
 - CSV export works with the configured `TRACKER_API_TOKEN`.
+
+Migration `tracker.0004_dailystudystat` backfills the derived daily table from
+all completed historical `TimeLog` rows. The rebuild command immediately after
+`migrate` is an idempotent consistency check and is safe to rerun after manual
+database maintenance.
 
 ## Rollback
 

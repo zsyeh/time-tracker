@@ -16,11 +16,12 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path
-from tracker.views import dashboard_view, api_action, export_logs_csv
+from tracker.views import api_action, daily_stats_view, dashboard_view, export_logs_csv
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', dashboard_view, name='dashboard'),      # 根目录直接指向面板
+    path('daily-stats/', daily_stats_view, name='daily_stats'),
     path('api/action/', api_action, name='api_action'), # 按钮操作 API
     path('api/export.csv', export_logs_csv, name='export_logs_csv'),
 ]

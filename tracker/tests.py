@@ -1,12 +1,22 @@
 import datetime
 import json
+from unittest import mock
 
-from django.test import TestCase, override_settings
+from django.db import connection
+from django.db.migrations.executor import MigrationExecutor
+from django.test import TestCase, TransactionTestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
-from .models import TimeLog
+from .models import DailyStudyStat, TimeLog
 from .schedule import get_summer_schedule
+
+
+SHANGHAI_TZ = datetime.timezone(datetime.timedelta(hours=8))
+
+
+def shanghai_datetime(year, month, day, hour, minute=0):
+    return datetime.datetime(year, month, day, hour, minute, tzinfo=SHANGHAI_TZ)
 
 
 @override_settings(TRACKER_API_TOKEN='test-token')
@@ -36,6 +46,7 @@ class ApiActionTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(TimeLog.objects.filter(end_time__isnull=True).count(), 1)
+        self.assertEqual(DailyStudyStat.objects.count(), 0)
 
     def test_start_accepts_training_category(self):
         response = self.post_action({'action': 'start', 'category': 'training'})
@@ -50,19 +61,27 @@ class ApiActionTests(TestCase):
 
         self.assertEqual(response.status_code, 200)
         self.assertEqual(TimeLog.objects.count(), 0)
+        self.assertEqual(DailyStudyStat.objects.count(), 0)
 
     def test_stop_closes_valid_log(self):
+        now = shanghai_datetime(2026, 7, 18, 10, 0)
+        start = now - datetime.timedelta(minutes=30)
         TimeLog.objects.create(
             category='math',
-            start_time=timezone.now() - datetime.timedelta(minutes=30),
+            start_time=start,
         )
 
-        response = self.post_action({'action': 'stop', 'note': 'done'})
+        with mock.patch('tracker.views._get_safe_now', return_value=now):
+            response = self.post_action({'action': 'stop', 'note': 'done'})
 
         self.assertEqual(response.status_code, 200)
         log = TimeLog.objects.get()
-        self.assertIsNotNone(log.end_time)
+        self.assertEqual(log.end_time, now)
         self.assertEqual(log.note, 'done')
+        stat = DailyStudyStat.objects.get(date=datetime.date(2026, 7, 18))
+        self.assertEqual(stat.study_count, 1)
+        self.assertEqual(stat.first_start_time, start)
+        self.assertEqual(stat.total_minutes, 30)
 
     def test_export_requires_token(self):
         response = self.client.get(reverse('export_logs_csv'))
@@ -120,6 +139,165 @@ class ApiActionTests(TestCase):
         self.assertEqual(streak_summary['active_days'], 2)
 
 
+@override_settings(TIME_ZONE='Asia/Shanghai', USE_TZ=True)
+class DailyStudyStatSignalTests(TestCase):
+    def create_completed_log(self, start, minutes, category='math'):
+        return TimeLog.objects.create(
+            category=category,
+            start_time=start,
+            end_time=start + datetime.timedelta(minutes=minutes),
+        )
+
+    def test_date_field_is_unique(self):
+        self.assertTrue(DailyStudyStat._meta.get_field('date').unique)
+
+    def test_same_day_uses_earliest_start_and_repeated_save_is_idempotent(self):
+        day = datetime.date(2026, 7, 18)
+        later_start = shanghai_datetime(2026, 7, 18, 10, 0)
+        earlier_start = shanghai_datetime(2026, 7, 18, 7, 30)
+        later_log = self.create_completed_log(later_start, 35)
+        earlier_log = self.create_completed_log(earlier_start, 55, category='english')
+
+        stat = DailyStudyStat.objects.get(date=day)
+        self.assertEqual(stat.study_count, 2)
+        self.assertEqual(stat.first_start_time, earlier_start)
+        self.assertEqual(stat.total_minutes, 90)
+
+        later_log.note = 'saved again'
+        later_log.save(update_fields=['note'])
+
+        stat.refresh_from_db()
+        self.assertEqual(DailyStudyStat.objects.filter(date=day).count(), 1)
+        self.assertEqual(stat.study_count, 2)
+        self.assertEqual(stat.first_start_time, earlier_start)
+        self.assertEqual(stat.total_minutes, 90)
+
+        earlier_log.delete()
+        stat.refresh_from_db()
+        self.assertEqual(stat.study_count, 1)
+        self.assertEqual(stat.first_start_time, later_start)
+        self.assertEqual(stat.total_minutes, 35)
+
+        later_log.delete()
+        self.assertFalse(DailyStudyStat.objects.filter(date=day).exists())
+
+    def test_uses_shanghai_start_date_across_utc_and_local_midnight(self):
+        crosses_midnight_start = datetime.datetime(
+            2026, 7, 17, 15, 50, tzinfo=datetime.timezone.utc
+        )
+        after_midnight_start = datetime.datetime(
+            2026, 7, 17, 16, 5, tzinfo=datetime.timezone.utc
+        )
+        self.create_completed_log(crosses_midnight_start, 40)
+        self.create_completed_log(after_midnight_start, 30, category='major')
+
+        july_17 = DailyStudyStat.objects.get(date=datetime.date(2026, 7, 17))
+        july_18 = DailyStudyStat.objects.get(date=datetime.date(2026, 7, 18))
+        self.assertEqual(july_17.study_count, 1)
+        self.assertEqual(july_17.first_start_time, crosses_midnight_start)
+        self.assertEqual(july_17.total_minutes, 40)
+        self.assertEqual(july_18.study_count, 1)
+        self.assertEqual(july_18.first_start_time, after_midnight_start)
+        self.assertEqual(july_18.total_minutes, 30)
+
+    def test_active_log_is_excluded_and_becoming_active_removes_summary(self):
+        start = shanghai_datetime(2026, 7, 18, 8, 0)
+        log = TimeLog.objects.create(category='math', start_time=start)
+
+        self.assertFalse(
+            DailyStudyStat.objects.filter(date=datetime.date(2026, 7, 18)).exists()
+        )
+
+        log.end_time = start + datetime.timedelta(minutes=45)
+        log.save(update_fields=['end_time'])
+        stat = DailyStudyStat.objects.get(date=datetime.date(2026, 7, 18))
+        self.assertEqual(stat.study_count, 1)
+        self.assertEqual(stat.total_minutes, 45)
+
+        log.end_time = None
+        log.save(update_fields=['end_time'])
+        self.assertFalse(
+            DailyStudyStat.objects.filter(date=datetime.date(2026, 7, 18)).exists()
+        )
+
+    def test_moving_completed_log_rebuilds_old_and_new_dates(self):
+        old_start = shanghai_datetime(2026, 7, 17, 9, 0)
+        new_start = shanghai_datetime(2026, 7, 19, 6, 45)
+        log = self.create_completed_log(old_start, 30)
+
+        log.start_time = new_start
+        log.end_time = new_start + datetime.timedelta(minutes=50)
+        log.save(update_fields=['start_time', 'end_time'])
+
+        self.assertFalse(
+            DailyStudyStat.objects.filter(date=datetime.date(2026, 7, 17)).exists()
+        )
+        stat = DailyStudyStat.objects.get(date=datetime.date(2026, 7, 19))
+        self.assertEqual(stat.study_count, 1)
+        self.assertEqual(stat.first_start_time, new_start)
+        self.assertEqual(stat.total_minutes, 50)
+
+
+@override_settings(TIME_ZONE='Asia/Shanghai', USE_TZ=True)
+class DailyStatsPageTests(TestCase):
+    def create_completed_log(self, start, minutes, category='math'):
+        return TimeLog.objects.create(
+            category=category,
+            start_time=start,
+            end_time=start + datetime.timedelta(minutes=minutes),
+        )
+
+    def test_daily_stats_route_renders_empty_state(self):
+        self.assertEqual(reverse('daily_stats'), '/daily-stats/')
+
+        response = self.client.get(reverse('daily_stats'))
+
+        self.assertEqual(response.status_code, 200)
+        self.assertTemplateUsed(response, 'daily_stats.html')
+        self.assertContains(response, '每日学习统计')
+        self.assertContains(response, '暂无学习统计')
+
+    def test_daily_stats_page_is_newest_first_and_contains_overview(self):
+        older = shanghai_datetime(2026, 7, 16, 9, 0)
+        newer_early = shanghai_datetime(2026, 7, 18, 7, 15)
+        newer_late = shanghai_datetime(2026, 7, 18, 13, 0)
+        self.create_completed_log(older, 30)
+        self.create_completed_log(newer_late, 45, category='major')
+        self.create_completed_log(newer_early, 60, category='english')
+
+        response = self.client.get(reverse('daily_stats'))
+
+        dates = [stat.date for stat in response.context['page_obj'].object_list]
+        self.assertEqual(
+            dates,
+            [datetime.date(2026, 7, 18), datetime.date(2026, 7, 16)],
+        )
+        overview = response.context['overview']
+        self.assertEqual(overview['day_count'], 2)
+        self.assertEqual(overview['study_count'], 3)
+        self.assertEqual(overview['total_minutes'], 135)
+        self.assertEqual(overview['total_hours'], 2.25)
+        self.assertContains(response, '返回 Dashboard')
+
+    def test_dashboard_exposes_today_metrics_and_metric_elements(self):
+        now = shanghai_datetime(2026, 7, 18, 15, 0)
+        first_start = shanghai_datetime(2026, 7, 18, 7, 15)
+        self.create_completed_log(first_start, 60)
+        self.create_completed_log(shanghai_datetime(2026, 7, 18, 11, 30), 45)
+
+        with mock.patch('tracker.views._get_safe_now', return_value=now):
+            response = self.client.get(reverse('dashboard'))
+
+        daily_metrics = json.loads(response.context['daily_metrics'])
+        self.assertEqual(
+            daily_metrics['2026-07-18'],
+            {'study_count': 2, 'first_start_time': '07:15'},
+        )
+        self.assertContains(response, 'id="today-study-count"')
+        self.assertContains(response, 'id="today-first-start"')
+        self.assertContains(response, 'id="data-daily-metrics"')
+
+
 class DashboardScheduleTests(TestCase):
     def test_dashboard_receives_complete_summer_schedule(self):
         response = self.client.get(reverse('dashboard'))
@@ -152,3 +330,61 @@ class DashboardScheduleTests(TestCase):
 
         second = get_summer_schedule()
         self.assertEqual(second['timeline'][0]['title'], '起床')
+
+
+@override_settings(TIME_ZONE='Asia/Shanghai', USE_TZ=True)
+class DailyStudyStatMigrationTests(TransactionTestCase):
+    migrate_from = ('tracker', '0003_timelog_note_alter_timelog_category')
+    migrate_to = ('tracker', '0004_dailystudystat')
+
+    def setUp(self):
+        super().setUp()
+        self.executor = MigrationExecutor(connection)
+        self.executor.migrate([self.migrate_from])
+        self.old_apps = self.executor.loader.project_state([self.migrate_from]).apps
+
+    def tearDown(self):
+        executor = MigrationExecutor(connection)
+        executor.migrate(executor.loader.graph.leaf_nodes())
+        super().tearDown()
+
+    def test_migration_backfills_completed_legacy_logs_by_shanghai_start_date(self):
+        HistoricalTimeLog = self.old_apps.get_model('tracker', 'TimeLog')
+        first_start = shanghai_datetime(2026, 7, 18, 0, 5)
+        second_start = shanghai_datetime(2026, 7, 18, 8, 0)
+        next_day_start = shanghai_datetime(2026, 7, 19, 23, 50)
+        HistoricalTimeLog.objects.create(
+            category='mth',
+            start_time=first_start,
+            end_time=first_start + datetime.timedelta(minutes=30),
+        )
+        HistoricalTimeLog.objects.create(
+            category='eng',
+            start_time=second_start,
+            end_time=second_start + datetime.timedelta(minutes=45),
+        )
+        HistoricalTimeLog.objects.create(
+            category='pro',
+            start_time=next_day_start,
+            end_time=next_day_start + datetime.timedelta(minutes=40),
+        )
+        HistoricalTimeLog.objects.create(
+            category='mth',
+            start_time=shanghai_datetime(2026, 7, 20, 9, 0),
+            end_time=None,
+        )
+
+        executor = MigrationExecutor(connection)
+        executor.migrate([self.migrate_to])
+        new_apps = executor.loader.project_state([self.migrate_to]).apps
+        HistoricalDailyStudyStat = new_apps.get_model('tracker', 'DailyStudyStat')
+
+        self.assertEqual(HistoricalDailyStudyStat.objects.count(), 2)
+        july_18 = HistoricalDailyStudyStat.objects.get(date=datetime.date(2026, 7, 18))
+        self.assertEqual(july_18.study_count, 2)
+        self.assertEqual(july_18.first_start_time, first_start)
+        self.assertEqual(july_18.total_minutes, 75)
+        july_19 = HistoricalDailyStudyStat.objects.get(date=datetime.date(2026, 7, 19))
+        self.assertEqual(july_19.study_count, 1)
+        self.assertEqual(july_19.first_start_time, next_day_start)
+        self.assertEqual(july_19.total_minutes, 40)

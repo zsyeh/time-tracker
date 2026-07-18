@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils import timezone
 
+
 class TimeLog(models.Model):
     # 统一枚举值与前端 payload 严格对应
     CATEGORY_CHOICES = [
@@ -25,3 +26,24 @@ class TimeLog(models.Model):
 
     def __str__(self):
         return f"{self.category} | {self.start_time.strftime('%Y-%m-%d %H:%M:%S')}"
+
+
+class DailyStudyStat(models.Model):
+    """Denormalized statistics for completed study logs on one local day."""
+
+    date = models.DateField(unique=True)
+    study_count = models.PositiveIntegerField(default=0)
+    first_start_time = models.DateTimeField()
+    total_minutes = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ('-date',)
+
+    @property
+    def average_minutes(self):
+        if not self.study_count:
+            return 0
+        return int(self.total_minutes / self.study_count)
+
+    def __str__(self):
+        return f"{self.date} | {self.study_count} sessions"

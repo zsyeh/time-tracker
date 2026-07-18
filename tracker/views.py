@@ -1,12 +1,14 @@
 from django.http import HttpResponse, JsonResponse
 from django.conf import settings
+from django.core.paginator import Paginator
+from django.db.models import Sum
 from django.shortcuts import render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
 import json
 import datetime
 import csv
-from .models import TimeLog
+from .models import DailyStudyStat, TimeLog
 from .schedule import get_summer_schedule
 from functools import wraps
 
@@ -110,7 +112,8 @@ def _build_streak_summary(daily_totals, today_date):
 def dashboard_view(request):
     _execute_lazy_garbage_collection()
     now = _get_safe_now()
-    today_start = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    local_now = timezone.localtime(now) if timezone.is_aware(now) else now
+    today_start = local_now.replace(hour=0, minute=0, second=0, microsecond=0)
     days_since_sunday = (today_start.weekday() + 1) % 7
     start_of_week_dt = today_start - datetime.timedelta(days=days_since_sunday)
 
@@ -123,16 +126,26 @@ def dashboard_view(request):
     month_logs = [log for log in completed_logs if log.start_time >= month_start]
 
     stats = {}
-    daily_stats = {} 
+    daily_stat_rows = list(DailyStudyStat.objects.all())
+    daily_stats = {
+        str(stat.date): stat.total_minutes
+        for stat in daily_stat_rows
+    }
+    daily_metrics = {
+        str(stat.date): {
+            'study_count': stat.study_count,
+            'first_start_time': (
+                timezone.localtime(stat.first_start_time).strftime('%H:%M')
+                if timezone.is_aware(stat.first_start_time)
+                else stat.first_start_time.strftime('%H:%M')
+            ),
+        }
+        for stat in daily_stat_rows
+    }
     
     for log in week_logs:
         label = dict(TimeLog.CATEGORY_CHOICES).get(log.category, log.category)
         stats[label] = stats.get(label, 0) + log.duration_minutes
-
-    for log in completed_logs:
-        local_start = timezone.localtime(log.start_time) if timezone.is_aware(log.start_time) else log.start_time
-        log_date_str = str(local_start.date())
-        daily_stats[log_date_str] = daily_stats.get(log_date_str, 0) + log.duration_minutes
 
     chart_data = [{"name": k, "value": v} for k, v in stats.items()]
 
@@ -158,17 +171,18 @@ def dashboard_view(request):
             'note': log.note or '无'
         })
 
-    today_str = str(timezone.localtime(now).date() if timezone.is_aware(now) else now.date())
+    today_str = str(local_now.date())
 
     context = {
         'chart_data': json.dumps(chart_data),
         'active_category': active_category,
         'active_elapsed': active_elapsed,
         'daily_stats': json.dumps(daily_stats),
+        'daily_metrics': json.dumps(daily_metrics),
         'recent_logs': json.dumps(recent_logs),
         'month_summary': json.dumps(_build_period_summary(month_logs)),
         'all_time_summary': json.dumps(_build_period_summary(completed_logs)),
-        'streak_summary': json.dumps(_build_streak_summary(daily_stats, timezone.localtime(now).date())),
+        'streak_summary': json.dumps(_build_streak_summary(daily_stats, local_now.date())),
         'today_str': today_str,
         'daily_target_minutes': settings.TRACKER_DAILY_TARGET_MINUTES,
         'weekly_target_minutes': settings.TRACKER_WEEKLY_TARGET_MINUTES,
@@ -176,6 +190,40 @@ def dashboard_view(request):
         'summer_schedule': get_summer_schedule(),
     }
     return render(request, 'dashboard.html', context)
+
+
+def daily_stats_view(request):
+    stats = DailyStudyStat.objects.all()
+    totals = stats.aggregate(
+        study_count=Sum('study_count'),
+        total_minutes=Sum('total_minutes'),
+    )
+    total_minutes = totals['total_minutes'] or 0
+    overview = {
+        'day_count': stats.count(),
+        'study_count': totals['study_count'] or 0,
+        'total_minutes': total_minutes,
+        'total_hours': round(total_minutes / 60, 2),
+    }
+
+    paginator = Paginator(stats, 31)
+    page_obj = paginator.get_page(request.GET.get('page'))
+    daily_target_minutes = settings.TRACKER_DAILY_TARGET_MINUTES
+    for stat in page_obj.object_list:
+        stat.progress_percent = min(
+            100,
+            round(stat.total_minutes / daily_target_minutes * 100, 1),
+        ) if daily_target_minutes else 0
+
+    return render(
+        request,
+        'daily_stats.html',
+        {
+            'page_obj': page_obj,
+            'overview': overview,
+            'daily_target_minutes': daily_target_minutes,
+        },
+    )
 
 @token_required
 @require_POST
