@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title></title>
+    <style>html,body{margin:0;min-height:100%;background:#000}</style>
+    <script>
+        (() => {
+            const storageKey = 'auth_token';
+
+            function readStoredToken() {
+                try {
+                    return localStorage.getItem(storageKey) || '';
+                } catch (error) {
+                    return '';
+                }
+            }
+
+            function storeToken(token) {
+                try {
+                    localStorage.setItem(storageKey, token);
+                } catch (error) {
+                    // The request can still use the token for this page load.
+                }
+            }
+
+            function clearStoredToken() {
+                try {
+                    localStorage.removeItem(storageKey);
+                } catch (error) {
+                    // Storage may be unavailable in a restricted browser context.
+                }
+            }
+
+            async function loadAuthorizedPage(token) {
+                const response = await fetch(window.location.href, {
+                    method: 'GET',
+                    headers: { 'Authorization': token },
+                    cache: 'no-store',
+                    credentials: 'same-origin'
+                });
+                if (!response.ok) return false;
+
+                const html = await response.text();
+                document.open();
+                document.write(html);
+                document.close();
+                return true;
+            }
+
+            async function authenticate() {
+                let token = readStoredToken();
+                let retrying = Boolean(token);
+
+                while (true) {
+                    if (token) {
+                        try {
+                            if (await loadAuthorizedPage(token)) return;
+                        } catch (error) {
+                            // Keep the page blank and allow a corrected token.
+                        }
+                        clearStoredToken();
+                    }
+
+                    token = window.prompt(
+                        retrying
+                            ? 'eh 专用 Authorization 请求头值无效，请重新输入：'
+                            : '请输入 eh 专用 Authorization 请求头值：'
+                    );
+                    if (token === null) return;
+                    if (!token) {
+                        retrying = true;
+                        continue;
+                    }
+
+                    storeToken(token);
+                    retrying = true;
+                }
+            }
+
+            authenticate();
+        })();
+    </script>
+</head>
+<body></body>
+</html>

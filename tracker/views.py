@@ -10,19 +10,11 @@ import datetime
 import csv
 from .models import DailyStudyStat, TimeLog
 from .schedule import get_summer_schedule
-from functools import wraps
+
+from .auth import token_required
 
 VALID_CATEGORIES = {choice[0] for choice in TimeLog.CATEGORY_CHOICES}
 CATEGORY_LABELS = dict(TimeLog.CATEGORY_CHOICES)
-
-def token_required(view_func):
-    @wraps(view_func)
-    def _wrapped_view(request, *args, **kwargs):
-        token = request.headers.get('Authorization')
-        if token and token == settings.TRACKER_API_TOKEN:
-            return view_func(request, *args, **kwargs)
-        return JsonResponse({'status': 'error', 'msg': '鉴权失败，请检查你的令牌'}, status=403)
-    return _wrapped_view
 
 MAX_TASK_DURATION = datetime.timedelta(hours=6)
 

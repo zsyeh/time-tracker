@@ -59,6 +59,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'tracker.auth.TrackerAuthorizationMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',  # <--- 必须插入到此处
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -142,7 +143,7 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
-TRACKER_API_TOKEN = os.environ.get('TRACKER_API_TOKEN', 'eH_')
+TRACKER_API_TOKEN = os.environ.get('TRACKER_API_TOKEN', '').strip()
 TRACKER_DAILY_TARGET_MINUTES = env_int('TRACKER_DAILY_TARGET_MINUTES', 360)
 TRACKER_WEEKLY_TARGET_MINUTES = env_int('TRACKER_WEEKLY_TARGET_MINUTES', 2520)
 TRACKER_EXAM_DATE = os.environ.get('TRACKER_EXAM_DATE', '2026-12-26')

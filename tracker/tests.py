@@ -4,15 +4,18 @@ from unittest import mock
 
 from django.db import connection
 from django.db.migrations.executor import MigrationExecutor
-from django.test import TestCase, TransactionTestCase, override_settings
+from django.http import HttpResponse
+from django.test import RequestFactory, TestCase, TransactionTestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
+from .views import _execute_lazy_garbage_collection, token_required
 from .models import DailyStudyStat, TimeLog
 from .schedule import get_summer_schedule
 
 
 SHANGHAI_TZ = datetime.timezone(datetime.timedelta(hours=8))
+AUTH_HEADERS = {'HTTP_AUTHORIZATION': 'test-token'}
 
 
 def shanghai_datetime(year, month, day, hour, minute=0):
@@ -155,7 +158,7 @@ class ApiActionTests(TestCase):
             end_time=now - datetime.timedelta(days=60),
         )
 
-        response = self.client.get(reverse('dashboard'))
+        response = self.client.get(reverse('dashboard'), **AUTH_HEADERS)
 
         self.assertEqual(response.status_code, 200)
         month_summary = json.loads(response.context['month_summary'])
@@ -169,6 +172,201 @@ class ApiActionTests(TestCase):
         self.assertEqual(all_time_summary['session_count'], 2)
         self.assertEqual(all_time_summary['active_days'], 2)
         self.assertEqual(streak_summary['active_days'], 2)
+
+
+@override_settings(TRACKER_API_TOKEN='test-token')
+class AuthorizationMiddlewareTests(TestCase):
+    def assert_private_no_store(self, response):
+        directives = {
+            directive.strip().lower()
+            for directive in response['Cache-Control'].split(',')
+        }
+        self.assertEqual(directives, {'private', 'no-store'})
+        vary_headers = {
+            header.strip().lower()
+            for header in response.get('Vary', '').split(',')
+            if header.strip()
+        }
+        self.assertIn('authorization', vary_headers)
+        self.assertEqual(response['X-Frame-Options'], 'DENY')
+
+    def test_dashboard_and_daily_stats_require_token_without_leaking_data(self):
+        start = shanghai_datetime(2026, 7, 18, 8, 15)
+        TimeLog.objects.create(
+            category='english',
+            start_time=start,
+            end_time=start + datetime.timedelta(minutes=45),
+            note='PRIVATE-NOTE-SENTINEL',
+        )
+
+        for url_name in ('dashboard', 'daily_stats'):
+            for header_kwargs in ({}, {'HTTP_AUTHORIZATION': 'wrong-token'}):
+                with self.subTest(url_name=url_name, headers=header_kwargs):
+                    response = self.client.get(reverse(url_name), **header_kwargs)
+
+                    self.assertEqual(response.status_code, 403)
+                    self.assertTemplateUsed(response, 'auth_gate.html')
+                    self.assertIn('<body></body>', response.content.decode('utf-8'))
+                    self.assertNotContains(
+                        response,
+                        'PRIVATE-NOTE-SENTINEL',
+                        status_code=403,
+                    )
+                    self.assertNotContains(
+                        response,
+                        '2026年07月18日',
+                        status_code=403,
+                    )
+                    self.assertNotContains(
+                        response,
+                        'Academic Analytics',
+                        status_code=403,
+                    )
+                    self.assert_private_no_store(response)
+
+    def test_correct_token_can_read_dashboard_and_daily_stats(self):
+        start = shanghai_datetime(2026, 7, 18, 8, 15)
+        TimeLog.objects.create(
+            category='english',
+            start_time=start,
+            end_time=start + datetime.timedelta(minutes=45),
+            note='PRIVATE-NOTE-SENTINEL',
+        )
+
+        dashboard_response = self.client.get(
+            reverse('dashboard'),
+            **AUTH_HEADERS,
+        )
+        daily_stats_response = self.client.get(
+            reverse('daily_stats'),
+            **AUTH_HEADERS,
+        )
+
+        self.assertEqual(dashboard_response.status_code, 200)
+        self.assertContains(dashboard_response, 'PRIVATE-NOTE-SENTINEL')
+        self.assertEqual(daily_stats_response.status_code, 200)
+        self.assertContains(daily_stats_response, '2026年07月18日')
+        self.assert_private_no_store(dashboard_response)
+        self.assert_private_no_store(daily_stats_response)
+
+    def test_dashboard_escapes_log_json_before_embedding_it_in_html(self):
+        start = timezone.now() - datetime.timedelta(minutes=45)
+        TimeLog.objects.create(
+            category='<img onerror=x>',
+            start_time=start,
+            end_time=start + datetime.timedelta(minutes=30),
+            note='</span><img src=x onerror=alert(1)>',
+        )
+
+        response = self.client.get(reverse('dashboard'), **AUTH_HEADERS)
+        html = response.content.decode('utf-8')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertNotIn('</span><img src=x onerror=alert(1)>', html)
+        self.assertNotIn('<img onerror=x>', html)
+        self.assertIn('&lt;/span&gt;&lt;img src=x onerror=alert(1)&gt;', html)
+        self.assertIn('const safeName = escapeHtml(item.name);', html)
+
+    def test_anonymous_dashboard_request_never_runs_garbage_collection(self):
+        active_log = TimeLog.objects.create(
+            category='math',
+            start_time=timezone.now() - datetime.timedelta(hours=7),
+        )
+
+        with mock.patch(
+            'tracker.views._execute_lazy_garbage_collection',
+            wraps=_execute_lazy_garbage_collection,
+        ) as garbage_collection:
+            response = self.client.get(reverse('dashboard'))
+
+        self.assertEqual(response.status_code, 403)
+        garbage_collection.assert_not_called()
+        active_log.refresh_from_db()
+        self.assertIsNone(active_log.end_time)
+
+    def test_wrong_token_stop_does_not_change_the_active_task(self):
+        active_log = TimeLog.objects.create(
+            category='major',
+            start_time=timezone.now() - datetime.timedelta(minutes=30),
+        )
+
+        response = self.client.post(
+            reverse('api_action'),
+            data=json.dumps({'action': 'stop', 'note': 'must-not-be-saved'}),
+            content_type='application/json',
+            HTTP_AUTHORIZATION='wrong-token',
+        )
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.content, b'')
+        active_log.refresh_from_db()
+        self.assertIsNone(active_log.end_time)
+        self.assertIsNone(active_log.note)
+
+    def test_non_gate_routes_return_empty_forbidden_response(self):
+        responses = (
+            self.client.get('/admin/'),
+            self.client.post(
+                reverse('api_action'),
+                data=json.dumps({'action': 'stop'}),
+                content_type='application/json',
+            ),
+            self.client.get(reverse('export_logs_csv')),
+            self.client.post(reverse('dashboard')),
+            self.client.get('/not-a-real-route/'),
+        )
+
+        for response in responses:
+            with self.subTest(path=response.wsgi_request.path):
+                self.assertEqual(response.status_code, 403)
+                self.assertEqual(response.content, b'')
+                self.assert_private_no_store(response)
+
+    def test_valid_token_is_compared_with_compare_digest(self):
+        with mock.patch('tracker.auth.compare_digest', return_value=True) as compare:
+            response = self.client.get(reverse('dashboard'), **AUTH_HEADERS)
+
+        self.assertEqual(response.status_code, 200)
+        compare.assert_called_once_with(b'test-token', b'test-token')
+
+    @override_settings(TRACKER_API_TOKEN='正确令牌')
+    def test_non_ascii_tokens_are_compared_without_server_errors(self):
+        rejected_response = self.client.get(
+            reverse('dashboard'),
+            HTTP_AUTHORIZATION='错误令牌',
+        )
+        accepted_response = self.client.get(
+            reverse('dashboard'),
+            HTTP_AUTHORIZATION='正确令牌',
+        )
+
+        self.assertEqual(rejected_response.status_code, 403)
+        self.assert_private_no_store(rejected_response)
+        self.assertEqual(accepted_response.status_code, 200)
+
+    @override_settings(TRACKER_API_TOKEN='')
+    def test_empty_token_configuration_fails_closed(self):
+        response = self.client.get(
+            reverse('dashboard'),
+            HTTP_AUTHORIZATION='eH_',
+        )
+
+        self.assertEqual(response.status_code, 403)
+        self.assertTemplateUsed(response, 'auth_gate.html')
+        self.assert_private_no_store(response)
+
+    def test_view_decorator_uses_same_empty_forbidden_response(self):
+        request = RequestFactory().post('/protected/')
+
+        @token_required
+        def protected_view(_request):
+            return HttpResponse('private')
+
+        response = protected_view(request)
+
+        self.assertEqual(response.status_code, 403)
+        self.assertEqual(response.content, b'')
+        self.assert_private_no_store(response)
 
 
 @override_settings(TIME_ZONE='Asia/Shanghai', USE_TZ=True)
@@ -270,7 +468,11 @@ class DailyStudyStatSignalTests(TestCase):
         self.assertEqual(stat.total_minutes, 50)
 
 
-@override_settings(TIME_ZONE='Asia/Shanghai', USE_TZ=True)
+@override_settings(
+    TIME_ZONE='Asia/Shanghai',
+    USE_TZ=True,
+    TRACKER_API_TOKEN='test-token',
+)
 class DailyStatsPageTests(TestCase):
     def create_completed_log(self, start, minutes, category='math'):
         return TimeLog.objects.create(
@@ -282,7 +484,7 @@ class DailyStatsPageTests(TestCase):
     def test_daily_stats_route_renders_empty_state(self):
         self.assertEqual(reverse('daily_stats'), '/daily-stats/')
 
-        response = self.client.get(reverse('daily_stats'))
+        response = self.client.get(reverse('daily_stats'), **AUTH_HEADERS)
 
         self.assertEqual(response.status_code, 200)
         self.assertTemplateUsed(response, 'daily_stats.html')
@@ -297,7 +499,7 @@ class DailyStatsPageTests(TestCase):
         self.create_completed_log(newer_late, 45, category='major')
         self.create_completed_log(newer_early, 60, category='english')
 
-        response = self.client.get(reverse('daily_stats'))
+        response = self.client.get(reverse('daily_stats'), **AUTH_HEADERS)
 
         dates = [stat.date for stat in response.context['page_obj'].object_list]
         self.assertEqual(
@@ -318,7 +520,7 @@ class DailyStatsPageTests(TestCase):
         self.create_completed_log(shanghai_datetime(2026, 7, 18, 11, 30), 45)
 
         with mock.patch('tracker.views._get_safe_now', return_value=now):
-            response = self.client.get(reverse('dashboard'))
+            response = self.client.get(reverse('dashboard'), **AUTH_HEADERS)
 
         daily_metrics = json.loads(response.context['daily_metrics'])
         self.assertEqual(
@@ -330,9 +532,10 @@ class DailyStatsPageTests(TestCase):
         self.assertContains(response, 'id="data-daily-metrics"')
 
 
+@override_settings(TRACKER_API_TOKEN='test-token')
 class DashboardScheduleTests(TestCase):
     def test_dashboard_receives_complete_summer_schedule(self):
-        response = self.client.get(reverse('dashboard'))
+        response = self.client.get(reverse('dashboard'), **AUTH_HEADERS)
 
         self.assertEqual(response.status_code, 200)
         schedule = response.context['summer_schedule']
@@ -344,7 +547,7 @@ class DashboardScheduleTests(TestCase):
         self.assertEqual(len(schedule['rules']), 6)
 
     def test_dashboard_renders_hidden_responsive_schedule_dialog(self):
-        response = self.client.get(reverse('dashboard'))
+        response = self.client.get(reverse('dashboard'), **AUTH_HEADERS)
 
         self.assertContains(response, 'id="open-study-plan"')
         self.assertContains(response, 'id="study-plan-dialog"')
@@ -364,9 +567,10 @@ class DashboardScheduleTests(TestCase):
         self.assertEqual(second['timeline'][0]['title'], '起床')
 
 
+@override_settings(TRACKER_API_TOKEN='test-token')
 class DashboardFocusModeTests(TestCase):
     def test_focus_overlay_hides_elapsed_duration_and_shows_shanghai_clock(self):
-        response = self.client.get(reverse('dashboard'))
+        response = self.client.get(reverse('dashboard'), **AUTH_HEADERS)
 
         self.assertContains(response, 'id="zen-subject"')
         self.assertContains(response, 'id="zen-clock"')
@@ -382,12 +586,39 @@ class DashboardFocusModeTests(TestCase):
         self.assertNotIn('00:00:00', focus_markup)
 
     def test_focus_mode_keeps_hidden_elapsed_guard_for_short_sessions(self):
-        response = self.client.get(reverse('dashboard'))
+        response = self.client.get(reverse('dashboard'), **AUTH_HEADERS)
 
         self.assertContains(response, 'getActiveElapsedSeconds() < 25 * 60')
         self.assertContains(response, 'activeElapsedBaseSeconds + elapsedSinceSync')
         self.assertContains(response, 'id="data-active-elapsed"')
         self.assertContains(response, 'dashboard.inert = true')
+
+    def test_action_auth_failure_prompts_and_retries_the_same_request(self):
+        response = self.client.get(reverse('dashboard'), **AUTH_HEADERS)
+        html = response.content.decode('utf-8')
+
+        self.assertIn(
+            'const authFailed = response.status === 401 || response.status === 403;',
+            html,
+        )
+        self.assertIn('Authorization 请求头值无效，请重新输入', html)
+        self.assertIn(
+            'body: JSON.stringify({ action: action, category: category, note: note })',
+            html,
+        )
+        self.assertIn('finally {\n            setNetworkState(false, finalStatus);', html)
+
+    def test_soft_reload_uses_auth_header_without_full_reload_loop(self):
+        response = self.client.get(reverse('dashboard'), **AUTH_HEADERS)
+        html = response.content.decode('utf-8')
+
+        soft_reload = html.split('async function softReloadDashboard()', 1)[1].split(
+            'function handleStop()',
+            1,
+        )[0]
+        self.assertIn('fetchWithEhAuth(', soft_reload)
+        self.assertIn('window.location.href', soft_reload)
+        self.assertNotIn('window.location.reload()', soft_reload)
 
 
 @override_settings(TIME_ZONE='Asia/Shanghai', USE_TZ=True)

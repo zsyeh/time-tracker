@@ -17,6 +17,7 @@ A small Django time-tracking dashboard for study sessions.
   when completed logs are saved, moved, or deleted.
 - Button-triggered, responsive summer schedule with timeline, training, quota,
   and rule views.
+- Header-protected dashboard, APIs, exports, and administration routes.
 - Environment-based token, host, goal, and exam-date configuration.
 
 ## Setup
@@ -28,6 +29,12 @@ python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
 cp .env.example .env
+```
+
+Set a private, non-empty `TRACKER_API_TOKEN` in `.env`; the checked-in example
+intentionally leaves it blank so a missing configuration fails closed. Then run:
+
+```bash
 python manage.py migrate
 python manage.py runserver 0.0.0.0:8000
 ```
@@ -43,7 +50,10 @@ Environment variables:
 - `DJANGO_SECRET_KEY`: Django secret key. Required for production.
 - `DJANGO_DEBUG`: `true` or `false`. Defaults to `false`.
 - `DJANGO_ALLOWED_HOSTS`: comma-separated host list.
-- `TRACKER_API_TOKEN`: token used by `/api/action/`.
+- `TRACKER_API_TOKEN`: required token supplied in the raw `Authorization` header
+  for every application request. It has no default; an empty value keeps the
+  entire site locked. Use a long random ASCII value and make sure any reverse
+  proxy forwards the header unchanged.
 - `TRACKER_DAILY_TARGET_MINUTES`: daily target minutes shown on the dashboard.
 - `TRACKER_WEEKLY_TARGET_MINUTES`: weekly target minutes shown on the dashboard.
 - `TRACKER_EXAM_DATE`: countdown target date, formatted as `YYYY-MM-DD`.
@@ -88,7 +98,13 @@ any such maintenance.
 
 ## CSV Export
 
-Set the token in the dashboard first, then use the `导出CSV` button.
+The site returns no study data until the configured token is supplied as the raw
+`Authorization` header. Browser page entries use a blank authentication gate:
+it reads the value saved by the `eh专用` control (or asks for it), then requests
+the protected page with the header. Invalid or cancelled authentication leaves
+the page blank.
+
+After authentication, use the `导出CSV` button to export records.
 
 The backend endpoint is:
 

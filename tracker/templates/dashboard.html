@@ -498,15 +498,15 @@
 </div>
 
 <div id="django-context">
-    <span id="data-chart">{{ chart_data|safe }}</span>
+    <span id="data-chart">{{ chart_data }}</span>
     <span id="data-active">{{ active_category }}</span>
     <span id="data-active-elapsed">{{ active_elapsed }}</span>
-    <span id="data-daily">{{ daily_stats|safe }}</span>
-    <span id="data-daily-metrics">{{ daily_metrics|safe }}</span>
-    <span id="data-recent">{{ recent_logs|safe }}</span>
-    <span id="data-month-summary">{{ month_summary|safe }}</span>
-    <span id="data-all-time-summary">{{ all_time_summary|safe }}</span>
-    <span id="data-streak-summary">{{ streak_summary|safe }}</span>
+    <span id="data-daily">{{ daily_stats }}</span>
+    <span id="data-daily-metrics">{{ daily_metrics }}</span>
+    <span id="data-recent">{{ recent_logs }}</span>
+    <span id="data-month-summary">{{ month_summary }}</span>
+    <span id="data-all-time-summary">{{ all_time_summary }}</span>
+    <span id="data-streak-summary">{{ streak_summary }}</span>
     <span id="data-today">{{ today_str }}</span>
     <span id="data-daily-target">{{ daily_target_minutes }}</span>
     <span id="data-weekly-target">{{ weekly_target_minutes }}</span>
@@ -606,11 +606,96 @@
         selectStudyPlanTab('timeline');
     }
 
-    function setAuthToken() {
-        const token = prompt("符咒交出来");
-        if (token) {
-            localStorage.setItem('auth_token', token);
-            alert("不是成龙");
+    const AUTH_TOKEN_STORAGE_KEY = 'auth_token';
+
+    function getStoredAuthToken() {
+        try {
+            return (localStorage.getItem(AUTH_TOKEN_STORAGE_KEY) || '').trim();
+        } catch (error) {
+            return '';
+        }
+    }
+
+    function storeAuthToken(token) {
+        try {
+            if (token) {
+                localStorage.setItem(AUTH_TOKEN_STORAGE_KEY, token);
+            } else {
+                localStorage.removeItem(AUTH_TOKEN_STORAGE_KEY);
+            }
+            return true;
+        } catch (error) {
+            return false;
+        }
+    }
+
+    function promptForAuthToken(message) {
+        const value = prompt(message);
+        if (value === null) return null;
+
+        const token = value.trim();
+        if (!token) {
+            storeAuthToken('');
+            return null;
+        }
+        storeAuthToken(token);
+        return token;
+    }
+
+    async function setAuthToken() {
+        const previousToken = getStoredAuthToken();
+        const token = promptForAuthToken("请输入 eh 专用 Authorization 请求头值：");
+        if (!token) return;
+
+        setNetworkState(true);
+        try {
+            const response = await fetch(window.location.href, {
+                headers: { 'Authorization': token },
+                cache: 'no-store',
+                credentials: 'same-origin'
+            });
+            if (!response.ok) {
+                storeAuthToken(previousToken);
+                alert("eh 专用请求头无效，未保存");
+                setNetworkState(false, '鉴权失败');
+                return;
+            }
+            setNetworkState(false, 'eh 专用请求头已更新');
+        } catch (error) {
+            storeAuthToken(previousToken);
+            alert("无法验证请求头，请检查网络");
+            setNetworkState(false, '验证失败');
+        }
+    }
+
+    async function fetchWithEhAuth(url, options = {}, promptOnAuthFailure = false) {
+        let token = getStoredAuthToken();
+
+        while (true) {
+            if (!token && promptOnAuthFailure) {
+                token = promptForAuthToken("需要 eh 专用 Authorization 请求头值，请输入后继续：");
+                if (!token) return null;
+            }
+
+            const headers = new Headers(options.headers || {});
+            if (token) {
+                headers.set('Authorization', token);
+            } else {
+                headers.delete('Authorization');
+            }
+
+            const response = await fetch(url, {
+                ...options,
+                headers,
+                cache: options.cache || 'no-store',
+                credentials: options.credentials || 'same-origin'
+            });
+            const authFailed = response.status === 401 || response.status === 403;
+            if (!authFailed || !promptOnAuthFailure) return response;
+
+            storeAuthToken('');
+            token = promptForAuthToken("eh 专用 Authorization 请求头值无效，请重新输入：");
+            if (!token) return null;
         }
     }
 
@@ -644,17 +729,28 @@
 
     async function softReloadDashboard() {
         try {
-            const response = await fetch(window.location.href);
+            const response = await fetchWithEhAuth(
+                window.location.href,
+                { cache: 'no-store' },
+                true
+            );
+            if (!response) return false;
+            if (!response.ok) throw new Error(`Dashboard reload failed: ${response.status}`);
+
             const htmlText = await response.text();
             const parser = new DOMParser();
             const doc = parser.parseFromString(htmlText, 'text/html');
             
             ['data-chart', 'data-active', 'data-active-elapsed', 'data-daily', 'data-daily-metrics', 'data-recent', 'data-month-summary', 'data-all-time-summary', 'data-streak-summary', 'data-today', 'data-daily-target', 'data-weekly-target', 'data-exam-date'].forEach(id => {
-                document.getElementById(id).innerText = doc.getElementById(id).innerText;
+                const currentNode = document.getElementById(id);
+                const nextNode = doc.getElementById(id);
+                if (!currentNode || !nextNode) throw new Error(`Missing dashboard context: ${id}`);
+                currentNode.innerText = nextNode.innerText;
             });
             initViewEngine();
+            return true;
         } catch (error) {
-            window.location.reload(); 
+            return false;
         }
     }
 
@@ -670,46 +766,79 @@
         triggerAction('stop', null, note);
     }
 
+    function applyLocalActionState(action, category) {
+        const isStarting = action === 'start' && category;
+        const activeCategory = isStarting ? category : 'None';
+        document.getElementById('data-active').innerText = activeCategory;
+        document.getElementById('data-active-elapsed').innerText = '0';
+        document.querySelectorAll('.action-btn').forEach(btn => btn.classList.remove('active'));
+        document.getElementById('btn-stop').style.display = isStarting ? 'block' : 'none';
+
+        if (isStarting) {
+            const activeButton = document.getElementById(`btn-${category}`);
+            if (activeButton) activeButton.classList.add('active');
+        }
+        toggleZenMode(activeCategory, 0);
+    }
+
     async function triggerAction(action, category = null, note = '') {
-        const myToken = localStorage.getItem('auth_token');
         setNetworkState(true);
+        let finalStatus = '操作中止';
         try {
-            const res = await fetch('/api/action/', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() ,'Authorization': myToken },
-                body: JSON.stringify({ action: action, category: category, note: note })
-            });
-            const data = await res.json();
+            const res = await fetchWithEhAuth(
+                '/api/action/',
+                {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCsrfToken() },
+                    body: JSON.stringify({ action: action, category: category, note: note })
+                },
+                true
+            );
+            if (!res) {
+                finalStatus = '等待鉴权';
+                return;
+            }
+
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok) {
+                alert(data.msg || "操作失败");
+                const reloaded = await softReloadDashboard();
+                if (!reloaded && action === 'stop' && res.status === 400) {
+                    applyLocalActionState('stop');
+                }
+                return;
+            }
             
             if (data.status === 'success') {
-                await softReloadDashboard();
-                setNetworkState(false, data.msg);
+                const reloaded = await softReloadDashboard();
+                if (!reloaded) applyLocalActionState(action, category);
+                finalStatus = reloaded
+                    ? (data.msg || '操作成功')
+                    : `${data.msg || '操作成功'}，页面数据待同步`;
             } else {
-                alert(data.msg || "nmsl");
-                await softReloadDashboard(); 
-                setNetworkState(false, '操作中止');
+                alert(data.msg || "操作失败");
+                const reloaded = await softReloadDashboard();
+                if (!reloaded && action === 'stop') applyLocalActionState('stop');
             }
         } catch(error) {
             alert("网络通讯故障，请检查连接");
-            setNetworkState(false, '离线状态');
+            finalStatus = '离线状态';
+        } finally {
+            setNetworkState(false, finalStatus);
         }
     }
 
     async function exportLogsCsv() {
-        const myToken = localStorage.getItem('auth_token');
-        if (!myToken) {
-            alert("请先设置令牌");
-            return;
-        }
-
         setNetworkState(true);
+        let finalStatus = '导出失败';
         try {
-            const res = await fetch('/api/export.csv?days=365', {
-                headers: { 'Authorization': myToken }
-            });
+            const res = await fetchWithEhAuth('/api/export.csv?days=365', {}, true);
+            if (!res) {
+                finalStatus = '等待鉴权';
+                return;
+            }
             if (!res.ok) {
-                const text = await res.text();
-                throw new Error(text || '导出失败');
+                throw new Error(`Export failed: ${res.status}`);
             }
             const blob = await res.blob();
             const link = document.createElement('a');
@@ -719,10 +848,11 @@
             link.click();
             link.remove();
             URL.revokeObjectURL(link.href);
-            setNetworkState(false, 'CSV 已导出');
+            finalStatus = 'CSV 已导出';
         } catch(error) {
-            alert("导出失败，请检查令牌或网络");
-            setNetworkState(false, '导出失败');
+            alert("导出失败，请检查网络");
+        } finally {
+            setNetworkState(false, finalStatus);
         }
     }
 
@@ -919,8 +1049,9 @@
                 const pct = (item.value / totalMinutes * 100).toFixed(2);
                 const color = palette[index % palette.length];
                 const h = (item.value / 60).toFixed(1);
-                barHtml += `<div class="segment" style="width: ${pct}%; background-color: ${color};" data-tooltip="${item.name}: ${h}h (${pct}%)"></div>`;
-                legendHtml += `<div class="legend-item"><div class="legend-color" style="background-color: ${color};"></div><span>${item.name} <strong style="color:#fff;margin-left:4px">${h}h</strong></span></div>`;
+                const safeName = escapeHtml(item.name);
+                barHtml += `<div class="segment" style="width: ${pct}%; background-color: ${color};" data-tooltip="${safeName}: ${h}h (${pct}%)"></div>`;
+                legendHtml += `<div class="legend-item"><div class="legend-color" style="background-color: ${color};"></div><span>${safeName} <strong style="color:#fff;margin-left:4px">${h}h</strong></span></div>`;
             });
             document.getElementById('dom-stacked-bar').innerHTML = barHtml;
             document.getElementById('dom-legend').innerHTML = legendHtml;
