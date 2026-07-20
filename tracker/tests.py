@@ -2,6 +2,8 @@ import datetime
 import json
 from unittest import mock
 
+from django.conf import settings
+from django.contrib.auth import get_user_model
 from django.db import connection
 from django.db.migrations.executor import MigrationExecutor
 from django.http import HttpResponse
@@ -305,7 +307,6 @@ class AuthorizationMiddlewareTests(TestCase):
 
     def test_non_gate_routes_return_empty_forbidden_response(self):
         responses = (
-            self.client.get('/admin/'),
             self.client.post(
                 reverse('api_action'),
                 data=json.dumps({'action': 'stop'}),
@@ -321,6 +322,55 @@ class AuthorizationMiddlewareTests(TestCase):
                 self.assertEqual(response.status_code, 403)
                 self.assertEqual(response.content, b'')
                 self.assert_private_no_store(response)
+
+    def test_admin_uses_django_login_without_tracker_token(self):
+        redirect_response = self.client.get('/admin')
+        index_response = self.client.get('/admin/')
+        login_response = self.client.get('/admin/login/')
+
+        self.assertRedirects(
+            redirect_response,
+            '/admin/',
+            status_code=301,
+            fetch_redirect_response=False,
+        )
+        self.assertRedirects(
+            index_response,
+            '/admin/login/?next=/admin/',
+            fetch_redirect_response=False,
+        )
+        self.assertEqual(login_response.status_code, 200)
+        self.assertContains(login_response, 'name="username"')
+        self.assertContains(login_response, 'name="password"')
+
+    def test_admin_session_login_works_without_tracker_token(self):
+        get_user_model().objects.create_superuser(
+            username='admin',
+            email='admin@example.com',
+            password='test-password',
+        )
+
+        login_response = self.client.post(
+            '/admin/login/?next=/admin/',
+            {'username': 'admin', 'password': 'test-password'},
+        )
+        index_response = self.client.get('/admin/')
+
+        self.assertRedirects(
+            login_response,
+            '/admin/',
+            fetch_redirect_response=False,
+        )
+        self.assertEqual(index_response.status_code, 200)
+        self.assertContains(index_response, 'Site administration')
+
+    def test_static_files_are_handled_before_tracker_authorization(self):
+        middleware = settings.MIDDLEWARE
+
+        self.assertLess(
+            middleware.index('whitenoise.middleware.WhiteNoiseMiddleware'),
+            middleware.index('tracker.auth.TrackerAuthorizationMiddleware'),
+        )
 
     def test_valid_token_is_compared_with_compare_digest(self):
         with mock.patch('tracker.auth.compare_digest', return_value=True) as compare:

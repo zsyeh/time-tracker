@@ -17,7 +17,7 @@ A small Django time-tracking dashboard for study sessions.
   when completed logs are saved, moved, or deleted.
 - Button-triggered, responsive summer schedule with timeline, training, quota,
   and rule views.
-- Header-protected dashboard, APIs, exports, and administration routes.
+- Header-protected dashboard, APIs, and exports; session-protected administration.
 - Environment-based token, host, goal, and exam-date configuration.
 
 ## Setup
@@ -51,9 +51,10 @@ Environment variables:
 - `DJANGO_DEBUG`: `true` or `false`. Defaults to `false`.
 - `DJANGO_ALLOWED_HOSTS`: comma-separated host list.
 - `TRACKER_API_TOKEN`: required token supplied in the raw `Authorization` header
-  for every application request. It has no default; an empty value keeps the
-  entire site locked. Use a long random ASCII value and make sure any reverse
-  proxy forwards the header unchanged.
+  for tracker pages and API requests. It has no default; an empty value keeps
+  those routes locked. Use a long random ASCII value and make sure any reverse
+  proxy forwards the header unchanged. Django Admin uses its own staff login
+  instead so normal browser navigation and form submissions work.
 - `TRACKER_DAILY_TARGET_MINUTES`: daily target minutes shown on the dashboard.
 - `TRACKER_WEEKLY_TARGET_MINUTES`: weekly target minutes shown on the dashboard.
 - `TRACKER_EXAM_DATE`: countdown target date, formatted as `YYYY-MM-DD`.
@@ -121,6 +122,19 @@ The exported columns are:
 - `category_label`
 - `duration_minutes`
 - `note`
+
+## Administration
+
+Create an administrator account once on each new database:
+
+```bash
+python manage.py createsuperuser
+```
+
+Then open `http://127.0.0.1:8000/admin/` and sign in with that account. The
+administration site is protected by Django's session-based staff login and does
+not require the tracker `Authorization` header. When accessing the service by
+its server IP, include that IP in `DJANGO_ALLOWED_HOSTS`.
 
 ## Summer Schedule
 

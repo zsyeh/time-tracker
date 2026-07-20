@@ -9,6 +9,13 @@ from django.utils.cache import patch_vary_headers
 
 AUTHORIZATION_HEADER = 'Authorization'
 AUTH_GATE_PATHS = {'/', '/daily-stats/'}
+ADMIN_PATH_PREFIX = '/admin'
+
+
+def is_admin_request(request):
+    """Leave Django Admin authentication to its session-based login flow."""
+    path = request.path
+    return path == ADMIN_PATH_PREFIX or path.startswith(f'{ADMIN_PATH_PREFIX}/')
 
 
 def request_has_valid_token(request):
@@ -50,6 +57,9 @@ class TrackerAuthorizationMiddleware:
         self.get_response = get_response
 
     def __call__(self, request):
+        if is_admin_request(request):
+            return self.get_response(request)
+
         if not request_has_valid_token(request):
             if request.method == 'GET' and request.path in AUTH_GATE_PATHS:
                 response = HttpResponse(

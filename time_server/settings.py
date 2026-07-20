@@ -59,8 +59,8 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    'whitenoise.middleware.WhiteNoiseMiddleware',
     'tracker.auth.TrackerAuthorizationMiddleware',
-    'whitenoise.middleware.WhiteNoiseMiddleware',  # <--- 必须插入到此处
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
