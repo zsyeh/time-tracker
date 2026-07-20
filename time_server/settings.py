@@ -147,3 +147,14 @@ TRACKER_API_TOKEN = os.environ.get('TRACKER_API_TOKEN', '').strip()
 TRACKER_DAILY_TARGET_MINUTES = env_int('TRACKER_DAILY_TARGET_MINUTES', 360)
 TRACKER_WEEKLY_TARGET_MINUTES = env_int('TRACKER_WEEKLY_TARGET_MINUTES', 2520)
 TRACKER_EXAM_DATE = os.environ.get('TRACKER_EXAM_DATE', '2026-12-26')
+
+# The MCP process is intentionally separate from Django's web process. A secret
+# URL segment is supported because ChatGPT developer-mode apps cannot attach an
+# arbitrary static Authorization header to an MCP endpoint.
+MCP_HOST = os.environ.get('MCP_HOST', '127.0.0.1').strip()
+MCP_PORT = env_int('MCP_PORT', 8001)
+MCP_URL_KEY = os.environ.get('MCP_URL_KEY', '').strip()
+MCP_ALLOW_UNAUTHENTICATED = os.environ.get(
+    'MCP_ALLOW_UNAUTHENTICATED',
+    'false',
+).lower() in {'1', 'true', 'yes', 'on'}
