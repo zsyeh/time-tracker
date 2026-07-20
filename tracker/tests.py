@@ -8,7 +8,7 @@ from django.contrib.auth import get_user_model
 from django.db import connection
 from django.db.migrations.executor import MigrationExecutor
 from django.http import HttpResponse
-from django.test import RequestFactory, TestCase, TransactionTestCase, override_settings
+from django.test import Client, RequestFactory, TestCase, TransactionTestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
@@ -134,6 +134,18 @@ class ApiActionTests(TestCase):
             content_type='application/json',
             HTTP_AUTHORIZATION=token,
         )
+
+    def test_authorized_api_does_not_require_cookie_csrf_token(self):
+        client = Client(enforce_csrf_checks=True)
+        response = client.post(
+            reverse('api_action'),
+            data=json.dumps({'action': 'start', 'category': 'math'}),
+            content_type='application/json',
+            HTTP_AUTHORIZATION='test-token',
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['status'], 'success')
 
     def test_rejects_missing_token(self):
         response = self.post_action({'action': 'start', 'category': 'math'}, token='')
