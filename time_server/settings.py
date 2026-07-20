@@ -63,6 +63,7 @@ MIDDLEWARE = [
     'tracker.auth.TrackerAuthorizationMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -158,3 +159,16 @@ MCP_ALLOW_UNAUTHENTICATED = os.environ.get(
     'MCP_ALLOW_UNAUTHENTICATED',
     'false',
 ).lower() in {'1', 'true', 'yes', 'on'}
+
+# A completed MCP task can be archived in a private GitHub repository. The
+# subprocess uses argument lists (never a shell), and an empty repository name
+# disables the integration.
+LEARNING_REPO = os.environ.get('LEARNING_REPO', '').strip()
+LEARNING_REPO_PATH = Path(
+    os.environ.get('LEARNING_REPO_PATH', BASE_DIR.parent / 'study-learning-log')
+).expanduser()
+
+# Nginx terminates TLS on this host and forwards the original scheme.
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+SESSION_COOKIE_SECURE = not DEBUG
+CSRF_COOKIE_SECURE = not DEBUG

@@ -67,6 +67,11 @@ Environment variables:
 - `MCP_ALLOW_UNAUTHENTICATED`: permits `/mcp` without a URL key. Leave this
   `false` unless the listener is loopback-only and reached through a trusted
   private tunnel.
+- `LEARNING_REPO`: optional GitHub repository (for example
+  `owner/study-learning-log`) where completed MCP task reports are committed.
+- `LEARNING_REPO_PATH`: local checkout used for learning-log commits. If the
+  checkout or remote repository does not exist, the authenticated `gh` CLI
+  clones or creates a private repository automatically.
 
 ## Commands
 

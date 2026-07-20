@@ -72,7 +72,10 @@ class McpToolTests(TestCase):
 
         with mock.patch('tracker.mcp_server.timezone.now', return_value=start):
             started = mcp_start_task('math')
-        with mock.patch('tracker.mcp_server.timezone.now', return_value=end):
+        with mock.patch('tracker.mcp_server.timezone.now', return_value=end), mock.patch(
+            'tracker.mcp_server.archive_completed_task',
+            return_value={'status': 'pushed', 'commit': 'abc1234'},
+        ) as archive:
             stopped = mcp_stop_task(report)
 
         self.assertEqual(started['status'], 'started')
@@ -80,6 +83,25 @@ class McpToolTests(TestCase):
         log = TimeLog.objects.get()
         self.assertEqual(log.note, report)
         self.assertEqual(log.duration_minutes, 30)
+        self.assertEqual(stopped['learning_log']['status'], 'pushed')
+        archive.assert_called_once_with(stopped['task'])
+
+    def test_github_failure_does_not_undo_completed_task(self):
+        now = shanghai_datetime(2026, 7, 20, 10, 30)
+        TimeLog.objects.create(
+            category='major',
+            start_time=now - datetime.timedelta(minutes=30),
+        )
+
+        with mock.patch('tracker.mcp_server.timezone.now', return_value=now), mock.patch(
+            'tracker.mcp_server.archive_completed_task',
+            side_effect=OSError('GitHub unavailable'),
+        ):
+            result = mcp_stop_task('完成章节复盘')
+
+        self.assertEqual(result['status'], 'completed')
+        self.assertEqual(result['learning_log']['status'], 'failed')
+        self.assertIsNotNone(TimeLog.objects.get().end_time)
 
     def test_stop_discards_a_session_shorter_than_minimum(self):
         now = shanghai_datetime(2026, 7, 20, 10, 20)

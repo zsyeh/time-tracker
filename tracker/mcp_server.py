@@ -3,6 +3,7 @@
 import datetime
 import json
 import re
+import subprocess
 from typing import Any, Dict, List, Optional
 
 import uvicorn
@@ -12,9 +13,11 @@ from django.db import transaction
 from django.db.models import Q
 from django.utils import timezone
 from mcp.server.fastmcp import FastMCP
+from mcp.server.transport_security import TransportSecuritySettings
 from pydantic import BaseModel
 
 from .models import TimeLog
+from .learning_log import archive_completed_task
 
 
 CATEGORY_LABELS = dict(TimeLog.CATEGORY_CHOICES)
@@ -246,7 +249,15 @@ def stop_task(report: str) -> Dict[str, Any]:
         active.end_time = now
         active.note = report
         active.save(update_fields=['end_time', 'note'])
-    return {'status': 'completed', 'task': _serialize_log(active, now)}
+    task = _serialize_log(active, now)
+    try:
+        learning_log = archive_completed_task(task)
+    except (OSError, subprocess.SubprocessError) as exc:
+        # The time entry is already durable. A transient GitHub failure should
+        # be visible to ChatGPT without turning a successful stop into a retry
+        # that could duplicate or corrupt the session.
+        learning_log = {'status': 'failed', 'error': str(exc)}
+    return {'status': 'completed', 'task': task, 'learning_log': learning_log}
 
 
 def search(query: str) -> Dict[str, List[Dict[str, str]]]:
@@ -358,6 +369,19 @@ def create_mcp_server() -> FastMCP:
         streamable_http_path=mcp_path(),
         stateless_http=True,
         json_response=True,
+        transport_security=TransportSecuritySettings(
+            enable_dns_rebinding_protection=True,
+            allowed_hosts=[
+                '127.0.0.1:*',
+                'localhost:*',
+                'timer.ehzsy.space',
+            ],
+            allowed_origins=[
+                'http://127.0.0.1:*',
+                'http://localhost:*',
+                'https://timer.ehzsy.space',
+            ],
+        ),
     )
     server.tool(name='search', annotations=READ_ONLY)(_mcp_search)
     server.tool(name='fetch', annotations=READ_ONLY)(_mcp_fetch)
