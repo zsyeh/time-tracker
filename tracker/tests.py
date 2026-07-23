@@ -2,17 +2,27 @@ import datetime
 import json
 from unittest import mock
 
+from asgiref.sync import async_to_sync
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import connection
 from django.db.migrations.executor import MigrationExecutor
 from django.http import HttpResponse
-from django.test import RequestFactory, TestCase, TransactionTestCase, override_settings
+from django.test import Client, RequestFactory, TestCase, TransactionTestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
 from .views import _execute_lazy_garbage_collection, token_required
 from .models import DailyStudyStat, TimeLog
+from .mcp_server import (
+    fetch as mcp_fetch,
+    get_study_summary as mcp_get_study_summary,
+    get_tracker_status as mcp_get_tracker_status,
+    search as mcp_search,
+    start_task as mcp_start_task,
+    stop_task as mcp_stop_task,
+    mcp,
+)
 from .schedule import get_summer_schedule
 
 
@@ -24,6 +34,97 @@ def shanghai_datetime(year, month, day, hour, minute=0):
     return datetime.datetime(year, month, day, hour, minute, tzinfo=SHANGHAI_TZ)
 
 
+class McpToolTests(TestCase):
+    def test_registered_async_tools_can_use_the_django_orm(self):
+        _content, structured = async_to_sync(mcp.call_tool)(
+            'search',
+            {'query': ''},
+        )
+
+        self.assertEqual(set(structured), {'results'})
+
+    def test_status_summary_search_and_fetch_return_chat_friendly_data(self):
+        now = shanghai_datetime(2026, 7, 20, 12, 0)
+        start = now - datetime.timedelta(minutes=45)
+        log = TimeLog.objects.create(
+            category='english',
+            start_time=start,
+            end_time=now,
+            note='复习了词汇和长难句',
+        )
+
+        with mock.patch('tracker.mcp_server.timezone.now', return_value=now):
+            status = mcp_get_tracker_status()
+            summary = mcp_get_study_summary(7)
+            results = mcp_search('词汇')
+            document = mcp_fetch(f'session:{log.pk}')
+
+        self.assertEqual(status['today']['minutes'], 45)
+        self.assertEqual(summary['total_minutes'], 45)
+        self.assertIn(f'session:{log.pk}', {item['id'] for item in results['results']})
+        self.assertIn('复习了词汇和长难句', document['text'])
+        self.assertEqual(document['metadata']['source'], 'jkxx-study-tracker')
+
+    def test_start_and_stop_save_a_long_report(self):
+        start = shanghai_datetime(2026, 7, 20, 10, 0)
+        end = start + datetime.timedelta(minutes=30)
+        report = '完成二次函数错题复盘。' * 40
+
+        with mock.patch('tracker.mcp_server.timezone.now', return_value=start):
+            started = mcp_start_task('math')
+        with mock.patch('tracker.mcp_server.timezone.now', return_value=end), mock.patch(
+            'tracker.mcp_server.archive_completed_task',
+            return_value={'status': 'pushed', 'commit': 'abc1234'},
+        ) as archive:
+            stopped = mcp_stop_task(report)
+
+        self.assertEqual(started['status'], 'started')
+        self.assertEqual(stopped['status'], 'completed')
+        log = TimeLog.objects.get()
+        self.assertEqual(log.note, report)
+        self.assertEqual(log.duration_minutes, 30)
+        self.assertEqual(stopped['learning_log']['status'], 'pushed')
+        archive.assert_called_once_with(stopped['task'])
+
+    def test_github_failure_does_not_undo_completed_task(self):
+        now = shanghai_datetime(2026, 7, 20, 10, 30)
+        TimeLog.objects.create(
+            category='major',
+            start_time=now - datetime.timedelta(minutes=30),
+        )
+
+        with mock.patch('tracker.mcp_server.timezone.now', return_value=now), mock.patch(
+            'tracker.mcp_server.archive_completed_task',
+            side_effect=OSError('GitHub unavailable'),
+        ):
+            result = mcp_stop_task('完成章节复盘')
+
+        self.assertEqual(result['status'], 'completed')
+        self.assertEqual(result['learning_log']['status'], 'failed')
+        self.assertIsNotNone(TimeLog.objects.get().end_time)
+
+    def test_stop_discards_a_session_shorter_than_minimum(self):
+        now = shanghai_datetime(2026, 7, 20, 10, 20)
+        TimeLog.objects.create(
+            category='major',
+            start_time=now - datetime.timedelta(minutes=20),
+        )
+
+        with mock.patch('tracker.mcp_server.timezone.now', return_value=now):
+            result = mcp_stop_task('完成一节内容')
+
+        self.assertEqual(result['status'], 'discarded')
+        self.assertFalse(TimeLog.objects.exists())
+
+    def test_start_rejects_invalid_category_and_parallel_task(self):
+        with self.assertRaisesMessage(ValueError, 'Invalid category'):
+            mcp_start_task('physics')
+
+        TimeLog.objects.create(category='training')
+        with self.assertRaisesMessage(ValueError, 'already running'):
+            mcp_start_task('math')
+
+
 @override_settings(TRACKER_API_TOKEN='test-token')
 class ApiActionTests(TestCase):
     def post_action(self, payload, token='test-token'):
@@ -33,6 +134,18 @@ class ApiActionTests(TestCase):
             content_type='application/json',
             HTTP_AUTHORIZATION=token,
         )
+
+    def test_authorized_api_does_not_require_cookie_csrf_token(self):
+        client = Client(enforce_csrf_checks=True)
+        response = client.post(
+            reverse('api_action'),
+            data=json.dumps({'action': 'start', 'category': 'math'}),
+            content_type='application/json',
+            HTTP_AUTHORIZATION='test-token',
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['status'], 'success')
 
     def test_rejects_missing_token(self):
         response = self.post_action({'action': 'start', 'category': 'math'}, token='')

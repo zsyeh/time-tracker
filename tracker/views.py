@@ -5,6 +5,7 @@ from django.db.models import Sum
 from django.shortcuts import render
 from django.utils import timezone
 from django.views.decorators.http import require_POST
+from django.views.decorators.csrf import csrf_exempt
 import json
 import datetime
 import csv
@@ -218,6 +219,7 @@ def daily_stats_view(request):
     )
 
 @token_required
+@csrf_exempt
 @require_POST
 def api_action(request):
     try:
@@ -260,7 +262,21 @@ def api_action(request):
         active_log.end_time = now
         active_log.note = note
         active_log.save()
-        return JsonResponse({'status': 'success', 'msg': f'结算成功: {int(duration_mins)} 分钟'})
+        local_start = timezone.localtime(active_log.start_time) if timezone.is_aware(active_log.start_time) else active_log.start_time
+        local_end = timezone.localtime(active_log.end_time) if timezone.is_aware(active_log.end_time) else active_log.end_time
+        return JsonResponse({
+            'status': 'success',
+            'msg': f'结算成功: {int(duration_mins)} 分钟',
+            'session': {
+                'id': active_log.pk,
+                'category': active_log.category,
+                'category_label': CATEGORY_LABELS.get(active_log.category, active_log.category),
+                'start_time': local_start.isoformat(),
+                'end_time': local_end.isoformat(),
+                'duration_minutes': int(duration_mins),
+                'summary': active_log.note,
+            },
+        })
 
     return JsonResponse({'status': 'error', 'msg': '未知指令'}, status=400)
 
