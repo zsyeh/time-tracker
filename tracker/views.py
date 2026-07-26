@@ -10,6 +10,7 @@ import json
 import datetime
 import csv
 from .models import DailyStudyStat, TimeLog
+from .daily_stats import local_day_bounds
 from .schedule import get_summer_schedule
 
 from .auth import token_required
@@ -217,6 +218,53 @@ def daily_stats_view(request):
             'daily_target_minutes': daily_target_minutes,
         },
     )
+
+
+def day_sessions_view(request):
+    raw_date = request.GET.get('date', '')
+    try:
+        study_date = datetime.date.fromisoformat(raw_date)
+    except ValueError:
+        return JsonResponse(
+            {'status': 'error', 'msg': 'date 必须是 YYYY-MM-DD 格式'},
+            status=400,
+        )
+
+    day_start, next_day_start = local_day_bounds(study_date)
+    logs = TimeLog.objects.filter(
+        start_time__gte=day_start,
+        start_time__lt=next_day_start,
+        end_time__isnull=False,
+    ).order_by('start_time').only(
+        'category',
+        'start_time',
+        'end_time',
+        'note',
+    )
+
+    sessions = []
+    total_minutes = 0
+    for log in logs:
+        local_start = timezone.localtime(log.start_time)
+        local_end = timezone.localtime(log.end_time)
+        duration_minutes = max(0, log.duration_minutes)
+        total_minutes += duration_minutes
+        sessions.append({
+            'category': log.category,
+            'category_label': CATEGORY_LABELS.get(log.category, log.category),
+            'start_time': local_start.strftime('%H:%M'),
+            'end_time': local_end.strftime('%H:%M'),
+            'duration_minutes': duration_minutes,
+            'note': log.note or '',
+        })
+
+    return JsonResponse({
+        'date': study_date.isoformat(),
+        'total_minutes': total_minutes,
+        'session_count': len(sessions),
+        'sessions': sessions,
+    })
+
 
 @token_required
 @csrf_exempt

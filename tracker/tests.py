@@ -694,6 +694,64 @@ class DailyStatsPageTests(TestCase):
         self.assertContains(response, 'id="today-first-start"')
         self.assertContains(response, 'id="data-daily-metrics"')
 
+    def test_day_sessions_returns_ordered_local_time_ranges(self):
+        later = shanghai_datetime(2026, 7, 18, 13, 10)
+        earlier = shanghai_datetime(2026, 7, 18, 7, 15)
+        self.create_completed_log(later, 45, category='major')
+        first = self.create_completed_log(earlier, 60, category='english')
+        first.note = '背单词'
+        first.save(update_fields=['note'])
+        self.create_completed_log(
+            shanghai_datetime(2026, 7, 19, 8, 0),
+            30,
+            category='math',
+        )
+
+        response = self.client.get(
+            reverse('day_sessions'),
+            {'date': '2026-07-18'},
+            **AUTH_HEADERS,
+        )
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload['date'], '2026-07-18')
+        self.assertEqual(payload['session_count'], 2)
+        self.assertEqual(payload['total_minutes'], 105)
+        self.assertEqual(
+            payload['sessions'][0],
+            {
+                'category': 'english',
+                'category_label': '英语',
+                'start_time': '07:15',
+                'end_time': '08:15',
+                'duration_minutes': 60,
+                'note': '背单词',
+            },
+        )
+        self.assertEqual(payload['sessions'][1]['start_time'], '13:10')
+
+    def test_day_sessions_rejects_invalid_date_and_requires_auth(self):
+        invalid = self.client.get(
+            reverse('day_sessions'),
+            {'date': 'not-a-date'},
+            **AUTH_HEADERS,
+        )
+        anonymous = self.client.get(
+            reverse('day_sessions'),
+            {'date': '2026-07-18'},
+        )
+
+        self.assertEqual(invalid.status_code, 400)
+        self.assertEqual(anonymous.status_code, 403)
+
+    def test_dashboard_heatmap_has_accessible_session_dialog(self):
+        response = self.client.get(reverse('dashboard'), **AUTH_HEADERS)
+
+        self.assertContains(response, 'id="day-detail-dialog"')
+        self.assertContains(response, '点击绿色格子查看时段')
+        self.assertContains(response, "fetchDaySessions(dateKey)")
+
 
 @override_settings(TRACKER_API_TOKEN='test-token')
 class DashboardScheduleTests(TestCase):

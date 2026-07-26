@@ -12,7 +12,7 @@ class TimeLog(models.Model):
     ]
     
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
-    start_time = models.DateTimeField(default=timezone.now)
+    start_time = models.DateTimeField(default=timezone.now, db_index=True)
     end_time = models.DateTimeField(null=True, blank=True)
     # A completed session can carry the longer summary/report submitted from
     # ChatGPT through MCP. Existing short notes remain fully compatible.

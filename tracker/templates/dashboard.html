@@ -79,18 +79,45 @@
         .bottom-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(20px, 3vw, 40px); margin-top: 24px; align-items: start; }
         
         .heatmap-card { background: #1e293b; border-radius: 16px; padding: 20px 24px; border: 1px solid rgba(222, 255, 154, 0.1); width: 100%; min-width: 0; }
-        .heatmap-header { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 14px; color: #94a3b8; }
+        .heatmap-header { display: flex; justify-content: space-between; gap: 16px; margin-bottom: 15px; font-size: 14px; color: #94a3b8; }
+        .heatmap-hint { color: #deff9a; font-size: 12px; }
         .heatmap-wrap { display: grid; grid-template-columns: 28px max-content; gap: 8px; overflow-x: auto; padding-bottom: 10px; }
         .heatmap-months { grid-column: 2; display: grid; grid-auto-flow: column; grid-auto-columns: 16px; gap: 4px; min-height: 16px; color: #64748b; font-size: 11px; }
         .heatmap-weekdays { grid-column: 1; display: grid; grid-template-rows: repeat(7, 16px); gap: 4px; color: #64748b; font-size: 11px; line-height: 16px; }
         .heatmap-grid { grid-column: 2; display: grid; grid-auto-flow: column; grid-template-rows: repeat(7, 16px); grid-auto-columns: 16px; gap: 4px; }
-        .heatmap-cell { width: 16px; height: 16px; border-radius: 3px; background: #0f172a; border: 1px solid rgba(255,255,255,0.04); position: relative; cursor: crosshair; transition: transform 0.1s, border-color 0.1s; }
+        .heatmap-cell { width: 16px; height: 16px; padding: 0; border-radius: 3px; background: #0f172a; border: 1px solid rgba(255,255,255,0.04); position: relative; cursor: default; font: inherit; transition: transform 0.1s, border-color 0.1s, box-shadow 0.1s; }
+        .heatmap-cell[data-active="true"] { cursor: pointer; }
         .heatmap-cell:hover { transform: scale(1.25); z-index: 2; border-color: #fff; }
+        .heatmap-cell[data-active="true"]:hover { box-shadow: 0 0 0 3px rgba(222, 255, 154, 0.12); }
+        .heatmap-cell:focus-visible { z-index: 3; outline: 3px solid rgba(222, 255, 154, 0.46); outline-offset: 2px; }
         .heatmap-cell.level-1 { background: #14532d; } .heatmap-cell.level-2 { background: #15803d; } .heatmap-cell.level-3 { background: #22c55e; } .heatmap-cell.level-4 { background: #86efac; }
         .heatmap-cell:hover::after { content: attr(data-info); position: absolute; bottom: 150%; left: 50%; transform: translateX(-50%); background: #020617; border: 1px solid rgba(255,255,255,0.12); padding: 6px 10px; border-radius: 6px; font-size: 12px; white-space: nowrap; color: #fff; pointer-events: none; }
         .heatmap-legend { display: flex; align-items: center; justify-content: flex-end; gap: 6px; color: #64748b; font-size: 12px; margin-top: 8px; }
         .legend-square { width: 12px; height: 12px; border-radius: 2px; background: #0f172a; border: 1px solid rgba(255,255,255,0.04); }
         .legend-square.level-1 { background: #14532d; } .legend-square.level-2 { background: #15803d; } .legend-square.level-3 { background: #22c55e; } .legend-square.level-4 { background: #86efac; }
+
+        .day-dialog { width: min(620px, calc(100vw - 28px)); max-width: none; max-height: min(760px, calc(100dvh - 36px)); margin: auto; padding: 0; color: #f8fafc; background: #0b1120; border: 1px solid rgba(222, 255, 154, 0.25); border-radius: 20px; box-shadow: 0 30px 90px rgba(0, 0, 0, 0.72); overflow: hidden; }
+        .day-dialog:not([open]) { display: none; }
+        .day-dialog[open] { animation: day-dialog-in 0.18s ease-out; }
+        .day-dialog::backdrop { background: rgba(2, 6, 23, 0.8); backdrop-filter: blur(6px); }
+        .day-dialog-header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding: 24px 26px 20px; background: radial-gradient(circle at top right, rgba(134, 239, 172, 0.15), transparent 43%), linear-gradient(145deg, #111827, #0f172a); border-bottom: 1px solid rgba(148, 163, 184, 0.12); }
+        .day-dialog-kicker { margin: 0 0 5px; color: #86efac; font-size: 11px; font-weight: 700; letter-spacing: 0.15em; text-transform: uppercase; }
+        .day-dialog-title { margin: 0; font-size: clamp(23px, 5vw, 30px); line-height: 1.15; }
+        .day-dialog-summary { margin: 8px 0 0; color: #94a3b8; font-size: 13px; }
+        .day-dialog-close { flex: 0 0 42px; width: 42px; height: 42px; display: grid; place-items: center; color: #cbd5e1; background: rgba(148, 163, 184, 0.1); border: 1px solid rgba(148, 163, 184, 0.14); border-radius: 50%; font-size: 24px; line-height: 1; cursor: pointer; transition: color 0.2s, background 0.2s, transform 0.2s; }
+        .day-dialog-close:hover { color: #fff; background: rgba(148, 163, 184, 0.2); transform: rotate(6deg); }
+        .day-dialog-close:focus-visible { outline: 3px solid rgba(222, 255, 154, 0.42); outline-offset: 2px; }
+        .day-session-list { max-height: min(510px, calc(100dvh - 190px)); margin: 0; padding: 18px 26px 26px; overflow-y: auto; overscroll-behavior: contain; list-style: none; }
+        .day-session { position: relative; display: grid; grid-template-columns: 74px minmax(0, 1fr) auto; gap: 14px; align-items: start; padding: 16px 0 16px 18px; border-bottom: 1px solid rgba(148, 163, 184, 0.1); }
+        .day-session:last-child { border-bottom: 0; }
+        .day-session::before { content: ''; position: absolute; top: 21px; left: 0; width: 7px; height: 7px; background: #86efac; border-radius: 50%; box-shadow: 0 0 0 5px rgba(134, 239, 172, 0.09); }
+        .day-session-time { color: #f8fafc; font-size: 15px; font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+        .day-session-main { min-width: 0; }
+        .day-session-category { display: block; margin-bottom: 5px; color: #deff9a; font-size: 14px; font-weight: 700; }
+        .day-session-note { margin: 0; color: #94a3b8; font-size: 13px; line-height: 1.55; overflow-wrap: anywhere; }
+        .day-session-duration { padding: 5px 9px; color: #86efac; background: rgba(134, 239, 172, 0.08); border: 1px solid rgba(134, 239, 172, 0.14); border-radius: 999px; font-size: 12px; font-weight: 700; white-space: nowrap; }
+        .day-dialog-state { min-height: 190px; display: grid; place-items: center; padding: 30px; color: #94a3b8; font-size: 14px; text-align: center; }
+        .day-loading-dot { width: 22px; height: 22px; border: 2px solid rgba(222, 255, 154, 0.18); border-top-color: #deff9a; border-radius: 50%; animation: day-spin 0.7s linear infinite; }
 
         .log-card { background: #1e293b; border-radius: 16px; padding: 20px 24px; border: 1px solid rgba(222, 255, 154, 0.1); width: 100%; max-height: 250px; overflow-y: auto; min-width: 0; }
         .log-header { font-size: 14px; color: #94a3b8; margin-bottom: 15px; }
@@ -167,6 +194,8 @@
         #django-context { display: none; }
         @keyframes pulse { 0% { opacity: 1; } 50% { opacity: 0.6; } 100% { opacity: 1; } }
         @keyframes plan-dialog-in { from { opacity: 0; transform: translateY(12px) scale(0.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes day-dialog-in { from { opacity: 0; transform: translateY(8px) scale(0.985); } to { opacity: 1; transform: translateY(0) scale(1); } }
+        @keyframes day-spin { to { transform: rotate(360deg); } }
         .is-loading { animation: pulse 1.5s infinite; pointer-events: none; }
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: transparent; }
@@ -230,10 +259,15 @@
             .plan-time { color: #deff9a; }
             .plan-marker { display: none; }
             .plan-timeline-copy { padding: 0; }
+            .day-dialog-header { padding: 21px 20px 17px; }
+            .day-session-list { padding: 12px 20px 20px; }
+            .day-session { grid-template-columns: 66px minmax(0, 1fr); gap: 10px; padding-left: 16px; }
+            .day-session-duration { grid-column: 2; justify-self: start; }
         }
 
         @media (prefers-reduced-motion: reduce) {
-            .plan-dialog[open] { animation: none; }
+            .plan-dialog[open],
+            .day-dialog[open] { animation: none; }
             .plan-close { transition: none; }
         }
     </style>
@@ -368,7 +402,7 @@
         <div class="heatmap-card">
             <div class="heatmap-header">
                 <span>持续性矩阵 (6月起)</span>
-                <span>GitHub 风格</span>
+                <span class="heatmap-hint"><i class="fa-regular fa-hand-pointer" aria-hidden="true"></i> 点击绿色格子查看时段</span>
             </div>
             <div class="heatmap-wrap">
                 <div class="heatmap-months" id="heatmap-months"></div>
@@ -394,6 +428,20 @@
         </div>
     </div>
 </div>
+
+<dialog id="day-detail-dialog" class="day-dialog" aria-labelledby="day-detail-title">
+    <header class="day-dialog-header">
+        <div>
+            <p class="day-dialog-kicker">Daily timeline</p>
+            <h2 class="day-dialog-title" id="day-detail-title">当日在线时段</h2>
+            <p class="day-dialog-summary" id="day-detail-summary" aria-live="polite">正在读取记录…</p>
+        </div>
+        <button type="button" class="day-dialog-close" onclick="closeDayDetail()" aria-label="关闭当日在线时段">×</button>
+    </header>
+    <div id="day-detail-content" aria-live="polite">
+        <div class="day-dialog-state"><span class="day-loading-dot" aria-label="加载中"></span></div>
+    </div>
+</dialog>
 
 <dialog id="study-plan-dialog" class="plan-dialog" aria-labelledby="study-plan-title">
     <header class="plan-header">
@@ -520,6 +568,7 @@
     let activeElapsedBaseTime = 0;
     let shanghaiClockInterval = null;
     let studyPlanTrigger = null;
+    const daySessionCache = new Map();
     const shanghaiTimeFormatter = new Intl.DateTimeFormat('zh-CN', {
         timeZone: 'Asia/Shanghai',
         hour: '2-digit',
@@ -863,6 +912,90 @@
         document.getElementById('cd-days').innerText = Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
     }
 
+    function formatStudyDate(dateKey) {
+        const [year, month, day] = dateKey.split('-').map(Number);
+        return `${year}年${month}月${day}日`;
+    }
+
+    function closeDayDetail() {
+        const dialog = document.getElementById('day-detail-dialog');
+        if (dialog.open) dialog.close();
+    }
+
+    function renderDaySessions(payload) {
+        const summary = document.getElementById('day-detail-summary');
+        const content = document.getElementById('day-detail-content');
+        summary.innerText = `${Number(payload.session_count || 0)} 个时段 · 共 ${Number(payload.total_minutes || 0)} 分钟`;
+
+        if (!payload.sessions?.length) {
+            content.innerHTML = '<div class="day-dialog-state">这一天暂无已完成的在线时段</div>';
+            return;
+        }
+
+        content.innerHTML = `<ol class="day-session-list">${payload.sessions.map(session => `
+            <li class="day-session">
+                <time class="day-session-time">${escapeHtml(session.start_time)}–${escapeHtml(session.end_time)}</time>
+                <div class="day-session-main">
+                    <strong class="day-session-category">${escapeHtml(session.category_label)}</strong>
+                    <p class="day-session-note">${escapeHtml(session.note || '未填写记录摘要')}</p>
+                </div>
+                <span class="day-session-duration">${Number(session.duration_minutes) || 0} min</span>
+            </li>
+        `).join('')}</ol>`;
+    }
+
+    async function fetchDaySessions(dateKey) {
+        if (!daySessionCache.has(dateKey)) {
+            const request = fetchWithEhAuth(
+                `/api/day-sessions/?date=${encodeURIComponent(dateKey)}`,
+                { cache: 'no-store' },
+                true
+            ).then(async response => {
+                if (!response) throw new Error('Authorization cancelled');
+                if (!response.ok) throw new Error(`Day sessions failed: ${response.status}`);
+                return response.json();
+            }).catch(error => {
+                daySessionCache.delete(dateKey);
+                throw error;
+            });
+            daySessionCache.set(dateKey, request);
+        }
+        return daySessionCache.get(dateKey);
+    }
+
+    async function openDayDetail(dateKey) {
+        const dialog = document.getElementById('day-detail-dialog');
+        const title = document.getElementById('day-detail-title');
+        const summary = document.getElementById('day-detail-summary');
+        const content = document.getElementById('day-detail-content');
+        dialog.dataset.date = dateKey;
+        title.innerText = formatStudyDate(dateKey);
+        summary.innerText = '正在读取在线时段…';
+        content.innerHTML = '<div class="day-dialog-state"><span class="day-loading-dot" aria-label="加载中"></span></div>';
+        if (!dialog.open) dialog.showModal();
+
+        try {
+            const payload = await fetchDaySessions(dateKey);
+            if (dialog.dataset.date === dateKey) renderDaySessions(payload);
+        } catch (error) {
+            if (dialog.dataset.date !== dateKey) return;
+            summary.innerText = '读取失败';
+            content.innerHTML = '<div class="day-dialog-state">暂时无法获取记录，请稍后重试</div>';
+        }
+    }
+
+    function initDayDetailDialog() {
+        const grid = document.getElementById('heatmap-grid');
+        const dialog = document.getElementById('day-detail-dialog');
+        grid.addEventListener('click', event => {
+            const cell = event.target.closest('.heatmap-cell[data-active="true"]');
+            if (cell) openDayDetail(cell.dataset.date);
+        });
+        dialog.addEventListener('click', event => {
+            if (event.target === dialog) closeDayDetail();
+        });
+    }
+
     function renderHeatmap(dailyStats, dailyMetrics, todayStr) {
         const container = document.getElementById('heatmap-grid');
         const monthContainer = document.getElementById('heatmap-months');
@@ -886,10 +1019,18 @@
             const hours = (mins / 60).toFixed(1);
             let level = mins > 0 ? 1 : 0;
             if (mins >= 120) level = 2; if (mins >= 240) level = 3; if (mins >= 360) level = 4; 
-            const cell = document.createElement('div');
+            const cell = document.createElement(mins > 0 ? 'button' : 'span');
             cell.className = `heatmap-cell level-${level}`;
             const firstStart = metrics.first_start_time || '暂无';
             cell.setAttribute('data-info', `${dateKey} | ${hours}h · ${Number(metrics.study_count || 0)}次 · 首次 ${firstStart}`);
+            cell.dataset.date = dateKey;
+            if (mins > 0) {
+                cell.type = 'button';
+                cell.dataset.active = 'true';
+                cell.setAttribute('aria-label', `${dateKey}，学习 ${hours} 小时，点击查看在线时段`);
+            } else {
+                cell.setAttribute('aria-hidden', 'true');
+            }
             container.appendChild(cell);
 
             if ((visibleDays - i) % 7 === 0) {
@@ -1067,6 +1208,7 @@
 
     window.addEventListener('DOMContentLoaded', () => {
         initStudyPlanDialog();
+        initDayDetailDialog();
         initViewEngine();
     });
 </script>
