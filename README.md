@@ -44,6 +44,40 @@ Open `http://127.0.0.1:8000/`.
 
 The complete daily history is available at `http://127.0.0.1:8000/daily-stats/`.
 
+## Docker 一键安装
+
+服务器已安装 Docker Engine 和 Docker Compose 插件时，克隆项目后运行：
+
+```bash
+chmod +x install.sh
+./install.sh your-domain.example.com
+```
+
+脚本会在首次运行时创建权限为 `600` 的 `.env`，生成随机 Django 密钥和
+`TRACKER_API_TOKEN`，构建镜像、执行数据库迁移、收集静态文件并等待健康检查
+通过。省略域名参数时默认仅允许 `localhost`。已有 `.env` 不会被覆盖。
+
+SQLite 数据保存在 Docker 命名卷 `tracker_data`，重新构建容器不会丢失。
+常用命令：
+
+```bash
+docker compose ps
+docker compose logs -f web
+docker compose up -d --build
+docker compose down
+```
+
+可选的 MCP 服务不会默认启动。如需启用：
+
+```bash
+docker compose --profile mcp up -d
+```
+
+MCP 端口默认只绑定宿主机回环地址 `127.0.0.1:8001`，不会直接暴露到公网。
+
+如果要修改 Web 对外端口，在 `.env` 中设置 `TRACKER_PORT`。生产环境仍建议
+在容器前使用 Nginx、Caddy 或 Cloudflare Tunnel 提供 HTTPS。
+
 ## Configuration
 
 Environment variables:
@@ -51,6 +85,9 @@ Environment variables:
 - `DJANGO_SECRET_KEY`: Django secret key. Required for production.
 - `DJANGO_DEBUG`: `true` or `false`. Defaults to `false`.
 - `DJANGO_ALLOWED_HOSTS`: comma-separated host list.
+- `DATABASE_PATH`: optional SQLite file path; Docker uses
+  `/app/data/db.sqlite3` in its persistent volume.
+- `TRACKER_PORT`: host port published by Docker Compose. Defaults to `8000`.
 - `TRACKER_API_TOKEN`: required token supplied in the raw `Authorization` header
   for tracker pages and API requests. It has no default; an empty value keeps
   those routes locked. Use a long random ASCII value and make sure any reverse

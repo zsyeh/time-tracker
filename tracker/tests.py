@@ -751,6 +751,9 @@ class DailyStatsPageTests(TestCase):
         self.assertContains(response, 'id="day-detail-dialog"')
         self.assertContains(response, '点击绿色格子查看时段')
         self.assertContains(response, "fetchDaySessions(dateKey)")
+        self.assertContains(response, '24 小时在线与离线分布')
+        self.assertContains(response, 'class="day-timeline-track"')
+        self.assertContains(response, '在线占比')
 
 
 @override_settings(TRACKER_API_TOKEN='test-token')

@@ -107,7 +107,28 @@
         .day-dialog-close { flex: 0 0 42px; width: 42px; height: 42px; display: grid; place-items: center; color: #cbd5e1; background: rgba(148, 163, 184, 0.1); border: 1px solid rgba(148, 163, 184, 0.14); border-radius: 50%; font-size: 24px; line-height: 1; cursor: pointer; transition: color 0.2s, background 0.2s, transform 0.2s; }
         .day-dialog-close:hover { color: #fff; background: rgba(148, 163, 184, 0.2); transform: rotate(6deg); }
         .day-dialog-close:focus-visible { outline: 3px solid rgba(222, 255, 154, 0.42); outline-offset: 2px; }
-        .day-session-list { max-height: min(510px, calc(100dvh - 190px)); margin: 0; padding: 18px 26px 26px; overflow-y: auto; overscroll-behavior: contain; list-style: none; }
+        .day-visual { padding: 22px 26px 18px; background: rgba(15, 23, 42, 0.62); border-bottom: 1px solid rgba(148, 163, 184, 0.1); }
+        .day-visual-metrics { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 9px; margin-bottom: 20px; }
+        .day-visual-metric { padding: 11px 12px; background: #111827; border: 1px solid rgba(148, 163, 184, 0.1); border-radius: 11px; }
+        .day-visual-metric span { display: block; margin-bottom: 5px; color: #64748b; font-size: 11px; }
+        .day-visual-metric strong { color: #f8fafc; font-size: 16px; font-variant-numeric: tabular-nums; }
+        .day-visual-metric:first-child strong { color: #86efac; }
+        .day-timeline-labels { position: relative; height: 18px; margin: 0 1px 5px; color: #64748b; font-size: 10px; font-variant-numeric: tabular-nums; }
+        .day-timeline-label { position: absolute; transform: translateX(-50%); }
+        .day-timeline-label:first-child { transform: none; }
+        .day-timeline-label:last-child { transform: translateX(-100%); }
+        .day-timeline-track { position: relative; height: 44px; overflow: hidden; background-color: #111827; background-image: linear-gradient(to right, rgba(148, 163, 184, 0.13) 1px, transparent 1px); background-size: 12.5% 100%; border: 1px solid rgba(148, 163, 184, 0.18); border-radius: 10px; box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.3); }
+        .day-timeline-block { position: absolute; top: 5px; bottom: 5px; min-width: 3px; overflow: hidden; background: linear-gradient(135deg, #22c55e, #86efac); border: 1px solid rgba(222, 255, 154, 0.55); border-radius: 6px; box-shadow: 0 0 15px rgba(34, 197, 94, 0.24); }
+        .day-timeline-block[data-category="english"] { background: linear-gradient(135deg, #0ea5e9, #7dd3fc); }
+        .day-timeline-block[data-category="major"] { background: linear-gradient(135deg, #8b5cf6, #c4b5fd); }
+        .day-timeline-block[data-category="training"] { background: linear-gradient(135deg, #f97316, #fdba74); }
+        .day-timeline-block span { position: absolute; inset: 0; display: grid; place-items: center; padding: 0 5px; overflow: hidden; color: #052e16; font-size: 10px; font-weight: 700; text-overflow: ellipsis; white-space: nowrap; }
+        .day-timeline-legend { display: flex; align-items: center; gap: 16px; margin-top: 10px; color: #94a3b8; font-size: 11px; }
+        .day-timeline-key { display: inline-flex; align-items: center; gap: 6px; }
+        .day-timeline-key::before { content: ''; width: 9px; height: 9px; background: #22c55e; border-radius: 3px; }
+        .day-timeline-key.offline::before { background: #111827; border: 1px solid rgba(148, 163, 184, 0.3); }
+        #day-detail-content { max-height: calc(100dvh - 145px); overflow-y: auto; overscroll-behavior: contain; }
+        .day-session-list { margin: 0; padding: 18px 26px 26px; list-style: none; }
         .day-session { position: relative; display: grid; grid-template-columns: 74px minmax(0, 1fr) auto; gap: 14px; align-items: start; padding: 16px 0 16px 18px; border-bottom: 1px solid rgba(148, 163, 184, 0.1); }
         .day-session:last-child { border-bottom: 0; }
         .day-session::before { content: ''; position: absolute; top: 21px; left: 0; width: 7px; height: 7px; background: #86efac; border-radius: 50%; box-shadow: 0 0 0 5px rgba(134, 239, 172, 0.09); }
@@ -260,6 +281,9 @@
             .plan-marker { display: none; }
             .plan-timeline-copy { padding: 0; }
             .day-dialog-header { padding: 21px 20px 17px; }
+            .day-visual { padding: 18px 20px 15px; }
+            .day-visual-metrics { grid-template-columns: 1fr 1fr; }
+            .day-visual-metric:last-child { grid-column: 1 / -1; }
             .day-session-list { padding: 12px 20px 20px; }
             .day-session { grid-template-columns: 66px minmax(0, 1fr); gap: 10px; padding-left: 16px; }
             .day-session-duration { grid-column: 2; justify-self: start; }
@@ -925,14 +949,48 @@
     function renderDaySessions(payload) {
         const summary = document.getElementById('day-detail-summary');
         const content = document.getElementById('day-detail-content');
-        summary.innerText = `${Number(payload.session_count || 0)} 个时段 · 共 ${Number(payload.total_minutes || 0)} 分钟`;
+        const totalMinutes = Math.max(0, Number(payload.total_minutes) || 0);
+        const onlinePercent = Math.min(100, totalMinutes / 1440 * 100);
+        const offlineMinutes = Math.max(0, 1440 - totalMinutes);
+        summary.innerText = `${Number(payload.session_count || 0)} 个在线时段 · 全天分配`;
 
         if (!payload.sessions?.length) {
             content.innerHTML = '<div class="day-dialog-state">这一天暂无已完成的在线时段</div>';
             return;
         }
 
-        content.innerHTML = `<ol class="day-session-list">${payload.sessions.map(session => `
+        const timeToMinute = value => {
+            const [hour, minute] = String(value).split(':').map(Number);
+            return Math.max(0, Math.min(1440, hour * 60 + minute));
+        };
+        const timelineBlocks = payload.sessions.map(session => {
+            const startMinute = timeToMinute(session.start_time);
+            const endMinute = Math.min(1440, startMinute + Math.max(0, Number(session.duration_minutes) || 0));
+            const left = startMinute / 1440 * 100;
+            const width = Math.max(0.22, (endMinute - startMinute) / 1440 * 100);
+            const label = `${session.start_time}–${session.end_time} ${session.category_label}`;
+            return `<div class="day-timeline-block" data-category="${escapeHtml(session.category)}" style="left:${left.toFixed(4)}%;width:${width.toFixed(4)}%" title="${escapeHtml(label)}"><span>${escapeHtml(session.category_label)}</span></div>`;
+        }).join('');
+        const hourLabels = Array.from({ length: 9 }, (_, index) => {
+            const hour = index * 3;
+            return `<span class="day-timeline-label" style="left:${index * 12.5}%">${String(hour).padStart(2, '0')}</span>`;
+        }).join('');
+
+        content.innerHTML = `
+            <section class="day-visual" aria-label="24 小时在线与离线分布">
+                <div class="day-visual-metrics">
+                    <div class="day-visual-metric"><span>在线</span><strong>${totalMinutes} 分钟</strong></div>
+                    <div class="day-visual-metric"><span>离线</span><strong>${offlineMinutes} 分钟</strong></div>
+                    <div class="day-visual-metric"><span>在线占比</span><strong>${onlinePercent.toFixed(1)}%</strong></div>
+                </div>
+                <div class="day-timeline-labels" aria-hidden="true">${hourLabels}</div>
+                <div class="day-timeline-track">${timelineBlocks}</div>
+                <div class="day-timeline-legend">
+                    <span class="day-timeline-key">在线</span>
+                    <span class="day-timeline-key offline">离线</span>
+                </div>
+            </section>
+            <ol class="day-session-list">${payload.sessions.map(session => `
             <li class="day-session">
                 <time class="day-session-time">${escapeHtml(session.start_time)}–${escapeHtml(session.end_time)}</time>
                 <div class="day-session-main">
