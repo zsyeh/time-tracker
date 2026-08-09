@@ -3,6 +3,7 @@ import { computed, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { api } from '../lib/api'
 import type { HeatmapDay, Page, StudySession } from '../types'
+import MarkdownPreview from './MarkdownPreview.vue'
 
 const props = defineProps<{ days: HeatmapDay[] }>()
 const detailOpen = ref(false)
@@ -133,7 +134,7 @@ async function openSession(session: StudySession) {
       </template>
       <div v-if="selectedSession" v-loading="sessionLoading" class="session-detail-page">
         <dl><div><dt>SUBJECT</dt><dd>{{ selectedSession.subject_label }}</dd></div><div><dt>TIME</dt><dd>{{ new Date(selectedSession.start_time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) }} – {{ selectedSession.end_time ? new Date(selectedSession.end_time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '--' }}</dd></div><div><dt>DURATION</dt><dd>{{ duration(selectedSession.duration_minutes) }}</dd></div></dl>
-        <pre>{{ selectedSession.details || 'No details were recorded for this historical session.' }}</pre>
+        <MarkdownPreview :key="selectedSession.id" :source="selectedSession.details" show-source empty-text="No details were recorded for this historical session." />
       </div>
     </el-drawer>
   </section>

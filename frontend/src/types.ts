@@ -102,3 +102,18 @@ export interface Page<T> {
   previous: string | null
   results: T[]
 }
+
+export interface GlobalSearchResult {
+  kind: 'session' | 'issue'
+  record_id: number
+  title: string
+  snippet: string
+  subject: Subject
+  subject_label: string
+  occurred_at: string
+}
+
+export interface GlobalSearchResponse {
+  query: string
+  results: GlobalSearchResult[]
+}

@@ -266,6 +266,38 @@ class AnalyticsAndExportTests(TestCase):
         detail = self.client.get(f'/api/sessions/{session.pk}/').json()
         self.assertEqual(detail['details'], 'DEFERRED-DETAILS')
 
+    def test_global_search_spans_sessions_and_issues_without_full_bodies(self):
+        session = completed_session(
+            self.user,
+            title='Fourier transform review',
+            details='A long body about the Fourier kernel and Parseval identity.',
+        )
+        LearningIssue.objects.create(
+            user=self.user,
+            category='math',
+            topic='Fourier sign error',
+            issue_type='calculation_error',
+            description='The Fourier exponent sign was reversed.',
+        )
+        completed_session(
+            self.other,
+            title='Fourier private record',
+            details='OTHER-SEARCH-SECRET',
+        )
+        response = self.client.get('/api/search/?q=Fourier')
+        self.assertEqual(response.status_code, 200)
+        results = response.json()['results']
+        self.assertEqual({item['kind'] for item in results}, {'session', 'issue'})
+        self.assertIn(session.pk, [item['record_id'] for item in results if item['kind'] == 'session'])
+        self.assertTrue(all('details' not in item for item in results))
+        self.assertNotContains(response, 'OTHER-SEARCH-SECRET')
+
+    def test_global_search_empty_query_avoids_unbounded_results(self):
+        completed_session(self.user, title='Should not appear')
+        response = self.client.get('/api/search/?q=')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['results'], [])
+
 
 @override_settings(SECURE_SSL_REDIRECT=False)
 class LaunchTokenTests(TestCase):

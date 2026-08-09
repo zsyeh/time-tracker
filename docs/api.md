@@ -12,6 +12,7 @@ public. Every response is restricted to the authenticated owner.
 | POST | `/api/sessions/<id>/finish/` | Finish with a title and details body |
 | POST | `/api/sessions/<id>/abandon/` | Permanently delete the running session |
 | GET | `/api/dashboard/overview/?days=180` | One-request dashboard analytics |
+| GET | `/api/search/?q=<keyword>&limit=18` | Bounded global text search summaries |
 | GET/POST | `/api/issues/` | Learning issue list/create |
 | GET/PATCH/DELETE | `/api/issues/<id>/` | Learning issue detail |
 | GET/POST | `/api/launch-tokens/` | Manage scoped tokens |
@@ -24,6 +25,10 @@ public. Every response is restricted to the authenticated owner.
 Session/export filters: `subject`, `status`, `date_from`, `date_to`, and `search`.
 Use `compact=1` on the session list to return only timeline metadata and `title`;
 fetch `/api/sessions/<id>/` only when the full `details` body is opened.
+
+Global search spans owned completed-session text and owned Issues. It returns at
+most 24 mixed summary records and never includes a complete session `details`
+body; the client fetches the owned detail endpoint only after selection.
 History is paginated. A duplicate start for the same running subject returns that
 session with `reused: true`; a different running subject returns HTTP 409 and is
 never silently stopped.

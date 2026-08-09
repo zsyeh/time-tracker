@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent, onMounted, ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import { Clock, DataAnalysis, Guide, List, Setting } from '@element-plus/icons-vue'
+import { Clock, DataAnalysis, Guide, List, Search as SearchIcon, Setting } from '@element-plus/icons-vue'
 import ActiveSession from './components/ActiveSession.vue'
+import GlobalSearch from './components/GlobalSearch.vue'
 import HeatmapGrid from './components/HeatmapGrid.vue'
 import MetricCard from './components/MetricCard.vue'
 import { api, post } from './lib/api'
@@ -18,6 +19,7 @@ const page = ref<PageName>('today')
 const overview = ref<Overview | null>(null)
 const loading = ref(true)
 const username = ref('')
+const globalSearch = ref<InstanceType<typeof GlobalSearch> | null>(null)
 const nav = [
   { id: 'today', label: 'Today', icon: Clock }, { id: 'trends', label: 'Trends', icon: DataAnalysis },
   { id: 'history', label: 'Sessions', icon: List }, { id: 'issues', label: 'Issues', icon: Guide },
@@ -54,11 +56,12 @@ onMounted(load)
   <div class="app-shell">
     <aside class="sidebar">
       <div class="brand"><span class="brand-mark">L</span><div><strong>Learning OS</strong><small>PERSONAL SYSTEM</small></div></div>
+      <GlobalSearch ref="globalSearch" @navigate="page = $event" />
       <nav><span class="nav-section">WORKSPACE</span><button v-for="item in nav" :key="item.id" :class="{ active: page === item.id }" @click="page = item.id"><el-icon><component :is="item.icon" /></el-icon><span>{{ item.label }}</span></button></nav>
       <div class="sidebar-user"><span>{{ username.slice(0, 1).toUpperCase() }}</span><div><b>{{ username }}</b><button @click="logout">Sign out</button></div></div>
     </aside>
     <main class="main-content" v-loading.fullscreen.lock="loading">
-      <div class="mobile-header"><div class="brand"><span class="brand-mark">L</span><strong>Learning OS</strong></div><el-dropdown trigger="click"><el-button>Menu</el-button><template #dropdown><el-dropdown-menu><el-dropdown-item v-for="item in nav" :key="item.id" @click="page = item.id">{{ item.label }}</el-dropdown-item><el-dropdown-item divided @click="logout">Sign out</el-dropdown-item></el-dropdown-menu></template></el-dropdown></div>
+      <div class="mobile-header"><div class="brand"><span class="brand-mark">L</span><strong>Learning OS</strong></div><div class="mobile-tools"><el-button circle aria-label="Open global search" @click="globalSearch?.open()"><el-icon><SearchIcon /></el-icon></el-button><el-dropdown trigger="click"><el-button>Menu</el-button><template #dropdown><el-dropdown-menu><el-dropdown-item v-for="item in nav" :key="item.id" @click="page = item.id">{{ item.label }}</el-dropdown-item><el-dropdown-item divided @click="logout">Sign out</el-dropdown-item></el-dropdown-menu></template></el-dropdown></div></div>
       <template v-if="page === 'today'">
         <section class="hero exam-hero">
           <div class="date-block"><span class="eyebrow">TODAY / {{ weekdayLabel }}</span><h1>{{ todayLabel }}</h1><p>LOCAL DATE · ASIA/SHANGHAI</p></div>

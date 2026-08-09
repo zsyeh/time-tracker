@@ -3,6 +3,7 @@ import { onMounted, reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { api, patch } from '../lib/api'
 import type { Page, StudySession } from '../types'
+import MarkdownPreview from '../components/MarkdownPreview.vue'
 
 const loading = ref(false)
 const rows = ref<StudySession[]>([])
@@ -45,7 +46,7 @@ onMounted(load)
       <el-pagination v-if="total > 20" v-model:current-page="page" layout="prev, pager, next" :total="total" :page-size="20" @current-change="load" />
     </section>
     <el-drawer v-model="editing" title="Session details" size="min(680px, 94vw)">
-      <el-form label-position="top" class="simple-review"><el-form-item label="Title"><el-input v-model="edit.title" maxlength="500" show-word-limit /></el-form-item><el-form-item label="Details"><el-input v-model="edit.details" type="textarea" :rows="20" placeholder="Paste plain text or Markdown." /></el-form-item><el-button type="primary" @click="save">Save changes</el-button></el-form>
+      <el-form label-position="top" class="simple-review"><el-form-item label="Title"><el-input v-model="edit.title" maxlength="500" show-word-limit /></el-form-item><el-form-item label="Details"><el-input v-model="edit.details" type="textarea" :rows="20" placeholder="Paste Markdown or edit the source." /></el-form-item><MarkdownPreview :key="expanded?.id" :source="edit.details" /><el-button type="primary" @click="save">Save changes</el-button></el-form>
     </el-drawer>
   </div>
 </template>

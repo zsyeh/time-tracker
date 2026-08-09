@@ -3,6 +3,7 @@ import { onMounted, reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
 import { api, patch, post, remove } from '../lib/api'
 import type { Issue, Page } from '../types'
+import MarkdownPreview from '../components/MarkdownPreview.vue'
 
 const rows = ref<Issue[]>([])
 const open = ref(false)
@@ -49,15 +50,17 @@ onMounted(load)
         <button class="text-danger" @click="drop(row)">Delete</button>
       </article>
     </section>
-    <el-dialog v-model="open" title="Record issue" width="min(600px, 94vw)">
+    <el-dialog v-model="open" title="Record issue" width="min(600px, 94vw)" destroy-on-close>
       <el-form label-position="top">
         <div class="form-pair">
           <el-form-item label="Subject"><el-select v-model="form.subject"><el-option v-for="(label, key) in subjects" :key="key" :label="label" :value="key" /></el-select></el-form-item>
           <el-form-item label="Type"><el-select v-model="form.issue_type"><el-option v-for="(label, key) in labels" :key="key" :label="label" :value="key" /></el-select></el-form-item>
         </div>
         <el-form-item label="Topic"><el-input v-model="form.topic" /></el-form-item>
-        <el-form-item label="Description"><el-input v-model="form.description" type="textarea" :rows="4" /></el-form-item>
-        <el-form-item label="Resolution"><el-input v-model="form.solution" type="textarea" :rows="3" /></el-form-item>
+        <el-form-item label="Description"><el-input v-model="form.description" type="textarea" :rows="4" placeholder="Plain text or Markdown" /></el-form-item>
+        <MarkdownPreview :source="form.description" />
+        <el-form-item label="Resolution"><el-input v-model="form.solution" type="textarea" :rows="3" placeholder="Plain text or Markdown" /></el-form-item>
+        <MarkdownPreview :source="form.solution" />
       </el-form>
       <template #footer><el-button @click="open = false">Cancel</el-button><el-button type="primary" @click="create">Save issue</el-button></template>
     </el-dialog>

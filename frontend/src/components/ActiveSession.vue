@@ -3,6 +3,7 @@ import { reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { post } from '../lib/api'
 import type { StudySession, Subject } from '../types'
+import MarkdownPreview from './MarkdownPreview.vue'
 
 const props = defineProps<{ session: StudySession | null }>()
 const emit = defineEmits<{ changed: [] }>()
@@ -96,7 +97,8 @@ async function abandon() {
   <el-dialog v-model="finishOpen" title="Complete session" width="min(760px, 94vw)" destroy-on-close>
     <el-form label-position="top" class="review-form simple-review">
       <el-form-item label="Title · Required"><el-input v-model="form.title" maxlength="500" show-word-limit placeholder="A concise heading for this session" /></el-form-item>
-      <el-form-item label="Details · Required"><el-input v-model="form.details" type="textarea" :rows="14" placeholder="Paste the full ChatGPT response or write plain text / Markdown." /></el-form-item>
+      <el-form-item label="Details · Required"><el-input v-model="form.details" type="textarea" :rows="14" placeholder="Paste Markdown from ChatGPT. TeX formulas support $...$, $$...$$, \(...\), and \[...\]." /></el-form-item>
+      <MarkdownPreview :source="form.details" />
       <p class="minimum-note">Sessions under 25 minutes or over 12 hours are deleted automatically.</p>
     </el-form>
     <template #footer><el-button @click="finishOpen = false">Continue session</el-button><el-button type="primary" :loading="saving" @click="finish">Save & finish</el-button></template>

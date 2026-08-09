@@ -3,6 +3,7 @@ from django.urls import include, path
 
 from tracker.api_views import (
     DashboardOverviewView,
+    GlobalSearchView,
     KnowledgePointDetailView,
     KnowledgePointListCreateView,
     LaunchTokenActionView,
@@ -35,6 +36,7 @@ urlpatterns = [
     path('api/sessions/<int:pk>/finish/', SessionFinishView.as_view(), name='session_finish'),
     path('api/sessions/<int:pk>/abandon/', SessionAbandonView.as_view(), name='session_abandon'),
     path('api/dashboard/overview/', DashboardOverviewView.as_view(), name='dashboard_overview'),
+    path('api/search/', GlobalSearchView.as_view(), name='global_search'),
     path('api/issues/', LearningIssueListCreateView.as_view(), name='issue_list'),
     path('api/issues/<int:pk>/', LearningIssueDetailView.as_view(), name='issue_detail'),
     path('api/knowledge/', KnowledgePointListCreateView.as_view(), name='knowledge_list'),

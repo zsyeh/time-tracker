@@ -1,6 +1,7 @@
 import csv
 import datetime
 import json
+import re
 import secrets
 from io import StringIO
 
@@ -187,6 +188,93 @@ class DashboardOverviewView(APIView):
             payload = build_dashboard_overview(request.user, days)
             cache.set(cache_key, payload, timeout=60)
         return Response(payload)
+
+
+def _search_snippet(query, *values, length=180):
+    text = next(
+        (str(value) for value in values if value and query.casefold() in str(value).casefold()),
+        next((str(value) for value in values if value), ''),
+    )
+    text = re.sub(r'\s+', ' ', text).strip()
+    if len(text) <= length:
+        return text
+    match_at = text.casefold().find(query.casefold())
+    start = max(0, match_at - 55) if match_at >= 0 else 0
+    start = min(start, max(0, len(text) - length))
+    excerpt = text[start:start + length].strip()
+    return f"{'…' if start else ''}{excerpt}{'…' if start + length < len(text) else ''}"
+
+
+class GlobalSearchView(APIView):
+    """Return bounded cross-feature search summaries without full session bodies."""
+
+    def get(self, request):
+        query = request.query_params.get('q', '').strip()[:120]
+        if not query:
+            return Response({'query': '', 'results': []})
+        try:
+            limit = int(request.query_params.get('limit', 16))
+        except ValueError:
+            return Response({'detail': 'limit must be an integer'}, status=400)
+        limit = max(1, min(limit, 24))
+
+        session_filter = (
+            Q(title__icontains=query)
+            | Q(details__icontains=query)
+            | Q(chapter__icontains=query)
+            | Q(topic__icontains=query)
+            | Q(breakthrough__icontains=query)
+            | Q(problems__icontains=query)
+            | Q(next_action__icontains=query)
+        )
+        sessions = TimeLog.objects.filter(
+            user=request.user,
+            status='completed',
+        ).filter(session_filter).only(
+            'id', 'category', 'title', 'details', 'chapter', 'topic',
+            'breakthrough', 'problems', 'next_action', 'start_time',
+        ).order_by('-start_time')[:limit]
+
+        issue_filter = (
+            Q(topic__icontains=query)
+            | Q(description__icontains=query)
+            | Q(solution__icontains=query)
+        )
+        issues = LearningIssue.objects.filter(user=request.user).filter(issue_filter).only(
+            'id', 'category', 'topic', 'issue_type', 'description', 'solution',
+            'resolved', 'updated_at',
+        ).order_by('-updated_at')[:limit]
+
+        results = []
+        for session in sessions:
+            results.append({
+                'kind': 'session',
+                'record_id': session.pk,
+                'title': session.title or session.topic or session.chapter or 'Untitled session',
+                'snippet': _search_snippet(
+                    query, session.title, session.details, session.topic, session.chapter,
+                    session.breakthrough, session.problems, session.next_action,
+                ),
+                'subject': session.category,
+                'subject_label': session.get_category_display(),
+                'occurred_at': _local(session.start_time).isoformat(),
+                '_sort': session.start_time,
+            })
+        for issue in issues:
+            results.append({
+                'kind': 'issue',
+                'record_id': issue.pk,
+                'title': issue.topic or issue.get_issue_type_display(),
+                'snippet': _search_snippet(query, issue.topic, issue.description, issue.solution),
+                'subject': issue.category,
+                'subject_label': issue.get_category_display(),
+                'occurred_at': _local(issue.updated_at).isoformat(),
+                '_sort': issue.updated_at,
+            })
+        results.sort(key=lambda item: item['_sort'], reverse=True)
+        for item in results:
+            item.pop('_sort', None)
+        return Response({'query': query, 'results': results[:limit]})
 
 
 class LearningIssueListCreateView(generics.ListCreateAPIView):
