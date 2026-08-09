@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import DailyStudyStat, KnowledgePoint, LaunchToken, LearningIssue, TimeLog
+from .models import DailyStudyStat, GitHubNoteSync, KnowledgePoint, LaunchToken, LearningIssue, TimeLog
 
 
 @admin.register(TimeLog)
@@ -14,6 +14,13 @@ class TimeLogAdmin(admin.ModelAdmin):
 class DailyStudyStatAdmin(admin.ModelAdmin):
     list_display = ('user', 'date', 'study_count', 'first_start_time', 'total_minutes')
     ordering = ('-date',)
+
+
+@admin.register(GitHubNoteSync)
+class GitHubNoteSyncAdmin(admin.ModelAdmin):
+    list_display = ('session', 'status', 'attempts', 'markdown_path', 'synced_at')
+    list_filter = ('status',)
+    readonly_fields = ('session', 'attempts', 'last_error', 'markdown_path', 'synced_at')
 
 
 admin.site.register(LearningIssue)

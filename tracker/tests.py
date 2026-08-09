@@ -1,5 +1,6 @@
 import datetime
 import json
+from unittest import mock
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
@@ -10,7 +11,8 @@ from django.urls import reverse
 from django.utils import timezone
 
 from .analytics import build_dashboard_overview
-from .models import KnowledgePoint, LaunchToken, LearningIssue, TimeLog
+from .learning_log import markdown_relative_path, render_session_markdown, sync_session_note
+from .models import GitHubNoteSync, KnowledgePoint, LaunchToken, LearningIssue, TimeLog
 
 
 def completed_session(user, *, day=None, minutes=60, subject='math', title='完整学习总结', details='完整学习详情'):
@@ -124,7 +126,7 @@ class AuthAndIsolationTests(TestCase):
         self.assertContains(response, 'tracker/admin.css')
 
 
-@override_settings(SECURE_SSL_REDIRECT=False)
+@override_settings(SECURE_SSL_REDIRECT=False, LEARNING_REPO='')
 class SessionWorkflowTests(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user('learner', password='password')
@@ -167,6 +169,25 @@ class SessionWorkflowTests(TestCase):
         self.assertEqual(session.status, 'completed')
         self.assertEqual(session.title, '函数复盘')
         self.assertEqual(session.details, '完成题目并复盘')
+
+    @override_settings(LEARNING_REPO='zsyeh/personal-learning-notes')
+    @mock.patch('tracker.learning_log.subprocess.Popen')
+    def test_web_finish_queues_github_markdown_without_waiting_for_push(self, popen):
+        session_id = self.client.post(
+            '/api/sessions/', {'subject': 'math'}, content_type='application/json',
+        ).json()['session']['id']
+        TimeLog.objects.filter(pk=session_id).update(
+            start_time=timezone.now() - datetime.timedelta(minutes=26),
+        )
+        response = self.client.post(
+            f'/api/sessions/{session_id}/finish/',
+            {'title': 'Limits review', 'details': '$$\\lim_{x \\to 0} f(x)$$'},
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['github_note']['status'], 'queued')
+        self.assertTrue(GitHubNoteSync.objects.filter(session_id=session_id, status='pending').exists())
+        popen.assert_called_once()
 
     def test_finish_discards_session_shorter_than_25_minutes(self):
         session_id = self.client.post('/api/sessions/', {'subject': 'english'}, content_type='application/json').json()['session']['id']
@@ -297,6 +318,45 @@ class AnalyticsAndExportTests(TestCase):
         response = self.client.get('/api/search/?q=')
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.json()['results'], [])
+
+
+class GitHubNoteSyncTests(TestCase):
+    def test_markdown_uses_one_unique_file_and_preserves_formula_source(self):
+        task = {
+            'id': 42,
+            'category': 'math',
+            'category_label': 'Mathematics',
+            'start_time': '2026-08-09T08:05:00+08:00',
+            'end_time': '2026-08-09T09:10:00+08:00',
+            'duration_minutes': 65,
+            'title': '# Limits review',
+            'details': 'Formula: $$\\lim_{x \\to 0} f(x)$$',
+        }
+        path = str(markdown_relative_path(task))
+        document = render_session_markdown(task)
+        self.assertEqual(path, 'sessions/2026/08/2026-08-09-0805-42-limits-review.md')
+        self.assertIn('# Limits review', document)
+        self.assertIn('$$\\lim_{x \\to 0} f(x)$$', document)
+        self.assertIn('session_id: 42', document)
+
+    @override_settings(LEARNING_REPO='zsyeh/personal-learning-notes')
+    @mock.patch('tracker.learning_log.archive_completed_task')
+    def test_successful_retry_marks_the_durable_outbox_synced(self, archive):
+        user = get_user_model().objects.create_user('sync-user', password='password')
+        session = completed_session(user, title='Retry me', details='Markdown body')
+        archive.return_value = {
+            'status': 'pushed',
+            'repository': 'zsyeh/personal-learning-notes',
+            'commit': 'abc1234',
+            'file': 'sessions/2026/08/example.md',
+        }
+        result = sync_session_note(session)
+        sync = GitHubNoteSync.objects.get(session=session)
+        self.assertEqual(result['status'], 'pushed')
+        self.assertEqual(sync.status, 'synced')
+        self.assertEqual(sync.attempts, 1)
+        self.assertEqual(sync.markdown_path, 'sessions/2026/08/example.md')
+        self.assertIsNotNone(sync.synced_at)
 
 
 @override_settings(SECURE_SSL_REDIRECT=False)

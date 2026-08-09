@@ -27,8 +27,14 @@ cd frontend && npm ci && npm run build && cd ..
 .venv/bin/python manage.py collectstatic --noinput
 .venv/bin/python manage.py check --deploy
 systemctl start time-tracker-web.service time-tracker-mcp.service
+systemctl enable --now time-tracker-github-sync.timer
 ./deploy/scripts/smoke-test.sh https://study.example.com
 ```
+
+Set `LEARNING_REPO=owner/private-repository` and `LEARNING_REPO_PATH` in `.env`,
+then authenticate the service account with `gh auth login`. Web completions
+enqueue a durable record and dispatch an immediate background push. The systemd
+timer retries pending records every minute without delaying the completion API.
 
 Validate row count, total duration, owner assignment, HTTPS login, a session start
 and finish, export download, and Passkey enrollment before discarding rollback

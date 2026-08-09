@@ -17,7 +17,7 @@ from mcp.server.transport_security import TransportSecuritySettings
 from pydantic import BaseModel
 
 from .models import TimeLog
-from .learning_log import archive_completed_task
+from .learning_log import sync_session_note
 from .services import (
     MAXIMUM_SESSION_HOURS,
     MINIMUM_SESSION_MINUTES,
@@ -291,7 +291,7 @@ def stop_task(title: str, details: str) -> Dict[str, Any]:
         active.save(update_fields=['end_time', 'title', 'details', 'status'])
     task = _serialize_log(active, now)
     try:
-        learning_log = archive_completed_task(task)
+        learning_log = sync_session_note(active)
     except (OSError, subprocess.SubprocessError) as exc:
         # The time entry is already durable. A transient GitHub failure should
         # be visible to ChatGPT without turning a successful stop into a retry

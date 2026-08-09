@@ -11,6 +11,7 @@
 - 运行中隐藏时长；结束时只填写 `Title` 和可粘贴 ChatGPT 内容的 `Details`。
 - `Details` 支持按需 Markdown 预览、KaTeX 行内/块级公式、代码高亮、表格、任务列表、脚注和 GFM Callout；默认不加载预览引擎。
 - `⌘/Ctrl + K` 全局关键词搜索学习标题、正文和 Issues，结果按需下钻完整内容。
+- 每次完成后生成一个独立 Markdown 文件并通过本机 GitHub CLI 推送到私有仓库；失败会进入持久化队列自动重试。
 - 少于 25 分钟、超过 12 小时或主动放弃的会话直接删除，不写入完成记录。
 - Django Session 登录、可配置“记住我”、django-allauth Passkey/WebAuthn、多用户数据隔离。
 - 科目趋势、周/月汇总、学习记录检索和问题闭环；知识点入口已从当前界面移除。

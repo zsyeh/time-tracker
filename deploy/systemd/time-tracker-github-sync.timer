@@ -1,0 +1,11 @@
+[Unit]
+Description=Retry Personal Learning OS GitHub note exports every minute
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=1min
+Persistent=true
+AccuracySec=10s
+
+[Install]
+WantedBy=timers.target

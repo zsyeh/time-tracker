@@ -194,12 +194,12 @@ MCP_ALLOW_UNAUTHENTICATED = os.environ.get(
     'false',
 ).lower() in {'1', 'true', 'yes', 'on'}
 
-# A completed MCP task can be archived in a private GitHub repository. The
-# subprocess uses argument lists (never a shell), and an empty repository name
-# disables the integration.
+# Every newly completed task can be archived as an individual Markdown file in
+# a private GitHub repository. The subprocess uses argument lists (never a
+# shell), and an empty repository name disables the integration.
 LEARNING_REPO = os.environ.get('LEARNING_REPO', '').strip()
 LEARNING_REPO_PATH = Path(
-    os.environ.get('LEARNING_REPO_PATH', BASE_DIR.parent / 'study-learning-log')
+    os.environ.get('LEARNING_REPO_PATH', BASE_DIR.parent / 'personal-learning-notes')
 ).expanduser()
 
 # Nginx terminates TLS on this host and forwards the original scheme.

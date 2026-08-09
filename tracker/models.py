@@ -143,6 +143,31 @@ class DailyStudyStat(models.Model):
         return f"{self.date} | {self.study_count} sessions"
 
 
+class GitHubNoteSync(models.Model):
+    """Durable outbox entry for one completed session Markdown document."""
+
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),
+        ('synced', 'Synced'),
+    ]
+
+    session = models.OneToOneField(
+        TimeLog,
+        on_delete=models.CASCADE,
+        related_name='github_note_sync',
+    )
+    status = models.CharField(max_length=12, choices=STATUS_CHOICES, default='pending', db_index=True)
+    markdown_path = models.CharField(max_length=500, blank=True)
+    attempts = models.PositiveIntegerField(default=0)
+    last_error = models.TextField(blank=True)
+    synced_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ('created_at',)
+
+
 class LearningIssue(models.Model):
     ISSUE_TYPE_CHOICES = [
         ('concept_error', 'Concept error'),

@@ -1,11 +1,12 @@
 import time
 
+from django.conf import settings
 from django.core.cache import cache
 from django.db.models.signals import post_delete, post_save, pre_save
 from django.dispatch import receiver
 
 from .daily_stats import local_study_date, refresh_daily_stat
-from .models import TimeLog
+from .models import GitHubNoteSync, TimeLog
 
 
 def invalidate_dashboard(user_id):
@@ -34,6 +35,8 @@ def refresh_stats_after_save(sender, instance, raw=False, **kwargs):
     refresh_daily_stat(current_date, instance.user_id)
     if previous_date and previous_date != current_date:
         refresh_daily_stat(previous_date, instance.user_id)
+    if instance.status == 'completed' and settings.LEARNING_REPO:
+        GitHubNoteSync.objects.get_or_create(session=instance)
 
 
 @receiver(post_delete, sender=TimeLog)

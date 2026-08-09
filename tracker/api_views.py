@@ -22,6 +22,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .analytics import build_dashboard_overview
+from .learning_log import dispatch_github_note_sync
 from .models import KnowledgePoint, LaunchToken, LearningIssue, TimeLog
 from .serializers import (
     FinishSessionSerializer,
@@ -155,6 +156,7 @@ class SessionFinishView(APIView):
                 'maximum_hours': MAXIMUM_SESSION_HOURS,
                 'session': None,
             })
+        github_note = dispatch_github_note_sync(session.pk) if changed else {'status': 'unchanged'}
         return Response({
             'changed': changed,
             'discarded': False,
@@ -162,6 +164,7 @@ class SessionFinishView(APIView):
             'minimum_minutes': MINIMUM_SESSION_MINUTES,
             'maximum_hours': MAXIMUM_SESSION_HOURS,
             'session': StudySessionSerializer(session).data,
+            'github_note': github_note,
         })
 
 

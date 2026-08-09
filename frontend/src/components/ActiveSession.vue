@@ -53,14 +53,14 @@ async function finish() {
   }
   saving.value = true
   try {
-    const result = await post<{ discarded: boolean; discard_reason: string | null }>(`/api/sessions/${props.session.id}/finish/`, form)
+    const result = await post<{ discarded: boolean; discard_reason: string | null; github_note?: { status: string } }>(`/api/sessions/${props.session.id}/finish/`, form)
     finishOpen.value = false
     if (result.discarded) {
       ElMessage.info(result.discard_reason === 'longer_than_maximum'
         ? 'Session deleted: duration exceeded 12 hours'
         : 'Session deleted: duration was under 25 minutes')
     } else {
-      ElMessage.success('Session completed')
+      ElMessage.success(result.github_note?.status === 'queued' ? 'Session completed · GitHub sync queued' : 'Session completed')
       form.title = ''
       form.details = ''
     }

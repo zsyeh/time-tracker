@@ -14,6 +14,14 @@ at least 25 minutes and no more than 12 hours can become completed records.
 Explicit discard deletes the running row, so `abandoned` is retained only as a
 legacy schema value and is not written by current application flows.
 
+## GitHub note sync
+
+`GitHubNoteSync` is a durable one-to-one outbox record created only when a new
+session becomes completed. It tracks the generated Markdown path, retry count,
+last error, and synchronization timestamp. Existing historical sessions are not
+backfilled automatically. A failed GitHub operation never rolls back or removes
+the completed learning record.
+
 ## Learning issue
 
 Optional user-owned structured problem connected to a study session when useful.
