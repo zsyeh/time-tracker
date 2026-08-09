@@ -2,6 +2,30 @@
 
 一个私有优先、低摩擦启动、重视结束复盘的个人学习操作系统。后端是 Django/DRF，前端是 Vue 3 + TypeScript + Vite + ECharts + Element Plus，生产环境保持同源部署。
 
+## Docker Hub 与一键部署
+
+> **[打开一键部署页面](https://app.ehzsy.site)** · **[Docker Hub 镜像](https://dockerhub.ehzsy.site)** · 镜像：`zsyeh/time-tracker:latest`
+
+Docker Run 版本：
+
+```bash
+curl -fsSL https://app.ehzsy.site/install/docker-run.sh | sh
+```
+
+Docker Compose 版本：
+
+```bash
+curl -fsSL https://app.ehzsy.site/install/docker-compose.sh | sh
+```
+
+需要指定公网域名时，在管道末尾增加参数，例如：
+
+```bash
+curl -fsSL https://app.ehzsy.site/install/docker-compose.sh | sh -s -- study.example.com
+```
+
+两个脚本都会拉取已经构建好的前后端镜像、创建持久化数据卷、生成随机 Django 密钥、执行数据库迁移和健康检查，并在空数据库中输出一次性管理员账号。公网 Passkey 必须配合 HTTPS 反向代理使用。
+
 ## 主要能力
 
 - 从 2026-05-23 开始的学习热力图；达到 5 小时的日期使用高对比亮绿色。

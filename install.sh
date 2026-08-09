@@ -90,7 +90,8 @@ if [ "$user_count" = "0" ]; then
     admin_user=${ADMIN_USERNAME:-admin}
     admin_password=$(random_hex 12)
     docker compose "$@" exec -T -e DJANGO_SUPERUSER_PASSWORD="$admin_password" web \
-        python manage.py createsuperuser --noinput --username "$admin_user"
+        python manage.py createsuperuser --noinput --username "$admin_user" \
+        --email "${ADMIN_EMAIL:-${admin_user}@localhost.invalid}"
     echo "首次管理员：$admin_user"
     echo "首次密码（仅显示这一次）：$admin_password"
     echo "登录后请立即修改密码并绑定 Passkey。"
