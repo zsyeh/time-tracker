@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, onMounted, reactive, ref } from 'vue'
+import { reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { post } from '../lib/api'
 import type { StudySession, Subject } from '../types'
@@ -8,8 +8,6 @@ const props = defineProps<{ session: StudySession | null }>()
 const emit = defineEmits<{ changed: [] }>()
 const finishOpen = ref(false)
 const saving = ref(false)
-const now = ref(Date.now())
-let ticker = 0
 const form = reactive({
   chapter: '', topic: '', learning_mode: 'theory', difficulty: 3, energy_level: 'medium',
   focus_level: 3, confidence_after: 3, note: '', breakthrough: '', problems: '', next_action: '',
@@ -18,18 +16,6 @@ const subjects: Array<{ id: Subject; label: string; shortcut: string }> = [
   { id: 'math', label: '数学', shortcut: 'M' }, { id: 'english', label: '英语', shortcut: 'E' },
   { id: 'major', label: '专业课', shortcut: 'P' }, { id: 'training', label: '训练', shortcut: 'T' },
 ]
-const elapsed = computed(() => {
-  if (!props.session) return '00:00:00'
-  const seconds = Math.max(0, Math.floor((now.value - new Date(props.session.start_time).getTime()) / 1000))
-  const h = Math.floor(seconds / 3600).toString().padStart(2, '0')
-  const m = Math.floor(seconds % 3600 / 60).toString().padStart(2, '0')
-  const s = (seconds % 60).toString().padStart(2, '0')
-  return `${h}:${m}:${s}`
-})
-
-onMounted(() => { ticker = window.setInterval(() => { now.value = Date.now() }, 1000) })
-onBeforeUnmount(() => window.clearInterval(ticker))
-
 async function start(subject: Subject) {
   try {
     await post('/api/sessions/', { subject })
@@ -74,12 +60,12 @@ async function abandon() {
 <template>
   <section class="focus-panel" :class="{ active: session }">
     <template v-if="session">
-      <div><span class="pulse-dot" /><span class="eyebrow">SESSION IN PROGRESS</span><h2>{{ session.subject_label }}学习中</h2><p>{{ session.topic || session.chapter || '专注当下，结束时再认真复盘。' }}</p></div>
-      <div class="active-clock">{{ elapsed }}</div>
+      <div><span class="pulse-dot" /><span class="eyebrow">SESSION IN PROGRESS</span><h2>{{ session.subject_label }}学习中</h2><p>{{ session.topic || session.chapter || 'Start time recorded.' }}</p></div>
+      <div class="hidden-timer" aria-label="运行时长已隐藏"><span>TIMER HIDDEN</span><small>Visible after completion</small></div>
       <div class="active-actions"><el-button plain @click="abandon">放弃</el-button><el-button type="primary" @click="prepareFinish">完成并复盘</el-button></div>
     </template>
     <template v-else>
-      <div><span class="eyebrow">QUICK START</span><h2>准备好开始了吗？</h2><p>服务器记录准确开始时间；重复点击同一科目不会产生重复记录。</p></div>
+      <div><span class="eyebrow">START SESSION</span><h2>Select a subject.</h2><p>Start time is recorded automatically. Duplicate starts are ignored.</p></div>
       <div class="subject-actions">
         <button v-for="item in subjects" :key="item.id" :class="`subject-button subject-${item.id}`" @click="start(item.id)"><b>{{ item.shortcut }}</b><span>{{ item.label }}</span></button>
       </div>

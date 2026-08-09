@@ -1,6 +1,7 @@
 import datetime
 from collections import defaultdict
 
+from django.conf import settings
 from django.utils import timezone
 
 from .models import TimeLog
@@ -111,9 +112,19 @@ def build_dashboard_overview(user, days=180):
         mean = round(sum(start_minutes) / len(start_minutes))
         average_start = f'{mean // 60:02d}:{mean % 60:02d}'
 
+    try:
+        exam_date = datetime.date.fromisoformat(settings.TRACKER_EXAM_DATE)
+    except (TypeError, ValueError):
+        exam_date = datetime.date(2026, 12, 26)
+
     return {
         'server_time': _local(now).isoformat(),
         'range_days': days,
+        'calendar': {
+            'today': local_today.isoformat(),
+            'exam_date': exam_date.isoformat(),
+            'days_until_exam': max(0, (exam_date - local_today).days),
+        },
         'today': today_row,
         'active_session': serialize_session(active, now) if active else None,
         'summary': {

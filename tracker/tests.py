@@ -109,10 +109,17 @@ class AuthAndIsolationTests(TestCase):
     def test_login_prioritizes_passkey_and_loads_project_styles(self):
         response = self.client.get('/accounts/login/')
         self.assertEqual(response.status_code, 200)
-        self.assertContains(response, '使用 Passkey 登录')
+        self.assertContains(response, 'Continue with Passkey')
         self.assertContains(response, 'id="passkey_login"')
         self.assertContains(response, 'tracker/auth.css')
-        self.assertContains(response, 'iPhone / iPad')
+        self.assertContains(response, 'iCloud Keychain')
+
+    @override_settings(DEBUG=True)
+    def test_django_admin_login_uses_project_branding_and_styles(self):
+        response = self.client.get('/admin/login/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Learning OS')
+        self.assertContains(response, 'tracker/admin.css')
 
 
 @override_settings(SECURE_SSL_REDIRECT=False)
@@ -175,6 +182,10 @@ class AnalyticsAndExportTests(TestCase):
         self.assertEqual(overview['heatmap'][-1]['level'], 2)
         self.assertEqual(overview['heatmap'][-2]['level'], 4)
         self.assertEqual(overview['summary']['average_start_time'], '08:00')
+        self.assertEqual(overview['calendar']['today'], today.isoformat())
+        self.assertEqual(overview['calendar']['exam_date'], settings.TRACKER_EXAM_DATE)
+        expected_days = max(0, (datetime.date.fromisoformat(settings.TRACKER_EXAM_DATE) - today).days)
+        self.assertEqual(overview['calendar']['days_until_exam'], expected_days)
 
     def test_exports_keep_raw_reflection_and_filters(self):
         completed_session(self.user, subject='math', note='RAW-REFLECTION-SENTINEL')

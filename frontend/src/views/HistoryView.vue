@@ -39,7 +39,8 @@ onMounted(load)
         <time><b>{{ new Date(row.start_time).getDate().toString().padStart(2, '0') }}</b><span>{{ new Date(row.start_time).toLocaleDateString('zh-CN', { month: 'short' }) }}</span></time>
         <i :class="`subject-dot subject-${row.subject}`" />
         <div class="history-main"><strong>{{ row.subject_label }} · {{ row.topic || row.chapter || '未命名学习' }}</strong><p>{{ row.note || (row.status === 'running' ? '正在学习中…' : '暂无总结') }}</p><small>{{ new Date(row.start_time).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' }) }} · {{ row.status }}</small></div>
-        <b class="duration-badge">{{ duration(row.duration_minutes) }}</b>
+        <b v-if="row.status !== 'running'" class="duration-badge">{{ duration(row.duration_minutes) }}</b>
+        <b v-else class="running-badge">IN SESSION</b>
       </article>
       <el-pagination v-if="total > 20" v-model:current-page="page" layout="prev, pager, next" :total="total" :page-size="20" @current-change="load" />
     </section>

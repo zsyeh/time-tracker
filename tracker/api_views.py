@@ -151,7 +151,9 @@ class DashboardOverviewView(APIView):
             return Response({'detail': 'days must be an integer'}, status=400)
         days = max(7, min(days, 366))
         version = cache.get(f'dashboard-version:{request.user.pk}', 1)
-        cache_key = f'dashboard-overview:{request.user.pk}:{days}:{version}'
+        # Keep a payload schema version in the key so a zero-downtime frontend
+        # deployment never receives an older cached response shape.
+        cache_key = f'dashboard-overview:v2:{request.user.pk}:{days}:{version}'
         payload = cache.get(cache_key)
         if payload is None:
             payload = build_dashboard_overview(request.user, days)

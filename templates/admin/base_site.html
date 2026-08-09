@@ -1,0 +1,18 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{{ title }} · Learning OS Control{% endblock %}
+
+{% block extrastyle %}
+    {{ block.super }}
+    <link rel="stylesheet" href="{% static 'tracker/admin.css' %}">
+{% endblock %}
+
+{% block branding %}
+    <div class="learning-admin-brand">
+        <span>L</span>
+        <div><strong>Learning OS</strong><small>CONTROL PANEL</small></div>
+    </div>
+{% endblock %}
+
+{% block nav-global %}<span class="admin-instance">PRIVATE INSTANCE / AUTHORIZED ACCESS ONLY</span>{% endblock %}

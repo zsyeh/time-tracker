@@ -27,6 +27,12 @@ const nav = [
 const subjectLabels: Record<string, string> = { math: '数学', english: '英语', major: '专业课', training: '训练' }
 const todayHours = computed(() => overview.value ? `${Math.floor(overview.value.today.minutes / 60)}h ${overview.value.today.minutes % 60}m` : '--')
 const maxTodaySubject = computed(() => Math.max(1, ...(overview.value?.today_subject_totals.map((item) => item.minutes) || [])))
+const todayLabel = computed(() => overview.value?.calendar.today.replaceAll('-', '.') || '----.--.--')
+const weekdayLabel = computed(() => {
+  if (!overview.value) return 'TODAY'
+  return new Intl.DateTimeFormat('en-US', { weekday: 'long', timeZone: 'Asia/Shanghai' })
+    .format(new Date(`${overview.value.calendar.today}T12:00:00+08:00`)).toUpperCase()
+})
 
 async function load() {
   loading.value = true
@@ -53,7 +59,10 @@ onMounted(load)
     <main class="main-content" v-loading.fullscreen.lock="loading">
       <div class="mobile-header"><div class="brand"><span class="brand-mark">L</span><strong>Learning OS</strong></div><el-dropdown trigger="click"><el-button>菜单</el-button><template #dropdown><el-dropdown-menu><el-dropdown-item v-for="item in nav" :key="item.id" @click="page = item.id">{{ item.label }}</el-dropdown-item><el-dropdown-item divided @click="logout">退出</el-dropdown-item></el-dropdown-menu></template></el-dropdown></div>
       <template v-if="page === 'today'">
-        <section class="hero"><div><span class="eyebrow">{{ new Date().toLocaleDateString('zh-CN', { weekday: 'long', month: 'long', day: 'numeric' }) }}</span><h1>今天，继续向前。</h1><p>清晰记录投入，诚实完成复盘，让长期进步有迹可循。</p></div><div class="hero-date"><b>{{ new Date().getDate() }}</b><span>{{ new Date().toLocaleDateString('zh-CN', { month: 'short' }) }}</span></div></section>
+        <section class="hero exam-hero">
+          <div class="date-block"><span class="eyebrow">TODAY / {{ weekdayLabel }}</span><h1>{{ todayLabel }}</h1><p>LOCAL DATE · ASIA/SHANGHAI</p></div>
+          <div class="exam-countdown"><span>2026 POSTGRADUATE EXAM</span><div><b>{{ overview?.calendar.days_until_exam ?? '--' }}</b><small>DAYS</small></div><time>{{ overview?.calendar.exam_date || '2026-12-26' }}</time></div>
+        </section>
         <ActiveSession :session="overview?.active_session || null" @changed="load" />
         <section v-if="overview" class="metrics-grid">
           <MetricCard label="今日学习" :value="todayHours" :hint="`首次开始 ${overview.today.first_start || '--'}`" tone="goal" />
