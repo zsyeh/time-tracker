@@ -8,6 +8,10 @@ It stores an owner, subject, chapter/topic, start/end timestamps, status, learni
 mode, reflection fields, and optional self-ratings. Duration is derived from the
 timestamps; there is no second authoritative duration column.
 
+Only sessions lasting at least 25 minutes can become completed records. Explicit
+discard deletes the running row, so `abandoned` is retained only as a legacy
+schema value and is not written by current application flows.
+
 ## Learning issue
 
 Optional user-owned structured problem connected to a study session when useful.

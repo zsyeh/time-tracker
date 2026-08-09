@@ -70,15 +70,15 @@ def archive_completed_task(task: Dict[str, Any]) -> Dict[str, str]:
         target = path / relative_file
         target.parent.mkdir(parents=True, exist_ok=True)
         report = task.get('report', '').strip()
-        first_line = next((line.strip() for line in report.splitlines() if line.strip()), '学习总结')
+        first_line = next((line.strip() for line in report.splitlines() if line.strip()), 'Study summary')
         summary_title = re.sub(r'^#+\s*', '', first_line).strip()
-        summary_title = summary_title[:80].rstrip() or '学习总结'
+        summary_title = summary_title[:80].rstrip() or 'Study summary'
         entry = (
-            f"\n## {summary_title} · {task['duration_minutes']} 分钟\n\n"
-            f"- 科目：{task['category_label']}\n"
-            f"- 开始：{started:%Y-%m-%d %H:%M}\n"
-            f"- 结束：{ended:%Y-%m-%d %H:%M}\n"
-            f"- Tracker session：{task['id']}\n\n"
+            f"\n## {summary_title} · {task['duration_minutes']} minutes\n\n"
+            f"- Subject: {task['category_label']}\n"
+            f"- Start: {started:%Y-%m-%d %H:%M}\n"
+            f"- End: {ended:%Y-%m-%d %H:%M}\n"
+            f"- Tracker session: {task['id']}\n\n"
             f"{report}\n"
         )
         with target.open('a', encoding='utf-8') as stream:

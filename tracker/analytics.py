@@ -37,6 +37,13 @@ def build_dashboard_overview(user, days=180):
     now = timezone.now()
     local_today = _local(now).date()
     first_day = local_today - datetime.timedelta(days=days - 1)
+    try:
+        configured_heatmap_start = datetime.date.fromisoformat(
+            settings.TRACKER_HEATMAP_START_DATE
+        )
+    except (TypeError, ValueError):
+        configured_heatmap_start = datetime.date(2026, 5, 23)
+    heatmap_first_day = max(first_day, configured_heatmap_start)
     boundary = timezone.make_aware(
         datetime.datetime.combine(first_day, datetime.time.min),
         timezone.get_current_timezone(),
@@ -79,8 +86,9 @@ def build_dashboard_overview(user, days=180):
     current_five_hour_streak, longest_five_hour_streak = _streak(five_hour_dates, local_today)
 
     heatmap = []
-    for offset in range(days):
-        day = first_day + datetime.timedelta(days=offset)
+    heatmap_day_count = max(0, (local_today - heatmap_first_day).days + 1)
+    for offset in range(heatmap_day_count):
+        day = heatmap_first_day + datetime.timedelta(days=offset)
         row = daily.get(day, {'minutes': 0, 'sessions': 0, 'first_start': None})
         minutes = row['minutes']
         if minutes == 0:
@@ -116,7 +124,6 @@ def build_dashboard_overview(user, days=180):
         exam_date = datetime.date.fromisoformat(settings.TRACKER_EXAM_DATE)
     except (TypeError, ValueError):
         exam_date = datetime.date(2026, 12, 26)
-
     return {
         'server_time': _local(now).isoformat(),
         'range_days': days,
@@ -124,6 +131,7 @@ def build_dashboard_overview(user, days=180):
             'today': local_today.isoformat(),
             'exam_date': exam_date.isoformat(),
             'days_until_exam': max(0, (exam_date - local_today).days),
+            'heatmap_start_date': heatmap_first_day.isoformat(),
         },
         'today': today_row,
         'active_session': serialize_session(active, now) if active else None,

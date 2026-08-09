@@ -31,7 +31,14 @@ from .serializers import (
     StartSessionSerializer,
     StudySessionSerializer,
 )
-from .services import ActiveSessionConflict, finish_session, normalize_subject, start_session
+from .services import (
+    MINIMUM_SESSION_MINUTES,
+    ActiveSessionConflict,
+    abandon_session,
+    finish_session,
+    normalize_subject,
+    start_session,
+)
 
 
 def _local(value):
@@ -103,7 +110,7 @@ class SessionListCreateView(APIView):
         except ActiveSessionConflict as exc:
             return Response(
                 {
-                    'detail': '另一个科目正在学习中，请先完成或放弃它。',
+                    'detail': 'Another subject is active. Finish or discard it first.',
                     'active_session': StudySessionSerializer(exc.session).data,
                 },
                 status=status.HTTP_409_CONFLICT,
@@ -127,20 +134,29 @@ class SessionFinishView(APIView):
         serializer = FinishSessionSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         try:
-            session, changed = finish_session(session, serializer.validated_data)
+            session, changed, discarded = finish_session(session, serializer.validated_data)
         except ValueError as exc:
             return Response({'detail': str(exc)}, status=status.HTTP_400_BAD_REQUEST)
-        return Response({'changed': changed, 'session': StudySessionSerializer(session).data})
+        if discarded:
+            return Response({
+                'changed': changed,
+                'discarded': True,
+                'minimum_minutes': MINIMUM_SESSION_MINUTES,
+                'session': None,
+            })
+        return Response({
+            'changed': changed,
+            'discarded': False,
+            'minimum_minutes': MINIMUM_SESSION_MINUTES,
+            'session': StudySessionSerializer(session).data,
+        })
 
 
 class SessionAbandonView(APIView):
     def post(self, request, pk):
         session = get_object_or_404(TimeLog, pk=pk, user=request.user)
-        if session.status == 'running':
-            session.end_time = timezone.now()
-            session.status = 'abandoned'
-            session.save(update_fields=('end_time', 'status', 'updated_at'))
-        return Response(StudySessionSerializer(session).data)
+        deleted = abandon_session(session)
+        return Response({'deleted': deleted})
 
 
 class DashboardOverviewView(APIView):
@@ -153,7 +169,7 @@ class DashboardOverviewView(APIView):
         version = cache.get(f'dashboard-version:{request.user.pk}', 1)
         # Keep a payload schema version in the key so a zero-downtime frontend
         # deployment never receives an older cached response shape.
-        cache_key = f'dashboard-overview:v2:{request.user.pk}:{days}:{version}'
+        cache_key = f'dashboard-overview:v3:{request.user.pk}:{days}:{version}'
         payload = cache.get(cache_key)
         if payload is None:
             payload = build_dashboard_overview(request.user, days)
@@ -211,7 +227,7 @@ class LaunchTokenListCreateView(APIView):
         data.update({
             'raw_token': raw_token,
             'launch_url': request.build_absolute_uri(f'/launch/{raw_token}'),
-            'warning': '此地址只显示一次，请立即保存。',
+            'warning': 'This URL is displayed once. Save it now.',
         })
         return Response(data, status=status.HTTP_201_CREATED)
 
@@ -234,7 +250,7 @@ class LaunchTokenActionView(APIView):
             data.update({
                 'raw_token': raw_token,
                 'launch_url': request.build_absolute_uri(f'/launch/{raw_token}'),
-                'warning': '新地址只显示一次，旧地址已立即失效。',
+                'warning': 'The new URL is displayed once. The previous URL is now invalid.',
             })
             return Response(data)
         if action == 'delete':
@@ -299,7 +315,7 @@ def export_json(request):
 
 @api_view(['GET'])
 def export_markdown(request):
-    lines = ['# 学习记录导出', '']
+    lines = ['# Study session export', '']
     current_day = None
     for session in _session_export_rows(request):
         local_start = _local(session.start_time)
@@ -308,20 +324,20 @@ def export_markdown(request):
             lines.extend([f'## {day}', ''])
             current_day = day
         lines.extend([
-            f"### {session.get_category_display()} · {session.duration_minutes} 分钟",
+            f"### {session.get_category_display()} · {session.duration_minutes} minutes",
             '',
-            f'- 时间：{local_start:%H:%M}–{_local(session.end_time):%H:%M}',
-            f'- 章节：{session.chapter or "未填写"}',
-            f'- 主题：{session.topic or "未填写"}',
-            f'- 模式：{session.learning_mode or "未填写"}',
+            f'- Time: {local_start:%H:%M}–{_local(session.end_time):%H:%M}',
+            f'- Chapter: {session.chapter or "Not provided"}',
+            f'- Topic: {session.topic or "Not provided"}',
+            f'- Mode: {session.learning_mode or "Not provided"}',
             '',
             session.note or '',
             '',
-            f'**突破：** {session.breakthrough or "未填写"}',
+            f'**Breakthrough:** {session.breakthrough or "Not provided"}',
             '',
-            f'**问题：** {session.problems or "未填写"}',
+            f'**Problems:** {session.problems or "Not provided"}',
             '',
-            f'**下一步：** {session.next_action or "未填写"}',
+            f'**Next action:** {session.next_action or "Not provided"}',
             '',
         ])
     response = HttpResponse('\n'.join(lines), content_type='text/markdown; charset=utf-8')

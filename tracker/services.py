@@ -15,6 +15,7 @@ SUBJECT_ALIASES = {
     'major': 'major',
     'training': 'training',
 }
+MINIMUM_SESSION_MINUTES = 25
 
 
 class ActiveSessionConflict(Exception):
@@ -72,6 +73,10 @@ def start_session(user, subject, **metadata):
     return session, False
 
 
+def is_short_session(start_time, end_time):
+    return (end_time - start_time).total_seconds() < MINIMUM_SESSION_MINUTES * 60
+
+
 def finish_session(session, reflection):
     required = ('note', 'breakthrough', 'problems', 'next_action')
     missing = [field for field in required if not str(reflection.get(field, '')).strip()]
@@ -85,8 +90,12 @@ def finish_session(session, reflection):
     with transaction.atomic():
         locked = TimeLog.objects.select_for_update().get(pk=session.pk, user=session.user)
         if locked.status != 'running':
-            return locked, False
-        locked.end_time = timezone.now()
+            return locked, False, False
+        end_time = timezone.now()
+        if is_short_session(locked.start_time, end_time):
+            locked.delete()
+            return None, True, True
+        locked.end_time = end_time
         locked.status = 'completed'
         for field in (
             'chapter',
@@ -105,17 +114,16 @@ def finish_session(session, reflection):
                 setattr(locked, field, reflection[field])
         locked.full_clean()
         locked.save()
-    return locked, True
+    return locked, True, False
 
 
 def abandon_session(session):
     with transaction.atomic():
         locked = TimeLog.objects.select_for_update().get(pk=session.pk, user=session.user)
         if locked.status == 'running':
-            locked.end_time = timezone.now()
-            locked.status = 'abandoned'
-            locked.save(update_fields=('end_time', 'status', 'updated_at'))
-    return locked
+            locked.delete()
+            return True
+    return False
 
 
 def local_day_bounds(day):

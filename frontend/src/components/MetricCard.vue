@@ -10,8 +10,8 @@ defineProps<{
 
 <template>
   <article class="metric-card" :class="`metric-${tone || 'default'}`">
-    <p>{{ label }}</p>
+    <header><p>{{ label }}</p><i /></header>
     <div><strong>{{ value }}</strong><span v-if="suffix">{{ suffix }}</span></div>
-    <small v-if="hint">{{ hint }}</small>
+    <footer v-if="hint"><small>{{ hint }}</small></footer>
   </article>
 </template>

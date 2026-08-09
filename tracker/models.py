@@ -11,29 +11,29 @@ from django.utils import timezone
 class TimeLog(models.Model):
     # 统一枚举值与前端 payload 严格对应
     CATEGORY_CHOICES = [
-        ('math', '数学'),
-        ('english', '英语'),
-        ('major', '专业课'),
-        ('training', '训练'), 
+        ('math', 'Mathematics'),
+        ('english', 'English'),
+        ('major', 'Major'),
+        ('training', 'Training'),
     ]
     
     STATUS_CHOICES = [
-        ('running', '进行中'),
-        ('completed', '已完成'),
-        ('abandoned', '已放弃'),
+        ('running', 'Running'),
+        ('completed', 'Completed'),
+        ('abandoned', 'Legacy abandoned'),
     ]
     LEARNING_MODE_CHOICES = [
-        ('theory', '理论学习'),
-        ('exercise', '练习'),
-        ('review', '复习'),
-        ('memorization', '记忆'),
-        ('project', '项目'),
-        ('exam_simulation', '模拟考试'),
+        ('theory', 'Theory'),
+        ('exercise', 'Exercise'),
+        ('review', 'Review'),
+        ('memorization', 'Memorization'),
+        ('project', 'Project'),
+        ('exam_simulation', 'Exam simulation'),
     ]
     ENERGY_CHOICES = [
-        ('low', '低'),
-        ('medium', '中'),
-        ('high', '高'),
+        ('low', 'Low'),
+        ('medium', 'Medium'),
+        ('high', 'High'),
     ]
 
     user = models.ForeignKey(
@@ -145,13 +145,13 @@ class DailyStudyStat(models.Model):
 
 class LearningIssue(models.Model):
     ISSUE_TYPE_CHOICES = [
-        ('concept_error', '概念错误'),
-        ('calculation_error', '计算错误'),
-        ('recognition_error', '识别错误'),
-        ('memory_error', '记忆错误'),
-        ('speed_problem', '速度问题'),
-        ('careless_error', '粗心错误'),
-        ('strategy_problem', '策略问题'),
+        ('concept_error', 'Concept error'),
+        ('calculation_error', 'Calculation error'),
+        ('recognition_error', 'Recognition error'),
+        ('memory_error', 'Memory error'),
+        ('speed_problem', 'Speed problem'),
+        ('careless_error', 'Careless error'),
+        ('strategy_problem', 'Strategy problem'),
     ]
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='learning_issues')
@@ -179,11 +179,11 @@ class LearningIssue(models.Model):
 
 class KnowledgePoint(models.Model):
     STATUS_CHOICES = [
-        ('unknown', '未知'),
-        ('learning', '学习中'),
-        ('understood', '已理解'),
-        ('stable', '稳定'),
-        ('automatic', '自动化'),
+        ('unknown', 'Unknown'),
+        ('learning', 'Learning'),
+        ('understood', 'Understood'),
+        ('stable', 'Stable'),
+        ('automatic', 'Automatic'),
     ]
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='knowledge_points')

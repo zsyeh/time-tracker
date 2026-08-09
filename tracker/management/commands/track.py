@@ -2,7 +2,13 @@ from django.core.management.base import BaseCommand
 from django.utils import timezone
 
 from tracker.models import TimeLog
-from tracker.services import ActiveSessionConflict, get_service_user, start_session
+from tracker.services import (
+    MINIMUM_SESSION_MINUTES,
+    ActiveSessionConflict,
+    get_service_user,
+    is_short_session,
+    start_session,
+)
 
 class Command(BaseCommand):
     help = 'Terminal-based execution for time tracking state machine.'
@@ -46,12 +52,18 @@ class Command(BaseCommand):
                 self.stderr.write("Refused: No active task detected in memory.")
                 return
 
-            # 计算增量时间并持久化至 SQLite3
-            active_log.end_time = timezone.now()
+            end_time = timezone.now()
+            if is_short_session(active_log.start_time, end_time):
+                active_log.delete()
+                self.stdout.write(
+                    f'Process [DISCARD] -> session shorter than {MINIMUM_SESSION_MINUTES} min'
+                )
+                return
+            active_log.end_time = end_time
             active_log.status = 'completed'
-            active_log.note = active_log.note or '通过命令行结束，待补充复盘。'
-            active_log.breakthrough = active_log.breakthrough or '待补充'
-            active_log.problems = active_log.problems or '待补充'
-            active_log.next_action = active_log.next_action or '待补充'
+            active_log.note = active_log.note or 'Completed through the command line; review pending.'
+            active_log.breakthrough = active_log.breakthrough or 'Not provided'
+            active_log.problems = active_log.problems or 'Not provided'
+            active_log.next_action = active_log.next_action or 'Not provided'
             active_log.save()
             self.stdout.write(f"Process [STOP] -> {active_log.category} | Delta: {active_log.duration_minutes} min")

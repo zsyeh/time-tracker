@@ -12,13 +12,13 @@ export async function api<T>(url: string, options: RequestInit = {}): Promise<T>
   const response = await fetch(url, { ...options, headers, credentials: 'same-origin' })
   if (response.status === 401 || response.status === 403) {
     window.location.assign(`/accounts/login/?next=${encodeURIComponent(location.pathname + location.search)}`)
-    throw new Error('登录状态已失效')
+    throw new Error('Your session has expired')
   }
   if (!response.ok) {
-    let message = `请求失败 (${response.status})`
+    let message = `Request failed (${response.status})`
     try {
       const data = await response.json()
-      message = data.detail || Object.values(data).flat().join('；') || message
+      message = data.detail || Object.values(data).flat().join('; ') || message
     } catch { /* non-json response */ }
     const error = new Error(message) as Error & { status?: number }
     error.status = response.status

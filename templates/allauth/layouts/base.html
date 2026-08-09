@@ -1,6 +1,6 @@
 {% load static i18n %}
 <!doctype html>
-<html lang="zh-CN">
+<html lang="en">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -12,19 +12,19 @@
 </head>
 <body class="auth-page">
     <header class="auth-nav">
-        <a class="auth-brand" href="/" aria-label="返回学习系统">
+        <a class="auth-brand" href="/" aria-label="Return to Learning OS">
             <span class="auth-brand-mark">L</span>
             <span><strong>Learning OS</strong><small>PERSONAL SYSTEM</small></span>
         </a>
         {% if user.is_authenticated %}
             <nav>
-                <a href="/">返回仪表盘</a>
+                <a href="/">Dashboard</a>
                 {% url 'mfa_index' as mfa_url %}
                 {% if mfa_url %}<a href="{{ mfa_url }}">Passkey</a>{% endif %}
                 {% url 'account_change_password' as password_url %}
-                {% if password_url %}<a href="{{ password_url }}">修改密码</a>{% endif %}
+                {% if password_url %}<a href="{{ password_url }}">Password</a>{% endif %}
                 {% url 'account_logout' as logout_url %}
-                {% if logout_url %}<a href="{{ logout_url }}">退出</a>{% endif %}
+                {% if logout_url %}<a href="{{ logout_url }}">Sign out</a>{% endif %}
             </nav>
         {% endif %}
     </header>

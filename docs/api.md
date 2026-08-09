@@ -10,7 +10,7 @@ public. Every response is restricted to the authenticated owner.
 | GET/POST | `/api/sessions/` | Paginated search / start session |
 | GET/PATCH | `/api/sessions/<id>/` | Read/edit owned session |
 | POST | `/api/sessions/<id>/finish/` | Manual structured finish |
-| POST | `/api/sessions/<id>/abandon/` | Explicitly abandon |
+| POST | `/api/sessions/<id>/abandon/` | Permanently delete the running session |
 | GET | `/api/dashboard/overview/?days=180` | One-request dashboard analytics |
 | GET/POST | `/api/issues/` | Learning issue list/create |
 | GET/PATCH/DELETE | `/api/issues/<id>/` | Learning issue detail |
@@ -30,4 +30,6 @@ never silently stopped.
 
 The finish endpoint requires `chapter` or `topic`, plus non-empty `note`,
 `breakthrough`, `problems`, and `next_action`. Optional self-ratings remain
-inspectable data and are not presented as scientific measurements.
+inspectable data and are not presented as scientific measurements. A finish
+attempt before 25 elapsed minutes deletes the session and returns
+`discarded: true`; it never creates a completed or abandoned record.

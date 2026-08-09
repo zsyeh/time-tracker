@@ -220,3 +220,28 @@ button, input, textarea, select { font: inherit; }
   .auth-footer { display: none; }
 }
 @media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+
+/* Shared product shell: neutral Linear-like structure with one violet action color. */
+:root { --bg: #0b0c0f; --panel: #121318; --panel-2: #17191f; --line: #2a2c34; --text: #f4f4f5; --muted: #8b8d98; --accent: #8b7cf6; }
+body { background: radial-gradient(circle at 82% -10%, rgba(139, 124, 246, .1), transparent 32%), var(--bg); background-size: auto; }
+.auth-brand-mark { border-radius: 8px; color: #fff; background: linear-gradient(145deg, #a89cff, #7464e7); }
+.auth-story { border-left-color: #2a2c34; }
+.auth-index { color: #fff; background: #7464e7; border-radius: 0 5px 5px 0; }
+.auth-story h1 { font-weight: 620; }
+.auth-visual { border-color: #2c2e36; border-radius: 11px; background: rgba(18, 19, 24, .78); }
+.auth-cells i { border-radius: 2px; background: #202229; }
+.auth-cells .l1 { background: #214333; }
+.auth-cells .l2 { background: #347a55; }
+.auth-cells .goal { background: #70e1a1; box-shadow: none; }
+.auth-visual-head b { color: #70e1a1; }
+.auth-card { border-color: #30323a; border-radius: 12px; background: linear-gradient(145deg, #15161b, #111217); box-shadow: 0 36px 100px rgba(0, 0, 0, .45); }
+.auth-card:before { display: none; }
+.passkey-button { border-color: #7c6ee7; border-radius: 8px; color: #fff; background: #7c6ee7; box-shadow: none; }
+.passkey-button:hover { transform: translateY(-1px); box-shadow: 0 10px 28px rgba(124, 110, 231, .2); }
+.passkey-icon { border-radius: 7px; background: rgba(255, 255, 255, .1); }
+.passkey-note span, .auth-card a, .private-note span { color: #a99eff; }
+.auth-form input[type=text], .auth-form input[type=password], .auth-form input[type=email],
+.auth-card form > p input[type=text], .auth-card form > p input[type=password], .auth-card form > p input[type=email] { border-color: #30323a; border-radius: 7px; background: #0f1014; }
+.auth-form input:focus, .auth-card form > p input:focus { border-color: #8b7cf6; box-shadow: 0 0 0 3px rgba(139, 124, 246, .09); }
+.password-button, .auth-card form button, .auth-card > a[role=button] { border-color: #3a3c45; border-radius: 7px; background: #1a1b21; }
+.password-button:hover, .auth-card form button:hover { border-color: #6259a8; background: #20212a; }

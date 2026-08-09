@@ -75,3 +75,16 @@ body.login #footer { display: none; }
   #content { padding: 18px 14px; }
   body.login #content { padding: 25px 20px 28px; }
 }
+
+:root { --primary: #8b7cf6; --accent: #a99eff; --primary-fg: #fff; --body-bg: #0b0c0f; --darkened-bg: #111217; --selected-bg: #1a1b21; --header-bg: #0d0e12; --link-fg: #a99eff; --link-hover-color: #c2baff; --hairline-color: #292b32; --border-color: #30323a; }
+html, body { background: #0b0c0f; }
+body { background-image: radial-gradient(circle at 82% -10%, rgba(139, 124, 246, .09), transparent 32%); background-size: auto; }
+.learning-admin-brand > span { border-radius: 8px; color: #fff; background: linear-gradient(145deg, #a89cff, #7464e7); }
+.module, .inline-group, #changelist .results { border-color: #30323a; border-radius: 10px; background: #121318; }
+.module h2, .module caption, .inline-group h2 { color: #fff; background: #6f61d5; }
+.button, input[type=submit], input[type=button], .submit-row input, a.button { border-color: #7c6ee7; border-radius: 7px; color: #fff; background: #7c6ee7; box-shadow: none; }
+.button:hover, input[type=submit]:hover, input[type=button]:hover { color: #fff; background: #8b7cf6; }
+.button.default, input[type=submit].default, .submit-row input.default { background: #7c6ee7; }
+input, textarea, select, .vTextField { border-color: #30323a; border-radius: 7px; background: #0f1014; }
+input:focus, textarea:focus, select:focus { border-color: #8b7cf6; box-shadow: 0 0 0 3px rgba(139, 124, 246, .08); }
+body.login #container { border-color: #30323a; border-radius: 12px; background: #121318; }

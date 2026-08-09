@@ -156,11 +156,38 @@ class SessionWorkflowTests(TestCase):
             'topic': '函数', 'note': '完成题目并复盘', 'breakthrough': '理解了转换',
             'problems': '计算速度偏慢', 'next_action': '再练十题', 'focus_level': 4,
         }
+        TimeLog.objects.filter(pk=session_id).update(
+            start_time=timezone.now() - datetime.timedelta(minutes=26),
+        )
         response = self.client.post(f'/api/sessions/{session_id}/finish/', payload, content_type='application/json')
         self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.json()['discarded'])
         session = TimeLog.objects.get(pk=session_id)
         self.assertEqual(session.status, 'completed')
         self.assertEqual(session.next_action, '再练十题')
+
+    def test_finish_discards_session_shorter_than_25_minutes(self):
+        session_id = self.client.post('/api/sessions/', {'subject': 'english'}, content_type='application/json').json()['session']['id']
+        TimeLog.objects.filter(pk=session_id).update(
+            start_time=timezone.now() - datetime.timedelta(minutes=24),
+        )
+        payload = {
+            'topic': 'Reading', 'note': 'Short review', 'breakthrough': 'None',
+            'problems': 'None', 'next_action': 'Retry',
+        }
+        response = self.client.post(f'/api/sessions/{session_id}/finish/', payload, content_type='application/json')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()['discarded'])
+        self.assertEqual(response.json()['minimum_minutes'], 25)
+        self.assertFalse(TimeLog.objects.filter(pk=session_id).exists())
+
+    def test_abandon_deletes_running_session_instead_of_recording_it(self):
+        session_id = self.client.post('/api/sessions/', {'subject': 'training'}, content_type='application/json').json()['session']['id']
+        response = self.client.post(f'/api/sessions/{session_id}/abandon/')
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()['deleted'])
+        self.assertFalse(TimeLog.objects.filter(pk=session_id).exists())
+        self.assertFalse(TimeLog.objects.filter(status='abandoned').exists())
 
 
 @override_settings(SECURE_SSL_REDIRECT=False)
@@ -184,6 +211,11 @@ class AnalyticsAndExportTests(TestCase):
         self.assertEqual(overview['summary']['average_start_time'], '08:00')
         self.assertEqual(overview['calendar']['today'], today.isoformat())
         self.assertEqual(overview['calendar']['exam_date'], settings.TRACKER_EXAM_DATE)
+        self.assertGreaterEqual(
+            datetime.date.fromisoformat(overview['heatmap'][0]['date']),
+            datetime.date.fromisoformat(settings.TRACKER_HEATMAP_START_DATE),
+        )
+        self.assertEqual(overview['calendar']['heatmap_start_date'], overview['heatmap'][0]['date'])
         expected_days = max(0, (datetime.date.fromisoformat(settings.TRACKER_EXAM_DATE) - today).days)
         self.assertEqual(overview['calendar']['days_until_exam'], expected_days)
 

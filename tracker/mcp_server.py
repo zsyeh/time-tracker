@@ -18,7 +18,7 @@ from pydantic import BaseModel
 
 from .models import TimeLog
 from .learning_log import archive_completed_task
-from .services import get_service_user
+from .services import MINIMUM_SESSION_MINUTES, get_service_user, is_short_session
 
 
 CATEGORY_LABELS = dict(TimeLog.CATEGORY_CHOICES)
@@ -85,16 +85,15 @@ def _local(value: datetime.datetime) -> datetime.datetime:
 
 
 def _serialize_log(log: TimeLog, now: Optional[datetime.datetime] = None) -> Dict[str, Any]:
-    current = now or timezone.now()
     active = log.end_time is None
-    elapsed = current - log.start_time if active else log.end_time - log.start_time
+    elapsed = None if active else log.end_time - log.start_time
     return {
         'id': log.pk,
         'category': log.category,
         'category_label': CATEGORY_LABELS.get(log.category, log.category),
         'start_time': _local(log.start_time).isoformat(),
         'end_time': _local(log.end_time).isoformat() if log.end_time else None,
-        'duration_minutes': max(0, int(elapsed.total_seconds() / 60)),
+        'duration_minutes': None if active else max(0, int(elapsed.total_seconds() / 60)),
         'active': active,
         'report': log.note or '',
     }
@@ -145,6 +144,8 @@ def get_tracker_status() -> Dict[str, Any]:
         'rules': {
             'manual_finish_required': True,
             'automatic_expiry': False,
+            'minimum_session_minutes': MINIMUM_SESSION_MINUTES,
+            'short_sessions_are_discarded': True,
         },
     }
 
@@ -154,8 +155,8 @@ def list_recent_sessions(days: int = 7, limit: int = 50) -> Dict[str, Any]:
     _validate_range(days, limit)
     logs = TimeLog.objects.filter(
         user=get_service_user(),
+        status='completed',
         start_time__gte=_period_start(days),
-        end_time__isnull=False,
     ).order_by('-start_time')[:limit]
     items = [_serialize_log(log) for log in logs]
     return {'days': days, 'count': len(items), 'sessions': items}
@@ -166,8 +167,8 @@ def get_study_summary(days: int = 7) -> Dict[str, Any]:
     _validate_range(days)
     logs = list(TimeLog.objects.filter(
         user=get_service_user(),
+        status='completed',
         start_time__gte=_period_start(days),
-        end_time__isnull=False,
     ).order_by('-start_time'))
     by_category: Dict[str, int] = {}
     by_day: Dict[str, int] = {}
@@ -238,11 +239,20 @@ def stop_task(report: str) -> Dict[str, Any]:
         active = TimeLog.objects.filter(user=owner, status='running').order_by('start_time').first()
         if not active:
             raise ValueError('No active task.')
+        if is_short_session(active.start_time, now):
+            discarded_id = active.pk
+            active.delete()
+            return {
+                'status': 'discarded',
+                'reason': 'shorter_than_minimum',
+                'minimum_minutes': MINIMUM_SESSION_MINUTES,
+                'session_id': discarded_id,
+            }
         active.end_time = now
         active.note = report
         active.breakthrough = report
-        active.problems = '通过 MCP 完成；未单独填写'
-        active.next_action = '下次学习时继续复盘'
+        active.problems = 'Completed through MCP; not provided separately.'
+        active.next_action = 'Define the next action in the following session.'
         active.status = 'completed'
         active.save(update_fields=['end_time', 'note', 'breakthrough', 'problems', 'next_action', 'status'])
     task = _serialize_log(active, now)
@@ -260,9 +270,9 @@ def search(query: str) -> Dict[str, List[Dict[str, str]]]:
     """Search tracker knowledge. This exact shape enables ChatGPT knowledge retrieval."""
     query = query.strip()
     results = [
-        {'id': 'status:current', 'title': '当前任务与目标进度', 'url': ''},
-        {'id': 'summary:7', 'title': '最近 7 天学习汇总', 'url': ''},
-        {'id': 'summary:30', 'title': '最近 30 天学习汇总', 'url': ''},
+        {'id': 'status:current', 'title': 'Current task and target progress', 'url': ''},
+        {'id': 'summary:7', 'title': 'Study summary: last 7 days', 'url': ''},
+        {'id': 'summary:30', 'title': 'Study summary: last 30 days', 'url': ''},
     ]
     logs = TimeLog.objects.filter(user=get_service_user(), status='completed')
     if query:
@@ -277,7 +287,7 @@ def search(query: str) -> Dict[str, List[Dict[str, str]]]:
             'id': f'session:{log.pk}',
             'title': (
                 f'{local_start:%Y-%m-%d %H:%M} '
-                f'{CATEGORY_LABELS.get(log.category, log.category)} {log.duration_minutes} 分钟'
+                f'{CATEGORY_LABELS.get(log.category, log.category)} {log.duration_minutes} minutes'
             ),
             'url': '',
         })
@@ -288,14 +298,14 @@ def fetch(id: str) -> Dict[str, Any]:
     """Fetch one result returned by search using the required ChatGPT connector shape."""
     if id == 'status:current':
         payload = get_tracker_status()
-        title = '当前任务与目标进度'
+        title = 'Current task and target progress'
     elif id.startswith('summary:'):
         try:
             days = int(id.split(':', 1)[1])
         except ValueError as exc:
             raise ValueError('Invalid summary id') from exc
         payload = get_study_summary(days)
-        title = f'最近 {days} 天学习汇总'
+        title = f'Study summary: last {days} days'
     elif id.startswith('session:'):
         try:
             pk = int(id.split(':', 1)[1])
@@ -357,8 +367,9 @@ def create_mcp_server() -> FastMCP:
     server = FastMCP(
         name='jkxx Study Tracker',
         instructions=(
-            '查询学习记录和目标进度；按用户明确意图开启任务；结束任务前收集本次总结报告。'
-            '任务分类仅可使用 math、english、major、training。'
+            'Query study records and target progress. Start a task only after explicit user intent. '
+            'Collect a completion report before ending an eligible task. Sessions shorter than '
+            '25 minutes are discarded. Categories: math, english, major, training.'
         ),
         host=settings.MCP_HOST,
         port=settings.MCP_PORT,
