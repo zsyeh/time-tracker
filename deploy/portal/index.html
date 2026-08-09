@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="One-command Docker deployment for Personal Learning OS.">
+  <title>Personal Learning OS · Docker</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main>
+    <nav><a class="brand" href="/"><span></span> Personal Learning OS</a><div><a href="https://github.com/zsyeh/time-tracker">GitHub</a><a href="https://dockerhub.ehzsy.site">Docker Hub</a></div></nav>
+    <header>
+      <span class="kicker">TIME TRACKER / CONTAINER EDITION</span>
+      <h1>Your learning archive,<br><em>running in one command.</em></h1>
+      <p>A production image containing the Vue interface and Django API, with persistent SQLite storage, automatic migrations, health checks, and no external database required.</p>
+      <div class="badges"><span>linux/amd64</span><span>persistent data</span><span>private by default</span></div>
+    </header>
+
+    <section class="install-grid">
+      <article>
+        <div class="step"><span>01</span><b>Docker Run</b></div>
+        <p>The smallest install. Creates a named volume, secure environment file, health-checked container, and first administrator.</p>
+        <pre><code id="run-command">curl -fsSL https://app.ehzsy.site/install/docker-run.sh | sh</code></pre>
+        <button data-copy="run-command">Copy command</button>
+        <a class="download" href="/install/docker-run.sh">Download script ↗</a>
+      </article>
+      <article>
+        <div class="step"><span>02</span><b>Docker Compose</b></div>
+        <p>The maintainable install. Downloads a release Compose file, writes a private environment, and keeps upgrades explicit.</p>
+        <pre><code id="compose-command">curl -fsSL https://app.ehzsy.site/install/docker-compose.sh | sh</code></pre>
+        <button data-copy="compose-command">Copy command</button>
+        <a class="download" href="/install/docker-compose.sh">Download script ↗</a>
+      </article>
+    </section>
+
+    <section class="details">
+      <div><span>IMAGE</span><strong>zsyeh/time-tracker:latest</strong></div>
+      <div><span>DEFAULT PORT</span><strong>8000</strong></div>
+      <div><span>DATA VOLUME</span><strong>/app/data</strong></div>
+      <div><span>UPGRADE</span><strong>pull · recreate</strong></div>
+    </section>
+
+    <section class="note"><span>PUBLIC HOSTNAME</span><p>Pass a hostname when installing: <code>curl … | sh -s -- study.example.com</code>. Put the service behind HTTPS before enrolling a Passkey.</p></section>
+    <footer><span>Personal Learning OS</span><span>Docker release portal · ehzsy.site</span></footer>
+  </main>
+  <script>
+    document.querySelectorAll('[data-copy]').forEach((button) => button.addEventListener('click', async () => {
+      const text = document.getElementById(button.dataset.copy).textContent;
+      await navigator.clipboard.writeText(text);
+      button.textContent = 'Copied';
+      setTimeout(() => { button.textContent = 'Copy command'; }, 1400);
+    }));
+  </script>
+</body>
+</html>

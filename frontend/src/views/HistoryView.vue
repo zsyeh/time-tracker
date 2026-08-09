@@ -1,0 +1,52 @@
+<script setup lang="ts">
+import { onMounted, reactive, ref } from 'vue'
+import { ElMessage } from 'element-plus'
+import { api, patch } from '../lib/api'
+import type { Page, StudySession } from '../types'
+import MarkdownPreview from '../components/MarkdownPreview.vue'
+
+const loading = ref(false)
+const rows = ref<StudySession[]>([])
+const total = ref(0)
+const page = ref(1)
+const expanded = ref<StudySession | null>(null)
+const editing = ref(false)
+const filters = reactive({ search: '', subject: '', status: '' })
+const edit = reactive({ title: '', details: '' })
+
+function duration(minutes: number) { return minutes >= 60 ? `${Math.floor(minutes / 60)}h ${minutes % 60}m` : `${minutes}m` }
+async function load() {
+  loading.value = true
+  const params = new URLSearchParams({ page: String(page.value) })
+  if (filters.search) params.set('search', filters.search)
+  if (filters.subject) params.set('subject', filters.subject)
+  if (filters.status) params.set('status', filters.status)
+  try { const data = await api<Page<StudySession>>(`/api/sessions/?${params}`); rows.value = data.results; total.value = data.count }
+  catch (error) { ElMessage.error((error as Error).message) } finally { loading.value = false }
+}
+function inspect(row: StudySession) { expanded.value = row; Object.assign(edit, { title: row.title, details: row.details }); editing.value = true }
+async function save() { if (!expanded.value) return; try { expanded.value = await patch(`/api/sessions/${expanded.value.id}/`, edit); editing.value = false; ElMessage.success('Session updated'); await load() } catch (error) { ElMessage.error((error as Error).message) } }
+function search() { page.value = 1; load() }
+onMounted(load)
+</script>
+
+<template>
+  <div class="view-stack">
+    <section class="page-intro"><span class="eyebrow">SESSION ARCHIVE</span><h1>Sessions</h1><p>Search titles and open the full details only when needed.</p></section>
+    <section class="panel filters"><el-input v-model="filters.search" clearable placeholder="Search title or details" @keyup.enter="search" /><el-select v-model="filters.subject" clearable placeholder="All subjects"><el-option label="Mathematics" value="math" /><el-option label="English" value="english" /><el-option label="Major" value="major" /><el-option label="Training" value="training" /></el-select><el-select v-model="filters.status" clearable placeholder="All statuses"><el-option label="Completed" value="completed" /><el-option label="Running" value="running" /></el-select><el-button type="primary" @click="search">Apply</el-button></section>
+    <section class="panel history-panel" v-loading="loading">
+      <el-empty v-if="!rows.length && !loading" description="No matching sessions" />
+      <article v-for="row in rows" :key="row.id" class="history-row" @click="inspect(row)">
+        <time><b>{{ new Date(row.start_time).getDate().toString().padStart(2, '0') }}</b><span>{{ new Date(row.start_time).toLocaleDateString('en-US', { month: 'short' }) }}</span></time>
+        <i :class="`subject-dot subject-${row.subject}`" />
+        <div class="history-main"><strong>{{ row.title || (row.status === 'running' ? `${row.subject_label} session` : 'Untitled session') }}</strong><p>{{ row.status === 'running' ? 'Session in progress' : (row.details || 'No details') }}</p><small>{{ row.subject_label }} · {{ new Date(row.start_time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) }} · {{ row.status }}</small></div>
+        <b v-if="row.status !== 'running'" class="duration-badge">{{ duration(row.duration_minutes) }}</b>
+        <b v-else class="running-badge">IN SESSION</b>
+      </article>
+      <el-pagination v-if="total > 20" v-model:current-page="page" layout="prev, pager, next" :total="total" :page-size="20" @current-change="load" />
+    </section>
+    <el-drawer v-model="editing" title="Session details" size="min(680px, 94vw)">
+      <el-form label-position="top" class="simple-review"><el-form-item label="Title"><el-input v-model="edit.title" maxlength="500" show-word-limit /></el-form-item><el-form-item label="Details"><el-input v-model="edit.details" type="textarea" :rows="20" placeholder="Paste Markdown or edit the source." /></el-form-item><MarkdownPreview :key="expanded?.id" :source="edit.details" /><el-button type="primary" @click="save">Save changes</el-button></el-form>
+    </el-drawer>
+  </div>
+</template>

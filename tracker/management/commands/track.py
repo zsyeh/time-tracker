@@ -1,6 +1,15 @@
 from django.core.management.base import BaseCommand
 from django.utils import timezone
+
 from tracker.models import TimeLog
+from tracker.services import (
+    MAXIMUM_SESSION_HOURS,
+    MINIMUM_SESSION_MINUTES,
+    ActiveSessionConflict,
+    get_service_user,
+    session_discard_reason,
+    start_session,
+)
 
 class Command(BaseCommand):
     help = 'Terminal-based execution for time tracking state machine.'
@@ -14,14 +23,10 @@ class Command(BaseCommand):
         action = options['action']
         category = options['category']
 
-        # 检索当前内存中是否存在未闭合的时间游标 (end_time 为 NULL)
-        active_log = TimeLog.objects.filter(end_time__isnull=True).first()
+        owner = get_service_user()
+        active_log = TimeLog.objects.filter(user=owner, status='running').first()
 
         if action == 'start':
-            if active_log:
-                self.stderr.write(f"Refused: [{active_log.category}] is currently running.")
-                return
-            
             if not category:
                 self.stderr.write("Syntax Error: Category parameter is mandatory for 'start' action.")
                 return
@@ -32,7 +37,11 @@ class Command(BaseCommand):
                 self.stderr.write(f"Invalid category. Allowed: {valid_categories}")
                 return
 
-            TimeLog.objects.create(category=category)
+            try:
+                start_session(owner, category)
+            except ActiveSessionConflict as exc:
+                self.stderr.write(f"Refused: [{exc.session.category}] is currently running.")
+                return
             self.stdout.write(f"Process [START] -> {category}")
 
         elif action == 'stop':
@@ -40,7 +49,22 @@ class Command(BaseCommand):
                 self.stderr.write("Refused: No active task detected in memory.")
                 return
 
-            # 计算增量时间并持久化至 SQLite3
-            active_log.end_time = timezone.now()
+            end_time = timezone.now()
+            discard_reason = session_discard_reason(active_log.start_time, end_time)
+            if discard_reason:
+                active_log.delete()
+                limit = (
+                    f'shorter than {MINIMUM_SESSION_MINUTES} min'
+                    if discard_reason == 'shorter_than_minimum'
+                    else f'longer than {MAXIMUM_SESSION_HOURS} h'
+                )
+                self.stdout.write(
+                    f'Process [DISCARD] -> session {limit}'
+                )
+                return
+            active_log.end_time = end_time
+            active_log.status = 'completed'
+            active_log.title = active_log.title or 'Command-line study session'
+            active_log.details = active_log.details or 'Completed through the command line; details pending.'
             active_log.save()
             self.stdout.write(f"Process [STOP] -> {active_log.category} | Delta: {active_log.duration_minutes} min")

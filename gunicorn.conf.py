@@ -1,14 +1,16 @@
-# /root/time_server/gunicorn.conf.py
 import multiprocessing
+import os
 
-# 网络绑定
-bind = "0.0.0.0:30000"
 
-# 进程与线程管理
-workers = 3
-worker_class = "sync"
+bind = os.environ.get('GUNICORN_BIND', '127.0.0.1:8000')
+workers = int(os.environ.get('GUNICORN_WORKERS', min(4, multiprocessing.cpu_count() * 2 + 1)))
+worker_class = 'sync'
+timeout = 60
+graceful_timeout = 30
+keepalive = 5
 
-# 日志路由配置
-accesslog = "/var/log/gunicorn_access.log"
-errorlog = "/var/log/gunicorn_error.log"
-loglevel = "info"
+# Launch Token credentials occur in request paths. Nginx is responsible for
+# ordinary access logging and explicitly suppresses launch endpoints.
+accesslog = None
+errorlog = '-'
+loglevel = os.environ.get('GUNICORN_LOG_LEVEL', 'info')

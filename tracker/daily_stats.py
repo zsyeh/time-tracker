@@ -29,11 +29,14 @@ def local_day_bounds(study_date):
     return start, end
 
 
-def refresh_daily_stat(study_date):
+def refresh_daily_stat(study_date, user):
     """Rebuild one denormalized row from completed TimeLog records."""
+    user_id = getattr(user, 'pk', user)
     day_start, next_day_start = local_day_bounds(study_date)
     logs = list(
         TimeLog.objects.filter(
+            user_id=user_id,
+            status='completed',
             start_time__gte=day_start,
             start_time__lt=next_day_start,
             end_time__isnull=False,
@@ -42,10 +45,11 @@ def refresh_daily_stat(study_date):
 
     with transaction.atomic():
         if not logs:
-            DailyStudyStat.objects.filter(date=study_date).delete()
+            DailyStudyStat.objects.filter(user_id=user_id, date=study_date).delete()
             return None
 
         stat, _ = DailyStudyStat.objects.update_or_create(
+            user_id=user_id,
             date=study_date,
             defaults={
                 'study_count': len(logs),
@@ -56,21 +60,27 @@ def refresh_daily_stat(study_date):
     return stat
 
 
-def rebuild_all_daily_stats():
+def rebuild_all_daily_stats(user=None):
     """Repair the complete derived table and remove rows without source logs."""
-    study_dates = {
-        local_study_date(start_time)
-        for start_time in TimeLog.objects.filter(end_time__isnull=False).values_list(
-            'start_time', flat=True
-        ).iterator()
-    }
-
+    users = [user.pk] if user else list(
+        TimeLog.objects.order_by().values_list('user_id', flat=True).distinct()
+    )
+    rebuilt = 0
     with transaction.atomic():
-        if study_dates:
-            DailyStudyStat.objects.exclude(date__in=study_dates).delete()
-        else:
-            DailyStudyStat.objects.all().delete()
-        for study_date in sorted(study_dates):
-            refresh_daily_stat(study_date)
-
-    return len(study_dates)
+        for user_id in users:
+            study_dates = {
+                local_study_date(start_time)
+                for start_time in TimeLog.objects.filter(
+                    user_id=user_id,
+                    end_time__isnull=False,
+                ).values_list('start_time', flat=True).iterator()
+            }
+            user_stats = DailyStudyStat.objects.filter(user_id=user_id)
+            if study_dates:
+                user_stats.exclude(date__in=study_dates).delete()
+            else:
+                user_stats.delete()
+            for study_date in sorted(study_dates):
+                refresh_daily_stat(study_date, user_id)
+                rebuilt += 1
+    return rebuilt
