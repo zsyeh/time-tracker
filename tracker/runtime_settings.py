@@ -5,13 +5,13 @@ settings screen. The rest of the dotenv file is preserved byte-for-byte as
 far as possible, so credentials and deployment settings stay outside this API.
 """
 
+import datetime
 import fcntl
 import json
 import os
 import re
 import tempfile
 import threading
-import datetime
 from pathlib import Path
 
 from django.conf import settings
@@ -142,7 +142,7 @@ def save_runtime_config(values):
     global _cache_signature
     path = local_env_path()
     path.parent.mkdir(parents=True, exist_ok=True)
-    lock_path = path.with_name(f'.{path.name}.lock')
+    lock_path = path.with_name(f'{path.name}.lock')
     with lock_path.open('a+', encoding='utf-8') as lock_file:
         os.chmod(lock_path, 0o600)
         fcntl.flock(lock_file.fileno(), fcntl.LOCK_EX)
