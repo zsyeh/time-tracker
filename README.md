@@ -4,7 +4,7 @@
 
 ## Docker Hub 与一键部署
 
-> **[打开一键部署页面](https://app.ehzsy.site)** · **[Docker Hub 镜像](https://dockerhub.ehzsy.site)** · 镜像：`zsyeh/time-tracker:latest`
+> **[打开一键部署页面](https://app.ehzsy.site)** · **[Docker Hub 镜像](https://dockerhub.ehzsy.site)** · 镜像：`ehzsy/time-tracker:latest`
 
 Docker Run 版本：
 

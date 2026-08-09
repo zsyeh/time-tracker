@@ -1,7 +1,7 @@
 #!/bin/sh
 set -eu
 
-image=${TIME_TRACKER_IMAGE:-zsyeh/time-tracker:latest}
+image=${TIME_TRACKER_IMAGE:-ehzsy/time-tracker:latest}
 container_name=${TIME_TRACKER_CONTAINER:-time-tracker}
 volume_name=${TIME_TRACKER_VOLUME:-time_tracker_data}
 tracker_port=${TRACKER_PORT:-8000}
