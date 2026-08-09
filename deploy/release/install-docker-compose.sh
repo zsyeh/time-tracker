@@ -3,7 +3,7 @@ set -eu
 
 download_base=${TIME_TRACKER_DOWNLOAD_BASE:-https://app.ehzsy.site/files}
 install_dir=${TIME_TRACKER_DIR:-"$PWD/time-tracker-docker"}
-image_repository=${TIME_TRACKER_IMAGE:-zsyeh/time-tracker}
+image_repository=${TIME_TRACKER_IMAGE:-ehzsy/time-tracker}
 image_tag=${TIME_TRACKER_TAG:-latest}
 tracker_port=${TRACKER_PORT:-8000}
 public_host=${1:-localhost}
