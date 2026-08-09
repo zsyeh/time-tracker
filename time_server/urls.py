@@ -1,34 +1,52 @@
-"""
-URL configuration for time_server project.
-
-The `urlpatterns` list routes URLs to views. For more information please see:
-    https://docs.djangoproject.com/en/5.2/topics/http/urls/
-Examples:
-Function views
-    1. Add an import:  from my_app import views
-    2. Add a URL to urlpatterns:  path('', views.home, name='home')
-Class-based views
-    1. Add an import:  from other_app.views import Home
-    2. Add a URL to urlpatterns:  path('', Home.as_view(), name='home')
-Including another URLconf
-    1. Import the include() function: from django.urls import include, path
-    2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
-"""
 from django.contrib import admin
-from django.urls import path
-from tracker.views import (
-    api_action,
-    daily_stats_view,
-    dashboard_view,
-    day_sessions_view,
-    export_logs_csv,
+from django.urls import include, path
+
+from tracker.api_views import (
+    DashboardOverviewView,
+    KnowledgePointDetailView,
+    KnowledgePointListCreateView,
+    LaunchTokenActionView,
+    LaunchTokenListCreateView,
+    LearningIssueDetailView,
+    LearningIssueListCreateView,
+    SessionAbandonView,
+    SessionDetailView,
+    SessionFinishView,
+    SessionListCreateView,
+    auth_logout,
+    auth_session,
+    export_csv,
+    export_json,
+    export_markdown,
 )
+from tracker.web_views import LaunchDeviceView, direct_start_view, launch_browser_view, spa_view
+
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', dashboard_view, name='dashboard'),      # 根目录直接指向面板
-    path('daily-stats/', daily_stats_view, name='daily_stats'),
-    path('api/day-sessions/', day_sessions_view, name='day_sessions'),
-    path('api/action/', api_action, name='api_action'), # 按钮操作 API
-    path('api/export.csv', export_logs_csv, name='export_logs_csv'),
+    path('accounts/', include('allauth.urls')),
+    path('start/<str:subject>', direct_start_view, name='direct_start'),
+    path('launch/<str:raw_token>', launch_browser_view, name='launch_browser'),
+    path('api/launch/<str:raw_token>/start', LaunchDeviceView.as_view(), name='launch_device'),
+    path('api/auth/session/', auth_session, name='auth_session'),
+    path('api/auth/logout/', auth_logout, name='auth_logout'),
+    path('api/sessions/', SessionListCreateView.as_view(), name='session_list'),
+    path('api/sessions/<int:pk>/', SessionDetailView.as_view(), name='session_detail'),
+    path('api/sessions/<int:pk>/finish/', SessionFinishView.as_view(), name='session_finish'),
+    path('api/sessions/<int:pk>/abandon/', SessionAbandonView.as_view(), name='session_abandon'),
+    path('api/dashboard/overview/', DashboardOverviewView.as_view(), name='dashboard_overview'),
+    path('api/issues/', LearningIssueListCreateView.as_view(), name='issue_list'),
+    path('api/issues/<int:pk>/', LearningIssueDetailView.as_view(), name='issue_detail'),
+    path('api/knowledge/', KnowledgePointListCreateView.as_view(), name='knowledge_list'),
+    path('api/knowledge/<int:pk>/', KnowledgePointDetailView.as_view(), name='knowledge_detail'),
+    path('api/launch-tokens/', LaunchTokenListCreateView.as_view(), name='launch_token_list'),
+    path(
+        'api/launch-tokens/<int:pk>/<str:action>/',
+        LaunchTokenActionView.as_view(),
+        name='launch_token_action',
+    ),
+    path('api/export/csv/', export_csv, name='export_csv'),
+    path('api/export/json/', export_json, name='export_json'),
+    path('api/export/markdown/', export_markdown, name='export_markdown'),
+    path('', spa_view, name='dashboard'),
 ]

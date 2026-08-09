@@ -18,11 +18,11 @@ from pydantic import BaseModel
 
 from .models import TimeLog
 from .learning_log import archive_completed_task
+from .services import get_service_user
 
 
 CATEGORY_LABELS = dict(TimeLog.CATEGORY_CHOICES)
 VALID_CATEGORIES = set(CATEGORY_LABELS)
-MAX_TASK_DURATION = datetime.timedelta(hours=6)
 MAX_REPORT_LENGTH = 10_000
 URL_KEY_PATTERN = re.compile(r'^[A-Za-z0-9_-]{24,128}$')
 
@@ -120,10 +120,11 @@ def get_tracker_status() -> Dict[str, Any]:
     local_now = _local(now)
     today_start = local_now.replace(hour=0, minute=0, second=0, microsecond=0)
     week_start = today_start - datetime.timedelta(days=(today_start.weekday() + 1) % 7)
-    completed = TimeLog.objects.filter(end_time__isnull=False)
+    owner = get_service_user()
+    completed = TimeLog.objects.filter(user=owner, status='completed')
     today_logs = list(completed.filter(start_time__gte=today_start))
     week_logs = list(completed.filter(start_time__gte=week_start))
-    active = TimeLog.objects.filter(end_time__isnull=True).order_by('start_time').first()
+    active = TimeLog.objects.filter(user=owner, status='running').order_by('start_time').first()
     return {
         'server_time': local_now.isoformat(),
         'active_task': _serialize_log(active, now) if active else None,
@@ -142,8 +143,8 @@ def get_tracker_status() -> Dict[str, Any]:
             for value, label in TimeLog.CATEGORY_CHOICES
         ],
         'rules': {
-            'minimum_session_minutes': 25,
-            'maximum_session_hours': 6,
+            'manual_finish_required': True,
+            'automatic_expiry': False,
         },
     }
 
@@ -152,6 +153,7 @@ def list_recent_sessions(days: int = 7, limit: int = 50) -> Dict[str, Any]:
     """List completed study sessions in a recent time window."""
     _validate_range(days, limit)
     logs = TimeLog.objects.filter(
+        user=get_service_user(),
         start_time__gte=_period_start(days),
         end_time__isnull=False,
     ).order_by('-start_time')[:limit]
@@ -163,6 +165,7 @@ def get_study_summary(days: int = 7) -> Dict[str, Any]:
     """Aggregate completed study time by category and day."""
     _validate_range(days)
     logs = list(TimeLog.objects.filter(
+        user=get_service_user(),
         start_time__gte=_period_start(days),
         end_time__isnull=False,
     ).order_by('-start_time'))
@@ -193,11 +196,9 @@ def get_study_summary(days: int = 7) -> Dict[str, Any]:
     }
 
 
-def _discard_stale_active(now: datetime.datetime) -> bool:
-    active = TimeLog.objects.filter(end_time__isnull=True).order_by('start_time').first()
-    if active and now - active.start_time > MAX_TASK_DURATION:
-        active.delete()
-        return True
+def _discard_stale_active(now: datetime.datetime, owner) -> bool:
+    # V3 sessions are never auto-finished or deleted. Keep the return value for
+    # MCP response compatibility while preserving the manual reflection gate.
     return False
 
 
@@ -206,15 +207,16 @@ def start_task(category: str) -> Dict[str, Any]:
     if category not in VALID_CATEGORIES:
         raise ValueError(f'Invalid category. Allowed values: {sorted(VALID_CATEGORIES)}')
     now = timezone.now()
+    owner = get_service_user()
     with transaction.atomic():
-        stale_discarded = _discard_stale_active(now)
-        active = TimeLog.objects.filter(end_time__isnull=True).order_by('start_time').first()
+        stale_discarded = _discard_stale_active(now, owner)
+        active = TimeLog.objects.filter(user=owner, status='running').order_by('start_time').first()
         if active:
             raise ValueError(
                 f'{CATEGORY_LABELS.get(active.category, active.category)} is already running '
                 f'(session {active.pk}). Stop it before starting another task.'
             )
-        log = TimeLog.objects.create(category=category, start_time=now)
+        log = TimeLog.objects.create(user=owner, category=category, start_time=now, status='running')
     return {
         'status': 'started',
         'stale_task_discarded': stale_discarded,
@@ -230,25 +232,19 @@ def stop_task(report: str) -> Dict[str, Any]:
     if len(report) > MAX_REPORT_LENGTH:
         raise ValueError(f'report must not exceed {MAX_REPORT_LENGTH} characters')
     now = timezone.now()
+    owner = get_service_user()
     with transaction.atomic():
-        stale_discarded = _discard_stale_active(now)
-        active = TimeLog.objects.filter(end_time__isnull=True).order_by('start_time').first()
+        stale_discarded = _discard_stale_active(now, owner)
+        active = TimeLog.objects.filter(user=owner, status='running').order_by('start_time').first()
         if not active:
-            suffix = ' The stale task exceeded 6 hours and was discarded.' if stale_discarded else ''
-            raise ValueError(f'No active task.{suffix}')
-        duration_minutes = int((now - active.start_time).total_seconds() / 60)
-        task = _serialize_log(active, now)
-        if duration_minutes < 25:
-            active.delete()
-            return {
-                'status': 'discarded',
-                'reason': 'Session was shorter than the 25-minute minimum.',
-                'duration_minutes': duration_minutes,
-                'task': task,
-            }
+            raise ValueError('No active task.')
         active.end_time = now
         active.note = report
-        active.save(update_fields=['end_time', 'note'])
+        active.breakthrough = report
+        active.problems = '通过 MCP 完成；未单独填写'
+        active.next_action = '下次学习时继续复盘'
+        active.status = 'completed'
+        active.save(update_fields=['end_time', 'note', 'breakthrough', 'problems', 'next_action', 'status'])
     task = _serialize_log(active, now)
     try:
         learning_log = archive_completed_task(task)
@@ -268,7 +264,7 @@ def search(query: str) -> Dict[str, List[Dict[str, str]]]:
         {'id': 'summary:7', 'title': '最近 7 天学习汇总', 'url': ''},
         {'id': 'summary:30', 'title': '最近 30 天学习汇总', 'url': ''},
     ]
-    logs = TimeLog.objects.filter(end_time__isnull=False)
+    logs = TimeLog.objects.filter(user=get_service_user(), status='completed')
     if query:
         category_ids = [
             key for key, label in CATEGORY_LABELS.items()
@@ -303,7 +299,7 @@ def fetch(id: str) -> Dict[str, Any]:
     elif id.startswith('session:'):
         try:
             pk = int(id.split(':', 1)[1])
-            log = TimeLog.objects.get(pk=pk, end_time__isnull=False)
+            log = TimeLog.objects.get(pk=pk, user=get_service_user(), status='completed')
         except (ValueError, TimeLog.DoesNotExist) as exc:
             raise ValueError('Session not found') from exc
         payload = _serialize_log(log)

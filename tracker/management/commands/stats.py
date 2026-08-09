@@ -1,6 +1,7 @@
 from django.core.management.base import BaseCommand
 from django.utils import timezone
 from tracker.models import TimeLog
+from tracker.services import get_service_user
 from collections import defaultdict
 import datetime
 
@@ -18,7 +19,11 @@ class Command(BaseCommand):
         start_date = now.replace(hour=0, minute=0, second=0, microsecond=0) - datetime.timedelta(days=days-1)
 
         # 仅查询已闭合的时间区间 (end_time 不为空)
-        logs = TimeLog.objects.filter(start_time__gte=start_date, end_time__isnull=False).order_by('-start_time')
+        logs = TimeLog.objects.filter(
+            user=get_service_user(),
+            start_time__gte=start_date,
+            status='completed',
+        ).order_by('-start_time')
 
         if not logs.exists():
             self.stdout.write(self.style.WARNING("未检索到有效的时间记录。"))
