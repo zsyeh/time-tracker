@@ -21,7 +21,8 @@ LABEL org.opencontainers.image.title="Personal Learning OS" \
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
-    DATABASE_PATH=/app/data/db.sqlite3
+    DATABASE_PATH=/app/data/db.sqlite3 \
+    TRACKER_LOCAL_ENV_PATH=/app/data/tracker.env
 
 WORKDIR /app
 

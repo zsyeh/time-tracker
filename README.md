@@ -40,6 +40,8 @@ curl -fsSL https://app.ehzsy.site/install/docker-compose.sh | sh -s -- study.exa
 - Django Session 登录、可配置“记住我”、django-allauth Passkey/WebAuthn、多用户数据隔离。
 - 科目趋势、周/月汇总、学习记录检索和问题闭环；知识点入口已从当前界面移除。
 - Coolapk 绿、YouTube 红、Bilibili 粉、Meituan 黄和 Apple 白五套主题颜色，以及  标签图标。
+- 登录页提供小尺寸的 Docker Hub、项目源码、GitHub 主页与个人博客链接。
+- 设置页可即时修改主页内容、自习室口令、记录起始日期、考试日期和倒计时名称，并与本地 `.env` 双向同步；未设置时保持原有默认值。
 - 可撤销、可过期、只允许启动指定科目的 Launch Token，支持浏览器、NFC、快捷指令和 IoT POST。
 - CSV、JSON、Markdown 完整导出；不嵌入任何 AI API。
 
@@ -59,6 +61,8 @@ python manage.py runserver 127.0.0.1:8000
 ```
 
 访问 `http://127.0.0.1:8000/`。首次登录后在“设置”中绑定 Passkey。开发模式允许 HTTP WebAuthn；生产环境必须是 HTTPS。
+
+登录后进入 `Settings` → `Homepage and schedule` 可以修改本地实例参数。普通安装读写项目根目录的 `.env`；官方 Docker 镜像读写持久卷内的 `/app/data/tracker.env`。网页仅允许修改五个展示参数，不会读取或覆盖 Django 密钥、数据库地址、GitHub 凭据等其他环境变量。手动编辑对应 `.env` 后刷新设置页，也会读取最新值。
 
 前端独立开发：
 

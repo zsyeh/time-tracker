@@ -1,5 +1,8 @@
 import datetime
 import json
+import os
+import tempfile
+from pathlib import Path
 from unittest import mock
 
 from django.conf import settings
@@ -117,6 +120,10 @@ class AuthAndIsolationTests(TestCase):
         self.assertContains(response, 'id="passkey_login"')
         self.assertContains(response, 'tracker/auth.css')
         self.assertContains(response, 'iCloud Keychain')
+        self.assertContains(response, 'https://hub.docker.com/r/ehzsy/time-tracker')
+        self.assertContains(response, 'https://github.com/zsyeh/time-tracker')
+        self.assertContains(response, 'https://github.com/zsyeh')
+        self.assertContains(response, 'https://blog.ehzsy.site')
 
     @override_settings(DEBUG=True)
     def test_django_admin_login_uses_project_branding_and_styles(self):
@@ -124,6 +131,89 @@ class AuthAndIsolationTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Learning OS')
         self.assertContains(response, 'tracker/admin.css')
+
+
+@override_settings(SECURE_SSL_REDIRECT=False)
+class RuntimeSettingsTests(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user('settings-owner', password='password')
+        self.client.force_login(self.user)
+        self.temporary_directory = tempfile.TemporaryDirectory()
+        self.env_path = Path(self.temporary_directory.name) / '.env'
+
+    def tearDown(self):
+        self.temporary_directory.cleanup()
+
+    def test_reads_local_env_and_falls_back_to_original_defaults(self):
+        self.env_path.write_text(
+            'UNMANAGED_SECRET=preserved\n'
+            'STUDY_ROOM_CODE=from-local-file\n'
+            'TRACKER_HOMEPAGE_CONTENT="Local dashboard copy"\n',
+            encoding='utf-8',
+        )
+        with self.settings(
+            TRACKER_LOCAL_ENV_PATH=self.env_path,
+            TRACKER_HEATMAP_START_DATE='2026-05-23',
+            TRACKER_EXAM_DATE='2026-12-26',
+            TRACKER_COUNTDOWN_LABEL='Default countdown',
+            TRACKER_HOMEPAGE_CONTENT='',
+            STUDY_ROOM_CODE='default-room',
+        ):
+            response = self.client.get('/api/settings/runtime/')
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload['values']['study_room_code'], 'from-local-file')
+        self.assertEqual(payload['values']['homepage_content'], 'Local dashboard copy')
+        self.assertEqual(payload['values']['tracking_start_date'], '2026-05-23')
+        self.assertEqual(payload['values']['countdown_label'], 'Default countdown')
+        self.assertNotContains(response, 'UNMANAGED_SECRET')
+
+    def test_save_is_atomic_preserves_unmanaged_values_and_updates_dashboard(self):
+        self.env_path.write_text('UNMANAGED_SECRET=preserved\nSTUDY_ROOM_CODE=old-room\n', encoding='utf-8')
+        values = {
+            'homepage_content': 'A concise local heading',
+            'study_room_code': 'new-room',
+            'tracking_start_date': '2026-06-01',
+            'exam_date': '2027-01-02',
+            'countdown_label': 'Exam window',
+        }
+        with self.settings(
+            TRACKER_LOCAL_ENV_PATH=self.env_path,
+            TRACKER_HEATMAP_START_DATE='2026-05-23',
+            TRACKER_EXAM_DATE='2026-12-26',
+            TRACKER_COUNTDOWN_LABEL='Default countdown',
+            TRACKER_HOMEPAGE_CONTENT='',
+            STUDY_ROOM_CODE='default-room',
+        ):
+            response = self.client.put(
+                '/api/settings/runtime/', values, content_type='application/json',
+            )
+            dashboard = self.client.get('/api/dashboard/overview/?days=180').json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['values'], values)
+        rendered = self.env_path.read_text(encoding='utf-8')
+        self.assertIn('UNMANAGED_SECRET=preserved', rendered)
+        self.assertIn('STUDY_ROOM_CODE="new-room"', rendered)
+        self.assertEqual(os.stat(self.env_path).st_mode & 0o777, 0o600)
+        self.assertEqual(dashboard['private_display']['homepage_content'], values['homepage_content'])
+        self.assertEqual(dashboard['private_display']['study_room_code'], values['study_room_code'])
+        self.assertEqual(dashboard['private_display']['countdown_label'], values['countdown_label'])
+        self.assertEqual(dashboard['calendar']['exam_date'], values['exam_date'])
+        self.assertEqual(dashboard['calendar']['heatmap_start_date'], values['tracking_start_date'])
+
+    def test_rejects_tracking_start_after_exam_date_without_changing_file(self):
+        self.env_path.write_text('UNMANAGED=value\n', encoding='utf-8')
+        original = self.env_path.read_text(encoding='utf-8')
+        with self.settings(TRACKER_LOCAL_ENV_PATH=self.env_path):
+            response = self.client.put('/api/settings/runtime/', {
+                'homepage_content': '',
+                'study_room_code': '',
+                'tracking_start_date': '2027-01-03',
+                'exam_date': '2027-01-02',
+                'countdown_label': 'Exam',
+            }, content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(self.env_path.read_text(encoding='utf-8'), original)
 
 
 @override_settings(SECURE_SSL_REDIRECT=False, LEARNING_REPO='')

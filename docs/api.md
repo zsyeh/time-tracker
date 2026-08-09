@@ -12,6 +12,7 @@ public. Every response is restricted to the authenticated owner.
 | POST | `/api/sessions/<id>/finish/` | Finish with a title and details body |
 | POST | `/api/sessions/<id>/abandon/` | Permanently delete the running session |
 | GET | `/api/dashboard/overview/?days=180` | One-request dashboard analytics |
+| GET/PUT | `/api/settings/runtime/` | Read or atomically update allow-listed local `.env` display settings |
 | GET | `/api/search/?q=<keyword>&limit=18` | Bounded global text search summaries |
 | GET/POST | `/api/issues/` | Learning issue list/create |
 | GET/PATCH/DELETE | `/api/issues/<id>/` | Learning issue detail |
@@ -29,6 +30,12 @@ fetch `/api/sessions/<id>/` only when the full `details` body is opened.
 Global search spans owned completed-session text and owned Issues. It returns at
 most 24 mixed summary records and never includes a complete session `details`
 body; the client fetches the owned detail endpoint only after selection.
+
+Runtime settings expose only homepage content, study-room code, tracking start
+date, exam date, and countdown label. Unknown dotenv entries are never returned
+and are preserved during updates. Docker stores the managed file in its data
+volume; local installs use the project `.env` unless `TRACKER_LOCAL_ENV_PATH` is
+set.
 History is paginated. A duplicate start for the same running subject returns that
 session with `reused: true`; a different running subject returns HTTP 409 and is
 never silently stopped.
