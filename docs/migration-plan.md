@@ -19,6 +19,23 @@
 Both database backups were read after creation. They contain 125 `TimeLog` rows,
 52 `DailyStudyStat` rows, and 9,581 total completed minutes.
 
+## Migration rehearsal validation (2026-08-09)
+
+Migration `0007`/`0008` was applied to a fresh copy of the pre-refactor SQLite
+backup, not the live database. Verification after migration returned:
+
+| Invariant | Before | After |
+| --- | ---: | ---: |
+| Study sessions | 125 | 125 |
+| Completed sessions | 125 | 125 |
+| Daily-stat rows | 52 | 52 |
+| Aggregate duration | 9,581 min | 9,581 min |
+| Sessions without owner | n/a | 0 |
+| Historical notes present | 102 | 102 |
+
+The automated migration test also verifies primary key, timestamp-derived
+duration, raw note, completed status, and deterministic owner assignment.
+
 ## Incremental migration
 
 1. Extend `TimeLog` in place instead of renaming or recreating its table.

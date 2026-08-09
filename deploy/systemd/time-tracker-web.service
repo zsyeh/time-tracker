@@ -1,0 +1,20 @@
+[Unit]
+Description=Personal Learning OS Django web service
+After=network.target
+
+[Service]
+Type=simple
+User=root
+Group=root
+WorkingDirectory=/root/time-tracker
+Environment=PYTHONUNBUFFERED=1
+# Gunicorn access logging is intentionally disabled: Launch Token credentials
+# occur in request paths. Nginx logs ordinary routes and suppresses launch paths.
+ExecStart=/root/time-tracker/.venv/bin/gunicorn --workers 2 --bind 127.0.0.1:8000 --error-logfile - time_server.wsgi:application
+Restart=on-failure
+RestartSec=3
+PrivateTmp=true
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

@@ -15,6 +15,9 @@ Browser -> Nginx/TLS -> Vue static shell + Django same-origin API
 - SQLite remains supported for safe in-place migration. PostgreSQL is supported
   through environment configuration and is preferred for new production installs.
 - No server-side AI provider or model API is part of the architecture.
+- Django's shared file cache keeps short-lived per-user overview aggregates;
+  `TimeLog` signals invalidate them across Gunicorn workers. Redis is unnecessary
+  at the current scale.
 - The optional MCP process is a local protocol adapter over the same deterministic
   data and is not an embedded AI service.
 
