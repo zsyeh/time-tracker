@@ -48,6 +48,17 @@
 
 进入 `Settings` → `Theme color`，可选择 Coolapk Green、YouTube Red、Bilibili Pink、Meituan Yellow 或 Apple White。选择会保存在当前浏览器中，并同步用于主应用、登录页和 Django 管理页；热力图的绿色分级保持不变，便于跨主题比较。
 
+## 修改本地主页参数
+
+进入 `Settings` → `Homepage and schedule`，可以修改以下参数：
+
+- `Homepage content`：显示在当天日期下方的可选主页内容，留空时维持原来的简洁主页。
+- `Study room code`：首页的小号自习室口令，留空时隐藏。
+- `Tracking start date`：热力图和统计开始展示记录的日期。
+- `Exam date` 与 `Countdown label`：首页倒数日日期及名称。
+
+打开设置页时会读取本地 `.env`，保存时只原子更新上述五个键并立即应用，文件里其余密钥和注释不会被网页读取或覆盖。`Load defaults` 只把原有默认值填回表单，需要再次点击 `Save settings` 才会写入。Docker 版本把网页管理的本地参数保存到数据卷内的 `/app/data/tracker.env`，因此重建容器后仍然存在。
+
 ## Passkey 与数据
 
 - iPhone/iPad 可在登录页直接使用本机 Passkey，不需要扫码；首次绑定在 `Settings` → `Add Passkey`。

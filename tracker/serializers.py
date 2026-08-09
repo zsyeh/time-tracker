@@ -156,3 +156,18 @@ class LaunchTokenCreateSerializer(serializers.Serializer):
     max_uses = serializers.IntegerField(min_value=1, required=False, allow_null=True)
     source_label = serializers.CharField(max_length=120, required=False, allow_blank=True)
     notes = serializers.CharField(required=False, allow_blank=True)
+
+
+class RuntimeSettingsSerializer(serializers.Serializer):
+    homepage_content = serializers.CharField(max_length=500, allow_blank=True, trim_whitespace=True)
+    study_room_code = serializers.CharField(max_length=120, allow_blank=True, trim_whitespace=True)
+    tracking_start_date = serializers.DateField()
+    exam_date = serializers.DateField()
+    countdown_label = serializers.CharField(max_length=80, allow_blank=False, trim_whitespace=True)
+
+    def validate(self, attrs):
+        if attrs['tracking_start_date'] > attrs['exam_date']:
+            raise serializers.ValidationError({
+                'tracking_start_date': 'Tracking start date must not be later than the exam date.',
+            })
+        return attrs

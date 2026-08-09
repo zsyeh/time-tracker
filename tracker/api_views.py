@@ -24,12 +24,14 @@ from rest_framework.views import APIView
 from .analytics import build_dashboard_overview
 from .learning_log import dispatch_github_note_sync
 from .models import KnowledgePoint, LaunchToken, LearningIssue, TimeLog
+from .runtime_settings import runtime_config, save_runtime_config
 from .serializers import (
     FinishSessionSerializer,
     KnowledgePointSerializer,
     LaunchTokenCreateSerializer,
     LaunchTokenSerializer,
     LearningIssueSerializer,
+    RuntimeSettingsSerializer,
     StartSessionSerializer,
     StudySessionSerializer,
     StudySessionSummarySerializer,
@@ -183,13 +185,37 @@ class DashboardOverviewView(APIView):
             return Response({'detail': 'days must be an integer'}, status=400)
         days = max(7, min(days, 366))
         version = cache.get(f'dashboard-version:{request.user.pk}', 1)
+        config = runtime_config()
         # Keep a payload schema version in the key so a zero-downtime frontend
         # deployment never receives an older cached response shape.
-        cache_key = f'dashboard-overview:v4:{request.user.pk}:{days}:{version}'
+        cache_key = f'dashboard-overview:v5:{request.user.pk}:{days}:{version}:{config["fingerprint"]}'
         payload = cache.get(cache_key)
         if payload is None:
-            payload = build_dashboard_overview(request.user, days)
+            payload = build_dashboard_overview(request.user, days, config=config['values'])
             cache.set(cache_key, payload, timeout=60)
+        return Response(payload)
+
+
+class RuntimeSettingsView(APIView):
+    """Read and atomically persist the allow-listed local instance settings."""
+
+    def get(self, request):
+        return Response(runtime_config())
+
+    def put(self, request):
+        serializer = RuntimeSettingsSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        values = {
+            key: value.isoformat() if hasattr(value, 'isoformat') else value
+            for key, value in serializer.validated_data.items()
+        }
+        try:
+            payload = save_runtime_config(values)
+        except OSError:
+            return Response(
+                {'detail': 'The local settings file is not writable.'},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
         return Response(payload)
 
 

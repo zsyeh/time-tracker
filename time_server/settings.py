@@ -183,6 +183,16 @@ TRACKER_WEEKLY_TARGET_MINUTES = env_int('TRACKER_WEEKLY_TARGET_MINUTES', 2520)
 TRACKER_EXAM_DATE = os.environ.get('TRACKER_EXAM_DATE', '2026-12-26')
 TRACKER_HEATMAP_START_DATE = os.environ.get('TRACKER_HEATMAP_START_DATE', '2026-05-23')
 STUDY_ROOM_CODE = os.environ.get('STUDY_ROOM_CODE', '').strip()
+TRACKER_HOMEPAGE_CONTENT = os.environ.get('TRACKER_HOMEPAGE_CONTENT', '').strip()
+TRACKER_COUNTDOWN_LABEL = os.environ.get(
+    'TRACKER_COUNTDOWN_LABEL',
+    '2026 Postgraduate Exam',
+).strip()
+# In containers this points into the persistent data volume. Local installs use
+# the existing project .env file. Only non-secret display settings are managed.
+TRACKER_LOCAL_ENV_PATH = Path(
+    os.environ.get('TRACKER_LOCAL_ENV_PATH', BASE_DIR / '.env')
+)
 
 # The MCP process is intentionally separate from Django's web process. A secret
 # URL segment is supported because ChatGPT developer-mode apps cannot attach an

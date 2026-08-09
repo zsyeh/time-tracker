@@ -179,6 +179,10 @@ button, input, textarea, select { font: inherit; }
 .password-button:hover, .auth-card form button:hover { border-color: var(--accent); background: #202a24; }
 .private-note { margin: 19px 0 0 !important; color: #5e6b64 !important; text-align: center; font: 7px ui-monospace, monospace !important; letter-spacing: .1em; }
 .private-note span { color: var(--accent); }
+.source-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 5px; margin-top: 13px; }
+.source-links a { min-height: 28px; padding: 5px 8px; display: inline-flex; align-items: center; gap: 5px; border: 1px solid #2b2d34; border-radius: 6px; color: #7e818c; background: rgba(255,255,255,.012); font: 7px ui-monospace, monospace; letter-spacing: .06em; transition: color .15s ease, border-color .15s ease, background .15s ease; }
+.source-links a:hover { color: var(--text); border-color: rgba(var(--accent-rgb), .52); background: rgba(var(--accent-rgb), .045); }
+.source-links svg { width: 14px; height: 14px; flex: 0 0 14px; fill: currentColor; }
 
 .auth-errors, .errorlist { color: var(--danger); font-size: 10px; line-height: 1.55; }
 .errorlist { padding-left: 17px; }

@@ -1,13 +1,22 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { api, post } from '../lib/api'
-import type { LaunchToken } from '../types'
+import { api, post, put } from '../lib/api'
+import type { LaunchToken, RuntimeSettingsResponse, RuntimeSettingsValues } from '../types'
+
+const emit = defineEmits<{ changed: [] }>()
 
 const tokens = ref<LaunchToken[]>([])
 const open = ref(false)
 const revealed = ref<LaunchToken | null>(null)
 const theme = ref(localStorage.getItem('learning-os-theme') || 'coolapk')
+const runtimeLoading = ref(true)
+const runtimeSaving = ref(false)
+const runtimeMeta = ref<RuntimeSettingsResponse | null>(null)
+const runtimeForm = reactive<RuntimeSettingsValues>({
+  homepage_content: '', study_room_code: '', tracking_start_date: '2026-05-23',
+  exam_date: '2026-12-26', countdown_label: '2026 Postgraduate Exam',
+})
 const form = reactive({ name: 'Desktop shortcut', subject: 'math', source_label: 'Browser', max_uses: null as number | null, expires_at: null as string | null, notes: '' })
 const subjects = { math: 'Mathematics', english: 'English', major: 'Major', training: 'Training' }
 const themes = [
@@ -28,6 +37,32 @@ async function load() {
   try { tokens.value = await api<LaunchToken[]>('/api/launch-tokens/') }
   catch (error) { ElMessage.error((error as Error).message) }
 }
+function applyRuntime(values: RuntimeSettingsValues) {
+  Object.assign(runtimeForm, values)
+}
+async function loadRuntime() {
+  runtimeLoading.value = true
+  try {
+    runtimeMeta.value = await api<RuntimeSettingsResponse>('/api/settings/runtime/')
+    applyRuntime(runtimeMeta.value.values)
+  } catch (error) { ElMessage.error((error as Error).message) }
+  finally { runtimeLoading.value = false }
+}
+async function saveRuntime() {
+  runtimeSaving.value = true
+  try {
+    runtimeMeta.value = await put<RuntimeSettingsResponse>('/api/settings/runtime/', runtimeForm)
+    applyRuntime(runtimeMeta.value.values)
+    ElMessage.success('Local settings saved')
+    emit('changed')
+  } catch (error) { ElMessage.error((error as Error).message) }
+  finally { runtimeSaving.value = false }
+}
+function loadDefaults() {
+  if (!runtimeMeta.value) return
+  applyRuntime(runtimeMeta.value.defaults)
+  ElMessage.info('Defaults loaded. Save to apply them.')
+}
 async function create() {
   try { revealed.value = await post<LaunchToken>('/api/launch-tokens/', form); open.value = false; await load() }
   catch (error) { ElMessage.error((error as Error).message) }
@@ -45,13 +80,34 @@ async function copy() {
   await navigator.clipboard.writeText(revealed.value.launch_url)
   ElMessage.success('Launch URL copied')
 }
-onMounted(load)
+onMounted(() => { load(); loadRuntime() })
 </script>
 
 <template>
   <div class="view-stack">
     <section class="page-intro"><span class="eyebrow">SYSTEM / ACCESS</span><h1>Settings</h1><p>Authentication, portable data, and scoped launch capabilities.</p></section>
     <section class="settings-grid">
+      <article class="panel settings-card instance-settings" v-loading="runtimeLoading">
+        <div class="card-title"><div><span class="eyebrow">LOCAL INSTANCE</span><h2>Homepage and schedule</h2></div><span class="env-badge">.ENV ↔ WEB</span></div>
+        <p>These display values are read from the local environment file. Saving updates only the fields shown here and applies them immediately.</p>
+        <el-form label-position="top" class="runtime-settings-form" @submit.prevent="saveRuntime">
+          <el-form-item label="Homepage content">
+            <el-input v-model="runtimeForm.homepage_content" type="textarea" :rows="3" maxlength="500" show-word-limit placeholder="Optional text shown below today's date" />
+          </el-form-item>
+          <div class="form-pair">
+            <el-form-item label="Study room code"><el-input v-model="runtimeForm.study_room_code" maxlength="120" placeholder="Hidden when empty" /></el-form-item>
+            <el-form-item label="Countdown label"><el-input v-model="runtimeForm.countdown_label" maxlength="80" /></el-form-item>
+          </div>
+          <div class="form-pair">
+            <el-form-item label="Tracking start date"><el-input v-model="runtimeForm.tracking_start_date" type="date" /></el-form-item>
+            <el-form-item label="Exam date"><el-input v-model="runtimeForm.exam_date" type="date" /></el-form-item>
+          </div>
+          <div class="runtime-settings-footer">
+            <small>{{ runtimeMeta?.local_env_exists ? 'LOCAL FILE CONNECTED' : 'LOCAL FILE WILL BE CREATED ON SAVE' }}</small>
+            <div><el-button @click="loadDefaults">Load defaults</el-button><el-button type="primary" :loading="runtimeSaving" @click="saveRuntime">Save settings</el-button></div>
+          </div>
+        </el-form>
+      </article>
       <article class="panel settings-card theme-card">
         <div class="card-title"><div><span class="eyebrow">APPEARANCE</span><h2>Theme color</h2></div></div>
         <p>Choose one accent. Activity heatmap colors stay consistent for comparison.</p>

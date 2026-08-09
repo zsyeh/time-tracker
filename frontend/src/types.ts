@@ -36,7 +36,7 @@ export interface Overview {
   server_time: string
   range_days: number
   calendar: { today: string; exam_date: string; days_until_exam: number; heatmap_start_date: string }
-  private_display: { study_room_code: string }
+  private_display: { study_room_code: string; homepage_content: string; countdown_label: string }
   today: { minutes: number; sessions: number; first_start: string | null }
   active_session: StudySession | null
   summary: {
@@ -56,6 +56,22 @@ export interface Overview {
   monthly_totals: Array<{ month: string; minutes: number }>
   heatmap: HeatmapDay[]
   daily_start_times: Array<{ date: string; first_start: string }>
+}
+
+export interface RuntimeSettingsValues {
+  homepage_content: string
+  study_room_code: string
+  tracking_start_date: string
+  exam_date: string
+  countdown_label: string
+}
+
+export interface RuntimeSettingsResponse {
+  values: RuntimeSettingsValues
+  defaults: RuntimeSettingsValues
+  sources: Record<keyof RuntimeSettingsValues, 'local_env' | 'default'>
+  fingerprint: string
+  local_env_exists: boolean
 }
 
 export interface Issue {
