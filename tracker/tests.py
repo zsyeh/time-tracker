@@ -262,6 +262,11 @@ class AnalyticsAndExportTests(TestCase):
         expected_days = max(0, (datetime.date.fromisoformat(settings.TRACKER_EXAM_DATE) - today).days)
         self.assertEqual(overview['calendar']['days_until_exam'], expected_days)
 
+    @override_settings(STUDY_ROOM_CODE='test-room-code')
+    def test_dashboard_returns_private_study_room_code_to_authenticated_user(self):
+        overview = build_dashboard_overview(self.user, 7)
+        self.assertEqual(overview['private_display']['study_room_code'], 'test-room-code')
+
     def test_exports_keep_raw_reflection_and_filters(self):
         completed_session(self.user, subject='math', title='RAW-TITLE-SENTINEL', details='RAW-DETAILS-SENTINEL')
         completed_session(self.other, subject='english', title='OTHER-SECRET')

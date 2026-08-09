@@ -132,6 +132,9 @@ def build_dashboard_overview(user, days=180):
             'days_until_exam': max(0, (exam_date - local_today).days),
             'heatmap_start_date': heatmap_first_day.isoformat(),
         },
+        'private_display': {
+            'study_room_code': settings.STUDY_ROOM_CODE,
+        },
         'today': today_row,
         'active_session': serialize_session(active, now) if active else None,
         'summary': {

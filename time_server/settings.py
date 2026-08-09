@@ -182,6 +182,7 @@ TRACKER_DAILY_TARGET_MINUTES = env_int('TRACKER_DAILY_TARGET_MINUTES', 360)
 TRACKER_WEEKLY_TARGET_MINUTES = env_int('TRACKER_WEEKLY_TARGET_MINUTES', 2520)
 TRACKER_EXAM_DATE = os.environ.get('TRACKER_EXAM_DATE', '2026-12-26')
 TRACKER_HEATMAP_START_DATE = os.environ.get('TRACKER_HEATMAP_START_DATE', '2026-05-23')
+STUDY_ROOM_CODE = os.environ.get('STUDY_ROOM_CODE', '').strip()
 
 # The MCP process is intentionally separate from Django's web process. A secret
 # URL segment is supported because ChatGPT developer-mode apps cannot attach an

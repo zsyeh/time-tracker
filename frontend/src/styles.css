@@ -54,6 +54,7 @@ body{
 .date-block{padding:12px 0 25px}
 .date-block h1{font:600 clamp(40px,6.4vw,76px)/.95 ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:-.075em;margin:12px 0 13px}
 .date-block p{font:9px ui-monospace,monospace;letter-spacing:.16em;color:#68756f}
+.date-block .study-room-code{margin-top:8px;color:var(--green);font-size:10px;letter-spacing:.11em}
 .exam-countdown{min-width:270px;padding:14px 0 21px 30px;border-left:1px solid var(--line);display:grid;align-content:end;justify-items:end}
 .exam-countdown>span{font:9px ui-monospace,monospace;letter-spacing:.14em;color:#91a099}
 .exam-countdown>div{display:flex;align-items:baseline;gap:9px;margin:6px 0 1px}

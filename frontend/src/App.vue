@@ -64,7 +64,7 @@ onMounted(load)
       <div class="mobile-header"><div class="brand"><span class="brand-mark">L</span><strong>Learning OS</strong></div><div class="mobile-tools"><el-button circle aria-label="Open global search" @click="globalSearch?.open()"><el-icon><SearchIcon /></el-icon></el-button><el-dropdown trigger="click"><el-button>Menu</el-button><template #dropdown><el-dropdown-menu><el-dropdown-item v-for="item in nav" :key="item.id" @click="page = item.id">{{ item.label }}</el-dropdown-item><el-dropdown-item divided @click="logout">Sign out</el-dropdown-item></el-dropdown-menu></template></el-dropdown></div></div>
       <template v-if="page === 'today'">
         <section class="hero exam-hero">
-          <div class="date-block"><span class="eyebrow">TODAY / {{ weekdayLabel }}</span><h1>{{ todayLabel }}</h1><p>LOCAL DATE · ASIA/SHANGHAI</p></div>
+          <div class="date-block"><span class="eyebrow">TODAY / {{ weekdayLabel }}</span><h1>{{ todayLabel }}</h1><p>LOCAL DATE · ASIA/SHANGHAI</p><p v-if="overview?.private_display.study_room_code" class="study-room-code">STUDY ROOM · {{ overview.private_display.study_room_code }}</p></div>
           <div class="exam-countdown"><span>2026 POSTGRADUATE EXAM</span><div><b>{{ overview?.calendar.days_until_exam ?? '--' }}</b><small>DAYS</small></div><time>{{ overview?.calendar.exam_date || '2026-12-26' }}</time></div>
         </section>
         <ActiveSession :session="overview?.active_session || null" @changed="load" />

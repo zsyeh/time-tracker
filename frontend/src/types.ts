@@ -36,6 +36,7 @@ export interface Overview {
   server_time: string
   range_days: number
   calendar: { today: string; exam_date: string; days_until_exam: number; heatmap_start_date: string }
+  private_display: { study_room_code: string }
   today: { minutes: number; sessions: number; first_start: string | null }
   active_session: StudySession | null
   summary: {
