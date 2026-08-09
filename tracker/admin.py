@@ -7,7 +7,7 @@ from .models import DailyStudyStat, KnowledgePoint, LaunchToken, LearningIssue, 
 class TimeLogAdmin(admin.ModelAdmin):
     list_display = ('user', 'category', 'status', 'start_time', 'end_time', 'duration_minutes')
     list_filter = ('user', 'category', 'status', 'start_time')
-    search_fields = ('note', 'chapter', 'topic')
+    search_fields = ('title', 'details', 'chapter', 'topic')
 
 
 @admin.register(DailyStudyStat)

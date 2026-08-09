@@ -16,6 +16,7 @@ SUBJECT_ALIASES = {
     'training': 'training',
 }
 MINIMUM_SESSION_MINUTES = 25
+MAXIMUM_SESSION_HOURS = 12
 
 
 class ActiveSessionConflict(Exception):
@@ -50,6 +51,9 @@ def start_session(user, subject, **metadata):
             user=user,
             status='running',
         ).first()
+        if active and is_long_session(active.start_time, now):
+            active.delete()
+            active = None
         if active:
             if active.category == category:
                 return active, True
@@ -77,24 +81,34 @@ def is_short_session(start_time, end_time):
     return (end_time - start_time).total_seconds() < MINIMUM_SESSION_MINUTES * 60
 
 
-def finish_session(session, reflection):
-    required = ('note', 'breakthrough', 'problems', 'next_action')
-    missing = [field for field in required if not str(reflection.get(field, '')).strip()]
-    if not str(reflection.get('chapter', '')).strip() and not str(
-        reflection.get('topic', '')
-    ).strip():
-        missing.append('chapter_or_topic')
-    if missing:
-        raise ValueError(f"missing reflection fields: {', '.join(missing)}")
+def is_long_session(start_time, end_time):
+    return (end_time - start_time).total_seconds() > MAXIMUM_SESSION_HOURS * 60 * 60
 
+
+def session_discard_reason(start_time, end_time):
+    if is_short_session(start_time, end_time):
+        return 'shorter_than_minimum'
+    if is_long_session(start_time, end_time):
+        return 'longer_than_maximum'
+    return None
+
+
+def finish_session(session, reflection):
     with transaction.atomic():
         locked = TimeLog.objects.select_for_update().get(pk=session.pk, user=session.user)
         if locked.status != 'running':
-            return locked, False, False
+            return locked, False, None
         end_time = timezone.now()
-        if is_short_session(locked.start_time, end_time):
+        discard_reason = session_discard_reason(locked.start_time, end_time)
+        if discard_reason:
             locked.delete()
-            return None, True, True
+            return None, True, discard_reason
+
+        required = ('title', 'details')
+        missing = [field for field in required if not str(reflection.get(field, '')).strip()]
+        if missing:
+            raise ValueError(f"missing completion fields: {', '.join(missing)}")
+
         locked.end_time = end_time
         locked.status = 'completed'
         for field in (
@@ -105,7 +119,8 @@ def finish_session(session, reflection):
             'energy_level',
             'focus_level',
             'confidence_after',
-            'note',
+            'title',
+            'details',
             'breakthrough',
             'problems',
             'next_action',
@@ -114,7 +129,7 @@ def finish_session(session, reflection):
                 setattr(locked, field, reflection[field])
         locked.full_clean()
         locked.save()
-    return locked, True, False
+    return locked, True, None
 
 
 def abandon_session(session):

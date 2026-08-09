@@ -7,8 +7,22 @@ import type { LaunchToken } from '../types'
 const tokens = ref<LaunchToken[]>([])
 const open = ref(false)
 const revealed = ref<LaunchToken | null>(null)
+const theme = ref(localStorage.getItem('learning-os-theme') || 'coolapk')
 const form = reactive({ name: 'Desktop shortcut', subject: 'math', source_label: 'Browser', max_uses: null as number | null, expires_at: null as string | null, notes: '' })
 const subjects = { math: 'Mathematics', english: 'English', major: 'Major', training: 'Training' }
+const themes = [
+  { id: 'coolapk', label: 'Coolapk Green', color: '#10c469' },
+  { id: 'youtube', label: 'YouTube Red', color: '#ff0033' },
+  { id: 'bilibili', label: 'Bilibili Pink', color: '#fb7299' },
+  { id: 'meituan', label: 'Meituan Yellow', color: '#ffd100' },
+  { id: 'apple', label: 'Apple White', color: '#f5f5f7' },
+]
+
+function setTheme(value: string) {
+  theme.value = value
+  document.documentElement.dataset.theme = value
+  localStorage.setItem('learning-os-theme', value)
+}
 
 async function load() {
   try { tokens.value = await api<LaunchToken[]>('/api/launch-tokens/') }
@@ -38,6 +52,13 @@ onMounted(load)
   <div class="view-stack">
     <section class="page-intro"><span class="eyebrow">SYSTEM / ACCESS</span><h1>Settings</h1><p>Authentication, portable data, and scoped launch capabilities.</p></section>
     <section class="settings-grid">
+      <article class="panel settings-card theme-card">
+        <div class="card-title"><div><span class="eyebrow">APPEARANCE</span><h2>Theme color</h2></div></div>
+        <p>Choose one accent. Activity heatmap colors stay consistent for comparison.</p>
+        <div class="theme-options">
+          <button v-for="item in themes" :key="item.id" type="button" :class="{ active: theme === item.id }" @click="setTheme(item.id)"><i :style="{ background: item.color }" /><span>{{ item.label }}</span><b>{{ theme === item.id ? 'SELECTED' : '' }}</b></button>
+        </div>
+      </article>
       <article class="panel settings-card">
         <div class="card-title"><div><span class="eyebrow">PASSKEY</span><h2>Secure access</h2></div><span class="secure-badge">WebAuthn</span></div>
         <p>Use a platform authenticator or security key. Password access remains available for recovery.</p>

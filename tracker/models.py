@@ -73,9 +73,9 @@ class TimeLog(models.Model):
         blank=True,
         validators=[MinValueValidator(1), MaxValueValidator(5)],
     )
-    # A completed session can carry the longer summary/report submitted from
-    # ChatGPT through MCP. Existing short notes remain fully compatible.
-    note = models.TextField(null=True, blank=True)
+    # Historical notes are preserved verbatim as titles by migration 0010.
+    title = models.TextField(null=True, blank=True)
+    details = models.TextField(blank=True)
     breakthrough = models.TextField(blank=True)
     problems = models.TextField(blank=True)
     next_action = models.TextField(blank=True)

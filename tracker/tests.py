@@ -13,7 +13,7 @@ from .analytics import build_dashboard_overview
 from .models import KnowledgePoint, LaunchToken, LearningIssue, TimeLog
 
 
-def completed_session(user, *, day=None, minutes=60, subject='math', note='完整学习总结'):
+def completed_session(user, *, day=None, minutes=60, subject='math', title='完整学习总结', details='完整学习详情'):
     day = day or timezone.localdate()
     start = timezone.make_aware(
         datetime.datetime.combine(day, datetime.time(8, 0)),
@@ -27,7 +27,8 @@ def completed_session(user, *, day=None, minutes=60, subject='math', note='完�
         status='completed',
         chapter='第一章',
         topic='核心主题',
-        note=note,
+        title=title,
+        details=details,
         breakthrough='掌握了关键方法',
         problems='仍需提高速度',
         next_action='明天完成练习',
@@ -36,7 +37,7 @@ def completed_session(user, *, day=None, minutes=60, subject='math', note='完�
 
 class HistoricalMigrationTests(TransactionTestCase):
     migrate_from = [('tracker', '0006_timelog_start_time_index')]
-    migrate_to = [('tracker', '0008_backfill_session_ownership')]
+    migrate_to = [('tracker', '0010_rename_note_title_add_details')]
 
     def setUp(self):
         executor = MigrationExecutor(connection)
@@ -60,11 +61,12 @@ class HistoricalMigrationTests(TransactionTestCase):
         executor = MigrationExecutor(connection)
         executor.migrate(executor.loader.graph.leaf_nodes())
 
-    def test_preserves_primary_key_duration_note_and_assigns_owner(self):
+    def test_preserves_primary_key_duration_note_as_title_and_assigns_owner(self):
         Session = self.apps.get_model('tracker', 'TimeLog')
         row = Session.objects.get(pk=self.log_id)
         self.assertEqual(row.user_id, self.owner_id)
-        self.assertEqual(row.note, '不可丢失的旧记录')
+        self.assertEqual(row.title, '不可丢失的旧记录')
+        self.assertEqual(row.details, '')
         self.assertEqual(row.status, 'completed')
         self.assertEqual(int((row.end_time - row.start_time).total_seconds() / 60), 75)
 
@@ -75,8 +77,8 @@ class AuthAndIsolationTests(TestCase):
         User = get_user_model()
         self.alice = User.objects.create_user('alice', password='valid-test-password')
         self.bob = User.objects.create_user('bob', password='valid-test-password')
-        self.alice_session = completed_session(self.alice, note='ALICE-PRIVATE')
-        self.bob_session = completed_session(self.bob, note='BOB-PRIVATE', subject='english')
+        self.alice_session = completed_session(self.alice, title='ALICE-PRIVATE')
+        self.bob_session = completed_session(self.bob, title='BOB-PRIVATE', subject='english')
         LearningIssue.objects.create(user=self.bob, category='math', issue_type='concept_error', description='BOB-ISSUE')
         KnowledgePoint.objects.create(user=self.bob, category='math', name='BOB-KNOWLEDGE')
 
@@ -146,40 +148,60 @@ class SessionWorkflowTests(TestCase):
         self.assertTrue(repeated.json()['reused'])
         self.assertEqual(conflict.status_code, 409)
 
-    def test_finish_requires_deliberate_structured_reflection(self):
+    def test_finish_requires_title_and_details_only(self):
         session_id = self.client.post('/api/sessions/', {'subject': 'math'}, content_type='application/json').json()['session']['id']
-        invalid = self.client.post(
-            f'/api/sessions/{session_id}/finish/', {'note': 'only a note'}, content_type='application/json',
-        )
-        self.assertEqual(invalid.status_code, 400)
-        payload = {
-            'topic': '函数', 'note': '完成题目并复盘', 'breakthrough': '理解了转换',
-            'problems': '计算速度偏慢', 'next_action': '再练十题', 'focus_level': 4,
-        }
         TimeLog.objects.filter(pk=session_id).update(
             start_time=timezone.now() - datetime.timedelta(minutes=26),
         )
+        invalid = self.client.post(
+            f'/api/sessions/{session_id}/finish/', {'title': 'Only a title'}, content_type='application/json',
+        )
+        self.assertEqual(invalid.status_code, 400)
+        payload = {
+            'title': '函数复盘', 'details': '完成题目并复盘',
+        }
         response = self.client.post(f'/api/sessions/{session_id}/finish/', payload, content_type='application/json')
         self.assertEqual(response.status_code, 200)
         self.assertFalse(response.json()['discarded'])
         session = TimeLog.objects.get(pk=session_id)
         self.assertEqual(session.status, 'completed')
-        self.assertEqual(session.next_action, '再练十题')
+        self.assertEqual(session.title, '函数复盘')
+        self.assertEqual(session.details, '完成题目并复盘')
 
     def test_finish_discards_session_shorter_than_25_minutes(self):
         session_id = self.client.post('/api/sessions/', {'subject': 'english'}, content_type='application/json').json()['session']['id']
         TimeLog.objects.filter(pk=session_id).update(
             start_time=timezone.now() - datetime.timedelta(minutes=24),
         )
-        payload = {
-            'topic': 'Reading', 'note': 'Short review', 'breakthrough': 'None',
-            'problems': 'None', 'next_action': 'Retry',
-        }
+        payload = {'title': 'Reading', 'details': 'Short review'}
         response = self.client.post(f'/api/sessions/{session_id}/finish/', payload, content_type='application/json')
         self.assertEqual(response.status_code, 200)
         self.assertTrue(response.json()['discarded'])
         self.assertEqual(response.json()['minimum_minutes'], 25)
         self.assertFalse(TimeLog.objects.filter(pk=session_id).exists())
+
+    def test_finish_discards_session_longer_than_12_hours_without_form_data(self):
+        session_id = self.client.post('/api/sessions/', {'subject': 'math'}, content_type='application/json').json()['session']['id']
+        TimeLog.objects.filter(pk=session_id).update(
+            start_time=timezone.now() - datetime.timedelta(hours=12, seconds=1),
+        )
+        response = self.client.post(
+            f'/api/sessions/{session_id}/finish/', {}, content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['discard_reason'], 'longer_than_maximum')
+        self.assertEqual(response.json()['maximum_hours'], 12)
+        self.assertFalse(TimeLog.objects.filter(pk=session_id).exists())
+
+    def test_new_start_replaces_stale_session_longer_than_12_hours(self):
+        stale_id = self.client.post('/api/sessions/', {'subject': 'math'}, content_type='application/json').json()['session']['id']
+        TimeLog.objects.filter(pk=stale_id).update(
+            start_time=timezone.now() - datetime.timedelta(hours=13),
+        )
+        response = self.client.post('/api/sessions/', {'subject': 'english'}, content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+        self.assertFalse(TimeLog.objects.filter(pk=stale_id).exists())
+        self.assertEqual(response.json()['session']['subject'], 'english')
 
     def test_abandon_deletes_running_session_instead_of_recording_it(self):
         session_id = self.client.post('/api/sessions/', {'subject': 'training'}, content_type='application/json').json()['session']['id']
@@ -220,15 +242,29 @@ class AnalyticsAndExportTests(TestCase):
         self.assertEqual(overview['calendar']['days_until_exam'], expected_days)
 
     def test_exports_keep_raw_reflection_and_filters(self):
-        completed_session(self.user, subject='math', note='RAW-REFLECTION-SENTINEL')
-        completed_session(self.other, subject='english', note='OTHER-SECRET')
+        completed_session(self.user, subject='math', title='RAW-TITLE-SENTINEL', details='RAW-DETAILS-SENTINEL')
+        completed_session(self.other, subject='english', title='OTHER-SECRET')
         response = self.client.get('/api/export/json/?subject=math')
         payload = json.loads(response.content)
         self.assertEqual(len(payload['sessions']), 1)
-        self.assertEqual(payload['sessions'][0]['note'], 'RAW-REFLECTION-SENTINEL')
+        self.assertEqual(payload['sessions'][0]['title'], 'RAW-TITLE-SENTINEL')
+        self.assertEqual(payload['sessions'][0]['details'], 'RAW-DETAILS-SENTINEL')
         self.assertNotIn('OTHER-SECRET', response.content.decode())
         markdown = self.client.get('/api/export/markdown/?subject=math').content.decode()
-        self.assertIn('RAW-REFLECTION-SENTINEL', markdown)
+        self.assertIn('RAW-TITLE-SENTINEL', markdown)
+        self.assertIn('RAW-DETAILS-SENTINEL', markdown)
+
+    def test_compact_session_list_defers_details_until_drilldown(self):
+        session = completed_session(
+            self.user,
+            title='VISIBLE-TITLE',
+            details='DEFERRED-DETAILS',
+        )
+        compact = self.client.get('/api/sessions/?compact=1').json()['results'][0]
+        self.assertEqual(compact['title'], 'VISIBLE-TITLE')
+        self.assertNotIn('details', compact)
+        detail = self.client.get(f'/api/sessions/{session.pk}/').json()
+        self.assertEqual(detail['details'], 'DEFERRED-DETAILS')
 
 
 @override_settings(SECURE_SSL_REDIRECT=False)

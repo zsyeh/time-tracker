@@ -54,8 +54,7 @@ def build_dashboard_overview(user, days=180):
             status='completed',
             start_time__gte=boundary,
         ).only(
-            'id', 'category', 'start_time', 'end_time', 'status', 'chapter',
-            'topic', 'learning_mode', 'note', 'breakthrough', 'problems', 'next_action',
+            'id', 'category', 'start_time', 'end_time', 'status',
         ).order_by('start_time')
     )
     active = TimeLog.objects.filter(user=user, status='running').first()
@@ -186,7 +185,8 @@ def serialize_session(session, now=None):
         'start_time': _local(session.start_time).isoformat(),
         'end_time': _local(session.end_time).isoformat() if session.end_time else None,
         'duration_minutes': max(0, int((end - session.start_time).total_seconds() / 60)),
-        'note': session.note or '',
+        'title': session.title or '',
+        'details': session.details,
         'breakthrough': session.breakthrough,
         'problems': session.problems,
         'next_action': session.next_action,

@@ -6,8 +6,11 @@ import type { HeatmapDay, Page, StudySession } from '../types'
 
 const props = defineProps<{ days: HeatmapDay[] }>()
 const detailOpen = ref(false)
+const sessionOpen = ref(false)
+const sessionLoading = ref(false)
 const loading = ref(false)
 const selected = ref<HeatmapDay | null>(null)
+const selectedSession = ref<StudySession | null>(null)
 const sessions = ref<StudySession[]>([])
 
 const cells = computed(() => {
@@ -40,12 +43,25 @@ async function openDay(day: HeatmapDay | null) {
   detailOpen.value = true
   loading.value = true
   try {
-    const result = await api<Page<StudySession>>(`/api/sessions/?date_from=${day.date}&date_to=${day.date}`)
+    const result = await api<Page<StudySession>>(`/api/sessions/?date_from=${day.date}&date_to=${day.date}&compact=1`)
     sessions.value = result.results.filter((item) => item.status === 'completed')
   } catch (error) {
     ElMessage.error((error as Error).message)
   } finally {
     loading.value = false
+  }
+}
+
+async function openSession(session: StudySession) {
+  selectedSession.value = session
+  sessionOpen.value = true
+  sessionLoading.value = true
+  try {
+    selectedSession.value = await api<StudySession>(`/api/sessions/${session.id}/`)
+  } catch (error) {
+    ElMessage.error((error as Error).message)
+  } finally {
+    sessionLoading.value = false
   }
 }
 </script>
@@ -62,7 +78,7 @@ async function openDay(day: HeatmapDay | null) {
         <i class="cell level-4" /><span>≥ 5H</span>
       </div>
     </div>
-    <p class="section-note">Data starts on 23 May 2026. Select a day to inspect its session timeline.</p>
+    <p class="section-note">Data starts on 23 May 2026. Select a day for its timeline and session titles.</p>
     <div class="heatmap-scroll">
       <div class="weekday-labels"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
       <div class="heatmap-grid">
@@ -96,18 +112,28 @@ async function openDay(day: HeatmapDay | null) {
             class="online-segment"
             :class="`subject-${session.subject}`"
             :style="timelineStyle(session)"
-            :title="`${session.subject_label} ${new Date(session.start_time).toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' })}`"
+            :title="`${session.subject_label} ${new Date(session.start_time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })}`"
           />
         </div>
         <div class="online-key"><span><i class="key-online" />STUDY</span><span><i class="key-offline" />OFFLINE</span></div>
         <el-empty v-if="!loading && !sessions.length" description="No completed sessions" :image-size="70" />
         <div v-else class="session-list compact-list">
-          <article v-for="session in sessions" :key="session.id" class="session-row">
+          <article v-for="session in sessions" :key="session.id" class="session-row session-drill-row" role="button" tabindex="0" @click="openSession(session)" @keyup.enter="openSession(session)">
             <i :class="`subject-dot subject-${session.subject}`" />
-            <div><strong>{{ session.subject_label }} · {{ session.topic || session.chapter || 'Untitled session' }}</strong><small>{{ new Date(session.start_time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) }} – {{ session.end_time ? new Date(session.end_time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '--' }}</small></div>
-            <b>{{ duration(session.duration_minutes) }}</b>
+            <div><strong>{{ session.title || 'Untitled session' }}</strong><small>{{ session.subject_label }} · {{ new Date(session.start_time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) }} – {{ session.end_time ? new Date(session.end_time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '--' }}</small></div>
+            <b>OPEN</b>
           </article>
         </div>
+      </div>
+    </el-drawer>
+
+    <el-drawer v-model="sessionOpen" append-to-body size="min(680px, 94vw)" class="session-detail-drawer">
+      <template #header>
+        <div class="dialog-title"><div><span class="eyebrow">SESSION DETAILS</span><h2>{{ selectedSession?.title || 'Untitled session' }}</h2></div></div>
+      </template>
+      <div v-if="selectedSession" v-loading="sessionLoading" class="session-detail-page">
+        <dl><div><dt>SUBJECT</dt><dd>{{ selectedSession.subject_label }}</dd></div><div><dt>TIME</dt><dd>{{ new Date(selectedSession.start_time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) }} – {{ selectedSession.end_time ? new Date(selectedSession.end_time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '--' }}</dd></div><div><dt>DURATION</dt><dd>{{ duration(selectedSession.duration_minutes) }}</dd></div></dl>
+        <pre>{{ selectedSession.details || 'No details were recorded for this historical session.' }}</pre>
       </div>
     </el-drawer>
   </section>

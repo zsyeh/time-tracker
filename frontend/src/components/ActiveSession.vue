@@ -8,10 +8,7 @@ const props = defineProps<{ session: StudySession | null }>()
 const emit = defineEmits<{ changed: [] }>()
 const finishOpen = ref(false)
 const saving = ref(false)
-const form = reactive({
-  chapter: '', topic: '', learning_mode: 'theory', difficulty: 3, energy_level: 'medium',
-  focus_level: 3, confidence_after: 3, note: '', breakthrough: '', problems: '', next_action: '',
-})
+const form = reactive({ title: '', details: '' })
 const subjects: Array<{ id: Subject; label: string; shortcut: string }> = [
   { id: 'math', label: 'Mathematics', shortcut: 'M' }, { id: 'english', label: 'English', shortcut: 'E' },
   { id: 'major', label: 'Major', shortcut: 'P' }, { id: 'training', label: 'Training', shortcut: 'T' },
@@ -24,26 +21,48 @@ async function start(subject: Subject) {
   } catch (error) { ElMessage.error((error as Error).message) }
 }
 
-function prepareFinish() {
+async function prepareFinish() {
   if (!props.session) return
-  form.chapter = props.session.chapter
-  form.topic = props.session.topic
-  form.learning_mode = props.session.learning_mode || 'theory'
+  const elapsed = Date.now() - new Date(props.session.start_time).getTime()
+  if (elapsed < 25 * 60 * 1000 || elapsed > 12 * 60 * 60 * 1000) {
+    saving.value = true
+    try {
+      const result = await post<{ discarded: boolean; discard_reason: string | null }>(`/api/sessions/${props.session.id}/finish/`, {})
+      if (result.discarded) {
+        const message = result.discard_reason === 'longer_than_maximum'
+          ? 'Session deleted: duration exceeded 12 hours'
+          : 'Session deleted: duration was under 25 minutes'
+        ElMessage.info(message)
+        emit('changed')
+        return
+      }
+    } catch {
+      // If the browser clock differs from the server, use the normal form and
+      // let the server make the authoritative duration decision on submit.
+    } finally { saving.value = false }
+  }
   finishOpen.value = true
 }
 
 async function finish() {
   if (!props.session) return
-  if (!(form.chapter.trim() || form.topic.trim()) || !form.note.trim() || !form.breakthrough.trim() || !form.problems.trim() || !form.next_action.trim()) {
-    ElMessage.warning('Complete the topic, summary, breakthrough, problems, and next action')
+  if (!form.title.trim() || !form.details.trim()) {
+    ElMessage.warning('Add a title and details before finishing')
     return
   }
   saving.value = true
   try {
-    const result = await post<{ discarded: boolean }>(`/api/sessions/${props.session.id}/finish/`, form)
+    const result = await post<{ discarded: boolean; discard_reason: string | null }>(`/api/sessions/${props.session.id}/finish/`, form)
     finishOpen.value = false
-    if (result.discarded) ElMessage.info('Session discarded: duration was under 25 minutes')
-    else ElMessage.success('Session completed')
+    if (result.discarded) {
+      ElMessage.info(result.discard_reason === 'longer_than_maximum'
+        ? 'Session deleted: duration exceeded 12 hours'
+        : 'Session deleted: duration was under 25 minutes')
+    } else {
+      ElMessage.success('Session completed')
+      form.title = ''
+      form.details = ''
+    }
     emit('changed')
   } catch (error) { ElMessage.error((error as Error).message) } finally { saving.value = false }
 }
@@ -74,15 +93,11 @@ async function abandon() {
     </template>
   </section>
 
-  <el-dialog v-model="finishOpen" title="Finish session · Structured review" width="min(720px, 94vw)" destroy-on-close>
-    <el-form label-position="top" class="review-form">
-      <div class="form-pair"><el-form-item label="Chapter"><el-input v-model="form.chapter" placeholder="Example: Chapter 3" /></el-form-item><el-form-item label="Topic"><el-input v-model="form.topic" placeholder="What was studied" /></el-form-item></div>
-      <div class="form-pair"><el-form-item label="Mode"><el-select v-model="form.learning_mode"><el-option v-for="item in [['theory','Theory'],['exercise','Exercise'],['review','Review'],['memorization','Memorization'],['project','Project'],['exam_simulation','Exam simulation']]" :key="item[0]" :label="item[1]" :value="item[0]" /></el-select></el-form-item><el-form-item label="Focus"><el-rate v-model="form.focus_level" /></el-form-item></div>
-      <el-form-item label="Summary · Required"><el-input v-model="form.note" type="textarea" :rows="3" placeholder="Record facts, methods, and outcomes" /></el-form-item>
-      <el-form-item label="Breakthrough · Required"><el-input v-model="form.breakthrough" type="textarea" :rows="2" /></el-form-item>
-      <el-form-item label="Open problems · Required"><el-input v-model="form.problems" type="textarea" :rows="2" /></el-form-item>
-      <el-form-item label="Next action · Required"><el-input v-model="form.next_action" type="textarea" :rows="2" /></el-form-item>
-      <p class="minimum-note">Sessions shorter than 25 minutes are discarded automatically.</p>
+  <el-dialog v-model="finishOpen" title="Complete session" width="min(760px, 94vw)" destroy-on-close>
+    <el-form label-position="top" class="review-form simple-review">
+      <el-form-item label="Title · Required"><el-input v-model="form.title" maxlength="500" show-word-limit placeholder="A concise heading for this session" /></el-form-item>
+      <el-form-item label="Details · Required"><el-input v-model="form.details" type="textarea" :rows="14" placeholder="Paste the full ChatGPT response or write plain text / Markdown." /></el-form-item>
+      <p class="minimum-note">Sessions under 25 minutes or over 12 hours are deleted automatically.</p>
     </el-form>
     <template #footer><el-button @click="finishOpen = false">Continue session</el-button><el-button type="primary" :loading="saving" @click="finish">Save & finish</el-button></template>
   </el-dialog>

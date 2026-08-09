@@ -5,6 +5,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#0b0c0f" />
     <meta name="robots" content="noindex,nofollow" />
+    <link rel="icon" href="/static/tracker/apple-favicon.svg" type="image/svg+xml" />
+    <script>
+      try {
+        const savedTheme = localStorage.getItem('learning-os-theme') || 'coolapk'
+        document.documentElement.dataset.theme = savedTheme
+      } catch (_) { document.documentElement.dataset.theme = 'coolapk' }
+    </script>
     <title>Personal Learning OS</title>
   </head>
   <body>

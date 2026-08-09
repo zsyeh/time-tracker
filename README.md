@@ -5,12 +5,14 @@
 ## 主要能力
 
 - 从 2026-05-23 开始的学习热力图；达到 5 小时的日期使用高对比亮绿色。
-- 点击任意日期查看 24 小时在线/未在线时间轴和当天所有学习时段。
+- 点击任意日期查看 24 小时在线/未在线时间轴和当天每次学习标题；再点标题才显示正文详情。
 - 普通连续学习日、连续 5 小时日、历史最长连续日、达标日数、每日首次开始时间。
 - `/start/math`、`/start/english`、`/start/professional` 快速启动，服务器时间为准且重复请求幂等。
-- 手动结束并强制填写总结、突破、问题和下一步；少于 25 分钟或主动放弃的会话直接删除。
+- 运行中隐藏时长；结束时只填写 `Title` 和可粘贴 ChatGPT 内容的 `Details`。
+- 少于 25 分钟、超过 12 小时或主动放弃的会话直接删除，不写入完成记录。
 - Django Session 登录、可配置“记住我”、django-allauth Passkey/WebAuthn、多用户数据隔离。
-- 科目趋势、周/月汇总、学习记录检索、问题闭环和知识点管理。
+- 科目趋势、周/月汇总、学习记录检索和问题闭环；知识点入口已从当前界面移除。
+- Coolapk 绿、YouTube 红、Bilibili 粉、Meituan 黄和 Apple 白五套主题颜色，以及  标签图标。
 - 可撤销、可过期、只允许启动指定科目的 Launch Token，支持浏览器、NFC、快捷指令和 IoT POST。
 - CSV、JSON、Markdown 完整导出；不嵌入任何 AI API。
 
@@ -87,4 +89,4 @@ cd frontend && npm run build
 - `/api/export/{csv,json,markdown}/`：完整导出
 - `/admin/`：管理员恢复入口
 
-API、认证、模型和部署配置分别见 [API](docs/api.md)、[认证](docs/auth.md)、[数据模型](docs/data-model.md)、[架构](docs/architecture.md)。
+第一次使用建议先看 [使用说明](docs/usage.zh-CN.md)。API、认证、模型和部署配置分别见 [API](docs/api.md)、[认证](docs/auth.md)、[数据模型](docs/data-model.md)、[架构](docs/architecture.md)。

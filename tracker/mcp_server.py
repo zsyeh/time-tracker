@@ -18,12 +18,19 @@ from pydantic import BaseModel
 
 from .models import TimeLog
 from .learning_log import archive_completed_task
-from .services import MINIMUM_SESSION_MINUTES, get_service_user, is_short_session
+from .services import (
+    MAXIMUM_SESSION_HOURS,
+    MINIMUM_SESSION_MINUTES,
+    get_service_user,
+    is_long_session,
+    session_discard_reason,
+)
 
 
 CATEGORY_LABELS = dict(TimeLog.CATEGORY_CHOICES)
 VALID_CATEGORIES = set(CATEGORY_LABELS)
-MAX_REPORT_LENGTH = 10_000
+MAX_TITLE_LENGTH = 500
+MAX_DETAILS_LENGTH = 50_000
 URL_KEY_PATTERN = re.compile(r'^[A-Za-z0-9_-]{24,128}$')
 
 READ_ONLY = {
@@ -95,7 +102,8 @@ def _serialize_log(log: TimeLog, now: Optional[datetime.datetime] = None) -> Dic
         'end_time': _local(log.end_time).isoformat() if log.end_time else None,
         'duration_minutes': None if active else max(0, int(elapsed.total_seconds() / 60)),
         'active': active,
-        'report': log.note or '',
+        'title': log.title or '',
+        'details': log.details,
     }
 
 
@@ -145,7 +153,9 @@ def get_tracker_status() -> Dict[str, Any]:
             'manual_finish_required': True,
             'automatic_expiry': False,
             'minimum_session_minutes': MINIMUM_SESSION_MINUTES,
+            'maximum_session_hours': MAXIMUM_SESSION_HOURS,
             'short_sessions_are_discarded': True,
+            'overlong_sessions_are_discarded': True,
         },
     }
 
@@ -197,10 +207,16 @@ def get_study_summary(days: int = 7) -> Dict[str, Any]:
     }
 
 
-def _discard_stale_active(now: datetime.datetime, owner) -> bool:
-    # V3 sessions are never auto-finished or deleted. Keep the return value for
-    # MCP response compatibility while preserving the manual reflection gate.
-    return False
+def _discard_stale_active(now: datetime.datetime, owner) -> Optional[int]:
+    active = TimeLog.objects.select_for_update().filter(
+        user=owner,
+        status='running',
+    ).order_by('start_time').first()
+    if active and is_long_session(active.start_time, now):
+        discarded_id = active.pk
+        active.delete()
+        return discarded_id
+    return None
 
 
 def start_task(category: str) -> Dict[str, Any]:
@@ -220,41 +236,59 @@ def start_task(category: str) -> Dict[str, Any]:
         log = TimeLog.objects.create(user=owner, category=category, start_time=now, status='running')
     return {
         'status': 'started',
-        'stale_task_discarded': stale_discarded,
+        'stale_task_discarded': stale_discarded is not None,
         'task': _serialize_log(log, now),
     }
 
 
-def stop_task(report: str) -> Dict[str, Any]:
-    """End the active task and save the supplied completion summary/report."""
-    report = report.strip()
-    if not report:
-        raise ValueError('report is required when ending a task')
-    if len(report) > MAX_REPORT_LENGTH:
-        raise ValueError(f'report must not exceed {MAX_REPORT_LENGTH} characters')
+def stop_task(title: str, details: str) -> Dict[str, Any]:
+    """End the active task with one concise title and one details body."""
+    title = title.strip()
+    details = details.strip()
+    if not title:
+        raise ValueError('title is required when ending a task')
+    if not details:
+        raise ValueError('details are required when ending a task')
+    if len(title) > MAX_TITLE_LENGTH:
+        raise ValueError(f'title must not exceed {MAX_TITLE_LENGTH} characters')
+    if len(details) > MAX_DETAILS_LENGTH:
+        raise ValueError(f'details must not exceed {MAX_DETAILS_LENGTH} characters')
     now = timezone.now()
     owner = get_service_user()
     with transaction.atomic():
         stale_discarded = _discard_stale_active(now, owner)
-        active = TimeLog.objects.filter(user=owner, status='running').order_by('start_time').first()
-        if not active:
-            raise ValueError('No active task.')
-        if is_short_session(active.start_time, now):
-            discarded_id = active.pk
-            active.delete()
+        if stale_discarded is not None:
             return {
                 'status': 'discarded',
-                'reason': 'shorter_than_minimum',
-                'minimum_minutes': MINIMUM_SESSION_MINUTES,
+                'reason': 'longer_than_maximum',
+                'maximum_hours': MAXIMUM_SESSION_HOURS,
+                'session_id': stale_discarded,
+            }
+        active = TimeLog.objects.select_for_update().filter(
+            user=owner,
+            status='running',
+        ).order_by('start_time').first()
+        if not active:
+            raise ValueError('No active task.')
+        discard_reason = session_discard_reason(active.start_time, now)
+        if discard_reason:
+            discarded_id = active.pk
+            active.delete()
+            response = {
+                'status': 'discarded',
+                'reason': discard_reason,
                 'session_id': discarded_id,
             }
+            if discard_reason == 'shorter_than_minimum':
+                response['minimum_minutes'] = MINIMUM_SESSION_MINUTES
+            else:
+                response['maximum_hours'] = MAXIMUM_SESSION_HOURS
+            return response
         active.end_time = now
-        active.note = report
-        active.breakthrough = report
-        active.problems = 'Completed through MCP; not provided separately.'
-        active.next_action = 'Define the next action in the following session.'
+        active.title = title
+        active.details = details
         active.status = 'completed'
-        active.save(update_fields=['end_time', 'note', 'breakthrough', 'problems', 'next_action', 'status'])
+        active.save(update_fields=['end_time', 'title', 'details', 'status'])
     task = _serialize_log(active, now)
     try:
         learning_log = archive_completed_task(task)
@@ -280,15 +314,16 @@ def search(query: str) -> Dict[str, List[Dict[str, str]]]:
             key for key, label in CATEGORY_LABELS.items()
             if query.lower() in key.lower() or query in label
         ]
-        logs = logs.filter(Q(note__icontains=query) | Q(category__in=category_ids))
+        logs = logs.filter(
+            Q(title__icontains=query)
+            | Q(details__icontains=query)
+            | Q(category__in=category_ids)
+        )
     for log in logs.order_by('-start_time')[:17]:
         local_start = _local(log.start_time)
         results.append({
             'id': f'session:{log.pk}',
-            'title': (
-                f'{local_start:%Y-%m-%d %H:%M} '
-                f'{CATEGORY_LABELS.get(log.category, log.category)} {log.duration_minutes} minutes'
-            ),
+            'title': f'{local_start:%Y-%m-%d} · {log.title or "Untitled session"}',
             'url': '',
         })
     return {'results': results[:20]}
@@ -313,7 +348,7 @@ def fetch(id: str) -> Dict[str, Any]:
         except (ValueError, TimeLog.DoesNotExist) as exc:
             raise ValueError('Session not found') from exc
         payload = _serialize_log(log)
-        title = f"{payload['start_time']} {payload['category_label']}"
+        title = payload['title'] or f"{payload['start_time']} {payload['category_label']}"
     else:
         raise ValueError('Unknown document id')
     return {
@@ -357,9 +392,9 @@ async def _mcp_start_task(category: str) -> Dict[str, Any]:
     return await sync_to_async(start_task, thread_sensitive=True)(category)
 
 
-async def _mcp_stop_task(report: str) -> Dict[str, Any]:
-    """End the active task and save its completion summary/report."""
-    return await sync_to_async(stop_task, thread_sensitive=True)(report)
+async def _mcp_stop_task(title: str, details: str) -> Dict[str, Any]:
+    """End the active task with a short title and a full details body."""
+    return await sync_to_async(stop_task, thread_sensitive=True)(title, details)
 
 
 def create_mcp_server() -> FastMCP:
@@ -368,8 +403,10 @@ def create_mcp_server() -> FastMCP:
         name='jkxx Study Tracker',
         instructions=(
             'Query study records and target progress. Start a task only after explicit user intent. '
-            'Collect a completion report before ending an eligible task. Sessions shorter than '
-            '25 minutes are discarded. Categories: math, english, major, training.'
+            'Before ending an eligible task, collect exactly two fields: a short title and a full '
+            'details body. Keep every prompt factual and in English; do not add motivational text. '
+            'Sessions shorter than 25 minutes or longer than 12 hours are deleted. '
+            'Categories: math, english, major, training.'
         ),
         host=settings.MCP_HOST,
         port=settings.MCP_PORT,

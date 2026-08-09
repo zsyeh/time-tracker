@@ -245,3 +245,16 @@ body { background: radial-gradient(circle at 82% -10%, rgba(139, 124, 246, .1), 
 .auth-form input:focus, .auth-card form > p input:focus { border-color: #8b7cf6; box-shadow: 0 0 0 3px rgba(139, 124, 246, .09); }
 .password-button, .auth-card form button, .auth-card > a[role=button] { border-color: #3a3c45; border-radius: 7px; background: #1a1b21; }
 .password-button:hover, .auth-card form button:hover { border-color: #6259a8; background: #20212a; }
+
+:root,[data-theme="coolapk"] { --accent: #10c469; --accent-hover: #34d889; --accent-contrast: #06130b; --accent-rgb: 16, 196, 105; }
+[data-theme="youtube"] { --accent: #ff0033; --accent-hover: #ff3158; --accent-contrast: #fff; --accent-rgb: 255, 0, 51; }
+[data-theme="bilibili"] { --accent: #fb7299; --accent-hover: #ff92b1; --accent-contrast: #1a0710; --accent-rgb: 251, 114, 153; }
+[data-theme="meituan"] { --accent: #ffd100; --accent-hover: #ffdc3d; --accent-contrast: #171300; --accent-rgb: 255, 209, 0; }
+[data-theme="apple"] { --accent: #f5f5f7; --accent-hover: #fff; --accent-contrast: #0b0c0f; --accent-rgb: 245, 245, 247; }
+body { background: radial-gradient(circle at 82% -10%, rgba(var(--accent-rgb), .1), transparent 32%), var(--bg); }
+.auth-brand-mark,.auth-index { color: var(--accent-contrast); background: var(--accent); }
+.passkey-button { border-color: var(--accent); color: var(--accent-contrast); background: var(--accent); }
+.passkey-button:hover { background: var(--accent-hover); box-shadow: 0 10px 28px rgba(var(--accent-rgb), .18); }
+.passkey-note span,.auth-card a,.private-note span { color: var(--accent); }
+.auth-form input:focus,.auth-card form>p input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px rgba(var(--accent-rgb), .09); }
+.password-button:hover,.auth-card form button:hover { border-color: var(--accent); }

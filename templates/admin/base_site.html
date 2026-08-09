@@ -3,6 +3,17 @@
 
 {% block title %}{{ title }} · Learning OS Control{% endblock %}
 
+{% block extrahead %}
+    {{ block.super }}
+    <link rel="icon" href="/static/tracker/apple-favicon.svg" type="image/svg+xml">
+    <script>
+        try {
+            const savedTheme = localStorage.getItem('learning-os-theme') || 'coolapk';
+            document.documentElement.dataset.theme = savedTheme;
+        } catch (_) { document.documentElement.dataset.theme = 'coolapk'; }
+    </script>
+{% endblock %}
+
 {% block extrastyle %}
     {{ block.super }}
     <link rel="stylesheet" href="{% static 'tracker/admin.css' %}">

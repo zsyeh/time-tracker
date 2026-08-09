@@ -27,7 +27,8 @@ class StudySessionSerializer(serializers.ModelSerializer):
             'focus_level',
             'confidence_before',
             'confidence_after',
-            'note',
+            'title',
+            'details',
             'breakthrough',
             'problems',
             'next_action',
@@ -46,6 +47,19 @@ class StudySessionSerializer(serializers.ModelSerializer):
 
     def validate_subject(self, value):
         return normalize_subject(value)
+
+
+class StudySessionSummarySerializer(serializers.ModelSerializer):
+    subject = serializers.CharField(source='category')
+    subject_label = serializers.CharField(source='get_category_display', read_only=True)
+    duration_minutes = serializers.IntegerField(read_only=True)
+
+    class Meta:
+        model = TimeLog
+        fields = (
+            'id', 'subject', 'subject_label', 'start_time', 'end_time',
+            'duration_minutes', 'status', 'title',
+        )
 
 
 class StartSessionSerializer(serializers.Serializer):
@@ -76,10 +90,10 @@ class FinishSessionSerializer(serializers.Serializer):
     )
     focus_level = serializers.IntegerField(min_value=1, max_value=5, required=False, allow_null=True)
     confidence_after = serializers.IntegerField(min_value=1, max_value=5, required=False, allow_null=True)
-    note = serializers.CharField()
-    breakthrough = serializers.CharField()
-    problems = serializers.CharField()
-    next_action = serializers.CharField()
+    # Service-level validation runs after duration validation so invalid-length
+    # sessions can be deleted without forcing the user to fill out a form.
+    title = serializers.CharField(required=False, allow_blank=True)
+    details = serializers.CharField(required=False, allow_blank=True)
 
 
 class LearningIssueSerializer(serializers.ModelSerializer):

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent, onMounted, ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import { Calendar, Clock, DataAnalysis, Guide, List, Setting } from '@element-plus/icons-vue'
+import { Clock, DataAnalysis, Guide, List, Setting } from '@element-plus/icons-vue'
 import ActiveSession from './components/ActiveSession.vue'
 import HeatmapGrid from './components/HeatmapGrid.vue'
 import MetricCard from './components/MetricCard.vue'
@@ -11,10 +11,9 @@ import type { Overview } from './types'
 const TrendsView = defineAsyncComponent(() => import('./views/TrendsView.vue'))
 const HistoryView = defineAsyncComponent(() => import('./views/HistoryView.vue'))
 const IssuesView = defineAsyncComponent(() => import('./views/IssuesView.vue'))
-const KnowledgeView = defineAsyncComponent(() => import('./views/KnowledgeView.vue'))
 const SettingsView = defineAsyncComponent(() => import('./views/SettingsView.vue'))
 
-type PageName = 'today' | 'trends' | 'history' | 'issues' | 'knowledge' | 'settings'
+type PageName = 'today' | 'trends' | 'history' | 'issues' | 'settings'
 const page = ref<PageName>('today')
 const overview = ref<Overview | null>(null)
 const loading = ref(true)
@@ -22,7 +21,7 @@ const username = ref('')
 const nav = [
   { id: 'today', label: 'Today', icon: Clock }, { id: 'trends', label: 'Trends', icon: DataAnalysis },
   { id: 'history', label: 'Sessions', icon: List }, { id: 'issues', label: 'Issues', icon: Guide },
-  { id: 'knowledge', label: 'Knowledge', icon: Calendar }, { id: 'settings', label: 'Settings', icon: Setting },
+  { id: 'settings', label: 'Settings', icon: Setting },
 ] as const
 const subjectLabels: Record<string, string> = { math: 'Mathematics', english: 'English', major: 'Major', training: 'Training' }
 const todayHours = computed(() => overview.value ? `${Math.floor(overview.value.today.minutes / 60)}h ${overview.value.today.minutes % 60}m` : '--')
@@ -88,7 +87,6 @@ onMounted(load)
       <TrendsView v-else-if="page === 'trends'" :overview="overview" />
       <HistoryView v-else-if="page === 'history'" />
       <IssuesView v-else-if="page === 'issues'" />
-      <KnowledgeView v-else-if="page === 'knowledge'" />
       <SettingsView v-else />
     </main>
   </div>

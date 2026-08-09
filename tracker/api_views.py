@@ -30,8 +30,10 @@ from .serializers import (
     LearningIssueSerializer,
     StartSessionSerializer,
     StudySessionSerializer,
+    StudySessionSummarySerializer,
 )
 from .services import (
+    MAXIMUM_SESSION_HOURS,
     MINIMUM_SESSION_MINUTES,
     ActiveSessionConflict,
     abandon_session,
@@ -46,7 +48,7 @@ def _local(value):
 
 
 def _filtered_sessions(request):
-    queryset = TimeLog.objects.filter(user=request.user).prefetch_related('issues')
+    queryset = TimeLog.objects.filter(user=request.user)
     subject = request.query_params.get('subject')
     if subject:
         try:
@@ -65,7 +67,8 @@ def _filtered_sessions(request):
     search = request.query_params.get('search', '').strip()
     if search:
         queryset = queryset.filter(
-            Q(note__icontains=search)
+            Q(title__icontains=search)
+            | Q(details__icontains=search)
             | Q(chapter__icontains=search)
             | Q(topic__icontains=search)
             | Q(breakthrough__icontains=search)
@@ -98,7 +101,12 @@ class SessionListCreateView(APIView):
     def get(self, request):
         paginator = PageNumberPagination()
         page = paginator.paginate_queryset(_filtered_sessions(request), request)
-        return paginator.get_paginated_response(StudySessionSerializer(page, many=True).data)
+        serializer_class = (
+            StudySessionSummarySerializer
+            if request.query_params.get('compact') == '1'
+            else StudySessionSerializer
+        )
+        return paginator.get_paginated_response(serializer_class(page, many=True).data)
 
     def post(self, request):
         serializer = StartSessionSerializer(data=request.data)
@@ -134,20 +142,24 @@ class SessionFinishView(APIView):
         serializer = FinishSessionSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         try:
-            session, changed, discarded = finish_session(session, serializer.validated_data)
+            session, changed, discard_reason = finish_session(session, serializer.validated_data)
         except ValueError as exc:
             return Response({'detail': str(exc)}, status=status.HTTP_400_BAD_REQUEST)
-        if discarded:
+        if discard_reason:
             return Response({
                 'changed': changed,
                 'discarded': True,
+                'discard_reason': discard_reason,
                 'minimum_minutes': MINIMUM_SESSION_MINUTES,
+                'maximum_hours': MAXIMUM_SESSION_HOURS,
                 'session': None,
             })
         return Response({
             'changed': changed,
             'discarded': False,
+            'discard_reason': None,
             'minimum_minutes': MINIMUM_SESSION_MINUTES,
+            'maximum_hours': MAXIMUM_SESSION_HOURS,
             'session': StudySessionSerializer(session).data,
         })
 
@@ -169,7 +181,7 @@ class DashboardOverviewView(APIView):
         version = cache.get(f'dashboard-version:{request.user.pk}', 1)
         # Keep a payload schema version in the key so a zero-downtime frontend
         # deployment never receives an older cached response shape.
-        cache_key = f'dashboard-overview:v3:{request.user.pk}:{days}:{version}'
+        cache_key = f'dashboard-overview:v4:{request.user.pk}:{days}:{version}'
         payload = cache.get(cache_key)
         if payload is None:
             payload = build_dashboard_overview(request.user, days)
@@ -260,7 +272,9 @@ class LaunchTokenActionView(APIView):
 
 
 def _session_export_rows(request):
-    return list(_filtered_sessions(request).filter(status='completed'))
+    return list(
+        _filtered_sessions(request).filter(status='completed').prefetch_related('issues')
+    )
 
 
 @api_view(['GET'])
@@ -270,7 +284,7 @@ def export_csv(request):
     writer.writerow([
         'session_id', 'user_id', 'date', 'start_time', 'end_time', 'duration_minutes',
         'subject', 'chapter', 'topic', 'learning_mode', 'difficulty', 'energy_level',
-        'focus_level', 'confidence_before', 'confidence_after', 'status', 'note',
+        'focus_level', 'confidence_before', 'confidence_after', 'status', 'title', 'details',
         'breakthrough', 'problems', 'next_action', 'issues_json',
     ])
     for session in _session_export_rows(request):
@@ -289,8 +303,9 @@ def export_csv(request):
             _local(session.end_time).isoformat(), session.duration_minutes, session.category,
             session.chapter, session.topic, session.learning_mode, session.difficulty,
             session.energy_level, session.focus_level, session.confidence_before,
-            session.confidence_after, session.status, session.note or '', session.breakthrough,
-            session.problems, session.next_action, json.dumps(issues, ensure_ascii=False),
+            session.confidence_after, session.status, session.title or '', session.details,
+            session.breakthrough, session.problems, session.next_action,
+            json.dumps(issues, ensure_ascii=False),
         ])
     response = HttpResponse(output.getvalue(), content_type='text/csv; charset=utf-8')
     response['Content-Disposition'] = 'attachment; filename="learning-sessions.csv"'
@@ -331,13 +346,9 @@ def export_markdown(request):
             f'- Topic: {session.topic or "Not provided"}',
             f'- Mode: {session.learning_mode or "Not provided"}',
             '',
-            session.note or '',
+            f'### {session.title or "Untitled session"}',
             '',
-            f'**Breakthrough:** {session.breakthrough or "Not provided"}',
-            '',
-            f'**Problems:** {session.problems or "Not provided"}',
-            '',
-            f'**Next action:** {session.next_action or "Not provided"}',
+            session.details,
             '',
         ])
     response = HttpResponse('\n'.join(lines), content_type='text/markdown; charset=utf-8')

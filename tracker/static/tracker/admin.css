@@ -88,3 +88,14 @@ body { background-image: radial-gradient(circle at 82% -10%, rgba(139, 124, 246,
 input, textarea, select, .vTextField { border-color: #30323a; border-radius: 7px; background: #0f1014; }
 input:focus, textarea:focus, select:focus { border-color: #8b7cf6; box-shadow: 0 0 0 3px rgba(139, 124, 246, .08); }
 body.login #container { border-color: #30323a; border-radius: 12px; background: #121318; }
+
+:root,[data-theme="coolapk"] { --theme-accent: #10c469; --theme-hover: #34d889; --theme-contrast: #06130b; --theme-rgb: 16, 196, 105; }
+[data-theme="youtube"] { --theme-accent: #ff0033; --theme-hover: #ff3158; --theme-contrast: #fff; --theme-rgb: 255, 0, 51; }
+[data-theme="bilibili"] { --theme-accent: #fb7299; --theme-hover: #ff92b1; --theme-contrast: #1a0710; --theme-rgb: 251, 114, 153; }
+[data-theme="meituan"] { --theme-accent: #ffd100; --theme-hover: #ffdc3d; --theme-contrast: #171300; --theme-rgb: 255, 209, 0; }
+[data-theme="apple"] { --theme-accent: #f5f5f7; --theme-hover: #fff; --theme-contrast: #0b0c0f; --theme-rgb: 245, 245, 247; }
+:root { --primary: var(--theme-accent); --accent: var(--theme-accent); --primary-fg: var(--theme-contrast); --link-fg: var(--theme-accent); --link-hover-color: var(--theme-hover); }
+body { background-image: radial-gradient(circle at 82% -10%, rgba(var(--theme-rgb), .09), transparent 32%); }
+.learning-admin-brand>span,.module h2,.module caption,.inline-group h2,.button,input[type=submit],input[type=button],.submit-row input,a.button { border-color: var(--theme-accent); color: var(--theme-contrast); background: var(--theme-accent); }
+.button:hover,input[type=submit]:hover,input[type=button]:hover { color: var(--theme-contrast); background: var(--theme-hover); }
+input:focus,textarea:focus,select:focus { border-color: var(--theme-accent); box-shadow: 0 0 0 3px rgba(var(--theme-rgb), .08); }

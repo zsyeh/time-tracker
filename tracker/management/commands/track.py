@@ -3,10 +3,11 @@ from django.utils import timezone
 
 from tracker.models import TimeLog
 from tracker.services import (
+    MAXIMUM_SESSION_HOURS,
     MINIMUM_SESSION_MINUTES,
     ActiveSessionConflict,
     get_service_user,
-    is_short_session,
+    session_discard_reason,
     start_session,
 )
 
@@ -26,10 +27,6 @@ class Command(BaseCommand):
         active_log = TimeLog.objects.filter(user=owner, status='running').first()
 
         if action == 'start':
-            if active_log:
-                self.stderr.write(f"Refused: [{active_log.category}] is currently running.")
-                return
-            
             if not category:
                 self.stderr.write("Syntax Error: Category parameter is mandatory for 'start' action.")
                 return
@@ -53,17 +50,21 @@ class Command(BaseCommand):
                 return
 
             end_time = timezone.now()
-            if is_short_session(active_log.start_time, end_time):
+            discard_reason = session_discard_reason(active_log.start_time, end_time)
+            if discard_reason:
                 active_log.delete()
+                limit = (
+                    f'shorter than {MINIMUM_SESSION_MINUTES} min'
+                    if discard_reason == 'shorter_than_minimum'
+                    else f'longer than {MAXIMUM_SESSION_HOURS} h'
+                )
                 self.stdout.write(
-                    f'Process [DISCARD] -> session shorter than {MINIMUM_SESSION_MINUTES} min'
+                    f'Process [DISCARD] -> session {limit}'
                 )
                 return
             active_log.end_time = end_time
             active_log.status = 'completed'
-            active_log.note = active_log.note or 'Completed through the command line; review pending.'
-            active_log.breakthrough = active_log.breakthrough or 'Not provided'
-            active_log.problems = active_log.problems or 'Not provided'
-            active_log.next_action = active_log.next_action or 'Not provided'
+            active_log.title = active_log.title or 'Command-line study session'
+            active_log.details = active_log.details or 'Completed through the command line; details pending.'
             active_log.save()
             self.stdout.write(f"Process [STOP] -> {active_log.category} | Delta: {active_log.duration_minutes} min")

@@ -7,6 +7,13 @@
     <meta name="theme-color" content="#07110e">
     <meta name="robots" content="noindex,nofollow">
     <title>{% block head_title %}Personal Learning OS{% endblock head_title %}</title>
+    <link rel="icon" href="/static/tracker/apple-favicon.svg" type="image/svg+xml">
+    <script>
+        try {
+            const savedTheme = localStorage.getItem('learning-os-theme') || 'coolapk';
+            document.documentElement.dataset.theme = savedTheme;
+        } catch (_) { document.documentElement.dataset.theme = 'coolapk'; }
+    </script>
     <link rel="stylesheet" href="{% static 'tracker/auth.css' %}">
     {% block extra_head %}{% endblock extra_head %}
 </head>

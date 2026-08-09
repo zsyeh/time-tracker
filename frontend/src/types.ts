@@ -16,7 +16,8 @@ export interface StudySession {
   focus_level: number | null
   confidence_before: number | null
   confidence_after: number | null
-  note: string
+  title: string
+  details: string
   breakthrough: string
   problems: string
   next_action: string

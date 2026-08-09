@@ -69,17 +69,16 @@ def archive_completed_task(task: Dict[str, Any]) -> Dict[str, str]:
         relative_file = Path('sessions') / f'{started:%Y-%m}.md'
         target = path / relative_file
         target.parent.mkdir(parents=True, exist_ok=True)
-        report = task.get('report', '').strip()
-        first_line = next((line.strip() for line in report.splitlines() if line.strip()), 'Study summary')
-        summary_title = re.sub(r'^#+\s*', '', first_line).strip()
-        summary_title = summary_title[:80].rstrip() or 'Study summary'
+        details = task.get('details', '').strip()
+        summary_title = re.sub(r'^#+\s*', '', task.get('title', '').strip())
+        summary_title = summary_title[:120].rstrip() or 'Untitled session'
         entry = (
             f"\n## {summary_title} · {task['duration_minutes']} minutes\n\n"
             f"- Subject: {task['category_label']}\n"
             f"- Start: {started:%Y-%m-%d %H:%M}\n"
             f"- End: {ended:%Y-%m-%d %H:%M}\n"
             f"- Tracker session: {task['id']}\n\n"
-            f"{report}\n"
+            f"{details}\n"
         )
         with target.open('a', encoding='utf-8') as stream:
             stream.write(entry)
