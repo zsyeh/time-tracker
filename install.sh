@@ -51,8 +51,10 @@ if [ ! -f .env ]; then
     replace_env DJANGO_ALLOWED_HOSTS "$public_host,127.0.0.1,localhost"
     if [ "$public_host" = "localhost" ]; then
         replace_env CSRF_TRUSTED_ORIGINS "http://localhost,http://127.0.0.1"
+        replace_env DJANGO_SECURE_SSL_REDIRECT false
     else
         replace_env CSRF_TRUSTED_ORIGINS "https://$public_host"
+        replace_env DJANGO_SECURE_SSL_REDIRECT true
     fi
     replace_env POSTGRES_PASSWORD "$(random_hex 32)"
     echo "已生成权限为 600 的 .env。"
@@ -74,7 +76,7 @@ fi
 docker compose "$@" up -d --build
 
 attempt=0
-until docker compose "$@" exec -T web python -c "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/admin/login/', timeout=3)" >/dev/null 2>&1; do
+until docker compose "$@" exec -T web python -c "import urllib.request; request=urllib.request.Request('http://127.0.0.1:8000/admin/login/', headers={'X-Forwarded-Proto':'https'}); urllib.request.urlopen(request, timeout=3)" >/dev/null 2>&1; do
     attempt=$((attempt + 1))
     if [ "$attempt" -ge 40 ]; then
         echo "服务未能在预期时间内就绪，请运行 docker compose logs web 查看日志。" >&2

@@ -48,6 +48,8 @@ SQLite volume until validation is complete.
 ## Performance/security checklist
 
 - `DJANGO_DEBUG=false`; random `DJANGO_SECRET_KEY`.
+- `DJANGO_SECURE_SSL_REDIRECT=true` behind the HTTPS reverse proxy; local-only
+  HTTP installs may explicitly set it to `false`.
 - Exact `DJANGO_ALLOWED_HOSTS` and HTTPS `CSRF_TRUSTED_ORIGINS`.
 - HTTPS only; proxy forwards original scheme and host.
 - Hashed assets cached immutably; gzip/Brotli enabled when available.

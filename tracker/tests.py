@@ -5,7 +5,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import connection
 from django.db.migrations.executor import MigrationExecutor
-from django.test import TestCase, TransactionTestCase
+from django.test import TestCase, TransactionTestCase, override_settings
 from django.urls import reverse
 from django.utils import timezone
 
@@ -69,6 +69,7 @@ class HistoricalMigrationTests(TransactionTestCase):
         self.assertEqual(int((row.end_time - row.start_time).total_seconds() / 60), 75)
 
 
+@override_settings(SECURE_SSL_REDIRECT=False)
 class AuthAndIsolationTests(TestCase):
     def setUp(self):
         User = get_user_model()
@@ -103,6 +104,7 @@ class AuthAndIsolationTests(TestCase):
         self.assertIn(response.status_code, (200, 302))
 
 
+@override_settings(SECURE_SSL_REDIRECT=False)
 class SessionWorkflowTests(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user('learner', password='password')
@@ -143,6 +145,7 @@ class SessionWorkflowTests(TestCase):
         self.assertEqual(session.next_action, '再练十题')
 
 
+@override_settings(SECURE_SSL_REDIRECT=False)
 class AnalyticsAndExportTests(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user('analyst', password='password')
@@ -174,6 +177,7 @@ class AnalyticsAndExportTests(TestCase):
         self.assertIn('RAW-REFLECTION-SENTINEL', markdown)
 
 
+@override_settings(SECURE_SSL_REDIRECT=False)
 class LaunchTokenTests(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user('launcher', password='password')
