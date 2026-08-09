@@ -100,8 +100,19 @@ class AuthAndIsolationTests(TestCase):
         self.assertTrue(settings.MFA_PASSKEY_LOGIN_ENABLED)
         self.assertTrue(settings.SESSION_COOKIE_HTTPONLY)
         self.assertEqual(settings.SESSION_COOKIE_SAMESITE, 'Lax')
+        self.client.force_login(self.alice)
         response = self.client.get('/accounts/2fa/')
-        self.assertIn(response.status_code, (200, 302))
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '/accounts/2fa/webauthn/add/')
+
+    @override_settings(DEBUG=True)
+    def test_login_prioritizes_passkey_and_loads_project_styles(self):
+        response = self.client.get('/accounts/login/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '使用 Passkey 登录')
+        self.assertContains(response, 'id="passkey_login"')
+        self.assertContains(response, 'tracker/auth.css')
+        self.assertContains(response, 'iPhone / iPad')
 
 
 @override_settings(SECURE_SSL_REDIRECT=False)

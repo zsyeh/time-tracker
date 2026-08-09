@@ -87,7 +87,9 @@ ROOT_URLCONF = 'time_server.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        # Project templates intentionally take precedence over django-allauth's
+        # package templates so authentication shares the application's UI.
+        'DIRS': [BASE_DIR / 'templates'],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [

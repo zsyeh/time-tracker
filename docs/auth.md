@@ -19,6 +19,12 @@ django-allauth MFA owns WebAuthn registration and authentication. The applicatio
 does not implement cryptography. Password login remains available for recovery.
 Users enroll and remove authenticators at `/accounts/2fa/`.
 
+For the best iPhone/iPad flow, sign in with the password once on that device and
+open `/accounts/2fa/webauthn/add/` to save a Passkey in iCloud Keychain. Later
+logins use the prominent Passkey button and invoke the native Face ID/Touch ID
+sheet. A QR code is an operating-system cross-device fallback: it can still be
+shown when no local credential exists or the user chooses another device.
+
 Production requirements:
 
 - HTTPS at the public origin;

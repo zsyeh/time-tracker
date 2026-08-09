@@ -1,0 +1,61 @@
+{% load static i18n %}
+<!doctype html>
+<html lang="zh-CN">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#07110e">
+    <meta name="robots" content="noindex,nofollow">
+    <title>{% block head_title %}Personal Learning OS{% endblock head_title %}</title>
+    <link rel="stylesheet" href="{% static 'tracker/auth.css' %}">
+    {% block extra_head %}{% endblock extra_head %}
+</head>
+<body class="auth-page">
+    <header class="auth-nav">
+        <a class="auth-brand" href="/" aria-label="返回学习系统">
+            <span class="auth-brand-mark">L</span>
+            <span><strong>Learning OS</strong><small>PERSONAL SYSTEM</small></span>
+        </a>
+        {% if user.is_authenticated %}
+            <nav>
+                <a href="/">返回仪表盘</a>
+                {% url 'mfa_index' as mfa_url %}
+                {% if mfa_url %}<a href="{{ mfa_url }}">Passkey</a>{% endif %}
+                {% url 'account_change_password' as password_url %}
+                {% if password_url %}<a href="{{ password_url }}">修改密码</a>{% endif %}
+                {% url 'account_logout' as logout_url %}
+                {% if logout_url %}<a href="{{ logout_url }}">退出</a>{% endif %}
+            </nav>
+        {% endif %}
+    </header>
+
+    <main class="auth-layout">
+        <section class="auth-story" aria-hidden="true">
+            <span class="auth-kicker">PRIVATE · FOCUSED · DURABLE</span>
+            <h1>让开始变得简单，<br>让结束值得回看。</h1>
+            <p>低摩擦启动，认真完成复盘。你的长期学习记录只属于你。</p>
+            <div class="auth-visual">
+                <div class="auth-visual-head"><span>最近学习节奏</span><b>5H GOAL</b></div>
+                <div class="auth-cells">
+                    <i></i><i class="l1"></i><i class="l2"></i><i></i><i class="goal"></i><i class="goal"></i><i></i>
+                    <i class="l1"></i><i></i><i class="l2"></i><i class="l2"></i><i class="goal"></i><i></i><i class="l1"></i>
+                    <i></i><i class="l1"></i><i></i><i class="l2"></i><i class="goal"></i><i class="goal"></i><i class="l2"></i>
+                </div>
+            </div>
+        </section>
+
+        <section class="auth-card">
+            {% if messages %}
+                <div class="auth-messages">
+                    {% for message in messages %}<p>{{ message }}</p>{% endfor %}
+                </div>
+            {% endif %}
+            {% block body %}
+                {% block content %}{% endblock content %}
+            {% endblock body %}
+        </section>
+    </main>
+    <footer class="auth-footer">Personal Learning OS · Same-origin secure session</footer>
+    {% block extra_body %}{% endblock extra_body %}
+</body>
+</html>
