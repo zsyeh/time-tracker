@@ -178,11 +178,6 @@ onMounted(() => { load(); loadRuntime(); loadAccess() })
         <p>Export raw sessions and structured review fields without summary truncation.</p>
         <div class="export-actions"><a href="/api/export/csv/">CSV</a><a href="/api/export/json/">JSON</a><a href="/api/export/markdown/">Markdown</a></div>
       </article>
-      <article class="panel settings-card">
-        <div class="card-title"><div><span class="eyebrow">DOCUMENTATION</span><h2>User guide</h2></div></div>
-        <p>Open the standalone reference for registration, sessions, Markdown, reviews, and data isolation.</p>
-        <div class="settings-actions"><a class="el-button" href="/guide/">Open user guide</a><a class="text-link" href="/contact/">Contact administrator</a><a class="text-link" href="/legal/">Legal & disclaimer</a></div>
-      </article>
       <article v-if="isAdmin" class="panel settings-card admin-console-card">
         <div class="card-title"><div><span class="eyebrow">ADMINISTRATION</span><h2>Django control panel</h2></div><span class="secure-badge">STAFF ONLY</span></div>
         <p>Manage accounts, inspect invitation visitors, and access recovery controls.</p>

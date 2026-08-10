@@ -132,6 +132,7 @@ class AuthAndIsolationTests(TestCase):
         response = self.client.get('/accounts/2fa/')
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, '/accounts/2fa/webauthn/add/')
+        self.assertNotContains(response, 'User Guide')
 
     @override_settings(DEBUG=True)
     def test_login_prioritizes_passkey_and_loads_project_styles(self):
@@ -197,6 +198,7 @@ class InviteRegistrationTests(TestCase):
         self.assertEqual(page.status_code, 200)
         self.assertContains(page, 'INVITE CODE')
         self.assertContains(page, 'zsyeh7286@gmail.com')
+        self.assertNotContains(page, 'href="/guide/"')
 
         invalid = self.client.post('/accounts/signup/', {
             'username': 'no-invite-user',
@@ -352,6 +354,7 @@ class InviteRegistrationTests(TestCase):
         }, follow=True)
         self.assertEqual(generated.status_code, 200)
         self.assertContains(generated, 'NEW CODE · COPY NOW')
+        self.assertNotContains(generated, 'USER GUIDE')
         invite = InviteCode.objects.get(name='Study group')
         self.assertEqual(invite.max_uses, 7)
         self.assertEqual(invite.remaining_uses, 7)

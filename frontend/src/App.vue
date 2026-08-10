@@ -61,7 +61,6 @@ onMounted(load)
       <div class="sidebar-user"><span>{{ username.slice(0, 1).toUpperCase() }}</span><div><b>{{ username }}</b><button @click="logout">Sign out</button></div></div>
     </aside>
     <main class="main-content" v-loading.fullscreen.lock="loading">
-      <a class="app-guide-button" href="/guide/"><el-icon><Guide /></el-icon><span>USER GUIDE</span></a>
       <div class="mobile-header"><div class="brand"><span class="brand-mark">L</span><strong>Learning OS</strong></div><div class="mobile-tools"><el-button circle aria-label="Open global search" @click="globalSearch?.open()"><el-icon><SearchIcon /></el-icon></el-button><el-dropdown trigger="click"><el-button>Menu</el-button><template #dropdown><el-dropdown-menu><el-dropdown-item v-for="item in nav" :key="item.id" @click="page = item.id">{{ item.label }}</el-dropdown-item><el-dropdown-item divided @click="logout">Sign out</el-dropdown-item></el-dropdown-menu></template></el-dropdown></div></div>
       <template v-if="page === 'today'">
         <section class="hero exam-hero">

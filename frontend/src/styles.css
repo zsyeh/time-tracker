@@ -278,7 +278,3 @@ body{background:radial-gradient(circle at 82% -10%,rgba(var(--accent-rgb),.09),t
 .admin-console-card{border-color:rgba(var(--accent-rgb),.25)}.invite-heading-actions{display:flex;align-items:center;gap:14px}.invite-row>div:first-child{min-width:0}.invite-row small{line-height:1.6}.invite-panel .el-tag{min-width:68px;text-align:center}
 .invite-visitor-summary{margin-top:5px!important;color:var(--accent)!important;font:650 7px ui-monospace,monospace!important;letter-spacing:.07em}.settings-actions{flex-wrap:wrap}
 @media(max-width:620px){.invite-heading-actions{align-items:flex-end;flex-direction:column;gap:8px}.invite-heading-actions .text-link{order:2}.admin-console-card .settings-actions{align-items:flex-start;flex-direction:column}}
-
-/* Persistent documentation entry. */
-.app-guide-button{position:fixed;z-index:20;top:18px;right:24px;min-height:34px;padding:0 12px;border:1px solid #3be08e;border-radius:7px;color:#04130b;background:#10c469;box-shadow:0 9px 28px rgba(16,196,105,.18);display:inline-flex;align-items:center;gap:7px;text-decoration:none;font:750 8px ui-monospace,monospace;letter-spacing:.08em;transition:transform .15s,background .15s}.app-guide-button:hover{color:#04130b;background:#34d889;transform:translateY(-1px)}
-@media(max-width:760px){.app-guide-button{top:max(11px,env(safe-area-inset-top));right:92px;min-height:32px;padding-inline:9px}.app-guide-button span{display:none}}

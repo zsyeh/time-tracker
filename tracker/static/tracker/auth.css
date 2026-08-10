@@ -53,6 +53,8 @@ button, input, textarea, select { font: inherit; }
 .auth-nav nav { display: flex; gap: 20px; }
 .auth-nav nav a { color: var(--muted); font: 9px ui-monospace, monospace; letter-spacing: .08em; text-decoration: none; }
 .auth-nav nav a:hover { color: var(--accent); }
+.auth-nav nav a.auth-guide-link { margin-top: -7px; margin-bottom: -7px; padding: 8px 12px; border: 1px solid #3be08e; border-radius: 7px; color: #04130b; background: #10c469; box-shadow: 0 8px 24px rgba(16,196,105,.17); font-weight: 750; }
+.auth-nav nav a.auth-guide-link:hover { color: #04130b; background: #34d889; }
 
 .auth-layout {
   width: min(1240px, 100%);
