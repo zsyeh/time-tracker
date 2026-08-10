@@ -234,6 +234,10 @@ class InviteCode(models.Model):
             return False
         return not self.expires_at or self.expires_at > timezone.now()
 
+    @property
+    def remaining_uses(self):
+        return max(0, self.max_uses - self.use_count)
+
     def __str__(self):
         return self.name
 

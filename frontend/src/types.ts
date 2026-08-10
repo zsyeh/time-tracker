@@ -95,6 +95,7 @@ export interface InviteCode {
   is_active: boolean
   max_uses: number
   use_count: number
+  remaining_uses: number
   expires_at: string | null
   last_used_at: string | null
   created_at: string

@@ -8,6 +8,8 @@ from unittest import mock
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core import mail
+from django.core.cache import cache
 from django.db import connection
 from django.db.migrations.executor import MigrationExecutor
 from django.test import TestCase, TransactionTestCase, override_settings
@@ -142,6 +144,8 @@ class AuthAndIsolationTests(TestCase):
         self.assertContains(response, 'https://github.com/zsyeh/time-tracker')
         self.assertContains(response, 'https://github.com/zsyeh')
         self.assertContains(response, 'https://blog.ehzsy.site')
+        self.assertContains(response, 'CREATE ACCOUNT')
+        self.assertContains(response, '/guide/')
 
     @override_settings(DEBUG=True)
     def test_django_admin_login_uses_project_branding_and_styles(self):
@@ -164,6 +168,7 @@ class InviteRegistrationTests(TestCase):
         page = self.client.get('/accounts/signup/')
         self.assertEqual(page.status_code, 200)
         self.assertContains(page, 'INVITE CODE')
+        self.assertContains(page, 'zsyeh7286@gmail.com')
 
         invalid = self.client.post('/accounts/signup/', {
             'username': 'no-invite-user',
@@ -218,6 +223,85 @@ class InviteRegistrationTests(TestCase):
         })
         self.assertEqual(reused.status_code, 200)
         self.assertFalse(get_user_model().objects.filter(username='second-learner').exists())
+
+    def test_admin_dashboard_generates_capacity_and_lists_visitors(self):
+        self.client.force_login(self.admin)
+        generated = self.client.post('/admin/tracker/invitecode/dashboard/', {
+            'name': 'Study group',
+            'max_uses': 7,
+            'expires_at': '',
+        }, follow=True)
+        self.assertEqual(generated.status_code, 200)
+        self.assertContains(generated, 'NEW CODE · COPY NOW')
+        invite = InviteCode.objects.get(name='Study group')
+        self.assertEqual(invite.max_uses, 7)
+        self.assertEqual(invite.remaining_uses, 7)
+        self.assertContains(generated, '7')
+
+        visitor = get_user_model().objects.create_user('invited-visitor', password='password')
+        InviteRedemption.objects.create(invite=invite, user=visitor)
+        invite.use_count = 1
+        invite.last_used_at = timezone.now()
+        invite.save(update_fields=('use_count', 'last_used_at'))
+        dashboard = self.client.get('/admin/tracker/invitecode/dashboard/')
+        self.assertContains(dashboard, 'invited-visitor')
+        self.assertContains(dashboard, 'REGISTERED VISITORS')
+        self.assertEqual(invite.remaining_uses, 6)
+
+        listed = self.client.get('/api/invite-codes/').json()[0]
+        self.assertEqual(listed['remaining_uses'], 6)
+
+
+@override_settings(
+    SECURE_SSL_REDIRECT=False,
+    EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend',
+    CONTACT_EMAIL='zsyeh7286@gmail.com',
+    DEFAULT_FROM_EMAIL='zsyeh7286@gmail.com',
+    CONTACT_RATE_LIMIT_PER_HOUR=3,
+    STORAGES={
+        'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+        'staticfiles': {'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage'},
+    },
+)
+class PublicGuideAndContactTests(TestCase):
+    def setUp(self):
+        cache.clear()
+
+    def tearDown(self):
+        cache.clear()
+
+    def test_public_guide_has_registration_and_usage_entry_points(self):
+        response = self.client.get('/guide/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Register with an invite')
+        self.assertContains(response, 'Read before editing')
+        self.assertContains(response, 'zsyeh7286@gmail.com')
+
+    def test_contact_sends_smtp_message_from_owner_to_owner_without_database_record(self):
+        response = self.client.post('/contact/', {
+            'name': 'Visitor Name',
+            'reply_email': 'visitor@example.com',
+            'message': 'I need help with an invitation code.',
+            'website': '',
+        }, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Your message was sent to the administrator.')
+        self.assertEqual(len(mail.outbox), 1)
+        message = mail.outbox[0]
+        self.assertEqual(message.from_email, 'zsyeh7286@gmail.com')
+        self.assertEqual(message.to, ['zsyeh7286@gmail.com'])
+        self.assertEqual(message.reply_to, ['visitor@example.com'])
+        self.assertIn('Visitor Name', message.body)
+
+    def test_contact_honeypot_does_not_send(self):
+        response = self.client.post('/contact/', {
+            'name': 'Automated visitor',
+            'reply_email': 'bot@example.com',
+            'message': 'This automated message should not be delivered.',
+            'website': 'https://spam.example',
+        }, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(mail.outbox), 0)
 
 
 @override_settings(SECURE_SSL_REDIRECT=False)

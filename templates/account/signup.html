@@ -25,4 +25,9 @@
         <button class="password-button" type="submit">CREATE ACCOUNT</button>
     </form>
     <p class="signup-note">Already registered? <a href="{% url 'account_login' %}">Sign in</a></p>
+    <div class="signup-contact">
+        <span>NEED HELP?</span>
+        <a href="mailto:zsyeh7286@gmail.com">zsyeh7286@gmail.com</a>
+        <a href="{% url 'contact' %}">Open contact form →</a>
+    </div>
 {% endblock content %}

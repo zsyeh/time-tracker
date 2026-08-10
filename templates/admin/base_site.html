@@ -21,9 +21,9 @@
 
 {% block branding %}
     <div class="learning-admin-brand">
-        <span>L</span>
+        <span></span>
         <div><strong>Learning OS</strong><small>CONTROL PANEL</small></div>
     </div>
 {% endblock %}
 
-{% block nav-global %}<span class="admin-instance">PRIVATE INSTANCE / AUTHORIZED ACCESS ONLY</span>{% endblock %}
+{% block nav-global %}<nav class="admin-global"><a href="/">OPEN APP</a><a href="{% url 'admin:tracker_invitecode_dashboard' %}">INVITATIONS</a><a href="{% url 'guide' %}">USER GUIDE</a></nav>{% endblock %}

@@ -39,3 +39,39 @@ class InviteSignupForm(SignupForm):
             invite.save(update_fields=('use_count', 'last_used_at', 'is_active'))
             InviteRedemption.objects.create(invite=invite, user=user)
             return user
+
+
+class AdminInviteCodeForm(forms.Form):
+    name = forms.CharField(label='Label', max_length=120)
+    max_uses = forms.IntegerField(label='Maximum uses', min_value=1, max_value=100, initial=1)
+    expires_at = forms.DateTimeField(
+        label='Expires at',
+        required=False,
+        widget=forms.DateTimeInput(attrs={'type': 'datetime-local'}),
+    )
+
+    def clean_expires_at(self):
+        value = self.cleaned_data.get('expires_at')
+        if value and value <= timezone.now():
+            raise forms.ValidationError('Expiry must be in the future.')
+        return value
+
+
+class ContactForm(forms.Form):
+    name = forms.CharField(label='Your name', max_length=120)
+    reply_email = forms.EmailField(label='Your email', max_length=254)
+    message = forms.CharField(
+        label='Message',
+        min_length=10,
+        max_length=4000,
+        widget=forms.Textarea(attrs={'rows': 8}),
+    )
+    website = forms.CharField(
+        required=False,
+        label='',
+        widget=forms.TextInput(attrs={
+            'autocomplete': 'off',
+            'tabindex': '-1',
+            'aria-hidden': 'true',
+        }),
+    )

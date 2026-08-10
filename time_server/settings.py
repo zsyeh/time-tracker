@@ -214,6 +214,26 @@ LEARNING_REPO_PATH = Path(
 ).expanduser()
 LEARNING_REPO_MAIN_BRANCH = os.environ.get('LEARNING_REPO_MAIN_BRANCH', 'main').strip() or 'main'
 
+# Public contact messages are delivered directly and are never stored in the
+# application database. Gmail requires an app-specific password in production.
+CONTACT_EMAIL = os.environ.get('CONTACT_EMAIL', 'zsyeh7286@gmail.com').strip()
+CONTACT_RATE_LIMIT_PER_HOUR = env_int('CONTACT_RATE_LIMIT_PER_HOUR', 3)
+EMAIL_BACKEND = os.environ.get(
+    'EMAIL_BACKEND',
+    'django.core.mail.backends.smtp.EmailBackend',
+)
+EMAIL_HOST = os.environ.get('SMTP_HOST', 'smtp.gmail.com').strip()
+EMAIL_PORT = env_int('SMTP_PORT', 587)
+EMAIL_HOST_USER = os.environ.get('SMTP_USERNAME', '').strip()
+EMAIL_HOST_PASSWORD = os.environ.get('SMTP_PASSWORD', '')
+EMAIL_USE_TLS = env_bool('SMTP_USE_TLS', True)
+EMAIL_USE_SSL = env_bool('SMTP_USE_SSL', False)
+EMAIL_TIMEOUT = env_int('SMTP_TIMEOUT', 10)
+DEFAULT_FROM_EMAIL = os.environ.get(
+    'DEFAULT_FROM_EMAIL',
+    EMAIL_HOST_USER or CONTACT_EMAIL,
+).strip()
+
 # Nginx terminates TLS on this host and forwards the original scheme.
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_SSL_REDIRECT = env_bool('DJANGO_SECURE_SSL_REDIRECT', not DEBUG)

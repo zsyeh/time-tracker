@@ -1,0 +1,22 @@
+{% extends "public/base.html" %}
+{% block title %}Contact · Personal Learning OS{% endblock %}
+{% block content %}
+<section class="contact-layout">
+    <div class="contact-copy">
+        <span class="public-eyebrow">SUPPORT / CONTACT</span>
+        <h1>Contact the administrator.</h1>
+        <p>Use this form for invitation, registration, or account-access questions. The message is sent to the administrator by email and is not stored in the application database.</p>
+        <dl><div><dt>EMAIL</dt><dd><a href="mailto:{{ contact_email }}">{{ contact_email }}</a></dd></div><div><dt>DELIVERY</dt><dd>SMTP · DIRECT TO ADMIN</dd></div><div><dt>RETENTION</dt><dd>NOT STORED LOCALLY</dd></div></dl>
+    </div>
+    <form method="post" class="contact-form">
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="form-errors">{{ form.non_field_errors }}</div>{% endif %}
+        <label for="id_name">YOUR NAME</label>{{ form.name }}{% if form.name.errors %}<div class="form-errors">{{ form.name.errors }}</div>{% endif %}
+        <label for="id_reply_email">YOUR EMAIL</label>{{ form.reply_email }}{% if form.reply_email.errors %}<div class="form-errors">{{ form.reply_email.errors }}</div>{% endif %}
+        <label for="id_message">MESSAGE</label>{{ form.message }}{% if form.message.errors %}<div class="form-errors">{{ form.message.errors }}</div>{% endif %}
+        <div class="contact-honeypot" aria-hidden="true">{{ form.website }}</div>
+        <button type="submit">SEND MESSAGE</button>
+        <small>Maximum {{ form.message.field.max_length }} characters · rate limited</small>
+    </form>
+</section>
+{% endblock %}

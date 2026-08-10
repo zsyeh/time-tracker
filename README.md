@@ -39,6 +39,8 @@ curl -fsSL https://app.ehzsy.site/install/docker-compose.sh | sh -s -- study.exa
 - 每次完成后生成一个独立 Markdown 文件并通过本机 GitHub CLI 推送到私有仓库；管理员写入主分支，普通账号写入以用户名命名的隔离分支，失败会进入持久化队列自动重试。
 - 少于 25 分钟、超过 12 小时或主动放弃的会话直接删除，不写入完成记录。
 - Django Session 登录、邀请码注册、可配置“记住我”、django-allauth Passkey/WebAuthn、多用户数据隔离；只有管理员能在设置页生成或撤销邀请码。
+- 登录页保留明确的邀请注册按钮，并提供公开的 `/guide/` 使用说明和 `/contact/` 联系入口；注册页显示管理员邮箱。
+- Django Admin 提供独立的邀请码控制页，可设置 1–100 次使用容量并查看剩余次数、使用时间和注册访客。
 - 科目趋势、周/月汇总、学习记录检索和问题闭环；知识点入口已从当前界面移除。
 - Coolapk 绿、YouTube 红、Bilibili 粉、Meituan 黄和 Apple 白五套主题颜色，以及  标签图标。
 - 登录页提供小尺寸的 Docker Hub、项目源码、GitHub 主页与个人博客链接。
@@ -115,6 +117,8 @@ cd frontend && npm run build
 - `/`：认证后的 Vue 应用
 - `/accounts/login/`：密码或 Passkey 登录
 - `/accounts/signup/`：必须持有效邀请码的账号注册
+- `/guide/`：公开、独立的网站使用说明
+- `/contact/`：限流且不落库的管理员邮件联系表单
 - `/accounts/2fa/`：Passkey 管理
 - `/start/<subject>`：登录用户快捷启动
 - `/launch/<token>`：受限启动令牌
@@ -123,5 +127,6 @@ cd frontend && npm run build
 - `/api/sessions/<id>/reviews/`：记录回顾并读取该会话的回顾趋势
 - `/api/invite-codes/`：仅管理员可用的邀请码管理
 - `/admin/`：管理员恢复入口
+- `/admin/tracker/invitecode/dashboard/`：管理员邀请码容量与访客记录
 
 第一次使用建议先看 [使用说明](docs/usage.zh-CN.md)。API、认证、模型和部署配置分别见 [API](docs/api.md)、[认证](docs/auth.md)、[数据模型](docs/data-model.md)、[架构](docs/architecture.md)。
