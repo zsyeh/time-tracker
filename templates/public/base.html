@@ -1,0 +1,28 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#0b0c0f">
+    <meta name="robots" content="noindex,nofollow">
+    <title>{% block title %}Personal Learning OS{% endblock %}</title>
+    <link rel="icon" href="/static/tracker/apple-favicon.svg" type="image/svg+xml">
+    <script>
+        try { document.documentElement.dataset.theme = localStorage.getItem('learning-os-theme') || 'coolapk'; }
+        catch (_) { document.documentElement.dataset.theme = 'coolapk'; }
+    </script>
+    <link rel="stylesheet" href="{% static 'tracker/public.css' %}">
+</head>
+<body>
+    <header class="public-nav">
+        <a class="public-brand" href="/"><span></span><div><strong>Learning OS</strong><small>PUBLIC INFORMATION</small></div></a>
+        <nav><a href="{% url 'guide' %}">Guide</a><a href="{% url 'contact' %}">Contact</a><a href="{% url 'account_login' %}">Sign in</a><a class="nav-register" href="{% url 'account_signup' %}">Register</a></nav>
+    </header>
+    <main class="public-main">
+        {% if messages %}<div class="public-messages">{% for message in messages %}<p>{{ message }}</p>{% endfor %}</div>{% endif %}
+        {% block content %}{% endblock %}
+    </main>
+    <footer class="public-footer"><a href="mailto:{{ contact_email }}">{{ contact_email }}</a><span>·</span><a href="https://github.com/zsyeh/time-tracker">GitHub</a><span>·</span>Personal Learning OS</footer>
+</body>
+</html>

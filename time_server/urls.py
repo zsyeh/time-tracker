@@ -24,12 +24,15 @@ from tracker.api_views import (
     export_json,
     export_markdown,
 )
+from tracker.public_views import contact_view, guide_view
 from tracker.web_views import LaunchDeviceView, direct_start_view, launch_browser_view, spa_view
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('accounts/', include('allauth.urls')),
+    path('guide/', guide_view, name='guide'),
+    path('contact/', contact_view, name='contact'),
     path('start/<str:subject>', direct_start_view, name='direct_start'),
     path('launch/<str:raw_token>', launch_browser_view, name='launch_browser'),
     path('api/launch/<str:raw_token>/start', LaunchDeviceView.as_view(), name='launch_device'),

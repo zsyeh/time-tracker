@@ -164,14 +164,24 @@ onMounted(() => { load(); loadRuntime(); loadAccess() })
         <p>Export raw sessions and structured review fields without summary truncation.</p>
         <div class="export-actions"><a href="/api/export/csv/">CSV</a><a href="/api/export/json/">JSON</a><a href="/api/export/markdown/">Markdown</a></div>
       </article>
+      <article class="panel settings-card">
+        <div class="card-title"><div><span class="eyebrow">DOCUMENTATION</span><h2>User guide</h2></div></div>
+        <p>Open the standalone reference for registration, sessions, Markdown, reviews, and data isolation.</p>
+        <div class="settings-actions"><a class="el-button" href="/guide/">Open user guide</a><a class="text-link" href="/contact/">Contact administrator</a></div>
+      </article>
+      <article v-if="isAdmin" class="panel settings-card admin-console-card">
+        <div class="card-title"><div><span class="eyebrow">ADMINISTRATION</span><h2>Django control panel</h2></div><span class="secure-badge">STAFF ONLY</span></div>
+        <p>Manage accounts, inspect invitation visitors, and access recovery controls.</p>
+        <div class="settings-actions"><a class="el-button el-button--primary" href="/admin/">Open Django Admin</a><a class="text-link" href="/admin/tracker/invitecode/dashboard/">Invitation dashboard</a></div>
+      </article>
     </section>
     <section v-if="isAdmin" class="panel token-panel invite-panel">
-      <div class="section-heading"><div><span class="eyebrow">ADMIN / REGISTRATION</span><h2>Invite codes</h2></div><el-button type="primary" @click="inviteOpen = true">Generate invite</el-button></div>
-      <p class="section-note">Only administrators can generate codes. Raw codes are shown once and stored as hashes.</p>
+      <div class="section-heading"><div><span class="eyebrow">ADMIN / REGISTRATION</span><h2>Invite codes</h2></div><div class="invite-heading-actions"><a class="text-link" href="/admin/tracker/invitecode/dashboard/">Full visitor log</a><el-button type="primary" @click="inviteOpen = true">Generate invite</el-button></div></div>
+      <p class="section-note">Choose 1–100 uses per code. Raw codes are shown once and stored as hashes.</p>
       <el-empty v-if="!invites.length" description="No invite codes" />
       <article v-for="invite in invites" :key="invite.id" class="token-row invite-row">
-        <div><strong>{{ invite.name }}</strong><small>{{ invite.use_count }} / {{ invite.max_uses }} uses · created by {{ invite.created_by }}<span v-if="invite.expires_at"> · expires {{ new Date(invite.expires_at).toLocaleString('en-GB') }}</span></small></div>
-        <el-tag :type="invite.usable ? 'success' : 'info'">{{ invite.usable ? 'AVAILABLE' : 'CLOSED' }}</el-tag>
+        <div><strong>{{ invite.name }}</strong><small>{{ invite.use_count }} used · {{ invite.remaining_uses }} remaining · created by {{ invite.created_by }}<span v-if="invite.last_used_at"> · last used {{ new Date(invite.last_used_at).toLocaleString('en-GB') }}</span><span v-if="invite.expires_at"> · expires {{ new Date(invite.expires_at).toLocaleString('en-GB') }}</span></small></div>
+        <el-tag :type="invite.usable ? 'success' : 'info'">{{ invite.usable ? `${invite.remaining_uses} LEFT` : 'CLOSED' }}</el-tag>
         <div><el-button v-if="invite.is_active" text type="danger" @click="revokeInvite(invite)">Revoke</el-button></div>
       </article>
     </section>

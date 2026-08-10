@@ -1,0 +1,37 @@
+{% extends "admin/base_site.html" %}
+{% block title %}Invitation control · Learning OS{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><a href="{% url 'admin:index' %}">Home</a> › <a href="{% url 'admin:tracker_invitecode_changelist' %}">Invite codes</a> › Control</div>{% endblock %}
+{% block content %}
+<div class="invite-admin-page">
+    <header class="invite-admin-hero"><div><span>ADMIN / REGISTRATION</span><h1>Invitation control</h1><p>Generate access, inspect capacity, and review which accounts consumed each code.</p></div><a href="{% url 'admin:tracker_invitecode_changelist' %}" class="button">MODEL VIEW</a></header>
+    <section class="invite-admin-metrics">
+        <article><span>TOTAL CODES</span><strong>{{ invite_count }}</strong></article>
+        <article><span>AVAILABLE</span><strong>{{ available_count }}</strong></article>
+        <article><span>USES REMAINING</span><strong>{{ remaining_count }}</strong></article>
+        <article><span>REGISTERED VISITORS</span><strong>{{ visitor_count }}</strong></article>
+    </section>
+    <section class="invite-admin-grid">
+        <article class="invite-generate-card">
+            <span class="invite-card-kicker">NEW INVITATION</span><h2>Generate code</h2><p>Set an explicit capacity from 1 to 100. The raw code is available once after generation.</p>
+            {% if raw_code %}<div class="invite-reveal"><span>NEW CODE · COPY NOW</span><code id="raw-invite-code">{{ raw_code }}</code><button type="button" onclick="navigator.clipboard.writeText(document.getElementById('raw-invite-code').textContent);this.textContent='COPIED'">COPY CODE</button></div>{% endif %}
+            <form method="post" class="invite-admin-form">{% csrf_token %}
+                {% if form.non_field_errors %}<div class="errornote">{{ form.non_field_errors }}</div>{% endif %}
+                <label for="id_name">LABEL</label>{{ form.name }}{{ form.name.errors }}
+                <div class="invite-form-pair"><div><label for="id_max_uses">MAXIMUM USES</label>{{ form.max_uses }}{{ form.max_uses.errors }}</div><div><label for="id_expires_at">EXPIRES AT</label>{{ form.expires_at }}{{ form.expires_at.errors }}</div></div>
+                <button type="submit" class="button default">GENERATE INVITE</button>
+            </form>
+        </article>
+        <section class="invite-ledger">
+            <div class="invite-ledger-heading"><div><span class="invite-card-kicker">CAPACITY / VISITORS</span><h2>Invitation ledger</h2></div><small>LATEST 100</small></div>
+            {% for invite in invitations %}
+            <article class="invite-ledger-row">
+                <header><div><strong>{{ invite.name }}</strong><small>BY {{ invite.created_by|default:"DELETED ADMIN" }} · {{ invite.created_at|date:"Y-m-d H:i" }}</small></div><span class="invite-status {% if invite.usable %}available{% endif %}">{% if invite.usable %}AVAILABLE{% else %}CLOSED{% endif %}</span></header>
+                <div class="invite-capacity"><span style="--capacity:{% widthratio invite.use_count invite.max_uses 100 %}%"></span></div>
+                <dl><div><dt>USED</dt><dd>{{ invite.use_count }} / {{ invite.max_uses }}</dd></div><div><dt>REMAINING</dt><dd>{{ invite.remaining_uses }}</dd></div><div><dt>LAST USED</dt><dd>{{ invite.last_used_at|date:"Y-m-d H:i"|default:"—" }}</dd></div><div><dt>EXPIRES</dt><dd>{{ invite.expires_at|date:"Y-m-d H:i"|default:"NEVER" }}</dd></div></dl>
+                <div class="invite-visitors"><span>VISITORS</span>{% for redemption in invite.redemptions.all %}<a href="{% url 'admin:auth_user_change' redemption.user.pk %}"><b>{{ redemption.user.username }}</b><time>{{ redemption.redeemed_at|date:"Y-m-d H:i" }}</time></a>{% empty %}<small>NO REGISTRATIONS YET</small>{% endfor %}</div>
+            </article>
+            {% empty %}<div class="invite-empty">No invite codes have been generated.</div>{% endfor %}
+        </section>
+    </section>
+</div>
+{% endblock %}

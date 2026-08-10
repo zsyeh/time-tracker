@@ -8,12 +8,20 @@ production, and SameSite=Lax. `SESSION_REMEMBER_DAYS` controls the maximum trust
 device lifetime; django-allauth asks whether the user wants to be remembered.
 The signup page is public, but account creation requires a valid administrator-
 issued invite code. Only staff users can generate or revoke invites from the
-authenticated Settings page/API. Codes are random, stored only as SHA-256
-digests, optionally expiring/use-limited, and the raw value is displayed once.
+authenticated Settings page/API or the dedicated Django Admin invitation
+dashboard. Codes are random, stored only as SHA-256 digests, optionally
+expiring, configurable for 1–100 uses, and the raw value is displayed once.
+Administrators can inspect remaining capacity, redemption timestamps, and the
+username created by each redemption.
 
 All session, issue, knowledge-point, token, analytics, and export querysets filter
 by `request.user`. Foreign-key validation also rejects cross-user session/parent
 references.
+
+Public support pages do not grant application access. `/guide/` is read-only.
+`/contact/` uses CSRF protection, a honeypot, per-network rate limiting, and
+SMTP delivery to the administrator; contact text is not stored in the tracker
+database.
 
 ## Passkeys
 

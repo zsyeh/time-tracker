@@ -181,6 +181,21 @@ button, input, textarea, select { font: inherit; }
 .private-note span { color: var(--accent); }
 .signup-note { margin: 10px 0 0!important; color: #71747e!important; text-align: center; font-size: 9px!important; }
 .signup-form { margin-top: 22px; }
+.signup-button { min-height: 52px; margin-top: 12px; padding: 10px 13px; border: 1px solid rgba(var(--accent-rgb), .42); border-radius: 8px; color: var(--text)!important; background: rgba(var(--accent-rgb), .055); display: grid; grid-template-columns: 1fr auto; align-items: center; text-decoration: none; transition: border-color .15s, background .15s, transform .15s; }
+.signup-button:hover { border-color: var(--accent); background: rgba(var(--accent-rgb), .1); transform: translateY(-1px); }
+.signup-button span,.signup-button strong { display: block; }
+.signup-button span { color: #777a84; font-size: 8px; }
+.signup-button strong { margin-top: 3px; font: 700 10px ui-monospace,monospace; letter-spacing: .09em; }
+.signup-button b { grid-column: 2; grid-row: 1 / span 2; color: var(--accent); font-size: 18px; }
+.auth-help-links { margin-top: 13px; display: flex; justify-content: center; gap: 18px; }
+.auth-help-links a { color: #747680!important; font: 7px ui-monospace,monospace; letter-spacing: .09em; }
+.auth-help-links a:hover { color: var(--accent)!important; }
+.signup-contact { margin-top: 17px; padding-top: 14px; border-top: 1px solid #292b33; display: grid; gap: 6px; text-align: center; }
+.signup-contact span { color: #666974; font: 650 7px ui-monospace,monospace; letter-spacing: .1em; }
+.signup-contact a { font-size: 9px; }
+.auth-footer { display: flex; justify-content: center; gap: 7px; }
+.auth-footer a { color: #656871; text-decoration: none; }
+.auth-footer a:hover { color: var(--accent); }
 .source-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 5px; margin-top: 13px; }
 .source-links a { min-height: 28px; padding: 5px 8px; display: inline-flex; align-items: center; gap: 5px; border: 1px solid #2b2d34; border-radius: 6px; color: #7e818c; background: rgba(255,255,255,.012); font: 7px ui-monospace, monospace; letter-spacing: .06em; transition: color .15s ease, border-color .15s ease, background .15s ease; }
 .source-links a:hover { color: var(--text); border-color: rgba(var(--accent-rgb), .52); background: rgba(var(--accent-rgb), .045); }
