@@ -16,7 +16,7 @@ LABEL org.opencontainers.image.title="Personal Learning OS" \
       org.opencontainers.image.source="https://github.com/zsyeh/time-tracker" \
       org.opencontainers.image.version="$VERSION" \
       org.opencontainers.image.revision="$VCS_REF" \
-      org.opencontainers.image.licenses="MIT"
+      org.opencontainers.image.licenses="GPL-3.0-or-later"
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \

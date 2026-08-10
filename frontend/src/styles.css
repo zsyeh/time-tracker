@@ -276,4 +276,5 @@ body{background:radial-gradient(circle at 82% -10%,rgba(var(--accent-rgb),.09),t
 
 /* Administrator access and invitation capacity. */
 .admin-console-card{border-color:rgba(var(--accent-rgb),.25)}.invite-heading-actions{display:flex;align-items:center;gap:14px}.invite-row>div:first-child{min-width:0}.invite-row small{line-height:1.6}.invite-panel .el-tag{min-width:68px;text-align:center}
+.invite-visitor-summary{margin-top:5px!important;color:var(--accent)!important;font:650 7px ui-monospace,monospace!important;letter-spacing:.07em}.settings-actions{flex-wrap:wrap}
 @media(max-width:620px){.invite-heading-actions{align-items:flex-end;flex-direction:column;gap:8px}.invite-heading-actions .text-link{order:2}.admin-console-card .settings-actions{align-items:flex-start;flex-direction:column}}

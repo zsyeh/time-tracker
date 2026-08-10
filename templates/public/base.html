@@ -23,6 +23,6 @@
         {% if messages %}<div class="public-messages">{% for message in messages %}<p>{{ message }}</p>{% endfor %}</div>{% endif %}
         {% block content %}{% endblock %}
     </main>
-    <footer class="public-footer"><a href="mailto:{{ contact_email }}">{{ contact_email }}</a><span>·</span><a href="https://github.com/zsyeh/time-tracker">GitHub</a><span>·</span>Personal Learning OS</footer>
+    <footer class="public-footer"><a href="mailto:{{ contact_email }}">{{ contact_email }}</a><span>·</span><a href="https://github.com/zsyeh/time-tracker">GitHub</a><span>·</span><a href="{% url 'legal' %}">Legal & Disclaimer / 法律与免责声明</a><span>·</span>GPL-3.0-or-later</footer>
 </body>
 </html>

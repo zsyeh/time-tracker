@@ -3,7 +3,7 @@
 {% block breadcrumbs %}<div class="breadcrumbs"><a href="{% url 'admin:index' %}">Home</a> › <a href="{% url 'admin:tracker_invitecode_changelist' %}">Invite codes</a> › Control</div>{% endblock %}
 {% block content %}
 <div class="invite-admin-page">
-    <header class="invite-admin-hero"><div><span>ADMIN / REGISTRATION</span><h1>Invitation control</h1><p>Generate access, inspect capacity, and review which accounts consumed each code.</p></div><a href="{% url 'admin:tracker_invitecode_changelist' %}" class="button">MODEL VIEW</a></header>
+    <header class="invite-admin-hero"><div><span>ADMIN / REGISTRATION</span><h1>Invitation control</h1><p>Generate access, inspect capacity, and review which accounts consumed each code.</p></div><div class="invite-hero-actions"><a href="{% url 'admin:tracker_auth_recovery' %}" class="button">AUTH RECOVERY</a><a href="{% url 'admin:tracker_invitecode_changelist' %}" class="button">MODEL VIEW</a></div></header>
     <section class="invite-admin-metrics">
         <article><span>TOTAL CODES</span><strong>{{ invite_count }}</strong></article>
         <article><span>AVAILABLE</span><strong>{{ available_count }}</strong></article>

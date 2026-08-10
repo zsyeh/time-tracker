@@ -31,8 +31,11 @@ collide with it.
 ## Invite and redemption
 
 `InviteCode` stores only a SHA-256 digest plus label, issuer, expiry, use limit,
-and revocation state. `InviteRedemption` links the consumed capability to the
-new account for auditability without retaining the raw code.
+and revocation state. Self-service codes also store their Asia/Shanghai issue
+date and are constrained to one use; a conditional unique constraint permits
+only one self-service code per issuer and day. `InviteRedemption` links the
+consumed capability to the new account and timestamp for auditability without
+retaining the raw code.
 
 ## Learning issue
 

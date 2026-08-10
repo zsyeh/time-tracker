@@ -27,6 +27,11 @@ def guide_view(request):
 
 
 @never_cache
+def legal_view(request):
+    return render(request, 'public/legal.html', {'contact_email': settings.CONTACT_EMAIL})
+
+
+@never_cache
 def contact_view(request):
     form = ContactForm(request.POST or None)
     if request.method == 'POST' and form.is_valid():

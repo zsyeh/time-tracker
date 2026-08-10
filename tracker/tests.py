@@ -156,6 +156,33 @@ class AuthAndIsolationTests(TestCase):
 
 
 @override_settings(SECURE_SSL_REDIRECT=False, PASSWORD_HASHERS=TEST_PASSWORD_HASHERS)
+class AuthenticationPolicyTests(TestCase):
+    network = '198.51.100.24'
+
+    def setUp(self):
+        cache.clear()
+        self.user = get_user_model().objects.create_user('rate-user', password='correct')
+
+    def tearDown(self):
+        cache.clear()
+
+    def test_twenty_failed_logins_are_allowed_before_clear_limit_feedback(self):
+        for attempt in range(20):
+            response = self.client.post('/accounts/login/', {
+                'login': self.user.username,
+                'password': 'wrong',
+            }, REMOTE_ADDR=self.network)
+            self.assertEqual(response.status_code, 200, attempt)
+        limited = self.client.post('/accounts/login/', {
+            'login': self.user.username,
+            'password': 'wrong',
+        }, REMOTE_ADDR=self.network)
+        self.assertEqual(limited.status_code, 200)
+        self.assertContains(limited, 'Too many failed login attempts. Try again later.')
+        self.assertContains(limited, 'Continue with Passkey')
+
+
+@override_settings(SECURE_SSL_REDIRECT=False, PASSWORD_HASHERS=TEST_PASSWORD_HASHERS)
 class InviteRegistrationTests(TestCase):
     def setUp(self):
         User = get_user_model()
@@ -177,27 +204,70 @@ class InviteRegistrationTests(TestCase):
             'invite_code': 'not-a-real-code',
         })
         self.assertEqual(invalid.status_code, 200)
+        self.assertContains(invalid, 'ACCOUNT NOT CREATED')
         self.assertContains(invalid, 'invalid, expired, or already used')
         self.assertFalse(get_user_model().objects.filter(username='no-invite-user').exists())
 
-    def test_only_admin_can_issue_and_raw_code_is_shown_once(self):
+    def test_ordinary_member_can_issue_only_one_single_use_invite_per_day(self):
         self.client.force_login(self.member)
-        denied = self.client.post(
-            '/api/invite-codes/', {'name': 'Denied'}, content_type='application/json',
+        issued = self.client.post(
+            '/api/invite-codes/',
+            {'name': 'Daily share', 'max_uses': 99},
+            content_type='application/json',
         )
-        self.assertEqual(denied.status_code, 403)
+        self.assertEqual(issued.status_code, 201)
+        payload = issued.json()
+        self.assertEqual(payload['max_uses'], 1)
+        self.assertTrue(payload['is_self_service'])
+        self.assertEqual(payload['issued_local_date'], timezone.localdate().isoformat())
+        second = self.client.post(
+            '/api/invite-codes/', {'name': 'Second daily share'}, content_type='application/json',
+        )
+        self.assertEqual(second.status_code, 409)
+        self.assertIn('already been generated', second.json()['detail'])
+        self.client.logout()
+        registered = self.client.post('/accounts/signup/', {
+            'username': 'daily-invited-user',
+            'password1': '2',
+            'password2': '2',
+            'invite_code': payload['raw_code'],
+        })
+        self.assertEqual(registered.status_code, 302)
+        self.client.force_login(self.member)
+        owned = self.client.get('/api/invite-codes/').json()
+        self.assertEqual(len(owned), 1)
+        self.assertEqual(owned[0]['visitors'][0]['username'], 'daily-invited-user')
 
+    def test_admin_can_issue_configurable_invite_and_raw_code_is_shown_once(self):
         self.client.force_login(self.admin)
         response = self.client.post('/api/invite-codes/', {
-            'name': 'One new member', 'max_uses': 1,
+            'name': 'Study group', 'max_uses': 7,
         }, content_type='application/json')
         self.assertEqual(response.status_code, 201)
         raw_code = response.json()['raw_code']
         invite = InviteCode.objects.get()
+        self.assertEqual(invite.max_uses, 7)
+        self.assertFalse(invite.is_self_service)
         self.assertNotEqual(invite.code_digest, raw_code)
         self.assertEqual(invite.code_digest, InviteCode.digest(raw_code))
         listed = self.client.get('/api/invite-codes/').json()
         self.assertNotIn('raw_code', listed[0])
+
+    def test_signup_accepts_a_one_character_numeric_password_and_recommends_passkey(self):
+        invite, raw_code = InviteCode.issue(name='Weak password access', created_by=self.admin)
+        page = self.client.get('/accounts/signup/')
+        self.assertContains(page, 'Short or numeric passwords are accepted')
+        self.assertContains(page, 'PASSKEY RECOMMENDED')
+        response = self.client.post('/accounts/signup/', {
+            'username': 'short-password-user',
+            'password1': '1',
+            'password2': '1',
+            'invite_code': raw_code,
+        })
+        self.assertEqual(response.status_code, 302)
+        user = get_user_model().objects.get(username='short-password-user')
+        self.assertTrue(user.check_password('1'))
+        self.assertTrue(InviteRedemption.objects.filter(invite=invite, user=user).exists())
 
     def test_one_use_invite_creates_isolated_account_and_cannot_be_reused(self):
         invite, raw_code = InviteCode.issue(name='Single use', created_by=self.admin)
@@ -223,6 +293,10 @@ class InviteRegistrationTests(TestCase):
         })
         self.assertEqual(reused.status_code, 200)
         self.assertFalse(get_user_model().objects.filter(username='second-learner').exists())
+
+        self.client.force_login(self.admin)
+        listed = self.client.get('/api/invite-codes/').json()[0]
+        self.assertEqual(listed['visitors'][0]['username'], 'invited-learner')
 
     def test_admin_dashboard_generates_capacity_and_lists_visitors(self):
         self.client.force_login(self.admin)
@@ -251,6 +325,26 @@ class InviteRegistrationTests(TestCase):
         listed = self.client.get('/api/invite-codes/').json()[0]
         self.assertEqual(listed['remaining_uses'], 6)
 
+    def test_admin_can_inspect_and_reset_login_rate_status(self):
+        self.admin.is_superuser = True
+        self.admin.save(update_fields=('is_superuser',))
+        network = '198.51.100.91'
+        cache.set(f'allauth:rl:login:ip:{network}', [timezone.now().timestamp()], 900)
+        cache.set(f'allauth:rl:login_failed:ip:{network}', [timezone.now().timestamp()], 900)
+        self.client.force_login(self.admin)
+        page = self.client.get(
+            '/admin/tracker/invitecode/auth-recovery/', {'network': network},
+        )
+        self.assertContains(page, 'Authentication recovery')
+        self.assertContains(page, network)
+        response = self.client.post('/admin/tracker/invitecode/auth-recovery/', {
+            'network_address': network,
+            'scope': 'network',
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertIsNone(cache.get(f'allauth:rl:login:ip:{network}'))
+        self.assertIsNone(cache.get(f'allauth:rl:login_failed:ip:{network}'))
+
 
 @override_settings(
     SECURE_SSL_REDIRECT=False,
@@ -276,6 +370,13 @@ class PublicGuideAndContactTests(TestCase):
         self.assertContains(response, 'Register with an invite')
         self.assertContains(response, 'Read before editing')
         self.assertContains(response, 'zsyeh7286@gmail.com')
+
+    def test_bilingual_legal_page_explains_exports_and_gpl(self):
+        response = self.client.get('/legal/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Availability is not a promise')
+        self.assertContains(response, '不保证数据绝不丢失')
+        self.assertContains(response, 'GPL-3.0-or-later')
 
     def test_contact_sends_smtp_message_from_owner_to_owner_without_database_record(self):
         response = self.client.post('/contact/', {
@@ -308,7 +409,10 @@ class PublicGuideAndContactTests(TestCase):
 class RuntimeSettingsTests(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user('settings-owner', password='password')
-        self.client.force_login(self.user)
+        self.admin = get_user_model().objects.create_superuser(
+            'settings-admin', password='password', email='admin@example.com',
+        )
+        self.client.force_login(self.admin)
         self.temporary_directory = tempfile.TemporaryDirectory()
         self.env_path = Path(self.temporary_directory.name) / '.env'
 
@@ -337,7 +441,39 @@ class RuntimeSettingsTests(TestCase):
         self.assertEqual(payload['values']['homepage_content'], 'Local dashboard copy')
         self.assertEqual(payload['values']['tracking_start_date'], '2026-05-23')
         self.assertEqual(payload['values']['countdown_label'], 'Default countdown')
+        self.assertTrue(payload['writable'])
         self.assertNotContains(response, 'UNMANAGED_SECRET')
+
+    def test_ordinary_user_cannot_read_or_write_superuser_env_values(self):
+        self.env_path.write_text(
+            'STUDY_ROOM_CODE=private-admin-room\n'
+            'TRACKER_HOMEPAGE_CONTENT="Private admin copy"\n',
+            encoding='utf-8',
+        )
+        self.client.force_login(self.user)
+        with self.settings(
+            TRACKER_LOCAL_ENV_PATH=self.env_path,
+            STUDY_ROOM_CODE='private-process-room',
+            TRACKER_HOMEPAGE_CONTENT='Private process copy',
+        ):
+            response = self.client.get('/api/settings/runtime/')
+            dashboard = self.client.get('/api/dashboard/overview/?days=7').json()
+            denied = self.client.put('/api/settings/runtime/', {
+                'homepage_content': 'Attempted overwrite',
+                'study_room_code': 'attempted-room',
+                'tracking_start_date': '2026-05-23',
+                'exam_date': '2026-12-26',
+                'countdown_label': 'Attempted label',
+            }, content_type='application/json')
+        payload = response.json()
+        self.assertEqual(payload['values']['study_room_code'], '')
+        self.assertEqual(payload['values']['homepage_content'], '')
+        self.assertFalse(payload['writable'])
+        self.assertFalse(payload['local_env_exists'])
+        self.assertEqual(dashboard['private_display']['study_room_code'], '')
+        self.assertEqual(dashboard['private_display']['homepage_content'], '')
+        self.assertEqual(denied.status_code, 403)
+        self.assertIn('private-admin-room', self.env_path.read_text(encoding='utf-8'))
 
     def test_save_is_atomic_preserves_unmanaged_values_and_updates_dashboard(self):
         self.env_path.write_text('UNMANAGED_SECRET=preserved\nSTUDY_ROOM_CODE=old-room\n', encoding='utf-8')
@@ -524,9 +660,14 @@ class AnalyticsAndExportTests(TestCase):
         self.assertEqual(overview['calendar']['days_until_exam'], expected_days)
 
     @override_settings(STUDY_ROOM_CODE='test-room-code')
-    def test_dashboard_returns_private_study_room_code_to_authenticated_user(self):
+    def test_dashboard_hides_private_study_room_code_from_ordinary_user(self):
         overview = build_dashboard_overview(self.user, 7)
-        self.assertEqual(overview['private_display']['study_room_code'], 'test-room-code')
+        self.assertEqual(overview['private_display']['study_room_code'], '')
+        admin = get_user_model().objects.create_superuser(
+            'overview-admin', password='password', email='overview@example.com',
+        )
+        admin_overview = build_dashboard_overview(admin, 7)
+        self.assertEqual(admin_overview['private_display']['study_room_code'], 'test-room-code')
 
     def test_exports_keep_raw_reflection_and_filters(self):
         completed_session(self.user, subject='math', title='RAW-TITLE-SENTINEL', details='RAW-DETAILS-SENTINEL')
