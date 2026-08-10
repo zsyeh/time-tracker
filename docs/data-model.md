@@ -7,6 +7,9 @@ foreign references. In product/API language it is exposed as a study session.
 It stores an owner, subject, start/end timestamps, status, a `title`, a `details`
 body, legacy reflection fields, and optional metadata. Duration is derived from the
 timestamps; there is no second authoritative duration column.
+The denormalized `review_count` and `last_reviewed_at` fields make archive lists
+cheap to render; append-only `SessionReview` rows retain the bounded trend source.
+Repeated opens within ten minutes do not create another event.
 
 Migration `0010` renames the historical `note` column to `title` without rewriting
 its contents, then adds an initially empty `details` body. Only sessions lasting
@@ -17,10 +20,19 @@ legacy schema value and is not written by current application flows.
 ## GitHub note sync
 
 `GitHubNoteSync` is a durable one-to-one outbox record created only when a new
-session becomes completed. It tracks the generated Markdown path, retry count,
+session becomes completed. It tracks the generated Markdown path, target branch, retry count,
 last error, and synchronization timestamp. Existing historical sessions are not
 backfilled automatically. A failed GitHub operation never rolls back or removes
-the completed learning record.
+the completed learning record. Staff/superuser sessions target the configured
+main branch; all other sessions target a Git-safe branch derived from username.
+The configured main branch name is reserved so an ordinary username cannot
+collide with it.
+
+## Invite and redemption
+
+`InviteCode` stores only a SHA-256 digest plus label, issuer, expiry, use limit,
+and revocation state. `InviteRedemption` links the consumed capability to the
+new account for auditability without retaining the raw code.
 
 ## Learning issue
 

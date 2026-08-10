@@ -34,10 +34,11 @@ curl -fsSL https://app.ehzsy.site/install/docker-compose.sh | sh -s -- study.exa
 - `/start/math`、`/start/english`、`/start/professional` 快速启动，服务器时间为准且重复请求幂等。
 - 运行中隐藏时长；结束时只填写 `Title` 和可粘贴 ChatGPT 内容的 `Details`。
 - `Details` 支持按需 Markdown 预览、KaTeX 行内/块级公式、代码高亮、表格、任务列表、脚注和 GFM Callout；默认不加载预览引擎。
+- 历史回顾默认直接显示 Markdown 预览，支持全屏阅读、单独进入编辑，以及按会话统计回顾次数和近 28 天回顾趋势。
 - `⌘/Ctrl + K` 全局关键词搜索学习标题、正文和 Issues，结果按需下钻完整内容。
-- 每次完成后生成一个独立 Markdown 文件并通过本机 GitHub CLI 推送到私有仓库；失败会进入持久化队列自动重试。
+- 每次完成后生成一个独立 Markdown 文件并通过本机 GitHub CLI 推送到私有仓库；管理员写入主分支，普通账号写入以用户名命名的隔离分支，失败会进入持久化队列自动重试。
 - 少于 25 分钟、超过 12 小时或主动放弃的会话直接删除，不写入完成记录。
-- Django Session 登录、可配置“记住我”、django-allauth Passkey/WebAuthn、多用户数据隔离。
+- Django Session 登录、邀请码注册、可配置“记住我”、django-allauth Passkey/WebAuthn、多用户数据隔离；只有管理员能在设置页生成或撤销邀请码。
 - 科目趋势、周/月汇总、学习记录检索和问题闭环；知识点入口已从当前界面移除。
 - Coolapk 绿、YouTube 红、Bilibili 粉、Meituan 黄和 Apple 白五套主题颜色，以及  标签图标。
 - 登录页提供小尺寸的 Docker Hub、项目源码、GitHub 主页与个人博客链接。
@@ -113,11 +114,14 @@ cd frontend && npm run build
 
 - `/`：认证后的 Vue 应用
 - `/accounts/login/`：密码或 Passkey 登录
+- `/accounts/signup/`：必须持有效邀请码的账号注册
 - `/accounts/2fa/`：Passkey 管理
 - `/start/<subject>`：登录用户快捷启动
 - `/launch/<token>`：受限启动令牌
 - `/api/launch/<token>/start`：IoT 启动
 - `/api/export/{csv,json,markdown}/`：完整导出
+- `/api/sessions/<id>/reviews/`：记录回顾并读取该会话的回顾趋势
+- `/api/invite-codes/`：仅管理员可用的邀请码管理
 - `/admin/`：管理员恢复入口
 
 第一次使用建议先看 [使用说明](docs/usage.zh-CN.md)。API、认证、模型和部署配置分别见 [API](docs/api.md)、[认证](docs/auth.md)、[数据模型](docs/data-model.md)、[架构](docs/architecture.md)。

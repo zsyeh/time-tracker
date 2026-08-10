@@ -2,7 +2,7 @@
 import { onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { api, post, put } from '../lib/api'
-import type { LaunchToken, RuntimeSettingsResponse, RuntimeSettingsValues } from '../types'
+import type { InviteCode, LaunchToken, RuntimeSettingsResponse, RuntimeSettingsValues } from '../types'
 
 const emit = defineEmits<{ changed: [] }>()
 
@@ -13,11 +13,16 @@ const theme = ref(localStorage.getItem('learning-os-theme') || 'coolapk')
 const runtimeLoading = ref(true)
 const runtimeSaving = ref(false)
 const runtimeMeta = ref<RuntimeSettingsResponse | null>(null)
+const isAdmin = ref(false)
+const invites = ref<InviteCode[]>([])
+const inviteOpen = ref(false)
+const revealedInvite = ref<InviteCode | null>(null)
 const runtimeForm = reactive<RuntimeSettingsValues>({
   homepage_content: '', study_room_code: '', tracking_start_date: '2026-05-23',
   exam_date: '2026-12-26', countdown_label: '2026 Postgraduate Exam',
 })
 const form = reactive({ name: 'Desktop shortcut', subject: 'math', source_label: 'Browser', max_uses: null as number | null, expires_at: null as string | null, notes: '' })
+const inviteForm = reactive({ name: 'New member', max_uses: 1, expires_at: '' })
 const subjects = { math: 'Mathematics', english: 'English', major: 'Major', training: 'Training' }
 const themes = [
   { id: 'coolapk', label: 'Coolapk Green', color: '#10c469' },
@@ -47,6 +52,40 @@ async function loadRuntime() {
     applyRuntime(runtimeMeta.value.values)
   } catch (error) { ElMessage.error((error as Error).message) }
   finally { runtimeLoading.value = false }
+}
+async function loadInvites() {
+  try { invites.value = await api<InviteCode[]>('/api/invite-codes/') }
+  catch (error) { ElMessage.error((error as Error).message) }
+}
+async function loadAccess() {
+  try {
+    const auth = await api<{ user: { is_staff: boolean; is_superuser: boolean } }>('/api/auth/session/')
+    isAdmin.value = auth.user.is_staff || auth.user.is_superuser
+    if (isAdmin.value) await loadInvites()
+  } catch (error) { ElMessage.error((error as Error).message) }
+}
+async function createInvite() {
+  try {
+    revealedInvite.value = await post<InviteCode>('/api/invite-codes/', {
+      name: inviteForm.name,
+      max_uses: inviteForm.max_uses,
+      expires_at: inviteForm.expires_at || null,
+    })
+    inviteOpen.value = false
+    await loadInvites()
+  } catch (error) { ElMessage.error((error as Error).message) }
+}
+async function revokeInvite(invite: InviteCode) {
+  try {
+    await ElMessageBox.confirm('This invite will stop accepting new registrations.', 'Revoke invite?', { type: 'warning', confirmButtonText: 'Revoke', cancelButtonText: 'Cancel' })
+    await post(`/api/invite-codes/${invite.id}/revoke/`)
+    await loadInvites()
+  } catch (error) { if (error !== 'cancel') ElMessage.error((error as Error).message) }
+}
+async function copyInvite() {
+  if (!revealedInvite.value?.raw_code) return
+  await navigator.clipboard.writeText(revealedInvite.value.raw_code)
+  ElMessage.success('Invite code copied')
 }
 async function saveRuntime() {
   runtimeSaving.value = true
@@ -80,7 +119,7 @@ async function copy() {
   await navigator.clipboard.writeText(revealed.value.launch_url)
   ElMessage.success('Launch URL copied')
 }
-onMounted(() => { load(); loadRuntime() })
+onMounted(() => { load(); loadRuntime(); loadAccess() })
 </script>
 
 <template>
@@ -126,6 +165,16 @@ onMounted(() => { load(); loadRuntime() })
         <div class="export-actions"><a href="/api/export/csv/">CSV</a><a href="/api/export/json/">JSON</a><a href="/api/export/markdown/">Markdown</a></div>
       </article>
     </section>
+    <section v-if="isAdmin" class="panel token-panel invite-panel">
+      <div class="section-heading"><div><span class="eyebrow">ADMIN / REGISTRATION</span><h2>Invite codes</h2></div><el-button type="primary" @click="inviteOpen = true">Generate invite</el-button></div>
+      <p class="section-note">Only administrators can generate codes. Raw codes are shown once and stored as hashes.</p>
+      <el-empty v-if="!invites.length" description="No invite codes" />
+      <article v-for="invite in invites" :key="invite.id" class="token-row invite-row">
+        <div><strong>{{ invite.name }}</strong><small>{{ invite.use_count }} / {{ invite.max_uses }} uses · created by {{ invite.created_by }}<span v-if="invite.expires_at"> · expires {{ new Date(invite.expires_at).toLocaleString('en-GB') }}</span></small></div>
+        <el-tag :type="invite.usable ? 'success' : 'info'">{{ invite.usable ? 'AVAILABLE' : 'CLOSED' }}</el-tag>
+        <div><el-button v-if="invite.is_active" text type="danger" @click="revokeInvite(invite)">Revoke</el-button></div>
+      </article>
+    </section>
     <section class="panel token-panel">
       <div class="section-heading"><div><span class="eyebrow">LAUNCH TOKENS</span><h2>Scoped start links</h2></div><el-button type="primary" @click="open = true">New token</el-button></div>
       <p class="section-note">A token can only start its assigned subject. The raw URL is displayed once.</p>
@@ -149,6 +198,19 @@ onMounted(() => { load(); loadRuntime() })
       <el-alert title="The raw token cannot be viewed again after closing this dialog." type="warning" :closable="false" show-icon />
       <div class="reveal-url">{{ revealed?.launch_url }}</div>
       <template #footer><el-button type="primary" @click="copy">Copy URL</el-button><el-button @click="revealed = null">Saved</el-button></template>
+    </el-dialog>
+    <el-dialog v-model="inviteOpen" title="Generate invite code" width="min(560px, 94vw)">
+      <el-form label-position="top">
+        <el-form-item label="Label"><el-input v-model="inviteForm.name" maxlength="120" /></el-form-item>
+        <div class="form-pair"><el-form-item label="Maximum uses"><el-input-number v-model="inviteForm.max_uses" :min="1" :max="100" /></el-form-item><el-form-item label="Expires at"><el-input v-model="inviteForm.expires_at" type="datetime-local" /></el-form-item></div>
+      </el-form>
+      <template #footer><el-button @click="inviteOpen = false">Cancel</el-button><el-button type="primary" @click="createInvite">Generate</el-button></template>
+    </el-dialog>
+    <el-dialog :model-value="Boolean(revealedInvite)" title="Save this invite code now" width="min(620px, 94vw)" @close="revealedInvite = null">
+      <el-alert title="The raw invite code cannot be viewed again after closing this dialog." type="warning" :closable="false" show-icon />
+      <div class="reveal-url">{{ revealedInvite?.raw_code }}</div>
+      <p class="invite-signup-url">Signup page: <a :href="revealedInvite?.signup_url">{{ revealedInvite?.signup_url }}</a></p>
+      <template #footer><el-button type="primary" @click="copyInvite">Copy code</el-button><el-button @click="revealedInvite = null">Saved</el-button></template>
     </el-dialog>
   </div>
 </template>

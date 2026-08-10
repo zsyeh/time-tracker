@@ -1,0 +1,28 @@
+{% extends "account/base_entrance.html" %}
+{% block head_title %}Create account · Personal Learning OS{% endblock head_title %}
+{% block content %}
+    <div class="auth-card-heading">
+        <span class="auth-kicker">INVITE-ONLY ACCESS</span>
+        <h1>Create your workspace.</h1>
+        <p>Use an administrator-issued invite code. Each account keeps its sessions and GitHub archive branch isolated.</p>
+    </div>
+    <form class="auth-form signup-form" method="post" action="{% url 'account_signup' %}">
+        {% csrf_token %}
+        {% if form.non_field_errors %}<div class="auth-errors">{{ form.non_field_errors }}</div>{% endif %}
+        <label for="id_username">USERNAME</label>
+        {{ form.username }}
+        {% if form.username.errors %}<div class="auth-errors">{{ form.username.errors }}</div>{% endif %}
+        <label for="id_password1">PASSWORD</label>
+        {{ form.password1 }}
+        {% if form.password1.errors %}<div class="auth-errors">{{ form.password1.errors }}</div>{% endif %}
+        <label for="id_password2">CONFIRM PASSWORD</label>
+        {{ form.password2 }}
+        {% if form.password2.errors %}<div class="auth-errors">{{ form.password2.errors }}</div>{% endif %}
+        <label for="id_invite_code">INVITE CODE</label>
+        {{ form.invite_code }}
+        {% if form.invite_code.errors %}<div class="auth-errors">{{ form.invite_code.errors }}</div>{% endif %}
+        {{ redirect_field }}
+        <button class="password-button" type="submit">CREATE ACCOUNT</button>
+    </form>
+    <p class="signup-note">Already registered? <a href="{% url 'account_login' %}">Sign in</a></p>
+{% endblock content %}

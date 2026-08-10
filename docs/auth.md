@@ -6,8 +6,10 @@ Normal browser access uses Django sessions and DRF `SessionAuthentication`. The
 old fixed `Authorization` header gate is removed. Cookies are HttpOnly, Secure in
 production, and SameSite=Lax. `SESSION_REMEMBER_DAYS` controls the maximum trusted
 device lifetime; django-allauth asks whether the user wants to be remembered.
-Public signup is disabled by the project account adapter. Administrators create
-accounts through Django admin or `createsuperuser`.
+The signup page is public, but account creation requires a valid administrator-
+issued invite code. Only staff users can generate or revoke invites from the
+authenticated Settings page/API. Codes are random, stored only as SHA-256
+digests, optionally expiring/use-limited, and the raw value is displayed once.
 
 All session, issue, knowledge-point, token, analytics, and export querysets filter
 by `request.user`. Foreign-key validation also rejects cross-user session/parent

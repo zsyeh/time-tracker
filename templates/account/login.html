@@ -36,7 +36,8 @@
         {{ redirect_field }}
         <button class="password-button" type="submit">SIGN IN</button>
     </form>
-    <p class="private-note"><span>●</span> PRIVATE INSTANCE · REGISTRATION DISABLED</p>
+    <p class="private-note"><span>●</span> PRIVATE INSTANCE · INVITE-ONLY REGISTRATION</p>
+    <p class="signup-note">Have an invite? <a href="{% url 'account_signup' %}">Create account</a></p>
     <nav class="source-links" aria-label="Project links">
         <a href="https://hub.docker.com/r/ehzsy/time-tracker" target="_blank" rel="noopener noreferrer" title="Docker Hub">
             <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h3v3H4V7Zm4 0h3v3H8V7Zm4 0h3v3h-3V7ZM8 3h3v3H8V3Zm4 0h3v3h-3V3Zm4 4h3v3h-3V7Zm5.4 2.2c-.7-.5-1.7-.7-2.5-.5-.2-1-.8-1.8-1.6-2.4l-.5-.3-.3.5c-.5.8-.7 2-.4 2.9H3.1c-.2 1.8.1 4.1 1.3 5.7 1.4 1.8 3.5 2.8 6.4 2.8 6.2 0 9.7-2.9 11.3-8.1l.2-.4-.9-.2Z"/></svg>

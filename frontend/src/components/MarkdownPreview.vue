@@ -1,21 +1,26 @@
 <script setup lang="ts">
-import { onBeforeUnmount, ref, watch } from 'vue'
+import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
+import { Close, FullScreen } from '@element-plus/icons-vue'
 
 const props = withDefaults(defineProps<{
   source: string
   showSource?: boolean
   defaultOpen?: boolean
   emptyText?: string
+  allowFullscreen?: boolean
 }>(), {
   showSource: false,
   defaultOpen: false,
   emptyText: 'No Markdown content.',
+  allowFullscreen: false,
 })
 
 const previewOpen = ref(props.defaultOpen)
 const loading = ref(false)
 const rendered = ref('')
+const fullscreen = ref(false)
+let previousOverflow = ''
 let timer: ReturnType<typeof setTimeout> | undefined
 let version = 0
 
@@ -47,20 +52,50 @@ function togglePreview() {
   if (previewOpen.value) scheduleRender()
 }
 
+function toggleFullscreen() {
+  fullscreen.value = !fullscreen.value
+  if (fullscreen.value) {
+    previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+    if (!previewOpen.value) { previewOpen.value = true; scheduleRender() }
+  } else {
+    document.body.style.overflow = previousOverflow
+  }
+}
+
+function closeFullscreenWithEscape(event: KeyboardEvent) {
+  if (fullscreen.value && event.key === 'Escape') {
+    event.preventDefault()
+    event.stopPropagation()
+    toggleFullscreen()
+  }
+}
+
 watch(() => props.source, () => {
   rendered.value = ''
   if (previewOpen.value) scheduleRender(220)
 })
-onBeforeUnmount(() => { if (timer) clearTimeout(timer) })
+onMounted(() => {
+  window.addEventListener('keydown', closeFullscreenWithEscape, true)
+  if (previewOpen.value) scheduleRender()
+})
+onBeforeUnmount(() => {
+  window.removeEventListener('keydown', closeFullscreenWithEscape, true)
+  if (timer) clearTimeout(timer)
+  if (fullscreen.value) document.body.style.overflow = previousOverflow
+})
 </script>
 
 <template>
-  <div class="markdown-preview-shell" :class="{ 'source-enabled': showSource }">
+  <div class="markdown-preview-shell" :class="{ 'source-enabled': showSource, 'is-fullscreen': fullscreen }">
     <div class="markdown-preview-toolbar">
       <button type="button" class="markdown-preview-toggle" :aria-expanded="previewOpen" @click="togglePreview">
         {{ previewOpen ? (showSource ? 'Show source' : 'Hide preview') : 'Preview Markdown' }}
       </button>
       <span>KaTeX · GFM · code · footnotes · callouts</span>
+      <button v-if="allowFullscreen && previewOpen" type="button" class="markdown-fullscreen-toggle" :aria-label="fullscreen ? 'Exit full screen' : 'Open full screen'" @click="toggleFullscreen">
+        <el-icon><Close v-if="fullscreen" /><FullScreen v-else /></el-icon><span>{{ fullscreen ? 'EXIT' : 'FULL SCREEN' }}</span>
+      </button>
     </div>
     <el-collapse-transition>
       <section v-if="previewOpen" v-loading="loading" class="markdown-preview-panel">

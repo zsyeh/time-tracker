@@ -2,9 +2,10 @@
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Search } from '@element-plus/icons-vue'
-import { api } from '../lib/api'
-import type { GlobalSearchResponse, GlobalSearchResult, Issue, StudySession } from '../types'
+import { api, post } from '../lib/api'
+import type { GlobalSearchResponse, GlobalSearchResult, Issue, ReviewTrend as ReviewTrendType, StudySession } from '../types'
 import MarkdownPreview from './MarkdownPreview.vue'
+import ReviewTrend from './ReviewTrend.vue'
 
 const emit = defineEmits<{ navigate: [page: 'issues'] }>()
 const searchOpen = ref(false)
@@ -16,6 +17,7 @@ const detailLoading = ref(false)
 const selectedSession = ref<StudySession | null>(null)
 const selectedIssue = ref<Issue | null>(null)
 const selectedKind = ref<'session' | 'issue' | null>(null)
+const reviewTrend = ref<ReviewTrendType | null>(null)
 const inputRef = ref<{ focus: () => void } | null>(null)
 const cache = new Map<string, GlobalSearchResult[]>()
 const subjects = { math: 'Mathematics', english: 'English', major: 'Major', training: 'Training' }
@@ -78,12 +80,18 @@ async function openResult(result: GlobalSearchResult) {
   selectedKind.value = result.kind
   selectedSession.value = null
   selectedIssue.value = null
+  reviewTrend.value = null
   searchOpen.value = false
   detailOpen.value = true
   detailLoading.value = true
   try {
     if (result.kind === 'session') {
-      selectedSession.value = await api<StudySession>(`/api/sessions/${result.record_id}/`)
+      const [session, trend] = await Promise.all([
+        api<StudySession>(`/api/sessions/${result.record_id}/`),
+        post<ReviewTrendType>(`/api/sessions/${result.record_id}/reviews/`),
+      ])
+      selectedSession.value = session
+      reviewTrend.value = trend
     } else {
       selectedIssue.value = await api<Issue>(`/api/issues/${result.record_id}/`)
     }
@@ -147,12 +155,13 @@ defineExpose({ open })
     <div v-loading="detailLoading" class="global-result-detail">
       <template v-if="selectedSession">
         <div class="detail-meta"><span>{{ selectedSession.subject_label }}</span><time>{{ new Date(selectedSession.start_time).toLocaleString('en-GB') }}</time></div>
-        <MarkdownPreview :key="selectedSession.id" :source="selectedSession.details" show-source />
+        <ReviewTrend :trend="reviewTrend" :loading="detailLoading" />
+        <MarkdownPreview :key="selectedSession.id" :source="selectedSession.details" default-open allow-fullscreen />
       </template>
       <template v-else-if="selectedIssue">
         <div class="detail-meta"><span>{{ subjects[selectedIssue.subject] }}</span><b>{{ selectedIssue.resolved ? 'RESOLVED' : 'OPEN' }}</b></div>
-        <section class="issue-search-section"><span>DESCRIPTION</span><MarkdownPreview :key="`description-${selectedIssue.id}`" :source="selectedIssue.description" show-source /></section>
-        <section v-if="selectedIssue.solution" class="issue-search-section"><span>SOLUTION</span><MarkdownPreview :key="`solution-${selectedIssue.id}`" :source="selectedIssue.solution" show-source /></section>
+        <section class="issue-search-section"><span>DESCRIPTION</span><MarkdownPreview :key="`description-${selectedIssue.id}`" :source="selectedIssue.description" default-open allow-fullscreen /></section>
+        <section v-if="selectedIssue.solution" class="issue-search-section"><span>SOLUTION</span><MarkdownPreview :key="`solution-${selectedIssue.id}`" :source="selectedIssue.solution" default-open allow-fullscreen /></section>
         <el-button type="primary" @click="showIssues">Open Issues</el-button>
       </template>
     </div>
