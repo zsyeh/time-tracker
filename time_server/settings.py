@@ -212,6 +212,7 @@ LEARNING_REPO = os.environ.get('LEARNING_REPO', '').strip()
 LEARNING_REPO_PATH = Path(
     os.environ.get('LEARNING_REPO_PATH', BASE_DIR.parent / 'personal-learning-notes')
 ).expanduser()
+LEARNING_REPO_MAIN_BRANCH = os.environ.get('LEARNING_REPO_MAIN_BRANCH', 'main').strip() or 'main'
 
 # Nginx terminates TLS on this host and forwards the original scheme.
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
@@ -237,6 +238,7 @@ AUTHENTICATION_BACKENDS = [
 ]
 
 ACCOUNT_ADAPTER = 'tracker.account_adapter.PrivateAccountAdapter'
+ACCOUNT_FORMS = {'signup': 'tracker.forms.InviteSignupForm'}
 ACCOUNT_LOGIN_METHODS = {'username'}
 ACCOUNT_SIGNUP_FIELDS = ['username*', 'password1*', 'password2*']
 ACCOUNT_SESSION_REMEMBER = None

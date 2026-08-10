@@ -1,6 +1,7 @@
+from django.utils import timezone
 from rest_framework import serializers
 
-from .models import KnowledgePoint, LaunchToken, LearningIssue, TimeLog
+from .models import InviteCode, KnowledgePoint, LaunchToken, LearningIssue, TimeLog
 from .services import normalize_subject
 
 
@@ -32,6 +33,8 @@ class StudySessionSerializer(serializers.ModelSerializer):
             'breakthrough',
             'problems',
             'next_action',
+            'review_count',
+            'last_reviewed_at',
             'created_at',
             'updated_at',
         )
@@ -43,6 +46,8 @@ class StudySessionSerializer(serializers.ModelSerializer):
             'status',
             'created_at',
             'updated_at',
+            'review_count',
+            'last_reviewed_at',
         )
 
     def validate_subject(self, value):
@@ -59,6 +64,7 @@ class StudySessionSummarySerializer(serializers.ModelSerializer):
         fields = (
             'id', 'subject', 'subject_label', 'start_time', 'end_time',
             'duration_minutes', 'status', 'title',
+            'review_count', 'last_reviewed_at',
         )
 
 
@@ -171,3 +177,26 @@ class RuntimeSettingsSerializer(serializers.Serializer):
                 'tracking_start_date': 'Tracking start date must not be later than the exam date.',
             })
         return attrs
+
+
+class InviteCodeSerializer(serializers.ModelSerializer):
+    usable = serializers.BooleanField(read_only=True)
+    created_by = serializers.CharField(source='created_by.username', read_only=True)
+
+    class Meta:
+        model = InviteCode
+        fields = (
+            'id', 'name', 'created_by', 'is_active', 'max_uses', 'use_count',
+            'expires_at', 'last_used_at', 'created_at', 'usable',
+        )
+
+
+class InviteCodeCreateSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=120)
+    max_uses = serializers.IntegerField(min_value=1, max_value=100, default=1)
+    expires_at = serializers.DateTimeField(required=False, allow_null=True)
+
+    def validate_expires_at(self, value):
+        if value and value <= timezone.now():
+            raise serializers.ValidationError('Expiry must be in the future.')
+        return value

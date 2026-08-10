@@ -79,6 +79,8 @@ class TimeLog(models.Model):
     breakthrough = models.TextField(blank=True)
     problems = models.TextField(blank=True)
     next_action = models.TextField(blank=True)
+    review_count = models.PositiveIntegerField(default=0)
+    last_reviewed_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now, editable=False)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -158,6 +160,7 @@ class GitHubNoteSync(models.Model):
     )
     status = models.CharField(max_length=12, choices=STATUS_CHOICES, default='pending', db_index=True)
     markdown_path = models.CharField(max_length=500, blank=True)
+    branch = models.CharField(max_length=255, blank=True)
     attempts = models.PositiveIntegerField(default=0)
     last_error = models.TextField(blank=True)
     synced_at = models.DateTimeField(null=True, blank=True)
@@ -166,6 +169,86 @@ class GitHubNoteSync(models.Model):
 
     class Meta:
         ordering = ('created_at',)
+
+
+class SessionReview(models.Model):
+    """One meaningful review visit for a completed session."""
+
+    session = models.ForeignKey(TimeLog, on_delete=models.CASCADE, related_name='review_events')
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='session_reviews',
+    )
+    reviewed_at = models.DateTimeField(default=timezone.now, db_index=True)
+
+    class Meta:
+        ordering = ('-reviewed_at',)
+        indexes = [models.Index(fields=('session', 'reviewed_at'), name='review_session_time_idx')]
+
+
+class InviteCode(models.Model):
+    """Hashed, revocable signup capability issued by an administrator."""
+
+    name = models.CharField(max_length=120)
+    code_digest = models.CharField(max_length=64, unique=True, db_index=True)
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='created_invite_codes',
+    )
+    is_active = models.BooleanField(default=True)
+    max_uses = models.PositiveIntegerField(
+        default=1,
+        validators=[MinValueValidator(1), MaxValueValidator(100)],
+    )
+    use_count = models.PositiveIntegerField(default=0)
+    expires_at = models.DateTimeField(null=True, blank=True)
+    last_used_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('-created_at',)
+        constraints = [
+            models.CheckConstraint(
+                check=Q(max_uses__gte=models.F('use_count')),
+                name='invite_use_count_lte_max',
+            ),
+        ]
+
+    @staticmethod
+    def digest(raw_code):
+        return hashlib.sha256(raw_code.strip().encode('utf-8')).hexdigest()
+
+    @classmethod
+    def issue(cls, **fields):
+        raw_code = f"invite_{secrets.token_urlsafe(18)}"
+        invite = cls.objects.create(code_digest=cls.digest(raw_code), **fields)
+        return invite, raw_code
+
+    @property
+    def usable(self):
+        if not self.is_active or self.use_count >= self.max_uses:
+            return False
+        return not self.expires_at or self.expires_at > timezone.now()
+
+    def __str__(self):
+        return self.name
+
+
+class InviteRedemption(models.Model):
+    invite = models.ForeignKey(InviteCode, on_delete=models.PROTECT, related_name='redemptions')
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='invite_redemption',
+    )
+    redeemed_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('-redeemed_at',)
 
 
 class LearningIssue(models.Model):

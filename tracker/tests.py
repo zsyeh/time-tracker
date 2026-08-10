@@ -1,6 +1,7 @@
 import datetime
 import json
 import os
+import subprocess
 import tempfile
 from pathlib import Path
 from unittest import mock
@@ -14,8 +15,25 @@ from django.urls import reverse
 from django.utils import timezone
 
 from .analytics import build_dashboard_overview
-from .learning_log import markdown_relative_path, render_session_markdown, sync_session_note
-from .models import GitHubNoteSync, KnowledgePoint, LaunchToken, LearningIssue, TimeLog
+from .learning_log import (
+    archive_completed_task,
+    github_branch_for_user,
+    markdown_relative_path,
+    render_session_markdown,
+    sync_session_note,
+)
+from .models import (
+    GitHubNoteSync,
+    InviteCode,
+    InviteRedemption,
+    KnowledgePoint,
+    LaunchToken,
+    LearningIssue,
+    SessionReview,
+    TimeLog,
+)
+
+TEST_PASSWORD_HASHERS = ['django.contrib.auth.hashers.MD5PasswordHasher']
 
 
 def completed_session(user, *, day=None, minutes=60, subject='math', title='完整学习总结', details='完整学习详情'):
@@ -131,6 +149,75 @@ class AuthAndIsolationTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Learning OS')
         self.assertContains(response, 'tracker/admin.css')
+
+
+@override_settings(SECURE_SSL_REDIRECT=False, PASSWORD_HASHERS=TEST_PASSWORD_HASHERS)
+class InviteRegistrationTests(TestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.admin = User.objects.create_user(
+            'invite-admin', password='valid-test-password', is_staff=True,
+        )
+        self.member = User.objects.create_user('existing-member', password='valid-test-password')
+
+    def test_signup_page_is_open_but_requires_a_valid_invite(self):
+        page = self.client.get('/accounts/signup/')
+        self.assertEqual(page.status_code, 200)
+        self.assertContains(page, 'INVITE CODE')
+
+        invalid = self.client.post('/accounts/signup/', {
+            'username': 'no-invite-user',
+            'password1': 'valid-signup-password-7614',
+            'password2': 'valid-signup-password-7614',
+            'invite_code': 'not-a-real-code',
+        })
+        self.assertEqual(invalid.status_code, 200)
+        self.assertContains(invalid, 'invalid, expired, or already used')
+        self.assertFalse(get_user_model().objects.filter(username='no-invite-user').exists())
+
+    def test_only_admin_can_issue_and_raw_code_is_shown_once(self):
+        self.client.force_login(self.member)
+        denied = self.client.post(
+            '/api/invite-codes/', {'name': 'Denied'}, content_type='application/json',
+        )
+        self.assertEqual(denied.status_code, 403)
+
+        self.client.force_login(self.admin)
+        response = self.client.post('/api/invite-codes/', {
+            'name': 'One new member', 'max_uses': 1,
+        }, content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+        raw_code = response.json()['raw_code']
+        invite = InviteCode.objects.get()
+        self.assertNotEqual(invite.code_digest, raw_code)
+        self.assertEqual(invite.code_digest, InviteCode.digest(raw_code))
+        listed = self.client.get('/api/invite-codes/').json()
+        self.assertNotIn('raw_code', listed[0])
+
+    def test_one_use_invite_creates_isolated_account_and_cannot_be_reused(self):
+        invite, raw_code = InviteCode.issue(name='Single use', created_by=self.admin)
+        response = self.client.post('/accounts/signup/', {
+            'username': 'invited-learner',
+            'password1': 'valid-signup-password-7614',
+            'password2': 'valid-signup-password-7614',
+            'invite_code': raw_code,
+        })
+        self.assertEqual(response.status_code, 302)
+        learner = get_user_model().objects.get(username='invited-learner')
+        self.assertTrue(InviteRedemption.objects.filter(invite=invite, user=learner).exists())
+        invite.refresh_from_db()
+        self.assertEqual(invite.use_count, 1)
+        self.assertFalse(invite.is_active)
+
+        self.client.logout()
+        reused = self.client.post('/accounts/signup/', {
+            'username': 'second-learner',
+            'password1': 'valid-signup-password-7614',
+            'password2': 'valid-signup-password-7614',
+            'invite_code': raw_code,
+        })
+        self.assertEqual(reused.status_code, 200)
+        self.assertFalse(get_user_model().objects.filter(username='second-learner').exists())
 
 
 @override_settings(SECURE_SSL_REDIRECT=False)
@@ -415,6 +502,7 @@ class AnalyticsAndExportTests(TestCase):
         self.assertEqual(response.json()['results'], [])
 
 
+@override_settings(PASSWORD_HASHERS=TEST_PASSWORD_HASHERS)
 class GitHubNoteSyncTests(TestCase):
     def test_markdown_uses_one_unique_file_and_preserves_formula_source(self):
         task = {
@@ -452,6 +540,136 @@ class GitHubNoteSyncTests(TestCase):
         self.assertEqual(sync.attempts, 1)
         self.assertEqual(sync.markdown_path, 'sessions/2026/08/example.md')
         self.assertIsNotNone(sync.synced_at)
+
+    def test_branch_names_follow_username_and_never_collide_with_main(self):
+        with self.settings(LEARNING_REPO_MAIN_BRANCH='main'):
+            self.assertEqual(
+                github_branch_for_user('Alice', is_admin=False, user_id=7), 'Alice',
+            )
+            self.assertEqual(
+                github_branch_for_user('main', is_admin=False, user_id=8), 'main-user-8',
+            )
+            self.assertEqual(
+                github_branch_for_user('unsafe/name', is_admin=False, user_id=9), 'unsafe-name',
+            )
+            self.assertEqual(
+                github_branch_for_user('someone', is_admin=True, user_id=10), 'main',
+            )
+
+    def test_real_git_push_routes_member_to_username_branch_and_admin_to_main(self):
+        def run(*args, cwd=None):
+            return subprocess.run(
+                args, cwd=cwd, check=True, capture_output=True, text=True, timeout=20,
+            )
+
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            remote = root / 'notes.git'
+            seed = root / 'seed'
+            checkout = root / 'checkout'
+            run('git', 'init', '--bare', str(remote))
+            run('git', 'init', str(seed))
+            run('git', 'config', 'user.name', 'Test Writer', cwd=seed)
+            run('git', 'config', 'user.email', 'writer@example.test', cwd=seed)
+            (seed / 'README.md').write_text('# Learning notes\n', encoding='utf-8')
+            run('git', 'add', 'README.md', cwd=seed)
+            run('git', 'commit', '-m', 'Initialize notes', cwd=seed)
+            run('git', 'branch', '-M', 'main', cwd=seed)
+            run('git', 'remote', 'add', 'origin', str(remote), cwd=seed)
+            run('git', 'push', '-u', 'origin', 'main', cwd=seed)
+            run('git', 'symbolic-ref', 'HEAD', 'refs/heads/main', cwd=remote)
+            run('git', 'clone', str(remote), str(checkout))
+            run('git', 'config', 'user.name', 'Test Writer', cwd=checkout)
+            run('git', 'config', 'user.email', 'writer@example.test', cwd=checkout)
+
+            member_task = {
+                'id': 501,
+                'category': 'math',
+                'category_label': 'Mathematics',
+                'start_time': '2026-08-10T08:00:00+08:00',
+                'end_time': '2026-08-10T09:00:00+08:00',
+                'duration_minutes': 60,
+                'title': 'Member review',
+                'details': 'Member Markdown body',
+                'username': 'Alice',
+                'user_id': 11,
+                'is_admin': False,
+            }
+            admin_task = {
+                **member_task,
+                'id': 502,
+                'start_time': '2026-08-10T10:00:00+08:00',
+                'end_time': '2026-08-10T11:00:00+08:00',
+                'title': 'Admin review',
+                'details': 'Admin Markdown body',
+                'username': 'administrator',
+                'user_id': 1,
+                'is_admin': True,
+            }
+
+            with self.settings(
+                LEARNING_REPO='local/notes',
+                LEARNING_REPO_PATH=checkout,
+                LEARNING_REPO_MAIN_BRANCH='main',
+            ):
+                member_result = archive_completed_task(member_task)
+                admin_result = archive_completed_task(admin_task)
+
+            self.assertEqual(member_result['branch'], 'Alice')
+            self.assertEqual(admin_result['branch'], 'main')
+            member_document = run(
+                'git', 'show', f"Alice:{member_result['file']}", cwd=checkout,
+            ).stdout
+            admin_document = run(
+                'git', 'show', f"main:{admin_result['file']}", cwd=checkout,
+            ).stdout
+            self.assertIn('username: "Alice"', member_document)
+            self.assertIn('Member Markdown body', member_document)
+            self.assertIn('username: "administrator"', admin_document)
+            self.assertIn('Admin Markdown body', admin_document)
+
+
+@override_settings(SECURE_SSL_REDIRECT=False, PASSWORD_HASHERS=TEST_PASSWORD_HASHERS)
+class SessionReviewTests(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user('reviewer', password='password')
+        self.other = get_user_model().objects.create_user('other-reviewer', password='password')
+        self.session = completed_session(self.user, title='Review this session')
+        self.client.force_login(self.user)
+
+    def test_review_visit_is_deduplicated_and_returns_daily_trend(self):
+        first = self.client.post(f'/api/sessions/{self.session.pk}/reviews/')
+        second = self.client.post(f'/api/sessions/{self.session.pk}/reviews/')
+        self.assertEqual(first.status_code, 200)
+        self.assertTrue(first.json()['created'])
+        self.assertFalse(second.json()['created'])
+        self.assertEqual(second.json()['total'], 1)
+        self.assertEqual(second.json()['review_days'], 1)
+        self.assertEqual(len(second.json()['daily']), 1)
+        self.session.refresh_from_db()
+        self.assertEqual(self.session.review_count, 1)
+        self.assertIsNotNone(self.session.last_reviewed_at)
+
+        SessionReview.objects.filter(session=self.session).update(
+            reviewed_at=timezone.now() - datetime.timedelta(minutes=11),
+        )
+        third = self.client.post(f'/api/sessions/{self.session.pk}/reviews/')
+        self.assertTrue(third.json()['created'])
+        self.assertEqual(third.json()['total'], 2)
+        self.assertEqual(SessionReview.objects.filter(session=self.session).count(), 2)
+
+    def test_review_is_user_scoped_and_summary_contains_review_fields(self):
+        self.client.post(f'/api/sessions/{self.session.pk}/reviews/')
+        compact = self.client.get('/api/sessions/?compact=1').json()['results'][0]
+        self.assertEqual(compact['review_count'], 1)
+        self.assertIn('last_reviewed_at', compact)
+        self.assertNotIn('details', compact)
+
+        self.client.force_login(self.other)
+        self.assertEqual(
+            self.client.post(f'/api/sessions/{self.session.pk}/reviews/').status_code,
+            404,
+        )
 
 
 @override_settings(SECURE_SSL_REDIRECT=False)

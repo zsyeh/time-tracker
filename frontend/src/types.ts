@@ -21,6 +21,8 @@ export interface StudySession {
   breakthrough: string
   problems: string
   next_action: string
+  review_count: number
+  last_reviewed_at: string | null
 }
 
 export interface HeatmapDay {
@@ -72,6 +74,33 @@ export interface RuntimeSettingsResponse {
   sources: Record<keyof RuntimeSettingsValues, 'local_env' | 'default'>
   fingerprint: string
   local_env_exists: boolean
+}
+
+export interface ReviewTrendDay { date: string; count: number }
+
+export interface ReviewTrend {
+  session_id: number
+  total: number
+  last_reviewed_at: string | null
+  review_days: number
+  window_days: number
+  created: boolean
+  daily: ReviewTrendDay[]
+}
+
+export interface InviteCode {
+  id: number
+  name: string
+  created_by: string
+  is_active: boolean
+  max_uses: number
+  use_count: number
+  expires_at: string | null
+  last_used_at: string | null
+  created_at: string
+  usable: boolean
+  raw_code?: string
+  signup_url?: string
 }
 
 export interface Issue {

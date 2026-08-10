@@ -9,6 +9,7 @@ public. Every response is restricted to the authenticated owner.
 | POST | `/api/auth/logout/` | End browser session |
 | GET/POST | `/api/sessions/` | Paginated search / start session |
 | GET/PATCH | `/api/sessions/<id>/` | Read/edit owned session |
+| GET/POST | `/api/sessions/<id>/reviews/` | Read trend / record a deduplicated review visit |
 | POST | `/api/sessions/<id>/finish/` | Finish with a title and details body |
 | POST | `/api/sessions/<id>/abandon/` | Permanently delete the running session |
 | GET | `/api/dashboard/overview/?days=180` | One-request dashboard analytics |
@@ -18,6 +19,8 @@ public. Every response is restricted to the authenticated owner.
 | GET/PATCH/DELETE | `/api/issues/<id>/` | Learning issue detail |
 | GET/POST | `/api/launch-tokens/` | Manage scoped tokens |
 | POST | `/api/launch-tokens/<id>/<action>/` | `revoke`, `regenerate`, `delete` |
+| GET/POST | `/api/invite-codes/` | Administrator-only list/generate invite codes |
+| POST | `/api/invite-codes/<id>/revoke/` | Administrator-only invite revocation |
 | GET | `/api/export/csv/` | Flat complete export |
 | GET | `/api/export/json/` | Nested complete export |
 | GET | `/api/export/markdown/` | Human-readable export |
@@ -26,6 +29,15 @@ public. Every response is restricted to the authenticated owner.
 Session/export filters: `subject`, `status`, `date_from`, `date_to`, and `search`.
 Use `compact=1` on the session list to return only timeline metadata and `title`;
 fetch `/api/sessions/<id>/` only when the full `details` body is opened.
+
+Opening a completed session review posts one review visit. Visits by the same
+owner within ten minutes are deduplicated. The response contains the lifetime
+count and a bounded 90-day daily trend; compact session summaries contain only
+the denormalized count and last-review timestamp.
+
+Invite APIs require `is_staff`. The raw invite code is returned only by the
+create response; subsequent list responses expose metadata, use counts, expiry,
+and availability but never the raw secret or its digest.
 
 Global search spans owned completed-session text and owned Issues. It returns at
 most 24 mixed summary records and never includes a complete session `details`

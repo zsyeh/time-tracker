@@ -1,9 +1,11 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import { api } from '../lib/api'
-import type { HeatmapDay, Page, StudySession } from '../types'
+import { View } from '@element-plus/icons-vue'
+import { api, post } from '../lib/api'
+import type { HeatmapDay, Page, ReviewTrend as ReviewTrendType, StudySession } from '../types'
 import MarkdownPreview from './MarkdownPreview.vue'
+import ReviewTrend from './ReviewTrend.vue'
 
 const props = defineProps<{ days: HeatmapDay[] }>()
 const detailOpen = ref(false)
@@ -12,6 +14,7 @@ const sessionLoading = ref(false)
 const loading = ref(false)
 const selected = ref<HeatmapDay | null>(null)
 const selectedSession = ref<StudySession | null>(null)
+const reviewTrend = ref<ReviewTrendType | null>(null)
 const sessions = ref<StudySession[]>([])
 
 const cells = computed(() => {
@@ -55,10 +58,20 @@ async function openDay(day: HeatmapDay | null) {
 
 async function openSession(session: StudySession) {
   selectedSession.value = session
+  reviewTrend.value = null
   sessionOpen.value = true
   sessionLoading.value = true
   try {
-    selectedSession.value = await api<StudySession>(`/api/sessions/${session.id}/`)
+    const [detail, trend] = await Promise.all([
+      api<StudySession>(`/api/sessions/${session.id}/`),
+      post<ReviewTrendType>(`/api/sessions/${session.id}/reviews/`),
+    ])
+    detail.review_count = trend.total
+    detail.last_reviewed_at = trend.last_reviewed_at
+    session.review_count = trend.total
+    session.last_reviewed_at = trend.last_reviewed_at
+    selectedSession.value = detail
+    reviewTrend.value = trend
   } catch (error) {
     ElMessage.error((error as Error).message)
   } finally {
@@ -122,7 +135,7 @@ async function openSession(session: StudySession) {
           <article v-for="session in sessions" :key="session.id" class="session-row session-drill-row" role="button" tabindex="0" @click="openSession(session)" @keyup.enter="openSession(session)">
             <i :class="`subject-dot subject-${session.subject}`" />
             <div><strong>{{ session.title || 'Untitled session' }}</strong><small>{{ session.subject_label }} · {{ new Date(session.start_time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) }} – {{ session.end_time ? new Date(session.end_time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '--' }}</small></div>
-            <b>OPEN</b>
+            <b class="session-review-link"><el-icon><View /></el-icon><span>{{ session.review_count || 0 }}</span></b>
           </article>
         </div>
       </div>
@@ -130,11 +143,12 @@ async function openSession(session: StudySession) {
 
     <el-drawer v-model="sessionOpen" append-to-body size="min(680px, 94vw)" class="session-detail-drawer">
       <template #header>
-        <div class="dialog-title"><div><span class="eyebrow">SESSION DETAILS</span><h2>{{ selectedSession?.title || 'Untitled session' }}</h2></div></div>
+        <div class="dialog-title"><div><span class="eyebrow">SESSION REVIEW</span><h2>{{ selectedSession?.title || 'Untitled session' }}</h2></div></div>
       </template>
       <div v-if="selectedSession" v-loading="sessionLoading" class="session-detail-page">
         <dl><div><dt>SUBJECT</dt><dd>{{ selectedSession.subject_label }}</dd></div><div><dt>TIME</dt><dd>{{ new Date(selectedSession.start_time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) }} – {{ selectedSession.end_time ? new Date(selectedSession.end_time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '--' }}</dd></div><div><dt>DURATION</dt><dd>{{ duration(selectedSession.duration_minutes) }}</dd></div></dl>
-        <MarkdownPreview :key="selectedSession.id" :source="selectedSession.details" show-source empty-text="No details were recorded for this historical session." />
+        <ReviewTrend :trend="reviewTrend" :loading="sessionLoading" />
+        <MarkdownPreview :key="selectedSession.id" :source="selectedSession.details" default-open allow-fullscreen empty-text="No details were recorded for this historical session." />
       </div>
     </el-drawer>
   </section>

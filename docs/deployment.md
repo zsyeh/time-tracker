@@ -31,10 +31,13 @@ systemctl enable --now time-tracker-github-sync.timer
 ./deploy/scripts/smoke-test.sh https://study.example.com
 ```
 
-Set `LEARNING_REPO=owner/private-repository` and `LEARNING_REPO_PATH` in `.env`,
+Set `LEARNING_REPO=owner/private-repository`, `LEARNING_REPO_PATH`, and optionally
+`LEARNING_REPO_MAIN_BRANCH` (default `main`) in `.env`,
 then authenticate the service account with `gh auth login`. Web completions
 enqueue a durable record and dispatch an immediate background push. The systemd
 timer retries pending records every minute without delaying the completion API.
+Administrator notes are pushed to the main branch; invited users receive
+username-derived branches automatically.
 
 Validate row count, total duration, owner assignment, HTTPS login, a session start
 and finish, export download, and Passkey enrollment before discarding rollback
