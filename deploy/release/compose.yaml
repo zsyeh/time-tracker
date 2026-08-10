@@ -1,6 +1,6 @@
 services:
   web:
-    image: ${TIME_TRACKER_IMAGE:-zsyeh/time-tracker}:${TIME_TRACKER_TAG:-latest}
+    image: ${TIME_TRACKER_IMAGE:-ehzsy/time-tracker}:${TIME_TRACKER_TAG:-latest}
     restart: unless-stopped
     env_file:
       - ${TIME_TRACKER_ENV_FILE:-.env}
@@ -23,7 +23,7 @@ services:
       start_period: 25s
 
   mcp:
-    image: ${TIME_TRACKER_IMAGE:-zsyeh/time-tracker}:${TIME_TRACKER_TAG:-latest}
+    image: ${TIME_TRACKER_IMAGE:-ehzsy/time-tracker}:${TIME_TRACKER_TAG:-latest}
     profiles:
       - mcp
     restart: unless-stopped
