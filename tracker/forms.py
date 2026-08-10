@@ -57,6 +57,15 @@ class AdminInviteCodeForm(forms.Form):
         return value
 
 
+class LoginRateLimitResetForm(forms.Form):
+    network_address = forms.GenericIPAddressField(
+        label='Network address',
+        required=False,
+        help_text='Leave blank to use the network address of this admin session.',
+        widget=forms.TextInput(attrs={'placeholder': '203.0.113.10'}),
+    )
+
+
 class ContactForm(forms.Form):
     name = forms.CharField(label='Your name', max_length=120)
     reply_email = forms.EmailField(label='Your email', max_length=254)

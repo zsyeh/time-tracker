@@ -1,17 +1,61 @@
 import secrets
+import time
+from urllib.parse import urlencode
 
+from allauth.account.adapter import get_adapter
+from allauth.core.internal.ratelimit import parse_rates, truncate_ip
+from django.conf import settings
 from django.contrib import admin, messages
 from django.core.cache import cache
 from django.shortcuts import redirect
 from django.template.response import TemplateResponse
 from django.urls import path, reverse
 
-from .forms import AdminInviteCodeForm
+from .forms import AdminInviteCodeForm, LoginRateLimitResetForm
 
 from .models import (
     DailyStudyStat, GitHubNoteSync, InviteCode, InviteRedemption, KnowledgePoint,
     LaunchToken, LearningIssue, SessionReview, TimeLog,
 )
+
+
+LOGIN_RATE_ACTIONS = ('login', 'login_failed')
+
+
+def _rate_cache_key(action, network_address):
+    return f'allauth:rl:{action}:ip:{truncate_ip(network_address)}'
+
+
+def _rate_window_label(seconds):
+    if seconds % 3600 == 0:
+        return f'{int(seconds / 3600)} hour'
+    if seconds % 60 == 0:
+        return f'{int(seconds / 60)} minutes'
+    return f'{int(seconds)} seconds'
+
+
+def login_rate_status(network_address):
+    now = time.time()
+    rows = []
+    for action in LOGIN_RATE_ACTIONS:
+        history = cache.get(_rate_cache_key(action, network_address), [])
+        for rate in parse_rates(settings.ACCOUNT_RATE_LIMITS.get(action)):
+            if rate.per != 'ip':
+                continue
+            used = sum(timestamp > now - rate.duration for timestamp in history)
+            rows.append({
+                'action': action,
+                'limit': rate.amount,
+                'window': _rate_window_label(rate.duration),
+                'used': used,
+                'remaining': max(0, rate.amount - used),
+            })
+    return rows
+
+
+def clear_login_rate_limits(network_address):
+    for action in LOGIN_RATE_ACTIONS:
+        cache.delete(_rate_cache_key(action, network_address))
 
 
 @admin.register(TimeLog)
@@ -49,13 +93,14 @@ class InviteCodeAdmin(admin.ModelAdmin):
     change_list_template = 'admin/tracker/invitecode/change_list.html'
     list_display = (
         'name', 'created_by', 'availability', 'use_count', 'max_uses',
-        'remaining_uses_display', 'visitor_count', 'last_used_at', 'expires_at',
+        'remaining_uses_display', 'visitor_count', 'is_self_service',
+        'issued_local_date', 'last_used_at', 'expires_at',
     )
-    list_filter = ('is_active', 'created_at')
+    list_filter = ('is_active', 'is_self_service', 'created_at')
     search_fields = ('name', 'created_by__username', 'redemptions__user__username')
     readonly_fields = (
         'name', 'code_digest', 'created_by', 'max_uses', 'use_count',
-        'last_used_at', 'created_at',
+        'is_self_service', 'issued_local_date', 'last_used_at', 'created_at',
     )
 
     @admin.display(description='Status', boolean=True)
@@ -82,8 +127,49 @@ class InviteCodeAdmin(admin.ModelAdmin):
                 self.admin_site.admin_view(self.invite_dashboard),
                 name='tracker_invitecode_dashboard',
             ),
+            path(
+                'auth-recovery/',
+                self.admin_site.admin_view(self.auth_recovery),
+                name='tracker_auth_recovery',
+            ),
         ]
         return custom + super().get_urls()
+
+    def auth_recovery(self, request):
+        current_network = get_adapter().get_client_ip(request)
+        initial_network = request.GET.get('network', '').strip() or current_network
+        form = LoginRateLimitResetForm(
+            request.POST or None,
+            initial={'network_address': initial_network},
+        )
+        selected_network = initial_network
+        if request.method == 'POST' and form.is_valid():
+            selected_network = form.cleaned_data['network_address'] or current_network
+            if request.POST.get('scope') == 'all':
+                cache.clear()
+                messages.success(request, 'All temporary authentication limits were reset.')
+            else:
+                clear_login_rate_limits(selected_network)
+                messages.success(request, f'Login limits for {selected_network} were reset.')
+            target = reverse('admin:tracker_auth_recovery')
+            return redirect(f'{target}?{urlencode({"network": selected_network})}')
+
+        context = {
+            **self.admin_site.each_context(request),
+            'title': 'Authentication recovery',
+            'opts': self.model._meta,
+            'form': form,
+            'current_network': current_network,
+            'selected_network': selected_network,
+            'rate_status': login_rate_status(selected_network),
+        }
+        response = TemplateResponse(
+            request,
+            'admin/tracker/invitecode/auth_recovery.html',
+            context,
+        )
+        response['Cache-Control'] = 'private, no-store, max-age=0'
+        return response
 
     def invite_dashboard(self, request):
         if request.method == 'POST':

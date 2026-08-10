@@ -26,6 +26,14 @@ FIELD_TO_ENV = {
     'countdown_label': 'TRACKER_COUNTDOWN_LABEL',
 }
 
+PUBLIC_DEFAULT_VALUES = {
+    'homepage_content': '',
+    'study_room_code': '',
+    'tracking_start_date': '2026-05-23',
+    'exam_date': '2026-12-26',
+    'countdown_label': '2026 Postgraduate Exam',
+}
+
 _cache_lock = threading.RLock()
 _cache_signature = None
 _cache_values = {}
@@ -70,7 +78,26 @@ def default_values():
     }
 
 
-def runtime_config():
+def user_can_sync_env(user):
+    return bool(
+        user
+        and getattr(user, 'is_authenticated', False)
+        and getattr(user, 'is_superuser', False)
+    )
+
+
+def runtime_config(user=None):
+    if not user_can_sync_env(user):
+        values = dict(PUBLIC_DEFAULT_VALUES)
+        return {
+            'values': values,
+            'defaults': dict(values),
+            'sources': {field: 'default' for field in values},
+            'fingerprint': 'public-defaults-v1',
+            'local_env_exists': False,
+            'writable': False,
+        }
+
     dotenv, signature = _dotenv_values()
     defaults = default_values()
     values = {}
@@ -100,6 +127,7 @@ def runtime_config():
         'sources': sources,
         'fingerprint': fingerprint,
         'local_env_exists': signature[1] is not None,
+        'writable': True,
     }
 
 
@@ -137,8 +165,10 @@ def _replace_managed_lines(existing, values):
     return ''.join(output)
 
 
-def save_runtime_config(values):
+def save_runtime_config(values, *, user):
     """Atomically update only the allow-listed dotenv values."""
+    if not user_can_sync_env(user):
+        raise PermissionError('Only a superuser can synchronize local environment settings.')
     global _cache_signature
     path = local_env_path()
     path.parent.mkdir(parents=True, exist_ok=True)
@@ -162,4 +192,4 @@ def save_runtime_config(values):
         fcntl.flock(lock_file.fileno(), fcntl.LOCK_UN)
     with _cache_lock:
         _cache_signature = None
-    return runtime_config()
+    return runtime_config(user=user)

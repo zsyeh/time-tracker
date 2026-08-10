@@ -1,0 +1,14 @@
+{% extends "account/base_entrance.html" %}
+{% block head_title %}Login temporarily limited · Personal Learning OS{% endblock head_title %}
+{% block content %}
+<div class="auth-card-heading">
+    <span class="auth-kicker">TEMPORARY ACCESS LIMIT</span>
+    <h1>Too many sign-in attempts.</h1>
+    <p>This network reached the temporary login limit. Twenty failed attempts are allowed within fifteen minutes.</p>
+</div>
+<div class="rate-limit-help" role="alert">
+    <strong>WHAT TO DO</strong>
+    <p>Wait for the window to expire, use an enrolled Passkey, or ask the administrator to reset this network from Django Admin.</p>
+</div>
+<div class="rate-limit-actions"><a class="password-button" href="{% url 'account_login' %}">RETURN TO SIGN IN</a><a href="{% url 'contact' %}">CONTACT ADMINISTRATOR</a></div>
+{% endblock content %}

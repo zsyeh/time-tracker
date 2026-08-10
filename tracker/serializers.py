@@ -183,12 +183,23 @@ class InviteCodeSerializer(serializers.ModelSerializer):
     usable = serializers.BooleanField(read_only=True)
     remaining_uses = serializers.IntegerField(read_only=True)
     created_by = serializers.CharField(source='created_by.username', read_only=True)
+    visitors = serializers.SerializerMethodField()
+
+    def get_visitors(self, obj):
+        return [
+            {
+                'username': redemption.user.get_username(),
+                'redeemed_at': redemption.redeemed_at,
+            }
+            for redemption in obj.redemptions.all()
+        ]
 
     class Meta:
         model = InviteCode
         fields = (
             'id', 'name', 'created_by', 'is_active', 'max_uses', 'use_count',
             'remaining_uses', 'expires_at', 'last_used_at', 'created_at', 'usable',
+            'is_self_service', 'issued_local_date', 'visitors',
         )
 
 

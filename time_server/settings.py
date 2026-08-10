@@ -264,8 +264,10 @@ ACCOUNT_SIGNUP_FIELDS = ['username*', 'password1*', 'password2*']
 ACCOUNT_SESSION_REMEMBER = None
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_RATE_LIMITS = {
-    'login': '8/5m/ip',
-    'login_failed': '5/5m/ip,20/h/ip',
+    # The failed-login limit is deliberately the binding rule: twenty failed
+    # attempts are accepted within the window and the twenty-first is blocked.
+    'login': '40/15m/ip',
+    'login_failed': '20/15m/ip,60/h/ip',
 }
 
 MFA_SUPPORTED_TYPES = ['webauthn']

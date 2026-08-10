@@ -7,7 +7,7 @@ from io import StringIO
 
 from django.contrib.auth import logout
 from django.core.cache import cache
-from django.db import transaction
+from django.db import IntegrityError, transaction
 from django.db.models import Count, Q
 from django.db.models.functions import TruncDate
 from django.http import HttpResponse
@@ -245,7 +245,7 @@ class DashboardOverviewView(APIView):
             return Response({'detail': 'days must be an integer'}, status=400)
         days = max(7, min(days, 366))
         version = cache.get(f'dashboard-version:{request.user.pk}', 1)
-        config = runtime_config()
+        config = runtime_config(user=request.user)
         # Keep a payload schema version in the key so a zero-downtime frontend
         # deployment never receives an older cached response shape.
         cache_key = f'dashboard-overview:v5:{request.user.pk}:{days}:{version}:{config["fingerprint"]}'
@@ -260,9 +260,14 @@ class RuntimeSettingsView(APIView):
     """Read and atomically persist the allow-listed local instance settings."""
 
     def get(self, request):
-        return Response(runtime_config())
+        return Response(runtime_config(user=request.user))
 
     def put(self, request):
+        if not request.user.is_superuser:
+            return Response(
+                {'detail': 'Only the instance superuser can synchronize local environment settings.'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
         serializer = RuntimeSettingsSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         values = {
@@ -270,7 +275,7 @@ class RuntimeSettingsView(APIView):
             for key, value in serializer.validated_data.items()
         }
         try:
-            payload = save_runtime_config(values)
+            payload = save_runtime_config(values, user=request.user)
         except OSError:
             return Response(
                 {'detail': 'The local settings file is not writable.'},
@@ -280,19 +285,50 @@ class RuntimeSettingsView(APIView):
 
 
 class InviteCodeListCreateView(APIView):
-    permission_classes = [permissions.IsAdminUser]
+    def _queryset(self, request):
+        queryset = InviteCode.objects.select_related('created_by').prefetch_related(
+            'redemptions__user',
+        )
+        if not request.user.is_staff:
+            queryset = queryset.filter(created_by=request.user)
+        return queryset
 
     def get(self, request):
-        queryset = InviteCode.objects.select_related('created_by').all()[:100]
+        queryset = self._queryset(request)[:100]
         return Response(InviteCodeSerializer(queryset, many=True).data)
 
     def post(self, request):
         serializer = InviteCodeCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        invite, raw_code = InviteCode.issue(
-            created_by=request.user,
-            **serializer.validated_data,
-        )
+        fields = dict(serializer.validated_data)
+        if not request.user.is_staff:
+            local_day = timezone.localdate()
+            fields.update({
+                'max_uses': 1,
+                'expires_at': None,
+                'is_self_service': True,
+                'issued_local_date': local_day,
+            })
+            if InviteCode.objects.filter(
+                created_by=request.user,
+                is_self_service=True,
+                issued_local_date=local_day,
+            ).exists():
+                return Response(
+                    {'detail': 'Your one-time invite for today has already been generated.'},
+                    status=status.HTTP_409_CONFLICT,
+                )
+        try:
+            with transaction.atomic():
+                invite, raw_code = InviteCode.issue(
+                    created_by=request.user,
+                    **fields,
+                )
+        except IntegrityError:
+            return Response(
+                {'detail': 'Your one-time invite for today has already been generated.'},
+                status=status.HTTP_409_CONFLICT,
+            )
         payload = InviteCodeSerializer(invite).data
         payload.update({
             'raw_code': raw_code,
@@ -302,10 +338,11 @@ class InviteCodeListCreateView(APIView):
 
 
 class InviteCodeActionView(APIView):
-    permission_classes = [permissions.IsAdminUser]
-
     def post(self, request, pk, action):
-        invite = get_object_or_404(InviteCode, pk=pk)
+        queryset = InviteCode.objects.all()
+        if not request.user.is_staff:
+            queryset = queryset.filter(created_by=request.user)
+        invite = get_object_or_404(queryset, pk=pk)
         if action != 'revoke':
             return Response({'detail': 'Unsupported action.'}, status=status.HTTP_400_BAD_REQUEST)
         invite.is_active = False

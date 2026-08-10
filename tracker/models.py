@@ -207,6 +207,8 @@ class InviteCode(models.Model):
     use_count = models.PositiveIntegerField(default=0)
     expires_at = models.DateTimeField(null=True, blank=True)
     last_used_at = models.DateTimeField(null=True, blank=True)
+    is_self_service = models.BooleanField(default=False, db_index=True)
+    issued_local_date = models.DateField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -215,6 +217,18 @@ class InviteCode(models.Model):
             models.CheckConstraint(
                 check=Q(max_uses__gte=models.F('use_count')),
                 name='invite_use_count_lte_max',
+            ),
+            models.CheckConstraint(
+                check=(
+                    Q(is_self_service=False)
+                    | (Q(max_uses=1) & Q(issued_local_date__isnull=False))
+                ),
+                name='self_service_invite_single_use',
+            ),
+            models.UniqueConstraint(
+                fields=('created_by', 'issued_local_date'),
+                condition=Q(is_self_service=True),
+                name='unique_daily_self_service_invite',
             ),
         ]
 

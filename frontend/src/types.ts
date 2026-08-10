@@ -74,6 +74,7 @@ export interface RuntimeSettingsResponse {
   sources: Record<keyof RuntimeSettingsValues, 'local_env' | 'default'>
   fingerprint: string
   local_env_exists: boolean
+  writable: boolean
 }
 
 export interface ReviewTrendDay { date: string; count: number }
@@ -100,6 +101,9 @@ export interface InviteCode {
   last_used_at: string | null
   created_at: string
   usable: boolean
+  is_self_service: boolean
+  issued_local_date: string | null
+  visitors: Array<{ username: string; redeemed_at: string }>
   raw_code?: string
   signup_url?: string
 }

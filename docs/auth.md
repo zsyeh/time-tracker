@@ -7,16 +7,27 @@ old fixed `Authorization` header gate is removed. Cookies are HttpOnly, Secure i
 production, and SameSite=Lax. `SESSION_REMEMBER_DAYS` controls the maximum trusted
 device lifetime; django-allauth asks whether the user wants to be remembered.
 The signup page is public, but account creation requires a valid administrator-
-issued invite code. Only staff users can generate or revoke invites from the
-authenticated Settings page/API or the dedicated Django Admin invitation
-dashboard. Codes are random, stored only as SHA-256 digests, optionally
-expiring, configurable for 1–100 uses, and the raw value is displayed once.
-Administrators can inspect remaining capacity, redemption timestamps, and the
-username created by each redemption.
+issued invite code. Every authenticated ordinary user can generate one
+single-use invite per Asia/Shanghai calendar day. Staff users can generate
+configurable 1–100-use invites from Settings/API or the dedicated Django Admin
+dashboard. Codes are random, stored only as SHA-256 digests, and the raw value
+is displayed once. Issuers can inspect the username and redemption time for
+their own codes; administrators can inspect every code and visitor.
+
+Short and numeric passwords are accepted in allauth account flows. The signup
+page labels them as easier to guess and recommends adding a Passkey immediately
+after the first login. The twenty-first failed password attempt from one network
+within fifteen minutes is temporarily limited. Staff can inspect and reset the
+IP-based state from `/admin/tracker/invitecode/auth-recovery/`; resetting does
+not change a password or Passkey.
 
 All session, issue, knowledge-point, token, analytics, and export querysets filter
 by `request.user`. Foreign-key validation also rejects cross-user session/parent
 references.
+
+Only a superuser can read or write the allow-listed local `.env` display
+settings. Ordinary users receive fixed safe defaults with empty homepage content
+and study-room code, preventing instance-private values from crossing accounts.
 
 Public support pages do not grant application access. `/guide/` is read-only.
 `/contact/` uses CSRF protection, a honeypot, per-network rate limiting, and

@@ -34,7 +34,7 @@ def _streak(dates, today):
 
 def build_dashboard_overview(user, days=180, config=None):
     days = max(7, min(int(days), 366))
-    config = config or runtime_config()['values']
+    config = config or runtime_config(user=user)['values']
     now = timezone.now()
     local_today = _local(now).date()
     first_day = local_today - datetime.timedelta(days=days - 1)
