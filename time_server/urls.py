@@ -1,31 +1,45 @@
 from django.contrib import admin
 from django.urls import include, path
+from allauth.account.views import signup_by_passkey
+from allauth.mfa.webauthn.views import signup_webauthn
 
 from tracker.api_views import (
     DashboardOverviewView,
     GlobalSearchView,
+    InviteCodeActionView,
+    InviteCodeListCreateView,
     KnowledgePointDetailView,
     KnowledgePointListCreateView,
     LaunchTokenActionView,
     LaunchTokenListCreateView,
     LearningIssueDetailView,
     LearningIssueListCreateView,
+    RuntimeSettingsView,
     SessionAbandonView,
     SessionDetailView,
     SessionFinishView,
     SessionListCreateView,
+    SessionReviewView,
     auth_logout,
     auth_session,
     export_csv,
     export_json,
     export_markdown,
 )
+from tracker.public_views import contact_view, guide_view, legal_view
 from tracker.web_views import LaunchDeviceView, direct_start_view, launch_browser_view, spa_view
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    # django-allauth normally exposes Passkey signup only alongside mandatory
+    # email verification. This private instance uses its invite form instead.
+    path('accounts/signup/passkey/', signup_by_passkey, name='account_signup_by_passkey'),
+    path('accounts/2fa/webauthn/signup/', signup_webauthn, name='mfa_signup_webauthn'),
     path('accounts/', include('allauth.urls')),
+    path('guide/', guide_view, name='guide'),
+    path('legal/', legal_view, name='legal'),
+    path('contact/', contact_view, name='contact'),
     path('start/<str:subject>', direct_start_view, name='direct_start'),
     path('launch/<str:raw_token>', launch_browser_view, name='launch_browser'),
     path('api/launch/<str:raw_token>/start', LaunchDeviceView.as_view(), name='launch_device'),
@@ -35,7 +49,11 @@ urlpatterns = [
     path('api/sessions/<int:pk>/', SessionDetailView.as_view(), name='session_detail'),
     path('api/sessions/<int:pk>/finish/', SessionFinishView.as_view(), name='session_finish'),
     path('api/sessions/<int:pk>/abandon/', SessionAbandonView.as_view(), name='session_abandon'),
+    path('api/sessions/<int:pk>/reviews/', SessionReviewView.as_view(), name='session_reviews'),
     path('api/dashboard/overview/', DashboardOverviewView.as_view(), name='dashboard_overview'),
+    path('api/settings/runtime/', RuntimeSettingsView.as_view(), name='runtime_settings'),
+    path('api/invite-codes/', InviteCodeListCreateView.as_view(), name='invite_code_list'),
+    path('api/invite-codes/<int:pk>/<str:action>/', InviteCodeActionView.as_view(), name='invite_code_action'),
     path('api/search/', GlobalSearchView.as_view(), name='global_search'),
     path('api/issues/', LearningIssueListCreateView.as_view(), name='issue_list'),
     path('api/issues/<int:pk>/', LearningIssueDetailView.as_view(), name='issue_detail'),

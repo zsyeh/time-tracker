@@ -1,0 +1,24 @@
+{% extends "account/base_entrance.html" %}
+{% load static %}
+{% block head_title %}Create Passkey · Personal Learning OS{% endblock head_title %}
+{% block content %}
+    <div class="auth-card-heading">
+        <span class="auth-kicker">FINAL STEP / THIS DEVICE</span>
+        <h1>Create your Passkey.</h1>
+        <p>Your account has no password. Complete the secure device prompt to activate Passkey-only access.</p>
+    </div>
+    {% if form.errors %}<div class="auth-errors auth-error-summary" role="alert"><strong>PASSKEY NOT CREATED</strong>{{ form.errors }}</div>{% endif %}
+    <form id="passkey-credential-form" class="auth-form passkey-credential-form" method="post" action="{% url 'mfa_signup_webauthn' %}">
+        {% csrf_token %}
+        <label for="{{ form.name.id_for_label }}">PASSKEY NAME</label>
+        {{ form.name }}
+        {{ form.credential }}
+        <button id="mfa_webauthn_signup" class="passkey-button compact" type="button"><span><strong>CREATE PASSKEY</strong><small>Face ID · Touch ID · device PIN</small></span><b aria-hidden="true">→</b></button>
+    </form>
+    <p class="passkey-stage-warning">Complete this step before leaving the page. There is no password fallback for this account.</p>
+    {% include "mfa/webauthn/snippets/scripts.html" %}
+    {{ js_data|json_script:"js_data" }}
+    <script data-allauth-onload="allauth.webauthn.forms.signupForm" type="application/json">{
+      "ids": {"signup": "mfa_webauthn_signup", "credential": "{{ form.credential.auto_id }}", "data": "js_data"}
+    }</script>
+{% endblock content %}

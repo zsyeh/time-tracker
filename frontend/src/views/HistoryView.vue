@@ -1,30 +1,59 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import { api, patch } from '../lib/api'
-import type { Page, StudySession } from '../types'
+import { EditPen, View } from '@element-plus/icons-vue'
+import { api, patch, post } from '../lib/api'
+import type { Page, ReviewTrend as ReviewTrendType, StudySession } from '../types'
 import MarkdownPreview from '../components/MarkdownPreview.vue'
+import ReviewTrend from '../components/ReviewTrend.vue'
 
 const loading = ref(false)
 const rows = ref<StudySession[]>([])
 const total = ref(0)
 const page = ref(1)
 const expanded = ref<StudySession | null>(null)
+const drawerOpen = ref(false)
+const detailLoading = ref(false)
 const editing = ref(false)
+const reviewTrend = ref<ReviewTrendType | null>(null)
 const filters = reactive({ search: '', subject: '', status: '' })
 const edit = reactive({ title: '', details: '' })
 
 function duration(minutes: number) { return minutes >= 60 ? `${Math.floor(minutes / 60)}h ${minutes % 60}m` : `${minutes}m` }
 async function load() {
   loading.value = true
-  const params = new URLSearchParams({ page: String(page.value) })
+  const params = new URLSearchParams({ page: String(page.value), compact: '1' })
   if (filters.search) params.set('search', filters.search)
   if (filters.subject) params.set('subject', filters.subject)
   if (filters.status) params.set('status', filters.status)
   try { const data = await api<Page<StudySession>>(`/api/sessions/?${params}`); rows.value = data.results; total.value = data.count }
   catch (error) { ElMessage.error((error as Error).message) } finally { loading.value = false }
 }
-function inspect(row: StudySession) { expanded.value = row; Object.assign(edit, { title: row.title, details: row.details }); editing.value = true }
+async function inspect(row: StudySession) {
+  drawerOpen.value = true
+  detailLoading.value = true
+  editing.value = false
+  expanded.value = null
+  reviewTrend.value = null
+  try {
+    const [session, trend] = row.status === 'completed'
+      ? await Promise.all([
+          api<StudySession>(`/api/sessions/${row.id}/`),
+          post<ReviewTrendType>(`/api/sessions/${row.id}/reviews/`),
+        ])
+      : [await api<StudySession>(`/api/sessions/${row.id}/`), null]
+    if (trend) {
+      session.review_count = trend.total
+      session.last_reviewed_at = trend.last_reviewed_at
+    }
+    expanded.value = session
+    reviewTrend.value = trend
+    Object.assign(edit, { title: session.title, details: session.details })
+    const listItem = rows.value.find((item) => item.id === row.id)
+    if (listItem && trend) { listItem.review_count = trend.total; listItem.last_reviewed_at = trend.last_reviewed_at }
+  } catch (error) { ElMessage.error((error as Error).message) }
+  finally { detailLoading.value = false }
+}
 async function save() { if (!expanded.value) return; try { expanded.value = await patch(`/api/sessions/${expanded.value.id}/`, edit); editing.value = false; ElMessage.success('Session updated'); await load() } catch (error) { ElMessage.error((error as Error).message) } }
 function search() { page.value = 1; load() }
 onMounted(load)
@@ -39,14 +68,19 @@ onMounted(load)
       <article v-for="row in rows" :key="row.id" class="history-row" @click="inspect(row)">
         <time><b>{{ new Date(row.start_time).getDate().toString().padStart(2, '0') }}</b><span>{{ new Date(row.start_time).toLocaleDateString('en-US', { month: 'short' }) }}</span></time>
         <i :class="`subject-dot subject-${row.subject}`" />
-        <div class="history-main"><strong>{{ row.title || (row.status === 'running' ? `${row.subject_label} session` : 'Untitled session') }}</strong><p>{{ row.status === 'running' ? 'Session in progress' : (row.details || 'No details') }}</p><small>{{ row.subject_label }} · {{ new Date(row.start_time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) }} · {{ row.status }}</small></div>
-        <b v-if="row.status !== 'running'" class="duration-badge">{{ duration(row.duration_minutes) }}</b>
-        <b v-else class="running-badge">IN SESSION</b>
+        <div class="history-main"><strong>{{ row.title || (row.status === 'running' ? `${row.subject_label} session` : 'Untitled session') }}</strong><p>{{ row.status === 'running' ? 'Session in progress' : 'Markdown review available' }}</p><small>{{ row.subject_label }} · {{ new Date(row.start_time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) }} · {{ row.status }}</small></div>
+        <div class="history-actions"><b v-if="row.status !== 'running'" class="duration-badge">{{ duration(row.duration_minutes) }}</b><b v-else class="running-badge">IN SESSION</b><button v-if="row.status === 'completed'" type="button" class="review-eye" :aria-label="`Review ${row.title || 'session'}`" @click.stop="inspect(row)"><el-icon><View /></el-icon><span>{{ row.review_count || 0 }}</span></button></div>
       </article>
       <el-pagination v-if="total > 20" v-model:current-page="page" layout="prev, pager, next" :total="total" :page-size="20" @current-change="load" />
     </section>
-    <el-drawer v-model="editing" title="Session details" size="min(680px, 94vw)">
-      <el-form label-position="top" class="simple-review"><el-form-item label="Title"><el-input v-model="edit.title" maxlength="500" show-word-limit /></el-form-item><el-form-item label="Details"><el-input v-model="edit.details" type="textarea" :rows="20" placeholder="Paste Markdown or edit the source." /></el-form-item><MarkdownPreview :key="expanded?.id" :source="edit.details" /><el-button type="primary" @click="save">Save changes</el-button></el-form>
+    <el-drawer v-model="drawerOpen" size="min(760px, 96vw)" class="review-drawer" destroy-on-close>
+      <template #header><div class="dialog-title review-title"><div><span class="eyebrow">SESSION REVIEW</span><h2>{{ expanded?.title || 'Untitled session' }}</h2></div><el-button v-if="expanded && !editing" :icon="EditPen" @click="editing = true">Edit</el-button></div></template>
+      <div v-if="expanded" v-loading="detailLoading" class="session-detail-page review-page">
+        <dl><div><dt>SUBJECT</dt><dd>{{ expanded.subject_label }}</dd></div><div><dt>DATE</dt><dd>{{ new Date(expanded.start_time).toLocaleDateString('en-CA') }}</dd></div><div><dt>DURATION</dt><dd>{{ duration(expanded.duration_minutes) }}</dd></div></dl>
+        <ReviewTrend v-if="expanded.status === 'completed'" :trend="reviewTrend" :loading="detailLoading" />
+        <el-form v-if="editing" label-position="top" class="simple-review review-editor"><el-form-item label="Title"><el-input v-model="edit.title" maxlength="500" show-word-limit /></el-form-item><el-form-item label="Markdown source"><el-input v-model="edit.details" type="textarea" :rows="20" placeholder="Paste Markdown or edit the source." /></el-form-item><MarkdownPreview :source="edit.details" /><div class="editor-actions"><el-button @click="editing = false">Cancel</el-button><el-button type="primary" @click="save">Save changes</el-button></div></el-form>
+        <MarkdownPreview v-else :key="expanded.id" :source="expanded.details" default-open allow-fullscreen empty-text="No details were recorded for this session." />
+      </div>
     </el-drawer>
   </div>
 </template>

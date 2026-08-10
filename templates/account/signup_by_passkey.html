@@ -1,0 +1,32 @@
+{% extends "account/base_entrance.html" %}
+{% block head_title %}Passkey signup · Personal Learning OS{% endblock head_title %}
+{% block content %}
+    <div class="auth-card-heading">
+        <span class="auth-kicker">{% if form.invite_required %}INVITE + PASSKEY{% else %}OPEN REGISTRATION{% endif %}</span>
+        <h1>Create a Passkey-only workspace.</h1>
+        <p>No password will be stored. After this form, your device will create the only credential using Face ID, Touch ID, a device PIN, or a security key.</p>
+    </div>
+    {% if form.errors %}
+    <div class="auth-errors auth-error-summary" role="alert" aria-live="polite">
+        <strong>ACCOUNT NOT CREATED</strong>
+        <ul>
+            {% for field in form %}{% for error in field.errors %}<li>{{ field.label }}: {{ error }}</li>{% endfor %}{% endfor %}
+            {% for error in form.non_field_errors %}<li>{{ error }}</li>{% endfor %}
+        </ul>
+    </div>
+    {% endif %}
+    <form class="auth-form passkey-signup-form" method="post" action="{% url 'account_signup_by_passkey' %}">
+        {% csrf_token %}
+        <label for="id_username">USERNAME</label>
+        {{ form.username }}
+        {% if form.username.errors %}<div class="auth-errors">{{ form.username.errors }}</div>{% endif %}
+        <label for="id_invite_code">INVITE CODE{% if not form.invite_required %} · OPTIONAL{% endif %}</label>
+        {{ form.invite_code }}
+        {% if form.invite_code.errors %}<div class="auth-errors">{{ form.invite_code.errors }}</div>{% endif %}
+        {{ redirect_field }}
+        <div class="passkey-only-note"><strong>PASSKEY-ONLY ACCOUNT</strong><p>Do not close the next device prompt. Registration finishes only after the Passkey is created.</p></div>
+        <button class="passkey-button compact" type="submit"><span><strong>CONTINUE TO PASSKEY</strong><small>Use this device directly</small></span><b aria-hidden="true">→</b></button>
+    </form>
+    <p class="signup-note">Prefer a recovery password? <a href="{% url 'account_signup' %}">Use password signup</a></p>
+    <div class="signup-contact"><span>NEED HELP?</span><a href="mailto:zsyeh7286@gmail.com">zsyeh7286@gmail.com</a></div>
+{% endblock content %}

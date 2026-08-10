@@ -38,4 +38,9 @@ export const patch = <T>(url: string, body: unknown) => api<T>(url, {
   body: JSON.stringify(body),
 })
 
+export const put = <T>(url: string, body: unknown) => api<T>(url, {
+  method: 'PUT',
+  body: JSON.stringify(body),
+})
+
 export const remove = <T>(url: string) => api<T>(url, { method: 'DELETE' })

@@ -7,8 +7,9 @@ from io import StringIO
 
 from django.contrib.auth import logout
 from django.core.cache import cache
-from django.db import transaction
-from django.db.models import Q
+from django.db import IntegrityError, transaction
+from django.db.models import Count, Q
+from django.db.models.functions import TruncDate
 from django.http import HttpResponse
 from django.middleware.csrf import get_token
 from django.shortcuts import get_object_or_404
@@ -23,13 +24,17 @@ from rest_framework.views import APIView
 
 from .analytics import build_dashboard_overview
 from .learning_log import dispatch_github_note_sync
-from .models import KnowledgePoint, LaunchToken, LearningIssue, TimeLog
+from .models import InviteCode, KnowledgePoint, LaunchToken, LearningIssue, SessionReview, TimeLog
+from .runtime_settings import runtime_config, save_runtime_config
 from .serializers import (
     FinishSessionSerializer,
+    InviteCodeCreateSerializer,
+    InviteCodeSerializer,
     KnowledgePointSerializer,
     LaunchTokenCreateSerializer,
     LaunchTokenSerializer,
     LearningIssueSerializer,
+    RuntimeSettingsSerializer,
     StartSessionSerializer,
     StudySessionSerializer,
     StudySessionSummarySerializer,
@@ -88,6 +93,8 @@ def auth_session(request):
         'user': {
             'id': request.user.pk,
             'username': request.user.get_username(),
+            'is_staff': request.user.is_staff,
+            'is_superuser': request.user.is_superuser,
         } if request.user.is_authenticated else None,
         'csrf_token': get_token(request),
     })
@@ -175,6 +182,61 @@ class SessionAbandonView(APIView):
         return Response({'deleted': deleted})
 
 
+class SessionReviewView(APIView):
+    """Record a deduplicated review visit and return its per-session trend."""
+
+    window_days = 90
+
+    def _payload(self, session, created=False):
+        boundary = timezone.now() - datetime.timedelta(days=self.window_days - 1)
+        daily = list(
+            SessionReview.objects.filter(session=session, reviewed_at__gte=boundary)
+            .annotate(date=TruncDate('reviewed_at'))
+            .values('date')
+            .annotate(count=Count('id'))
+            .order_by('date')
+        )
+        return {
+            'session_id': session.pk,
+            'total': session.review_count,
+            'last_reviewed_at': session.last_reviewed_at,
+            'review_days': len(daily),
+            'window_days': self.window_days,
+            'created': created,
+            'daily': [
+                {'date': item['date'].isoformat(), 'count': item['count']}
+                for item in daily
+            ],
+        }
+
+    def get(self, request, pk):
+        session = get_object_or_404(TimeLog, pk=pk, user=request.user)
+        return Response(self._payload(session))
+
+    def post(self, request, pk):
+        with transaction.atomic():
+            session = get_object_or_404(
+                TimeLog.objects.select_for_update(), pk=pk, user=request.user,
+            )
+            if session.status != 'completed':
+                return Response(
+                    {'detail': 'Only completed sessions can be reviewed.'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            now = timezone.now()
+            cutoff = now - datetime.timedelta(minutes=10)
+            recent = SessionReview.objects.filter(
+                session=session, user=request.user, reviewed_at__gte=cutoff,
+            ).exists()
+            created = not recent
+            if created:
+                SessionReview.objects.create(session=session, user=request.user, reviewed_at=now)
+                session.review_count += 1
+                session.last_reviewed_at = now
+                session.save(update_fields=('review_count', 'last_reviewed_at', 'updated_at'))
+        return Response(self._payload(session, created=created))
+
+
 class DashboardOverviewView(APIView):
     def get(self, request):
         try:
@@ -183,14 +245,109 @@ class DashboardOverviewView(APIView):
             return Response({'detail': 'days must be an integer'}, status=400)
         days = max(7, min(days, 366))
         version = cache.get(f'dashboard-version:{request.user.pk}', 1)
+        config = runtime_config(user=request.user)
         # Keep a payload schema version in the key so a zero-downtime frontend
         # deployment never receives an older cached response shape.
-        cache_key = f'dashboard-overview:v4:{request.user.pk}:{days}:{version}'
+        cache_key = f'dashboard-overview:v5:{request.user.pk}:{days}:{version}:{config["fingerprint"]}'
         payload = cache.get(cache_key)
         if payload is None:
-            payload = build_dashboard_overview(request.user, days)
+            payload = build_dashboard_overview(request.user, days, config=config['values'])
             cache.set(cache_key, payload, timeout=60)
         return Response(payload)
+
+
+class RuntimeSettingsView(APIView):
+    """Read and atomically persist the allow-listed local instance settings."""
+
+    def get(self, request):
+        return Response(runtime_config(user=request.user))
+
+    def put(self, request):
+        if not request.user.is_superuser:
+            return Response(
+                {'detail': 'Only the instance superuser can synchronize local environment settings.'},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+        serializer = RuntimeSettingsSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        values = {
+            key: value.isoformat() if hasattr(value, 'isoformat') else value
+            for key, value in serializer.validated_data.items()
+        }
+        try:
+            payload = save_runtime_config(values, user=request.user)
+        except OSError:
+            return Response(
+                {'detail': 'The local settings file is not writable.'},
+                status=status.HTTP_503_SERVICE_UNAVAILABLE,
+            )
+        return Response(payload)
+
+
+class InviteCodeListCreateView(APIView):
+    def _queryset(self, request):
+        queryset = InviteCode.objects.select_related('created_by').prefetch_related(
+            'redemptions__user',
+        )
+        if not request.user.is_staff:
+            queryset = queryset.filter(created_by=request.user)
+        return queryset
+
+    def get(self, request):
+        queryset = self._queryset(request)[:100]
+        return Response(InviteCodeSerializer(queryset, many=True).data)
+
+    def post(self, request):
+        serializer = InviteCodeCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        fields = dict(serializer.validated_data)
+        if not request.user.is_staff:
+            local_day = timezone.localdate()
+            fields.update({
+                'max_uses': 1,
+                'expires_at': None,
+                'is_self_service': True,
+                'issued_local_date': local_day,
+            })
+            if InviteCode.objects.filter(
+                created_by=request.user,
+                is_self_service=True,
+                issued_local_date=local_day,
+            ).exists():
+                return Response(
+                    {'detail': 'Your one-time invite for today has already been generated.'},
+                    status=status.HTTP_409_CONFLICT,
+                )
+        try:
+            with transaction.atomic():
+                invite, raw_code = InviteCode.issue(
+                    created_by=request.user,
+                    **fields,
+                )
+        except IntegrityError:
+            return Response(
+                {'detail': 'Your one-time invite for today has already been generated.'},
+                status=status.HTTP_409_CONFLICT,
+            )
+        payload = InviteCodeSerializer(invite).data
+        payload.update({
+            'raw_code': raw_code,
+            'signup_url': request.build_absolute_uri('/accounts/signup/'),
+        })
+        return Response(payload, status=status.HTTP_201_CREATED)
+
+
+class InviteCodeActionView(APIView):
+    def post(self, request, pk, action):
+        queryset = InviteCode.objects.all()
+        if not request.user.is_staff:
+            queryset = queryset.filter(created_by=request.user)
+        invite = get_object_or_404(queryset, pk=pk)
+        if action != 'revoke':
+            return Response({'detail': 'Unsupported action.'}, status=status.HTTP_400_BAD_REQUEST)
+        invite.is_active = False
+        invite.save(update_fields=('is_active',))
+        return Response(InviteCodeSerializer(invite).data)
 
 
 def _search_snippet(query, *values, length=180):

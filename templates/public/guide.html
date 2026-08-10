@@ -1,0 +1,20 @@
+{% extends "public/base.html" %}
+{% block title %}User Guide · Personal Learning OS{% endblock %}
+{% block content %}
+<section class="public-hero">
+    <span class="public-eyebrow">DOCUMENTATION / USER GUIDE</span>
+    <h1>Use the tracker<br>without extra ceremony.</h1>
+    <p>A concise reference for registration, sessions, Markdown reviews, privacy, and account access.</p>
+    <div class="hero-actions"><a class="primary-action" href="{% url 'account_login' %}">SIGN IN</a><a href="{% url 'account_signup' %}">PASSWORD SIGNUP</a><a href="{% url 'account_signup_by_passkey' %}">PASSKEY-ONLY SIGNUP</a></div>
+</section>
+<section class="guide-grid">
+    <article><b>01</b><span>ACCOUNT ACCESS</span><h2>Register with an invite</h2><p>Choose password signup or Passkey-only signup. Both require a valid invite unless an administrator has explicitly opened registration. A Passkey-only account stores no password. Registration errors appear above the form.</p></article>
+    <article><b>02</b><span>START / FINISH</span><h2>Record one focused session</h2><p>Start a subject from the homepage. Running duration stays hidden. When finished, provide one title and a Markdown details body. Sessions shorter than 25 minutes or longer than 12 hours are discarded.</p></article>
+    <article><b>03</b><span>MARKDOWN</span><h2>Keep formulas and structure</h2><p>Details support KaTeX formulas, GFM tables, task lists, code highlighting, footnotes, callouts, marks, superscript, and subscript. Input preview is optional and disabled by default.</p></article>
+    <article><b>04</b><span>REVIEW</span><h2>Read before editing</h2><p>Historical sessions open in Markdown preview. Full-screen reading keeps its exit control visible and supports vertical touch scrolling. Use Edit only when changes are needed. The eye indicator and chart show review activity per session.</p></article>
+    <article><b>05</b><span>ACTIVITY</span><h2>Inspect a day</h2><p>Select a heatmap cell to view that day's online and offline timeline. Select a session title to open its review. The five-hour threshold uses a high-contrast heatmap color.</p></article>
+    <article><b>06</b><span>DATA ISOLATION</span><h2>Accounts remain separate</h2><p>Every user sees only their own sessions and exports. Only the instance superuser synchronizes private `.env` display settings; ordinary users never receive the study-room code or private homepage content.</p></article>
+</section>
+<section class="guide-policy-strip"><article><span>INVITE SHARING</span><h2>One daily invite for every member</h2><p>Ordinary users can generate one single-use invite per Shanghai calendar day from Settings. After redemption, the issuer can see the registered username. Administrators retain configurable 1–100-use invitations.</p></article><article><span>ACCESS RECOVERY</span><h2>Twenty failed attempts</h2><p>The twenty-first failed password attempt within fifteen minutes temporarily limits that network. Administrators can inspect and reset login status from Django Admin. Enrolled Passkeys remain the recommended sign-in method.</p></article><article><span>PORTABILITY</span><h2>Export before you need it</h2><p>Availability and zero data loss are not guaranteed. Download complete CSV, JSON, or Markdown records from Settings. <a href="{% url 'legal' %}">Read the bilingual disclaimer.</a></p></article></section>
+<section class="guide-contact"><div><span>SUPPORT</span><h2>Registration or access issue?</h2><p>Contact the administrator directly. Messages submitted through this site are sent by email and are not stored in the tracker database.</p></div><div><a href="mailto:{{ contact_email }}">{{ contact_email }}</a><a class="primary-action" href="{% url 'contact' %}">OPEN CONTACT FORM</a></div></section>
+{% endblock %}

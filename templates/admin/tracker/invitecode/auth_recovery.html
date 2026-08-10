@@ -1,0 +1,31 @@
+{% extends "admin/base_site.html" %}
+{% block title %}Authentication recovery · Learning OS{% endblock %}
+{% block breadcrumbs %}<div class="breadcrumbs"><a href="{% url 'admin:index' %}">Home</a> › Authentication recovery</div>{% endblock %}
+{% block content %}
+<div class="auth-recovery-page">
+    <header class="invite-admin-hero">
+        <div><span>ADMIN / ACCESS</span><h1>Authentication recovery</h1><p>Inspect and reset temporary IP-based login limits. Account passwords and Passkeys are not changed.</p></div>
+        <a href="{% url 'admin:tracker_invitecode_dashboard' %}" class="button">INVITATIONS</a>
+    </header>
+    <section class="auth-recovery-grid">
+        <article class="auth-recovery-card">
+            <span class="invite-card-kicker">NETWORK TARGET</span><h2>Reset login status</h2>
+            <p>This admin session is using <code>{{ current_network }}</code>. Leave the field blank to reset that address.</p>
+            <form method="post" class="invite-admin-form">{% csrf_token %}
+                <label for="id_network_address">NETWORK ADDRESS</label>{{ form.network_address }}{{ form.network_address.errors }}
+                <div class="auth-recovery-actions">
+                    <button type="submit" name="scope" value="network" class="button default">RESET THIS NETWORK</button>
+                    <button type="submit" name="scope" value="all" class="button auth-reset-all">RESET ALL LOGIN LOCKS</button>
+                </div>
+            </form>
+            <small>Reset all clears temporary application caches, including dashboard snapshots, but does not delete database records.</small>
+        </article>
+        <section class="auth-rate-status">
+            <div><span class="invite-card-kicker">CURRENT STATUS</span><h2>{{ selected_network }}</h2></div>
+            {% for row in rate_status %}
+            <article><div><span>{{ row.action|upper }}</span><strong>{{ row.used }} / {{ row.limit }}</strong></div><dl><div><dt>WINDOW</dt><dd>{{ row.window }}</dd></div><div><dt>REMAINING</dt><dd>{{ row.remaining }}</dd></div></dl></article>
+            {% empty %}<p>No IP-based login rate rules are configured.</p>{% endfor %}
+        </section>
+    </section>
+</div>
+{% endblock %}

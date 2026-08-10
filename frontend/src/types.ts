@@ -21,6 +21,8 @@ export interface StudySession {
   breakthrough: string
   problems: string
   next_action: string
+  review_count: number
+  last_reviewed_at: string | null
 }
 
 export interface HeatmapDay {
@@ -36,7 +38,7 @@ export interface Overview {
   server_time: string
   range_days: number
   calendar: { today: string; exam_date: string; days_until_exam: number; heatmap_start_date: string }
-  private_display: { study_room_code: string }
+  private_display: { study_room_code: string; homepage_content: string; countdown_label: string }
   today: { minutes: number; sessions: number; first_start: string | null }
   active_session: StudySession | null
   summary: {
@@ -56,6 +58,54 @@ export interface Overview {
   monthly_totals: Array<{ month: string; minutes: number }>
   heatmap: HeatmapDay[]
   daily_start_times: Array<{ date: string; first_start: string }>
+}
+
+export interface RuntimeSettingsValues {
+  homepage_content: string
+  study_room_code: string
+  tracking_start_date: string
+  exam_date: string
+  countdown_label: string
+}
+
+export interface RuntimeSettingsResponse {
+  values: RuntimeSettingsValues
+  defaults: RuntimeSettingsValues
+  sources: Record<keyof RuntimeSettingsValues, 'local_env' | 'default'>
+  fingerprint: string
+  local_env_exists: boolean
+  writable: boolean
+}
+
+export interface ReviewTrendDay { date: string; count: number }
+
+export interface ReviewTrend {
+  session_id: number
+  total: number
+  last_reviewed_at: string | null
+  review_days: number
+  window_days: number
+  created: boolean
+  daily: ReviewTrendDay[]
+}
+
+export interface InviteCode {
+  id: number
+  name: string
+  created_by: string
+  is_active: boolean
+  max_uses: number
+  use_count: number
+  remaining_uses: number
+  expires_at: string | null
+  last_used_at: string | null
+  created_at: string
+  usable: boolean
+  is_self_service: boolean
+  issued_local_date: string | null
+  visitors: Array<{ username: string; redeemed_at: string }>
+  raw_code?: string
+  signup_url?: string
 }
 
 export interface Issue {

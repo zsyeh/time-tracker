@@ -1,9 +1,15 @@
 import datetime
 import json
+import os
+import subprocess
+import tempfile
+from pathlib import Path
 from unittest import mock
 
 from django.conf import settings
 from django.contrib.auth import get_user_model
+from django.core import mail
+from django.core.cache import cache
 from django.db import connection
 from django.db.migrations.executor import MigrationExecutor
 from django.test import TestCase, TransactionTestCase, override_settings
@@ -11,8 +17,26 @@ from django.urls import reverse
 from django.utils import timezone
 
 from .analytics import build_dashboard_overview
-from .learning_log import markdown_relative_path, render_session_markdown, sync_session_note
-from .models import GitHubNoteSync, KnowledgePoint, LaunchToken, LearningIssue, TimeLog
+from .learning_log import (
+    archive_completed_task,
+    github_branch_for_user,
+    markdown_relative_path,
+    render_session_markdown,
+    sync_session_note,
+)
+from .models import (
+    GitHubNoteSync,
+    InviteCode,
+    InviteRedemption,
+    KnowledgePoint,
+    LaunchToken,
+    LearningIssue,
+    SessionReview,
+    SiteConfiguration,
+    TimeLog,
+)
+
+TEST_PASSWORD_HASHERS = ['django.contrib.auth.hashers.MD5PasswordHasher']
 
 
 def completed_session(user, *, day=None, minutes=60, subject='math', title='完整学习总结', details='完整学习详情'):
@@ -117,6 +141,12 @@ class AuthAndIsolationTests(TestCase):
         self.assertContains(response, 'id="passkey_login"')
         self.assertContains(response, 'tracker/auth.css')
         self.assertContains(response, 'iCloud Keychain')
+        self.assertContains(response, 'https://hub.docker.com/r/ehzsy/time-tracker')
+        self.assertContains(response, 'https://github.com/zsyeh/time-tracker')
+        self.assertContains(response, 'https://github.com/zsyeh')
+        self.assertContains(response, 'https://blog.ehzsy.site')
+        self.assertContains(response, 'CREATE ACCOUNT')
+        self.assertContains(response, '/guide/')
 
     @override_settings(DEBUG=True)
     def test_django_admin_login_uses_project_branding_and_styles(self):
@@ -124,6 +154,438 @@ class AuthAndIsolationTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'Learning OS')
         self.assertContains(response, 'tracker/admin.css')
+
+
+@override_settings(SECURE_SSL_REDIRECT=False, PASSWORD_HASHERS=TEST_PASSWORD_HASHERS)
+class AuthenticationPolicyTests(TestCase):
+    network = '198.51.100.24'
+
+    def setUp(self):
+        cache.clear()
+        self.user = get_user_model().objects.create_user('rate-user', password='correct')
+
+    def tearDown(self):
+        cache.clear()
+
+    def test_twenty_failed_logins_are_allowed_before_clear_limit_feedback(self):
+        for attempt in range(20):
+            response = self.client.post('/accounts/login/', {
+                'login': self.user.username,
+                'password': 'wrong',
+            }, REMOTE_ADDR=self.network)
+            self.assertEqual(response.status_code, 200, attempt)
+        limited = self.client.post('/accounts/login/', {
+            'login': self.user.username,
+            'password': 'wrong',
+        }, REMOTE_ADDR=self.network)
+        self.assertEqual(limited.status_code, 200)
+        self.assertContains(limited, 'Too many failed login attempts. Try again later.')
+        self.assertContains(limited, 'Continue with Passkey')
+
+
+@override_settings(SECURE_SSL_REDIRECT=False, PASSWORD_HASHERS=TEST_PASSWORD_HASHERS)
+class InviteRegistrationTests(TestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.admin = User.objects.create_user(
+            'invite-admin', password='valid-test-password', is_staff=True,
+        )
+        self.member = User.objects.create_user('existing-member', password='valid-test-password')
+
+    def test_signup_page_is_open_but_requires_a_valid_invite(self):
+        page = self.client.get('/accounts/signup/')
+        self.assertEqual(page.status_code, 200)
+        self.assertContains(page, 'INVITE CODE')
+        self.assertContains(page, 'zsyeh7286@gmail.com')
+
+        invalid = self.client.post('/accounts/signup/', {
+            'username': 'no-invite-user',
+            'password1': 'valid-signup-password-7614',
+            'password2': 'valid-signup-password-7614',
+            'invite_code': 'not-a-real-code',
+        })
+        self.assertEqual(invalid.status_code, 200)
+        self.assertContains(invalid, 'ACCOUNT NOT CREATED')
+        self.assertContains(invalid, 'invalid, expired, or already used')
+        self.assertFalse(get_user_model().objects.filter(username='no-invite-user').exists())
+
+    def test_passkey_only_signup_requires_and_redeems_an_invite(self):
+        page = self.client.get('/accounts/signup/passkey/')
+        self.assertEqual(page.status_code, 200)
+        self.assertContains(page, 'INVITE + PASSKEY')
+        self.assertContains(page, 'INVITE CODE')
+
+        missing = self.client.post('/accounts/signup/passkey/', {
+            'username': 'passkey-without-invite',
+            'invite_code': '',
+        })
+        self.assertEqual(missing.status_code, 200)
+        self.assertContains(missing, 'Enter an invite code')
+        self.assertFalse(get_user_model().objects.filter(username='passkey-without-invite').exists())
+
+        invite, raw_code = InviteCode.issue(name='Passkey access', created_by=self.admin)
+        started = self.client.post('/accounts/signup/passkey/', {
+            'username': 'passkey-only-user',
+            'invite_code': raw_code,
+        })
+        self.assertEqual(started.status_code, 302)
+        self.assertEqual(started.url, '/accounts/2fa/webauthn/signup/')
+        user = get_user_model().objects.get(username='passkey-only-user')
+        self.assertFalse(user.has_usable_password())
+        self.assertTrue(InviteRedemption.objects.filter(invite=invite, user=user).exists())
+
+    def test_open_registration_removes_invite_requirement_from_all_signup_modes(self):
+        SiteConfiguration.objects.create(singleton_key=1, registration_open=True)
+        password_signup = self.client.post('/accounts/signup/', {
+            'username': 'open-password-user',
+            'password1': '1',
+            'password2': '1',
+            'invite_code': '',
+        })
+        self.assertEqual(password_signup.status_code, 302)
+        self.client.logout()
+
+        passkey_signup = self.client.post('/accounts/signup/passkey/', {
+            'username': 'open-passkey-user',
+            'invite_code': '',
+        })
+        self.assertEqual(passkey_signup.status_code, 302)
+        self.assertFalse(get_user_model().objects.get(username='open-passkey-user').has_usable_password())
+        self.assertEqual(InviteRedemption.objects.count(), 0)
+
+    def test_ordinary_member_can_issue_only_one_single_use_invite_per_day(self):
+        self.client.force_login(self.member)
+        issued = self.client.post(
+            '/api/invite-codes/',
+            {'name': 'Daily share', 'max_uses': 99},
+            content_type='application/json',
+        )
+        self.assertEqual(issued.status_code, 201)
+        payload = issued.json()
+        self.assertEqual(payload['max_uses'], 1)
+        self.assertTrue(payload['is_self_service'])
+        self.assertEqual(payload['issued_local_date'], timezone.localdate().isoformat())
+        second = self.client.post(
+            '/api/invite-codes/', {'name': 'Second daily share'}, content_type='application/json',
+        )
+        self.assertEqual(second.status_code, 409)
+        self.assertIn('already been generated', second.json()['detail'])
+        self.client.logout()
+        registered = self.client.post('/accounts/signup/', {
+            'username': 'daily-invited-user',
+            'password1': '2',
+            'password2': '2',
+            'invite_code': payload['raw_code'],
+        })
+        self.assertEqual(registered.status_code, 302)
+        self.client.force_login(self.member)
+        owned = self.client.get('/api/invite-codes/').json()
+        self.assertEqual(len(owned), 1)
+        self.assertEqual(owned[0]['visitors'][0]['username'], 'daily-invited-user')
+
+    def test_admin_can_issue_configurable_invite_and_raw_code_is_shown_once(self):
+        self.client.force_login(self.admin)
+        response = self.client.post('/api/invite-codes/', {
+            'name': 'Study group', 'max_uses': 7,
+        }, content_type='application/json')
+        self.assertEqual(response.status_code, 201)
+        raw_code = response.json()['raw_code']
+        invite = InviteCode.objects.get()
+        self.assertEqual(invite.max_uses, 7)
+        self.assertFalse(invite.is_self_service)
+        self.assertNotEqual(invite.code_digest, raw_code)
+        self.assertEqual(invite.code_digest, InviteCode.digest(raw_code))
+        listed = self.client.get('/api/invite-codes/').json()
+        self.assertNotIn('raw_code', listed[0])
+
+    def test_signup_accepts_a_one_character_numeric_password_and_recommends_passkey(self):
+        invite, raw_code = InviteCode.issue(name='Weak password access', created_by=self.admin)
+        page = self.client.get('/accounts/signup/')
+        self.assertContains(page, 'Short or numeric passwords are accepted')
+        self.assertContains(page, 'PASSKEY RECOMMENDED')
+        response = self.client.post('/accounts/signup/', {
+            'username': 'short-password-user',
+            'password1': '1',
+            'password2': '1',
+            'invite_code': raw_code,
+        })
+        self.assertEqual(response.status_code, 302)
+        user = get_user_model().objects.get(username='short-password-user')
+        self.assertTrue(user.check_password('1'))
+        self.assertTrue(InviteRedemption.objects.filter(invite=invite, user=user).exists())
+
+    def test_one_use_invite_creates_isolated_account_and_cannot_be_reused(self):
+        invite, raw_code = InviteCode.issue(name='Single use', created_by=self.admin)
+        response = self.client.post('/accounts/signup/', {
+            'username': 'invited-learner',
+            'password1': 'valid-signup-password-7614',
+            'password2': 'valid-signup-password-7614',
+            'invite_code': raw_code,
+        })
+        self.assertEqual(response.status_code, 302)
+        learner = get_user_model().objects.get(username='invited-learner')
+        self.assertTrue(InviteRedemption.objects.filter(invite=invite, user=learner).exists())
+        invite.refresh_from_db()
+        self.assertEqual(invite.use_count, 1)
+        self.assertFalse(invite.is_active)
+
+        self.client.logout()
+        reused = self.client.post('/accounts/signup/', {
+            'username': 'second-learner',
+            'password1': 'valid-signup-password-7614',
+            'password2': 'valid-signup-password-7614',
+            'invite_code': raw_code,
+        })
+        self.assertEqual(reused.status_code, 200)
+        self.assertFalse(get_user_model().objects.filter(username='second-learner').exists())
+
+        self.client.force_login(self.admin)
+        listed = self.client.get('/api/invite-codes/').json()[0]
+        self.assertEqual(listed['visitors'][0]['username'], 'invited-learner')
+
+    def test_admin_dashboard_generates_capacity_and_lists_visitors(self):
+        self.client.force_login(self.admin)
+        generated = self.client.post('/admin/tracker/invitecode/dashboard/', {
+            'name': 'Study group',
+            'max_uses': 7,
+            'expires_at': '',
+        }, follow=True)
+        self.assertEqual(generated.status_code, 200)
+        self.assertContains(generated, 'NEW CODE · COPY NOW')
+        invite = InviteCode.objects.get(name='Study group')
+        self.assertEqual(invite.max_uses, 7)
+        self.assertEqual(invite.remaining_uses, 7)
+        self.assertContains(generated, '7')
+
+        visitor = get_user_model().objects.create_user('invited-visitor', password='password')
+        InviteRedemption.objects.create(invite=invite, user=visitor)
+        invite.use_count = 1
+        invite.last_used_at = timezone.now()
+        invite.save(update_fields=('use_count', 'last_used_at'))
+        dashboard = self.client.get('/admin/tracker/invitecode/dashboard/')
+        self.assertContains(dashboard, 'invited-visitor')
+        self.assertContains(dashboard, 'REGISTERED VISITORS')
+        self.assertEqual(invite.remaining_uses, 6)
+
+        listed = self.client.get('/api/invite-codes/').json()[0]
+        self.assertEqual(listed['remaining_uses'], 6)
+
+    def test_admin_dashboard_can_open_and_close_registration(self):
+        self.client.force_login(self.admin)
+        opened = self.client.post('/admin/tracker/invitecode/dashboard/', {
+            'action': 'registration_policy',
+            'registration_open': 'on',
+        }, follow=True)
+        self.assertEqual(opened.status_code, 200)
+        self.assertContains(opened, 'Registration is open')
+        configuration = SiteConfiguration.load()
+        self.assertTrue(configuration.registration_open)
+        self.assertEqual(configuration.updated_by, self.admin)
+
+        closed = self.client.post('/admin/tracker/invitecode/dashboard/', {
+            'action': 'registration_policy',
+        }, follow=True)
+        self.assertEqual(closed.status_code, 200)
+        configuration.refresh_from_db()
+        self.assertFalse(configuration.registration_open)
+        self.assertContains(closed, 'Invite-only registration')
+
+    def test_admin_can_inspect_and_reset_login_rate_status(self):
+        self.admin.is_superuser = True
+        self.admin.save(update_fields=('is_superuser',))
+        network = '198.51.100.91'
+        cache.set(f'allauth:rl:login:ip:{network}', [timezone.now().timestamp()], 900)
+        cache.set(f'allauth:rl:login_failed:ip:{network}', [timezone.now().timestamp()], 900)
+        self.client.force_login(self.admin)
+        page = self.client.get(
+            '/admin/tracker/invitecode/auth-recovery/', {'network': network},
+        )
+        self.assertContains(page, 'Authentication recovery')
+        self.assertContains(page, network)
+        response = self.client.post('/admin/tracker/invitecode/auth-recovery/', {
+            'network_address': network,
+            'scope': 'network',
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertIsNone(cache.get(f'allauth:rl:login:ip:{network}'))
+        self.assertIsNone(cache.get(f'allauth:rl:login_failed:ip:{network}'))
+
+
+@override_settings(
+    SECURE_SSL_REDIRECT=False,
+    EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend',
+    CONTACT_EMAIL='zsyeh7286@gmail.com',
+    DEFAULT_FROM_EMAIL='zsyeh7286@gmail.com',
+    CONTACT_RATE_LIMIT_PER_HOUR=3,
+    STORAGES={
+        'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
+        'staticfiles': {'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage'},
+    },
+)
+class PublicGuideAndContactTests(TestCase):
+    def setUp(self):
+        cache.clear()
+
+    def tearDown(self):
+        cache.clear()
+
+    def test_public_guide_has_registration_and_usage_entry_points(self):
+        response = self.client.get('/guide/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Register with an invite')
+        self.assertContains(response, 'Read before editing')
+        self.assertContains(response, 'zsyeh7286@gmail.com')
+
+    def test_bilingual_legal_page_explains_exports_and_gpl(self):
+        response = self.client.get('/legal/')
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Availability is not a promise')
+        self.assertContains(response, '不保证数据绝不丢失')
+        self.assertContains(response, 'GPL-3.0-or-later')
+
+    def test_contact_sends_smtp_message_from_owner_to_owner_without_database_record(self):
+        response = self.client.post('/contact/', {
+            'name': 'Visitor Name',
+            'reply_email': 'visitor@example.com',
+            'message': 'I need help with an invitation code.',
+            'website': '',
+        }, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'Your message was sent to the administrator.')
+        self.assertEqual(len(mail.outbox), 1)
+        message = mail.outbox[0]
+        self.assertEqual(message.from_email, 'zsyeh7286@gmail.com')
+        self.assertEqual(message.to, ['zsyeh7286@gmail.com'])
+        self.assertEqual(message.reply_to, ['visitor@example.com'])
+        self.assertIn('Visitor Name', message.body)
+
+    def test_contact_honeypot_does_not_send(self):
+        response = self.client.post('/contact/', {
+            'name': 'Automated visitor',
+            'reply_email': 'bot@example.com',
+            'message': 'This automated message should not be delivered.',
+            'website': 'https://spam.example',
+        }, follow=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(len(mail.outbox), 0)
+
+
+@override_settings(SECURE_SSL_REDIRECT=False)
+class RuntimeSettingsTests(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user('settings-owner', password='password')
+        self.admin = get_user_model().objects.create_superuser(
+            'settings-admin', password='password', email='admin@example.com',
+        )
+        self.client.force_login(self.admin)
+        self.temporary_directory = tempfile.TemporaryDirectory()
+        self.env_path = Path(self.temporary_directory.name) / '.env'
+
+    def tearDown(self):
+        self.temporary_directory.cleanup()
+
+    def test_reads_local_env_and_falls_back_to_original_defaults(self):
+        self.env_path.write_text(
+            'UNMANAGED_SECRET=preserved\n'
+            'STUDY_ROOM_CODE=from-local-file\n'
+            'TRACKER_HOMEPAGE_CONTENT="Local dashboard copy"\n',
+            encoding='utf-8',
+        )
+        with self.settings(
+            TRACKER_LOCAL_ENV_PATH=self.env_path,
+            TRACKER_HEATMAP_START_DATE='2026-05-23',
+            TRACKER_EXAM_DATE='2026-12-26',
+            TRACKER_COUNTDOWN_LABEL='Default countdown',
+            TRACKER_HOMEPAGE_CONTENT='',
+            STUDY_ROOM_CODE='default-room',
+        ):
+            response = self.client.get('/api/settings/runtime/')
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(payload['values']['study_room_code'], 'from-local-file')
+        self.assertEqual(payload['values']['homepage_content'], 'Local dashboard copy')
+        self.assertEqual(payload['values']['tracking_start_date'], '2026-05-23')
+        self.assertEqual(payload['values']['countdown_label'], 'Default countdown')
+        self.assertTrue(payload['writable'])
+        self.assertNotContains(response, 'UNMANAGED_SECRET')
+
+    def test_ordinary_user_cannot_read_or_write_superuser_env_values(self):
+        self.env_path.write_text(
+            'STUDY_ROOM_CODE=private-admin-room\n'
+            'TRACKER_HOMEPAGE_CONTENT="Private admin copy"\n',
+            encoding='utf-8',
+        )
+        self.client.force_login(self.user)
+        with self.settings(
+            TRACKER_LOCAL_ENV_PATH=self.env_path,
+            STUDY_ROOM_CODE='private-process-room',
+            TRACKER_HOMEPAGE_CONTENT='Private process copy',
+        ):
+            response = self.client.get('/api/settings/runtime/')
+            dashboard = self.client.get('/api/dashboard/overview/?days=7').json()
+            denied = self.client.put('/api/settings/runtime/', {
+                'homepage_content': 'Attempted overwrite',
+                'study_room_code': 'attempted-room',
+                'tracking_start_date': '2026-05-23',
+                'exam_date': '2026-12-26',
+                'countdown_label': 'Attempted label',
+            }, content_type='application/json')
+        payload = response.json()
+        self.assertEqual(payload['values']['study_room_code'], '')
+        self.assertEqual(payload['values']['homepage_content'], '')
+        self.assertFalse(payload['writable'])
+        self.assertFalse(payload['local_env_exists'])
+        self.assertEqual(dashboard['private_display']['study_room_code'], '')
+        self.assertEqual(dashboard['private_display']['homepage_content'], '')
+        self.assertEqual(denied.status_code, 403)
+        self.assertIn('private-admin-room', self.env_path.read_text(encoding='utf-8'))
+
+    def test_save_is_atomic_preserves_unmanaged_values_and_updates_dashboard(self):
+        self.env_path.write_text('UNMANAGED_SECRET=preserved\nSTUDY_ROOM_CODE=old-room\n', encoding='utf-8')
+        values = {
+            'homepage_content': 'A concise local heading',
+            'study_room_code': 'new-room',
+            'tracking_start_date': '2026-06-01',
+            'exam_date': '2027-01-02',
+            'countdown_label': 'Exam window',
+        }
+        with self.settings(
+            TRACKER_LOCAL_ENV_PATH=self.env_path,
+            TRACKER_HEATMAP_START_DATE='2026-05-23',
+            TRACKER_EXAM_DATE='2026-12-26',
+            TRACKER_COUNTDOWN_LABEL='Default countdown',
+            TRACKER_HOMEPAGE_CONTENT='',
+            STUDY_ROOM_CODE='default-room',
+        ):
+            response = self.client.put(
+                '/api/settings/runtime/', values, content_type='application/json',
+            )
+            dashboard = self.client.get('/api/dashboard/overview/?days=180').json()
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['values'], values)
+        rendered = self.env_path.read_text(encoding='utf-8')
+        self.assertIn('UNMANAGED_SECRET=preserved', rendered)
+        self.assertIn('STUDY_ROOM_CODE="new-room"', rendered)
+        self.assertEqual(os.stat(self.env_path).st_mode & 0o777, 0o600)
+        self.assertEqual(dashboard['private_display']['homepage_content'], values['homepage_content'])
+        self.assertEqual(dashboard['private_display']['study_room_code'], values['study_room_code'])
+        self.assertEqual(dashboard['private_display']['countdown_label'], values['countdown_label'])
+        self.assertEqual(dashboard['calendar']['exam_date'], values['exam_date'])
+        self.assertEqual(dashboard['calendar']['heatmap_start_date'], values['tracking_start_date'])
+
+    def test_rejects_tracking_start_after_exam_date_without_changing_file(self):
+        self.env_path.write_text('UNMANAGED=value\n', encoding='utf-8')
+        original = self.env_path.read_text(encoding='utf-8')
+        with self.settings(TRACKER_LOCAL_ENV_PATH=self.env_path):
+            response = self.client.put('/api/settings/runtime/', {
+                'homepage_content': '',
+                'study_room_code': '',
+                'tracking_start_date': '2027-01-03',
+                'exam_date': '2027-01-02',
+                'countdown_label': 'Exam',
+            }, content_type='application/json')
+        self.assertEqual(response.status_code, 400)
+        self.assertEqual(self.env_path.read_text(encoding='utf-8'), original)
 
 
 @override_settings(SECURE_SSL_REDIRECT=False, LEARNING_REPO='')
@@ -262,10 +724,18 @@ class AnalyticsAndExportTests(TestCase):
         expected_days = max(0, (datetime.date.fromisoformat(settings.TRACKER_EXAM_DATE) - today).days)
         self.assertEqual(overview['calendar']['days_until_exam'], expected_days)
 
-    @override_settings(STUDY_ROOM_CODE='test-room-code')
-    def test_dashboard_returns_private_study_room_code_to_authenticated_user(self):
+    @override_settings(
+        STUDY_ROOM_CODE='test-room-code',
+        TRACKER_LOCAL_ENV_PATH='/tmp/time-tracker-tests/no-runtime.env',
+    )
+    def test_dashboard_hides_private_study_room_code_from_ordinary_user(self):
         overview = build_dashboard_overview(self.user, 7)
-        self.assertEqual(overview['private_display']['study_room_code'], 'test-room-code')
+        self.assertEqual(overview['private_display']['study_room_code'], '')
+        admin = get_user_model().objects.create_superuser(
+            'overview-admin', password='password', email='overview@example.com',
+        )
+        admin_overview = build_dashboard_overview(admin, 7)
+        self.assertEqual(admin_overview['private_display']['study_room_code'], 'test-room-code')
 
     def test_exports_keep_raw_reflection_and_filters(self):
         completed_session(self.user, subject='math', title='RAW-TITLE-SENTINEL', details='RAW-DETAILS-SENTINEL')
@@ -325,6 +795,7 @@ class AnalyticsAndExportTests(TestCase):
         self.assertEqual(response.json()['results'], [])
 
 
+@override_settings(PASSWORD_HASHERS=TEST_PASSWORD_HASHERS)
 class GitHubNoteSyncTests(TestCase):
     def test_markdown_uses_one_unique_file_and_preserves_formula_source(self):
         task = {
@@ -362,6 +833,136 @@ class GitHubNoteSyncTests(TestCase):
         self.assertEqual(sync.attempts, 1)
         self.assertEqual(sync.markdown_path, 'sessions/2026/08/example.md')
         self.assertIsNotNone(sync.synced_at)
+
+    def test_branch_names_follow_username_and_never_collide_with_main(self):
+        with self.settings(LEARNING_REPO_MAIN_BRANCH='main'):
+            self.assertEqual(
+                github_branch_for_user('Alice', is_admin=False, user_id=7), 'Alice',
+            )
+            self.assertEqual(
+                github_branch_for_user('main', is_admin=False, user_id=8), 'main-user-8',
+            )
+            self.assertEqual(
+                github_branch_for_user('unsafe/name', is_admin=False, user_id=9), 'unsafe-name',
+            )
+            self.assertEqual(
+                github_branch_for_user('someone', is_admin=True, user_id=10), 'main',
+            )
+
+    def test_real_git_push_routes_member_to_username_branch_and_admin_to_main(self):
+        def run(*args, cwd=None):
+            return subprocess.run(
+                args, cwd=cwd, check=True, capture_output=True, text=True, timeout=20,
+            )
+
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            root = Path(temporary_directory)
+            remote = root / 'notes.git'
+            seed = root / 'seed'
+            checkout = root / 'checkout'
+            run('git', 'init', '--bare', str(remote))
+            run('git', 'init', str(seed))
+            run('git', 'config', 'user.name', 'Test Writer', cwd=seed)
+            run('git', 'config', 'user.email', 'writer@example.test', cwd=seed)
+            (seed / 'README.md').write_text('# Learning notes\n', encoding='utf-8')
+            run('git', 'add', 'README.md', cwd=seed)
+            run('git', 'commit', '-m', 'Initialize notes', cwd=seed)
+            run('git', 'branch', '-M', 'main', cwd=seed)
+            run('git', 'remote', 'add', 'origin', str(remote), cwd=seed)
+            run('git', 'push', '-u', 'origin', 'main', cwd=seed)
+            run('git', 'symbolic-ref', 'HEAD', 'refs/heads/main', cwd=remote)
+            run('git', 'clone', str(remote), str(checkout))
+            run('git', 'config', 'user.name', 'Test Writer', cwd=checkout)
+            run('git', 'config', 'user.email', 'writer@example.test', cwd=checkout)
+
+            member_task = {
+                'id': 501,
+                'category': 'math',
+                'category_label': 'Mathematics',
+                'start_time': '2026-08-10T08:00:00+08:00',
+                'end_time': '2026-08-10T09:00:00+08:00',
+                'duration_minutes': 60,
+                'title': 'Member review',
+                'details': 'Member Markdown body',
+                'username': 'Alice',
+                'user_id': 11,
+                'is_admin': False,
+            }
+            admin_task = {
+                **member_task,
+                'id': 502,
+                'start_time': '2026-08-10T10:00:00+08:00',
+                'end_time': '2026-08-10T11:00:00+08:00',
+                'title': 'Admin review',
+                'details': 'Admin Markdown body',
+                'username': 'administrator',
+                'user_id': 1,
+                'is_admin': True,
+            }
+
+            with self.settings(
+                LEARNING_REPO='local/notes',
+                LEARNING_REPO_PATH=checkout,
+                LEARNING_REPO_MAIN_BRANCH='main',
+            ):
+                member_result = archive_completed_task(member_task)
+                admin_result = archive_completed_task(admin_task)
+
+            self.assertEqual(member_result['branch'], 'Alice')
+            self.assertEqual(admin_result['branch'], 'main')
+            member_document = run(
+                'git', 'show', f"Alice:{member_result['file']}", cwd=checkout,
+            ).stdout
+            admin_document = run(
+                'git', 'show', f"main:{admin_result['file']}", cwd=checkout,
+            ).stdout
+            self.assertIn('username: "Alice"', member_document)
+            self.assertIn('Member Markdown body', member_document)
+            self.assertIn('username: "administrator"', admin_document)
+            self.assertIn('Admin Markdown body', admin_document)
+
+
+@override_settings(SECURE_SSL_REDIRECT=False, PASSWORD_HASHERS=TEST_PASSWORD_HASHERS)
+class SessionReviewTests(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user('reviewer', password='password')
+        self.other = get_user_model().objects.create_user('other-reviewer', password='password')
+        self.session = completed_session(self.user, title='Review this session')
+        self.client.force_login(self.user)
+
+    def test_review_visit_is_deduplicated_and_returns_daily_trend(self):
+        first = self.client.post(f'/api/sessions/{self.session.pk}/reviews/')
+        second = self.client.post(f'/api/sessions/{self.session.pk}/reviews/')
+        self.assertEqual(first.status_code, 200)
+        self.assertTrue(first.json()['created'])
+        self.assertFalse(second.json()['created'])
+        self.assertEqual(second.json()['total'], 1)
+        self.assertEqual(second.json()['review_days'], 1)
+        self.assertEqual(len(second.json()['daily']), 1)
+        self.session.refresh_from_db()
+        self.assertEqual(self.session.review_count, 1)
+        self.assertIsNotNone(self.session.last_reviewed_at)
+
+        SessionReview.objects.filter(session=self.session).update(
+            reviewed_at=timezone.now() - datetime.timedelta(minutes=11),
+        )
+        third = self.client.post(f'/api/sessions/{self.session.pk}/reviews/')
+        self.assertTrue(third.json()['created'])
+        self.assertEqual(third.json()['total'], 2)
+        self.assertEqual(SessionReview.objects.filter(session=self.session).count(), 2)
+
+    def test_review_is_user_scoped_and_summary_contains_review_fields(self):
+        self.client.post(f'/api/sessions/{self.session.pk}/reviews/')
+        compact = self.client.get('/api/sessions/?compact=1').json()['results'][0]
+        self.assertEqual(compact['review_count'], 1)
+        self.assertIn('last_reviewed_at', compact)
+        self.assertNotIn('details', compact)
+
+        self.client.force_login(self.other)
+        self.assertEqual(
+            self.client.post(f'/api/sessions/{self.session.pk}/reviews/').status_code,
+            404,
+        )
 
 
 @override_settings(SECURE_SSL_REDIRECT=False)

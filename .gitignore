@@ -3,6 +3,8 @@ __pycache__/
 *$py.class
 
 .env
+.env.lock
+*.bak-before-*
 .venv/
 venv/
 env/

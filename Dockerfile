@@ -16,12 +16,13 @@ LABEL org.opencontainers.image.title="Personal Learning OS" \
       org.opencontainers.image.source="https://github.com/zsyeh/time-tracker" \
       org.opencontainers.image.version="$VERSION" \
       org.opencontainers.image.revision="$VCS_REF" \
-      org.opencontainers.image.licenses="MIT"
+      org.opencontainers.image.licenses="GPL-3.0-or-later"
 
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PIP_NO_CACHE_DIR=1 \
-    DATABASE_PATH=/app/data/db.sqlite3
+    DATABASE_PATH=/app/data/db.sqlite3 \
+    TRACKER_LOCAL_ENV_PATH=/app/data/tracker.env
 
 WORKDIR /app
 

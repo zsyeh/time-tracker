@@ -1,14 +1,29 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { api, post } from '../lib/api'
-import type { LaunchToken } from '../types'
+import { api, post, put } from '../lib/api'
+import type { InviteCode, LaunchToken, RuntimeSettingsResponse, RuntimeSettingsValues } from '../types'
+
+const emit = defineEmits<{ changed: [] }>()
 
 const tokens = ref<LaunchToken[]>([])
 const open = ref(false)
 const revealed = ref<LaunchToken | null>(null)
 const theme = ref(localStorage.getItem('learning-os-theme') || 'coolapk')
+const runtimeLoading = ref(true)
+const runtimeSaving = ref(false)
+const runtimeMeta = ref<RuntimeSettingsResponse | null>(null)
+const isAdmin = ref(false)
+const isSuperuser = ref(false)
+const invites = ref<InviteCode[]>([])
+const inviteOpen = ref(false)
+const revealedInvite = ref<InviteCode | null>(null)
+const runtimeForm = reactive<RuntimeSettingsValues>({
+  homepage_content: '', study_room_code: '', tracking_start_date: '2026-05-23',
+  exam_date: '2026-12-26', countdown_label: '2026 Postgraduate Exam',
+})
 const form = reactive({ name: 'Desktop shortcut', subject: 'math', source_label: 'Browser', max_uses: null as number | null, expires_at: null as string | null, notes: '' })
+const inviteForm = reactive({ name: 'New member', max_uses: 1, expires_at: '' })
 const subjects = { math: 'Mathematics', english: 'English', major: 'Major', training: 'Training' }
 const themes = [
   { id: 'coolapk', label: 'Coolapk Green', color: '#10c469' },
@@ -17,6 +32,15 @@ const themes = [
   { id: 'meituan', label: 'Meituan Yellow', color: '#ffd100' },
   { id: 'apple', label: 'Apple White', color: '#f5f5f7' },
 ]
+
+const shanghaiDate = new Intl.DateTimeFormat('en-CA', {
+  timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit',
+})
+const dailyInviteAvailable = computed(() => {
+  if (isAdmin.value) return true
+  const today = shanghaiDate.format(new Date())
+  return !invites.value.some((invite) => invite.is_self_service && invite.issued_local_date === today)
+})
 
 function setTheme(value: string) {
   theme.value = value
@@ -27,6 +51,70 @@ function setTheme(value: string) {
 async function load() {
   try { tokens.value = await api<LaunchToken[]>('/api/launch-tokens/') }
   catch (error) { ElMessage.error((error as Error).message) }
+}
+function applyRuntime(values: RuntimeSettingsValues) {
+  Object.assign(runtimeForm, values)
+}
+async function loadRuntime() {
+  runtimeLoading.value = true
+  try {
+    runtimeMeta.value = await api<RuntimeSettingsResponse>('/api/settings/runtime/')
+    applyRuntime(runtimeMeta.value.values)
+  } catch (error) { ElMessage.error((error as Error).message) }
+  finally { runtimeLoading.value = false }
+}
+async function loadInvites() {
+  try { invites.value = await api<InviteCode[]>('/api/invite-codes/') }
+  catch (error) { ElMessage.error((error as Error).message) }
+}
+async function loadAccess() {
+  try {
+    const auth = await api<{ user: { username: string; is_staff: boolean; is_superuser: boolean } }>('/api/auth/session/')
+    isAdmin.value = auth.user.is_staff || auth.user.is_superuser
+    isSuperuser.value = auth.user.is_superuser
+    await loadInvites()
+  } catch (error) { ElMessage.error((error as Error).message) }
+}
+async function createInvite() {
+  try {
+    const payload: Record<string, unknown> = {
+      name: inviteForm.name,
+    }
+    if (isAdmin.value) {
+      payload.max_uses = inviteForm.max_uses
+      payload.expires_at = inviteForm.expires_at || null
+    }
+    revealedInvite.value = await post<InviteCode>('/api/invite-codes/', payload)
+    inviteOpen.value = false
+    await loadInvites()
+  } catch (error) { ElMessage.error((error as Error).message) }
+}
+async function revokeInvite(invite: InviteCode) {
+  try {
+    await ElMessageBox.confirm('This invite will stop accepting new registrations.', 'Revoke invite?', { type: 'warning', confirmButtonText: 'Revoke', cancelButtonText: 'Cancel' })
+    await post(`/api/invite-codes/${invite.id}/revoke/`)
+    await loadInvites()
+  } catch (error) { if (error !== 'cancel') ElMessage.error((error as Error).message) }
+}
+async function copyInvite() {
+  if (!revealedInvite.value?.raw_code) return
+  await navigator.clipboard.writeText(revealedInvite.value.raw_code)
+  ElMessage.success('Invite code copied')
+}
+async function saveRuntime() {
+  runtimeSaving.value = true
+  try {
+    runtimeMeta.value = await put<RuntimeSettingsResponse>('/api/settings/runtime/', runtimeForm)
+    applyRuntime(runtimeMeta.value.values)
+    ElMessage.success('Local settings saved')
+    emit('changed')
+  } catch (error) { ElMessage.error((error as Error).message) }
+  finally { runtimeSaving.value = false }
+}
+function loadDefaults() {
+  if (!runtimeMeta.value) return
+  applyRuntime(runtimeMeta.value.defaults)
+  ElMessage.info('Defaults loaded. Save to apply them.')
 }
 async function create() {
   try { revealed.value = await post<LaunchToken>('/api/launch-tokens/', form); open.value = false; await load() }
@@ -45,13 +133,34 @@ async function copy() {
   await navigator.clipboard.writeText(revealed.value.launch_url)
   ElMessage.success('Launch URL copied')
 }
-onMounted(load)
+onMounted(() => { load(); loadRuntime(); loadAccess() })
 </script>
 
 <template>
   <div class="view-stack">
     <section class="page-intro"><span class="eyebrow">SYSTEM / ACCESS</span><h1>Settings</h1><p>Authentication, portable data, and scoped launch capabilities.</p></section>
     <section class="settings-grid">
+      <article v-if="isSuperuser" class="panel settings-card instance-settings" v-loading="runtimeLoading">
+        <div class="card-title"><div><span class="eyebrow">LOCAL INSTANCE</span><h2>Homepage and schedule</h2></div><span class="env-badge">.ENV ↔ WEB</span></div>
+        <p>These display values are read from the local environment file. Saving updates only the fields shown here and applies them immediately.</p>
+        <el-form label-position="top" class="runtime-settings-form" @submit.prevent="saveRuntime">
+          <el-form-item label="Homepage content">
+            <el-input v-model="runtimeForm.homepage_content" type="textarea" :rows="3" maxlength="500" show-word-limit placeholder="Optional text shown below today's date" />
+          </el-form-item>
+          <div class="form-pair">
+            <el-form-item label="Study room code"><el-input v-model="runtimeForm.study_room_code" maxlength="120" placeholder="Hidden when empty" /></el-form-item>
+            <el-form-item label="Countdown label"><el-input v-model="runtimeForm.countdown_label" maxlength="80" /></el-form-item>
+          </div>
+          <div class="form-pair">
+            <el-form-item label="Tracking start date"><el-input v-model="runtimeForm.tracking_start_date" type="date" /></el-form-item>
+            <el-form-item label="Exam date"><el-input v-model="runtimeForm.exam_date" type="date" /></el-form-item>
+          </div>
+          <div class="runtime-settings-footer">
+            <small>{{ runtimeMeta?.local_env_exists ? 'LOCAL FILE CONNECTED' : 'LOCAL FILE WILL BE CREATED ON SAVE' }}</small>
+            <div><el-button @click="loadDefaults">Load defaults</el-button><el-button type="primary" :loading="runtimeSaving" @click="saveRuntime">Save settings</el-button></div>
+          </div>
+        </el-form>
+      </article>
       <article class="panel settings-card theme-card">
         <div class="card-title"><div><span class="eyebrow">APPEARANCE</span><h2>Theme color</h2></div></div>
         <p>Choose one accent. Activity heatmap colors stay consistent for comparison.</p>
@@ -61,13 +170,33 @@ onMounted(load)
       </article>
       <article class="panel settings-card">
         <div class="card-title"><div><span class="eyebrow">PASSKEY</span><h2>Secure access</h2></div><span class="secure-badge">WebAuthn</span></div>
-        <p>Use a platform authenticator or security key. Password access remains available for recovery.</p>
+        <p>Use a platform authenticator or security key. Passwords are optional; Passkey-only accounts are supported.</p>
         <div class="settings-actions"><a class="el-button el-button--primary" href="/accounts/2fa/webauthn/add/">Add Passkey</a><a class="text-link" href="/accounts/2fa/">Manage</a></div>
       </article>
       <article class="panel settings-card">
         <div class="card-title"><div><span class="eyebrow">PORTABLE DATA</span><h2>Data export</h2></div></div>
         <p>Export raw sessions and structured review fields without summary truncation.</p>
         <div class="export-actions"><a href="/api/export/csv/">CSV</a><a href="/api/export/json/">JSON</a><a href="/api/export/markdown/">Markdown</a></div>
+      </article>
+      <article class="panel settings-card">
+        <div class="card-title"><div><span class="eyebrow">DOCUMENTATION</span><h2>User guide</h2></div></div>
+        <p>Open the standalone reference for registration, sessions, Markdown, reviews, and data isolation.</p>
+        <div class="settings-actions"><a class="el-button" href="/guide/">Open user guide</a><a class="text-link" href="/contact/">Contact administrator</a><a class="text-link" href="/legal/">Legal & disclaimer</a></div>
+      </article>
+      <article v-if="isAdmin" class="panel settings-card admin-console-card">
+        <div class="card-title"><div><span class="eyebrow">ADMINISTRATION</span><h2>Django control panel</h2></div><span class="secure-badge">STAFF ONLY</span></div>
+        <p>Manage accounts, inspect invitation visitors, and access recovery controls.</p>
+        <div class="settings-actions"><a class="el-button el-button--primary" href="/admin/">Open Django Admin</a><a class="text-link" href="/admin/tracker/invitecode/dashboard/">Invitation dashboard</a><a class="text-link" href="/admin/tracker/invitecode/auth-recovery/">Reset login status</a></div>
+      </article>
+    </section>
+    <section class="panel token-panel invite-panel">
+      <div class="section-heading"><div><span class="eyebrow">{{ isAdmin ? 'ADMIN / REGISTRATION' : 'ACCOUNT / SHARING' }}</span><h2>Invite codes</h2></div><div class="invite-heading-actions"><a v-if="isAdmin" class="text-link" href="/admin/tracker/invitecode/dashboard/">Full visitor log</a><el-button type="primary" :disabled="!dailyInviteAvailable" @click="inviteOpen = true">{{ dailyInviteAvailable ? 'Generate invite' : 'Daily invite used' }}</el-button></div></div>
+      <p class="section-note">{{ isAdmin ? 'Choose 1–100 uses per code. Raw codes are shown once and stored as hashes.' : 'You can generate one single-use invite per Shanghai calendar day. You can see the username after it is redeemed.' }}</p>
+      <el-empty v-if="!invites.length" description="No invite codes" />
+      <article v-for="invite in invites" :key="invite.id" class="token-row invite-row">
+        <div><strong>{{ invite.name }}</strong><small>{{ invite.use_count }} used · {{ invite.remaining_uses }} remaining · created by {{ invite.created_by }}<span v-if="invite.last_used_at"> · last used {{ new Date(invite.last_used_at).toLocaleString('en-GB') }}</span><span v-if="invite.expires_at"> · expires {{ new Date(invite.expires_at).toLocaleString('en-GB') }}</span></small><small v-if="invite.visitors.length" class="invite-visitor-summary">REGISTERED · {{ invite.visitors.map((visitor) => visitor.username).join(', ') }}</small></div>
+        <el-tag :type="invite.usable ? 'success' : 'info'">{{ invite.usable ? `${invite.remaining_uses} LEFT` : 'CLOSED' }}</el-tag>
+        <div><el-button v-if="invite.is_active" text type="danger" @click="revokeInvite(invite)">Revoke</el-button></div>
       </article>
     </section>
     <section class="panel token-panel">
@@ -93,6 +222,20 @@ onMounted(load)
       <el-alert title="The raw token cannot be viewed again after closing this dialog." type="warning" :closable="false" show-icon />
       <div class="reveal-url">{{ revealed?.launch_url }}</div>
       <template #footer><el-button type="primary" @click="copy">Copy URL</el-button><el-button @click="revealed = null">Saved</el-button></template>
+    </el-dialog>
+    <el-dialog v-model="inviteOpen" title="Generate invite code" width="min(560px, 94vw)">
+      <el-form label-position="top">
+        <el-form-item label="Label"><el-input v-model="inviteForm.name" maxlength="120" /></el-form-item>
+        <div v-if="isAdmin" class="form-pair"><el-form-item label="Maximum uses"><el-input-number v-model="inviteForm.max_uses" :min="1" :max="100" /></el-form-item><el-form-item label="Expires at"><el-input v-model="inviteForm.expires_at" type="datetime-local" /></el-form-item></div>
+        <el-alert v-else title="This invite can be used once. Your next invite becomes available on the next Shanghai calendar day." type="info" :closable="false" show-icon />
+      </el-form>
+      <template #footer><el-button @click="inviteOpen = false">Cancel</el-button><el-button type="primary" @click="createInvite">Generate</el-button></template>
+    </el-dialog>
+    <el-dialog :model-value="Boolean(revealedInvite)" title="Save this invite code now" width="min(620px, 94vw)" @close="revealedInvite = null">
+      <el-alert title="The raw invite code cannot be viewed again after closing this dialog." type="warning" :closable="false" show-icon />
+      <div class="reveal-url">{{ revealedInvite?.raw_code }}</div>
+      <p class="invite-signup-url">Signup page: <a :href="revealedInvite?.signup_url">{{ revealedInvite?.signup_url }}</a></p>
+      <template #footer><el-button type="primary" @click="copyInvite">Copy code</el-button><el-button @click="revealedInvite = null">Saved</el-button></template>
     </el-dialog>
   </div>
 </template>

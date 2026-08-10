@@ -1,10 +1,10 @@
 import datetime
 from collections import defaultdict
 
-from django.conf import settings
 from django.utils import timezone
 
 from .models import TimeLog
+from .runtime_settings import runtime_config
 
 
 FIVE_HOUR_MINUTES = 300
@@ -32,14 +32,15 @@ def _streak(dates, today):
     return current, longest
 
 
-def build_dashboard_overview(user, days=180):
+def build_dashboard_overview(user, days=180, config=None):
     days = max(7, min(int(days), 366))
+    config = config or runtime_config(user=user)['values']
     now = timezone.now()
     local_today = _local(now).date()
     first_day = local_today - datetime.timedelta(days=days - 1)
     try:
         configured_heatmap_start = datetime.date.fromisoformat(
-            settings.TRACKER_HEATMAP_START_DATE
+            config['tracking_start_date']
         )
     except (TypeError, ValueError):
         configured_heatmap_start = datetime.date(2026, 5, 23)
@@ -120,7 +121,7 @@ def build_dashboard_overview(user, days=180):
         average_start = f'{mean // 60:02d}:{mean % 60:02d}'
 
     try:
-        exam_date = datetime.date.fromisoformat(settings.TRACKER_EXAM_DATE)
+        exam_date = datetime.date.fromisoformat(config['exam_date'])
     except (TypeError, ValueError):
         exam_date = datetime.date(2026, 12, 26)
     return {
@@ -133,7 +134,9 @@ def build_dashboard_overview(user, days=180):
             'heatmap_start_date': heatmap_first_day.isoformat(),
         },
         'private_display': {
-            'study_room_code': settings.STUDY_ROOM_CODE,
+            'study_room_code': config['study_room_code'],
+            'homepage_content': config['homepage_content'],
+            'countdown_label': config['countdown_label'],
         },
         'today': today_row,
         'active_session': serialize_session(active, now) if active else None,

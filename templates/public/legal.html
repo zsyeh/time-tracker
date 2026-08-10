@@ -1,0 +1,26 @@
+{% extends "public/base.html" %}
+{% block title %}Legal & Disclaimer · Personal Learning OS{% endblock %}
+{% block content %}
+<section class="legal-hero">
+    <span class="public-eyebrow">LEGAL / DISCLAIMER · 法律与免责声明</span>
+    <h1>Availability is not a promise.<br>Your data stays portable.</h1>
+    <p>Last updated: 10 August 2026 · License: GPL-3.0-or-later</p>
+</section>
+<section class="legal-grid">
+    <article lang="en">
+        <span>ENGLISH</span>
+        <h2>Service and data disclaimer</h2>
+        <p>This software and hosted instance are provided “as is”, without warranties of availability, fitness, security, or error-free operation. Continuous or permanent operation is not guaranteed. Maintenance, force majeure, network failures, infrastructure loss, third-party services, attacks, configuration errors, or other events may interrupt access.</p>
+        <p>No guarantee is made that data can never be lost, corrupted, delayed, or incorrectly synchronized. You are responsible for keeping independent backups. While the service is available, you can download your learning records at any time in CSV, JSON, and Markdown from Settings.</p>
+        <p>Released source code remains available under the GNU General Public License, version 3 or any later version. You may use, inspect, modify, and redistribute it under that license. The license does not create a promise that this hosted instance will operate forever.</p>
+    </article>
+    <article lang="zh-CN">
+        <span>中文</span>
+        <h2>服务与数据免责声明</h2>
+        <p>本软件及其托管实例按“现状”提供，不对可用性、适用性、安全性、无错误运行作出保证，也不承诺持续或永久运行。维护、不可抗力、网络故障、基础设施损坏、第三方服务异常、攻击、配置错误或其他事件都可能导致服务中断。</p>
+        <p>不保证数据绝不丢失、损坏、延迟或错误同步。用户应自行保留独立备份。在服务可用时，你可以随时从设置页面将全部学习记录下载为 CSV、JSON 和 Markdown。</p>
+        <p>已经发布的源代码依照 GNU GPL 第 3 版或后续版本持续开放。你可以在遵守该协议的前提下使用、查看、修改和再分发代码；开源许可不等同于对托管网站永久运行的承诺。</p>
+    </article>
+</section>
+<section class="legal-export"><div><span>DATA PORTABILITY / 数据可携带</span><h2>Keep your own copy.</h2><p>Authenticated users can export complete records from Settings at any time.</p></div><a class="primary-action" href="/">OPEN SETTINGS</a></section>
+{% endblock %}

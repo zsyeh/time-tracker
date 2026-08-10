@@ -419,11 +419,13 @@ def create_mcp_server() -> FastMCP:
                 '127.0.0.1:*',
                 'localhost:*',
                 'timer.ehzsy.space',
+                'timer.ehzsy.site',
             ],
             allowed_origins=[
                 'http://127.0.0.1:*',
                 'http://localhost:*',
                 'https://timer.ehzsy.space',
+                'https://timer.ehzsy.site',
             ],
         ),
     )
