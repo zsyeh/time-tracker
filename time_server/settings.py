@@ -19,6 +19,10 @@ from dotenv import load_dotenv
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 load_dotenv(BASE_DIR / '.env')
+# Keep the production database selector separate from administrator-editable
+# display settings. The ignored overlay is root-readable only on native hosts;
+# Docker deployments continue to provide DATABASE_URL via the environment.
+load_dotenv(BASE_DIR / '.env.database')
 
 
 def env_int(name, default):

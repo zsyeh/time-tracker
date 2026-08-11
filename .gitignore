@@ -4,6 +4,7 @@ __pycache__/
 
 .env
 .env.lock
+.env.database
 *.bak-before-*
 .venv/
 venv/

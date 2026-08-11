@@ -17,6 +17,17 @@ HTTP/2 and Certbot/another automated certificate issuer.
 
 ## Native systemd deployment
 
+Native production may keep the database selector in a mode-`600`, ignored
+`.env.database` overlay. This prevents the administrator-editable `.env` display
+settings from accidentally replacing database credentials. For a local
+peer-authenticated PostgreSQL role matching the service OS user:
+
+```dotenv
+DATABASE_URL=postgresql:///time_tracker
+```
+
+Docker deployments continue to supply `DATABASE_URL` directly through Compose.
+
 ```bash
 cd /path/to/time-tracker
 cp db.sqlite3 /safe/backup/db-$(date +%F-%H%M%S).sqlite3

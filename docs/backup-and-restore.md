@@ -27,8 +27,19 @@ python manage.py migrate --noinput
 
 ```bash
 pg_dump --format=custom --no-owner "$DATABASE_URL" > /safe/backups/learning-os.dump
-createdb learning_os_restore_test
-pg_restore --no-owner --dbname=learning_os_restore_test /safe/backups/learning-os.dump
+sudo -u postgres createdb --owner=learning_os learning_os_restore_test
+
+# Extensions must be installed by a database administrator. Exclude their TOC
+# entries from the application-role restore after creating them once.
+sudo -u postgres psql -d learning_os_restore_test \
+  -c 'CREATE EXTENSION IF NOT EXISTS pg_stat_statements;'
+pg_restore --list /safe/backups/learning-os.dump \
+  | grep -vE 'EXTENSION( -)? pg_stat_statements' \
+  > /safe/backups/learning-os.restore.list
+pg_restore --exit-on-error --no-owner \
+  --use-list=/safe/backups/learning-os.restore.list \
+  --dbname=learning_os_restore_test \
+  /safe/backups/learning-os.dump
 ```
 
 Verify a restore in an isolated database: integrity check, migration state,
