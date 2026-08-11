@@ -1,13 +1,14 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { determinant, eigenDirections, transform } from '../../core/numerics'
+import { matrixFromFormula } from '../../core/formulaRouter'
 import { useMathTimeline } from '../../core/useMathTimeline'
 import MathFormula from '../../components/MathFormula.vue'
 import TimelineControls from '../../components/TimelineControls.vue'
 import VisualizationViewport from '../../components/VisualizationViewport.vue'
 import type { LinearScene, QualityProfile, RendererId, RendererTelemetry, RuntimeCapabilities } from '../../types'
 
-const props = defineProps<{ profile: QualityProfile; capabilities: RuntimeCapabilities }>()
+const props = defineProps<{ profile: QualityProfile; capabilities: RuntimeCapabilities; initialExpression?: string }>()
 const emit = defineEmits<{ telemetry: [value: RendererTelemetry]; renderer: [id: RendererId] }>()
 const viewport = ref<InstanceType<typeof VisualizationViewport> | null>(null)
 const matrix = reactive({ a: 1.2, b: .8, c: -.35, d: 1.55 })
@@ -19,6 +20,10 @@ const det = computed(() => determinant(scene.value.matrix))
 const mapped = computed(() => transform(scene.value.matrix, scene.value.vector))
 const eigen = computed(() => eigenDirections(scene.value.matrix))
 const timeline = useMathTimeline((value) => viewport.value?.setTime(value), props.capabilities.reducedMotion)
+watch(() => props.initialExpression, (source) => {
+  const values = source ? matrixFromFormula(source) : null
+  if (values) [matrix.a, matrix.b, matrix.c, matrix.d] = values
+}, { immediate: true })
 function resetMatrix() { Object.assign(matrix, { a: 1.2, b: .8, c: -.35, d: 1.55 }); Object.assign(vector, { x: 2, y: 1 }); timeline.reset() }
 </script>
 

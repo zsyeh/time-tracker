@@ -60,13 +60,16 @@ const md: MarkdownIt = new MarkdownIt({
     delimiters: 'all',
     mathFence: true,
     render(content, displayMode) {
-      return katex.renderToString(content, {
+      const formula = katex.renderToString(content, {
         displayMode,
         output: 'htmlAndMathml',
         strict: 'warn',
         throwOnError: false,
         trust: false,
       })
+      const encoded = encodeURIComponent(content)
+      const launch = `<button type="button" class="markdown-formula-launch" data-math-launch="${encoded}" aria-label="Open formula in Math Lab" title="Open in Math Lab">↗</button>`
+      return displayMode ? `<div class="markdown-formula-unit is-display">${formula}${launch}</div>` : `<span class="markdown-formula-unit is-inline">${formula}${launch}</span>`
     },
   })
 
@@ -92,7 +95,7 @@ export function renderMarkdown(source: string): string {
   const rendered = md.render(source)
   return DOMPurify.sanitize(rendered, {
     USE_PROFILES: { html: true, svg: true, mathMl: true },
-    ADD_ATTR: ['checked', 'decoding', 'disabled', 'loading', 'referrerpolicy', 'rel', 'target'],
+    ADD_ATTR: ['aria-label', 'checked', 'data-math-launch', 'decoding', 'disabled', 'loading', 'referrerpolicy', 'rel', 'target', 'title', 'type'],
     FORBID_TAGS: ['style'],
   })
 }

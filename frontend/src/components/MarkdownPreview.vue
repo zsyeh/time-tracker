@@ -1,7 +1,11 @@
 <script setup lang="ts">
-import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { defineAsyncComponent, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Close, FullScreen } from '@element-plus/icons-vue'
+import type { FormulaLaunchRequest } from '../math-visualizer/core/formulaRouter'
+import type { MathModuleId } from '../math-visualizer/types'
+
+const FormulaLaunchPanel = defineAsyncComponent(() => import('./FormulaLaunchPanel.vue'))
 
 type MathStyle = 'classic' | 'minimal' | 'paper' | 'blueprint'
 
@@ -42,6 +46,8 @@ const fullscreen = ref(false)
 const mathStyle = ref<MathStyle>(savedMathStyle())
 const fullscreenDialog = ref<HTMLDialogElement | null>(null)
 const fullscreenScroll = ref<HTMLElement | null>(null)
+const formulaChooser = ref<(Omit<FormulaLaunchRequest, 'id' | 'automatic'>) | null>(null)
+const formulaSelection = ref<MathModuleId>('linear')
 let previousOverflow = ''
 let timer: ReturnType<typeof setTimeout> | undefined
 let version = 0
@@ -115,9 +121,45 @@ function onNativeDialogClose() {
   restorePageScroll()
 }
 
+function onFullscreenCancel() {
+  if (formulaChooser.value) formulaChooser.value = null
+  else exitFullscreen()
+}
+
 function openMathLab() {
   exitFullscreen()
   requestAnimationFrame(() => window.dispatchEvent(new CustomEvent('learning-os-open-math-lab')))
+}
+
+async function handleRenderedClick(event: MouseEvent) {
+  const button = (event.target as Element | null)?.closest<HTMLElement>('[data-math-launch]')
+  if (!button) return
+  event.preventDefault()
+  event.stopPropagation()
+  try {
+    const expression = decodeURIComponent(button.dataset.mathLaunch || '')
+    if (!expression.trim()) return
+    const { routeFormula } = await import('../math-visualizer/core/formulaRouter')
+    const route = routeFormula(expression)
+    formulaChooser.value = { ...route, expression }
+    formulaSelection.value = route.module
+  } catch {
+    ElMessage.error('Unable to read this formula.')
+  }
+}
+
+function launchFormula() {
+  const formula = formulaChooser.value
+  if (!formula) return
+  const request: FormulaLaunchRequest = {
+    ...formula,
+    module: formulaSelection.value,
+    id: Date.now(),
+    automatic: formulaSelection.value === formula.module,
+  }
+  formulaChooser.value = null
+  if (fullscreen.value) exitFullscreen()
+  requestAnimationFrame(() => window.dispatchEvent(new CustomEvent('learning-os-open-math-lab', { detail: request })))
 }
 
 function setMathStyle(event: Event) {
@@ -166,7 +208,7 @@ onBeforeUnmount(() => {
     </div>
     <el-collapse-transition>
       <section v-if="previewOpen" v-loading="loading" class="markdown-preview-panel">
-        <div v-if="source.trim()" class="markdown-body" v-html="rendered" />
+        <div v-if="source.trim()" class="markdown-body" v-html="rendered" @click="handleRenderedClick" />
         <p v-else class="markdown-empty">{{ emptyText }}</p>
       </section>
       <pre v-else-if="showSource" class="markdown-source">{{ source || emptyText }}</pre>
@@ -180,7 +222,7 @@ onBeforeUnmount(() => {
       class="markdown-reading-portal"
       :data-math-style="mathStyle"
       aria-label="Immersive Markdown reader"
-      @cancel.prevent="exitFullscreen"
+      @cancel.prevent="onFullscreenCancel"
       @close="onNativeDialogClose"
       @pointerdown.stop
       @wheel.stop
@@ -199,12 +241,17 @@ onBeforeUnmount(() => {
         <main ref="fullscreenScroll" v-loading="loading" class="reading-portal-scroll" tabindex="-1" @touchmove.stop>
           <article class="reading-portal-document">
             <div class="reading-document-meta"><span>MARKDOWN DOCUMENT</span><b>READING MODE</b></div>
-            <div v-if="source.trim()" class="markdown-body" v-html="rendered" />
+            <div v-if="source.trim()" class="markdown-body" v-html="rendered" @click="handleRenderedClick" />
             <p v-else class="markdown-empty">{{ emptyText }}</p>
           </article>
         </main>
         <footer class="reading-portal-footer"><span>LOCAL RENDER · SANITIZED HTML · KATEX</span><b>SCROLL DOCUMENT</b></footer>
       </div>
+      <FormulaLaunchPanel v-if="formulaChooser" :expression="formulaChooser.expression" :detected="formulaChooser.module" :confidence="formulaChooser.confidence" :selected="formulaSelection" @update:selected="formulaSelection = $event" @close="formulaChooser = null" @open="launchFormula" />
     </dialog>
+  </Teleport>
+
+  <Teleport to="body">
+    <FormulaLaunchPanel v-if="formulaChooser && !fullscreen" :expression="formulaChooser.expression" :detected="formulaChooser.module" :confidence="formulaChooser.confidence" :selected="formulaSelection" @update:selected="formulaSelection = $event" @close="formulaChooser = null" @open="launchFormula" />
   </Teleport>
 </template>

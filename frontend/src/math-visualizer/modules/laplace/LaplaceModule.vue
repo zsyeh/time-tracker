@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { numericalLaplace } from '../../core/numerics'
 import { useMathTimeline } from '../../core/useMathTimeline'
 import MathFormula from '../../components/MathFormula.vue'
@@ -7,7 +7,7 @@ import TimelineControls from '../../components/TimelineControls.vue'
 import VisualizationViewport from '../../components/VisualizationViewport.vue'
 import type { LaplacePreset, LaplaceScene, QualityProfile, RendererId, RendererTelemetry, RuntimeCapabilities } from '../../types'
 
-const props = defineProps<{ profile: QualityProfile; capabilities: RuntimeCapabilities }>()
+const props = defineProps<{ profile: QualityProfile; capabilities: RuntimeCapabilities; initialExpression?: string }>()
 const emit = defineEmits<{ telemetry: [value: RendererTelemetry]; renderer: [id: RendererId] }>()
 const viewport = ref<InstanceType<typeof VisualizationViewport> | null>(null)
 const preset = ref<LaplacePreset>('sine')
@@ -17,6 +17,11 @@ const error = ref('')
 const scene = computed<LaplaceScene>(() => ({ kind: 'laplace', preset: preset.value, sigma: sigma.value, omega: omega.value }))
 const result = computed(() => numericalLaplace(preset.value, sigma.value, omega.value, 12, 2400))
 const timeline = useMathTimeline((value) => { omega.value = -5 + value * 10; viewport.value?.setTime(value) }, props.capabilities.reducedMotion)
+watch(() => props.initialExpression, (source) => {
+  if (!source) return
+  const value = source.toLowerCase()
+  preset.value = /pulse|step|heaviside/.test(value) ? 'pulse' : /sin|cos/.test(value) ? 'sine' : /exp|e\^/.test(value) ? 'exponential' : 'constant'
+}, { immediate: true })
 </script>
 
 <template>

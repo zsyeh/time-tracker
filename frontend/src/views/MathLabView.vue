@@ -6,7 +6,10 @@ import { resolveQuality } from '../math-visualizer/core/quality'
 import PerformanceSelector from '../math-visualizer/components/PerformanceSelector.vue'
 import RendererDebugPanel from '../math-visualizer/components/RendererDebugPanel.vue'
 import type { MathModuleId, QualityMode, QualityProfile, RendererId, RendererTelemetry } from '../math-visualizer/types'
+import type { FormulaLaunchRequest } from '../math-visualizer/core/formulaRouter'
 import '../math-visualizer/styles/math-lab.css'
+
+const props = defineProps<{ launchRequest?: FormulaLaunchRequest | null }>()
 
 const LinearTransformModule = defineAsyncComponent(() => import('../math-visualizer/modules/linear-algebra/LinearTransformModule.vue'))
 const ComplexMappingModule = defineAsyncComponent(() => import('../math-visualizer/modules/complex-analysis/ComplexMappingModule.vue'))
@@ -28,15 +31,24 @@ const adaptiveProfile = ref<QualityProfile | null>(null)
 const profile = computed(() => adaptiveProfile.value || resolveQuality(mode.value, capabilities))
 const telemetry = ref<RendererTelemetry | null>(null)
 const renderer = ref<RendererId | null>(null)
+const activeLaunch = ref<FormulaLaunchRequest | null>(null)
 let manager = new PerformanceManager(profile.value, true)
 
 const selectedMeta = computed(() => modules.find((item) => item.id === selected.value))
 const selectedComponent = computed(() => ({ linear: LinearTransformModule, complex: ComplexMappingModule, fourier: FourierModule, laplace: LaplaceModule, surface: SurfaceModule }[selected.value || 'linear']))
+const routedExpression = computed(() => activeLaunch.value?.module === selected.value ? activeLaunch.value.expression : '')
 
 watch(mode, () => {
   adaptiveProfile.value = null
   manager = new PerformanceManager(resolveQuality(mode.value, capabilities), mode.value === 'auto')
 })
+watch(() => props.launchRequest, (request) => {
+  if (!request) return
+  activeLaunch.value = request
+  selected.value = request.module
+  telemetry.value = null
+  renderer.value = null
+}, { immediate: true })
 
 function receiveTelemetry(value: RendererTelemetry) {
   telemetry.value = value
@@ -44,8 +56,8 @@ function receiveTelemetry(value: RendererTelemetry) {
   if (adjusted && mode.value === 'auto') adaptiveProfile.value = adjusted
 }
 
-function openModule(id: MathModuleId) { selected.value = id; telemetry.value = null; renderer.value = null }
-function closeModule() { selected.value = null; telemetry.value = null; renderer.value = null }
+function openModule(id: MathModuleId) { activeLaunch.value = null; selected.value = id; telemetry.value = null; renderer.value = null }
+function closeModule() { activeLaunch.value = null; selected.value = null; telemetry.value = null; renderer.value = null }
 onBeforeUnmount(() => { selected.value = null })
 </script>
 
@@ -71,7 +83,8 @@ onBeforeUnmount(() => { selected.value = null })
 
     <template v-else>
       <section class="math-workspace-status"><span><i />{{ renderer ? `${renderer.toUpperCase()} ACTIVE` : 'STARTING RENDERER' }}</span><span>{{ profile.surfaceResolution }}² SURFACE · {{ profile.complexResolution }} COMPLEX · DPR {{ profile.maxDpr }}</span></section>
-      <Suspense><component :is="selectedComponent" :profile="profile" :capabilities="capabilities" @renderer="renderer = $event" @telemetry="receiveTelemetry" /><template #fallback><div class="math-module-loader panel"><i /><b>LOADING {{ selectedMeta?.label.toUpperCase() }}</b><span>Heavy code is requested only now.</span></div></template></Suspense>
+      <section v-if="activeLaunch" class="math-import-banner"><div><span>MARKDOWN FORMULA / ROUTED TO {{ selectedMeta?.label.toUpperCase() }}</span><code>{{ activeLaunch.expression }}</code></div><b>{{ activeLaunch.automatic ? `${activeLaunch.confidence.toUpperCase()} AUTO MATCH` : 'MANUAL ROUTE' }}</b></section>
+      <Suspense><component :is="selectedComponent" :key="`${selected}-${activeLaunch?.id || 0}`" :profile="profile" :capabilities="capabilities" :initial-expression="routedExpression" @renderer="renderer = $event" @telemetry="receiveTelemetry" /><template #fallback><div class="math-module-loader panel"><i /><b>LOADING {{ selectedMeta?.label.toUpperCase() }}</b><span>Heavy code is requested only now.</span></div></template></Suspense>
       <RendererDebugPanel :telemetry="telemetry" :profile="profile" :capabilities="capabilities" />
     </template>
   </div>

@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { evaluateComplex } from '../../core/numerics'
 import MathFormula from '../../components/MathFormula.vue'
 import VisualizationViewport from '../../components/VisualizationViewport.vue'
 import type { ComplexPreset, ComplexScene, QualityProfile, RendererId, RendererTelemetry, RuntimeCapabilities, Vec2 } from '../../types'
 
-const props = defineProps<{ profile: QualityProfile; capabilities: RuntimeCapabilities }>()
+const props = defineProps<{ profile: QualityProfile; capabilities: RuntimeCapabilities; initialExpression?: string }>()
 const emit = defineEmits<{ telemetry: [value: RendererTelemetry]; renderer: [id: RendererId] }>()
 const presets: Array<{ id: ComplexPreset; label: string; expression: string; note: string }> = [
   { id: 'identity', label: 'Identity', expression: 'z', note: 'Conformal baseline' }, { id: 'square', label: 'Square', expression: 'z^2', note: 'Angles double around zero' },
@@ -21,6 +21,17 @@ const preset = computed(() => presets.find((item) => item.id === selected.value)
 const scene = computed<ComplexScene>(() => ({ kind: 'complex', preset: selected.value, expression: `w = ${preset.value.expression}`, point: [point.x, point.y], showGrid: options.grid, domainColoring: options.domain }))
 const mapped = computed(() => evaluateComplex(selected.value, { re: point.x, im: point.y }))
 function updatePoint(value: Vec2) { point.x = value[0]; point.y = value[1] }
+watch(() => props.initialExpression, (source) => {
+  if (!source) return
+  const value = source.toLowerCase().replace(/\s+/g, '')
+  if (/1\/?z|z\^\{-?1\}|z\^-1/.test(value)) selected.value = 'reciprocal'
+  else if (/log|\\ln/.test(value)) selected.value = 'log'
+  else if (/exp|e\^/.test(value)) selected.value = 'exp'
+  else if (/cos/.test(value)) selected.value = 'cos'
+  else if (/sin/.test(value)) selected.value = 'sin'
+  else if (/z\^\{?2\}?|z²/.test(value)) selected.value = 'square'
+  else selected.value = 'identity'
+}, { immediate: true })
 </script>
 
 <template>

@@ -8,7 +8,7 @@ import TimelineControls from '../../components/TimelineControls.vue'
 import VisualizationViewport from '../../components/VisualizationViewport.vue'
 import type { FourierScene, QualityProfile, RendererId, RendererTelemetry, RuntimeCapabilities, SignalPreset } from '../../types'
 
-const props = defineProps<{ profile: QualityProfile; capabilities: RuntimeCapabilities }>()
+const props = defineProps<{ profile: QualityProfile; capabilities: RuntimeCapabilities; initialExpression?: string }>()
 const emit = defineEmits<{ telemetry: [value: RendererTelemetry]; renderer: [id: RendererId] }>()
 const viewport = ref<InstanceType<typeof VisualizationViewport> | null>(null)
 const preset = ref<SignalPreset>('two-tone')
@@ -17,6 +17,11 @@ const options = reactive({ wrapping: true, spectrum: true })
 const error = ref('')
 const spectrum = ref<number[]>(computeSpectrum(preset.value))
 watch(preset, (value) => { spectrum.value = computeSpectrum(value) })
+watch(() => props.initialExpression, (source) => {
+  if (!source) return
+  const value = source.toLowerCase()
+  preset.value = value.includes('square') ? 'square' : value.includes('triangle') ? 'triangle' : /sin|cos/.test(value) ? 'sine' : 'two-tone'
+}, { immediate: true })
 const scene = computed<FourierScene>(() => ({ kind: 'fourier', preset: preset.value, omega: omega.value, showWrapping: options.wrapping, showSpectrum: options.spectrum, spectrum: spectrum.value }))
 const coefficient = computed(() => fourierCoefficient(preset.value, omega.value, 1024))
 const timeline = useMathTimeline((value) => { omega.value = .25 + value * 11.75; viewport.value?.setTime(value) }, props.capabilities.reducedMotion)

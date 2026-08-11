@@ -38,6 +38,8 @@ MathBox 使用 Three 0.139.2，但被放进同源 iframe 渲染舱；主窗口�
 
 Math Lab 可以从 Markdown 原生 `<dialog>` 顶层阅读环境进入。阅读正文的 `.reading-portal-scroll` 是唯一纵向滚动容器，背景在 modal 打开时处于 inert 状态；滚轮、指针和触摸事件还会在 portal 边界停止传播。退出键始终保留在固定头部。
 
+每个 KaTeX 行内或块级公式都会获得一个轻量 `↗` 入口。`formulaRouter` 只使用字符串特征判断 Linear、Complex、Fourier、Laplace/Integral 或 Surface，不加载数学 vendor。路由面板显示自动判断和置信度，用户可以覆盖分类；确认后才创建 Math Lab 模块。数字矩阵、常见复函数、信号预设和三维公式会尽可能转换为模块初始状态，原公式始终显示在工作区导入栏中。
+
 ## 质量档位与回退
 
 | 档位 | 目标 FPS | 最大 DPR | Surface | Complex | 典型路径 |
@@ -70,4 +72,3 @@ Auto 只做能力检测，不进行 UA 猜测。它检查 WebGPU、WebGL2/WebGL1
 ## 调试
 
 工作区底部的 `RENDERER DIAGNOSTICS` 可查看 renderer、质量档位、FPS、frame time、DPR、viewport、surface 和 curve samples。排查时优先切换到 Compatibility，确认 Canvas 路径是否正常；再检查 WebGL capability、控制台 context-lost 信息和 `/static/app/vendor/math-lab/` 文件是否可访问。
-

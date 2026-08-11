@@ -8,6 +8,7 @@ import HeatmapGrid from './components/HeatmapGrid.vue'
 import MetricCard from './components/MetricCard.vue'
 import { api, post } from './lib/api'
 import type { Overview } from './types'
+import type { FormulaLaunchRequest } from './math-visualizer/core/formulaRouter'
 
 const TrendsView = defineAsyncComponent(() => import('./views/TrendsView.vue'))
 const HistoryView = defineAsyncComponent(() => import('./views/HistoryView.vue'))
@@ -21,6 +22,7 @@ const overview = ref<Overview | null>(null)
 const loading = ref(true)
 const username = ref('')
 const globalSearch = ref<InstanceType<typeof GlobalSearch> | null>(null)
+const mathLabLaunch = ref<FormulaLaunchRequest | null>(null)
 const nav = [
   { id: 'today', label: 'Today', icon: Clock }, { id: 'trends', label: 'Trends', icon: DataAnalysis },
   { id: 'history', label: 'Sessions', icon: List }, { id: 'issues', label: 'Issues', icon: Guide },
@@ -51,7 +53,10 @@ async function load() {
   } catch (error) { ElMessage.error((error as Error).message) } finally { loading.value = false }
 }
 async function logout() { await post('/api/auth/logout/'); location.assign('/accounts/login/') }
-function openMathLab() { page.value = 'mathlab' }
+function openMathLab(event: Event) {
+  mathLabLaunch.value = (event as CustomEvent<FormulaLaunchRequest>).detail || null
+  page.value = 'mathlab'
+}
 onMounted(() => { window.addEventListener('learning-os-open-math-lab', openMathLab); void load() })
 onBeforeUnmount(() => window.removeEventListener('learning-os-open-math-lab', openMathLab))
 </script>
@@ -94,7 +99,7 @@ onBeforeUnmount(() => window.removeEventListener('learning-os-open-math-lab', op
       <TrendsView v-else-if="page === 'trends'" :overview="overview" />
       <HistoryView v-else-if="page === 'history'" />
       <IssuesView v-else-if="page === 'issues'" />
-      <MathLabView v-else-if="page === 'mathlab'" />
+      <MathLabView v-else-if="page === 'mathlab'" :launch-request="mathLabLaunch" />
       <SettingsView v-else @changed="load" />
     </main>
   </div>

@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { computed, ref, watch } from 'vue'
 import { useMathTimeline } from '../../core/useMathTimeline'
+import { normalizeFormulaExpression } from '../../core/formulaRouter'
 import MathFormula from '../../components/MathFormula.vue'
 import TimelineControls from '../../components/TimelineControls.vue'
 import VisualizationViewport from '../../components/VisualizationViewport.vue'
 import type { QualityProfile, RendererId, RendererTelemetry, RuntimeCapabilities, SurfacePreset, SurfaceScene } from '../../types'
 
-const props = defineProps<{ profile: QualityProfile; capabilities: RuntimeCapabilities }>()
+const props = defineProps<{ profile: QualityProfile; capabilities: RuntimeCapabilities; initialExpression?: string }>()
 const emit = defineEmits<{ telemetry: [value: RendererTelemetry]; renderer: [id: RendererId] }>()
 const viewport = ref<InstanceType<typeof VisualizationViewport> | null>(null)
 const presets: Array<{ id: SurfacePreset; label: string; expression: string }> = [
@@ -40,6 +41,22 @@ async function applyCustomExpression() {
     applying.value = false
   }
 }
+watch(() => props.initialExpression, async (source) => {
+  if (!source) return
+  const value = source.toLowerCase().replace(/\s+/g, '')
+  const matched: SurfacePreset | null = /x\^?2-y\^?2|x²-y²/.test(value) ? 'saddle'
+    : /exp|e\^/.test(value) && value.includes('x') && value.includes('y') ? 'gaussian'
+      : /sin\(?x\)?.*cos\(?y\)?|\\sin\{?x\}?.*\\cos\{?y\}?/.test(value) ? 'waves'
+        : /sin.*x.*x.*y.*y|sin.*x\^?2.*y\^?2/.test(value) ? 'ripple' : null
+  if (matched) { preset.value = matched; customSurface.value = undefined; return }
+  const normalized = normalizeFormulaExpression(source).replace(/\)\s*(?=[a-z(])/g, ')*')
+  if (!normalized || normalized.includes('\\') || normalized.includes('=')) {
+    expressionError.value = 'This TeX expression needs manual simplification before sampling.'
+    return
+  }
+  customExpression.value = normalized
+  await applyCustomExpression()
+}, { immediate: true })
 </script>
 
 <template>
