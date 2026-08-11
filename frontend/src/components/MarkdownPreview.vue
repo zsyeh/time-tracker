@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Close, FullScreen } from '@element-plus/icons-vue'
 
@@ -40,6 +40,8 @@ const loading = ref(false)
 const rendered = ref('')
 const fullscreen = ref(false)
 const mathStyle = ref<MathStyle>(savedMathStyle())
+const fullscreenDialog = ref<HTMLDialogElement | null>(null)
+const fullscreenScroll = ref<HTMLElement | null>(null)
 let previousOverflow = ''
 let timer: ReturnType<typeof setTimeout> | undefined
 let version = 0
@@ -73,23 +75,49 @@ function togglePreview() {
   if (previewOpen.value) scheduleRender()
 }
 
-function toggleFullscreen() {
-  fullscreen.value = !fullscreen.value
-  if (fullscreen.value) {
-    previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    if (!previewOpen.value) { previewOpen.value = true; scheduleRender() }
-  } else {
-    document.body.style.overflow = previousOverflow
-  }
+function restorePageScroll() {
+  document.body.style.overflow = previousOverflow
+  document.documentElement.classList.remove('markdown-reading-open')
 }
 
-function closeFullscreenWithEscape(event: KeyboardEvent) {
-  if (fullscreen.value && event.key === 'Escape') {
-    event.preventDefault()
-    event.stopPropagation()
-    toggleFullscreen()
+async function enterFullscreen() {
+  if (fullscreen.value) return
+  previousOverflow = document.body.style.overflow
+  document.body.style.overflow = 'hidden'
+  document.documentElement.classList.add('markdown-reading-open')
+  fullscreen.value = true
+  if (!previewOpen.value) { previewOpen.value = true; scheduleRender() }
+  await nextTick()
+  const dialog = fullscreenDialog.value
+  if (dialog && !dialog.open) {
+    try { dialog.showModal() } catch { dialog.setAttribute('open', '') }
   }
+  await nextTick()
+  fullscreenScroll.value?.focus({ preventScroll: true })
+}
+
+function exitFullscreen() {
+  if (!fullscreen.value) return
+  const dialog = fullscreenDialog.value
+  if (dialog?.open) dialog.close()
+  fullscreen.value = false
+  restorePageScroll()
+}
+
+function toggleFullscreen() {
+  if (fullscreen.value) exitFullscreen()
+  else void enterFullscreen()
+}
+
+function onNativeDialogClose() {
+  if (!fullscreen.value) return
+  fullscreen.value = false
+  restorePageScroll()
+}
+
+function openMathLab() {
+  exitFullscreen()
+  requestAnimationFrame(() => window.dispatchEvent(new CustomEvent('learning-os-open-math-lab')))
 }
 
 function setMathStyle(event: Event) {
@@ -109,43 +137,71 @@ watch(() => props.source, () => {
   if (previewOpen.value) scheduleRender(220)
 })
 onMounted(() => {
-  window.addEventListener('keydown', closeFullscreenWithEscape, true)
   window.addEventListener('learning-os-math-style', syncMathStyle)
   if (previewOpen.value) scheduleRender()
 })
 onBeforeUnmount(() => {
-  window.removeEventListener('keydown', closeFullscreenWithEscape, true)
   window.removeEventListener('learning-os-math-style', syncMathStyle)
   if (timer) clearTimeout(timer)
-  if (fullscreen.value) document.body.style.overflow = previousOverflow
+  if (fullscreen.value) restorePageScroll()
 })
 </script>
 
 <template>
-  <Teleport to="body" :disabled="!fullscreen">
-    <div class="markdown-preview-shell" :class="{ 'source-enabled': showSource, 'is-fullscreen': fullscreen }" :data-math-style="mathStyle">
-      <div class="markdown-preview-toolbar">
-        <button v-if="!fullscreen" type="button" class="markdown-preview-toggle" :aria-expanded="previewOpen" @click="togglePreview">
-          {{ previewOpen ? (showSource ? 'Show source' : 'Hide preview') : 'Preview Markdown' }}
-        </button>
-        <span>KaTeX · GFM · code · footnotes · callouts</span>
-        <label v-if="previewOpen" class="markdown-math-style">
-          <span>MATH STYLE</span>
-          <select :value="mathStyle" aria-label="Formula rendering style" @change="setMathStyle">
-            <option v-for="style in mathStyles" :key="style.id" :value="style.id">{{ style.label }}</option>
-          </select>
-        </label>
-        <button v-if="allowFullscreen && (previewOpen || fullscreen)" type="button" class="markdown-fullscreen-toggle" :aria-label="fullscreen ? 'Exit full screen' : 'Open full screen'" @click="toggleFullscreen">
-          <el-icon><Close v-if="fullscreen" /><FullScreen v-else /></el-icon><span>{{ fullscreen ? 'EXIT' : 'FULL SCREEN' }}</span>
-        </button>
-      </div>
-      <el-collapse-transition>
-        <section v-if="previewOpen" v-loading="loading" class="markdown-preview-panel">
-          <div v-if="source.trim()" class="markdown-body" v-html="rendered" />
-          <p v-else class="markdown-empty">{{ emptyText }}</p>
-        </section>
-        <pre v-else-if="showSource" class="markdown-source">{{ source || emptyText }}</pre>
-      </el-collapse-transition>
+  <div class="markdown-preview-shell" :class="{ 'source-enabled': showSource }" :data-math-style="mathStyle">
+    <div class="markdown-preview-toolbar">
+      <button type="button" class="markdown-preview-toggle" :aria-expanded="previewOpen" @click="togglePreview">
+        {{ previewOpen ? (showSource ? 'Show source' : 'Hide preview') : 'Preview Markdown' }}
+      </button>
+      <span>KaTeX · GFM · code · footnotes · callouts</span>
+      <label v-if="previewOpen" class="markdown-math-style">
+        <span>MATH STYLE</span>
+        <select :value="mathStyle" aria-label="Formula rendering style" @change="setMathStyle">
+          <option v-for="style in mathStyles" :key="style.id" :value="style.id">{{ style.label }}</option>
+        </select>
+      </label>
+      <button v-if="allowFullscreen && previewOpen" type="button" class="markdown-fullscreen-toggle" aria-label="Open immersive reader" @click="toggleFullscreen">
+        <el-icon><FullScreen /></el-icon><span>IMMERSIVE</span>
+      </button>
     </div>
+    <el-collapse-transition>
+      <section v-if="previewOpen" v-loading="loading" class="markdown-preview-panel">
+        <div v-if="source.trim()" class="markdown-body" v-html="rendered" />
+        <p v-else class="markdown-empty">{{ emptyText }}</p>
+      </section>
+      <pre v-else-if="showSource" class="markdown-source">{{ source || emptyText }}</pre>
+    </el-collapse-transition>
+  </div>
+
+  <Teleport to="body">
+    <dialog
+      v-if="fullscreen"
+      ref="fullscreenDialog"
+      class="markdown-reading-portal"
+      :data-math-style="mathStyle"
+      aria-label="Immersive Markdown reader"
+      @cancel.prevent="exitFullscreen"
+      @close="onNativeDialogClose"
+    >
+      <div class="reading-portal-frame">
+        <header class="reading-portal-header">
+          <div class="reading-portal-identity"><i /><div><span>LEARNING OS / READER</span><strong>Immersive document environment</strong></div></div>
+          <div class="reading-portal-actions">
+            <label class="markdown-math-style"><span>FORMULA</span><select :value="mathStyle" aria-label="Formula rendering style" @change="setMathStyle"><option v-for="style in mathStyles" :key="style.id" :value="style.id">{{ style.label }}</option></select></label>
+            <button type="button" class="reading-lab-button" @click="openMathLab">OPEN MATH LAB</button>
+            <button type="button" class="reading-exit-button" aria-label="Exit immersive reader" @click="exitFullscreen"><el-icon><Close /></el-icon><span>EXIT</span></button>
+          </div>
+        </header>
+        <aside class="reading-portal-rail" aria-hidden="true"><b>REVIEW</b><i /><span>DOCUMENT</span><span>FORMULA</span><small>ESC TO EXIT</small></aside>
+        <main ref="fullscreenScroll" v-loading="loading" class="reading-portal-scroll" tabindex="-1">
+          <article class="reading-portal-document">
+            <div class="reading-document-meta"><span>MARKDOWN DOCUMENT</span><b>READING MODE</b></div>
+            <div v-if="source.trim()" class="markdown-body" v-html="rendered" />
+            <p v-else class="markdown-empty">{{ emptyText }}</p>
+          </article>
+        </main>
+        <footer class="reading-portal-footer"><span>LOCAL RENDER · SANITIZED HTML · KATEX</span><b>SCROLL DOCUMENT</b></footer>
+      </div>
+    </dialog>
   </Teleport>
 </template>
