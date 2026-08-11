@@ -2,6 +2,7 @@
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Close, FullScreen } from '@element-plus/icons-vue'
+import { mathVisualizationEnabled } from '../lib/featureFlags'
 import type { FormulaLaunchRequest } from '../math-visualizer/core/formulaRouter'
 
 type MathStyle = 'classic' | 'minimal' | 'paper' | 'blueprint'
@@ -56,7 +57,7 @@ async function renderNow() {
   try {
     await new Promise<void>((resolve) => requestAnimationFrame(() => resolve()))
     const { renderMarkdown } = await import('../lib/markdown')
-    const html = renderMarkdown(source)
+    const html = renderMarkdown(source, { mathVisualization: mathVisualizationEnabled.value })
     if (requestVersion === version) rendered.value = html
   } catch (error) {
     ElMessage.error(`Markdown preview failed: ${(error as Error).message}`)
@@ -121,6 +122,7 @@ function onFullscreenCancel() {
 }
 
 async function handleRenderedClick(event: MouseEvent) {
+  if (!mathVisualizationEnabled.value) return
   const button = (event.target as Element | null)?.closest<HTMLElement>('[data-math-launch]')
   if (!button) return
   event.preventDefault()
@@ -152,6 +154,10 @@ function syncMathStyle(event: Event) {
 watch(() => props.source, () => {
   rendered.value = ''
   if (previewOpen.value) scheduleRender(220)
+})
+watch(mathVisualizationEnabled, () => {
+  rendered.value = ''
+  if (previewOpen.value) scheduleRender()
 })
 onMounted(() => {
   window.addEventListener('learning-os-math-style', syncMathStyle)

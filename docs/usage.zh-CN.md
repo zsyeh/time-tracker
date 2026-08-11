@@ -27,7 +27,7 @@
 
 公式区域可在 `Classic`、`Minimal`、`Paper` 和 `Blueprint` 四种样式之间切换。选择保存在当前浏览器；切换只更新 CSS，不会重复执行 Markdown 或 KaTeX 解析。
 
-行内和块级公式旁都有一个小型 `↗` 快捷入口。点击后会根据公式结构自动判断 Linear、Complex、Fourier、Laplace/Integral 或 3D Surface，并直接打开独立的顶层可视化窗口；窗口内的 `VISUALIZATION SYSTEM` 可以随时手动改选分类。数字 2×2 矩阵、常见复函数、信号类型和三维公式会直接带入对应场景，原公式保留在窗口顶部。
+数学可视化默认关闭。管理员可在 Django Admin 的 Invitation control → `GLOBAL SITE POLICY` 中打开 `MATH VISUALIZATION`；关闭时行内和块级公式旁不会生成 `↗`，相关路由与渲染器也不会加载。开启后，点击 `↗` 会根据公式结构自动判断 Linear、Complex、Fourier、Laplace/Integral 或 3D Surface，并直接打开独立的顶层可视化窗口；窗口内仍可手动改选分类。
 
 公式窗口不再出现在主菜单中，只从具体公式调用。它使用第二层原生 dialog 压在 Markdown 阅读器之上，因此文章、全屏状态和滚动位置都不会卸载；`RETURN TO DOCUMENT` 或 Esc 会回到原文。三维模块会自动转换常见的嵌套分式、根式、希腊字母、绝对值与隐式乘法，并为公式中的额外参数自动赋值和生成可拖动滑条。参数采样采用短防抖，Math Lab、math.js 和每个渲染器仍按需加载。手机或不支持 WebGL 的浏览器会自动回退到 Canvas。
 

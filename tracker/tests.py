@@ -378,11 +378,14 @@ class InviteRegistrationTests(TestCase):
         opened = self.client.post('/admin/tracker/invitecode/dashboard/', {
             'action': 'registration_policy',
             'registration_open': 'on',
+            'math_visualization_enabled': 'on',
         }, follow=True)
         self.assertEqual(opened.status_code, 200)
         self.assertContains(opened, 'Registration is open')
+        self.assertContains(opened, 'MATH VISUALIZATION')
         configuration = SiteConfiguration.load()
         self.assertTrue(configuration.registration_open)
+        self.assertTrue(configuration.math_visualization_enabled)
         self.assertEqual(configuration.updated_by, self.admin)
 
         closed = self.client.post('/admin/tracker/invitecode/dashboard/', {
@@ -391,7 +394,13 @@ class InviteRegistrationTests(TestCase):
         self.assertEqual(closed.status_code, 200)
         configuration.refresh_from_db()
         self.assertFalse(configuration.registration_open)
+        self.assertFalse(configuration.math_visualization_enabled)
         self.assertContains(closed, 'Invite-only registration')
+
+    def test_math_visualization_is_disabled_by_default(self):
+        configuration = SiteConfiguration.load()
+        self.assertFalse(configuration.math_visualization_enabled)
+        self.assertFalse(SiteConfiguration.math_visualization_is_enabled())
 
     def test_admin_can_inspect_and_reset_login_rate_status(self):
         self.admin.is_superuser = True
@@ -726,6 +735,15 @@ class AnalyticsAndExportTests(TestCase):
         self.assertEqual(overview['calendar']['heatmap_start_date'], overview['heatmap'][0]['date'])
         expected_days = max(0, (datetime.date.fromisoformat(settings.TRACKER_EXAM_DATE) - today).days)
         self.assertEqual(overview['calendar']['days_until_exam'], expected_days)
+
+    def test_dashboard_exposes_the_global_math_visualization_flag(self):
+        disabled = self.client.get('/api/dashboard/overview/?days=7').json()
+        self.assertFalse(disabled['features']['math_visualization'])
+        configuration = SiteConfiguration.load()
+        configuration.math_visualization_enabled = True
+        configuration.save(update_fields=('math_visualization_enabled', 'updated_at'))
+        enabled = self.client.get('/api/dashboard/overview/?days=7').json()
+        self.assertTrue(enabled['features']['math_visualization'])
 
     @override_settings(
         STUDY_ROOM_CODE='test-room-code',

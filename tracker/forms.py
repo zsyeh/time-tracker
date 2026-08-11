@@ -82,6 +82,11 @@ class RegistrationPolicyForm(forms.Form):
         required=False,
         help_text='When enabled, anyone can create an account without an invite code.',
     )
+    math_visualization_enabled = forms.BooleanField(
+        label='Enable math visualization',
+        required=False,
+        help_text='Show formula launch buttons and allow the on-demand visualization window.',
+    )
 
 
 class LoginRateLimitResetForm(forms.Form):

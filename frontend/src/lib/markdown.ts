@@ -59,7 +59,7 @@ const md: MarkdownIt = new MarkdownIt({
   .use(tex, {
     delimiters: 'all',
     mathFence: true,
-    render(content, displayMode) {
+    render(content, displayMode, env) {
       const formula = katex.renderToString(content, {
         displayMode,
         output: 'htmlAndMathml',
@@ -68,7 +68,9 @@ const md: MarkdownIt = new MarkdownIt({
         trust: false,
       })
       const encoded = encodeURIComponent(content)
-      const launch = `<button type="button" class="markdown-formula-launch" data-math-launch="${encoded}" aria-label="Open formula in Math Lab" title="Open in Math Lab">↗</button>`
+      const launch = (env as { mathVisualization?: boolean } | undefined)?.mathVisualization
+        ? `<button type="button" class="markdown-formula-launch" data-math-launch="${encoded}" aria-label="Open formula in Math Lab" title="Open in Math Lab">↗</button>`
+        : ''
       return displayMode ? `<div class="markdown-formula-unit is-display">${formula}${launch}</div>` : `<span class="markdown-formula-unit is-inline">${formula}${launch}</span>`
     },
   })
@@ -91,8 +93,8 @@ md.renderer.rules.image = (tokens, index, options, env, self) => {
   return defaultImage(tokens, index, options, env, self)
 }
 
-export function renderMarkdown(source: string): string {
-  const rendered = md.render(source)
+export function renderMarkdown(source: string, options: { mathVisualization?: boolean } = {}): string {
+  const rendered = md.render(source, { mathVisualization: Boolean(options.mathVisualization) })
   return DOMPurify.sanitize(rendered, {
     USE_PROFILES: { html: true, svg: true, mathMl: true },
     ADD_ATTR: ['aria-label', 'checked', 'data-math-launch', 'decoding', 'disabled', 'loading', 'referrerpolicy', 'rel', 'target', 'title', 'type'],

@@ -37,6 +37,7 @@ export interface HeatmapDay {
 export interface Overview {
   server_time: string
   range_days: number
+  features: { math_visualization: boolean }
   calendar: { today: string; exam_date: string; days_until_exam: number; heatmap_start_date: string }
   private_display: { study_room_code: string; homepage_content: string; countdown_label: string }
   today: { minutes: number; sessions: number; first_start: string | null }

@@ -24,7 +24,7 @@ from rest_framework.views import APIView
 
 from .analytics import build_dashboard_overview
 from .learning_log import dispatch_github_note_sync
-from .models import InviteCode, KnowledgePoint, LaunchToken, LearningIssue, SessionReview, TimeLog
+from .models import InviteCode, KnowledgePoint, LaunchToken, LearningIssue, SessionReview, SiteConfiguration, TimeLog
 from .runtime_settings import runtime_config, save_runtime_config
 from .serializers import (
     FinishSessionSerializer,
@@ -246,12 +246,16 @@ class DashboardOverviewView(APIView):
         days = max(7, min(days, 366))
         version = cache.get(f'dashboard-version:{request.user.pk}', 1)
         config = runtime_config(user=request.user)
+        math_visualization_enabled = SiteConfiguration.math_visualization_is_enabled()
         # Keep a payload schema version in the key so a zero-downtime frontend
         # deployment never receives an older cached response shape.
-        cache_key = f'dashboard-overview:v5:{request.user.pk}:{days}:{version}:{config["fingerprint"]}'
+        cache_key = f'dashboard-overview:v6:{request.user.pk}:{days}:{version}:{config["fingerprint"]}:{int(math_visualization_enabled)}'
         payload = cache.get(cache_key)
         if payload is None:
             payload = build_dashboard_overview(request.user, days, config=config['values'])
+            payload['features'] = {
+                'math_visualization': math_visualization_enabled,
+            }
             cache.set(cache_key, payload, timeout=60)
         return Response(payload)
 

@@ -174,17 +174,24 @@ class InviteCodeAdmin(admin.ModelAdmin):
     def invite_dashboard(self, request):
         configuration = SiteConfiguration.load()
         policy_form = RegistrationPolicyForm(
-            initial={'registration_open': configuration.registration_open},
+            initial={
+                'registration_open': configuration.registration_open,
+                'math_visualization_enabled': configuration.math_visualization_enabled,
+            },
         )
         if request.method == 'POST' and request.POST.get('action') == 'registration_policy':
             policy_form = RegistrationPolicyForm(request.POST)
             form = AdminInviteCodeForm()
             if policy_form.is_valid():
                 configuration.registration_open = policy_form.cleaned_data['registration_open']
+                configuration.math_visualization_enabled = policy_form.cleaned_data['math_visualization_enabled']
                 configuration.updated_by = request.user
-                configuration.save(update_fields=('registration_open', 'updated_by', 'updated_at'))
+                configuration.save(update_fields=(
+                    'registration_open', 'math_visualization_enabled', 'updated_by', 'updated_at',
+                ))
                 state = 'open' if configuration.registration_open else 'invite-only'
-                messages.success(request, f'Registration is now {state}.')
+                math_state = 'enabled' if configuration.math_visualization_enabled else 'disabled'
+                messages.success(request, f'Registration is now {state}. Math visualization is {math_state}.')
                 return redirect(reverse('admin:tracker_invitecode_dashboard'))
         elif request.method == 'POST':
             form = AdminInviteCodeForm(request.POST)
@@ -246,9 +253,9 @@ class InviteCodeAdmin(admin.ModelAdmin):
 
 @admin.register(SiteConfiguration)
 class SiteConfigurationAdmin(admin.ModelAdmin):
-    list_display = ('registration_open', 'updated_by', 'updated_at')
+    list_display = ('registration_open', 'math_visualization_enabled', 'updated_by', 'updated_at')
     readonly_fields = ('singleton_key', 'updated_by', 'updated_at')
-    fields = ('registration_open', 'singleton_key', 'updated_by', 'updated_at')
+    fields = ('registration_open', 'math_visualization_enabled', 'singleton_key', 'updated_by', 'updated_at')
 
     def has_add_permission(self, request):
         return not SiteConfiguration.objects.exists()

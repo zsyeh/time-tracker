@@ -277,6 +277,10 @@ class SiteConfiguration(models.Model):
         default=False,
         help_text='Allow anyone to register without an invite code.',
     )
+    math_visualization_enabled = models.BooleanField(
+        default=False,
+        help_text='Show Markdown formula launch buttons and enable the visualization window.',
+    )
     updated_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,
         null=True,
@@ -298,6 +302,10 @@ class SiteConfiguration(models.Model):
     @classmethod
     def registration_is_open(cls):
         return cls.objects.filter(singleton_key=1, registration_open=True).exists()
+
+    @classmethod
+    def math_visualization_is_enabled(cls):
+        return cls.objects.filter(singleton_key=1, math_visualization_enabled=True).exists()
 
     def __str__(self):
         return 'Registration policy'

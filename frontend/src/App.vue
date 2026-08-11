@@ -7,6 +7,7 @@ import GlobalSearch from './components/GlobalSearch.vue'
 import HeatmapGrid from './components/HeatmapGrid.vue'
 import MetricCard from './components/MetricCard.vue'
 import { api, post } from './lib/api'
+import { mathVisualizationEnabled } from './lib/featureFlags'
 import type { Overview } from './types'
 import type { FormulaLaunchRequest } from './math-visualizer/core/formulaRouter'
 
@@ -51,11 +52,13 @@ async function load() {
       api<{ user: { username: string } }>('/api/auth/session/'),
     ])
     overview.value = data
+    mathVisualizationEnabled.value = Boolean(data.features?.math_visualization)
     username.value = auth.user.username
   } catch (error) { ElMessage.error((error as Error).message) } finally { loading.value = false }
 }
 async function logout() { await post('/api/auth/logout/'); location.assign('/accounts/login/') }
 async function openMathLab(event: Event) {
+  if (!mathVisualizationEnabled.value) return
   const request = (event as CustomEvent<FormulaLaunchRequest>).detail
   if (!request) return
   mathLabReturnTarget = document.activeElement instanceof HTMLElement ? document.activeElement : null

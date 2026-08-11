@@ -10,9 +10,9 @@
         <article><span>USES REMAINING</span><strong>{{ remaining_count }}</strong></article>
         <article><span>REGISTERED VISITORS</span><strong>{{ visitor_count }}</strong></article>
     </section>
-    <section class="registration-policy {% if configuration.registration_open %}is-open{% endif %}">
-        <div><span class="invite-card-kicker">GLOBAL ACCESS POLICY</span><h2>{% if configuration.registration_open %}Registration is open{% else %}Invite-only registration{% endif %}</h2><p>{% if configuration.registration_open %}Anyone can create a password or Passkey-only account without a code.{% else %}Every password and Passkey-only signup must redeem a valid invite code.{% endif %}</p></div>
-        <form method="post" class="registration-policy-form">{% csrf_token %}<input type="hidden" name="action" value="registration_policy"><label class="admin-switch">{{ policy_form.registration_open }}<span aria-hidden="true"></span><b>OPEN REGISTRATION</b></label><button type="submit" class="button default">SAVE POLICY</button></form>
+    <section class="registration-policy {% if configuration.registration_open or configuration.math_visualization_enabled %}is-open{% endif %}">
+        <div><span class="invite-card-kicker">GLOBAL SITE POLICY</span><h2>{% if configuration.registration_open %}Registration is open{% else %}Invite-only registration{% endif %}</h2><p>{% if configuration.registration_open %}Anyone can create a password or Passkey-only account without a code.{% else %}Every password and Passkey-only signup must redeem a valid invite code.{% endif %} Math visualization is {% if configuration.math_visualization_enabled %}enabled{% else %}disabled by default{% endif %}.</p></div>
+        <form method="post" class="registration-policy-form">{% csrf_token %}<input type="hidden" name="action" value="registration_policy"><label class="admin-switch">{{ policy_form.registration_open }}<span aria-hidden="true"></span><b>OPEN REGISTRATION</b></label><label class="admin-switch">{{ policy_form.math_visualization_enabled }}<span aria-hidden="true"></span><b>MATH VISUALIZATION</b></label><button type="submit" class="button default">SAVE POLICY</button></form>
     </section>
     <section class="invite-admin-grid">
         <article class="invite-generate-card">

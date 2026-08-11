@@ -35,7 +35,7 @@ curl -fsSL https://app.ehzsy.site/install/docker-compose.sh | sh -s -- study.exa
 - 运行中隐藏时长；结束时只填写 `Title` 和可粘贴 ChatGPT 内容的 `Details`。
 - `Details` 支持按需 Markdown 预览、KaTeX 行内/块级公式、代码高亮、表格、任务列表、脚注和 GFM Callout；默认不加载预览引擎。
 - 历史回顾默认直接显示 Markdown 预览，支持原生顶层沉浸式全屏阅读、单独进入编辑，以及按会话统计回顾次数和近 28 天回顾趋势。
-- 按需公式窗口提供线性映射、复变映射与 domain coloring、Fourier/FFT、Laplace 数值积分和三维曲面；点击 Markdown 公式旁的 `↗` 会自动分类并直接打开对应场景，也可在窗口内改选分类。三维公式会自动转换常见 TeX、为额外变量赋值并生成参数滑条。关闭窗口会原位返回文档。重型渲染器默认不加载，并具备 Canvas 回退。见 [Math Lab](docs/math-lab.md) 与 [渲染兼容性](docs/math-renderer-compatibility.md)。
+- 可选的按需公式窗口提供线性映射、复变映射与 domain coloring、Fourier/FFT、Laplace 数值积分和三维曲面。该功能默认关闭，管理员可在 Django Admin 的全局站点策略中开启；关闭时 Markdown 不生成公式快捷按钮，也不会加载可视化代码。开启后点击公式旁的 `↗` 会自动分类并直接打开对应场景。见 [Math Lab](docs/math-lab.md) 与 [渲染兼容性](docs/math-renderer-compatibility.md)。
 - `⌘/Ctrl + K` 全局关键词搜索学习标题、正文和 Issues，结果按需下钻完整内容。
 - 每次完成后生成一个独立 Markdown 文件并通过本机 GitHub CLI 推送到私有仓库；管理员写入主分支，普通账号写入以用户名命名的隔离分支，失败会进入持久化队列自动重试。
 - 少于 25 分钟、超过 12 小时或主动放弃的会话直接删除，不写入完成记录。
