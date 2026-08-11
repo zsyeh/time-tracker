@@ -182,6 +182,9 @@ onBeforeUnmount(() => {
       aria-label="Immersive Markdown reader"
       @cancel.prevent="exitFullscreen"
       @close="onNativeDialogClose"
+      @pointerdown.stop
+      @wheel.stop
+      @touchstart.stop
     >
       <div class="reading-portal-frame">
         <header class="reading-portal-header">
@@ -193,7 +196,7 @@ onBeforeUnmount(() => {
           </div>
         </header>
         <aside class="reading-portal-rail" aria-hidden="true"><b>REVIEW</b><i /><span>DOCUMENT</span><span>FORMULA</span><small>ESC TO EXIT</small></aside>
-        <main ref="fullscreenScroll" v-loading="loading" class="reading-portal-scroll" tabindex="-1">
+        <main ref="fullscreenScroll" v-loading="loading" class="reading-portal-scroll" tabindex="-1" @touchmove.stop>
           <article class="reading-portal-document">
             <div class="reading-document-meta"><span>MARKDOWN DOCUMENT</span><b>READING MODE</b></div>
             <div v-if="source.trim()" class="markdown-body" v-html="rendered" />

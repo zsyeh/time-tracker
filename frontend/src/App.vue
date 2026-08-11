@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, defineAsyncComponent, onMounted, ref } from 'vue'
+import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import { Clock, DataAnalysis, Guide, List, Search as SearchIcon, Setting } from '@element-plus/icons-vue'
+import { Clock, Connection, DataAnalysis, Guide, List, Search as SearchIcon, Setting } from '@element-plus/icons-vue'
 import ActiveSession from './components/ActiveSession.vue'
 import GlobalSearch from './components/GlobalSearch.vue'
 import HeatmapGrid from './components/HeatmapGrid.vue'
@@ -12,9 +12,10 @@ import type { Overview } from './types'
 const TrendsView = defineAsyncComponent(() => import('./views/TrendsView.vue'))
 const HistoryView = defineAsyncComponent(() => import('./views/HistoryView.vue'))
 const IssuesView = defineAsyncComponent(() => import('./views/IssuesView.vue'))
+const MathLabView = defineAsyncComponent(() => import('./views/MathLabView.vue'))
 const SettingsView = defineAsyncComponent(() => import('./views/SettingsView.vue'))
 
-type PageName = 'today' | 'trends' | 'history' | 'issues' | 'settings'
+type PageName = 'today' | 'trends' | 'history' | 'issues' | 'mathlab' | 'settings'
 const page = ref<PageName>('today')
 const overview = ref<Overview | null>(null)
 const loading = ref(true)
@@ -23,6 +24,7 @@ const globalSearch = ref<InstanceType<typeof GlobalSearch> | null>(null)
 const nav = [
   { id: 'today', label: 'Today', icon: Clock }, { id: 'trends', label: 'Trends', icon: DataAnalysis },
   { id: 'history', label: 'Sessions', icon: List }, { id: 'issues', label: 'Issues', icon: Guide },
+  { id: 'mathlab', label: 'Math Lab', icon: Connection },
   { id: 'settings', label: 'Settings', icon: Setting },
 ] as const
 const subjectLabels: Record<string, string> = { math: 'Mathematics', english: 'English', major: 'Major', training: 'Training' }
@@ -49,7 +51,9 @@ async function load() {
   } catch (error) { ElMessage.error((error as Error).message) } finally { loading.value = false }
 }
 async function logout() { await post('/api/auth/logout/'); location.assign('/accounts/login/') }
-onMounted(load)
+function openMathLab() { page.value = 'mathlab' }
+onMounted(() => { window.addEventListener('learning-os-open-math-lab', openMathLab); void load() })
+onBeforeUnmount(() => window.removeEventListener('learning-os-open-math-lab', openMathLab))
 </script>
 
 <template>
@@ -90,6 +94,7 @@ onMounted(load)
       <TrendsView v-else-if="page === 'trends'" :overview="overview" />
       <HistoryView v-else-if="page === 'history'" />
       <IssuesView v-else-if="page === 'issues'" />
+      <MathLabView v-else-if="page === 'mathlab'" />
       <SettingsView v-else @changed="load" />
     </main>
   </div>

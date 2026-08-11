@@ -34,7 +34,8 @@ curl -fsSL https://app.ehzsy.site/install/docker-compose.sh | sh -s -- study.exa
 - `/start/math`、`/start/english`、`/start/professional` 快速启动，服务器时间为准且重复请求幂等。
 - 运行中隐藏时长；结束时只填写 `Title` 和可粘贴 ChatGPT 内容的 `Details`。
 - `Details` 支持按需 Markdown 预览、KaTeX 行内/块级公式、代码高亮、表格、任务列表、脚注和 GFM Callout；默认不加载预览引擎。
-- 历史回顾默认直接显示 Markdown 预览，支持全屏阅读、单独进入编辑，以及按会话统计回顾次数和近 28 天回顾趋势。
+- 历史回顾默认直接显示 Markdown 预览，支持原生顶层沉浸式全屏阅读、单独进入编辑，以及按会话统计回顾次数和近 28 天回顾趋势。
+- 按需 `Math Lab` 提供线性映射、复变映射与 domain coloring、Fourier/FFT、Laplace 数值积分和三维曲面；重型渲染器默认不加载，并具备 Canvas 回退。见 [Math Lab](docs/math-lab.md) 与 [渲染兼容性](docs/math-renderer-compatibility.md)。
 - `⌘/Ctrl + K` 全局关键词搜索学习标题、正文和 Issues，结果按需下钻完整内容。
 - 每次完成后生成一个独立 Markdown 文件并通过本机 GitHub CLI 推送到私有仓库；管理员写入主分支，普通账号写入以用户名命名的隔离分支，失败会进入持久化队列自动重试。
 - 少于 25 分钟、超过 12 小时或主动放弃的会话直接删除，不写入完成记录。
@@ -74,6 +75,7 @@ python manage.py runserver 127.0.0.1:8000
 cd frontend
 npm run dev
 npm run typecheck
+npm test
 npm run build
 ```
 

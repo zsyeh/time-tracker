@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
     "typecheck": "vue-tsc --noEmit",
+    "test": "vitest run",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -18,19 +19,27 @@
     "@mdit/plugin-sup": "0.22.0",
     "@mdit/plugin-tasklist": "0.22.0",
     "@mdit/plugin-tex": "0.22.0",
+    "cindyjs": "0.0.5",
     "dompurify": "^3.4.13",
     "echarts": "^6.1.0",
     "element-plus": "^2.8.8",
+    "fft.js": "4.0.4",
     "highlight.js": "^11.11.1",
     "katex": "^0.18.2",
     "markdown-it": "^14.3.0",
+    "mathbox": "2.3.2-rc1",
+    "mathjs": "15.2.0",
+    "three": "0.139.2",
+    "three-modern": "npm:three@0.185.1",
     "vue": "^3.5.13"
   },
   "devDependencies": {
     "@types/markdown-it": "^14.1.2",
+    "@types/three": "0.185.4",
     "@vitejs/plugin-vue": "^5.2.1",
     "typescript": "^5.7.2",
     "vite": "^5.4.11",
+    "vitest": "3.2.6",
     "vue-tsc": "^2.2.0"
   }
 }
