@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import * as math from 'mathjs'
 import { MathEngine } from './MathEngine'
+import { prepareSurfaceFormula } from './formulaRouter'
 
 describe('MathEngine expression boundary', () => {
   const engine = new MathEngine(math)
@@ -20,5 +21,12 @@ describe('MathEngine expression boundary', () => {
     const sampled = await engine.sampleSurface('sin(x) * cos(y)', 9, 2)
     expect(sampled.values).toHaveLength(81)
     expect(sampled.values.every(Number.isFinite)).toBe(true)
+  })
+
+  it('samples automatically assigned formula parameters', async () => {
+    const prepared = prepareSurfaceFormula('z = \\alpha \\frac{\\sin(kx)}{1 + \\beta(x^2 + y^2)}')
+    const sampled = await engine.sampleSurface(prepared.expression, 5, 1, { alpha: 2, k: 1.5, beta: .2 })
+    expect(sampled.values).toHaveLength(25)
+    expect(Math.max(...sampled.values)).toBeGreaterThan(1)
   })
 })

@@ -27,9 +27,9 @@
 
 公式区域可在 `Classic`、`Minimal`、`Paper` 和 `Blueprint` 四种样式之间切换。选择保存在当前浏览器；切换只更新 CSS，不会重复执行 Markdown 或 KaTeX 解析。
 
-行内和块级公式旁都有一个小型 `↗` 快捷入口。点击后会先根据公式结构自动判断 Linear、Complex、Fourier、Laplace/Integral 或 3D Surface，并显示判断置信度；打开前可以手动修改分类。数字 2×2 矩阵、常见复函数、信号类型和三维预设会直接带入对应场景，其他公式会作为导入公式保留在 Math Lab 顶部供继续调整。
+行内和块级公式旁都有一个小型 `↗` 快捷入口。点击后会根据公式结构自动判断 Linear、Complex、Fourier、Laplace/Integral 或 3D Surface，并直接打开独立的顶层可视化窗口；窗口内的 `VISUALIZATION SYSTEM` 可以随时手动改选分类。数字 2×2 矩阵、常见复函数、信号类型和三维公式会直接带入对应场景，原公式保留在窗口顶部。
 
-全屏阅读器右上角的 `OPEN MATH LAB` 可以进入独立数学工作区；普通页面侧栏也有 `Math Lab`。工作区支持线性映射、复变与 domain coloring、Fourier/FFT、Laplace 数值积分以及可旋转的三维曲面。Math Lab 和每个渲染器都默认不加载，只有明确打开模块才请求相应代码。手机或不支持 WebGL 的浏览器会自动回退到 Canvas，不会显示空白画布。三维模块的自定义表达式只有通过公式快捷入口或点击 `APPLY EXPRESSION` 时才加载 math.js 并采样，错误表达式不会替换当前有效曲面。
+公式窗口不再出现在主菜单中，只从具体公式调用。它使用第二层原生 dialog 压在 Markdown 阅读器之上，因此文章、全屏状态和滚动位置都不会卸载；`RETURN TO DOCUMENT` 或 Esc 会回到原文。三维模块会自动转换常见的嵌套分式、根式、希腊字母、绝对值与隐式乘法，并为公式中的额外参数自动赋值和生成可拖动滑条。参数采样采用短防抖，Math Lab、math.js 和每个渲染器仍按需加载。手机或不支持 WebGL 的浏览器会自动回退到 Canvas。
 
 预览禁止 Markdown 中的原始 HTML，并会在写入页面前进行 HTML/MathML/SVG 净化。KaTeX 不信任可触发外部资源或 HTML 的 TeX 命令。
 

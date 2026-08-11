@@ -1,11 +1,8 @@
 <script setup lang="ts">
-import { defineAsyncComponent, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { ElMessage } from 'element-plus'
 import { Close, FullScreen } from '@element-plus/icons-vue'
 import type { FormulaLaunchRequest } from '../math-visualizer/core/formulaRouter'
-import type { MathModuleId } from '../math-visualizer/types'
-
-const FormulaLaunchPanel = defineAsyncComponent(() => import('./FormulaLaunchPanel.vue'))
 
 type MathStyle = 'classic' | 'minimal' | 'paper' | 'blueprint'
 
@@ -46,8 +43,6 @@ const fullscreen = ref(false)
 const mathStyle = ref<MathStyle>(savedMathStyle())
 const fullscreenDialog = ref<HTMLDialogElement | null>(null)
 const fullscreenScroll = ref<HTMLElement | null>(null)
-const formulaChooser = ref<(Omit<FormulaLaunchRequest, 'id' | 'automatic'>) | null>(null)
-const formulaSelection = ref<MathModuleId>('linear')
 let previousOverflow = ''
 let timer: ReturnType<typeof setTimeout> | undefined
 let version = 0
@@ -122,13 +117,7 @@ function onNativeDialogClose() {
 }
 
 function onFullscreenCancel() {
-  if (formulaChooser.value) formulaChooser.value = null
-  else exitFullscreen()
-}
-
-function openMathLab() {
   exitFullscreen()
-  requestAnimationFrame(() => window.dispatchEvent(new CustomEvent('learning-os-open-math-lab')))
 }
 
 async function handleRenderedClick(event: MouseEvent) {
@@ -141,25 +130,11 @@ async function handleRenderedClick(event: MouseEvent) {
     if (!expression.trim()) return
     const { routeFormula } = await import('../math-visualizer/core/formulaRouter')
     const route = routeFormula(expression)
-    formulaChooser.value = { ...route, expression }
-    formulaSelection.value = route.module
+    const request: FormulaLaunchRequest = { ...route, expression, id: Date.now(), automatic: true }
+    requestAnimationFrame(() => window.dispatchEvent(new CustomEvent('learning-os-open-math-lab', { detail: request })))
   } catch {
     ElMessage.error('Unable to read this formula.')
   }
-}
-
-function launchFormula() {
-  const formula = formulaChooser.value
-  if (!formula) return
-  const request: FormulaLaunchRequest = {
-    ...formula,
-    module: formulaSelection.value,
-    id: Date.now(),
-    automatic: formulaSelection.value === formula.module,
-  }
-  formulaChooser.value = null
-  if (fullscreen.value) exitFullscreen()
-  requestAnimationFrame(() => window.dispatchEvent(new CustomEvent('learning-os-open-math-lab', { detail: request })))
 }
 
 function setMathStyle(event: Event) {
@@ -233,7 +208,6 @@ onBeforeUnmount(() => {
           <div class="reading-portal-identity"><i /><div><span>LEARNING OS / READER</span><strong>Immersive document environment</strong></div></div>
           <div class="reading-portal-actions">
             <label class="markdown-math-style"><span>FORMULA</span><select :value="mathStyle" aria-label="Formula rendering style" @change="setMathStyle"><option v-for="style in mathStyles" :key="style.id" :value="style.id">{{ style.label }}</option></select></label>
-            <button type="button" class="reading-lab-button" @click="openMathLab">OPEN MATH LAB</button>
             <button type="button" class="reading-exit-button" aria-label="Exit immersive reader" @click="exitFullscreen"><el-icon><Close /></el-icon><span>EXIT</span></button>
           </div>
         </header>
@@ -247,11 +221,6 @@ onBeforeUnmount(() => {
         </main>
         <footer class="reading-portal-footer"><span>LOCAL RENDER · SANITIZED HTML · KATEX</span><b>SCROLL DOCUMENT</b></footer>
       </div>
-      <FormulaLaunchPanel v-if="formulaChooser" :expression="formulaChooser.expression" :detected="formulaChooser.module" :confidence="formulaChooser.confidence" :selected="formulaSelection" @update:selected="formulaSelection = $event" @close="formulaChooser = null" @open="launchFormula" />
     </dialog>
-  </Teleport>
-
-  <Teleport to="body">
-    <FormulaLaunchPanel v-if="formulaChooser && !fullscreen" :expression="formulaChooser.expression" :detected="formulaChooser.module" :confidence="formulaChooser.confidence" :selected="formulaSelection" @update:selected="formulaSelection = $event" @close="formulaChooser = null" @open="launchFormula" />
   </Teleport>
 </template>

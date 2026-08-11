@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, defineAsyncComponent, onBeforeUnmount, onMounted, ref } from 'vue'
+import { computed, defineAsyncComponent, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { ElMessage } from 'element-plus'
-import { Clock, Connection, DataAnalysis, Guide, List, Search as SearchIcon, Setting } from '@element-plus/icons-vue'
+import { Clock, DataAnalysis, Guide, List, Search as SearchIcon, Setting } from '@element-plus/icons-vue'
 import ActiveSession from './components/ActiveSession.vue'
 import GlobalSearch from './components/GlobalSearch.vue'
 import HeatmapGrid from './components/HeatmapGrid.vue'
@@ -16,17 +16,19 @@ const IssuesView = defineAsyncComponent(() => import('./views/IssuesView.vue'))
 const MathLabView = defineAsyncComponent(() => import('./views/MathLabView.vue'))
 const SettingsView = defineAsyncComponent(() => import('./views/SettingsView.vue'))
 
-type PageName = 'today' | 'trends' | 'history' | 'issues' | 'mathlab' | 'settings'
+type PageName = 'today' | 'trends' | 'history' | 'issues' | 'settings'
 const page = ref<PageName>('today')
 const overview = ref<Overview | null>(null)
 const loading = ref(true)
 const username = ref('')
 const globalSearch = ref<InstanceType<typeof GlobalSearch> | null>(null)
 const mathLabLaunch = ref<FormulaLaunchRequest | null>(null)
+const mathLabOpen = ref(false)
+const mathLabDialog = ref<HTMLDialogElement | null>(null)
+let mathLabReturnTarget: HTMLElement | null = null
 const nav = [
   { id: 'today', label: 'Today', icon: Clock }, { id: 'trends', label: 'Trends', icon: DataAnalysis },
   { id: 'history', label: 'Sessions', icon: List }, { id: 'issues', label: 'Issues', icon: Guide },
-  { id: 'mathlab', label: 'Math Lab', icon: Connection },
   { id: 'settings', label: 'Settings', icon: Setting },
 ] as const
 const subjectLabels: Record<string, string> = { math: 'Mathematics', english: 'English', major: 'Major', training: 'Training' }
@@ -53,12 +55,34 @@ async function load() {
   } catch (error) { ElMessage.error((error as Error).message) } finally { loading.value = false }
 }
 async function logout() { await post('/api/auth/logout/'); location.assign('/accounts/login/') }
-function openMathLab(event: Event) {
-  mathLabLaunch.value = (event as CustomEvent<FormulaLaunchRequest>).detail || null
-  page.value = 'mathlab'
+async function openMathLab(event: Event) {
+  const request = (event as CustomEvent<FormulaLaunchRequest>).detail
+  if (!request) return
+  mathLabReturnTarget = document.activeElement instanceof HTMLElement ? document.activeElement : null
+  mathLabLaunch.value = request
+  mathLabOpen.value = true
+  await nextTick()
+  const dialog = mathLabDialog.value
+  if (dialog && !dialog.open) {
+    try { dialog.showModal() } catch { dialog.setAttribute('open', '') }
+  }
+}
+
+function closeMathLab() {
+  const dialog = mathLabDialog.value
+  if (dialog?.open) dialog.close()
+  else onMathLabDialogClose()
+}
+
+function onMathLabDialogClose() {
+  mathLabOpen.value = false
+  mathLabLaunch.value = null
+  const target = mathLabReturnTarget
+  mathLabReturnTarget = null
+  requestAnimationFrame(() => target?.focus({ preventScroll: true }))
 }
 onMounted(() => { window.addEventListener('learning-os-open-math-lab', openMathLab); void load() })
-onBeforeUnmount(() => window.removeEventListener('learning-os-open-math-lab', openMathLab))
+onBeforeUnmount(() => { window.removeEventListener('learning-os-open-math-lab', openMathLab); if (mathLabDialog.value?.open) mathLabDialog.value.close() })
 </script>
 
 <template>
@@ -99,8 +123,15 @@ onBeforeUnmount(() => window.removeEventListener('learning-os-open-math-lab', op
       <TrendsView v-else-if="page === 'trends'" :overview="overview" />
       <HistoryView v-else-if="page === 'history'" />
       <IssuesView v-else-if="page === 'issues'" />
-      <MathLabView v-else-if="page === 'mathlab'" :launch-request="mathLabLaunch" />
       <SettingsView v-else @changed="load" />
     </main>
   </div>
+
+  <Teleport to="body">
+    <dialog v-if="mathLabOpen" ref="mathLabDialog" class="math-lab-window" aria-label="Formula visualization window" @cancel.prevent="closeMathLab" @close="onMathLabDialogClose">
+      <div class="math-lab-window-frame">
+        <Suspense><MathLabView :launch-request="mathLabLaunch" @close="closeMathLab" /><template #fallback><div class="math-window-loader">OPENING VISUALIZATION…</div></template></Suspense>
+      </div>
+    </dialog>
+  </Teleport>
 </template>

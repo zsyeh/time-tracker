@@ -1,6 +1,6 @@
 # Math Lab
 
-Math Lab 是 Learning OS 内的按需数学可视化工作区。它不是常驻监控面板：进入应用、查看热力图或打开 Markdown 时都不会初始化数学渲染器。用户从侧栏进入 `Math Lab`，或在沉浸式 Markdown 阅读器中点击 `OPEN MATH LAB` 后，才加载工作区外壳；具体模块和重型引擎在再次选择模块后加载。
+Math Lab 是 Learning OS 内由公式直接调用的按需数学可视化窗口。它不再提供侧栏入口，也不是常驻监控面板：进入应用、查看热力图或打开 Markdown 时都不会初始化数学渲染器。只有点击公式旁的 `↗` 后才加载窗口外壳、自动分类结果以及对应的重型引擎。
 
 ## 架构
 
@@ -36,9 +36,11 @@ MathBox 使用 Three 0.139.2，但被放进同源 iframe 渲染舱；主窗口�
 
 所有动画共用 `Timeline` 控制器，支持播放、暂停、重置、拖动、0.25–2 倍速度、反向和循环。页面隐藏时停止 RAF；恢复时重置时间基准，避免一次累计巨大的 `dt`。开启系统 `prefers-reduced-motion` 时不自动播放，仍可手动拖动时间轴。
 
-Math Lab 可以从 Markdown 原生 `<dialog>` 顶层阅读环境进入。阅读正文的 `.reading-portal-scroll` 是唯一纵向滚动容器，背景在 modal 打开时处于 inert 状态；滚轮、指针和触摸事件还会在 portal 边界停止传播。退出键始终保留在固定头部。
+公式窗口使用第二个原生 `<dialog>` 压入顶层栈。调用它的 Markdown 阅读器不会关闭或卸载，`.reading-portal-scroll` 的位置也不会重置；关闭公式窗口后，焦点会返回原公式入口。窗口自己的纵向滚动容器处理滚轮和触摸事件，固定头部始终保留 `RETURN TO DOCUMENT`。
 
-每个 KaTeX 行内或块级公式都会获得一个轻量 `↗` 入口。`formulaRouter` 只使用字符串特征判断 Linear、Complex、Fourier、Laplace/Integral 或 Surface，不加载数学 vendor。路由面板显示自动判断和置信度，用户可以覆盖分类；确认后才创建 Math Lab 模块。数字矩阵、常见复函数、信号预设和三维公式会尽可能转换为模块初始状态，原公式始终显示在工作区导入栏中。
+每个 KaTeX 行内或块级公式都会获得一个轻量 `↗` 入口。`formulaRouter` 只使用字符串特征判断 Linear、Complex、Fourier、Laplace/Integral 或 Surface，不加载数学 vendor；点击后直接创建自动判断的模块，用户可以在窗口头部覆盖分类。数字矩阵、常见复函数、信号预设和三维公式会尽可能转换为模块初始状态，原公式始终显示在导入栏中。
+
+Surface 路径会在 math.js 加载前规范化常见 TeX，并提取除 `x`、`y`、常量与安全函数之外的符号。最多 10 个额外符号会获得安全默认值和独立滑条；拖动时使用 90 ms 防抖重新采样。参数和值只进入受 AST 白名单约束的 scope，不拼接或执行 JavaScript。
 
 ## 质量档位与回退
 

@@ -3,7 +3,7 @@ import type { ComplexValue } from './numerics'
 import { loadVendorScript } from './vendorAssets'
 
 const allowedNodeTypes = new Set(['ConstantNode', 'SymbolNode', 'OperatorNode', 'ParenthesisNode', 'FunctionNode'])
-const allowedFunctions = new Set(['sin', 'cos', 'tan', 'asin', 'acos', 'atan', 'sinh', 'cosh', 'tanh', 'exp', 'log', 'sqrt', 'abs', 'arg', 're', 'im', 'conj'])
+const allowedFunctions = new Set(['sin', 'cos', 'tan', 'sec', 'csc', 'cot', 'asin', 'acos', 'atan', 'sinh', 'cosh', 'tanh', 'exp', 'log', 'sqrt', 'abs', 'floor', 'ceil', 'min', 'max', 'sign', 'arg', 're', 'im', 'conj'])
 const allowedSymbols = new Set(['x', 'y', 'z', 't', 's', 'pi', 'e', 'i', ...allowedFunctions])
 const allowedOperators = new Set(['add', 'subtract', 'multiply', 'divide', 'pow', 'unaryMinus', 'unaryPlus'])
 
@@ -35,7 +35,7 @@ export class MathEngine {
   }
 
   async compile(source: string, extraSymbols: string[] = []): Promise<CompiledExpression> {
-    if (!source.trim() || source.length > 180) throw new Error('Expression must contain 1–180 characters.')
+    if (!source.trim() || source.length > 500) throw new Error('Expression must contain 1–500 characters.')
     const math = await this.load()
     const node = math.parse(source)
     this.validateNode(node, new Set([...allowedSymbols, ...extraSymbols]))
@@ -51,14 +51,15 @@ export class MathEngine {
     throw new Error('Expression did not return a scalar complex value.')
   }
 
-  async sampleSurface(source: string, resolution = 65, range = 5): Promise<SampledSurface> {
-    const compiled = await this.compile(source, ['x', 'y'])
+  async sampleSurface(source: string, resolution = 65, range = 5, parameters: Record<string, number> = {}): Promise<SampledSurface> {
+    const parameterNames = Object.keys(parameters).filter((name) => /^[A-Za-z_][A-Za-z0-9_]*$/.test(name)).slice(0, 10)
+    const compiled = await this.compile(source, ['x', 'y', ...parameterNames])
     const values: number[] = []
     for (let row = 0; row < resolution; row += 1) {
       const y = -range + row / (resolution - 1) * range * 2
       for (let column = 0; column < resolution; column += 1) {
         const x = -range + column / (resolution - 1) * range * 2
-        const result = compiled.evaluate({ x, y })
+        const result = compiled.evaluate({ ...parameters, x, y })
         if (typeof result !== 'number' || !Number.isFinite(result)) throw new Error('Expression must remain finite and real across the visible domain.')
         values.push(Math.max(-100, Math.min(100, result)))
       }
