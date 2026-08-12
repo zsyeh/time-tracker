@@ -16,6 +16,7 @@ from .forms import AdminInviteCodeForm, LoginRateLimitResetForm, RegistrationPol
 from .models import (
     DailyStudyStat, GitHubNoteSync, InviteCode, InviteRedemption, KnowledgePoint,
     LaunchToken, LearningIssue, SessionReview, SiteConfiguration, TimeLog,
+    SessionShare, UserDataEncryptionPreference,
 )
 
 
@@ -60,7 +61,10 @@ def clear_login_rate_limits(network_address):
 
 @admin.register(TimeLog)
 class TimeLogAdmin(admin.ModelAdmin):
-    list_display = ('user', 'category', 'status', 'start_time', 'end_time', 'duration_minutes')
+    list_display = (
+        'user', 'category', 'status', 'start_time', 'end_time',
+        'duration_minutes', 'disturbance_count',
+    )
     list_filter = ('user', 'category', 'status', 'start_time')
     search_fields = ('title', 'details', 'chapter', 'topic')
 
@@ -84,8 +88,14 @@ admin.site.register(KnowledgePoint)
 
 @admin.register(LaunchToken)
 class LaunchTokenAdmin(admin.ModelAdmin):
-    list_display = ('name', 'user', 'category', 'is_active', 'expires_at', 'usage_count')
-    readonly_fields = ('token_digest', 'created_at', 'last_used_at', 'usage_count')
+    list_display = (
+        'name', 'user', 'category', 'is_active', 'is_paused',
+        'available_from', 'available_until', 'expires_at', 'usage_count',
+    )
+    readonly_fields = (
+        'token_digest', 'disturbance_token_digest', 'created_at',
+        'last_used_at', 'usage_count',
+    )
 
 
 @admin.register(InviteCode)
@@ -285,3 +295,27 @@ class SessionReviewAdmin(admin.ModelAdmin):
     list_display = ('session', 'user', 'reviewed_at')
     list_filter = ('reviewed_at',)
     readonly_fields = ('session', 'user', 'reviewed_at')
+
+
+@admin.register(SessionShare)
+class SessionShareAdmin(admin.ModelAdmin):
+    list_display = ('session', 'is_active', 'created_at', 'expires_at', 'revoked_at')
+    list_filter = ('is_active', 'created_at', 'expires_at')
+    readonly_fields = ('session', 'token_digest', 'created_at', 'expires_at', 'revoked_at', 'is_active')
+
+    def has_add_permission(self, request):
+        return False
+
+
+@admin.register(UserDataEncryptionPreference)
+class UserDataEncryptionPreferenceAdmin(admin.ModelAdmin):
+    list_display = ('user', 'enabled', 'updated_at')
+    list_filter = ('enabled', 'updated_at')
+    search_fields = ('user__username', 'user__email')
+    readonly_fields = ('user', 'enabled', 'updated_at')
+
+    def has_add_permission(self, request):
+        return False
+
+    def has_delete_permission(self, request, obj=None):
+        return False

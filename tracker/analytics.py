@@ -196,4 +196,9 @@ def serialize_session(session, now=None):
         'breakthrough': session.breakthrough,
         'problems': session.problems,
         'next_action': session.next_action,
+        'disturbance_count': session.disturbance_count,
+        'last_disturbance_at': (
+            _local(session.last_disturbance_at).isoformat()
+            if session.last_disturbance_at else None
+        ),
     }

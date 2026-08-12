@@ -9,10 +9,11 @@ views and ECharts. No third-party font/CDN request is required.
 
 Use `deploy/nginx/learning-os.conf.example` as the Nginx baseline and the systemd
 unit in `deploy/systemd/`. Gunicorn access logging is disabled because raw Launch
-Tokens occur in request paths; Nginx logs ordinary routes but suppresses both
-browser and IoT launch paths. Replace the
+Tokens occur in request paths; Nginx logs ordinary routes but suppresses browser,
+IoT launch, and disturbance paths. Replace the
 domain/certificate paths, validate with `nginx -t`, and reload. Access logging is
-disabled for `/launch/` because its path contains a capability token. Prefer
+disabled for `/launch/`, `/api/launch/`, and `/api/disturbance/` because their
+paths contain capability tokens. Prefer
 HTTP/2 and Certbot/another automated certificate issuer.
 
 ## Native systemd deployment
@@ -73,6 +74,13 @@ address instead of claiming that delivery succeeded.
 Validate row count, total duration, owner assignment, HTTPS login, a session start
 and finish, export download, and Passkey enrollment before discarding rollback
 artifacts. Gunicorn, not `runserver`, is required in production.
+
+The first user who enables at-rest encryption causes Django to create a mode-600
+server key at `DATA_ENCRYPTION_KEY_PATH`. It lives outside PostgreSQL; Docker's
+default path is in the existing persistent data volume. Back it up separately and
+restore it before starting Django against encrypted records. Multi-host installs
+should provision the same 32-byte URL-safe base64 `DATA_ENCRYPTION_MASTER_KEY`
+through their secret manager instead of relying on a node-local key file.
 
 ## Docker Compose
 

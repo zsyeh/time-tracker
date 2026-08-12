@@ -1,23 +1,20 @@
 <script setup lang="ts">
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Search } from '@element-plus/icons-vue'
-import { api, post } from '../lib/api'
-import type { GlobalSearchResponse, GlobalSearchResult, Issue, ReviewTrend as ReviewTrendType, StudySession } from '../types'
+import { api } from '../lib/api'
+import type { GlobalSearchResponse, GlobalSearchResult, Issue, StudySession } from '../types'
 import MarkdownPreview from './MarkdownPreview.vue'
-import ReviewTrend from './ReviewTrend.vue'
 
-const emit = defineEmits<{ navigate: [page: 'issues'] }>()
+const router = useRouter()
 const searchOpen = ref(false)
 const detailOpen = ref(false)
 const query = ref('')
 const results = ref<GlobalSearchResult[]>([])
 const loading = ref(false)
 const detailLoading = ref(false)
-const selectedSession = ref<StudySession | null>(null)
 const selectedIssue = ref<Issue | null>(null)
-const selectedKind = ref<'session' | 'issue' | null>(null)
-const reviewTrend = ref<ReviewTrendType | null>(null)
 const inputRef = ref<{ focus: () => void } | null>(null)
 const cache = new Map<string, GlobalSearchResult[]>()
 const subjects = { math: 'Mathematics', english: 'English', major: 'Major', training: 'Training' }
@@ -77,24 +74,22 @@ function textSegments(text: string) {
 }
 
 async function openResult(result: GlobalSearchResult) {
-  selectedKind.value = result.kind
-  selectedSession.value = null
+  if (result.kind === 'session') {
+    searchOpen.value = false
+    if (result.session_uuid) {
+      await router.push(`/sessions/${result.session_uuid}`)
+      return
+    }
+    const session = await api<StudySession>(`/api/sessions/${result.record_id}/`)
+    await router.push(`/sessions/${session.uuid}`)
+    return
+  }
   selectedIssue.value = null
-  reviewTrend.value = null
   searchOpen.value = false
   detailOpen.value = true
   detailLoading.value = true
   try {
-    if (result.kind === 'session') {
-      const [session, trend] = await Promise.all([
-        api<StudySession>(`/api/sessions/${result.record_id}/`),
-        post<ReviewTrendType>(`/api/sessions/${result.record_id}/reviews/`),
-      ])
-      selectedSession.value = session
-      reviewTrend.value = trend
-    } else {
-      selectedIssue.value = await api<Issue>(`/api/issues/${result.record_id}/`)
-    }
+    selectedIssue.value = await api<Issue>(`/api/issues/${result.record_id}/`)
   } catch (error) {
     ElMessage.error((error as Error).message)
   } finally {
@@ -104,7 +99,7 @@ async function openResult(result: GlobalSearchResult) {
 
 function showIssues() {
   detailOpen.value = false
-  emit('navigate', 'issues')
+  void router.push('/issues')
 }
 
 function keyboard(event: KeyboardEvent) {
@@ -150,15 +145,10 @@ defineExpose({ open })
 
   <el-drawer v-model="detailOpen" append-to-body size="min(720px, 94vw)" class="global-detail-drawer">
     <template #header>
-      <div class="dialog-title"><div><span class="eyebrow">GLOBAL SEARCH / {{ selectedKind?.toUpperCase() }}</span><h2>{{ selectedSession?.title || selectedIssue?.topic || 'Search result' }}</h2></div></div>
+      <div class="dialog-title"><div><span class="eyebrow">GLOBAL SEARCH / ISSUE</span><h2>{{ selectedIssue?.topic || 'Search result' }}</h2></div></div>
     </template>
     <div v-loading="detailLoading" class="global-result-detail">
-      <template v-if="selectedSession">
-        <div class="detail-meta"><span>{{ selectedSession.subject_label }}</span><time>{{ new Date(selectedSession.start_time).toLocaleString('en-GB') }}</time></div>
-        <ReviewTrend :trend="reviewTrend" :loading="detailLoading" />
-        <MarkdownPreview :key="selectedSession.id" :source="selectedSession.details" default-open allow-fullscreen />
-      </template>
-      <template v-else-if="selectedIssue">
+      <template v-if="selectedIssue">
         <div class="detail-meta"><span>{{ subjects[selectedIssue.subject] }}</span><b>{{ selectedIssue.resolved ? 'RESOLVED' : 'OPEN' }}</b></div>
         <section class="issue-search-section"><span>DESCRIPTION</span><MarkdownPreview :key="`description-${selectedIssue.id}`" :source="selectedIssue.description" default-open allow-fullscreen /></section>
         <section v-if="selectedIssue.solution" class="issue-search-section"><span>SOLUTION</span><MarkdownPreview :key="`solution-${selectedIssue.id}`" :source="selectedIssue.solution" default-open allow-fullscreen /></section>

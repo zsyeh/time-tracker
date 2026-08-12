@@ -28,6 +28,19 @@ export async function api<T>(url: string, options: RequestInit = {}): Promise<T>
   return response.json() as Promise<T>
 }
 
+export async function publicApi<T>(url: string): Promise<T> {
+  const response = await fetch(url, {
+    headers: { Accept: 'application/json' },
+    credentials: 'omit',
+  })
+  if (!response.ok) {
+    const error = new Error(response.status === 404 ? 'This shared article is unavailable.' : `Request failed (${response.status})`) as Error & { status?: number }
+    error.status = response.status
+    throw error
+  }
+  return response.json() as Promise<T>
+}
+
 export const post = <T>(url: string, body: unknown = {}) => api<T>(url, {
   method: 'POST',
   body: JSON.stringify(body),

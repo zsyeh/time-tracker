@@ -16,6 +16,34 @@
     <article><b>06</b><span>DATA ISOLATION</span><h2>Accounts remain separate</h2><p>Every user sees only their own sessions and exports. Only the instance superuser synchronizes private `.env` display settings; ordinary users never receive the study-room code or private homepage content.</p></article>
     <article><b>07</b><span>MATH LAB</span><h2>Open mathematics on demand</h2><p>Enter Math Lab from the app sidebar or the immersive reader. Explore linear and complex mappings, Fourier/FFT, Laplace integration, and orbitable 3D surfaces. Renderers stay unloaded until selected and fall back to Canvas when GPU features are unavailable.</p></article>
 </section>
+<section class="shortcut-public-guide" id="shortcuts">
+    <header><span class="public-eyebrow">IOS SHORTCUTS / 快捷指令</span><h2>Unauthenticated start and disturbance automation</h2><p>Each capability uses two different secret URIs: one may only start its assigned subject, while the other may only record a disturbance against the currently running session.</p></header>
+    <div class="shortcut-public-columns">
+        <article>
+            <span>ENGLISH</span>
+            <h3>A. Create the capability</h3>
+            <ol><li>Sign in and open <b>Settings → Start and disturbance URIs</b>.</li><li>Select the subject and validity window. The default window is <b>06:00–22:00 Asia/Shanghai</b>.</li><li>Select <b>Create capability</b>. Save both secret URIs before closing the dialog; the server stores hashes and cannot display the raw values later.</li></ol>
+            <h3>B. Build the Start Study shortcut</h3>
+            <ol><li>Select <b>Copy &amp; Open Shortcuts</b> beside <b>Shortcut Start · POST</b>. iOS opens a new empty shortcut and the URI is already on the clipboard.</li><li>Add the <b>Get Contents of URL</b> action, paste the URI, change Method to <b>POST</b>, and leave Headers and Request Body empty.</li><li>Name it, for example “Start Mathematics”. Run it once to verify the JSON response says <code>started</code> or <code>existing</code>.</li><li>Optionally add it to the Home Screen, Lock Screen, widget, Action Button, NFC, Focus, or another personal automation.</li></ol>
+            <h3>C. Record charger-disconnection disturbances</h3>
+            <ol><li>Copy the separate <b>Disturbance · POST</b> URI.</li><li>In Shortcuts open <b>Automation → + → Charger → Is Disconnected</b>. Choose <b>Run Immediately</b>.</li><li>Add <b>Get Contents of URL</b>, paste the disturbance URI, choose <b>POST</b>, leave the body empty, and save.</li><li>Each trigger increments the current Session disturbance count once. If no Session is running, the request is a no-op. A stale Session over 12 hours is discarded.</li></ol>
+            <h3>D. Pause, schedule, and rotate</h3>
+            <p><b>Pause</b> temporarily disables both URIs without changing either Shortcut. <b>Resume</b> restores them. Configure changes the daily window; equal start/end means all day, and an overnight range such as 22:00–06:00 is supported. Outside the window, a valid URI returns a successful no-op. Generate a new URI if a secret was lost or exposed; the previous URI becomes invalid immediately.</p>
+        </article>
+        <article lang="zh-CN">
+            <span>中文</span>
+            <h3>A. 创建能力链接</h3>
+            <ol><li>登录后打开<b>设置 → Start and disturbance URIs</b>。</li><li>选择科目和每日有效时段；默认使用上海时区 <b>06:00–22:00</b>。</li><li>点击 <b>Create capability</b>。关闭弹窗前保存两个秘密 URI；服务器只保存哈希，之后无法再次显示原始 URI。</li></ol>
+            <h3>B. 创建“开始学习”快捷指令</h3>
+            <ol><li>点击 <b>Shortcut Start · POST</b> 旁边的<b>复制并打开快捷指令</b>。iOS 会打开一个空白快捷指令，URI 已在剪贴板中。</li><li>添加<b>获取 URL 内容</b>动作，粘贴 URI，把方法改为 <b>POST</b>；请求头与请求正文均留空。</li><li>命名，例如“开始数学”。先运行一次；JSON 返回 <code>started</code> 或 <code>existing</code> 即为正常。</li><li>随后可以添加到主屏幕、锁屏、小组件、操作按钮、NFC、专注模式或其他个人自动化。</li></ol>
+            <h3>C. 记录断开充电器造成的扰动</h3>
+            <ol><li>复制单独的 <b>Disturbance · POST</b> URI。</li><li>在快捷指令中打开<b>自动化 → + → 充电器 → 已断开连接</b>，选择<b>立即运行</b>。</li><li>添加<b>获取 URL 内容</b>，粘贴扰动 URI，方法选择 <b>POST</b>，正文留空并保存。</li><li>每次触发只给当前运行中的 Session 增加一次扰动；没有运行任务时为空操作。超过 12 小时的遗留任务会被直接丢弃。</li></ol>
+            <h3>D. 暂停、时段与换新</h3>
+            <p><b>Pause</b> 会临时关闭两个 URI，但不改变快捷指令里的地址；<b>Resume</b> 后恢复。Configure 可修改每天的有效时段；开始和结束相同表示全天，22:00–06:00 这样的跨夜时段也支持。时段外请求会成功返回但不执行任何写入。URI 泄露或丢失时生成新 URI，旧 URI 会立即失效。</p>
+        </article>
+    </div>
+    <aside><b>Security / 安全：</b> The URI itself is the credential. Do not publish it, include it in screenshots, or send it through untrusted analytics. Use HTTPS and keep access logging disabled for these paths. URI 本身就是凭据，请勿公开、截图传播或交给不可信分析服务；务必使用 HTTPS，并关闭这些路径的访问日志。</aside>
+</section>
 <section class="guide-policy-strip"><article><span>INVITE SHARING</span><h2>One daily invite for every member</h2><p>Ordinary users can generate one single-use invite per Shanghai calendar day from Settings. After redemption, the issuer can see the registered username. Administrators retain configurable 1–100-use invitations.</p></article><article><span>ACCESS RECOVERY</span><h2>Twenty failed attempts</h2><p>The twenty-first failed password attempt within fifteen minutes temporarily limits that network. Administrators can inspect and reset login status from Django Admin. Enrolled Passkeys remain the recommended sign-in method.</p></article><article><span>PORTABILITY</span><h2>Export before you need it</h2><p>Availability and zero data loss are not guaranteed. Download complete CSV, JSON, or Markdown records from Settings. <a href="{% url 'legal' %}">Read the bilingual disclaimer.</a></p></article></section>
 <section class="guide-contact"><div><span>SUPPORT</span><h2>Registration or access issue?</h2><p>Contact the administrator directly. Messages submitted through this site are sent by email and are not stored in the tracker database.</p></div><div><a href="mailto:{{ contact_email }}">{{ contact_email }}</a><a class="primary-action" href="{% url 'contact' %}">OPEN CONTACT FORM</a></div></section>
 {% endblock %}

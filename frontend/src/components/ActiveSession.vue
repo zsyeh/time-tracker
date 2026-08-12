@@ -82,7 +82,7 @@ async function abandon() {
 <template>
   <section class="focus-panel" :class="{ active: session }">
     <template v-if="session">
-      <div><span class="pulse-dot" /><span class="eyebrow">SESSION IN PROGRESS</span><h2>{{ session.subject_label }}</h2><p>{{ session.topic || session.chapter || 'Start time recorded.' }}</p></div>
+      <div><span class="pulse-dot" /><span class="eyebrow">SESSION IN PROGRESS</span><h2>{{ session.subject_label }}</h2><p>{{ session.topic || session.chapter || 'Start time recorded.' }}<span v-if="session.disturbance_count" class="active-disturbance-count"> · {{ session.disturbance_count }} disturbance{{ session.disturbance_count === 1 ? '' : 's' }}</span></p></div>
       <div class="hidden-timer" aria-label="Active duration hidden"><span>TIMER HIDDEN</span><small>Visible after completion</small></div>
       <div class="active-actions"><el-button plain @click="abandon">Discard</el-button><el-button type="primary" @click="prepareFinish">Finish & review</el-button></div>
     </template>

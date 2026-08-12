@@ -65,8 +65,11 @@ Production requirements:
 
 ## Launch tokens
 
-A launch token is not a login. It stores only a SHA-256 digest of at least 32
-random bytes and can only start its bound subject. It cannot read dashboard data,
-notes, exports, account details, Passkeys, or other tokens. Revocation/expiry is
-checked inside a database transaction and takes effect immediately. Raw tokens
-are shown only on create/regenerate and should be treated like physical keys.
+A launch capability is not a login. It uses separate 32-byte random secrets for
+starting its bound subject and recording a disturbance against the current
+Session; only SHA-256 digests are stored. Neither URI can read dashboard data,
+notes, exports, account details, Passkeys, other tokens, or other users' data.
+Pause, daily availability, revocation, expiry, and start-use capacity are checked
+inside database transactions. Raw values are shown only on create/regenerate and
+should be treated like physical keys. The separate disturbance secret cannot be
+reused as a start credential.

@@ -48,7 +48,9 @@ curl -fsSL https://app.ehzsy.site/install/docker-compose.sh | sh -s -- study.exa
 - 只有超级管理员可从设置页修改主页内容、自习室口令、记录起始日期、考试日期和倒计时名称并与本地 `.env` 双向同步；普通用户使用隔离的安全默认值，不会收到自习室口令或私有主页内容。
 - 注册允许短密码或纯数字密码，但界面会明确推荐首次登录后绑定 Passkey；同一网络 15 分钟内允许 20 次失败登录，管理员可从 Django Admin 查看并重置临时锁定。
 - 可撤销、可过期、只允许启动指定科目的 Launch Token，支持浏览器、NFC、快捷指令和 IoT POST。
+- Launch capability 同时生成相互隔离的免登录 Start URI 与 Disturbance URI，可保留原 URI 临时暂停/恢复，并设置每日有效时段（默认上海时区 06:00–22:00）。iPhone 可用“获取 URL 内容”POST 启动学习；“充电器已断开连接”自动化可累计当前 Session 的扰动次数。
 - CSV、JSON、Markdown 完整导出；不嵌入任何 AI API。
+- 每个用户可在 Settings 中选择服务端管理的 AES-256-GCM 静态加密。开启后学习标题、Markdown、复盘、主观评分和 Issue 文本在数据库及数据库备份中只保存密文；趋势所需的最小运行元数据保持可索引。该功能不增加密码、不影响导出、GitHub 同步或明文公开分享，但不是端到端加密，服务器持钥者仍可解密。
 
 ## 本地开发
 
@@ -117,7 +119,14 @@ cd frontend && npm run build
 
 ## 常用路由
 
-- `/`：认证后的 Vue 应用
+- `/`：跳转到 `/today`
+- `/today`：Today
+- `/trends`：趋势
+- `/sessions`：Session History
+- `/sessions/<uuid>`：需要登录且按 owner 隔离的 Session 永久文章 URI
+- `/issues`：Issues
+- `/settings`：Settings
+- `/share/<token>`：无需登录的独立只读分享文章；token 可撤销、可过期且数据库只保存 hash
 - `/accounts/login/`：密码或 Passkey 登录
 - `/accounts/signup/`：密码注册（默认需要有效邀请码）
 - `/accounts/signup/passkey/`：Passkey-only 注册（默认同样需要邀请码）
@@ -128,8 +137,12 @@ cd frontend && npm run build
 - `/start/<subject>`：登录用户快捷启动
 - `/launch/<token>`：受限启动令牌
 - `/api/launch/<token>/start`：IoT 启动
+- `/api/disturbance/<token>/record`：免登录、独立密钥、仅记录当前 Session 扰动的 POST URI
 - `/api/export/{csv,json,markdown}/`：完整导出
 - `/api/sessions/<id>/reviews/`：记录回顾并读取该会话的回顾趋势
+- `/api/sessions/<uuid>/`：按需读取或更新本人 Session 正文
+- `/api/sessions/<uuid>/share/`：创建、查看状态或撤销公开分享
+- `/api/public/shares/<token>/`：公开只读、最小字段 Session 文章
 - `/api/invite-codes/`：普通用户每日单次邀请码与管理员高级邀请码管理
 - `/admin/`：管理员恢复入口
 - `/admin/tracker/invitecode/dashboard/`：管理员邀请码容量与访客记录

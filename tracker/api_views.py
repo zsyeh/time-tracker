@@ -10,7 +10,7 @@ from django.core.cache import cache
 from django.db import IntegrityError, transaction
 from django.db.models import Count, Q
 from django.db.models.functions import TruncDate
-from django.http import HttpResponse
+from django.http import Http404, HttpResponse
 from django.middleware.csrf import get_token
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -23,8 +23,17 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .analytics import build_dashboard_overview
+from .data_encryption import (
+    DataEncryptionError,
+    encryption_status,
+    set_user_encryption,
+    user_encryption_enabled,
+)
 from .learning_log import dispatch_github_note_sync
-from .models import InviteCode, KnowledgePoint, LaunchToken, LearningIssue, SessionReview, SiteConfiguration, TimeLog
+from .models import (
+    InviteCode, KnowledgePoint, LaunchToken, LearningIssue, SessionReview,
+    SessionShare, SiteConfiguration, TimeLog,
+)
 from .runtime_settings import runtime_config, save_runtime_config
 from .serializers import (
     FinishSessionSerializer,
@@ -32,12 +41,16 @@ from .serializers import (
     InviteCodeSerializer,
     KnowledgePointSerializer,
     LaunchTokenCreateSerializer,
+    LaunchTokenConfigureSerializer,
     LaunchTokenSerializer,
     LearningIssueSerializer,
+    PublicSharedSessionSerializer,
     RuntimeSettingsSerializer,
+    SessionShareCreateSerializer,
     StartSessionSerializer,
     StudySessionSerializer,
     StudySessionSummarySerializer,
+    UserDataEncryptionSerializer,
 )
 from .services import (
     MAXIMUM_SESSION_HOURS,
@@ -73,15 +86,27 @@ def _filtered_sessions(request):
         queryset = queryset.filter(start_time__date__lte=date_to)
     search = request.query_params.get('search', '').strip()
     if search:
-        queryset = queryset.filter(
-            Q(title__icontains=search)
-            | Q(details__icontains=search)
-            | Q(chapter__icontains=search)
-            | Q(topic__icontains=search)
-            | Q(breakthrough__icontains=search)
-            | Q(problems__icontains=search)
-            | Q(next_action__icontains=search)
-        )
+        if user_encryption_enabled(request.user.pk):
+            needle = search.casefold()
+            matched_ids = [
+                session.pk
+                for session in queryset.iterator(chunk_size=200)
+                if any(needle in str(getattr(session, field) or '').casefold() for field in (
+                    'title', 'details', 'chapter', 'topic', 'breakthrough',
+                    'problems', 'next_action',
+                ))
+            ]
+            queryset = queryset.filter(pk__in=matched_ids)
+        else:
+            queryset = queryset.filter(
+                Q(title__icontains=search)
+                | Q(details__icontains=search)
+                | Q(chapter__icontains=search)
+                | Q(topic__icontains=search)
+                | Q(breakthrough__icontains=search)
+                | Q(problems__icontains=search)
+                | Q(next_action__icontains=search)
+            )
     return queryset.order_by('-start_time')
 
 
@@ -109,12 +134,22 @@ def auth_logout(request):
 class SessionListCreateView(APIView):
     def get(self, request):
         paginator = PageNumberPagination()
-        page = paginator.paginate_queryset(_filtered_sessions(request), request)
+        queryset = _filtered_sessions(request)
+        # Long Markdown belongs to the resource detail response. `full=1`
+        # remains available for compatibility with clients that explicitly need
+        # the historical list payload.
         serializer_class = (
-            StudySessionSummarySerializer
-            if request.query_params.get('compact') == '1'
-            else StudySessionSerializer
+            StudySessionSerializer
+            if request.query_params.get('full') == '1'
+            else StudySessionSummarySerializer
         )
+        if serializer_class is StudySessionSummarySerializer:
+            queryset = queryset.defer(
+                'encrypted_content', 'details', 'breakthrough', 'problems',
+                'next_action', 'learning_mode', 'difficulty', 'energy_level',
+                'focus_level', 'confidence_before', 'confidence_after',
+            )
+        page = paginator.paginate_queryset(queryset, request)
         return paginator.get_paginated_response(serializer_class(page, many=True).data)
 
     def post(self, request):
@@ -143,6 +178,11 @@ class SessionDetailView(generics.RetrieveUpdateAPIView):
 
     def get_queryset(self):
         return TimeLog.objects.filter(user=self.request.user)
+
+
+class SessionUuidDetailView(SessionDetailView):
+    lookup_field = 'uuid'
+    lookup_url_kwarg = 'session_uuid'
 
 
 class SessionFinishView(APIView):
@@ -198,6 +238,7 @@ class SessionReviewView(APIView):
         )
         return {
             'session_id': session.pk,
+            'session_uuid': str(session.uuid),
             'total': session.review_count,
             'last_reviewed_at': session.last_reviewed_at,
             'review_days': len(daily),
@@ -209,14 +250,19 @@ class SessionReviewView(APIView):
             ],
         }
 
-    def get(self, request, pk):
-        session = get_object_or_404(TimeLog, pk=pk, user=request.user)
+    def _session(self, request, *, pk=None, session_uuid=None, lock=False):
+        queryset = TimeLog.objects.select_for_update() if lock else TimeLog.objects.all()
+        lookup = {'uuid': session_uuid} if session_uuid is not None else {'pk': pk}
+        return get_object_or_404(queryset, user=request.user, **lookup)
+
+    def get(self, request, pk=None, session_uuid=None):
+        session = self._session(request, pk=pk, session_uuid=session_uuid)
         return Response(self._payload(session))
 
-    def post(self, request, pk):
+    def post(self, request, pk=None, session_uuid=None):
         with transaction.atomic():
-            session = get_object_or_404(
-                TimeLog.objects.select_for_update(), pk=pk, user=request.user,
+            session = self._session(
+                request, pk=pk, session_uuid=session_uuid, lock=True,
             )
             if session.status != 'completed':
                 return Response(
@@ -235,6 +281,111 @@ class SessionReviewView(APIView):
                 session.last_reviewed_at = now
                 session.save(update_fields=('review_count', 'last_reviewed_at', 'updated_at'))
         return Response(self._payload(session, created=created))
+
+
+def _share_payload(share):
+    if share is None:
+        return {
+            'status': 'private',
+            'is_shared': False,
+            'is_active': False,
+            'created_at': None,
+            'expires_at': None,
+            'revoked_at': None,
+        }
+    if share.usable:
+        share_status = 'active'
+    elif share.revoked_at is not None or not share.is_active:
+        share_status = 'revoked'
+    else:
+        share_status = 'expired'
+    return {
+        'status': share_status,
+        'is_shared': True,
+        'is_active': share.usable,
+        'created_at': share.created_at,
+        'expires_at': share.expires_at,
+        'revoked_at': share.revoked_at,
+    }
+
+
+class SessionShareView(APIView):
+    """Manage one active, hashed public capability for an owned session."""
+
+    def _session(self, request, *, lock=False, session_uuid=None):
+        queryset = TimeLog.objects.select_for_update() if lock else TimeLog.objects.all()
+        return get_object_or_404(queryset, user=request.user, uuid=session_uuid)
+
+    def get(self, request, session_uuid):
+        session = self._session(request, session_uuid=session_uuid)
+        share = session.shares.order_by('-created_at').first()
+        return Response(_share_payload(share))
+
+    def post(self, request, session_uuid):
+        serializer = SessionShareCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        with transaction.atomic():
+            session = self._session(request, lock=True, session_uuid=session_uuid)
+            if session.status != 'completed':
+                return Response(
+                    {'detail': 'Only completed sessions can be shared.'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            existing = session.shares.filter(is_active=True).first()
+            if existing and existing.usable:
+                return Response(
+                    {'detail': 'This session already has an active share. Revoke it before creating another.'},
+                    status=status.HTTP_409_CONFLICT,
+                )
+            if existing:
+                existing.revoke()
+            share, raw_token = SessionShare.issue(
+                session=session,
+                expires_at=serializer.validated_data.get('expires_at'),
+            )
+        payload = _share_payload(share)
+        payload['share_url'] = request.build_absolute_uri(f'/share/{raw_token}')
+        payload['warning'] = 'This URL is shown once because only its hash is stored.'
+        return Response(payload, status=status.HTTP_201_CREATED)
+
+    def delete(self, request, session_uuid):
+        with transaction.atomic():
+            session = self._session(request, lock=True, session_uuid=session_uuid)
+            share = session.shares.filter(is_active=True).first()
+            if share is None:
+                return Response(_share_payload(session.shares.order_by('-created_at').first()))
+            share.revoke()
+        return Response(_share_payload(share))
+
+
+class PublicSessionShareView(APIView):
+    """Anonymous, read-only, minimal projection of a valid share capability."""
+
+    authentication_classes = []
+    permission_classes = [permissions.AllowAny]
+
+    def finalize_response(self, request, response, *args, **kwargs):
+        response = super().finalize_response(request, response, *args, **kwargs)
+        # Apply capability protections to success and error responses alike so
+        # an expired/revoked token is never cached by a browser or intermediary.
+        response['Cache-Control'] = 'no-store, max-age=0'
+        response['X-Robots-Tag'] = 'noindex, nofollow, noarchive'
+        response['Referrer-Policy'] = 'no-referrer'
+        return response
+
+    def get(self, request, raw_token):
+        if len(raw_token) > 128:
+            raise Http404
+        share = get_object_or_404(
+            SessionShare.objects.select_related('session'),
+            token_digest=SessionShare.digest(raw_token),
+            is_active=True,
+            revoked_at__isnull=True,
+            session__status='completed',
+        )
+        if not share.usable:
+            raise Http404
+        return Response(PublicSharedSessionSerializer(share.session).data)
 
 
 class DashboardOverviewView(APIView):
@@ -285,6 +436,25 @@ class RuntimeSettingsView(APIView):
                 {'detail': 'The local settings file is not writable.'},
                 status=status.HTTP_503_SERVICE_UNAVAILABLE,
             )
+        return Response(payload)
+
+
+class UserDataEncryptionView(APIView):
+    """Read or change the current user's transparent at-rest storage policy."""
+
+    def get(self, request):
+        return Response(encryption_status(request.user))
+
+    def put(self, request):
+        serializer = UserDataEncryptionSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        try:
+            payload = set_user_encryption(
+                request.user,
+                serializer.validated_data['enabled'],
+            )
+        except DataEncryptionError as exc:
+            return Response({'detail': str(exc)}, status=status.HTTP_503_SERVICE_UNAVAILABLE)
         return Response(payload)
 
 
@@ -391,29 +561,55 @@ class GlobalSearchView(APIView):
             | Q(problems__icontains=query)
             | Q(next_action__icontains=query)
         )
-        sessions = TimeLog.objects.filter(
+        encrypted_search = user_encryption_enabled(request.user.pk)
+        session_queryset = TimeLog.objects.filter(
             user=request.user,
             status='completed',
-        ).filter(session_filter).only(
-            'id', 'category', 'title', 'details', 'chapter', 'topic',
-            'breakthrough', 'problems', 'next_action', 'start_time',
-        ).order_by('-start_time')[:limit]
+        ).order_by('-start_time')
+        if encrypted_search:
+            needle = query.casefold()
+            sessions = [
+                session
+                for session in session_queryset.iterator(chunk_size=200)
+                if any(needle in str(getattr(session, field) or '').casefold() for field in (
+                    'title', 'details', 'chapter', 'topic', 'breakthrough',
+                    'problems', 'next_action',
+                ))
+            ][:limit]
+        else:
+            sessions = session_queryset.filter(session_filter).only(
+                'id', 'uuid', 'user', 'category', 'title', 'details', 'chapter', 'topic',
+                'breakthrough', 'problems', 'next_action', 'start_time',
+                'encrypted_summary', 'encrypted_content',
+            )[:limit]
 
         issue_filter = (
             Q(topic__icontains=query)
             | Q(description__icontains=query)
             | Q(solution__icontains=query)
         )
-        issues = LearningIssue.objects.filter(user=request.user).filter(issue_filter).only(
-            'id', 'category', 'topic', 'issue_type', 'description', 'solution',
-            'resolved', 'updated_at',
-        ).order_by('-updated_at')[:limit]
+        issue_queryset = LearningIssue.objects.filter(user=request.user).order_by('-updated_at')
+        if encrypted_search:
+            needle = query.casefold()
+            issues = [
+                issue
+                for issue in issue_queryset.iterator(chunk_size=200)
+                if any(needle in str(getattr(issue, field) or '').casefold() for field in (
+                    'topic', 'description', 'solution',
+                ))
+            ][:limit]
+        else:
+            issues = issue_queryset.filter(issue_filter).only(
+                'id', 'user', 'category', 'topic', 'issue_type', 'description', 'solution',
+                'resolved', 'updated_at', 'encrypted_content',
+            )[:limit]
 
         results = []
         for session in sessions:
             results.append({
                 'kind': 'session',
                 'record_id': session.pk,
+                'session_uuid': str(session.uuid),
                 'title': session.title or session.topic or session.chapter or 'Untitled session',
                 'snippet': _search_snippet(
                     query, session.title, session.details, session.topic, session.chapter,
@@ -486,41 +682,97 @@ class LaunchTokenListCreateView(APIView):
         serializer.is_valid(raise_exception=True)
         values = serializer.validated_data
         values['category'] = normalize_subject(values.pop('subject'))
-        token, raw_token = LaunchToken.issue(user=request.user, **values)
+        token, raw_token, disturbance_token = LaunchToken.issue_with_disturbance(
+            user=request.user,
+            **values,
+        )
         data = LaunchTokenSerializer(token).data
-        data.update({
+        data.update(_launch_uri_payload(request, raw_token, disturbance_token))
+        return Response(data, status=status.HTTP_201_CREATED)
+
+
+def _launch_uri_payload(request, raw_token=None, disturbance_token=None):
+    payload = {
+        'shortcuts_create_url': 'shortcuts://create-shortcut',
+        'warning': 'Capability URLs are displayed once. Save them in Shortcuts now.',
+    }
+    if raw_token:
+        payload.update({
             'raw_token': raw_token,
             'launch_url': request.build_absolute_uri(f'/launch/{raw_token}'),
-            'warning': 'This URL is displayed once. Save it now.',
+            'shortcut_start_url': request.build_absolute_uri(
+                f'/api/launch/{raw_token}/start',
+            ),
         })
-        return Response(data, status=status.HTTP_201_CREATED)
+    if disturbance_token:
+        payload.update({
+            'raw_disturbance_token': disturbance_token,
+            'disturbance_url': request.build_absolute_uri(
+                f'/api/disturbance/{disturbance_token}/record',
+            ),
+        })
+    return payload
 
 
 class LaunchTokenActionView(APIView):
     def post(self, request, pk, action):
         token = get_object_or_404(LaunchToken, pk=pk, user=request.user)
+        if action in {'pause', 'resume'}:
+            if not token.is_active:
+                return Response(
+                    {'detail': 'A revoked token must be regenerated before it can be resumed.'},
+                    status=status.HTTP_409_CONFLICT,
+                )
+            token.is_paused = action == 'pause'
+            token.save(update_fields=('is_paused',))
+            return Response(LaunchTokenSerializer(token).data)
         if action == 'revoke':
             token.is_active = False
-            token.save(update_fields=('is_active',))
+            token.is_paused = False
+            token.save(update_fields=('is_active', 'is_paused'))
             return Response(LaunchTokenSerializer(token).data)
         if action == 'regenerate':
             raw_token = secrets.token_urlsafe(32)
             token.token_digest = LaunchToken.digest(raw_token)
             token.is_active = True
+            token.is_paused = False
             token.usage_count = 0
             token.last_used_at = None
-            token.save(update_fields=('token_digest', 'is_active', 'usage_count', 'last_used_at'))
+            token.save(update_fields=(
+                'token_digest', 'is_active', 'is_paused', 'usage_count', 'last_used_at',
+            ))
             data = LaunchTokenSerializer(token).data
-            data.update({
-                'raw_token': raw_token,
-                'launch_url': request.build_absolute_uri(f'/launch/{raw_token}'),
-                'warning': 'The new URL is displayed once. The previous URL is now invalid.',
-            })
+            data.update(_launch_uri_payload(request, raw_token=raw_token))
+            data['warning'] = 'The new start URLs are displayed once. Previous start URLs are now invalid.'
+            return Response(data)
+        if action == 'regenerate-disturbance':
+            if not token.is_active:
+                return Response(
+                    {'detail': 'Regenerate the start URI to reactivate this capability first.'},
+                    status=status.HTTP_409_CONFLICT,
+                )
+            raw_token = secrets.token_urlsafe(32)
+            token.disturbance_token_digest = LaunchToken.digest(raw_token)
+            token.save(update_fields=('disturbance_token_digest',))
+            data = LaunchTokenSerializer(token).data
+            data.update(_launch_uri_payload(request, disturbance_token=raw_token))
+            data['warning'] = 'The new disturbance URL is displayed once. The previous disturbance URL is now invalid.'
             return Response(data)
         if action == 'delete':
             token.delete()
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response({'detail': 'unknown action'}, status=status.HTTP_404_NOT_FOUND)
+
+    def put(self, request, pk, action):
+        if action != 'configure':
+            return Response({'detail': 'unknown action'}, status=status.HTTP_404_NOT_FOUND)
+        token = get_object_or_404(LaunchToken, pk=pk, user=request.user)
+        serializer = LaunchTokenConfigureSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        for field, value in serializer.validated_data.items():
+            setattr(token, field, value)
+        token.save(update_fields=tuple(serializer.validated_data))
+        return Response(LaunchTokenSerializer(token).data)
 
 
 def _session_export_rows(request):
@@ -537,7 +789,8 @@ def export_csv(request):
         'session_id', 'user_id', 'date', 'start_time', 'end_time', 'duration_minutes',
         'subject', 'chapter', 'topic', 'learning_mode', 'difficulty', 'energy_level',
         'focus_level', 'confidence_before', 'confidence_after', 'status', 'title', 'details',
-        'breakthrough', 'problems', 'next_action', 'issues_json',
+        'breakthrough', 'problems', 'next_action', 'disturbance_count',
+        'last_disturbance_at', 'issues_json',
     ])
     for session in _session_export_rows(request):
         issues = [
@@ -557,6 +810,8 @@ def export_csv(request):
             session.energy_level, session.focus_level, session.confidence_before,
             session.confidence_after, session.status, session.title or '', session.details,
             session.breakthrough, session.problems, session.next_action,
+            session.disturbance_count,
+            _local(session.last_disturbance_at).isoformat() if session.last_disturbance_at else '',
             json.dumps(issues, ensure_ascii=False),
         ])
     response = HttpResponse(output.getvalue(), content_type='text/csv; charset=utf-8')
@@ -597,6 +852,11 @@ def export_markdown(request):
             f'- Chapter: {session.chapter or "Not provided"}',
             f'- Topic: {session.topic or "Not provided"}',
             f'- Mode: {session.learning_mode or "Not provided"}',
+            f'- Disturbances: {session.disturbance_count}',
+            (
+                f'- Last disturbance: {_local(session.last_disturbance_at).isoformat()}'
+                if session.last_disturbance_at else '- Last disturbance: None'
+            ),
             '',
             f'### {session.title or "Untitled session"}',
             '',

@@ -1,5 +1,7 @@
+import datetime
 import hashlib
 import secrets
+import uuid as uuid_lib
 
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -7,8 +9,10 @@ from django.db import models
 from django.db.models import Q
 from django.utils import timezone
 
+from .encrypted_models import EncryptedAtRestMixin
 
-class TimeLog(models.Model):
+
+class TimeLog(EncryptedAtRestMixin, models.Model):
     # 统一枚举值与前端 payload 严格对应
     CATEGORY_CHOICES = [
         ('math', 'Mathematics'),
@@ -41,6 +45,7 @@ class TimeLog(models.Model):
         on_delete=models.CASCADE,
         related_name='study_sessions',
     )
+    uuid = models.UUIDField(default=uuid_lib.uuid4, editable=False, unique=True)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
     chapter = models.CharField(max_length=200, blank=True)
     topic = models.CharField(max_length=200, blank=True)
@@ -79,8 +84,12 @@ class TimeLog(models.Model):
     breakthrough = models.TextField(blank=True)
     problems = models.TextField(blank=True)
     next_action = models.TextField(blank=True)
+    encrypted_summary = models.TextField(blank=True, editable=False)
+    encrypted_content = models.TextField(blank=True, editable=False)
     review_count = models.PositiveIntegerField(default=0)
     last_reviewed_at = models.DateTimeField(null=True, blank=True)
+    disturbance_count = models.PositiveIntegerField(default=0)
+    last_disturbance_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now, editable=False)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -97,6 +106,15 @@ class TimeLog(models.Model):
                 name='one_running_session_per_user',
             ),
         ]
+
+    encrypted_field_groups = {
+        'encrypted_summary': ('chapter', 'topic', 'title'),
+        'encrypted_content': (
+            'learning_mode', 'difficulty', 'energy_level', 'focus_level',
+            'confidence_before', 'confidence_after', 'details', 'breakthrough',
+            'problems', 'next_action',
+        ),
+    }
 
     @property
     def duration_minutes(self):
@@ -145,7 +163,7 @@ class DailyStudyStat(models.Model):
         return f"{self.date} | {self.study_count} sessions"
 
 
-class GitHubNoteSync(models.Model):
+class GitHubNoteSync(EncryptedAtRestMixin, models.Model):
     """Durable outbox entry for one completed session Markdown document."""
 
     STATUS_CHOICES = [
@@ -163,12 +181,27 @@ class GitHubNoteSync(models.Model):
     branch = models.CharField(max_length=255, blank=True)
     attempts = models.PositiveIntegerField(default=0)
     last_error = models.TextField(blank=True)
+    encrypted_content = models.TextField(blank=True, editable=False)
     synced_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
         ordering = ('created_at',)
+
+    encrypted_field_groups = {
+        'encrypted_content': ('markdown_path', 'last_error'),
+    }
+    encryption_owner_field = 'session_id'
+
+    def _encryption_user_id(self):
+        session = self._state.fields_cache.get('session')
+        if session is not None:
+            return session.user_id
+        session_id = self.__dict__.get('session_id')
+        if not session_id:
+            return None
+        return TimeLog.objects.filter(pk=session_id).values_list('user_id', flat=True).get()
 
 
 class SessionReview(models.Model):
@@ -185,6 +218,58 @@ class SessionReview(models.Model):
     class Meta:
         ordering = ('-reviewed_at',)
         indexes = [models.Index(fields=('session', 'reviewed_at'), name='review_session_time_idx')]
+
+
+class SessionShare(models.Model):
+    """Revocable public capability for one otherwise private study session."""
+
+    session = models.ForeignKey(TimeLog, on_delete=models.CASCADE, related_name='shares')
+    token_digest = models.CharField(max_length=64, unique=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    expires_at = models.DateTimeField(null=True, blank=True)
+    revoked_at = models.DateTimeField(null=True, blank=True)
+    is_active = models.BooleanField(default=True, db_index=True)
+
+    class Meta:
+        ordering = ('-created_at',)
+        constraints = [
+            models.UniqueConstraint(
+                fields=('session',),
+                condition=Q(is_active=True),
+                name='one_active_share_per_session',
+            ),
+        ]
+
+    @staticmethod
+    def digest(raw_token):
+        return hashlib.sha256(raw_token.strip().encode('utf-8')).hexdigest()
+
+    @classmethod
+    def issue(cls, *, session, expires_at=None):
+        raw_token = f'share_{secrets.token_urlsafe(32)}'
+        share = cls.objects.create(
+            session=session,
+            token_digest=cls.digest(raw_token),
+            expires_at=expires_at,
+        )
+        return share, raw_token
+
+    @property
+    def usable(self):
+        if not self.is_active or self.revoked_at is not None:
+            return False
+        return not self.expires_at or self.expires_at > timezone.now()
+
+    def revoke(self):
+        if not self.is_active and self.revoked_at is not None:
+            return False
+        self.is_active = False
+        self.revoked_at = timezone.now()
+        self.save(update_fields=('is_active', 'revoked_at'))
+        return True
+
+    def __str__(self):
+        return f'Share for session {self.session_id}'
 
 
 class InviteCode(models.Model):
@@ -311,7 +396,26 @@ class SiteConfiguration(models.Model):
         return 'Registration policy'
 
 
-class LearningIssue(models.Model):
+class UserDataEncryptionPreference(models.Model):
+    """Per-user opt-in for transparent server-managed encryption at rest."""
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='data_encryption_preference',
+    )
+    enabled = models.BooleanField(default=False)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = 'user data encryption preference'
+        verbose_name_plural = 'user data encryption preferences'
+
+    def __str__(self):
+        return f'{self.user} | {"encrypted" if self.enabled else "plaintext"}'
+
+
+class LearningIssue(EncryptedAtRestMixin, models.Model):
     ISSUE_TYPE_CHOICES = [
         ('concept_error', 'Concept error'),
         ('calculation_error', 'Calculation error'),
@@ -335,6 +439,7 @@ class LearningIssue(models.Model):
     issue_type = models.CharField(max_length=24, choices=ISSUE_TYPE_CHOICES)
     description = models.TextField()
     solution = models.TextField(blank=True)
+    encrypted_content = models.TextField(blank=True, editable=False)
     resolved = models.BooleanField(default=False)
     repeat_count = models.PositiveIntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -343,6 +448,10 @@ class LearningIssue(models.Model):
     class Meta:
         ordering = ('-created_at',)
         indexes = [models.Index(fields=('user', 'resolved'), name='issue_user_resolved_idx')]
+
+    encrypted_field_groups = {
+        'encrypted_content': ('topic', 'issue_type', 'description', 'solution'),
+    }
 
 
 class KnowledgePoint(models.Model):
@@ -381,8 +490,18 @@ class LaunchToken(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='launch_tokens')
     name = models.CharField(max_length=120)
     token_digest = models.CharField(max_length=64, unique=True, db_index=True)
+    disturbance_token_digest = models.CharField(
+        max_length=64,
+        unique=True,
+        null=True,
+        blank=True,
+        editable=False,
+    )
     category = models.CharField(max_length=20, choices=TimeLog.CATEGORY_CHOICES)
     is_active = models.BooleanField(default=True)
+    is_paused = models.BooleanField(default=False)
+    available_from = models.TimeField(default=datetime.time(6, 0))
+    available_until = models.TimeField(default=datetime.time(22, 0))
     expires_at = models.DateTimeField(null=True, blank=True)
     max_uses = models.PositiveIntegerField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -405,11 +524,44 @@ class LaunchToken(models.Model):
         token = cls.objects.create(token_digest=cls.digest(raw_token), **fields)
         return token, raw_token
 
+    @classmethod
+    def issue_with_disturbance(cls, **fields):
+        raw_token = secrets.token_urlsafe(32)
+        disturbance_token = secrets.token_urlsafe(32)
+        token = cls.objects.create(
+            token_digest=cls.digest(raw_token),
+            disturbance_token_digest=cls.digest(disturbance_token),
+            **fields,
+        )
+        return token, raw_token, disturbance_token
+
     @property
-    def usable(self):
+    def credential_valid(self):
         if not self.is_active:
             return False
         if self.expires_at and self.expires_at <= timezone.now():
+            return False
+        return True
+
+    def schedule_allows(self, at=None):
+        local_time = timezone.localtime(at or timezone.now()).time().replace(tzinfo=None)
+        if self.available_from == self.available_until:
+            return True
+        if self.available_from < self.available_until:
+            return self.available_from <= local_time < self.available_until
+        return local_time >= self.available_from or local_time < self.available_until
+
+    @property
+    def within_schedule(self):
+        return self.schedule_allows()
+
+    @property
+    def has_disturbance_uri(self):
+        return bool(self.disturbance_token_digest)
+
+    @property
+    def usable(self):
+        if not self.credential_valid or self.is_paused or not self.within_schedule:
             return False
         if self.max_uses is not None and self.usage_count >= self.max_uses:
             return False

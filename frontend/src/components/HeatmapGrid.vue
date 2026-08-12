@@ -1,21 +1,24 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
+import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { View } from '@element-plus/icons-vue'
 import { api, post } from '../lib/api'
-import type { HeatmapDay, Page, ReviewTrend as ReviewTrendType, StudySession } from '../types'
+import type { HeatmapDay, Page, ReviewTrend as ReviewTrendType, StudySession, StudySessionSummary } from '../types'
 import MarkdownPreview from './MarkdownPreview.vue'
 import ReviewTrend from './ReviewTrend.vue'
 
 const props = defineProps<{ days: HeatmapDay[] }>()
+const router = useRouter()
 const detailOpen = ref(false)
 const sessionOpen = ref(false)
 const sessionLoading = ref(false)
 const loading = ref(false)
 const selected = ref<HeatmapDay | null>(null)
 const selectedSession = ref<StudySession | null>(null)
+const selectedSessionTitle = ref('')
 const reviewTrend = ref<ReviewTrendType | null>(null)
-const sessions = ref<StudySession[]>([])
+const sessions = ref<StudySessionSummary[]>([])
 
 const cells = computed(() => {
   if (!props.days.length) return []
@@ -30,7 +33,7 @@ function duration(minutes: number) {
   return `${hours ? `${hours}h` : ''}${rest ? ` ${rest}m` : ''}`.trim()
 }
 
-function timelineStyle(session: StudySession) {
+function timelineStyle(session: StudySessionSummary) {
   const start = new Date(session.start_time)
   const end = new Date(session.end_time || session.start_time)
   const startMinutes = start.getHours() * 60 + start.getMinutes()
@@ -47,7 +50,7 @@ async function openDay(day: HeatmapDay | null) {
   detailOpen.value = true
   loading.value = true
   try {
-    const result = await api<Page<StudySession>>(`/api/sessions/?date_from=${day.date}&date_to=${day.date}&compact=1`)
+    const result = await api<Page<StudySessionSummary>>(`/api/sessions/?date_from=${day.date}&date_to=${day.date}`)
     sessions.value = result.results.filter((item) => item.status === 'completed')
   } catch (error) {
     ElMessage.error((error as Error).message)
@@ -56,15 +59,16 @@ async function openDay(day: HeatmapDay | null) {
   }
 }
 
-async function openSession(session: StudySession) {
-  selectedSession.value = session
+async function openSession(session: StudySessionSummary) {
+  selectedSession.value = null
+  selectedSessionTitle.value = session.title || 'Untitled session'
   reviewTrend.value = null
   sessionOpen.value = true
   sessionLoading.value = true
   try {
     const [detail, trend] = await Promise.all([
-      api<StudySession>(`/api/sessions/${session.id}/`),
-      post<ReviewTrendType>(`/api/sessions/${session.id}/reviews/`),
+      api<StudySession>(`/api/sessions/${session.uuid}/`),
+      post<ReviewTrendType>(`/api/sessions/${session.uuid}/reviews/`),
     ])
     detail.review_count = trend.total
     detail.last_reviewed_at = trend.last_reviewed_at
@@ -122,7 +126,7 @@ async function openSession(session: StudySession) {
           <div v-for="hour in 3" :key="hour" class="timeline-line" :style="{ left: `${hour * 25}%` }" />
           <div
             v-for="session in sessions"
-            :key="session.id"
+            :key="session.uuid"
             class="online-segment"
             :class="`subject-${session.subject}`"
             :style="timelineStyle(session)"
@@ -132,7 +136,7 @@ async function openSession(session: StudySession) {
         <div class="online-key"><span><i class="key-online" />STUDY</span><span><i class="key-offline" />OFFLINE</span></div>
         <el-empty v-if="!loading && !sessions.length" description="No completed sessions" :image-size="70" />
         <div v-else class="session-list compact-list">
-          <article v-for="session in sessions" :key="session.id" class="session-row session-drill-row" role="button" tabindex="0" @click="openSession(session)" @keyup.enter="openSession(session)">
+          <article v-for="session in sessions" :key="session.uuid" class="session-row session-drill-row" role="button" tabindex="0" @click="openSession(session)" @keyup.enter="openSession(session)">
             <i :class="`subject-dot subject-${session.subject}`" />
             <div><strong>{{ session.title || 'Untitled session' }}</strong><small>{{ session.subject_label }} · {{ new Date(session.start_time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) }} – {{ session.end_time ? new Date(session.end_time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '--' }}</small></div>
             <b class="session-review-link"><el-icon><View /></el-icon><span>{{ session.review_count || 0 }}</span></b>
@@ -143,13 +147,14 @@ async function openSession(session: StudySession) {
 
     <el-drawer v-model="sessionOpen" append-to-body size="min(680px, 94vw)" class="session-detail-drawer">
       <template #header>
-        <div class="dialog-title"><div><span class="eyebrow">SESSION REVIEW</span><h2>{{ selectedSession?.title || 'Untitled session' }}</h2></div></div>
+        <div class="dialog-title"><div><span class="eyebrow">SESSION REVIEW</span><h2>{{ selectedSession?.title || selectedSessionTitle }}</h2></div><el-button v-if="selectedSession" @click="sessionOpen = false; detailOpen = false; router.push(`/sessions/${selectedSession.uuid}`)">Open article</el-button></div>
       </template>
       <div v-if="selectedSession" v-loading="sessionLoading" class="session-detail-page">
         <dl><div><dt>SUBJECT</dt><dd>{{ selectedSession.subject_label }}</dd></div><div><dt>TIME</dt><dd>{{ new Date(selectedSession.start_time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) }} – {{ selectedSession.end_time ? new Date(selectedSession.end_time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) : '--' }}</dd></div><div><dt>DURATION</dt><dd>{{ duration(selectedSession.duration_minutes) }}</dd></div></dl>
         <ReviewTrend :trend="reviewTrend" :loading="sessionLoading" />
-        <MarkdownPreview :key="selectedSession.id" :source="selectedSession.details" default-open allow-fullscreen empty-text="No details were recorded for this historical session." />
+        <MarkdownPreview :key="selectedSession.uuid" :source="selectedSession.details" default-open allow-fullscreen empty-text="No details were recorded for this historical session." />
       </div>
+      <div v-else v-loading="sessionLoading" class="session-detail-loading" />
     </el-drawer>
   </section>
 </template>

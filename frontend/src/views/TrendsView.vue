@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
+import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { EChartsType } from '../lib/charts'
 import type { Overview } from '../types'
 
@@ -38,6 +38,13 @@ async function draw() {
 
 function resize() { chart?.resize() }
 onMounted(async () => { await nextTick(); await draw(); window.addEventListener('resize', resize, { passive: true }) })
+watch(() => props.overview, async (value) => {
+  if (!value) return
+  await nextTick()
+  chart?.dispose()
+  chart = null
+  await draw()
+})
 onBeforeUnmount(() => { window.removeEventListener('resize', resize); chart?.dispose() })
 </script>
 

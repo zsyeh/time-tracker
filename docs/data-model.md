@@ -7,9 +7,38 @@ foreign references. In product/API language it is exposed as a study session.
 It stores an owner, subject, start/end timestamps, status, a `title`, a `details`
 body, legacy reflection fields, and optional metadata. Duration is derived from the
 timestamps; there is no second authoritative duration column.
+Each row also has a unique immutable UUID used by `/sessions/<uuid>` and the
+owner-scoped detail API. Integer primary keys remain unchanged for internal
+relationships and compatibility; complete domain URLs are never stored.
 The denormalized `review_count` and `last_reviewed_at` fields make archive lists
 cheap to render; append-only `SessionReview` rows retain the bounded trend source.
 Repeated opens within ten minutes do not create another event.
+
+## Session share
+
+`SessionShare` is an explicit public capability linked to a Session. It stores a
+SHA-256 digest of a 32-byte random token, creation/optional expiry/revocation
+timestamps, and active state. A conditional unique constraint allows only one
+active share per Session. Raw tokens are returned once and never stored. A share
+does not change Session ownership or grant write access; the public API projects
+only the small article field whitelist.
+
+## Optional encryption at rest
+
+`UserDataEncryptionPreference` is a per-user, default-off storage policy. When it
+is enabled, `TimeLog` stores title/chapter/topic in `encrypted_summary` and long
+Markdown, reflection, and personal rating fields in `encrypted_content`.
+`LearningIssue` stores its private text in a separate encrypted payload, and
+`GitHubNoteSync` protects paths and error text that may contain a title. The
+original protected columns are cleared, while owner, UUID, subject, timestamps,
+status, duration inputs, and relationship keys remain queryable operational
+metadata. Payloads use AES-256-GCM with random nonces and per-user keys derived
+from a server master key; ciphertext is authenticated and non-deterministic.
+
+The key is stored outside PostgreSQL and database backups. Django can still
+decrypt it, so this is not end-to-end or zero-knowledge encryption. ORM/API reads,
+exports, GitHub Markdown, and explicit public shares continue to produce readable
+content. Losing the server key makes encrypted records unrecoverable.
 
 Migration `0010` renames the historical `note` column to `title` without rewriting
 its contents, then adds an initially empty `details` body. Only sessions lasting
@@ -50,9 +79,13 @@ follow-up model.
 
 ## Launch token
 
-Stores only a SHA-256 digest of a 32-byte random capability. It is user-owned,
-subject-scoped, revocable, optionally expiring/use-limited, and can only start a
-session. Raw tokens are shown once and never persisted.
+Stores separate SHA-256 digests for two 32-byte random capabilities: subject-
+scoped Session start and current-Session disturbance recording. It is user-owned,
+temporarily pausable, revocable, optionally expiring/start-use-limited, and has a
+daily availability window defaulting to 06:00–22:00 Asia/Shanghai. Raw tokens are
+shown once and never persisted. `TimeLog.disturbance_count` and
+`last_disturbance_at` retain a bounded aggregate instead of an indefinitely
+growing event table.
 
 ## Passkey credential
 

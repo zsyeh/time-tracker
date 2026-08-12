@@ -4,6 +4,12 @@ Keep database backups outside the repository and never archive `.env` with a
 shareable source bundle. A practical retention policy is 7 daily, 4 weekly, and
 12 monthly copies, plus a JSON export. Encrypt off-host copies.
 
+If any user enables database-at-rest encryption, also back up the server key at
+`DATA_ENCRYPTION_KEY_PATH` separately from the database. The default is
+`.data-encryption.key` beside `TRACKER_LOCAL_ENV_PATH` (inside the persistent data
+volume for Docker). Preserve mode `600`. A database dump without this key cannot
+recover encrypted content; do not put the key in the same archive as the dump.
+
 ## SQLite
 
 Stop writers or use SQLite's backup command:

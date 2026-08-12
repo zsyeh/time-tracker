@@ -1,28 +1,34 @@
 export type Subject = 'math' | 'english' | 'major' | 'training'
 
-export interface StudySession {
+export interface StudySessionSummary {
   id: number
+  uuid: string
   subject: Subject
   subject_label: string
-  chapter: string
-  topic: string
   start_time: string
   end_time: string | null
   duration_minutes: number
   status: 'running' | 'completed' | 'abandoned'
+  title: string | null
+  review_count: number
+  last_reviewed_at: string | null
+}
+
+export interface StudySession extends StudySessionSummary {
+  chapter: string
+  topic: string
   learning_mode: string
   difficulty: number | null
   energy_level: string
   focus_level: number | null
   confidence_before: number | null
   confidence_after: number | null
-  title: string
   details: string
   breakthrough: string
   problems: string
   next_action: string
-  review_count: number
-  last_reviewed_at: string | null
+  disturbance_count: number
+  last_disturbance_at: string | null
 }
 
 export interface HeatmapDay {
@@ -78,10 +84,20 @@ export interface RuntimeSettingsResponse {
   writable: boolean
 }
 
+export interface DataEncryptionStatus {
+  enabled: boolean
+  available: boolean
+  algorithm: 'AES-256-GCM'
+  mode: 'server-managed-at-rest'
+  updated_at: string | null
+  migrated_records?: number
+}
+
 export interface ReviewTrendDay { date: string; count: number }
 
 export interface ReviewTrend {
   session_id: number
+  session_uuid: string
   total: number
   last_reviewed_at: string | null
   review_days: number
@@ -139,13 +155,24 @@ export interface LaunchToken {
   name: string
   subject: Subject
   is_active: boolean
+  is_paused: boolean
+  available_from: string
+  available_until: string
   expires_at: string | null
   max_uses: number | null
   usage_count: number
   source_label: string
+  notes: string
   usable: boolean
+  credential_valid: boolean
+  within_schedule: boolean
+  has_disturbance_uri: boolean
   raw_token?: string
+  raw_disturbance_token?: string
   launch_url?: string
+  shortcut_start_url?: string
+  disturbance_url?: string
+  shortcuts_create_url?: string
 }
 
 export interface Page<T> {
@@ -158,11 +185,32 @@ export interface Page<T> {
 export interface GlobalSearchResult {
   kind: 'session' | 'issue'
   record_id: number
+  session_uuid?: string
   title: string
   snippet: string
   subject: Subject
   subject_label: string
   occurred_at: string
+}
+
+export interface SessionShareStatus {
+  status: 'private' | 'active' | 'expired' | 'revoked'
+  is_shared: boolean
+  is_active: boolean
+  created_at: string | null
+  expires_at: string | null
+  revoked_at: string | null
+  share_url?: string
+  warning?: string
+}
+
+export interface PublicSharedSession {
+  title: string
+  subject: Subject
+  start_time: string
+  end_time: string | null
+  duration_minutes: number
+  markdown: string
 }
 
 export interface GlobalSearchResponse {

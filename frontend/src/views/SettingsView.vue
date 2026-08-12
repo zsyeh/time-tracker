@@ -2,17 +2,22 @@
 import { computed, onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { api, post, put } from '../lib/api'
-import type { InviteCode, LaunchToken, RuntimeSettingsResponse, RuntimeSettingsValues } from '../types'
+import type { DataEncryptionStatus, InviteCode, LaunchToken, RuntimeSettingsResponse, RuntimeSettingsValues } from '../types'
 
 const emit = defineEmits<{ changed: [] }>()
 
 const tokens = ref<LaunchToken[]>([])
 const open = ref(false)
 const revealed = ref<LaunchToken | null>(null)
+const tokenConfigureOpen = ref(false)
+const editingToken = ref<LaunchToken | null>(null)
 const theme = ref(localStorage.getItem('learning-os-theme') || 'coolapk')
 const runtimeLoading = ref(true)
 const runtimeSaving = ref(false)
 const runtimeMeta = ref<RuntimeSettingsResponse | null>(null)
+const dataEncryption = ref<DataEncryptionStatus | null>(null)
+const encryptionLoading = ref(true)
+const encryptionSaving = ref(false)
 const isAdmin = ref(false)
 const isSuperuser = ref(false)
 const invites = ref<InviteCode[]>([])
@@ -22,7 +27,8 @@ const runtimeForm = reactive<RuntimeSettingsValues>({
   homepage_content: '', study_room_code: '', tracking_start_date: '2026-05-23',
   exam_date: '2026-12-26', countdown_label: '2026 Postgraduate Exam',
 })
-const form = reactive({ name: 'Desktop shortcut', subject: 'math', source_label: 'Browser', max_uses: null as number | null, expires_at: null as string | null, notes: '' })
+const form = reactive({ name: 'Study shortcut', subject: 'math', source_label: 'iPhone Shortcuts', max_uses: null as number | null, expires_at: null as string | null, notes: '', available_from: '06:00', available_until: '22:00' })
+const tokenConfigureForm = reactive({ name: '', source_label: '', max_uses: null as number | null, expires_at: null as string | null, notes: '', available_from: '06:00', available_until: '22:00' })
 const inviteForm = reactive({ name: 'New member', max_uses: 1, expires_at: '' })
 const subjects = { math: 'Mathematics', english: 'English', major: 'Major', training: 'Training' }
 const themes = [
@@ -66,6 +72,30 @@ async function loadRuntime() {
 async function loadInvites() {
   try { invites.value = await api<InviteCode[]>('/api/invite-codes/') }
   catch (error) { ElMessage.error((error as Error).message) }
+}
+async function loadEncryption() {
+  encryptionLoading.value = true
+  try { dataEncryption.value = await api<DataEncryptionStatus>('/api/settings/data-encryption/') }
+  catch (error) { ElMessage.error((error as Error).message) }
+  finally { encryptionLoading.value = false }
+}
+async function changeEncryption(value: string | number | boolean) {
+  const enabled = Boolean(value)
+  const action = enabled ? 'enable' : 'disable'
+  try {
+    await ElMessageBox.confirm(
+      enabled
+        ? 'Existing private study content will be rewritten as ciphertext. Public share links and server features will continue to return readable content.'
+        : 'Existing private study content will be rewritten to plaintext database fields.',
+      `${enabled ? 'Enable' : 'Disable'} at-rest encryption?`,
+      { type: enabled ? 'warning' : 'info', confirmButtonText: enabled ? 'Enable encryption' : 'Store as plaintext', cancelButtonText: 'Cancel' },
+    )
+    encryptionSaving.value = true
+    dataEncryption.value = await put<DataEncryptionStatus>('/api/settings/data-encryption/', { enabled })
+    ElMessage.success(`At-rest encryption ${action}d${dataEncryption.value.migrated_records ? ` for ${dataEncryption.value.migrated_records} records` : ''}`)
+  } catch (error) {
+    if (error !== 'cancel') ElMessage.error((error as Error).message)
+  } finally { encryptionSaving.value = false }
 }
 async function loadAccess() {
   try {
@@ -120,20 +150,49 @@ async function create() {
   try { revealed.value = await post<LaunchToken>('/api/launch-tokens/', form); open.value = false; await load() }
   catch (error) { ElMessage.error((error as Error).message) }
 }
+function configure(token: LaunchToken) {
+  editingToken.value = token
+  Object.assign(tokenConfigureForm, {
+    name: token.name,
+    source_label: token.source_label || '',
+    max_uses: token.max_uses,
+    expires_at: token.expires_at ? token.expires_at.slice(0, 16) : null,
+    notes: token.notes || '',
+    available_from: token.available_from.slice(0, 5),
+    available_until: token.available_until.slice(0, 5),
+  })
+  tokenConfigureOpen.value = true
+}
+async function saveTokenConfiguration() {
+  if (!editingToken.value) return
+  try {
+    await put(`/api/launch-tokens/${editingToken.value.id}/configure/`, tokenConfigureForm)
+    tokenConfigureOpen.value = false
+    editingToken.value = null
+    await load()
+    ElMessage.success('Capability settings saved')
+  } catch (error) { ElMessage.error((error as Error).message) }
+}
 async function action(token: LaunchToken, name: string) {
   try {
     if (name === 'delete') await ElMessageBox.confirm('This launch URL will stop working immediately.', 'Delete launch token?', { type: 'warning', confirmButtonText: 'Delete', cancelButtonText: 'Cancel' })
     const value = await post<LaunchToken | undefined>(`/api/launch-tokens/${token.id}/${name}/`)
-    if (value?.raw_token) revealed.value = value
+    if (value?.raw_token || value?.raw_disturbance_token) revealed.value = value
     await load()
   } catch (error) { if (error !== 'cancel') ElMessage.error((error as Error).message) }
 }
-async function copy() {
-  if (!revealed.value?.launch_url) return
-  await navigator.clipboard.writeText(revealed.value.launch_url)
-  ElMessage.success('Launch URL copied')
+async function copyCapability(url: string | undefined, label: string) {
+  if (!url) return
+  await navigator.clipboard.writeText(url)
+  ElMessage.success(`${label} copied`)
 }
-onMounted(() => { load(); loadRuntime(); loadAccess() })
+async function copyAndOpenShortcuts(url: string | undefined, label: string) {
+  if (!url) return
+  await navigator.clipboard.writeText(url)
+  ElMessage.success(`${label} copied. Paste it into Get Contents of URL.`)
+  window.location.href = revealed.value?.shortcuts_create_url || 'shortcuts://create-shortcut'
+}
+onMounted(() => { load(); loadRuntime(); loadAccess(); loadEncryption() })
 </script>
 
 <template>
@@ -168,6 +227,19 @@ onMounted(() => { load(); loadRuntime(); loadAccess() })
           <button v-for="item in themes" :key="item.id" type="button" :class="{ active: theme === item.id }" @click="setTheme(item.id)"><i :style="{ background: item.color }" /><span>{{ item.label }}</span><b>{{ theme === item.id ? 'SELECTED' : '' }}</b></button>
         </div>
       </article>
+      <article class="panel settings-card encryption-card" v-loading="encryptionLoading">
+        <div class="card-title">
+          <div><span class="eyebrow">STORAGE PRIVACY</span><h2>Private content at rest</h2></div>
+          <span class="secure-badge">{{ dataEncryption?.algorithm || 'AES-256-GCM' }}</span>
+        </div>
+        <div class="encryption-toggle-row">
+          <div><strong>Encrypt my private study content</strong><small>{{ dataEncryption?.enabled ? 'DATABASE STORAGE IS ENCRYPTED' : 'DATABASE STORAGE IS PLAINTEXT' }}</small></div>
+          <el-switch :model-value="dataEncryption?.enabled || false" :loading="encryptionSaving" :disabled="encryptionLoading || encryptionSaving" aria-label="Encrypt my private study content" @change="changeEncryption" />
+        </div>
+        <p class="encryption-disclosure"><b>This is not end-to-end encryption.</b> When enabled, study titles, Markdown, reflection fields, personal ratings, and Issue text are stored as ciphertext and cannot be read directly from database rows or database-only backups. Operational metadata remains available for fast timelines and statistics.</p>
+        <p class="encryption-disclosure">No additional password is required. To preserve performance and convenience, the encryption key remains on the server. A person with sufficient server access may still obtain the key and decrypt the data; this protection increases the effort required but does not make access impossible.</p>
+        <p class="encryption-disclosure">If you require privacy from the server operator, use a self-hosted deployment. The server administrator will apply reasonable safeguards to prevent database disclosure, but no hosted service can guarantee absolute confidentiality. Public share links and GitHub Markdown archives remain readable at their destinations.</p>
+      </article>
       <article class="panel settings-card">
         <div class="card-title"><div><span class="eyebrow">PASSKEY</span><h2>Secure access</h2></div><span class="secure-badge">WebAuthn</span></div>
         <p>Use a platform authenticator or security key. Passwords are optional; Passkey-only accounts are supported.</p>
@@ -195,28 +267,48 @@ onMounted(() => { load(); loadRuntime(); loadAccess() })
       </article>
     </section>
     <section class="panel token-panel">
-      <div class="section-heading"><div><span class="eyebrow">LAUNCH TOKENS</span><h2>Scoped start links</h2></div><el-button type="primary" @click="open = true">New token</el-button></div>
-      <p class="section-note">A token can only start its assigned subject. The raw URL is displayed once.</p>
+      <div class="section-heading"><div><span class="eyebrow">SHORTCUT CAPABILITIES</span><h2>Start and disturbance URIs</h2></div><el-button type="primary" @click="open = true">New capability</el-button></div>
+      <p class="section-note">No sign-in is required when a valid secret URI is called. Start and disturbance use separate random secrets. Each can be copied only when created or regenerated.</p>
       <el-empty v-if="!tokens.length" description="No launch tokens" />
-      <article v-for="token in tokens" :key="token.id" class="token-row">
-        <div><strong>{{ token.name }}</strong><small>{{ token.subject }} · {{ token.usage_count }} uses<span v-if="token.max_uses"> / {{ token.max_uses }}</span></small></div>
-        <el-tag :type="token.usable ? 'success' : 'info'">{{ token.usable ? 'ACTIVE' : 'INACTIVE' }}</el-tag>
-        <div><el-button text @click="action(token, token.is_active ? 'revoke' : 'regenerate')">{{ token.is_active ? 'Revoke' : 'Regenerate' }}</el-button><el-button text type="danger" @click="action(token, 'delete')">Delete</el-button></div>
+      <article v-for="token in tokens" :key="token.id" class="token-row capability-row">
+        <div><strong>{{ token.name }}</strong><small>{{ token.subject }} · {{ token.usage_count }} starts<span v-if="token.max_uses"> / {{ token.max_uses }}</span> · {{ token.available_from.slice(0, 5) }}–{{ token.available_until.slice(0, 5) }} Asia/Shanghai</small><small v-if="!token.within_schedule && token.credential_valid && !token.is_paused" class="capability-state-note">OUTSIDE ACTIVE WINDOW · REQUESTS ARE SAFE NO-OPS</small></div>
+        <el-tag :type="token.usable ? 'success' : 'info'">{{ token.is_paused ? 'PAUSED' : token.usable ? 'ACTIVE NOW' : token.credential_valid ? 'SCHEDULED OFF' : 'CLOSED' }}</el-tag>
+        <div class="capability-actions"><el-button text @click="configure(token)">Configure</el-button><el-button v-if="token.is_active" text @click="action(token, token.is_paused ? 'resume' : 'pause')">{{ token.is_paused ? 'Resume' : 'Pause' }}</el-button><el-button text @click="action(token, 'regenerate')">New start URI</el-button><el-button :disabled="!token.is_active" text @click="action(token, 'regenerate-disturbance')">{{ token.has_disturbance_uri ? 'New disturbance URI' : 'Create disturbance URI' }}</el-button><el-button text type="danger" @click="action(token, 'delete')">Delete</el-button></div>
       </article>
+      <details class="shortcut-inline-guide">
+        <summary>iPhone Shortcuts setup / iPhone 快捷指令设置</summary>
+        <div class="shortcut-guide-columns">
+          <article><span>ENGLISH</span><h3>Start study</h3><ol><li>Create a capability and tap <b>Copy &amp; Open Shortcuts</b> beside the Shortcut Start URI.</li><li>In the new shortcut, add <b>Get Contents of URL</b>, paste the URI, set Method to <b>POST</b>, and leave the request body empty.</li><li>Name the shortcut and optionally add it to the Home Screen, Lock Screen, Action Button, widget, NFC, or another automation.</li></ol><h3>Detect a disturbance</h3><ol><li>Copy the separate Disturbance URI.</li><li>Open Shortcuts → Automation → + → <b>Charger</b> → <b>Is Disconnected</b> → <b>Run Immediately</b>.</li><li>Add <b>Get Contents of URL</b>, paste the Disturbance URI, choose <b>POST</b>, leave the body empty, then save.</li></ol><p>Pause disables both URIs without changing them. By default requests are effective only from 06:00 to 22:00 Asia/Shanghai. Outside the window, a valid request returns a safe no-op. A disturbance is counted only while a session is running. A stale running session over 12 hours is discarded.</p></article>
+          <article lang="zh-CN"><span>中文</span><h3>开始学习</h3><ol><li>创建能力链接，点击 Shortcut Start URI 旁的 <b>复制并打开快捷指令</b>。</li><li>在新快捷指令中添加<b>获取 URL 内容</b>，粘贴 URI，把方法设为 <b>POST</b>，请求正文留空。</li><li>命名后可添加到主屏幕、锁屏、操作按钮、小组件、NFC 或其他自动化。</li></ol><h3>检测扰动</h3><ol><li>复制单独的 Disturbance URI。</li><li>打开快捷指令 → 自动化 → + → <b>充电器</b> → <b>已断开连接</b> → <b>立即运行</b>。</li><li>添加<b>获取 URL 内容</b>，粘贴扰动 URI，方法选 <b>POST</b>，正文留空并保存。</li></ol><p>暂停会临时关闭两个 URI，但不会改变 URI。默认仅在上海时区 06:00–22:00 生效；时段外会安全地空操作。只有存在运行中的学习任务时才累计扰动；超过 12 小时的遗留任务会被丢弃。</p></article>
+        </div>
+      </details>
     </section>
-    <el-dialog v-model="open" title="Create launch token" width="min(560px, 94vw)">
+    <el-dialog v-model="open" title="Create Shortcut capability" width="min(620px, 94vw)">
       <el-form label-position="top">
         <el-form-item label="Name"><el-input v-model="form.name" /></el-form-item>
         <div class="form-pair"><el-form-item label="Subject"><el-select v-model="form.subject"><el-option v-for="(label, key) in subjects" :key="key" :label="label" :value="key" /></el-select></el-form-item><el-form-item label="Maximum uses"><el-input-number v-model="form.max_uses" :min="1" placeholder="Unlimited" /></el-form-item></div>
+        <div class="form-pair"><el-form-item label="Available from"><el-input v-model="form.available_from" type="time" /></el-form-item><el-form-item label="Available until"><el-input v-model="form.available_until" type="time" /></el-form-item></div>
         <el-form-item label="Source label"><el-input v-model="form.source_label" /></el-form-item>
         <el-form-item label="Notes"><el-input v-model="form.notes" type="textarea" /></el-form-item>
       </el-form>
-      <template #footer><el-button @click="open = false">Cancel</el-button><el-button type="primary" @click="create">Create token</el-button></template>
+      <template #footer><el-button @click="open = false">Cancel</el-button><el-button type="primary" @click="create">Create capability</el-button></template>
     </el-dialog>
-    <el-dialog :model-value="Boolean(revealed)" title="Save this URL now" width="min(620px, 94vw)" @close="revealed = null">
-      <el-alert title="The raw token cannot be viewed again after closing this dialog." type="warning" :closable="false" show-icon />
-      <div class="reveal-url">{{ revealed?.launch_url }}</div>
-      <template #footer><el-button type="primary" @click="copy">Copy URL</el-button><el-button @click="revealed = null">Saved</el-button></template>
+    <el-dialog :model-value="Boolean(revealed)" title="Save these capability URIs now" width="min(760px, 96vw)" @close="revealed = null">
+      <el-alert title="Raw secrets are stored only as hashes and cannot be shown again after this dialog closes." type="warning" :closable="false" show-icon />
+      <div v-if="revealed?.shortcut_start_url" class="capability-reveal"><span>SHORTCUT START · POST</span><div class="reveal-url">{{ revealed.shortcut_start_url }}</div><div><el-button @click="copyCapability(revealed?.shortcut_start_url, 'Start URI')">Copy</el-button><el-button type="primary" @click="copyAndOpenShortcuts(revealed?.shortcut_start_url, 'Start URI')">Copy &amp; Open Shortcuts</el-button></div></div>
+      <div v-if="revealed?.launch_url" class="capability-reveal"><span>BROWSER START · GET</span><div class="reveal-url">{{ revealed.launch_url }}</div><div><el-button @click="copyCapability(revealed?.launch_url, 'Browser start URI')">Copy</el-button></div></div>
+      <div v-if="revealed?.disturbance_url" class="capability-reveal"><span>DISTURBANCE · POST</span><div class="reveal-url">{{ revealed.disturbance_url }}</div><div><el-button @click="copyCapability(revealed?.disturbance_url, 'Disturbance URI')">Copy</el-button><el-button type="primary" @click="copyAndOpenShortcuts(revealed?.disturbance_url, 'Disturbance URI')">Copy &amp; Open Shortcuts</el-button></div></div>
+      <template #footer><el-button @click="revealed = null">I saved the URI</el-button></template>
+    </el-dialog>
+    <el-dialog v-model="tokenConfigureOpen" title="Configure capability" width="min(620px, 94vw)">
+      <el-form label-position="top">
+        <el-form-item label="Name"><el-input v-model="tokenConfigureForm.name" /></el-form-item>
+        <div class="form-pair"><el-form-item label="Available from"><el-input v-model="tokenConfigureForm.available_from" type="time" /></el-form-item><el-form-item label="Available until"><el-input v-model="tokenConfigureForm.available_until" type="time" /></el-form-item></div>
+        <div class="form-pair"><el-form-item label="Maximum starts"><el-input-number v-model="tokenConfigureForm.max_uses" :min="1" placeholder="Unlimited" /></el-form-item><el-form-item label="Expires at"><el-input v-model="tokenConfigureForm.expires_at" type="datetime-local" /></el-form-item></div>
+        <el-form-item label="Source label"><el-input v-model="tokenConfigureForm.source_label" /></el-form-item>
+        <el-form-item label="Notes"><el-input v-model="tokenConfigureForm.notes" type="textarea" /></el-form-item>
+      </el-form>
+      <template #footer><el-button @click="tokenConfigureOpen = false">Cancel</el-button><el-button type="primary" @click="saveTokenConfiguration">Save</el-button></template>
     </el-dialog>
     <el-dialog v-model="inviteOpen" title="Generate invite code" width="min(560px, 94vw)">
       <el-form label-position="top">

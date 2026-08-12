@@ -1,9 +1,12 @@
+import base64
 import datetime
 import json
 import os
 import subprocess
 import tempfile
+import uuid
 from pathlib import Path
+from urllib.parse import urlsplit
 from unittest import mock
 
 from django.conf import settings
@@ -12,7 +15,8 @@ from django.core import mail
 from django.core.cache import cache
 from django.db import connection
 from django.db.migrations.executor import MigrationExecutor
-from django.test import TestCase, TransactionTestCase, override_settings
+from django.test import Client, TestCase, TransactionTestCase, override_settings
+from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 from django.utils import timezone
 
@@ -22,6 +26,7 @@ from .learning_log import (
     github_branch_for_user,
     markdown_relative_path,
     render_session_markdown,
+    session_task,
     sync_session_note,
 )
 from .models import (
@@ -32,11 +37,16 @@ from .models import (
     LaunchToken,
     LearningIssue,
     SessionReview,
+    SessionShare,
     SiteConfiguration,
     TimeLog,
+    UserDataEncryptionPreference,
 )
+from .data_encryption import DataEncryptionError, PAYLOAD_PREFIX
+from .web_views import _frontend_html
 
 TEST_PASSWORD_HASHERS = ['django.contrib.auth.hashers.MD5PasswordHasher']
+TEST_DATA_ENCRYPTION_KEY = base64.urlsafe_b64encode(b'E' * 32).decode('ascii')
 
 
 def completed_session(user, *, day=None, minutes=60, subject='math', title='完整学习总结', details='完整学习详情'):
@@ -97,6 +107,48 @@ class HistoricalMigrationTests(TransactionTestCase):
         self.assertEqual(int((row.end_time - row.start_time).total_seconds() / 60), 75)
 
 
+class SessionResourceMigrationTests(TransactionTestCase):
+    migrate_from = [('tracker', '0015_site_configuration_math_visualization')]
+    migrate_to = [('tracker', '0016_session_resources_and_shares')]
+
+    def setUp(self):
+        executor = MigrationExecutor(connection)
+        old_targets = [node for node in executor.loader.graph.leaf_nodes() if node[0] != 'tracker'] + self.migrate_from
+        executor.migrate(old_targets)
+        old_apps = executor.loader.project_state(old_targets).apps
+        User = old_apps.get_model('auth', 'User')
+        TimeLogOld = old_apps.get_model('tracker', 'TimeLog')
+        owner = User.objects.create(username='uuid-migration-owner', is_active=True)
+        start = timezone.now() - datetime.timedelta(hours=2)
+        self.session_ids = [
+            TimeLogOld.objects.create(
+                user_id=owner.pk,
+                category='math',
+                start_time=start + datetime.timedelta(minutes=index),
+                end_time=start + datetime.timedelta(minutes=60 + index),
+                status='completed',
+                title=f'Legacy session {index}',
+            ).pk
+            for index in range(2)
+        ]
+        executor = MigrationExecutor(connection)
+        new_targets = [node for node in executor.loader.graph.leaf_nodes() if node[0] != 'tracker'] + self.migrate_to
+        executor.migrate(new_targets)
+        self.apps = executor.loader.project_state(new_targets).apps
+
+    def tearDown(self):
+        executor = MigrationExecutor(connection)
+        executor.migrate(executor.loader.graph.leaf_nodes())
+
+    def test_existing_sessions_receive_unique_valid_uuids(self):
+        Session = self.apps.get_model('tracker', 'TimeLog')
+        values = list(Session.objects.filter(pk__in=self.session_ids).values_list('uuid', flat=True))
+        self.assertEqual(len(values), 2)
+        self.assertEqual(len(set(values)), 2)
+        for value in values:
+            self.assertEqual(uuid.UUID(str(value)), value)
+
+
 @override_settings(SECURE_SSL_REDIRECT=False)
 class AuthAndIsolationTests(TestCase):
     def setUp(self):
@@ -122,6 +174,30 @@ class AuthAndIsolationTests(TestCase):
         self.assertNotContains(self.client.get('/api/export/json/'), 'BOB-PRIVATE')
         self.assertNotContains(self.client.get('/api/issues/'), 'BOB-ISSUE')
         self.assertNotContains(self.client.get('/api/knowledge/'), 'BOB-KNOWLEDGE')
+
+    def test_uuid_detail_is_owned_and_stable_across_edits(self):
+        self.client.force_login(self.alice)
+        resource_url = f'/api/sessions/{self.alice_session.uuid}/'
+        response = self.client.get(resource_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['uuid'], str(self.alice_session.uuid))
+        self.assertEqual(
+            self.client.get(f'/api/sessions/{self.bob_session.uuid}/').status_code,
+            404,
+        )
+        self.assertEqual(
+            self.client.get(f'/api/sessions/{uuid.uuid4()}/').status_code,
+            404,
+        )
+        updated = self.client.patch(
+            resource_url,
+            {'title': 'Changed title', 'subject': 'training', 'details': '# Updated'},
+            content_type='application/json',
+        )
+        self.assertEqual(updated.status_code, 200)
+        self.assertEqual(updated.json()['uuid'], str(self.alice_session.uuid))
+        self.alice_session.refresh_from_db()
+        self.assertEqual(self.alice_session.uuid, uuid.UUID(response.json()['uuid']))
 
     def test_passkey_routes_and_secure_session_settings_are_enabled(self):
         self.assertIn('allauth.mfa', settings.INSTALLED_APPS)
@@ -777,11 +853,19 @@ class AnalyticsAndExportTests(TestCase):
             title='VISIBLE-TITLE',
             details='DEFERRED-DETAILS',
         )
+        summary = self.client.get('/api/sessions/').json()['results'][0]
+        self.assertEqual(summary['title'], 'VISIBLE-TITLE')
+        self.assertEqual(summary['uuid'], str(session.uuid))
+        self.assertNotIn('details', summary)
         compact = self.client.get('/api/sessions/?compact=1').json()['results'][0]
-        self.assertEqual(compact['title'], 'VISIBLE-TITLE')
         self.assertNotIn('details', compact)
-        detail = self.client.get(f'/api/sessions/{session.pk}/').json()
+        self.assertEqual(
+            self.client.get('/api/sessions/?full=1').json()['results'][0]['details'],
+            'DEFERRED-DETAILS',
+        )
+        detail = self.client.get(f'/api/sessions/{session.uuid}/').json()
         self.assertEqual(detail['details'], 'DEFERRED-DETAILS')
+        self.assertEqual(self.client.get(f'/api/sessions/{session.pk}/').status_code, 200)
 
     def test_global_search_spans_sessions_and_issues_without_full_bodies(self):
         session = completed_session(
@@ -986,13 +1070,451 @@ class SessionReviewTests(TestCase):
         )
 
 
+@override_settings(SECURE_SSL_REDIRECT=False, PASSWORD_HASHERS=TEST_PASSWORD_HASHERS)
+class SessionShareTests(TestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.owner = User.objects.create_user('share-owner', password='password')
+        self.other = User.objects.create_user('share-other', password='password')
+        self.session = completed_session(
+            self.owner,
+            title='Public calculus article',
+            details='# Integral\n\n<script>window.pwned = true</script>\n\n$$\\int_0^1 x^2 dx$$',
+        )
+        self.manage_url = f'/api/sessions/{self.session.uuid}/share/'
+
+    def _create_share(self):
+        self.client.force_login(self.owner)
+        response = self.client.post(
+            self.manage_url,
+            {'expires_at': (timezone.now() + datetime.timedelta(days=2)).isoformat()},
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 201)
+        raw_token = urlsplit(response.json()['share_url']).path.rsplit('/', 1)[-1]
+        return response, raw_token
+
+    def test_share_is_private_until_owner_creates_high_entropy_hashed_token(self):
+        self.client.force_login(self.owner)
+        private = self.client.get(self.manage_url)
+        self.assertEqual(private.json()['status'], 'private')
+        self.assertFalse(private.json()['is_shared'])
+
+        response, raw_token = self._create_share()
+        share = SessionShare.objects.get(session=self.session)
+        self.assertGreaterEqual(len(raw_token), 48)
+        self.assertNotEqual(share.token_digest, raw_token)
+        self.assertEqual(share.token_digest, SessionShare.digest(raw_token))
+        self.assertTrue(response.json()['is_active'])
+        self.assertNotIn(raw_token, str(share.__dict__))
+
+    def test_valid_share_is_anonymous_read_only_and_minimal(self):
+        _, raw_token = self._create_share()
+        self.client.logout()
+        public_url = f'/api/public/shares/{raw_token}/'
+        response = self.client.get(public_url)
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(set(response.json()), {
+            'title', 'subject', 'start_time', 'end_time', 'duration_minutes', 'markdown',
+        })
+        self.assertEqual(response.json()['markdown'], self.session.details)
+        serialized = json.dumps(response.json())
+        for private_field in ('user_id', 'email', 'review_count', 'session_id', 'uuid', 'quick-start'):
+            self.assertNotIn(private_field, serialized)
+        self.assertIn('no-store', response['Cache-Control'])
+        self.assertEqual(response['Referrer-Policy'], 'no-referrer')
+        self.client.force_login(self.owner)
+        self.assertEqual(set(self.client.get(public_url).json()), set(response.json()))
+        self.assertEqual(self.client.post(public_url, {}, content_type='application/json').status_code, 405)
+        self.assertEqual(self.client.patch(public_url, {}, content_type='application/json').status_code, 405)
+
+    def test_invalid_revoked_and_expired_tokens_return_404(self):
+        invalid = self.client.get('/api/public/shares/not-a-token/')
+        self.assertEqual(invalid.status_code, 404)
+        self.assertIn('no-store', invalid['Cache-Control'])
+        self.assertEqual(invalid['Referrer-Policy'], 'no-referrer')
+        _, raw_token = self._create_share()
+        self.assertEqual(self.client.delete(self.manage_url).status_code, 200)
+        self.client.logout()
+        self.assertEqual(self.client.get(f'/api/public/shares/{raw_token}/').status_code, 404)
+
+        expired, expired_token = SessionShare.issue(session=self.session)
+        expired.expires_at = timezone.now() - datetime.timedelta(seconds=1)
+        expired.save(update_fields=('expires_at',))
+        self.assertEqual(self.client.get(f'/api/public/shares/{expired_token}/').status_code, 404)
+
+    def test_share_management_is_owner_scoped_and_csrf_protected(self):
+        self.client.force_login(self.other)
+        self.assertEqual(self.client.get(self.manage_url).status_code, 404)
+        self.assertEqual(self.client.post(self.manage_url, {}, content_type='application/json').status_code, 404)
+        self.assertEqual(self.client.delete(self.manage_url).status_code, 404)
+
+        csrf_client = Client(enforce_csrf_checks=True)
+        csrf_client.force_login(self.owner)
+        self.assertEqual(
+            csrf_client.post(self.manage_url, {}, content_type='application/json').status_code,
+            403,
+        )
+        csrf_client.get('/api/auth/session/')
+        csrf = csrf_client.cookies['csrftoken'].value
+        self.assertEqual(
+            csrf_client.post(
+                self.manage_url, {}, content_type='application/json', HTTP_X_CSRFTOKEN=csrf,
+            ).status_code,
+            201,
+        )
+
+
+@override_settings(
+    SECURE_SSL_REDIRECT=False,
+    PASSWORD_HASHERS=TEST_PASSWORD_HASHERS,
+    DATA_ENCRYPTION_MASTER_KEY=TEST_DATA_ENCRYPTION_KEY,
+    DATA_ENCRYPTION_KEY_PATH='/unused/test-data-encryption.key',
+)
+class UserDataAtRestEncryptionTests(TestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.owner = User.objects.create_user('encrypted-owner', password='password')
+        self.other = User.objects.create_user('plaintext-owner', password='password')
+        self.session = completed_session(
+            self.owner,
+            title='PRIVATE-TITLE-SENTINEL',
+            details='# PRIVATE-MARKDOWN-SENTINEL',
+        )
+        self.session.learning_mode = 'exercise'
+        self.session.difficulty = 4
+        self.session.focus_level = 5
+        self.session.save(update_fields=('learning_mode', 'difficulty', 'focus_level'))
+        self.issue = LearningIssue.objects.create(
+            user=self.owner,
+            category='math',
+            topic='PRIVATE-ISSUE-TOPIC',
+            issue_type='concept_error',
+            description='PRIVATE-ISSUE-DESCRIPTION',
+            solution='PRIVATE-ISSUE-SOLUTION',
+        )
+        self.sync, _ = GitHubNoteSync.objects.get_or_create(session=self.session)
+        self.sync.status = 'pending'
+        self.sync.markdown_path = 'sessions/PRIVATE-TITLE-SENTINEL.md'
+        self.sync.last_error = 'PRIVATE-SYNC-ERROR'
+        self.sync.save(update_fields=('status', 'markdown_path', 'last_error'))
+        self.other_session = completed_session(
+            self.other,
+            title='OTHER-PLAINTEXT-TITLE',
+            details='OTHER-PLAINTEXT-DETAILS',
+        )
+        self.client.force_login(self.owner)
+        self.settings_url = '/api/settings/data-encryption/'
+
+    def _raw_session(self, session=None):
+        return TimeLog.objects.filter(pk=(session or self.session).pk).values(
+            'chapter', 'topic', 'title', 'details', 'breakthrough', 'problems',
+            'next_action', 'learning_mode', 'difficulty', 'focus_level',
+            'encrypted_summary', 'encrypted_content',
+        ).get()
+
+    def _raw_issue(self):
+        return LearningIssue.objects.filter(pk=self.issue.pk).values(
+            'topic', 'issue_type', 'description', 'solution', 'encrypted_content',
+        ).get()
+
+    def _raw_sync(self):
+        return GitHubNoteSync.objects.filter(pk=self.sync.pk).values(
+            'markdown_path', 'last_error', 'encrypted_content',
+        ).get()
+
+    def _enable(self):
+        response = self.client.put(
+            self.settings_url,
+            {'enabled': True},
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertTrue(response.json()['enabled'])
+        self.assertEqual(response.json()['mode'], 'server-managed-at-rest')
+        self.assertNotIn('key', response.json())
+        return response
+
+    def test_default_is_plaintext_and_each_user_controls_only_their_policy(self):
+        status_response = self.client.get(self.settings_url)
+        self.assertEqual(status_response.status_code, 200)
+        self.assertFalse(status_response.json()['enabled'])
+        self.assertTrue(status_response.json()['available'])
+        self.assertEqual(self._raw_session()['title'], 'PRIVATE-TITLE-SENTINEL')
+
+        self._enable()
+        self.assertTrue(UserDataEncryptionPreference.objects.get(user=self.owner).enabled)
+        self.assertFalse(
+            UserDataEncryptionPreference.objects.filter(user=self.other, enabled=True).exists(),
+        )
+        self.assertEqual(self._raw_session(self.other_session)['title'], 'OTHER-PLAINTEXT-TITLE')
+
+    def test_enable_removes_private_plaintext_from_raw_database_but_orm_is_transparent(self):
+        self._enable()
+        raw_session = self._raw_session()
+        raw_issue = self._raw_issue()
+        raw_sync = self._raw_sync()
+
+        self.assertIn(raw_session['title'], (None, ''))
+        self.assertEqual(raw_session['details'], '')
+        self.assertEqual(raw_session['chapter'], '')
+        self.assertEqual(raw_session['learning_mode'], '')
+        self.assertIsNone(raw_session['difficulty'])
+        self.assertIsNone(raw_session['focus_level'])
+        self.assertTrue(raw_session['encrypted_summary'].startswith(PAYLOAD_PREFIX))
+        self.assertTrue(raw_session['encrypted_content'].startswith(PAYLOAD_PREFIX))
+        self.assertEqual(raw_issue['topic'], '')
+        self.assertEqual(raw_issue['description'], '')
+        self.assertEqual(raw_issue['solution'], '')
+        self.assertTrue(raw_issue['encrypted_content'].startswith(PAYLOAD_PREFIX))
+        self.assertEqual(raw_sync['markdown_path'], '')
+        self.assertEqual(raw_sync['last_error'], '')
+        self.assertTrue(raw_sync['encrypted_content'].startswith(PAYLOAD_PREFIX))
+
+        raw_dump = json.dumps({'session': raw_session, 'issue': raw_issue, 'sync': raw_sync})
+        for sentinel in (
+            'PRIVATE-TITLE-SENTINEL', 'PRIVATE-MARKDOWN-SENTINEL',
+            'PRIVATE-ISSUE-TOPIC', 'PRIVATE-ISSUE-DESCRIPTION',
+            'PRIVATE-ISSUE-SOLUTION',
+            'PRIVATE-SYNC-ERROR',
+        ):
+            self.assertNotIn(sentinel, raw_dump)
+
+        restored_session = TimeLog.objects.get(pk=self.session.pk)
+        restored_issue = LearningIssue.objects.get(pk=self.issue.pk)
+        restored_sync = GitHubNoteSync.objects.get(pk=self.sync.pk)
+        self.assertEqual(restored_session.title, 'PRIVATE-TITLE-SENTINEL')
+        self.assertEqual(restored_session.details, '# PRIVATE-MARKDOWN-SENTINEL')
+        self.assertEqual(restored_session.learning_mode, 'exercise')
+        self.assertEqual(restored_session.difficulty, 4)
+        self.assertEqual(restored_session.focus_level, 5)
+        self.assertEqual(restored_issue.topic, 'PRIVATE-ISSUE-TOPIC')
+        self.assertEqual(restored_issue.description, 'PRIVATE-ISSUE-DESCRIPTION')
+        self.assertEqual(restored_sync.markdown_path, 'sessions/PRIVATE-TITLE-SENTINEL.md')
+        self.assertEqual(restored_sync.last_error, 'PRIVATE-SYNC-ERROR')
+
+    def test_encrypted_records_keep_list_detail_search_export_github_and_share_behavior(self):
+        self._enable()
+
+        with CaptureQueriesContext(connection) as queries:
+            listing = self.client.get('/api/sessions/').json()['results'][0]
+        self.assertEqual(listing['title'], 'PRIVATE-TITLE-SENTINEL')
+        self.assertNotIn('details', listing)
+        list_queries = [
+            query['sql'] for query in queries
+            if 'tracker_timelog' in query['sql'] and 'COUNT(' not in query['sql']
+        ]
+        self.assertTrue(list_queries)
+        self.assertTrue(all('encrypted_content' not in query for query in list_queries))
+        detail = self.client.get(f'/api/sessions/{self.session.uuid}/')
+        self.assertEqual(detail.status_code, 200)
+        self.assertEqual(detail.json()['details'], '# PRIVATE-MARKDOWN-SENTINEL')
+
+        history_search = self.client.get('/api/sessions/?search=MARKDOWN-SENTINEL')
+        self.assertEqual(history_search.json()['count'], 1)
+        global_search = self.client.get('/api/search/?q=PRIVATE-ISSUE-DESCRIPTION')
+        self.assertEqual([row['kind'] for row in global_search.json()['results']], ['issue'])
+
+        exported = self.client.get('/api/export/markdown/').content.decode('utf-8')
+        self.assertIn('PRIVATE-TITLE-SENTINEL', exported)
+        self.assertIn('PRIVATE-MARKDOWN-SENTINEL', exported)
+        task = session_task(TimeLog.objects.get(pk=self.session.pk))
+        self.assertEqual(task['title'], 'PRIVATE-TITLE-SENTINEL')
+        self.assertEqual(task['details'], '# PRIVATE-MARKDOWN-SENTINEL')
+
+        share_response = self.client.post(
+            f'/api/sessions/{self.session.uuid}/share/',
+            {},
+            content_type='application/json',
+        )
+        self.assertEqual(share_response.status_code, 201)
+        raw_token = urlsplit(share_response.json()['share_url']).path.rsplit('/', 1)[-1]
+        self.client.logout()
+        public = self.client.get(f'/api/public/shares/{raw_token}/')
+        self.assertEqual(public.status_code, 200)
+        self.assertEqual(public.json()['title'], 'PRIVATE-TITLE-SENTINEL')
+        self.assertEqual(public.json()['markdown'], '# PRIVATE-MARKDOWN-SENTINEL')
+
+    def test_new_writes_updates_and_disable_transition_preserve_content(self):
+        self._enable()
+        new_session = completed_session(
+            self.owner,
+            title='NEW-ENCRYPTED-TITLE',
+            details='NEW-ENCRYPTED-DETAILS',
+        )
+        raw_new = self._raw_session(new_session)
+        self.assertIn(raw_new['title'], (None, ''))
+        self.assertNotIn('NEW-ENCRYPTED-TITLE', raw_new['encrypted_summary'])
+        new_issue = LearningIssue.objects.create(
+            user=self.owner,
+            category='math',
+            issue_type='concept_error',
+            description='NEW-ENCRYPTED-ISSUE',
+        )
+        raw_new_issue = LearningIssue.objects.filter(pk=new_issue.pk).values(
+            'description', 'encrypted_content',
+        ).get()
+        self.assertEqual(raw_new_issue['description'], '')
+        self.assertNotIn('NEW-ENCRYPTED-ISSUE', raw_new_issue['encrypted_content'])
+
+        updated = self.client.patch(
+            f'/api/sessions/{self.session.uuid}/',
+            {'title': 'UPDATED-ENCRYPTED-TITLE', 'details': 'UPDATED-ENCRYPTED-DETAILS'},
+            content_type='application/json',
+        )
+        self.assertEqual(updated.status_code, 200)
+        self.assertEqual(updated.json()['title'], 'UPDATED-ENCRYPTED-TITLE')
+        raw_updated = self._raw_session()
+        self.assertIn(raw_updated['title'], (None, ''))
+        self.assertNotIn('UPDATED-ENCRYPTED-TITLE', raw_updated['encrypted_summary'])
+        self.assertNotIn('UPDATED-ENCRYPTED-DETAILS', raw_updated['encrypted_content'])
+
+        disabled = self.client.put(
+            self.settings_url,
+            {'enabled': False},
+            content_type='application/json',
+        )
+        self.assertEqual(disabled.status_code, 200)
+        self.assertFalse(disabled.json()['enabled'])
+        raw_plaintext = self._raw_session()
+        self.assertEqual(raw_plaintext['title'], 'UPDATED-ENCRYPTED-TITLE')
+        self.assertEqual(raw_plaintext['details'], 'UPDATED-ENCRYPTED-DETAILS')
+        self.assertEqual(raw_plaintext['encrypted_summary'], '')
+        self.assertEqual(raw_plaintext['encrypted_content'], '')
+
+    def test_payloads_use_random_nonces_and_reject_database_tampering(self):
+        self._enable()
+        first_payload = self._raw_session()['encrypted_summary']
+        self.client.put(
+            self.settings_url, {'enabled': False}, content_type='application/json',
+        )
+        self._enable()
+        second_payload = self._raw_session()['encrypted_summary']
+        self.assertNotEqual(first_payload, second_payload)
+
+        replacement = 'A' if second_payload[-10] != 'A' else 'B'
+        tampered = f'{second_payload[:-10]}{replacement}{second_payload[-9:]}'
+        TimeLog.objects.filter(pk=self.session.pk).update(encrypted_summary=tampered)
+        with self.assertRaises(DataEncryptionError):
+            TimeLog.objects.get(pk=self.session.pk)
+
+    def test_missing_existing_key_fails_closed_without_generating_a_replacement(self):
+        self._enable()
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            missing_path = Path(temporary_directory) / 'missing.key'
+            with self.settings(
+                DATA_ENCRYPTION_MASTER_KEY='',
+                DATA_ENCRYPTION_KEY_PATH=missing_path,
+            ):
+                response = self.client.put(
+                    self.settings_url,
+                    {'enabled': True},
+                    content_type='application/json',
+                )
+                self.assertEqual(response.status_code, 503)
+                self.assertFalse(missing_path.exists())
+        self.assertTrue(UserDataEncryptionPreference.objects.get(user=self.owner).enabled)
+
+    def test_first_enable_creates_a_private_server_key_file(self):
+        with tempfile.TemporaryDirectory() as temporary_directory:
+            key_path = Path(temporary_directory) / 'generated.key'
+            with self.settings(
+                DATA_ENCRYPTION_MASTER_KEY='',
+                DATA_ENCRYPTION_KEY_PATH=key_path,
+            ):
+                self._enable()
+                self.assertTrue(key_path.exists())
+                self.assertEqual(key_path.stat().st_mode & 0o777, 0o600)
+                self.assertEqual(
+                    TimeLog.objects.get(pk=self.session.pk).title,
+                    'PRIVATE-TITLE-SENTINEL',
+                )
+
+    def test_toggle_is_csrf_protected(self):
+        csrf_client = Client(enforce_csrf_checks=True)
+        csrf_client.force_login(self.owner)
+        denied = csrf_client.put(
+            self.settings_url, {'enabled': True}, content_type='application/json',
+        )
+        self.assertEqual(denied.status_code, 403)
+
+
+@override_settings(SECURE_SSL_REDIRECT=False, PASSWORD_HASHERS=TEST_PASSWORD_HASHERS)
+class SpaHistoryFallbackTests(TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.frontend_dist = Path(self.temp.name)
+        (self.frontend_dist / 'index.html').write_text(
+            '<!doctype html><div id="spa-history-test">SPA</div>', encoding='utf-8',
+        )
+        self.settings_override = override_settings(FRONTEND_DIST=self.frontend_dist)
+        self.settings_override.enable()
+        _frontend_html.cache_clear()
+        self.user = get_user_model().objects.create_user('spa-user', password='password')
+        self.session = completed_session(self.user)
+
+    def tearDown(self):
+        _frontend_html.cache_clear()
+        self.settings_override.disable()
+        self.temp.cleanup()
+
+    def test_private_vue_routes_support_direct_refresh_for_authenticated_user(self):
+        self.client.force_login(self.user)
+        paths = (
+            '/today', '/trends', '/sessions', f'/sessions/{self.session.uuid}',
+            '/issues', '/settings',
+        )
+        for path in paths:
+            with self.subTest(path=path):
+                response = self.client.get(path)
+                self.assertEqual(response.status_code, 200)
+                self.assertContains(response, 'spa-history-test')
+                self.assertIn('private', response['Cache-Control'])
+
+    def test_private_deep_link_redirects_anonymous_but_share_shell_does_not(self):
+        private = self.client.get(f'/sessions/{self.session.uuid}')
+        self.assertEqual(private.status_code, 302)
+        self.assertIn('next=', private.url)
+        public = self.client.get('/share/example-token')
+        self.assertEqual(public.status_code, 200)
+        self.assertContains(public, 'spa-history-test')
+        self.assertIn('no-store', public['Cache-Control'])
+        self.assertIn("default-src 'self'", public['Content-Security-Policy'])
+
+    def test_spa_fallback_does_not_swallow_django_endpoint_namespaces(self):
+        paths = (
+            '/api/not-a-route/', '/accounts/not-a-route/', '/admin/not-a-route/',
+            '/start/not-a-subject', '/launch/not-a-token',
+        )
+        for path in paths:
+            with self.subTest(path=path):
+                response = self.client.get(path)
+                self.assertNotContains(response, 'spa-history-test', status_code=response.status_code)
+
+
 @override_settings(SECURE_SSL_REDIRECT=False)
 class LaunchTokenTests(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user('launcher', password='password')
 
+    def _issue_pair(self, **fields):
+        return LaunchToken.issue_with_disturbance(
+            user=self.user,
+            name=fields.pop('name', 'iPhone'),
+            category=fields.pop('category', 'english'),
+            available_from=fields.pop('available_from', datetime.time(0, 0)),
+            available_until=fields.pop('available_until', datetime.time(0, 0)),
+            **fields,
+        )
+
     def test_token_is_scoped_idempotent_and_does_not_expose_private_data(self):
-        token, raw = LaunchToken.issue(user=self.user, name='desk', category='english')
+        token, raw = LaunchToken.issue(
+            user=self.user,
+            name='desk',
+            category='english',
+            available_from=datetime.time(0, 0),
+            available_until=datetime.time(0, 0),
+        )
         first = self.client.get(f'/launch/{raw}')
         second = self.client.get(f'/launch/{raw}')
         self.assertEqual(first.status_code, 200)
@@ -1005,7 +1527,181 @@ class LaunchTokenTests(TestCase):
     def test_revoked_and_expired_tokens_fail_closed(self):
         revoked, raw_revoked = LaunchToken.issue(user=self.user, name='revoked', category='math', is_active=False)
         expired, raw_expired = LaunchToken.issue(
-            user=self.user, name='expired', category='math', expires_at=timezone.now() - datetime.timedelta(seconds=1),
+            user=self.user, name='expired', category='math',
+            expires_at=timezone.now() - datetime.timedelta(seconds=1),
+            available_from=datetime.time(0, 0), available_until=datetime.time(0, 0),
         )
         self.assertEqual(self.client.get(f'/launch/{raw_revoked}').status_code, 404)
         self.assertEqual(self.client.post(f'/api/launch/{raw_expired}/start').status_code, 404)
+
+    def test_authenticated_create_returns_separate_one_time_shortcut_uris(self):
+        self.client.force_login(self.user)
+        response = self.client.post(
+            '/api/launch-tokens/',
+            {'name': 'Study automation', 'subject': 'math'},
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 201)
+        payload = response.json()
+        self.assertEqual(payload['available_from'], '06:00:00')
+        self.assertEqual(payload['available_until'], '22:00:00')
+        self.assertTrue(payload['shortcut_start_url'].startswith('http://testserver/api/launch/'))
+        self.assertTrue(payload['disturbance_url'].startswith('http://testserver/api/disturbance/'))
+        self.assertEqual(payload['shortcuts_create_url'], 'shortcuts://create-shortcut')
+        self.assertNotEqual(payload['raw_token'], payload['raw_disturbance_token'])
+
+        token = LaunchToken.objects.get(user=self.user)
+        self.assertEqual(token.token_digest, LaunchToken.digest(payload['raw_token']))
+        self.assertEqual(
+            token.disturbance_token_digest,
+            LaunchToken.digest(payload['raw_disturbance_token']),
+        )
+        database_values = json.dumps({
+            'start': token.token_digest,
+            'disturbance': token.disturbance_token_digest,
+        })
+        self.assertNotIn(payload['raw_token'], database_values)
+        self.assertNotIn(payload['raw_disturbance_token'], database_values)
+
+        listing = self.client.get('/api/launch-tokens/').json()[0]
+        self.assertTrue(listing['has_disturbance_uri'])
+        self.assertNotIn('raw_token', listing)
+        self.assertNotIn('shortcut_start_url', listing)
+        self.assertNotIn('disturbance_url', listing)
+
+    def test_pause_resume_and_daily_window_are_non_destructive_no_ops(self):
+        token, raw_start, raw_disturbance = self._issue_pair()
+        self.client.force_login(self.user)
+        paused = self.client.post(f'/api/launch-tokens/{token.pk}/pause/')
+        self.assertEqual(paused.status_code, 200)
+        self.assertTrue(paused.json()['is_paused'])
+        self.client.logout()
+
+        start_paused = self.client.post(f'/api/launch/{raw_start}/start')
+        disturbance_paused = self.client.post(
+            f'/api/disturbance/{raw_disturbance}/record',
+        )
+        self.assertEqual(start_paused.json()['status'], 'paused')
+        self.assertEqual(disturbance_paused.json()['status'], 'paused')
+        self.assertFalse(TimeLog.objects.filter(user=self.user, status='running').exists())
+
+        self.client.force_login(self.user)
+        resumed = self.client.post(f'/api/launch-tokens/{token.pk}/resume/')
+        self.assertFalse(resumed.json()['is_paused'])
+        self.client.logout()
+        self.assertEqual(self.client.post(f'/api/launch/{raw_start}/start').json()['status'], 'started')
+
+        token.available_from = datetime.time(6, 0)
+        token.available_until = datetime.time(22, 0)
+        token.save(update_fields=('available_from', 'available_until'))
+        fixed_now = timezone.make_aware(datetime.datetime(2026, 8, 12, 5, 59))
+        with mock.patch('tracker.models.timezone.now', return_value=fixed_now):
+            outside = self.client.post(f'/api/launch/{raw_start}/start')
+        self.assertEqual(outside.status_code, 200)
+        self.assertEqual(outside.json()['status'], 'outside_schedule')
+        self.assertFalse(outside.json()['started'])
+
+    def test_schedule_supports_boundaries_overnight_and_equal_all_day(self):
+        token, _, _ = self._issue_pair(
+            available_from=datetime.time(6, 0),
+            available_until=datetime.time(22, 0),
+        )
+        local = timezone.get_current_timezone()
+        at = lambda hour, minute=0: timezone.make_aware(
+            datetime.datetime(2026, 8, 12, hour, minute), local,
+        )
+        self.assertTrue(token.schedule_allows(at(6)))
+        self.assertTrue(token.schedule_allows(at(21, 59)))
+        self.assertFalse(token.schedule_allows(at(22)))
+        token.available_from = datetime.time(22, 0)
+        token.available_until = datetime.time(6, 0)
+        self.assertTrue(token.schedule_allows(at(23)))
+        self.assertTrue(token.schedule_allows(at(5, 59)))
+        self.assertFalse(token.schedule_allows(at(12)))
+        token.available_until = datetime.time(22, 0)
+        self.assertTrue(token.schedule_allows(at(12)))
+
+    def test_disturbance_uri_counts_only_a_current_session_and_is_separately_scoped(self):
+        token, raw_start, raw_disturbance = self._issue_pair(max_uses=1)
+        self.assertEqual(self.client.post(f'/api/launch/{raw_start}/start').json()['status'], 'started')
+        self.assertEqual(self.client.post(f'/api/launch/{raw_start}/start').status_code, 404)
+
+        wrong_scope = self.client.post(f'/api/disturbance/{raw_start}/record')
+        self.assertEqual(wrong_scope.status_code, 404)
+        event = self.client.post(f'/api/disturbance/{raw_disturbance}/record')
+        self.assertEqual(event.status_code, 200)
+        self.assertEqual(event.json()['status'], 'recorded')
+        self.assertEqual(event.json()['disturbance_count'], 1)
+        session = TimeLog.objects.get(user=self.user, status='running')
+        self.assertEqual(session.disturbance_count, 1)
+        self.assertIsNotNone(session.last_disturbance_at)
+        self.assertNotIn('session_id', event.json())
+        method_not_allowed = self.client.get(f'/api/disturbance/{raw_disturbance}/record')
+        self.assertEqual(method_not_allowed.status_code, 405)
+        self.assertIn('no-store', method_not_allowed['Cache-Control'])
+        self.assertIn('no-store', event['Cache-Control'])
+
+        invalid = self.client.post('/api/disturbance/not-a-valid-secret/record')
+        self.assertEqual(invalid.status_code, 404)
+        self.assertIn('no-store', invalid['Cache-Control'])
+
+        session.delete()
+        no_session = self.client.post(f'/api/disturbance/{raw_disturbance}/record')
+        self.assertEqual(no_session.json(), {
+            'status': 'no_active_session',
+            'recorded': False,
+            'subject': token.category,
+        })
+
+    def test_disturbance_request_discards_a_stale_running_session(self):
+        _, _, raw_disturbance = self._issue_pair(category='math')
+        stale = TimeLog.objects.create(
+            user=self.user,
+            category='math',
+            status='running',
+            start_time=timezone.now() - datetime.timedelta(hours=12, seconds=1),
+        )
+        response = self.client.post(f'/api/disturbance/{raw_disturbance}/record')
+        self.assertEqual(response.json()['status'], 'stale_session_discarded')
+        self.assertFalse(TimeLog.objects.filter(pk=stale.pk).exists())
+
+    def test_owner_can_configure_and_rotate_each_secret_independently(self):
+        token, raw_start, raw_disturbance = self._issue_pair()
+        other = get_user_model().objects.create_user('other-launch-owner', password='password')
+        self.client.force_login(other)
+        self.assertEqual(
+            self.client.put(
+                f'/api/launch-tokens/{token.pk}/configure/',
+                {'name': 'No access', 'available_from': '07:00', 'available_until': '21:00'},
+                content_type='application/json',
+            ).status_code,
+            404,
+        )
+
+        self.client.force_login(self.user)
+        configured = self.client.put(
+            f'/api/launch-tokens/{token.pk}/configure/',
+            {
+                'name': 'Updated phone', 'available_from': '07:00',
+                'available_until': '21:00', 'max_uses': None,
+                'expires_at': None, 'source_label': 'Action Button', 'notes': '',
+            },
+            content_type='application/json',
+        )
+        self.assertEqual(configured.status_code, 200)
+        self.assertEqual(configured.json()['available_from'], '07:00:00')
+        rotated_disturbance = self.client.post(
+            f'/api/launch-tokens/{token.pk}/regenerate-disturbance/',
+        ).json()
+        self.assertNotIn('shortcut_start_url', rotated_disturbance)
+        self.assertIn('disturbance_url', rotated_disturbance)
+        self.client.logout()
+        self.assertEqual(self.client.post(f'/api/disturbance/{raw_disturbance}/record').status_code, 404)
+        self.assertNotEqual(
+            LaunchToken.objects.get(pk=token.pk).token_digest,
+            LaunchToken.digest(rotated_disturbance['raw_disturbance_token']),
+        )
+        self.assertEqual(
+            LaunchToken.objects.get(pk=token.pk).token_digest,
+            LaunchToken.digest(raw_start),
+        )

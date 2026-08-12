@@ -70,7 +70,18 @@
 - iPhone/iPad 可在登录页直接使用本机 Passkey，不需要扫码；首次绑定在 `Settings` → `Add Passkey`。
 - `Settings` 中可导出 CSV、JSON 或 Markdown。
 - `Issues` 用于保留需要追踪的问题；知识点入口已从当前产品界面移除。
-- 启动链接只具备启动指定科目的权限，可在 `Settings` 中撤销或重新生成。
+
+## iPhone 快捷指令：开始学习与扰动检测
+
+登录后进入 `Settings` → `Start and disturbance URIs`，选择科目并创建一个 capability。系统只在创建或重新生成时展示原始 URI，数据库只保留哈希，因此应立即保存。一个 capability 包含互不通用的两个秘密 URI：Start URI 只能开始绑定科目，Disturbance URI 只能为当前运行中的 Session 增加一次扰动计数；两者都不能读取笔记、账户或其他学习数据。
+
+开始学习：点击 Start URI 旁的 `Copy & Open Shortcuts`，在打开的空白快捷指令中添加 `Get Contents of URL`（获取 URL 内容），粘贴 URI，把 Method 设为 `POST`，Headers 和 Request Body 留空。保存后可以放到主屏幕、锁屏、小组件、操作按钮、NFC 或个人自动化。
+
+断开充电器时记录扰动：复制单独的 Disturbance URI，进入快捷指令的 `Automation → + → Charger → Is Disconnected → Run Immediately`，添加 `Get Contents of URL`，粘贴 URI并使用 `POST`，正文留空。不存在运行中的 Session 时请求不会写入；运行任务超过 12 小时会直接丢弃。
+
+默认有效时段是 Asia/Shanghai 06:00–22:00，结束时刻不包含在有效范围内。开始和结束设为相同值表示全天；也支持 22:00–06:00 这样的跨夜范围。`Pause` 可临时关闭两个 URI而不改变快捷指令，`Resume` 恢复；时段外或暂停时返回成功的空操作，避免自动化反复报错。URI 泄露时应单独重新生成对应 URI，旧值立即失效；`Revoke` 或删除会关闭整个 capability。
+
+The public guide at `/guide/` contains the same setup steps side by side in English and Chinese. A capability URI is a bearer secret: anyone who obtains it can perform only that URI's narrow action, so do not place it in screenshots or public notes.
 
 ## 邀请新账号
 

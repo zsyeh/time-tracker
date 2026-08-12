@@ -15,11 +15,15 @@ from tracker.api_views import (
     LearningIssueDetailView,
     LearningIssueListCreateView,
     RuntimeSettingsView,
+    UserDataEncryptionView,
     SessionAbandonView,
     SessionDetailView,
     SessionFinishView,
     SessionListCreateView,
     SessionReviewView,
+    SessionShareView,
+    SessionUuidDetailView,
+    PublicSessionShareView,
     auth_logout,
     auth_session,
     export_csv,
@@ -27,7 +31,10 @@ from tracker.api_views import (
     export_markdown,
 )
 from tracker.public_views import contact_view, guide_view, legal_view
-from tracker.web_views import LaunchDeviceView, direct_start_view, launch_browser_view, spa_view
+from tracker.web_views import (
+    LaunchDeviceView, LaunchDisturbanceView, direct_start_view,
+    launch_browser_view, public_spa_view, spa_view,
+)
 
 
 urlpatterns = [
@@ -43,6 +50,11 @@ urlpatterns = [
     path('start/<str:subject>', direct_start_view, name='direct_start'),
     path('launch/<str:raw_token>', launch_browser_view, name='launch_browser'),
     path('api/launch/<str:raw_token>/start', LaunchDeviceView.as_view(), name='launch_device'),
+    path(
+        'api/disturbance/<str:raw_token>/record',
+        LaunchDisturbanceView.as_view(),
+        name='launch_disturbance',
+    ),
     path('api/auth/session/', auth_session, name='auth_session'),
     path('api/auth/logout/', auth_logout, name='auth_logout'),
     path('api/sessions/', SessionListCreateView.as_view(), name='session_list'),
@@ -50,8 +62,13 @@ urlpatterns = [
     path('api/sessions/<int:pk>/finish/', SessionFinishView.as_view(), name='session_finish'),
     path('api/sessions/<int:pk>/abandon/', SessionAbandonView.as_view(), name='session_abandon'),
     path('api/sessions/<int:pk>/reviews/', SessionReviewView.as_view(), name='session_reviews'),
+    path('api/sessions/<uuid:session_uuid>/reviews/', SessionReviewView.as_view(), name='session_uuid_reviews'),
+    path('api/sessions/<uuid:session_uuid>/share/', SessionShareView.as_view(), name='session_share'),
+    path('api/sessions/<uuid:session_uuid>/', SessionUuidDetailView.as_view(), name='session_uuid_detail'),
+    path('api/public/shares/<str:raw_token>/', PublicSessionShareView.as_view(), name='public_session_share'),
     path('api/dashboard/overview/', DashboardOverviewView.as_view(), name='dashboard_overview'),
     path('api/settings/runtime/', RuntimeSettingsView.as_view(), name='runtime_settings'),
+    path('api/settings/data-encryption/', UserDataEncryptionView.as_view(), name='data_encryption_settings'),
     path('api/invite-codes/', InviteCodeListCreateView.as_view(), name='invite_code_list'),
     path('api/invite-codes/<int:pk>/<str:action>/', InviteCodeActionView.as_view(), name='invite_code_action'),
     path('api/search/', GlobalSearchView.as_view(), name='global_search'),
@@ -68,5 +85,14 @@ urlpatterns = [
     path('api/export/csv/', export_csv, name='export_csv'),
     path('api/export/json/', export_json, name='export_json'),
     path('api/export/markdown/', export_markdown, name='export_markdown'),
+    # Explicit SPA history fallbacks keep Django API/Auth/device endpoints out
+    # of the catchment while allowing direct browser refreshes.
+    path('today', spa_view, name='spa_today'),
+    path('trends', spa_view, name='spa_trends'),
+    path('sessions', spa_view, name='spa_sessions'),
+    path('sessions/<uuid:session_uuid>', spa_view, name='spa_session_detail'),
+    path('issues', spa_view, name='spa_issues'),
+    path('settings', spa_view, name='spa_settings'),
+    path('share/<str:raw_token>', public_spa_view, name='spa_public_share'),
     path('', spa_view, name='dashboard'),
 ]

@@ -197,6 +197,14 @@ TRACKER_COUNTDOWN_LABEL = os.environ.get(
 TRACKER_LOCAL_ENV_PATH = Path(
     os.environ.get('TRACKER_LOCAL_ENV_PATH', BASE_DIR / '.env')
 )
+# Optional at-rest encryption creates a server-only key beside the local
+# settings file on first use. Docker therefore keeps it in the existing data
+# volume, while native installs keep it outside PostgreSQL and its backups.
+DATA_ENCRYPTION_MASTER_KEY = os.environ.get('DATA_ENCRYPTION_MASTER_KEY', '').strip()
+DATA_ENCRYPTION_KEY_PATH = Path(os.environ.get(
+    'DATA_ENCRYPTION_KEY_PATH',
+    TRACKER_LOCAL_ENV_PATH.parent / '.data-encryption.key',
+))
 
 # The MCP process is intentionally separate from Django's web process. A secret
 # URL segment is supported because ChatGPT developer-mode apps cannot attach an
