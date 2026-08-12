@@ -64,6 +64,8 @@ def start_session(user, subject, **metadata):
                 category=category,
                 start_time=now,
                 status='running',
+                task_preset=metadata.get('task_preset'),
+                task_path=metadata.get('task_path', ''),
                 chapter=metadata.get('chapter', ''),
                 topic=metadata.get('topic', ''),
                 learning_mode=metadata.get('learning_mode', ''),
@@ -74,6 +76,9 @@ def start_session(user, subject, **metadata):
             if active.category == category:
                 return active, True
             raise ActiveSessionConflict(active)
+        task_preset = metadata.get('task_preset')
+        if task_preset is not None:
+            session.tags.set(task_preset.tags.all())
     return session, False
 
 
@@ -104,10 +109,10 @@ def finish_session(session, reflection):
             locked.delete()
             return None, True, discard_reason
 
-        required = ('title', 'details')
-        missing = [field for field in required if not str(reflection.get(field, '')).strip()]
-        if missing:
-            raise ValueError(f"missing completion fields: {', '.join(missing)}")
+        reflection = dict(reflection)
+        selected_tags = reflection.pop('tags', None)
+        if not str(reflection.get('title', '')).strip() and locked.task_path:
+            reflection['title'] = locked.task_path.split(' › ')[-1].strip()
 
         locked.end_time = end_time
         locked.status = 'completed'
@@ -129,6 +134,8 @@ def finish_session(session, reflection):
                 setattr(locked, field, reflection[field])
         locked.full_clean()
         locked.save()
+        if selected_tags is not None:
+            locked.tags.set(selected_tags)
     return locked, True, None
 
 

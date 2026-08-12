@@ -3,14 +3,147 @@ import datetime
 from django.utils import timezone
 from rest_framework import serializers
 
-from .models import InviteCode, KnowledgePoint, LaunchToken, LearningIssue, TimeLog
+from .models import (
+    InviteCode, KnowledgePoint, LaunchToken, LearningIssue, StudyTag, TaskPreset,
+    TimeLog,
+)
 from .services import normalize_subject
+
+
+class StudyTagSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = StudyTag
+        fields = ('id', 'name', 'color', 'created_at')
+        read_only_fields = ('id', 'created_at')
+
+    def validate_name(self, value):
+        value = ' '.join(value.split()).strip()
+        if not value:
+            raise serializers.ValidationError('Tag name cannot be blank.')
+        request = self.context['request']
+        matches = StudyTag.objects.filter(user=request.user)
+        if self.instance:
+            matches = matches.exclude(pk=self.instance.pk)
+        if any(tag.name.casefold() == value.casefold() for tag in matches):
+            raise serializers.ValidationError('A tag with this name already exists.')
+        return value
+
+
+class TaskPresetReadSerializer(serializers.ModelSerializer):
+    parent = serializers.IntegerField(source='parent_id', allow_null=True, read_only=True)
+    subject_label = serializers.CharField(source='get_subject_display', read_only=True)
+    depth = serializers.IntegerField(read_only=True)
+    path = serializers.CharField(source='path_label', read_only=True)
+    shortcut_label = serializers.SerializerMethodField()
+    tags = StudyTagSerializer(many=True, read_only=True)
+
+    class Meta:
+        model = TaskPreset
+        fields = (
+            'id', 'uuid', 'subject', 'subject_label', 'name', 'parent', 'depth',
+            'path', 'shortcut_label', 'tags', 'is_home_shortcut', 'is_active',
+            'sort_order', 'created_at', 'updated_at',
+        )
+
+    def get_shortcut_label(self, obj):
+        return f'{obj.get_subject_display()}: {obj.path_label}'
+
+
+class TaskPresetWriteSerializer(serializers.Serializer):
+    name = serializers.CharField(max_length=120)
+    subject = serializers.ChoiceField(choices=[choice[0] for choice in TimeLog.CATEGORY_CHOICES])
+    parent = serializers.IntegerField(required=False, allow_null=True)
+    tag_ids = serializers.ListField(
+        child=serializers.IntegerField(min_value=1),
+        required=False,
+        default=list,
+    )
+    is_home_shortcut = serializers.BooleanField(required=False, default=False)
+    is_active = serializers.BooleanField(required=False, default=True)
+    sort_order = serializers.IntegerField(min_value=0, max_value=65535, required=False, default=0)
+
+    def validate(self, attrs):
+        request = self.context['request']
+        instance = self.context.get('instance')
+        subject = attrs.get('subject', instance.subject if instance else None)
+        parent_id = attrs.get('parent', instance.parent_id if instance else None)
+        parent = None
+        if parent_id is not None:
+            parent = TaskPreset.objects.filter(user=request.user, pk=parent_id).select_related(
+                'parent__parent__parent',
+            ).first()
+            if parent is None:
+                raise serializers.ValidationError({'parent': 'Parent task was not found.'})
+            if parent.subject != subject:
+                raise serializers.ValidationError({'parent': 'Parent must belong to the same subject.'})
+            if not parent.is_active:
+                raise serializers.ValidationError({'parent': 'Parent task is inactive.'})
+            if parent.depth >= TaskPreset.MAX_DEPTH:
+                raise serializers.ValidationError({'parent': 'Task nesting is limited to four levels.'})
+            if instance:
+                cursor = parent
+                while cursor is not None:
+                    if cursor.pk == instance.pk:
+                        raise serializers.ValidationError({'parent': 'A task cannot contain itself.'})
+                    cursor = cursor.parent
+
+        name = ' '.join(attrs.get('name', instance.name if instance else '').split()).strip()
+        if not name:
+            raise serializers.ValidationError({'name': 'Task name cannot be blank.'})
+        siblings = TaskPreset.objects.filter(
+            user=request.user,
+            subject=subject,
+            parent_id=parent_id,
+        )
+        if instance:
+            siblings = siblings.exclude(pk=instance.pk)
+        if any(item.name.casefold() == name.casefold() for item in siblings):
+            raise serializers.ValidationError({'name': 'This task name already exists at that level.'})
+
+        if instance and attrs.get('is_active') is False and instance.children.filter(is_active=True).exists():
+            raise serializers.ValidationError({
+                'is_active': 'Archive or move active child tasks first.',
+            })
+
+        tag_ids = attrs.get('tag_ids')
+        if tag_ids is None and instance:
+            tags = list(instance.tags.all())
+        else:
+            unique_tag_ids = list(dict.fromkeys(tag_ids or []))
+            tags = list(StudyTag.objects.filter(user=request.user, pk__in=unique_tag_ids))
+            if len(tags) != len(unique_tag_ids):
+                raise serializers.ValidationError({'tag_ids': 'One or more tags were not found.'})
+
+        attrs['name'] = name
+        attrs['_parent'] = parent
+        attrs['_tags'] = tags
+        return attrs
+
+    def save(self):
+        request = self.context['request']
+        instance = self.context.get('instance')
+        values = dict(self.validated_data)
+        parent = values.pop('_parent')
+        tags = values.pop('_tags')
+        values.pop('parent', None)
+        values.pop('tag_ids', None)
+        if instance is None:
+            instance = TaskPreset.objects.create(user=request.user, parent=parent, **values)
+        else:
+            for field, value in values.items():
+                setattr(instance, field, value)
+            instance.parent = parent
+            instance.save()
+        instance.tags.set(tags)
+        return instance
 
 
 class StudySessionSerializer(serializers.ModelSerializer):
     subject = serializers.CharField(source='category')
     subject_label = serializers.CharField(source='get_category_display', read_only=True)
     duration_minutes = serializers.IntegerField(read_only=True)
+    task_preset = serializers.PrimaryKeyRelatedField(read_only=True)
+    tags = StudyTagSerializer(many=True, read_only=True)
 
     class Meta:
         model = TimeLog
@@ -19,6 +152,9 @@ class StudySessionSerializer(serializers.ModelSerializer):
             'uuid',
             'subject',
             'subject_label',
+            'task_preset',
+            'task_path',
+            'tags',
             'chapter',
             'topic',
             'start_time',
@@ -66,12 +202,14 @@ class StudySessionSummarySerializer(serializers.ModelSerializer):
     subject = serializers.CharField(source='category')
     subject_label = serializers.CharField(source='get_category_display', read_only=True)
     duration_minutes = serializers.IntegerField(read_only=True)
+    task_preset = serializers.PrimaryKeyRelatedField(read_only=True)
+    tags = StudyTagSerializer(many=True, read_only=True)
 
     class Meta:
         model = TimeLog
         fields = (
             'id', 'uuid', 'subject', 'subject_label', 'start_time', 'end_time',
-            'duration_minutes', 'status', 'title',
+            'duration_minutes', 'status', 'title', 'task_preset', 'task_path', 'tags',
             'review_count', 'last_reviewed_at',
         )
 
@@ -103,7 +241,11 @@ class PublicSharedSessionSerializer(serializers.ModelSerializer):
 
 
 class StartSessionSerializer(serializers.Serializer):
-    subject = serializers.ChoiceField(choices=('math', 'english', 'professional', 'major', 'training'))
+    subject = serializers.ChoiceField(
+        choices=('math', 'english', 'professional', 'major', 'training'),
+        required=False,
+    )
+    task_preset = serializers.IntegerField(min_value=1, required=False, allow_null=True)
     chapter = serializers.CharField(max_length=200, required=False, allow_blank=True)
     topic = serializers.CharField(max_length=200, required=False, allow_blank=True)
     learning_mode = serializers.ChoiceField(
@@ -112,6 +254,11 @@ class StartSessionSerializer(serializers.Serializer):
         allow_blank=True,
     )
     confidence_before = serializers.IntegerField(min_value=1, max_value=5, required=False, allow_null=True)
+
+    def validate(self, attrs):
+        if not attrs.get('subject') and not attrs.get('task_preset'):
+            raise serializers.ValidationError('Choose a subject or task preset.')
+        return attrs
 
 
 class FinishSessionSerializer(serializers.Serializer):
@@ -134,6 +281,10 @@ class FinishSessionSerializer(serializers.Serializer):
     # sessions can be deleted without forcing the user to fill out a form.
     title = serializers.CharField(required=False, allow_blank=True)
     details = serializers.CharField(required=False, allow_blank=True)
+    tag_ids = serializers.ListField(
+        child=serializers.IntegerField(min_value=1),
+        required=False,
+    )
 
 
 class LearningIssueSerializer(serializers.ModelSerializer):

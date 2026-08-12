@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
-import { api, post, put } from '../lib/api'
-import type { DataEncryptionStatus, InviteCode, LaunchToken, RuntimeSettingsResponse, RuntimeSettingsValues } from '../types'
+import { api, patch, post, put, remove } from '../lib/api'
+import type { DataEncryptionStatus, InviteCode, LaunchToken, RuntimeSettingsResponse, RuntimeSettingsValues, StudyTag, Subject, TaskPreset } from '../types'
 
 const emit = defineEmits<{ changed: [] }>()
 
@@ -30,6 +30,16 @@ const runtimeForm = reactive<RuntimeSettingsValues>({
 const form = reactive({ name: 'Study shortcut', subject: 'math', source_label: 'iPhone Shortcuts', max_uses: null as number | null, expires_at: null as string | null, notes: '', available_from: '06:00', available_until: '22:00' })
 const tokenConfigureForm = reactive({ name: '', source_label: '', max_uses: null as number | null, expires_at: null as string | null, notes: '', available_from: '06:00', available_until: '22:00' })
 const inviteForm = reactive({ name: 'New member', max_uses: 1, expires_at: '' })
+const presets = ref<TaskPreset[]>([])
+const studyTags = ref<StudyTag[]>([])
+const presetOpen = ref(false)
+const editingPreset = ref<TaskPreset | null>(null)
+const tagName = ref('')
+const tagColor = ref('green')
+const presetForm = reactive({
+  name: '', subject: 'math' as Subject, parent: null as number | null,
+  tag_ids: [] as number[], is_home_shortcut: false, is_active: true, sort_order: 0,
+})
 const subjects = { math: 'Mathematics', english: 'English', major: 'Major', training: 'Training' }
 const themes = [
   { id: 'coolapk', label: 'Coolapk Green', color: '#10c469' },
@@ -47,12 +57,36 @@ const dailyInviteAvailable = computed(() => {
   const today = shanghaiDate.format(new Date())
   return !invites.value.some((invite) => invite.is_self_service && invite.issued_local_date === today)
 })
+type PresetTreeNode = TaskPreset & { children: PresetTreeNode[] }
+const presetTree = computed<PresetTreeNode[]>(() => {
+  const nodes = new Map<number, PresetTreeNode>()
+  presets.value.forEach((preset) => nodes.set(preset.id, { ...preset, children: [] }))
+  const roots: PresetTreeNode[] = []
+  nodes.forEach((node) => {
+    const parent = node.parent ? nodes.get(node.parent) : null
+    if (parent) parent.children.push(node)
+    else roots.push(node)
+  })
+  const sortNodes = (items: PresetTreeNode[]) => {
+    items.sort((a, b) => a.subject.localeCompare(b.subject) || a.sort_order - b.sort_order || a.name.localeCompare(b.name))
+    items.forEach((item) => sortNodes(item.children))
+  }
+  sortNodes(roots)
+  return roots
+})
+const parentOptions = computed(() => presets.value.filter((preset) => (
+  preset.is_active
+  && preset.subject === presetForm.subject
+  && preset.depth < 4
+  && preset.id !== editingPreset.value?.id
+)))
 
 function setTheme(value: string) {
   theme.value = value
   document.documentElement.dataset.theme = value
   localStorage.setItem('learning-os-theme', value)
 }
+function tagLabels(tags: StudyTag[]) { return tags.map((tag) => `#${tag.name}`).join(' ') }
 
 async function load() {
   try { tokens.value = await api<LaunchToken[]>('/api/launch-tokens/') }
@@ -78,6 +112,74 @@ async function loadEncryption() {
   try { dataEncryption.value = await api<DataEncryptionStatus>('/api/settings/data-encryption/') }
   catch (error) { ElMessage.error((error as Error).message) }
   finally { encryptionLoading.value = false }
+}
+async function loadOrganization() {
+  try {
+    const [presetValues, tagValues] = await Promise.all([
+      api<TaskPreset[]>('/api/task-presets/'),
+      api<StudyTag[]>('/api/study-tags/'),
+    ])
+    presets.value = presetValues
+    studyTags.value = tagValues
+  } catch (error) { ElMessage.error((error as Error).message) }
+}
+function openPresetEditor(preset?: TaskPreset, parent?: TaskPreset) {
+  editingPreset.value = preset || null
+  Object.assign(presetForm, preset ? {
+    name: preset.name,
+    subject: preset.subject,
+    parent: preset.parent,
+    tag_ids: preset.tags.map((tag) => tag.id),
+    is_home_shortcut: preset.is_home_shortcut,
+    is_active: preset.is_active,
+    sort_order: preset.sort_order,
+  } : {
+    name: '',
+    subject: parent?.subject || 'math',
+    parent: parent?.id || null,
+    tag_ids: parent?.tags.map((tag) => tag.id) || [],
+    is_home_shortcut: false,
+    is_active: true,
+    sort_order: 0,
+  })
+  presetOpen.value = true
+}
+async function savePreset() {
+  try {
+    if (editingPreset.value) await patch(`/api/task-presets/${editingPreset.value.id}/`, presetForm)
+    else await post('/api/task-presets/', presetForm)
+    presetOpen.value = false
+    editingPreset.value = null
+    await loadOrganization()
+    emit('changed')
+    ElMessage.success('Task preset saved')
+  } catch (error) { ElMessage.error((error as Error).message) }
+}
+async function deletePreset(preset: TaskPreset) {
+  try {
+    await ElMessageBox.confirm(
+      preset.is_active ? 'Used tasks are archived so historical Sessions keep their classification.' : 'Remove this unused task?',
+      'Remove task preset?',
+      { type: 'warning', confirmButtonText: 'Remove', cancelButtonText: 'Cancel' },
+    )
+    await remove(`/api/task-presets/${preset.id}/`)
+    await loadOrganization()
+    emit('changed')
+  } catch (error) { if (error !== 'cancel') ElMessage.error((error as Error).message) }
+}
+async function createStudyTag() {
+  if (!tagName.value.trim()) return
+  try {
+    await post('/api/study-tags/', { name: tagName.value, color: tagColor.value })
+    tagName.value = ''
+    await loadOrganization()
+  } catch (error) { ElMessage.error((error as Error).message) }
+}
+async function deleteStudyTag(tag: StudyTag) {
+  try {
+    await remove(`/api/study-tags/${tag.id}/`)
+    await loadOrganization()
+  } catch (error) { ElMessage.error((error as Error).message) }
 }
 async function changeEncryption(value: string | number | boolean) {
   const enabled = Boolean(value)
@@ -192,7 +294,7 @@ async function copyAndOpenShortcuts(url: string | undefined, label: string) {
   ElMessage.success(`${label} copied. Paste it into Get Contents of URL.`)
   window.location.href = revealed.value?.shortcuts_create_url || 'shortcuts://create-shortcut'
 }
-onMounted(() => { load(); loadRuntime(); loadAccess(); loadEncryption() })
+onMounted(() => { load(); loadRuntime(); loadAccess(); loadEncryption(); loadOrganization() })
 </script>
 
 <template>
@@ -256,6 +358,23 @@ onMounted(() => { load(); loadRuntime(); loadAccess(); loadEncryption() })
         <div class="settings-actions"><a class="el-button el-button--primary" href="/admin/">Open Django Admin</a><a class="text-link" href="/admin/tracker/invitecode/dashboard/">Invitation dashboard</a><a class="text-link" href="/admin/tracker/invitecode/auth-recovery/">Reset login status</a></div>
       </article>
     </section>
+    <section class="panel organization-panel">
+      <div class="section-heading"><div><span class="eyebrow">CONTENT ORGANIZATION</span><h2>Task presets and tags</h2></div><el-button type="primary" @click="openPresetEditor()">New task preset</el-button></div>
+      <p class="section-note">Build up to four custom levels below a subject. Mark any task as a homepage shortcut; its tags are preselected when the Session starts.</p>
+      <div class="tag-manager">
+        <div class="tag-create"><el-input v-model="tagName" maxlength="64" placeholder="New tag name" @keyup.enter="createStudyTag" /><el-select v-model="tagColor" aria-label="Tag color"><el-option label="Green" value="green" /><el-option label="Blue" value="blue" /><el-option label="Pink" value="pink" /><el-option label="Yellow" value="yellow" /><el-option label="Purple" value="purple" /></el-select><el-button @click="createStudyTag">Add tag</el-button></div>
+        <div v-if="studyTags.length" class="managed-tags"><span v-for="tag in studyTags" :key="tag.id" :class="`study-tag tag-${tag.color}`">#{{ tag.name }}<button type="button" :aria-label="`Delete ${tag.name}`" @click="deleteStudyTag(tag)">×</button></span></div>
+      </div>
+      <el-empty v-if="!presets.length" description="No task presets yet. Example: Mathematics → Calculus → Limits." />
+      <el-tree v-else :data="presetTree" node-key="id" default-expand-all :expand-on-click-node="false" class="preset-tree">
+        <template #default="{ data }">
+          <div class="preset-tree-row" :class="{ inactive: !data.is_active }">
+            <div><strong>{{ data.parent ? data.name : `${data.subject_label}: ${data.name}` }}</strong><small><span v-if="data.is_home_shortcut">HOME SHORTCUT · </span>LEVEL {{ data.depth }}<span v-if="data.tags.length"> · {{ tagLabels(data.tags) }}</span></small></div>
+            <div><el-button v-if="data.depth < 4 && data.is_active" text @click.stop="openPresetEditor(undefined, data)">Add child</el-button><el-button text @click.stop="openPresetEditor(data)">Edit</el-button><el-button text type="danger" @click.stop="deletePreset(data)">{{ data.is_active ? 'Remove' : 'Delete' }}</el-button></div>
+          </div>
+        </template>
+      </el-tree>
+    </section>
     <section class="panel token-panel invite-panel">
       <div class="section-heading"><div><span class="eyebrow">{{ isAdmin ? 'ADMIN / REGISTRATION' : 'ACCOUNT / SHARING' }}</span><h2>Invite codes</h2></div><div class="invite-heading-actions"><a v-if="isAdmin" class="text-link" href="/admin/tracker/invitecode/dashboard/">Full visitor log</a><el-button type="primary" :disabled="!dailyInviteAvailable" @click="inviteOpen = true">{{ dailyInviteAvailable ? 'Generate invite' : 'Daily invite used' }}</el-button></div></div>
       <p class="section-note">{{ isAdmin ? 'Choose 1–100 uses per code. Raw codes are shown once and stored as hashes.' : 'You can generate one single-use invite per Shanghai calendar day. You can see the username after it is redeemed.' }}</p>
@@ -292,6 +411,16 @@ onMounted(() => { load(); loadRuntime(); loadAccess(); loadEncryption() })
         <el-form-item label="Notes"><el-input v-model="form.notes" type="textarea" /></el-form-item>
       </el-form>
       <template #footer><el-button @click="open = false">Cancel</el-button><el-button type="primary" @click="create">Create capability</el-button></template>
+    </el-dialog>
+    <el-dialog v-model="presetOpen" :title="editingPreset ? 'Edit task preset' : 'Create task preset'" width="min(640px, 94vw)">
+      <el-form label-position="top">
+        <div class="form-pair"><el-form-item label="Subject"><el-select v-model="presetForm.subject" :disabled="Boolean(editingPreset)"><el-option v-for="(label, key) in subjects" :key="key" :label="label" :value="key" /></el-select></el-form-item><el-form-item label="Task name"><el-input v-model="presetForm.name" maxlength="120" placeholder="For example: Limits" /></el-form-item></div>
+        <el-form-item label="Parent task · Optional"><el-select v-model="presetForm.parent" clearable placeholder="Directly below the subject"><el-option v-for="preset in parentOptions" :key="preset.id" :label="`${preset.path} · level ${preset.depth}`" :value="preset.id" /></el-select></el-form-item>
+        <el-form-item label="Default tags"><el-select v-model="presetForm.tag_ids" multiple clearable placeholder="Choose reusable tags"><el-option v-for="tag in studyTags" :key="tag.id" :label="`#${tag.name}`" :value="tag.id" /></el-select></el-form-item>
+        <div class="preset-switches"><label><el-switch v-model="presetForm.is_home_shortcut" /> Show as a homepage button</label><label v-if="editingPreset"><el-switch v-model="presetForm.is_active" /> Active</label><el-form-item label="Order"><el-input-number v-model="presetForm.sort_order" :min="0" :max="65535" /></el-form-item></div>
+        <el-alert title="A blank completion title defaults to this task's leaf name. Markdown details may remain empty." type="info" :closable="false" show-icon />
+      </el-form>
+      <template #footer><el-button @click="presetOpen = false">Cancel</el-button><el-button type="primary" @click="savePreset">Save task</el-button></template>
     </el-dialog>
     <el-dialog :model-value="Boolean(revealed)" title="Save these capability URIs now" width="min(760px, 96vw)" @close="revealed = null">
       <el-alert title="Raw secrets are stored only as hashes and cannot be shown again after this dialog closes." type="warning" :closable="false" show-icon />

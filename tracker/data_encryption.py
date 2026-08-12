@@ -193,7 +193,8 @@ def set_user_encryption(user, enabled: bool) -> dict:
     """Publish the target policy, then rewrite all protected rows."""
 
     from .models import (
-        GitHubNoteSync, LearningIssue, TimeLog, UserDataEncryptionPreference,
+        GitHubNoteSync, LearningIssue, StudyTag, TaskPreset, TimeLog,
+        UserDataEncryptionPreference,
     )
 
     migrated = 0
@@ -216,7 +217,7 @@ def set_user_encryption(user, enabled: bool) -> dict:
         preference.enabled = enabled
         preference.save(update_fields=('enabled', 'updated_at'))
 
-        for model in (TimeLog, LearningIssue):
+        for model in (TimeLog, LearningIssue, StudyTag, TaskPreset):
             for instance in model.objects.filter(user_id=user.pk).iterator(chunk_size=200):
                 updates = instance.encrypted_storage_updates(enabled=enabled)
                 model.objects.filter(pk=instance.pk).update(**updates)

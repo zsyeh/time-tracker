@@ -102,13 +102,14 @@ onMounted(load)
 
     <template v-else-if="session">
       <section class="page-intro session-article-heading">
-        <div><button type="button" class="article-back" @click="router.push('/sessions')"><el-icon><Back /></el-icon> SESSION HISTORY</button><span class="eyebrow">SESSION ARTICLE / {{ session.uuid }}</span><h1>{{ session.title || 'Untitled session' }}</h1><p>{{ session.subject_label }} · permanent private resource</p></div>
+        <div><button type="button" class="article-back" @click="router.push('/sessions')"><el-icon><Back /></el-icon> SESSION HISTORY</button><span class="eyebrow">SESSION ARTICLE / {{ session.uuid }}</span><h1>{{ session.title || 'Untitled session' }}</h1><p>{{ session.subject_label }}<span v-if="session.task_path"> · {{ session.task_path }}</span> · permanent private resource</p></div>
         <el-button v-if="!editing" :icon="EditPen" @click="editing = true">Edit</el-button>
       </section>
 
       <section class="panel session-article-card session-detail-page">
         <dl><div><dt>SUBJECT</dt><dd>{{ session.subject_label }}</dd></div><div><dt>START</dt><dd>{{ localDate(session.start_time) }}</dd></div><div><dt>END</dt><dd>{{ localDate(session.end_time) }}</dd></div><div><dt>DURATION</dt><dd>{{ duration(session.duration_minutes) }}</dd></div></dl>
         <p class="session-disturbance-summary"><b>{{ session.disturbance_count }}</b> DISTURBANCE{{ session.disturbance_count === 1 ? '' : 'S' }}<span v-if="session.last_disturbance_at"> · LAST {{ localDate(session.last_disturbance_at) }}</span></p>
+        <div v-if="session.tags.length" class="completion-tags"><span>TAGS</span><button v-for="tag in session.tags" :key="tag.id" type="button" class="selected">#{{ tag.name }}</button></div>
         <ReviewTrend v-if="session.status === 'completed'" :trend="reviewTrend" :loading="loading" />
         <el-form v-if="editing" label-position="top" class="simple-review review-editor">
           <el-form-item label="Title"><el-input v-model="edit.title" maxlength="500" show-word-limit /></el-form-item>

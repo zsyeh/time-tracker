@@ -241,14 +241,10 @@ def start_task(category: str) -> Dict[str, Any]:
     }
 
 
-def stop_task(title: str, details: str) -> Dict[str, Any]:
-    """End the active task with one concise title and one details body."""
+def stop_task(title: str = '', details: str = '') -> Dict[str, Any]:
+    """End the active task; the title and Markdown details are optional."""
     title = title.strip()
     details = details.strip()
-    if not title:
-        raise ValueError('title is required when ending a task')
-    if not details:
-        raise ValueError('details are required when ending a task')
     if len(title) > MAX_TITLE_LENGTH:
         raise ValueError(f'title must not exceed {MAX_TITLE_LENGTH} characters')
     if len(details) > MAX_DETAILS_LENGTH:
@@ -392,8 +388,8 @@ async def _mcp_start_task(category: str) -> Dict[str, Any]:
     return await sync_to_async(start_task, thread_sensitive=True)(category)
 
 
-async def _mcp_stop_task(title: str, details: str) -> Dict[str, Any]:
-    """End the active task with a short title and a full details body."""
+async def _mcp_stop_task(title: str = '', details: str = '') -> Dict[str, Any]:
+    """End the active task; an optional title and Markdown body may be supplied."""
     return await sync_to_async(stop_task, thread_sensitive=True)(title, details)
 
 
@@ -403,8 +399,9 @@ def create_mcp_server() -> FastMCP:
         name='jkxx Study Tracker',
         instructions=(
             'Query study records and target progress. Start a task only after explicit user intent. '
-            'Before ending an eligible task, collect exactly two fields: a short title and a full '
-            'details body. Keep every prompt factual and in English; do not add motivational text. '
+            'When ending an eligible task, accept an optional short title and optional Markdown '
+            'details. Never delay completion because either is empty. Keep every prompt factual '
+            'and in English; do not add motivational text. '
             'Sessions shorter than 25 minutes or longer than 12 hours are deleted. '
             'Categories: math, english, major, training.'
         ),

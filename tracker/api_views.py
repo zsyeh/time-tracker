@@ -9,6 +9,7 @@ from django.contrib.auth import logout
 from django.core.cache import cache
 from django.db import IntegrityError, transaction
 from django.db.models import Count, Q
+from django.db.models.deletion import ProtectedError
 from django.db.models.functions import TruncDate
 from django.http import Http404, HttpResponse
 from django.middleware.csrf import get_token
@@ -32,7 +33,7 @@ from .data_encryption import (
 from .learning_log import dispatch_github_note_sync
 from .models import (
     InviteCode, KnowledgePoint, LaunchToken, LearningIssue, SessionReview,
-    SessionShare, SiteConfiguration, TimeLog,
+    SessionShare, SiteConfiguration, StudyTag, TaskPreset, TimeLog,
 )
 from .runtime_settings import runtime_config, save_runtime_config
 from .serializers import (
@@ -50,6 +51,9 @@ from .serializers import (
     StartSessionSerializer,
     StudySessionSerializer,
     StudySessionSummarySerializer,
+    StudyTagSerializer,
+    TaskPresetReadSerializer,
+    TaskPresetWriteSerializer,
     UserDataEncryptionSerializer,
 )
 from .services import (
@@ -68,7 +72,7 @@ def _local(value):
 
 
 def _filtered_sessions(request):
-    queryset = TimeLog.objects.filter(user=request.user)
+    queryset = TimeLog.objects.filter(user=request.user).prefetch_related('tags')
     subject = request.query_params.get('subject')
     if subject:
         try:
@@ -78,6 +82,12 @@ def _filtered_sessions(request):
     status_value = request.query_params.get('status')
     if status_value:
         queryset = queryset.filter(status=status_value)
+    tag_id = request.query_params.get('tag')
+    if tag_id:
+        try:
+            queryset = queryset.filter(tags__id=int(tag_id), tags__user=request.user)
+        except (TypeError, ValueError):
+            return queryset.none()
     date_from = parse_date(request.query_params.get('date_from', ''))
     date_to = parse_date(request.query_params.get('date_to', ''))
     if date_from:
@@ -93,8 +103,8 @@ def _filtered_sessions(request):
                 for session in queryset.iterator(chunk_size=200)
                 if any(needle in str(getattr(session, field) or '').casefold() for field in (
                     'title', 'details', 'chapter', 'topic', 'breakthrough',
-                    'problems', 'next_action',
-                ))
+                    'problems', 'next_action', 'task_path',
+                )) or any(needle in tag.name.casefold() for tag in session.tags.all())
             ]
             queryset = queryset.filter(pk__in=matched_ids)
         else:
@@ -106,7 +116,9 @@ def _filtered_sessions(request):
                 | Q(breakthrough__icontains=search)
                 | Q(problems__icontains=search)
                 | Q(next_action__icontains=search)
-            )
+                | Q(task_path__icontains=search)
+                | Q(tags__name__icontains=search)
+            ).distinct()
     return queryset.order_by('-start_time')
 
 
@@ -156,7 +168,29 @@ class SessionListCreateView(APIView):
         serializer = StartSessionSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         values = serializer.validated_data
-        subject = values.pop('subject')
+        preset_id = values.pop('task_preset', None)
+        preset = None
+        if preset_id is not None:
+            preset = get_object_or_404(
+                TaskPreset.objects.prefetch_related('tags'),
+                pk=preset_id,
+                user=request.user,
+                is_active=True,
+            )
+            supplied_subject = values.pop('subject', None)
+            if supplied_subject and normalize_subject(supplied_subject) != preset.subject:
+                return Response(
+                    {'detail': 'The task preset does not belong to that subject.'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            subject = preset.subject
+            values.update({
+                'task_preset': preset,
+                'task_path': preset.path_label,
+                'topic': values.get('topic') or preset.name,
+            })
+        else:
+            subject = values.pop('subject')
         try:
             session, reused = start_session(request.user, subject, **values)
         except ActiveSessionConflict as exc:
@@ -190,8 +224,18 @@ class SessionFinishView(APIView):
         session = get_object_or_404(TimeLog, pk=pk, user=request.user)
         serializer = FinishSessionSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        values = dict(serializer.validated_data)
+        if 'tag_ids' in values:
+            tag_ids = list(dict.fromkeys(values.pop('tag_ids')))
+            tags = list(StudyTag.objects.filter(user=request.user, pk__in=tag_ids))
+            if len(tags) != len(tag_ids):
+                return Response(
+                    {'detail': 'One or more tags were not found.'},
+                    status=status.HTTP_400_BAD_REQUEST,
+                )
+            values['tags'] = tags
         try:
-            session, changed, discard_reason = finish_session(session, serializer.validated_data)
+            session, changed, discard_reason = finish_session(session, values)
         except ValueError as exc:
             return Response({'detail': str(exc)}, status=status.HTTP_400_BAD_REQUEST)
         if discard_reason:
@@ -400,7 +444,7 @@ class DashboardOverviewView(APIView):
         math_visualization_enabled = SiteConfiguration.math_visualization_is_enabled()
         # Keep a payload schema version in the key so a zero-downtime frontend
         # deployment never receives an older cached response shape.
-        cache_key = f'dashboard-overview:v6:{request.user.pk}:{days}:{version}:{config["fingerprint"]}:{int(math_visualization_enabled)}'
+        cache_key = f'dashboard-overview:v7:{request.user.pk}:{days}:{version}:{config["fingerprint"]}:{int(math_visualization_enabled)}'
         payload = cache.get(cache_key)
         if payload is None:
             payload = build_dashboard_overview(request.user, days, config=config['values'])
@@ -560,12 +604,14 @@ class GlobalSearchView(APIView):
             | Q(breakthrough__icontains=query)
             | Q(problems__icontains=query)
             | Q(next_action__icontains=query)
+            | Q(task_path__icontains=query)
+            | Q(tags__name__icontains=query)
         )
         encrypted_search = user_encryption_enabled(request.user.pk)
         session_queryset = TimeLog.objects.filter(
             user=request.user,
             status='completed',
-        ).order_by('-start_time')
+        ).prefetch_related('tags').order_by('-start_time')
         if encrypted_search:
             needle = query.casefold()
             sessions = [
@@ -573,13 +619,13 @@ class GlobalSearchView(APIView):
                 for session in session_queryset.iterator(chunk_size=200)
                 if any(needle in str(getattr(session, field) or '').casefold() for field in (
                     'title', 'details', 'chapter', 'topic', 'breakthrough',
-                    'problems', 'next_action',
-                ))
+                    'problems', 'next_action', 'task_path',
+                )) or any(needle in tag.name.casefold() for tag in session.tags.all())
             ][:limit]
         else:
-            sessions = session_queryset.filter(session_filter).only(
+            sessions = session_queryset.filter(session_filter).distinct().only(
                 'id', 'uuid', 'user', 'category', 'title', 'details', 'chapter', 'topic',
-                'breakthrough', 'problems', 'next_action', 'start_time',
+                'breakthrough', 'problems', 'next_action', 'task_path', 'start_time',
                 'encrypted_summary', 'encrypted_content',
             )[:limit]
 
@@ -613,6 +659,7 @@ class GlobalSearchView(APIView):
                 'title': session.title or session.topic or session.chapter or 'Untitled session',
                 'snippet': _search_snippet(
                     query, session.title, session.details, session.topic, session.chapter,
+                    session.task_path, *(tag.name for tag in session.tags.all()),
                     session.breakthrough, session.problems, session.next_action,
                 ),
                 'subject': session.category,
@@ -652,6 +699,134 @@ class LearningIssueDetailView(generics.RetrieveUpdateDestroyAPIView):
 
     def get_queryset(self):
         return LearningIssue.objects.filter(user=self.request.user)
+
+
+class StudyTagListCreateView(APIView):
+    def get(self, request):
+        tags = StudyTag.objects.filter(user=request.user)
+        return Response(StudyTagSerializer(tags, many=True).data)
+
+    def post(self, request):
+        serializer = StudyTagSerializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        tag = serializer.save(user=request.user)
+        cache.set(f'dashboard-version:{request.user.pk}', timezone.now().timestamp(), timeout=None)
+        return Response(StudyTagSerializer(tag).data, status=status.HTTP_201_CREATED)
+
+
+class StudyTagDetailView(APIView):
+    def patch(self, request, pk):
+        tag = get_object_or_404(StudyTag, user=request.user, pk=pk)
+        serializer = StudyTagSerializer(
+            tag,
+            data=request.data,
+            partial=True,
+            context={'request': request},
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        cache.set(f'dashboard-version:{request.user.pk}', timezone.now().timestamp(), timeout=None)
+        return Response(serializer.data)
+
+    def delete(self, request, pk):
+        tag = get_object_or_404(StudyTag, user=request.user, pk=pk)
+        if tag.sessions.exists() or tag.task_presets.exists():
+            return Response(
+                {'detail': 'Remove this tag from Sessions and task presets before deleting it.'},
+                status=status.HTTP_409_CONFLICT,
+            )
+        tag.delete()
+        cache.set(f'dashboard-version:{request.user.pk}', timezone.now().timestamp(), timeout=None)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+def _task_preset_queryset(user, *, active_only=False):
+    queryset = TaskPreset.objects.filter(user=user)
+    if active_only:
+        queryset = queryset.filter(is_active=True)
+    return queryset.select_related(
+        'parent__parent__parent',
+    ).prefetch_related('tags')
+
+
+class TaskPresetListCreateView(APIView):
+    def get(self, request):
+        presets = _task_preset_queryset(request.user)
+        return Response(TaskPresetReadSerializer(presets, many=True).data)
+
+    def post(self, request):
+        serializer = TaskPresetWriteSerializer(
+            data=request.data,
+            context={'request': request},
+        )
+        serializer.is_valid(raise_exception=True)
+        preset = serializer.save()
+        cache.set(f'dashboard-version:{request.user.pk}', timezone.now().timestamp(), timeout=None)
+        preset = _task_preset_queryset(request.user).get(pk=preset.pk)
+        return Response(TaskPresetReadSerializer(preset).data, status=status.HTTP_201_CREATED)
+
+
+class TaskPresetDetailView(APIView):
+    def patch(self, request, pk):
+        preset = get_object_or_404(_task_preset_queryset(request.user), pk=pk)
+        serializer = TaskPresetWriteSerializer(
+            data=request.data,
+            partial=True,
+            context={'request': request, 'instance': preset},
+        )
+        serializer.is_valid(raise_exception=True)
+        preset = serializer.save()
+        cache.set(f'dashboard-version:{request.user.pk}', timezone.now().timestamp(), timeout=None)
+        preset = _task_preset_queryset(request.user).get(pk=preset.pk)
+        return Response(TaskPresetReadSerializer(preset).data)
+
+    def delete(self, request, pk):
+        preset = get_object_or_404(TaskPreset, user=request.user, pk=pk)
+        if preset.children.filter(is_active=True).exists():
+            return Response(
+                {'detail': 'Archive or move child tasks before removing this task.'},
+                status=status.HTTP_409_CONFLICT,
+            )
+        if preset.sessions.exists():
+            preset.is_active = False
+            preset.is_home_shortcut = False
+            preset.save(update_fields=('is_active', 'is_home_shortcut', 'updated_at'))
+            cache.set(f'dashboard-version:{request.user.pk}', timezone.now().timestamp(), timeout=None)
+            return Response(TaskPresetReadSerializer(preset).data)
+        try:
+            preset.delete()
+        except ProtectedError:
+            return Response(
+                {'detail': 'Archive or move child tasks before removing this task.'},
+                status=status.HTTP_409_CONFLICT,
+            )
+        cache.set(f'dashboard-version:{request.user.pk}', timezone.now().timestamp(), timeout=None)
+        return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+class CompletionOptionsView(APIView):
+    def get(self, request):
+        presets = _task_preset_queryset(request.user, active_only=True)
+        tags = StudyTag.objects.filter(user=request.user)
+        recent_titles = []
+        seen = set()
+        recent_sessions = TimeLog.objects.filter(
+            user=request.user,
+            status='completed',
+        ).only('title', 'encrypted_summary', 'user_id').order_by('-end_time')[:40]
+        for session in recent_sessions:
+            title = ' '.join(str(session.title or '').split()).strip()
+            key = title.casefold()
+            if title and key not in seen:
+                recent_titles.append(title)
+                seen.add(key)
+            if len(recent_titles) >= 8:
+                break
+        return Response({
+            'presets': TaskPresetReadSerializer(presets, many=True).data,
+            'tags': StudyTagSerializer(tags, many=True).data,
+            'recent_titles': recent_titles,
+        })
 
 
 class KnowledgePointListCreateView(generics.ListCreateAPIView):
@@ -789,7 +964,7 @@ def export_csv(request):
         'session_id', 'user_id', 'date', 'start_time', 'end_time', 'duration_minutes',
         'subject', 'chapter', 'topic', 'learning_mode', 'difficulty', 'energy_level',
         'focus_level', 'confidence_before', 'confidence_after', 'status', 'title', 'details',
-        'breakthrough', 'problems', 'next_action', 'disturbance_count',
+        'task_path', 'tags', 'breakthrough', 'problems', 'next_action', 'disturbance_count',
         'last_disturbance_at', 'issues_json',
     ])
     for session in _session_export_rows(request):
@@ -809,6 +984,7 @@ def export_csv(request):
             session.chapter, session.topic, session.learning_mode, session.difficulty,
             session.energy_level, session.focus_level, session.confidence_before,
             session.confidence_after, session.status, session.title or '', session.details,
+            session.task_path, ', '.join(tag.name for tag in session.tags.all()),
             session.breakthrough, session.problems, session.next_action,
             session.disturbance_count,
             _local(session.last_disturbance_at).isoformat() if session.last_disturbance_at else '',
@@ -851,6 +1027,8 @@ def export_markdown(request):
             f'- Time: {local_start:%H:%M}–{_local(session.end_time):%H:%M}',
             f'- Chapter: {session.chapter or "Not provided"}',
             f'- Topic: {session.topic or "Not provided"}',
+            f'- Task: {session.task_path or "Not provided"}',
+            f'- Tags: {", ".join(tag.name for tag in session.tags.all()) or "None"}',
             f'- Mode: {session.learning_mode or "Not provided"}',
             f'- Disturbances: {session.disturbance_count}',
             (

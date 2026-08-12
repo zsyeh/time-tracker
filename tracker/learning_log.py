@@ -88,6 +88,8 @@ def session_task(session: TimeLog) -> Dict[str, Any]:
         'duration_minutes': session.duration_minutes,
         'title': session.title or '',
         'details': session.details,
+        'task_path': session.task_path,
+        'tags': [tag.name for tag in session.tags.all()],
         'username': session.user.get_username(),
         'user_id': session.user_id,
         'is_admin': bool(session.user.is_staff or session.user.is_superuser),
@@ -117,6 +119,8 @@ def render_session_markdown(task: Dict[str, Any]) -> str:
         f"started_at: {json.dumps(started.isoformat(), ensure_ascii=False)}\n"
         f"ended_at: {json.dumps(ended.isoformat(), ensure_ascii=False)}\n"
         f"duration_minutes: {int(task['duration_minutes'])}\n"
+        f"task_path: {json.dumps(str(task.get('task_path', '')), ensure_ascii=False)}\n"
+        f"tags: {json.dumps(list(task.get('tags', [])), ensure_ascii=False)}\n"
         f"username: {json.dumps(str(task.get('username', '')), ensure_ascii=False)}\n"
         '---\n\n'
         f'# {title}\n\n'
@@ -158,6 +162,7 @@ def archive_completed_task(task: Dict[str, Any]) -> Dict[str, str]:
         ).returncode != 0
         if staged:
             title = re.sub(r'\s+', ' ', str(task.get('title', '')).strip())[:72]
+            title = title or 'Untitled session'
             _run('git', 'commit', '-m', f"Add session {int(task['id'])}: {title}", cwd=path)
         _run('git', 'push', '-u', 'origin', f'HEAD:refs/heads/{branch}', cwd=path)
         commit = _run('git', 'rev-parse', '--short', 'HEAD', cwd=path).stdout.strip()

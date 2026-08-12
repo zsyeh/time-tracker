@@ -16,7 +16,7 @@ from .forms import AdminInviteCodeForm, LoginRateLimitResetForm, RegistrationPol
 from .models import (
     DailyStudyStat, GitHubNoteSync, InviteCode, InviteRedemption, KnowledgePoint,
     LaunchToken, LearningIssue, SessionReview, SiteConfiguration, TimeLog,
-    SessionShare, UserDataEncryptionPreference,
+    SessionShare, StudyTag, TaskPreset, UserDataEncryptionPreference,
 )
 
 
@@ -62,7 +62,7 @@ def clear_login_rate_limits(network_address):
 @admin.register(TimeLog)
 class TimeLogAdmin(admin.ModelAdmin):
     list_display = (
-        'user', 'category', 'status', 'start_time', 'end_time',
+        'user', 'category', 'task_path', 'status', 'start_time', 'end_time',
         'duration_minutes', 'disturbance_count',
     )
     list_filter = ('user', 'category', 'status', 'start_time')
@@ -84,6 +84,8 @@ class GitHubNoteSyncAdmin(admin.ModelAdmin):
 
 admin.site.register(LearningIssue)
 admin.site.register(KnowledgePoint)
+admin.site.register(StudyTag)
+admin.site.register(TaskPreset)
 
 
 @admin.register(LaunchToken)

@@ -2,16 +2,30 @@
 
 ## 开始与结束一次学习
 
-1. 在首页选择 `Mathematics`、`English`、`Major` 或 `Training` 开始。
+1. 在首页选择 `Mathematics`、`English`、`Major` 或 `Training` 开始；也可以点击自定义快捷按钮，或用 `Browse nested task presets` 从多级任务菜单开始。
 2. 运行中只显示 `TIMER HIDDEN`，不会显示累计时长。
-3. 点击 `Finish & review`。有效会话只需填写两个英文界面字段：
-   - `Title`：本次学习的大标题；旧数据中的 `note` 已原样迁移到这里。
-   - `Details`：正文，可直接粘贴 ChatGPT 返回的纯文本或 Markdown。
+3. 点击 `Finish & review`。以下两个英文界面字段都可以留空：
+   - `Title`：可选的本次学习大标题；旧数据中的 `note` 已原样迁移到这里。
+   - `Markdown details`：可选正文，可直接粘贴 ChatGPT 返回的纯文本或 Markdown。
 4. 点击 `Save & finish` 保存。
+
+不想写结束记录时可以直接保存空表单；Session 的科目、开始/结束时间、时长和扰动统计仍会保留。若本次从任务预设开始，空标题自动使用最末级任务名（例如 `Mathematics → Calculus → Limits` 使用 `Limits`）；普通科目开始且标题为空时，GitHub 归档使用 `Untitled session` 作为安全占位标题。
 
 时长小于 25 分钟或大于 12 小时的单次会话会直接删除，不进入完成记录。点击 `Discard` 的会话也直接删除。
 
 有效会话保存后会立即排队同步到私有 GitHub 仓库，每次会话对应一个独立 `.md` 文件，原始标题、正文、公式和增强 Markdown 语法都会保留。管理员账号写入主分支，普通账号写入按用户名生成的独立分支。GitHub 暂时不可用不会影响本地保存，后台每分钟自动重试。
+
+### 多级任务、主页快捷按钮与标签
+
+进入 `Settings` → `Task presets and tags`：
+
+- 先创建可复用标签，再创建归属于某一学科的任务，例如 `Mathematics → Calculus → Limits`。任务最多嵌套四级，移动或停用父级前要先处理仍启用的子级。
+- 打开 `Show as a homepage button` 后，该任务会成为首页的一键开始按钮；不常用的任务仍可通过首页的多级任务菜单按学科逐层选择，菜单数据只在打开时按需加载。
+- 可给任务设置默认标签。开始该任务时标签会自动带入，结束时可直接点选、取消或补充标签。
+- 结束表单会显示最近八个不同的历史标题，点击即可快速填入；标题和 Markdown 正文仍都允许留空。
+- `Trends` 按任务路径和标签统计累计时长/Session 数；Session 搜索同时匹配任务路径与标签，History API 也支持按标签筛选。
+
+任务名、路径和标签遵循当前账号的静态加密开关；Session 保存路径快照，因此以后重命名预设不会改变历史记录的分类文字。
 
 ### Markdown 与公式预览
 
@@ -35,7 +49,7 @@
 
 ## 全局关键词搜索
 
-点击侧栏 `Search everything`，或按 `⌘ K` / `Ctrl K`。搜索范围包括会话标题、Markdown 正文、旧结构化字段以及 Issues 的主题、描述和解决方案。
+点击侧栏 `Search everything`，或按 `⌘ K` / `Ctrl K`。搜索范围包括会话标题、Markdown 正文、任务路径、标签、旧结构化字段以及 Issues 的主题、描述和解决方案。
 
 输入会在短暂防抖后查询；搜索结果只传回标题和短摘要。点击会话结果时才读取完整正文，随后可选择 Markdown 预览；点击 Issue 结果可直接查看描述和解决方案。
 

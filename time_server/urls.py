@@ -4,6 +4,7 @@ from allauth.account.views import signup_by_passkey
 from allauth.mfa.webauthn.views import signup_webauthn
 
 from tracker.api_views import (
+    CompletionOptionsView,
     DashboardOverviewView,
     GlobalSearchView,
     InviteCodeActionView,
@@ -15,6 +16,10 @@ from tracker.api_views import (
     LearningIssueDetailView,
     LearningIssueListCreateView,
     RuntimeSettingsView,
+    StudyTagDetailView,
+    StudyTagListCreateView,
+    TaskPresetDetailView,
+    TaskPresetListCreateView,
     UserDataEncryptionView,
     SessionAbandonView,
     SessionDetailView,
@@ -69,6 +74,11 @@ urlpatterns = [
     path('api/dashboard/overview/', DashboardOverviewView.as_view(), name='dashboard_overview'),
     path('api/settings/runtime/', RuntimeSettingsView.as_view(), name='runtime_settings'),
     path('api/settings/data-encryption/', UserDataEncryptionView.as_view(), name='data_encryption_settings'),
+    path('api/study-tags/', StudyTagListCreateView.as_view(), name='study_tag_list'),
+    path('api/study-tags/<int:pk>/', StudyTagDetailView.as_view(), name='study_tag_detail'),
+    path('api/task-presets/', TaskPresetListCreateView.as_view(), name='task_preset_list'),
+    path('api/task-presets/<int:pk>/', TaskPresetDetailView.as_view(), name='task_preset_detail'),
+    path('api/completion-options/', CompletionOptionsView.as_view(), name='completion_options'),
     path('api/invite-codes/', InviteCodeListCreateView.as_view(), name='invite_code_list'),
     path('api/invite-codes/<int:pk>/<str:action>/', InviteCodeActionView.as_view(), name='invite_code_action'),
     path('api/search/', GlobalSearchView.as_view(), name='global_search'),

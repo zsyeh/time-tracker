@@ -14,8 +14,13 @@ public. Every response is restricted to the authenticated owner.
 | GET/POST | `/api/sessions/<id>/reviews/` | Read trend / record a deduplicated review visit |
 | GET/POST/DELETE | `/api/sessions/<uuid>/share/` | Inspect, create, or revoke an owned session share |
 | GET | `/api/public/shares/<token>/` | Public read-only article projection; no authentication |
-| POST | `/api/sessions/<id>/finish/` | Finish with a title and details body |
+| POST | `/api/sessions/<id>/finish/` | Finish; optional title and Markdown details may be empty |
 | POST | `/api/sessions/<id>/abandon/` | Permanently delete the running session |
+| GET/POST | `/api/study-tags/` | List/create reusable owned content tags |
+| PATCH/DELETE | `/api/study-tags/<id>/` | Edit/delete an unused owned tag |
+| GET/POST | `/api/task-presets/` | List/create owned subject task presets |
+| PATCH/DELETE | `/api/task-presets/<id>/` | Edit, archive, or remove an owned task preset |
+| GET | `/api/completion-options/` | Lazy completion data: active task tree, tags, and eight recent titles |
 | GET | `/api/dashboard/overview/?days=180` | One-request dashboard analytics |
 | GET/PUT | `/api/settings/runtime/` | Read safe defaults; superusers can atomically update allow-listed local `.env` display settings |
 | GET/PUT | `/api/settings/data-encryption/` | Read or toggle the current user's server-managed encryption-at-rest policy |
@@ -33,11 +38,20 @@ public. Every response is restricted to the authenticated owner.
 | POST | `/api/launch/<token>/start` | Public, token-scoped IoT start |
 | POST | `/api/disturbance/<token>/record` | Public, separately scoped disturbance counter for the current Session |
 
-Session/export filters: `subject`, `status`, `date_from`, `date_to`, and `search`.
+Session/export filters: `subject`, `status`, `tag`, `date_from`, `date_to`, and `search`.
 The session list returns only timeline metadata, UUID, title, and review counters
 by default. Fetch `/api/sessions/<uuid>/` only when the full `details` body is
 opened. `compact=1` remains accepted and `full=1` explicitly requests the legacy
 full-list payload for transitional clients.
+
+Task presets belong to one subject and may be nested to four custom levels. A
+start request may send `{ "task_preset": <id> }`; the server derives the subject,
+copies the current task path onto the Session, and applies the preset's default
+tags. The owner can still start with `{ "subject": "math" }` for an unclassified
+Session. On completion, `tag_ids` replaces the Session's tag selection. If the
+title is blank and the Session came from a preset, the leaf task name becomes the
+title; without a preset it remains blank. Preset/tag IDs are always owner-scoped.
+Used presets are archived instead of deleting historical classification.
 
 Opening a completed session review posts one review visit. Visits by the same
 owner within ten minutes are deduplicated. The response contains the lifetime
@@ -51,7 +65,7 @@ code is returned only by the create response. Subsequent owned list responses
 expose metadata, use counts, availability, and registered usernames/timestamps,
 but never the raw secret or digest.
 
-Global search spans owned completed-session text and owned Issues. It returns at
+Global search spans owned completed-session text, task paths, tag names, and owned Issues. It returns at
 most 24 mixed summary records and never includes a complete session `details`
 body; Session results include `session_uuid` so the client navigates directly to
 the owned permanent resource.
@@ -100,8 +114,10 @@ only when the owner has a running Session. With no running Session it returns
 `stale_session_discarded`. GET is not accepted for either Shortcut API; configure
 the iOS `Get Contents of URL` action to use POST with no body.
 
-For an eligible session, the finish endpoint requires non-empty `title` and
-`details`. A finish attempt before 25 elapsed minutes or after 12 elapsed hours
+For an eligible session, the finish endpoint accepts optional `title` and
+`details`; both may be empty. An empty completion still retains subject, timing,
+duration, and disturbance metadata, and its GitHub archive uses the safe
+`Untitled session` fallback. A finish attempt before 25 elapsed minutes or after 12 elapsed hours
 deletes the session and returns `discarded: true` with `discard_reason`; it never
 creates a completed or abandoned record. Historical structured fields remain in
 exports for compatibility but are not required by current completion flows.

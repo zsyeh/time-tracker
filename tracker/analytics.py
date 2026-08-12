@@ -3,7 +3,7 @@ from collections import defaultdict
 
 from django.utils import timezone
 
-from .models import TimeLog
+from .models import TaskPreset, TimeLog
 from .runtime_settings import runtime_config
 
 
@@ -55,16 +55,19 @@ def build_dashboard_overview(user, days=180, config=None):
             status='completed',
             start_time__gte=boundary,
         ).only(
-            'id', 'category', 'start_time', 'end_time', 'status',
-        ).order_by('start_time')
+            'id', 'user_id', 'category', 'task_path', 'start_time', 'end_time',
+            'status', 'encrypted_summary',
+        ).prefetch_related('tags').order_by('start_time')
     )
-    active = TimeLog.objects.filter(user=user, status='running').first()
+    active = TimeLog.objects.filter(user=user, status='running').prefetch_related('tags').first()
 
     daily = defaultdict(lambda: {'minutes': 0, 'sessions': 0, 'first_start': None})
     by_subject = defaultdict(int)
     by_week = defaultdict(int)
     by_month = defaultdict(int)
     today_by_subject = defaultdict(int)
+    by_tag = {}
+    by_task = defaultdict(lambda: {'minutes': 0, 'sessions': 0})
     for session in sessions:
         local_start = _local(session.start_time)
         day = local_start.date()
@@ -79,6 +82,20 @@ def build_dashboard_overview(user, days=180, config=None):
         by_month[day.replace(day=1)] += session.duration_minutes
         if day == local_today:
             today_by_subject[session.category] += session.duration_minutes
+        if session.task_path:
+            task_key = (session.category, session.task_path)
+            by_task[task_key]['minutes'] += session.duration_minutes
+            by_task[task_key]['sessions'] += 1
+        for tag in session.tags.all():
+            tag_row = by_tag.setdefault(tag.pk, {
+                'id': tag.pk,
+                'name': tag.name,
+                'color': tag.color,
+                'minutes': 0,
+                'sessions': 0,
+            })
+            tag_row['minutes'] += session.duration_minutes
+            tag_row['sessions'] += 1
 
     active_dates = {day for day, row in daily.items() if row['minutes'] > 0}
     five_hour_dates = {day for day, row in daily.items() if row['minutes'] >= FIVE_HOUR_MINUTES}
@@ -124,6 +141,13 @@ def build_dashboard_overview(user, days=180, config=None):
         exam_date = datetime.date.fromisoformat(config['exam_date'])
     except (TypeError, ValueError):
         exam_date = datetime.date(2026, 12, 26)
+    shortcuts = TaskPreset.objects.filter(
+        user=user,
+        is_active=True,
+        is_home_shortcut=True,
+    ).select_related('parent__parent__parent').prefetch_related('tags').order_by(
+        'sort_order', 'created_at',
+    )[:24]
     return {
         'server_time': _local(now).isoformat(),
         'range_days': days,
@@ -159,6 +183,37 @@ def build_dashboard_overview(user, days=180, config=None):
             {'subject': subject, 'minutes': today_by_subject.get(subject, 0)}
             for subject in ('math', 'english', 'major', 'training')
         ],
+        'task_shortcuts': [
+            {
+                'id': preset.pk,
+                'subject': preset.subject,
+                'subject_label': preset.get_subject_display(),
+                'name': preset.name,
+                'path': preset.path_label,
+                'label': f'{preset.get_subject_display()}: {preset.path_label}',
+                'tags': [
+                    {'id': tag.pk, 'name': tag.name, 'color': tag.color}
+                    for tag in preset.tags.all()
+                ],
+            }
+            for preset in shortcuts
+        ],
+        'tag_totals': sorted(
+            by_tag.values(),
+            key=lambda row: (-row['minutes'], row['name'].casefold()),
+        ),
+        'task_totals': [
+            {
+                'subject': subject,
+                'subject_label': dict(TimeLog.CATEGORY_CHOICES).get(subject, subject),
+                'path': path,
+                **values,
+            }
+            for (subject, path), values in sorted(
+                by_task.items(),
+                key=lambda item: (-item[1]['minutes'], item[0][0], item[0][1].casefold()),
+            )
+        ],
         'weekly_totals': [
             {'week_start': day.isoformat(), 'minutes': minutes}
             for day, minutes in sorted(by_week.items())
@@ -186,6 +241,12 @@ def serialize_session(session, now=None):
         'subject_label': session.get_category_display(),
         'chapter': session.chapter,
         'topic': session.topic,
+        'task_preset': session.task_preset_id,
+        'task_path': session.task_path,
+        'tags': [
+            {'id': tag.pk, 'name': tag.name, 'color': tag.color}
+            for tag in session.tags.all()
+        ],
         'status': session.status,
         'learning_mode': session.learning_mode,
         'start_time': _local(session.start_time).isoformat(),

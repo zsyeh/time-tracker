@@ -51,6 +51,7 @@ curl -fsSL https://app.ehzsy.site/install/docker-compose.sh | sh -s -- study.exa
 - Launch capability 同时生成相互隔离的免登录 Start URI 与 Disturbance URI，可保留原 URI 临时暂停/恢复，并设置每日有效时段（默认上海时区 06:00–22:00）。iPhone 可用“获取 URL 内容”POST 启动学习；“充电器已断开连接”自动化可累计当前 Session 的扰动次数。
 - CSV、JSON、Markdown 完整导出；不嵌入任何 AI API。
 - 每个用户可在 Settings 中选择服务端管理的 AES-256-GCM 静态加密。开启后学习标题、Markdown、复盘、主观评分和 Issue 文本在数据库及数据库备份中只保存密文；趋势所需的最小运行元数据保持可索引。该功能不增加密码、不影响导出、GitHub 同步或明文公开分享，但不是端到端加密，服务器持钥者仍可解密。
+- 用户可按学科创建最多四级的任务预设（如 `Mathematics → Calculus → Limits`），把任意层设为首页一键按钮，并配置可复用内容标签。空标题会在存在预设时取叶子任务名；结束页可点选标签和最近标题，Trends 按任务路径与标签聚合。
 
 ## 本地开发
 

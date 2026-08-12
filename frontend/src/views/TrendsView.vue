@@ -60,6 +60,8 @@ onBeforeUnmount(() => { window.removeEventListener('resize', resize); chart?.dis
     <section v-if="overview" class="aggregate-grid">
       <article class="panel aggregate-card"><span class="eyebrow">WEEKLY BREAKDOWN</span><h2>Recent weeks</h2><div v-for="row in overview.weekly_totals.slice(-6).reverse()" :key="row.week_start"><span>{{ row.week_start }}</span><b>{{ Math.floor(row.minutes / 60) }}h {{ row.minutes % 60 }}m</b></div></article>
       <article class="panel aggregate-card"><span class="eyebrow">MONTHLY BREAKDOWN</span><h2>Recent months</h2><div v-for="row in overview.monthly_totals.slice(-6).reverse()" :key="row.month"><span>{{ row.month }}</span><b>{{ Math.floor(row.minutes / 60) }}h {{ row.minutes % 60 }}m</b></div></article>
+      <article class="panel aggregate-card tag-stat-list"><span class="eyebrow">TAG BREAKDOWN</span><h2>Reusable content tags</h2><div v-for="row in overview.tag_totals.slice(0, 10)" :key="row.id"><span>#{{ row.name }}</span><small>{{ row.sessions }} sessions</small><b>{{ Math.floor(row.minutes / 60) }}h {{ row.minutes % 60 }}m</b></div><p v-if="!overview.tag_totals.length" class="section-note">No tagged Sessions yet.</p></article>
+      <article class="panel aggregate-card tag-stat-list"><span class="eyebrow">TASK BREAKDOWN</span><h2>Preset paths</h2><div v-for="row in overview.task_totals.slice(0, 10)" :key="`${row.subject}:${row.path}`"><span>{{ row.subject_label }} · {{ row.path }}</span><small>{{ row.sessions }} sessions</small><b>{{ Math.floor(row.minutes / 60) }}h {{ row.minutes % 60 }}m</b></div><p v-if="!overview.task_totals.length" class="section-note">No preset Sessions yet.</p></article>
     </section>
   </div>
 </template>

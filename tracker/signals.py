@@ -2,7 +2,7 @@ import time
 
 from django.conf import settings
 from django.core.cache import cache
-from django.db.models.signals import post_delete, post_save, pre_save
+from django.db.models.signals import m2m_changed, post_delete, post_save, pre_save
 from django.dispatch import receiver
 
 from .daily_stats import local_study_date, refresh_daily_stat
@@ -44,3 +44,8 @@ def refresh_stats_after_delete(sender, instance, **kwargs):
     invalidate_dashboard(instance.user_id)
     if instance.start_time:
         refresh_daily_stat(local_study_date(instance.start_time), instance.user_id)
+
+
+@receiver(m2m_changed, sender=TimeLog.tags.through)
+def invalidate_dashboard_after_tag_change(sender, instance, **kwargs):
+    invalidate_dashboard(instance.user_id)

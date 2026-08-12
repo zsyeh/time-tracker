@@ -14,6 +14,21 @@ The denormalized `review_count` and `last_reviewed_at` fields make archive lists
 cheap to render; append-only `SessionReview` rows retain the bounded trend source.
 Repeated opens within ten minutes do not create another event.
 
+## Task presets and study tags
+
+`TaskPreset` is a user-owned, subject-bound tree node with an immutable UUID and
+a protected self-parent relationship. API validation caps the custom tree at
+four levels, prevents cycles/cross-owner parents, and keeps active children from
+being orphaned. Any node can be a homepage shortcut and can carry default tags.
+Used presets are archived rather than removed.
+
+`StudyTag` is a reusable user-owned blog-style content label. Tags have a small
+display color and may be attached to both presets and completed Sessions. The
+Session stores a nullable preset relation plus an encrypted `task_path` snapshot,
+so renaming or archiving a preset does not rewrite historical classification.
+Task/tag relations stay queryable for aggregation. Preset names, tag names, and
+the path snapshot follow the user's optional at-rest encryption policy.
+
 ## Session share
 
 `SessionShare` is an explicit public capability linked to a Session. It stores a

@@ -27,7 +27,7 @@ const weekdayLabel = computed(() => {
       <div class="date-block"><span class="eyebrow">TODAY / {{ weekdayLabel }}</span><h1>{{ todayLabel }}</h1><p>LOCAL DATE · ASIA/SHANGHAI</p><p v-if="overview?.private_display.homepage_content" class="homepage-content">{{ overview.private_display.homepage_content }}</p><p v-if="overview?.private_display.study_room_code" class="study-room-code">STUDY ROOM · {{ overview.private_display.study_room_code }}</p></div>
       <div class="exam-countdown"><span>{{ overview?.private_display.countdown_label || '2026 POSTGRADUATE EXAM' }}</span><div><b>{{ overview?.calendar.days_until_exam ?? '--' }}</b><small>DAYS</small></div><time>{{ overview?.calendar.exam_date || '2026-12-26' }}</time></div>
     </section>
-    <ActiveSession :session="overview?.active_session || null" @changed="emit('changed')" />
+    <ActiveSession :session="overview?.active_session || null" :shortcuts="overview?.task_shortcuts || []" @changed="emit('changed')" />
     <section v-if="overview" class="status-overview panel">
       <div class="status-ring" :style="{ '--status-progress': `${todayProgress * 3.6}deg` }"><div><strong>{{ todayProgress }}</strong><span>%</span><small>5H TARGET</small></div></div>
       <div class="status-copy"><span class="eyebrow">DAILY STATUS</span><h2>{{ statusLabel }}</h2><p>Completed sessions only. Active duration remains hidden.</p></div>

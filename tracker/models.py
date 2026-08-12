@@ -12,14 +12,112 @@ from django.utils import timezone
 from .encrypted_models import EncryptedAtRestMixin
 
 
+SUBJECT_CHOICES = [
+    ('math', 'Mathematics'),
+    ('english', 'English'),
+    ('major', 'Major'),
+    ('training', 'Training'),
+]
+
+
+class StudyTag(EncryptedAtRestMixin, models.Model):
+    """Reusable user-owned label attached to presets and completed Sessions."""
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='study_tags',
+    )
+    name = models.CharField(max_length=64)
+    color = models.CharField(max_length=16, default='green')
+    encrypted_content = models.TextField(blank=True, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    encrypted_field_groups = {'encrypted_content': ('name',)}
+
+    class Meta:
+        ordering = ('name', 'pk')
+        indexes = [models.Index(fields=('user',), name='tag_user_idx')]
+
+    def __str__(self):
+        return self.name
+
+
+class TaskPreset(EncryptedAtRestMixin, models.Model):
+    """A user-owned subject task tree with at most four custom levels."""
+
+    MAX_DEPTH = 4
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='task_presets',
+    )
+    uuid = models.UUIDField(default=uuid_lib.uuid4, editable=False, unique=True)
+    subject = models.CharField(max_length=20, choices=SUBJECT_CHOICES)
+    name = models.CharField(max_length=120)
+    parent = models.ForeignKey(
+        'self',
+        null=True,
+        blank=True,
+        on_delete=models.PROTECT,
+        related_name='children',
+    )
+    tags = models.ManyToManyField(StudyTag, blank=True, related_name='task_presets')
+    is_home_shortcut = models.BooleanField(default=False)
+    is_active = models.BooleanField(default=True)
+    sort_order = models.PositiveSmallIntegerField(default=0)
+    encrypted_content = models.TextField(blank=True, editable=False)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    encrypted_field_groups = {'encrypted_content': ('name',)}
+
+    class Meta:
+        ordering = ('subject', 'sort_order', 'created_at')
+        indexes = [
+            models.Index(fields=('user', 'subject', 'is_active'), name='preset_user_subject_idx'),
+            models.Index(fields=('user', 'is_home_shortcut'), name='preset_user_home_idx'),
+        ]
+
+    @property
+    def depth(self):
+        depth = 1
+        cursor = self.parent
+        visited = {self.pk} if self.pk else set()
+        while cursor is not None:
+            if cursor.pk in visited:
+                return self.MAX_DEPTH + 1
+            visited.add(cursor.pk)
+            depth += 1
+            cursor = cursor.parent
+        return depth
+
+    @property
+    def path_names(self):
+        names = [self.name]
+        cursor = self.parent
+        visited = {self.pk} if self.pk else set()
+        while cursor is not None and len(names) <= self.MAX_DEPTH:
+            if cursor.pk in visited:
+                break
+            visited.add(cursor.pk)
+            names.append(cursor.name)
+            cursor = cursor.parent
+        return list(reversed(names))
+
+    @property
+    def path_label(self):
+        return ' › '.join(self.path_names)
+
+    def __str__(self):
+        return f'{self.get_subject_display()}: {self.path_label}'
+
+
 class TimeLog(EncryptedAtRestMixin, models.Model):
     # 统一枚举值与前端 payload 严格对应
-    CATEGORY_CHOICES = [
-        ('math', 'Mathematics'),
-        ('english', 'English'),
-        ('major', 'Major'),
-        ('training', 'Training'),
-    ]
+    CATEGORY_CHOICES = SUBJECT_CHOICES
     
     STATUS_CHOICES = [
         ('running', 'Running'),
@@ -47,6 +145,15 @@ class TimeLog(EncryptedAtRestMixin, models.Model):
     )
     uuid = models.UUIDField(default=uuid_lib.uuid4, editable=False, unique=True)
     category = models.CharField(max_length=20, choices=CATEGORY_CHOICES)
+    task_preset = models.ForeignKey(
+        TaskPreset,
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        related_name='sessions',
+    )
+    task_path = models.TextField(blank=True)
+    tags = models.ManyToManyField(StudyTag, blank=True, related_name='sessions')
     chapter = models.CharField(max_length=200, blank=True)
     topic = models.CharField(max_length=200, blank=True)
     start_time = models.DateTimeField(default=timezone.now, db_index=True)
@@ -108,7 +215,7 @@ class TimeLog(EncryptedAtRestMixin, models.Model):
         ]
 
     encrypted_field_groups = {
-        'encrypted_summary': ('chapter', 'topic', 'title'),
+        'encrypted_summary': ('chapter', 'topic', 'title', 'task_path'),
         'encrypted_content': (
             'learning_mode', 'difficulty', 'energy_level', 'focus_level',
             'confidence_before', 'confidence_after', 'details', 'breakthrough',

@@ -39,6 +39,8 @@ from .models import (
     SessionReview,
     SessionShare,
     SiteConfiguration,
+    StudyTag,
+    TaskPreset,
     TimeLog,
     UserDataEncryptionPreference,
 )
@@ -499,6 +501,144 @@ class InviteRegistrationTests(TestCase):
         self.assertIsNone(cache.get(f'allauth:rl:login_failed:ip:{network}'))
 
 
+@override_settings(SECURE_SSL_REDIRECT=False, LEARNING_REPO='')
+class TaskPresetAndTagTests(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user('taxonomy-owner', password='password')
+        self.other = get_user_model().objects.create_user('taxonomy-other', password='password')
+        self.client.force_login(self.user)
+
+    def _tag(self, name='Analysis'):
+        response = self.client.post(
+            '/api/study-tags/',
+            {'name': name, 'color': 'blue'},
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 201)
+        return response.json()
+
+    def _preset(self, name, *, parent=None, tag_ids=None, home=False, subject='math'):
+        response = self.client.post(
+            '/api/task-presets/',
+            {
+                'name': name,
+                'subject': subject,
+                'parent': parent,
+                'tag_ids': tag_ids or [],
+                'is_home_shortcut': home,
+            },
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 201, response.content)
+        return response.json()
+
+    def test_user_can_build_four_levels_but_not_a_fifth_or_cross_owner_parent(self):
+        calculus = self._preset('Calculus')
+        limits = self._preset('Limits', parent=calculus['id'])
+        techniques = self._preset('Techniques', parent=limits['id'])
+        lhopital = self._preset("L'Hopital", parent=techniques['id'])
+        self.assertEqual(lhopital['depth'], 4)
+        self.assertEqual(lhopital['path'], "Calculus › Limits › Techniques › L'Hopital")
+
+        fifth = self.client.post(
+            '/api/task-presets/',
+            {'name': 'Too deep', 'subject': 'math', 'parent': lhopital['id']},
+            content_type='application/json',
+        )
+        self.assertEqual(fifth.status_code, 400)
+        self.assertIn('four levels', fifth.content.decode('utf-8'))
+
+        other_parent = TaskPreset.objects.create(
+            user=self.other,
+            subject='math',
+            name='Private other task',
+        )
+        cross_owner = self.client.post(
+            '/api/task-presets/',
+            {'name': 'Invalid child', 'subject': 'math', 'parent': other_parent.pk},
+            content_type='application/json',
+        )
+        self.assertEqual(cross_owner.status_code, 400)
+        self.assertNotContains(self.client.get('/api/task-presets/'), 'Private other task')
+
+    def test_home_preset_starts_subject_defaults_blank_note_and_drives_tag_stats(self):
+        tag = self._tag('Core concept')
+        calculus = self._preset('Calculus')
+        limits = self._preset(
+            'Limits',
+            parent=calculus['id'],
+            tag_ids=[tag['id']],
+            home=True,
+        )
+
+        start = self.client.post(
+            '/api/sessions/',
+            {'task_preset': limits['id']},
+            content_type='application/json',
+        )
+        self.assertEqual(start.status_code, 201)
+        session_id = start.json()['session']['id']
+        self.assertEqual(start.json()['session']['subject'], 'math')
+        self.assertEqual(start.json()['session']['task_path'], 'Calculus › Limits')
+        self.assertEqual([item['name'] for item in start.json()['session']['tags']], ['Core concept'])
+        TimeLog.objects.filter(pk=session_id).update(
+            start_time=timezone.now() - datetime.timedelta(minutes=40),
+        )
+
+        finish = self.client.post(
+            f'/api/sessions/{session_id}/finish/',
+            {'title': '   ', 'details': '', 'tag_ids': [tag['id']]},
+            content_type='application/json',
+        )
+        self.assertEqual(finish.status_code, 200)
+        session = TimeLog.objects.get(pk=session_id)
+        self.assertEqual(session.title, 'Limits')
+        self.assertEqual(session.details, '')
+        self.assertEqual(list(session.tags.values_list('pk', flat=True)), [tag['id']])
+
+        overview = self.client.get('/api/dashboard/overview/?days=180').json()
+        self.assertEqual(overview['task_shortcuts'][0]['label'], 'Mathematics: Calculus › Limits')
+        self.assertEqual(overview['tag_totals'][0]['name'], 'Core concept')
+        self.assertEqual(overview['tag_totals'][0]['minutes'], 40)
+        self.assertEqual(overview['task_totals'][0]['path'], 'Calculus › Limits')
+
+        options = self.client.get('/api/completion-options/').json()
+        self.assertIn('Limits', options['recent_titles'])
+        self.assertEqual(options['tags'][0]['name'], 'Core concept')
+        filtered = self.client.get(f"/api/sessions/?tag={tag['id']}").json()
+        self.assertEqual(filtered['count'], 1)
+
+    def test_tag_and_preset_mutations_are_owner_scoped(self):
+        other_tag = StudyTag.objects.create(user=self.other, name='Other private tag')
+        other_preset = TaskPreset.objects.create(
+            user=self.other,
+            subject='english',
+            name='Other private preset',
+        )
+        self.assertEqual(
+            self.client.patch(
+                f'/api/study-tags/{other_tag.pk}/',
+                {'name': 'Stolen'},
+                content_type='application/json',
+            ).status_code,
+            404,
+        )
+        self.assertEqual(
+            self.client.patch(
+                f'/api/task-presets/{other_preset.pk}/',
+                {'name': 'Stolen'},
+                content_type='application/json',
+            ).status_code,
+            404,
+        )
+        invalid_start = self.client.post(
+            '/api/sessions/',
+            {'task_preset': other_preset.pk},
+            content_type='application/json',
+        )
+        self.assertEqual(invalid_start.status_code, 404)
+
+
 @override_settings(
     SECURE_SSL_REDIRECT=False,
     EMAIL_BACKEND='django.core.mail.backends.locmem.EmailBackend',
@@ -700,15 +840,11 @@ class SessionWorkflowTests(TestCase):
         self.assertTrue(repeated.json()['reused'])
         self.assertEqual(conflict.status_code, 409)
 
-    def test_finish_requires_title_and_details_only(self):
+    def test_finish_accepts_title_and_markdown(self):
         session_id = self.client.post('/api/sessions/', {'subject': 'math'}, content_type='application/json').json()['session']['id']
         TimeLog.objects.filter(pk=session_id).update(
             start_time=timezone.now() - datetime.timedelta(minutes=26),
         )
-        invalid = self.client.post(
-            f'/api/sessions/{session_id}/finish/', {'title': 'Only a title'}, content_type='application/json',
-        )
-        self.assertEqual(invalid.status_code, 400)
         payload = {
             'title': '函数复盘', 'details': '完成题目并复盘',
         }
@@ -719,6 +855,48 @@ class SessionWorkflowTests(TestCase):
         self.assertEqual(session.status, 'completed')
         self.assertEqual(session.title, '函数复盘')
         self.assertEqual(session.details, '完成题目并复盘')
+
+    @override_settings(LEARNING_REPO='zsyeh/personal-learning-notes')
+    @mock.patch('tracker.learning_log.subprocess.Popen')
+    def test_finish_allows_empty_title_and_markdown_and_queues_archive(self, popen):
+        session_id = self.client.post(
+            '/api/sessions/', {'subject': 'english'}, content_type='application/json',
+        ).json()['session']['id']
+        TimeLog.objects.filter(pk=session_id).update(
+            start_time=timezone.now() - datetime.timedelta(minutes=26),
+        )
+
+        response = self.client.post(
+            f'/api/sessions/{session_id}/finish/', {}, content_type='application/json',
+        )
+
+        self.assertEqual(response.status_code, 200)
+        self.assertFalse(response.json()['discarded'])
+        self.assertEqual(response.json()['github_note']['status'], 'queued')
+        session = TimeLog.objects.get(pk=session_id)
+        self.assertEqual(session.status, 'completed')
+        self.assertEqual(session.title or '', '')
+        self.assertEqual(session.details, '')
+        self.assertTrue(GitHubNoteSync.objects.filter(session=session, status='pending').exists())
+        popen.assert_called_once()
+
+    def test_mcp_stop_allows_omitting_title_and_markdown(self):
+        from .mcp_server import stop_task
+
+        session = TimeLog.objects.create(
+            user=self.user,
+            category='major',
+            status='running',
+            start_time=timezone.now() - datetime.timedelta(minutes=26),
+        )
+        with self.settings(TRACKER_OWNER_USERNAME=self.user.username, LEARNING_REPO=''):
+            result = stop_task()
+
+        self.assertEqual(result['status'], 'completed')
+        session.refresh_from_db()
+        self.assertEqual(session.status, 'completed')
+        self.assertEqual(session.title or '', '')
+        self.assertEqual(session.details, '')
 
     @override_settings(LEARNING_REPO='zsyeh/personal-learning-notes')
     @mock.patch('tracker.learning_log.subprocess.Popen')
@@ -919,6 +1097,26 @@ class GitHubNoteSyncTests(TestCase):
         self.assertIn('# Limits review', document)
         self.assertIn('$$\\lim_{x \\to 0} f(x)$$', document)
         self.assertIn('session_id: 42', document)
+
+    def test_empty_completion_uses_safe_untitled_markdown_fallback(self):
+        task = {
+            'id': 43,
+            'category': 'english',
+            'category_label': 'English',
+            'start_time': '2026-08-09T10:00:00+08:00',
+            'end_time': '2026-08-09T10:30:00+08:00',
+            'duration_minutes': 30,
+            'title': '',
+            'details': '',
+        }
+
+        self.assertEqual(
+            str(markdown_relative_path(task)),
+            'sessions/2026/08/2026-08-09-1000-43-untitled-session.md',
+        )
+        document = render_session_markdown(task)
+        self.assertIn('title: "Untitled session"', document)
+        self.assertIn('# Untitled session', document)
 
     @override_settings(LEARNING_REPO='zsyeh/personal-learning-notes')
     @mock.patch('tracker.learning_log.archive_completed_task')
@@ -1293,6 +1491,44 @@ class UserDataAtRestEncryptionTests(TestCase):
         self.assertEqual(restored_sync.markdown_path, 'sessions/PRIVATE-TITLE-SENTINEL.md')
         self.assertEqual(restored_sync.last_error, 'PRIVATE-SYNC-ERROR')
 
+    def test_task_presets_tags_and_session_path_follow_encryption_policy(self):
+        tag = StudyTag.objects.create(user=self.owner, name='PRIVATE-TAG-SENTINEL')
+        preset = TaskPreset.objects.create(
+            user=self.owner,
+            subject='math',
+            name='PRIVATE-PRESET-SENTINEL',
+            is_home_shortcut=True,
+        )
+        preset.tags.add(tag)
+        self.session.task_preset = preset
+        self.session.task_path = 'PRIVATE-PRESET-SENTINEL'
+        self.session.tags.add(tag)
+        self.session.save(update_fields=('task_preset', 'task_path'))
+
+        self._enable()
+        raw_tag = StudyTag.objects.filter(pk=tag.pk).values('name', 'encrypted_content').get()
+        raw_preset = TaskPreset.objects.filter(pk=preset.pk).values('name', 'encrypted_content').get()
+        raw_session = self._raw_session()
+        raw_session_path = TimeLog.objects.filter(pk=self.session.pk).values('task_path').get()
+        self.assertEqual(raw_tag['name'], '')
+        self.assertEqual(raw_preset['name'], '')
+        self.assertEqual(raw_session_path['task_path'], '')
+        self.assertTrue(raw_tag['encrypted_content'].startswith(PAYLOAD_PREFIX))
+        self.assertTrue(raw_preset['encrypted_content'].startswith(PAYLOAD_PREFIX))
+        self.assertNotIn('PRIVATE-PRESET-SENTINEL', raw_session['encrypted_summary'])
+        self.assertEqual(StudyTag.objects.get(pk=tag.pk).name, 'PRIVATE-TAG-SENTINEL')
+        self.assertEqual(TaskPreset.objects.get(pk=preset.pk).name, 'PRIVATE-PRESET-SENTINEL')
+        self.assertEqual(TimeLog.objects.get(pk=self.session.pk).task_path, 'PRIVATE-PRESET-SENTINEL')
+
+        disabled = self.client.put(
+            self.settings_url,
+            {'enabled': False},
+            content_type='application/json',
+        )
+        self.assertEqual(disabled.status_code, 200)
+        self.assertEqual(StudyTag.objects.get(pk=tag.pk).name, 'PRIVATE-TAG-SENTINEL')
+        self.assertEqual(TaskPreset.objects.get(pk=preset.pk).name, 'PRIVATE-PRESET-SENTINEL')
+
     def test_encrypted_records_keep_list_detail_search_export_github_and_share_behavior(self):
         self._enable()
 
@@ -1302,7 +1538,7 @@ class UserDataAtRestEncryptionTests(TestCase):
         self.assertNotIn('details', listing)
         list_queries = [
             query['sql'] for query in queries
-            if 'tracker_timelog' in query['sql'] and 'COUNT(' not in query['sql']
+            if 'FROM "tracker_timelog"' in query['sql'] and 'COUNT(' not in query['sql']
         ]
         self.assertTrue(list_queries)
         self.assertTrue(all('encrypted_content' not in query for query in list_queries))

@@ -1,5 +1,46 @@
 export type Subject = 'math' | 'english' | 'major' | 'training'
 
+export interface StudyTag {
+  id: number
+  name: string
+  color: string
+  created_at?: string
+}
+
+export interface TaskPreset {
+  id: number
+  uuid: string
+  subject: Subject
+  subject_label: string
+  name: string
+  parent: number | null
+  depth: number
+  path: string
+  shortcut_label: string
+  tags: StudyTag[]
+  is_home_shortcut: boolean
+  is_active: boolean
+  sort_order: number
+  created_at: string
+  updated_at: string
+}
+
+export interface TaskShortcut {
+  id: number
+  subject: Subject
+  subject_label: string
+  name: string
+  path: string
+  label: string
+  tags: StudyTag[]
+}
+
+export interface CompletionOptions {
+  presets: TaskPreset[]
+  tags: StudyTag[]
+  recent_titles: string[]
+}
+
 export interface StudySessionSummary {
   id: number
   uuid: string
@@ -10,6 +51,9 @@ export interface StudySessionSummary {
   duration_minutes: number
   status: 'running' | 'completed' | 'abandoned'
   title: string | null
+  task_preset: number | null
+  task_path: string
+  tags: StudyTag[]
   review_count: number
   last_reviewed_at: string | null
 }
@@ -61,6 +105,9 @@ export interface Overview {
   }
   subject_totals: Array<{ subject: Subject; minutes: number }>
   today_subject_totals: Array<{ subject: Subject; minutes: number }>
+  task_shortcuts: TaskShortcut[]
+  tag_totals: Array<{ id: number; name: string; color: string; minutes: number; sessions: number }>
+  task_totals: Array<{ subject: Subject; subject_label: string; path: string; minutes: number; sessions: number }>
   weekly_totals: Array<{ week_start: string; minutes: number }>
   monthly_totals: Array<{ month: string; minutes: number }>
   heatmap: HeatmapDay[]
