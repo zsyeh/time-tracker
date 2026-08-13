@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { EChartsType } from '../lib/charts'
+import { buildSubjectTimeStats } from '../lib/subjectStats'
 import type { Overview } from '../types'
 
 const props = defineProps<{ overview: Overview | null }>()
 const chartEl = ref<HTMLElement | null>(null)
+const trackedSubjectStats = computed(() => buildSubjectTimeStats(props.overview))
 let chart: EChartsType | null = null
 
 function minuteToTime(value: number) {
@@ -56,6 +58,13 @@ onBeforeUnmount(() => { window.removeEventListener('resize', resize); chart?.dis
       <article class="panel insight"><span>AVERAGE FIRST START</span><strong>{{ overview.summary.average_start_time || '--' }}</strong><p>Active days only</p></article>
       <article class="panel insight goal"><span>5H TARGET DAYS</span><strong>{{ overview.summary.five_hour_days }}</strong><p>{{ overview.summary.current_five_hour_streak }}-day current streak</p></article>
       <article class="panel insight"><span>TOTAL COMPLETED</span><strong>{{ Math.floor(overview.summary.total_minutes / 60) }}h</strong><p>{{ overview.summary.session_count }} sessions</p></article>
+    </section>
+    <section v-if="overview" class="subject-time-grid" aria-label="Study time by subject">
+      <article v-for="item in trackedSubjectStats" :key="item.subject" class="panel subject-time-card" :class="`subject-time-${item.subject}`">
+        <header><span>{{ item.label }}</span><i /></header>
+        <strong>{{ item.duration }}</strong>
+        <footer><span>LAST {{ overview.range_days }} DAYS</span><b>{{ item.share }}% OF TOTAL</b></footer>
+      </article>
     </section>
     <section v-if="overview" class="aggregate-grid">
       <article class="panel aggregate-card"><span class="eyebrow">WEEKLY BREAKDOWN</span><h2>Recent weeks</h2><div v-for="row in overview.weekly_totals.slice(-6).reverse()" :key="row.week_start"><span>{{ row.week_start }}</span><b>{{ Math.floor(row.minutes / 60) }}h {{ row.minutes % 60 }}m</b></div></article>

@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import ActiveSession from '../components/ActiveSession.vue'
 import HeatmapGrid from '../components/HeatmapGrid.vue'
 import MetricCard from '../components/MetricCard.vue'
+import { buildSubjectTimeStats } from '../lib/subjectStats'
 import type { Overview } from '../types'
 
 const props = defineProps<{ overview: Overview | null }>()
@@ -10,6 +11,7 @@ const emit = defineEmits<{ changed: [] }>()
 
 const subjectLabels: Record<string, string> = { math: 'Mathematics', english: 'English', major: 'Major', training: 'Training' }
 const todayHours = computed(() => props.overview ? `${Math.floor(props.overview.today.minutes / 60)}h ${props.overview.today.minutes % 60}m` : '--')
+const trackedSubjectStats = computed(() => buildSubjectTimeStats(props.overview))
 const maxTodaySubject = computed(() => Math.max(1, ...(props.overview?.today_subject_totals.map((item) => item.minutes) || [])))
 const todayProgress = computed(() => Math.min(100, Math.round((props.overview?.today.minutes || 0) / 300 * 100)))
 const statusLabel = computed(() => todayProgress.value >= 100 ? 'TARGET MET' : props.overview?.active_session ? 'SESSION ACTIVE' : 'NO ACTIVE SESSION')
@@ -40,6 +42,13 @@ const weekdayLabel = computed(() => {
       <MetricCard label="5H DAYS" :value="overview.summary.five_hour_days" suffix="days" hint="Last 180 days" tone="warm" />
       <MetricCard label="AVG. START" :value="overview.summary.average_start_time || '--'" hint="First session per active day" tone="blue" />
       <MetricCard label="ACTIVE DAYS" :value="overview.summary.active_days" suffix="days" :hint="`${overview.summary.session_count} completed sessions`" />
+    </section>
+    <section v-if="overview" class="subject-time-grid" aria-label="Study time by subject">
+      <article v-for="item in trackedSubjectStats" :key="item.subject" class="panel subject-time-card" :class="`subject-time-${item.subject}`">
+        <header><span>{{ item.label }}</span><i /></header>
+        <strong>{{ item.duration }}</strong>
+        <footer><span>LAST {{ overview.range_days }} DAYS</span><b>{{ item.share }}% OF TOTAL</b></footer>
+      </article>
     </section>
     <section v-if="overview" class="panel subject-strip">
       <div><span class="eyebrow">BREAKDOWN</span><h2>Today by subject</h2></div>
