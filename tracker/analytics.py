@@ -56,7 +56,7 @@ def build_dashboard_overview(user, days=180, config=None):
             start_time__gte=boundary,
         ).only(
             'id', 'user_id', 'category', 'task_path', 'start_time', 'end_time',
-            'status', 'encrypted_summary',
+            'status', 'efficiency_grade', 'encrypted_summary',
         ).prefetch_related('tags').order_by('start_time')
     )
     active = TimeLog.objects.filter(user=user, status='running').prefetch_related('tags').first()
@@ -69,22 +69,23 @@ def build_dashboard_overview(user, days=180, config=None):
     by_tag = {}
     by_task = defaultdict(lambda: {'minutes': 0, 'sessions': 0})
     for session in sessions:
+        credited_minutes = session.credited_duration_minutes
         local_start = _local(session.start_time)
         day = local_start.date()
         row = daily[day]
-        row['minutes'] += session.duration_minutes
+        row['minutes'] += credited_minutes
         row['sessions'] += 1
         start_label = local_start.strftime('%H:%M')
         if row['first_start'] is None or start_label < row['first_start']:
             row['first_start'] = start_label
-        by_subject[session.category] += session.duration_minutes
-        by_week[day - datetime.timedelta(days=day.weekday())] += session.duration_minutes
-        by_month[day.replace(day=1)] += session.duration_minutes
+        by_subject[session.category] += credited_minutes
+        by_week[day - datetime.timedelta(days=day.weekday())] += credited_minutes
+        by_month[day.replace(day=1)] += credited_minutes
         if day == local_today:
-            today_by_subject[session.category] += session.duration_minutes
+            today_by_subject[session.category] += credited_minutes
         if session.task_path:
             task_key = (session.category, session.task_path)
-            by_task[task_key]['minutes'] += session.duration_minutes
+            by_task[task_key]['minutes'] += credited_minutes
             by_task[task_key]['sessions'] += 1
         for tag in session.tags.all():
             tag_row = by_tag.setdefault(tag.pk, {
@@ -94,7 +95,7 @@ def build_dashboard_overview(user, days=180, config=None):
                 'minutes': 0,
                 'sessions': 0,
             })
-            tag_row['minutes'] += session.duration_minutes
+            tag_row['minutes'] += credited_minutes
             tag_row['sessions'] += 1
 
     active_dates = {day for day, row in daily.items() if row['minutes'] > 0}
@@ -252,6 +253,11 @@ def serialize_session(session, now=None):
         'start_time': _local(session.start_time).isoformat(),
         'end_time': _local(session.end_time).isoformat() if session.end_time else None,
         'duration_minutes': max(0, int((end - session.start_time).total_seconds() / 60)),
+        'efficiency_grade': session.efficiency_grade,
+        'efficiency_coefficient': session.efficiency_coefficient,
+        'credited_duration_minutes': (
+            session.credited_duration_minutes if session.end_time else 0
+        ),
         'title': session.title or '',
         'details': session.details,
         'breakthrough': session.breakthrough,

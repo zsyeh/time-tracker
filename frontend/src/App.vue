@@ -3,6 +3,7 @@ import { computed, defineAsyncComponent, nextTick, onBeforeUnmount, onMounted, r
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Clock, DataAnalysis, Guide, List, Search as SearchIcon, Setting } from '@element-plus/icons-vue'
+import BrandIdentity from './components/BrandIdentity.vue'
 import GlobalSearch from './components/GlobalSearch.vue'
 import { api, post } from './lib/api'
 import { mathVisualizationEnabled } from './lib/featureFlags'
@@ -93,13 +94,13 @@ onBeforeUnmount(() => {
 
   <div v-else class="app-shell">
     <aside class="sidebar">
-      <div class="brand"><span class="brand-mark">L</span><div><strong>Learning OS</strong><small>PERSONAL SYSTEM</small></div></div>
+      <BrandIdentity />
       <GlobalSearch ref="globalSearch" />
       <nav><span class="nav-section">WORKSPACE</span><button v-for="item in nav" :key="item.id" :class="{ active: activeSection === item.id }" @click="router.push(item.to)"><el-icon><component :is="item.icon" /></el-icon><span>{{ item.label }}</span></button></nav>
       <div class="sidebar-user"><span>{{ username.slice(0, 1).toUpperCase() }}</span><div><b>{{ username }}</b><button @click="logout">Sign out</button></div></div>
     </aside>
     <main class="main-content" v-loading.fullscreen.lock="loading">
-      <div class="mobile-header"><div class="brand"><span class="brand-mark">L</span><strong>Learning OS</strong></div><div class="mobile-tools"><el-button circle aria-label="Open global search" @click="globalSearch?.open()"><el-icon><SearchIcon /></el-icon></el-button><el-dropdown trigger="click"><el-button>Menu</el-button><template #dropdown><el-dropdown-menu><el-dropdown-item v-for="item in nav" :key="item.id" @click="router.push(item.to)">{{ item.label }}</el-dropdown-item><el-dropdown-item divided @click="logout">Sign out</el-dropdown-item></el-dropdown-menu></template></el-dropdown></div></div>
+      <div class="mobile-header"><BrandIdentity /><div class="mobile-tools"><el-button circle aria-label="Open global search" @click="globalSearch?.open()"><el-icon><SearchIcon /></el-icon></el-button><el-dropdown trigger="click"><el-button>Menu</el-button><template #dropdown><el-dropdown-menu><el-dropdown-item v-for="item in nav" :key="item.id" @click="router.push(item.to)">{{ item.label }}</el-dropdown-item><el-dropdown-item divided @click="logout">Sign out</el-dropdown-item></el-dropdown-menu></template></el-dropdown></div></div>
       <RouterView v-slot="{ Component }">
         <component v-if="route.name === 'today' || route.name === 'trends'" :is="Component" :overview="overview" @changed="load" />
         <component v-else-if="route.name === 'settings'" :is="Component" @changed="load" />

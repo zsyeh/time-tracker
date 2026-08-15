@@ -43,12 +43,15 @@ class Command(BaseCommand):
             start_str = local_start.strftime('%m-%d %H:%M')
             # 获取枚举对应的中文标签
             cat_display = dict(TimeLog.CATEGORY_CHOICES).get(log.category, log.category)
-            self.stdout.write(f"[{start_str}] {cat_display:<6} : {log.duration_minutes:>3} min")
+            self.stdout.write(
+                f"[{start_str}] {cat_display:<6} : "
+                f"{log.credited_duration_minutes:>3} min ({log.efficiency_grade})"
+            )
 
         # 2. 执行时间聚合计算
         for log in logs:
-            category_totals[log.category] += log.duration_minutes
-            total_minutes += log.duration_minutes
+            category_totals[log.category] += log.credited_duration_minutes
+            total_minutes += log.credited_duration_minutes
 
         if total_minutes == 0:
             return

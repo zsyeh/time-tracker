@@ -444,7 +444,7 @@ class DashboardOverviewView(APIView):
         math_visualization_enabled = SiteConfiguration.math_visualization_is_enabled()
         # Keep a payload schema version in the key so a zero-downtime frontend
         # deployment never receives an older cached response shape.
-        cache_key = f'dashboard-overview:v7:{request.user.pk}:{days}:{version}:{config["fingerprint"]}:{int(math_visualization_enabled)}'
+        cache_key = f'dashboard-overview:v8:{request.user.pk}:{days}:{version}:{config["fingerprint"]}:{int(math_visualization_enabled)}'
         payload = cache.get(cache_key)
         if payload is None:
             payload = build_dashboard_overview(request.user, days, config=config['values'])
@@ -962,6 +962,7 @@ def export_csv(request):
     writer = csv.writer(output)
     writer.writerow([
         'session_id', 'user_id', 'date', 'start_time', 'end_time', 'duration_minutes',
+        'efficiency_grade', 'efficiency_coefficient', 'credited_duration_minutes',
         'subject', 'chapter', 'topic', 'learning_mode', 'difficulty', 'energy_level',
         'focus_level', 'confidence_before', 'confidence_after', 'status', 'title', 'details',
         'task_path', 'tags', 'breakthrough', 'problems', 'next_action', 'disturbance_count',
@@ -980,7 +981,9 @@ def export_csv(request):
         local_start = _local(session.start_time)
         writer.writerow([
             session.pk, session.user_id, local_start.date().isoformat(), local_start.isoformat(),
-            _local(session.end_time).isoformat(), session.duration_minutes, session.category,
+            _local(session.end_time).isoformat(), session.duration_minutes,
+            session.efficiency_grade, session.efficiency_coefficient,
+            session.credited_duration_minutes, session.category,
             session.chapter, session.topic, session.learning_mode, session.difficulty,
             session.energy_level, session.focus_level, session.confidence_before,
             session.confidence_after, session.status, session.title or '', session.details,
@@ -1022,9 +1025,14 @@ def export_markdown(request):
             lines.extend([f'## {day}', ''])
             current_day = day
         lines.extend([
-            f"### {session.get_category_display()} · {session.duration_minutes} minutes",
+            f"### {session.get_category_display()} · {session.credited_duration_minutes} credited minutes",
             '',
             f'- Time: {local_start:%H:%M}–{_local(session.end_time):%H:%M}',
+            f'- Actual duration: {session.duration_minutes} minutes',
+            (
+                f'- Efficiency: {session.efficiency_grade} '
+                f'({session.efficiency_coefficient:.2f})'
+            ),
             f'- Chapter: {session.chapter or "Not provided"}',
             f'- Topic: {session.topic or "Not provided"}',
             f'- Task: {session.task_path or "Not provided"}',

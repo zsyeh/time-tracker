@@ -101,6 +101,9 @@ def _serialize_log(log: TimeLog, now: Optional[datetime.datetime] = None) -> Dic
         'start_time': _local(log.start_time).isoformat(),
         'end_time': _local(log.end_time).isoformat() if log.end_time else None,
         'duration_minutes': None if active else max(0, int(elapsed.total_seconds() / 60)),
+        'efficiency_grade': log.efficiency_grade,
+        'efficiency_coefficient': log.efficiency_coefficient,
+        'credited_duration_minutes': None if active else log.credited_duration_minutes,
         'active': active,
         'title': log.title or '',
         'details': log.details,
@@ -136,12 +139,12 @@ def get_tracker_status() -> Dict[str, Any]:
         'server_time': local_now.isoformat(),
         'active_task': _serialize_log(active, now) if active else None,
         'today': {
-            'minutes': sum(log.duration_minutes for log in today_logs),
+            'minutes': sum(log.credited_duration_minutes for log in today_logs),
             'sessions': len(today_logs),
             'target_minutes': settings.TRACKER_DAILY_TARGET_MINUTES,
         },
         'week': {
-            'minutes': sum(log.duration_minutes for log in week_logs),
+            'minutes': sum(log.credited_duration_minutes for log in week_logs),
             'sessions': len(week_logs),
             'target_minutes': settings.TRACKER_WEEKLY_TARGET_MINUTES,
         },
@@ -184,7 +187,7 @@ def get_study_summary(days: int = 7) -> Dict[str, Any]:
     by_day: Dict[str, int] = {}
     total = 0
     for log in logs:
-        minutes = log.duration_minutes
+        minutes = log.credited_duration_minutes
         total += minutes
         label = CATEGORY_LABELS.get(log.category, log.category)
         by_category[label] = by_category.get(label, 0) + minutes
@@ -241,10 +244,13 @@ def start_task(category: str) -> Dict[str, Any]:
     }
 
 
-def stop_task(title: str = '', details: str = '') -> Dict[str, Any]:
-    """End the active task; the title and Markdown details are optional."""
+def stop_task(title: str = '', details: str = '', efficiency_grade: str = 'A') -> Dict[str, Any]:
+    """End the active task with an optional A-F efficiency grade."""
     title = title.strip()
     details = details.strip()
+    efficiency_grade = efficiency_grade.strip().upper()
+    if efficiency_grade not in TimeLog.EFFICIENCY_COEFFICIENTS:
+        raise ValueError('efficiency_grade must be one of A, B, C, D, E, or F')
     if len(title) > MAX_TITLE_LENGTH:
         raise ValueError(f'title must not exceed {MAX_TITLE_LENGTH} characters')
     if len(details) > MAX_DETAILS_LENGTH:
@@ -283,8 +289,9 @@ def stop_task(title: str = '', details: str = '') -> Dict[str, Any]:
         active.end_time = now
         active.title = title
         active.details = details
+        active.efficiency_grade = efficiency_grade
         active.status = 'completed'
-        active.save(update_fields=['end_time', 'title', 'details', 'status'])
+        active.save(update_fields=['end_time', 'title', 'details', 'efficiency_grade', 'status'])
     task = _serialize_log(active, now)
     try:
         learning_log = sync_session_note(active)
@@ -388,9 +395,17 @@ async def _mcp_start_task(category: str) -> Dict[str, Any]:
     return await sync_to_async(start_task, thread_sensitive=True)(category)
 
 
-async def _mcp_stop_task(title: str = '', details: str = '') -> Dict[str, Any]:
-    """End the active task; an optional title and Markdown body may be supplied."""
-    return await sync_to_async(stop_task, thread_sensitive=True)(title, details)
+async def _mcp_stop_task(
+    title: str = '',
+    details: str = '',
+    efficiency_grade: str = 'A',
+) -> Dict[str, Any]:
+    """End the active task with optional notes and an A-F efficiency grade."""
+    return await sync_to_async(stop_task, thread_sensitive=True)(
+        title,
+        details,
+        efficiency_grade,
+    )
 
 
 def create_mcp_server() -> FastMCP:
@@ -400,7 +415,8 @@ def create_mcp_server() -> FastMCP:
         instructions=(
             'Query study records and target progress. Start a task only after explicit user intent. '
             'When ending an eligible task, accept an optional short title and optional Markdown '
-            'details. Never delay completion because either is empty. Keep every prompt factual '
+            'details and an optional A-F efficiency grade (A=1.00 through F=0.75). Never delay '
+            'completion because either note field is empty. Keep every prompt factual '
             'and in English; do not add motivational text. '
             'Sessions shorter than 25 minutes or longer than 12 hours are deleted. '
             'Categories: math, english, major, training.'

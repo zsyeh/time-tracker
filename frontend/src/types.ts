@@ -1,4 +1,5 @@
 export type Subject = 'math' | 'english' | 'major' | 'training'
+export type EfficiencyGrade = 'A' | 'B' | 'C' | 'D' | 'E' | 'F'
 
 export interface StudyTag {
   id: number
@@ -49,6 +50,9 @@ export interface StudySessionSummary {
   start_time: string
   end_time: string | null
   duration_minutes: number
+  efficiency_grade: EfficiencyGrade
+  efficiency_coefficient: number
+  credited_duration_minutes: number
   status: 'running' | 'completed' | 'abandoned'
   title: string | null
   task_preset: number | null

@@ -2,14 +2,27 @@
 import { computed, reactive, ref } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { api, post } from '../lib/api'
-import type { CompletionOptions, StudySession, Subject, TaskPreset, TaskShortcut } from '../types'
+import type { CompletionOptions, EfficiencyGrade, StudySession, Subject, TaskPreset, TaskShortcut } from '../types'
 import MarkdownPreview from './MarkdownPreview.vue'
 
 const props = defineProps<{ session: StudySession | null; shortcuts?: TaskShortcut[] }>()
 const emit = defineEmits<{ changed: [] }>()
 const finishOpen = ref(false)
 const saving = ref(false)
-const form = reactive({ title: '', details: '', tag_ids: [] as number[] })
+const form = reactive({
+  title: '',
+  details: '',
+  tag_ids: [] as number[],
+  efficiency_grade: 'A' as EfficiencyGrade,
+})
+const efficiencyGrades: Array<{ grade: EfficiencyGrade; coefficient: string }> = [
+  { grade: 'A', coefficient: '1.00' },
+  { grade: 'B', coefficient: '0.95' },
+  { grade: 'C', coefficient: '0.90' },
+  { grade: 'D', coefficient: '0.85' },
+  { grade: 'E', coefficient: '0.80' },
+  { grade: 'F', coefficient: '0.75' },
+]
 const completionOptions = ref<CompletionOptions>({ presets: [], tags: [], recent_titles: [] })
 const optionsLoaded = ref(false)
 const taskBrowserOpen = ref(false)
@@ -118,6 +131,7 @@ async function prepareFinish() {
     } finally { saving.value = false }
   }
   form.tag_ids = props.session.tags.map((tag) => tag.id)
+  form.efficiency_grade = 'A'
   finishOpen.value = true
   void loadCompletionOptions()
 }
@@ -137,6 +151,7 @@ async function finish() {
       form.title = ''
       form.details = ''
       form.tag_ids = []
+      form.efficiency_grade = 'A'
     }
     emit('changed')
   } catch (error) { ElMessage.error((error as Error).message) } finally { saving.value = false }
@@ -183,6 +198,20 @@ async function abandon() {
 
   <el-dialog v-model="finishOpen" title="Complete session" width="min(760px, 94vw)" destroy-on-close>
     <el-form label-position="top" class="review-form simple-review">
+      <div class="efficiency-assessment">
+        <div><span>EFFICIENCY ASSESSMENT</span><small>Credited time = actual duration × coefficient</small></div>
+        <div class="efficiency-options" role="radiogroup" aria-label="Efficiency grade">
+          <button
+            v-for="item in efficiencyGrades"
+            :key="item.grade"
+            type="button"
+            role="radio"
+            :aria-checked="form.efficiency_grade === item.grade"
+            :class="{ selected: form.efficiency_grade === item.grade }"
+            @click="form.efficiency_grade = item.grade"
+          ><b>{{ item.grade }}</b><span>×{{ item.coefficient }}</span></button>
+        </div>
+      </div>
       <el-form-item label="Title · Optional"><el-input v-model="form.title" maxlength="500" show-word-limit :placeholder="session?.task_path ? `Defaults to ${session.task_path.split(' › ').at(-1)}` : 'Leave empty to finish without notes'" /></el-form-item>
       <div v-if="completionOptions.recent_titles.length" class="completion-suggestions"><span>RECENT NOTES</span><button v-for="title in completionOptions.recent_titles" :key="title" type="button" @click="form.title = title">{{ title }}</button></div>
       <el-form-item label="Markdown details · Optional"><el-input v-model="form.details" type="textarea" :rows="14" placeholder="Optional Markdown. TeX formulas support $...$, $$...$$, \(...\), and \[...\]." /></el-form-item>

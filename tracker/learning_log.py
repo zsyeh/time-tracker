@@ -86,6 +86,9 @@ def session_task(session: TimeLog) -> Dict[str, Any]:
         'start_time': start.isoformat(),
         'end_time': end.isoformat() if end else None,
         'duration_minutes': session.duration_minutes,
+        'efficiency_grade': session.efficiency_grade,
+        'efficiency_coefficient': session.efficiency_coefficient,
+        'credited_duration_minutes': session.credited_duration_minutes,
         'title': session.title or '',
         'details': session.details,
         'task_path': session.task_path,
@@ -119,6 +122,9 @@ def render_session_markdown(task: Dict[str, Any]) -> str:
         f"started_at: {json.dumps(started.isoformat(), ensure_ascii=False)}\n"
         f"ended_at: {json.dumps(ended.isoformat(), ensure_ascii=False)}\n"
         f"duration_minutes: {int(task['duration_minutes'])}\n"
+        f"efficiency_grade: {json.dumps(str(task.get('efficiency_grade', 'A')), ensure_ascii=False)}\n"
+        f"efficiency_coefficient: {float(task.get('efficiency_coefficient', 1.0)):.2f}\n"
+        f"credited_duration_minutes: {int(task.get('credited_duration_minutes', task['duration_minutes']))}\n"
         f"task_path: {json.dumps(str(task.get('task_path', '')), ensure_ascii=False)}\n"
         f"tags: {json.dumps(list(task.get('tags', [])), ensure_ascii=False)}\n"
         f"username: {json.dumps(str(task.get('username', '')), ensure_ascii=False)}\n"

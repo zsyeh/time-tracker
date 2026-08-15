@@ -63,9 +63,10 @@ def clear_login_rate_limits(network_address):
 class TimeLogAdmin(admin.ModelAdmin):
     list_display = (
         'user', 'category', 'task_path', 'status', 'start_time', 'end_time',
-        'duration_minutes', 'disturbance_count',
+        'duration_minutes', 'efficiency_grade', 'credited_duration_minutes',
+        'disturbance_count',
     )
-    list_filter = ('user', 'category', 'status', 'start_time')
+    list_filter = ('user', 'category', 'status', 'efficiency_grade', 'start_time')
     search_fields = ('title', 'details', 'chapter', 'topic')
 
 

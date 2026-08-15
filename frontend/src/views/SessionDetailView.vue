@@ -107,7 +107,7 @@ onMounted(load)
       </section>
 
       <section class="panel session-article-card session-detail-page">
-        <dl><div><dt>SUBJECT</dt><dd>{{ session.subject_label }}</dd></div><div><dt>START</dt><dd>{{ localDate(session.start_time) }}</dd></div><div><dt>END</dt><dd>{{ localDate(session.end_time) }}</dd></div><div><dt>DURATION</dt><dd>{{ duration(session.duration_minutes) }}</dd></div></dl>
+        <dl><div><dt>SUBJECT</dt><dd>{{ session.subject_label }}</dd></div><div><dt>START</dt><dd>{{ localDate(session.start_time) }}</dd></div><div><dt>END</dt><dd>{{ localDate(session.end_time) }}</dd></div><div><dt>CREDITED</dt><dd>{{ duration(session.credited_duration_minutes) }}</dd></div><div><dt>ACTUAL</dt><dd>{{ duration(session.duration_minutes) }}</dd></div><div><dt>EFFICIENCY</dt><dd>{{ session.efficiency_grade }} · ×{{ session.efficiency_coefficient.toFixed(2) }}</dd></div></dl>
         <p class="session-disturbance-summary"><b>{{ session.disturbance_count }}</b> DISTURBANCE{{ session.disturbance_count === 1 ? '' : 'S' }}<span v-if="session.last_disturbance_at"> · LAST {{ localDate(session.last_disturbance_at) }}</span></p>
         <div v-if="session.tags.length" class="completion-tags"><span>TAGS</span><button v-for="tag in session.tags" :key="tag.id" type="button" class="selected">#{{ tag.name }}</button></div>
         <ReviewTrend v-if="session.status === 'completed'" :trend="reviewTrend" :loading="loading" />

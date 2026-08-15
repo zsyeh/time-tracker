@@ -142,6 +142,8 @@ class StudySessionSerializer(serializers.ModelSerializer):
     subject = serializers.CharField(source='category')
     subject_label = serializers.CharField(source='get_category_display', read_only=True)
     duration_minutes = serializers.IntegerField(read_only=True)
+    efficiency_coefficient = serializers.FloatField(read_only=True)
+    credited_duration_minutes = serializers.IntegerField(read_only=True)
     task_preset = serializers.PrimaryKeyRelatedField(read_only=True)
     tags = StudyTagSerializer(many=True, read_only=True)
 
@@ -160,6 +162,9 @@ class StudySessionSerializer(serializers.ModelSerializer):
             'start_time',
             'end_time',
             'duration_minutes',
+            'efficiency_grade',
+            'efficiency_coefficient',
+            'credited_duration_minutes',
             'status',
             'learning_mode',
             'difficulty',
@@ -185,6 +190,9 @@ class StudySessionSerializer(serializers.ModelSerializer):
             'start_time',
             'end_time',
             'duration_minutes',
+            'efficiency_grade',
+            'efficiency_coefficient',
+            'credited_duration_minutes',
             'status',
             'created_at',
             'updated_at',
@@ -202,6 +210,8 @@ class StudySessionSummarySerializer(serializers.ModelSerializer):
     subject = serializers.CharField(source='category')
     subject_label = serializers.CharField(source='get_category_display', read_only=True)
     duration_minutes = serializers.IntegerField(read_only=True)
+    efficiency_coefficient = serializers.FloatField(read_only=True)
+    credited_duration_minutes = serializers.IntegerField(read_only=True)
     task_preset = serializers.PrimaryKeyRelatedField(read_only=True)
     tags = StudyTagSerializer(many=True, read_only=True)
 
@@ -210,6 +220,7 @@ class StudySessionSummarySerializer(serializers.ModelSerializer):
         fields = (
             'id', 'uuid', 'subject', 'subject_label', 'start_time', 'end_time',
             'duration_minutes', 'status', 'title', 'task_preset', 'task_path', 'tags',
+            'efficiency_grade', 'efficiency_coefficient', 'credited_duration_minutes',
             'review_count', 'last_reviewed_at',
         )
 
@@ -262,6 +273,11 @@ class StartSessionSerializer(serializers.Serializer):
 
 
 class FinishSessionSerializer(serializers.Serializer):
+    efficiency_grade = serializers.ChoiceField(
+        choices=[choice[0] for choice in TimeLog.EFFICIENCY_CHOICES],
+        required=False,
+        default='A',
+    )
     chapter = serializers.CharField(max_length=200, required=False, allow_blank=True)
     topic = serializers.CharField(max_length=200, required=False, allow_blank=True)
     learning_mode = serializers.ChoiceField(

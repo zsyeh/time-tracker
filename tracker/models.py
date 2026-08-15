@@ -2,6 +2,7 @@ import datetime
 import hashlib
 import secrets
 import uuid as uuid_lib
+from decimal import Decimal, ROUND_HALF_UP
 
 from django.conf import settings
 from django.core.validators import MaxValueValidator, MinValueValidator
@@ -137,6 +138,22 @@ class TimeLog(EncryptedAtRestMixin, models.Model):
         ('medium', 'Medium'),
         ('high', 'High'),
     ]
+    EFFICIENCY_CHOICES = [
+        ('A', 'A · 1.00'),
+        ('B', 'B · 0.95'),
+        ('C', 'C · 0.90'),
+        ('D', 'D · 0.85'),
+        ('E', 'E · 0.80'),
+        ('F', 'F · 0.75'),
+    ]
+    EFFICIENCY_COEFFICIENTS = {
+        'A': Decimal('1.00'),
+        'B': Decimal('0.95'),
+        'C': Decimal('0.90'),
+        'D': Decimal('0.85'),
+        'E': Decimal('0.80'),
+        'F': Decimal('0.75'),
+    }
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -159,6 +176,11 @@ class TimeLog(EncryptedAtRestMixin, models.Model):
     start_time = models.DateTimeField(default=timezone.now, db_index=True)
     end_time = models.DateTimeField(null=True, blank=True)
     status = models.CharField(max_length=16, choices=STATUS_CHOICES, default='running')
+    efficiency_grade = models.CharField(
+        max_length=1,
+        choices=EFFICIENCY_CHOICES,
+        default='A',
+    )
     learning_mode = models.CharField(
         max_length=24,
         choices=LEARNING_MODE_CHOICES,
@@ -236,6 +258,19 @@ class TimeLog(EncryptedAtRestMixin, models.Model):
         if not self.end_time:
             return 0
         return max(0, int((self.end_time - self.start_time).total_seconds()))
+
+    @property
+    def efficiency_coefficient(self):
+        return float(self.EFFICIENCY_COEFFICIENTS.get(self.efficiency_grade, Decimal('1.00')))
+
+    @property
+    def credited_duration_minutes(self):
+        """Return whole credited minutes, rounded half up after weighting."""
+        weighted = Decimal(max(0, self.duration_minutes)) * self.EFFICIENCY_COEFFICIENTS.get(
+            self.efficiency_grade,
+            Decimal('1.00'),
+        )
+        return int(weighted.quantize(Decimal('1'), rounding=ROUND_HALF_UP))
 
     def __str__(self):
         return f"{self.category} | {self.start_time.strftime('%Y-%m-%d %H:%M:%S')}"

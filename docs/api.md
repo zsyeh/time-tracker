@@ -14,7 +14,7 @@ public. Every response is restricted to the authenticated owner.
 | GET/POST | `/api/sessions/<id>/reviews/` | Read trend / record a deduplicated review visit |
 | GET/POST/DELETE | `/api/sessions/<uuid>/share/` | Inspect, create, or revoke an owned session share |
 | GET | `/api/public/shares/<token>/` | Public read-only article projection; no authentication |
-| POST | `/api/sessions/<id>/finish/` | Finish; optional title and Markdown details may be empty |
+| POST | `/api/sessions/<id>/finish/` | Finish; optional title/details may be empty and `efficiency_grade` may be A–F |
 | POST | `/api/sessions/<id>/abandon/` | Permanently delete the running session |
 | GET/POST | `/api/study-tags/` | List/create reusable owned content tags |
 | PATCH/DELETE | `/api/study-tags/<id>/` | Edit/delete an unused owned tag |
@@ -115,12 +115,20 @@ only when the owner has a running Session. With no running Session it returns
 the iOS `Get Contents of URL` action to use POST with no body.
 
 For an eligible session, the finish endpoint accepts optional `title` and
-`details`; both may be empty. An empty completion still retains subject, timing,
+`details`; both may be empty. It also accepts `efficiency_grade` with `A` as the
+default. Grades A–F map to coefficients `1.00`, `0.95`, `0.90`, `0.85`, `0.80`,
+and `0.75`. Authenticated session responses keep the actual `duration_minutes`
+and additionally return `efficiency_grade`, `efficiency_coefficient`, and
+whole-minute `credited_duration_minutes`. An empty completion still retains subject, timing,
 duration, and disturbance metadata, and its GitHub archive uses the safe
 `Untitled session` fallback. A finish attempt before 25 elapsed minutes or after 12 elapsed hours
 deletes the session and returns `discarded: true` with `discard_reason`; it never
 creates a completed or abandoned record. Historical structured fields remain in
 exports for compatibility but are not required by current completion flows.
+
+Dashboard, subject, task, tag, heatmap, weekly, and monthly totals use credited
+minutes. The 24-hour timeline continues to use the real timestamps. CSV, JSON,
+Markdown, and GitHub Markdown retain both actual and credited duration metadata.
 
 The knowledge-point tables and endpoints are retained as a legacy compatibility
 surface, but they are no longer linked from the product UI. `Issues` is the one

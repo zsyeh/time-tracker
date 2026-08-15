@@ -54,7 +54,7 @@ def refresh_daily_stat(study_date, user):
             defaults={
                 'study_count': len(logs),
                 'first_start_time': logs[0].start_time,
-                'total_minutes': sum(max(0, log.duration_minutes) for log in logs),
+                'total_minutes': sum(max(0, log.credited_duration_minutes) for log in logs),
             },
         )
     return stat

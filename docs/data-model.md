@@ -7,6 +7,10 @@ foreign references. In product/API language it is exposed as a study session.
 It stores an owner, subject, start/end timestamps, status, a `title`, a `details`
 body, legacy reflection fields, and optional metadata. Duration is derived from the
 timestamps; there is no second authoritative duration column.
+`efficiency_grade` is the only persisted assessment value. A–F map to fixed
+coefficients `1.00` through `0.75`; credited duration is derived at read time and
+rounded to the nearest whole minute using half-up rounding. This preserves the
+real timeline, avoids duplicated duration state, and adds no aggregation query.
 Each row also has a unique immutable UUID used by `/sessions/<uuid>` and the
 owner-scoped detail API. Integer primary keys remain unchanged for internal
 relationships and compatibility; complete domain URLs are never stored.
@@ -46,7 +50,7 @@ Markdown, reflection, and personal rating fields in `encrypted_content`.
 `LearningIssue` stores its private text in a separate encrypted payload, and
 `GitHubNoteSync` protects paths and error text that may contain a title. The
 original protected columns are cleared, while owner, UUID, subject, timestamps,
-status, duration inputs, and relationship keys remain queryable operational
+status, duration inputs, efficiency grade, and relationship keys remain queryable operational
 metadata. Payloads use AES-256-GCM with random nonces and per-user keys derived
 from a server master key; ciphertext is authenticated and non-deterministic.
 

@@ -33,6 +33,7 @@ curl -fsSL https://app.ehzsy.site/install/docker-compose.sh | sh -s -- study.exa
 - 普通连续学习日、连续 5 小时日、历史最长连续日、达标日数、每日首次开始时间。
 - `/start/math`、`/start/english`、`/start/professional` 快速启动，服务器时间为准且重复请求幂等。
 - 运行中隐藏时长；结束时只填写 `Title` 和可粘贴 ChatGPT 内容的 `Details`。
+- 结算时可选 A–F 效率等级（`1.00 / 0.95 / 0.90 / 0.85 / 0.80 / 0.75`，默认 A）；真实起止时间保持不变，热力图、科目、任务、标签和 Trends 使用折算后的计入时长。
 - `Details` 支持按需 Markdown 预览、KaTeX 行内/块级公式、代码高亮、表格、任务列表、脚注和 GFM Callout；默认不加载预览引擎。
 - 历史回顾默认直接显示 Markdown 预览，支持原生顶层沉浸式全屏阅读、单独进入编辑，以及按会话统计回顾次数和近 28 天回顾趋势。
 - 可选的按需公式窗口提供线性映射、复变映射与 domain coloring、Fourier/FFT、Laplace 数值积分和三维曲面。该功能默认关闭，管理员可在 Django Admin 的全局站点策略中开启；关闭时 Markdown 不生成公式快捷按钮，也不会加载可视化代码。开启后点击公式旁的 `↗` 会自动分类并直接打开对应场景。见 [Math Lab](docs/math-lab.md) 与 [渲染兼容性](docs/math-renderer-compatibility.md)。

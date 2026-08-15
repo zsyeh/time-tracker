@@ -22,6 +22,9 @@ const filters = reactive({ search: '', subject: '', status: '' })
 const edit = reactive({ title: '', details: '' })
 
 function duration(minutes: number) { return minutes >= 60 ? `${Math.floor(minutes / 60)}h ${minutes % 60}m` : `${minutes}m` }
+function efficiency(session: StudySessionSummary) {
+  return `${session.efficiency_grade} · ×${session.efficiency_coefficient.toFixed(2)}`
+}
 async function load() {
   loading.value = true
   const params = new URLSearchParams({ page: String(page.value) })
@@ -74,14 +77,14 @@ onMounted(load)
         <time><b>{{ new Date(row.start_time).getDate().toString().padStart(2, '0') }}</b><span>{{ new Date(row.start_time).toLocaleDateString('en-US', { month: 'short' }) }}</span></time>
         <i :class="`subject-dot subject-${row.subject}`" />
         <div class="history-main"><strong>{{ row.title || (row.status === 'running' ? `${row.subject_label} session` : 'Untitled session') }}</strong><p>{{ row.task_path || (row.status === 'running' ? 'Session in progress' : 'Markdown review available') }}<span v-if="row.tags.length"> · {{ row.tags.map((tag) => `#${tag.name}`).join(' ') }}</span></p><small>{{ row.subject_label }} · {{ new Date(row.start_time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) }} · {{ row.status }}</small></div>
-        <div class="history-actions"><b v-if="row.status !== 'running'" class="duration-badge">{{ duration(row.duration_minutes) }}</b><b v-else class="running-badge">IN SESSION</b><button v-if="row.status === 'completed'" type="button" class="review-eye" :aria-label="`Review ${row.title || 'session'}`" @click.stop="inspect(row)"><el-icon><View /></el-icon><span>{{ row.review_count || 0 }}</span></button></div>
+        <div class="history-actions"><span v-if="row.status !== 'running'" class="duration-badge"><b>{{ duration(row.credited_duration_minutes) }}</b><small>{{ efficiency(row) }}</small></span><b v-else class="running-badge">IN SESSION</b><button v-if="row.status === 'completed'" type="button" class="review-eye" :aria-label="`Review ${row.title || 'session'}`" @click.stop="inspect(row)"><el-icon><View /></el-icon><span>{{ row.review_count || 0 }}</span></button></div>
       </article>
       <el-pagination v-if="total > 20" v-model:current-page="page" layout="prev, pager, next" :total="total" :page-size="20" @current-change="load" />
     </section>
     <el-drawer v-model="drawerOpen" size="min(760px, 96vw)" class="review-drawer" destroy-on-close>
       <template #header><div class="dialog-title review-title"><div><span class="eyebrow">SESSION REVIEW</span><h2>{{ expanded?.title || 'Untitled session' }}</h2></div><div class="drawer-resource-actions"><el-button v-if="expanded" @click="drawerOpen = false; router.push(`/sessions/${expanded.uuid}`)">Open article</el-button><el-button v-if="expanded && !editing" :icon="EditPen" @click="editing = true">Edit</el-button></div></div></template>
       <div v-if="expanded" v-loading="detailLoading" class="session-detail-page review-page">
-        <dl><div><dt>SUBJECT</dt><dd>{{ expanded.subject_label }}</dd></div><div><dt>TASK</dt><dd>{{ expanded.task_path || '—' }}</dd></div><div><dt>DATE</dt><dd>{{ new Date(expanded.start_time).toLocaleDateString('en-CA') }}</dd></div><div><dt>DURATION</dt><dd>{{ duration(expanded.duration_minutes) }}</dd></div></dl>
+        <dl><div><dt>SUBJECT</dt><dd>{{ expanded.subject_label }}</dd></div><div><dt>TASK</dt><dd>{{ expanded.task_path || '—' }}</dd></div><div><dt>DATE</dt><dd>{{ new Date(expanded.start_time).toLocaleDateString('en-CA') }}</dd></div><div><dt>CREDITED</dt><dd>{{ duration(expanded.credited_duration_minutes) }}</dd></div><div><dt>ACTUAL</dt><dd>{{ duration(expanded.duration_minutes) }}</dd></div><div><dt>EFFICIENCY</dt><dd>{{ efficiency(expanded) }}</dd></div></dl>
         <div v-if="expanded.tags.length" class="completion-tags"><span>TAGS</span><button v-for="tag in expanded.tags" :key="tag.id" type="button" class="selected">#{{ tag.name }}</button></div>
         <ReviewTrend v-if="expanded.status === 'completed'" :trend="reviewTrend" :loading="detailLoading" />
         <el-form v-if="editing" label-position="top" class="simple-review review-editor"><el-form-item label="Title"><el-input v-model="edit.title" maxlength="500" show-word-limit /></el-form-item><el-form-item label="Markdown source"><el-input v-model="edit.details" type="textarea" :rows="20" placeholder="Paste Markdown or edit the source." /></el-form-item><MarkdownPreview :source="edit.details" /><div class="editor-actions"><el-button @click="editing = false">Cancel</el-button><el-button type="primary" @click="save">Save changes</el-button></div></el-form>

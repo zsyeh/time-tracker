@@ -51,7 +51,16 @@ TEST_PASSWORD_HASHERS = ['django.contrib.auth.hashers.MD5PasswordHasher']
 TEST_DATA_ENCRYPTION_KEY = base64.urlsafe_b64encode(b'E' * 32).decode('ascii')
 
 
-def completed_session(user, *, day=None, minutes=60, subject='math', title='完整学习总结', details='完整学习详情'):
+def completed_session(
+    user,
+    *,
+    day=None,
+    minutes=60,
+    subject='math',
+    title='完整学习总结',
+    details='完整学习详情',
+    efficiency_grade='A',
+):
     day = day or timezone.localdate()
     start = timezone.make_aware(
         datetime.datetime.combine(day, datetime.time(8, 0)),
@@ -63,6 +72,7 @@ def completed_session(user, *, day=None, minutes=60, subject='math', title='完�
         start_time=start,
         end_time=start + datetime.timedelta(minutes=minutes),
         status='completed',
+        efficiency_grade=efficiency_grade,
         chapter='第一章',
         topic='核心主题',
         title=title,
@@ -149,6 +159,45 @@ class SessionResourceMigrationTests(TransactionTestCase):
         self.assertEqual(len(set(values)), 2)
         for value in values:
             self.assertEqual(uuid.UUID(str(value)), value)
+
+
+class EfficiencyGradeMigrationTests(TransactionTestCase):
+    migrate_from = [('tracker', '0019_task_presets_and_tags')]
+    migrate_to = [('tracker', '0020_timelog_efficiency_grade')]
+
+    def setUp(self):
+        executor = MigrationExecutor(connection)
+        old_targets = [
+            node for node in executor.loader.graph.leaf_nodes() if node[0] != 'tracker'
+        ] + self.migrate_from
+        executor.migrate(old_targets)
+        old_apps = executor.loader.project_state(old_targets).apps
+        User = old_apps.get_model('auth', 'User')
+        TimeLogOld = old_apps.get_model('tracker', 'TimeLog')
+        owner = User.objects.create(username='efficiency-migration-owner', is_active=True)
+        start = timezone.now() - datetime.timedelta(hours=1)
+        self.session_id = TimeLogOld.objects.create(
+            user_id=owner.pk,
+            category='math',
+            start_time=start,
+            end_time=start + datetime.timedelta(minutes=60),
+            status='completed',
+        ).pk
+
+        executor = MigrationExecutor(connection)
+        new_targets = [
+            node for node in executor.loader.graph.leaf_nodes() if node[0] != 'tracker'
+        ] + self.migrate_to
+        executor.migrate(new_targets)
+        self.apps = executor.loader.project_state(new_targets).apps
+
+    def tearDown(self):
+        executor = MigrationExecutor(connection)
+        executor.migrate(executor.loader.graph.leaf_nodes())
+
+    def test_existing_session_defaults_to_grade_a(self):
+        Session = self.apps.get_model('tracker', 'TimeLog')
+        self.assertEqual(Session.objects.get(pk=self.session_id).efficiency_grade, 'A')
 
 
 @override_settings(SECURE_SSL_REDIRECT=False)
@@ -856,6 +905,59 @@ class SessionWorkflowTests(TestCase):
         self.assertEqual(session.title, '函数复盘')
         self.assertEqual(session.details, '完成题目并复盘')
 
+    def test_finish_applies_selected_efficiency_grade_to_credited_time(self):
+        session_id = self.client.post(
+            '/api/sessions/', {'subject': 'math'}, content_type='application/json',
+        ).json()['session']['id']
+        TimeLog.objects.filter(pk=session_id).update(
+            start_time=timezone.now() - datetime.timedelta(minutes=40),
+        )
+
+        response = self.client.post(
+            f'/api/sessions/{session_id}/finish/',
+            {'efficiency_grade': 'C'},
+            content_type='application/json',
+        )
+
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()['session']
+        self.assertEqual(payload['duration_minutes'], 40)
+        self.assertEqual(payload['efficiency_grade'], 'C')
+        self.assertEqual(payload['efficiency_coefficient'], 0.9)
+        self.assertEqual(payload['credited_duration_minutes'], 36)
+        session = TimeLog.objects.get(pk=session_id)
+        self.assertEqual(session.efficiency_grade, 'C')
+        self.assertEqual(session.credited_duration_minutes, 36)
+
+    def test_finish_defaults_to_grade_a_and_rejects_unknown_grade(self):
+        invalid_id = self.client.post(
+            '/api/sessions/', {'subject': 'english'}, content_type='application/json',
+        ).json()['session']['id']
+        TimeLog.objects.filter(pk=invalid_id).update(
+            start_time=timezone.now() - datetime.timedelta(minutes=30),
+        )
+        invalid = self.client.post(
+            f'/api/sessions/{invalid_id}/finish/',
+            {'efficiency_grade': 'G'},
+            content_type='application/json',
+        )
+        self.assertEqual(invalid.status_code, 400)
+        self.assertEqual(TimeLog.objects.get(pk=invalid_id).status, 'running')
+
+        TimeLog.objects.filter(pk=invalid_id).delete()
+        default_id = self.client.post(
+            '/api/sessions/', {'subject': 'english'}, content_type='application/json',
+        ).json()['session']['id']
+        TimeLog.objects.filter(pk=default_id).update(
+            start_time=timezone.now() - datetime.timedelta(minutes=30),
+        )
+        completed = self.client.post(
+            f'/api/sessions/{default_id}/finish/', {}, content_type='application/json',
+        )
+        self.assertEqual(completed.status_code, 200)
+        self.assertEqual(completed.json()['session']['efficiency_grade'], 'A')
+        self.assertEqual(completed.json()['session']['credited_duration_minutes'], 30)
+
     @override_settings(LEARNING_REPO='zsyeh/personal-learning-notes')
     @mock.patch('tracker.learning_log.subprocess.Popen')
     def test_finish_allows_empty_title_and_markdown_and_queues_archive(self, popen):
@@ -990,6 +1092,34 @@ class AnalyticsAndExportTests(TestCase):
         expected_days = max(0, (datetime.date.fromisoformat(settings.TRACKER_EXAM_DATE) - today).days)
         self.assertEqual(overview['calendar']['days_until_exam'], expected_days)
 
+    def test_dashboard_uses_credited_duration_for_all_time_aggregates(self):
+        today = timezone.localdate()
+        completed_session(
+            self.user,
+            day=today,
+            minutes=270,
+            subject='math',
+            efficiency_grade='B',
+        )
+        completed_session(
+            self.user,
+            day=today,
+            minutes=40,
+            subject='english',
+            efficiency_grade='C',
+        )
+
+        overview = build_dashboard_overview(self.user, 7)
+
+        self.assertEqual(overview['today']['minutes'], 293)
+        self.assertEqual(overview['summary']['total_minutes'], 293)
+        self.assertEqual(overview['summary']['five_hour_days'], 0)
+        self.assertEqual(
+            {row['subject']: row['minutes'] for row in overview['subject_totals']},
+            {'math': 257, 'english': 36},
+        )
+        self.assertEqual(overview['weekly_totals'][-1]['minutes'], 293)
+
     def test_dashboard_exposes_the_global_math_visualization_flag(self):
         disabled = self.client.get('/api/dashboard/overview/?days=7').json()
         self.assertFalse(disabled['features']['math_visualization'])
@@ -1013,17 +1143,31 @@ class AnalyticsAndExportTests(TestCase):
         self.assertEqual(admin_overview['private_display']['study_room_code'], 'test-room-code')
 
     def test_exports_keep_raw_reflection_and_filters(self):
-        completed_session(self.user, subject='math', title='RAW-TITLE-SENTINEL', details='RAW-DETAILS-SENTINEL')
+        completed_session(
+            self.user,
+            subject='math',
+            minutes=40,
+            title='RAW-TITLE-SENTINEL',
+            details='RAW-DETAILS-SENTINEL',
+            efficiency_grade='C',
+        )
         completed_session(self.other, subject='english', title='OTHER-SECRET')
         response = self.client.get('/api/export/json/?subject=math')
         payload = json.loads(response.content)
         self.assertEqual(len(payload['sessions']), 1)
         self.assertEqual(payload['sessions'][0]['title'], 'RAW-TITLE-SENTINEL')
         self.assertEqual(payload['sessions'][0]['details'], 'RAW-DETAILS-SENTINEL')
+        self.assertEqual(payload['sessions'][0]['duration_minutes'], 40)
+        self.assertEqual(payload['sessions'][0]['efficiency_grade'], 'C')
+        self.assertEqual(payload['sessions'][0]['credited_duration_minutes'], 36)
         self.assertNotIn('OTHER-SECRET', response.content.decode())
+        csv_export = self.client.get('/api/export/csv/?subject=math').content.decode()
+        self.assertIn('efficiency_grade,efficiency_coefficient,credited_duration_minutes', csv_export)
         markdown = self.client.get('/api/export/markdown/?subject=math').content.decode()
         self.assertIn('RAW-TITLE-SENTINEL', markdown)
         self.assertIn('RAW-DETAILS-SENTINEL', markdown)
+        self.assertIn('Efficiency: C (0.90)', markdown)
+        self.assertIn('36 credited minutes', markdown)
 
     def test_compact_session_list_defers_details_until_drilldown(self):
         session = completed_session(

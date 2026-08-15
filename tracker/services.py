@@ -124,6 +124,7 @@ def finish_session(session, reflection):
             'energy_level',
             'focus_level',
             'confidence_after',
+            'efficiency_grade',
             'title',
             'details',
             'breakthrough',
