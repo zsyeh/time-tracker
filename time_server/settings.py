@@ -78,6 +78,7 @@ INSTALLED_APPS = [
     'allauth',
     'allauth.account',
     'allauth.mfa',
+    'drill.apps.DrillConfig',
     'tracker.apps.TrackerConfig',
 ]
 
@@ -176,8 +177,18 @@ STATIC_URL = 'static/'
 # 声明静态文件收集的绝对物理路径
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 FRONTEND_DIST = BASE_DIR / 'frontend' / 'dist'
+DRILL_FRONTEND_DIST = BASE_DIR / 'frontend' / 'drill-dist'
+STATICFILES_DIRS = []
 if FRONTEND_DIST.exists():
-    STATICFILES_DIRS = [('app', FRONTEND_DIST)]
+    STATICFILES_DIRS.append(('app', FRONTEND_DIST))
+if DRILL_FRONTEND_DIST.exists():
+    STATICFILES_DIRS.append(('drill', DRILL_FRONTEND_DIST))
+
+DRILL_HOSTS = {
+    host.strip().lower()
+    for host in os.environ.get('DRILL_HOSTS', 'drill.ehzsy.site').split(',')
+    if host.strip()
+}
 
 STORAGES = {
     'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},
@@ -390,7 +401,7 @@ CSRF_TRUSTED_ORIGINS = [
     origin.strip()
     for origin in os.environ.get(
         'CSRF_TRUSTED_ORIGINS',
-        'https://timer.ehzsy.site,https://timer.ehzsy.space',
+        'https://timer.ehzsy.site,https://timer.ehzsy.space,https://drill.ehzsy.site',
     ).split(',')
     if origin.strip()
 ]

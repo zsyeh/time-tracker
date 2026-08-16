@@ -4,7 +4,7 @@ WORKDIR /frontend
 COPY frontend/package.json frontend/package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY frontend/ ./
-RUN npm run build
+RUN npm run build && npm run build:drill
 
 FROM python:3.12-slim
 
@@ -34,6 +34,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY --chown=tracker:tracker . .
 COPY --from=frontend-build --chown=tracker:tracker /frontend/dist /app/frontend/dist
+COPY --from=frontend-build --chown=tracker:tracker /frontend/drill-dist /app/frontend/drill-dist
 RUN mkdir -p /app/data /app/staticfiles \
     && chown -R tracker:tracker /app/data /app/staticfiles \
     && chmod +x /app/docker-entrypoint.sh

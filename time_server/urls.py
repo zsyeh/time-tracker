@@ -40,8 +40,9 @@ from tracker.public_views import contact_view, guide_view, legal_view
 from tracker.stress_probe import StressTestProbeView
 from tracker.web_views import (
     LaunchDeviceView, LaunchDisturbanceView, direct_start_view,
-    launch_browser_view, public_spa_view, spa_view,
+    launch_browser_view, public_spa_view, root_spa_view, spa_view,
 )
+from drill.web_views import drill_spa_view
 
 
 urlpatterns = [
@@ -106,6 +107,7 @@ urlpatterns = [
     path('api/export/csv/', export_csv, name='export_csv'),
     path('api/export/json/', export_json, name='export_json'),
     path('api/export/markdown/', export_markdown, name='export_markdown'),
+    path('api/drill/', include('drill.urls')),
     # Explicit SPA history fallbacks keep Django API/Auth/device endpoints out
     # of the catchment while allowing direct browser refreshes.
     path('today', spa_view, name='spa_today'),
@@ -115,5 +117,8 @@ urlpatterns = [
     path('issues', spa_view, name='spa_issues'),
     path('settings', spa_view, name='spa_settings'),
     path('share/<str:raw_token>', public_spa_view, name='spa_public_share'),
-    path('', spa_view, name='dashboard'),
+    path('practice', drill_spa_view, name='drill_practice'),
+    path('practice/<uuid:question_uuid>', drill_spa_view, name='drill_question'),
+    path('heatmap', drill_spa_view, name='drill_heatmap_page'),
+    path('', root_spa_view, name='dashboard'),
 ]

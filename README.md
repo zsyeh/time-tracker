@@ -28,6 +28,8 @@ curl -fsSL https://app.ehzsy.site/install/docker-compose.sh | sh -s -- study.exa
 
 ## 主要能力
 
+- 独立的 `drill.ehzsy.site` 刷题前端与计时前端共用 Django 账号和 PostgreSQL，但不会在 `timer.ehzsy.site` 添加入口。题库包含 3,553 道数学题和原始裁剪图；可按书目、知识点、真题和未做状态筛选，记录每次练习结果，并一键继续刷同知识点题目。
+- 真题热力图覆盖识别出的历年考试题：从未做过的格子保持空色，随个人练习频次逐级加深；题库是全站只读资源，作答次数和结果按用户严格隔离。
 - 从 2026-05-23 开始的学习热力图；达到 5 小时的日期使用高对比亮绿色。
 - 点击任意日期查看 24 小时在线/未在线时间轴和当天每次学习标题；再点标题才显示正文详情。
 - 普通连续学习日、连续 5 小时日、历史最长连续日、达标日数、每日首次开始时间。
@@ -82,6 +84,7 @@ npm run dev
 npm run typecheck
 npm test
 npm run build
+npm run build:drill
 ```
 
 ## Docker 一键安装
@@ -122,6 +125,10 @@ cd frontend && npm run build
 
 ## 常用路由
 
+- `https://drill.ehzsy.site/practice`：独立刷题前端（使用与 Timer 相同的账号数据库）
+- `https://drill.ehzsy.site/practice/<uuid>`：稳定的题目页面及同类题入口
+- `https://drill.ehzsy.site/heatmap`：个人真题练习频次热力图
+- `/api/drill/*`：登录后可用的题库、作答、同类题、进度和图片 API
 - `/`：跳转到 `/today`
 - `/today`：Today
 - `/trends`：趋势

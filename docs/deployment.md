@@ -51,7 +51,7 @@ cd /path/to/time-tracker
 cp db.sqlite3 /safe/backup/db-$(date +%F-%H%M%S).sqlite3
 systemctl stop time-tracker-web.service time-tracker-mcp.service
 .venv/bin/pip install -r requirements.txt
-cd frontend && npm ci && npm run build && cd ..
+cd frontend && npm ci && npm run build && npm run build:drill && cd ..
 .venv/bin/python manage.py migrate --noinput
 .venv/bin/python manage.py collectstatic --noinput
 .venv/bin/python manage.py check --deploy
@@ -105,6 +105,13 @@ through their secret manager instead of relying on a node-local key file.
 `./install.sh --postgres domain` adds PostgreSQL 16 for new production installs.
 The multi-stage Docker image builds Vue assets first and contains only the Python
 runtime and built static files in the final image.
+
+The question drill uses a second Vue build from the same repository. Point
+`drill.example.com` at the same Gunicorn service, add that hostname to
+`DJANGO_ALLOWED_HOSTS`, and add its HTTPS origin to `CSRF_TRUSTED_ORIGINS`.
+The root dispatcher serves `frontend/drill-dist` only when the request hostname
+is listed in `DRILL_HOSTS`; the Timer navigation does not link to it. See
+`deploy/nginx/drill.ehzsy.site.conf.example` for the separate virtual host.
 
 For an existing SQLite deployment, do not simply switch its database URL. Export
 and import data in a maintenance window, verify counts/totals, and retain the

@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build",
+    "build:drill": "vue-tsc --noEmit -p tsconfig.drill.json && vite build --config vite.drill.config.ts",
     "typecheck": "vue-tsc --noEmit",
     "test": "vitest run",
     "preview": "vite preview"
