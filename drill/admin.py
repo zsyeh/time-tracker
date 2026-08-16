@@ -11,8 +11,10 @@ from .models import (
 
 @admin.register(QuestionDocument)
 class QuestionDocumentAdmin(admin.ModelAdmin):
-    list_display = ('display_title', 'title', 'page_count', 'parser_strategy', 'imported_at')
-    search_fields = ('display_title', 'title', 'filename', 'sha256')
+    list_display = (
+        'display_title', 'title', 'author', 'page_count', 'parser_strategy', 'imported_at',
+    )
+    search_fields = ('display_title', 'title', 'author', 'attribution', 'filename', 'sha256')
 
 
 @admin.register(QuestionTopic)

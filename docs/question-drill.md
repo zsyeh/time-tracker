@@ -26,7 +26,7 @@ changing the WebAuthn RP ID or widening the session cookie to every subdomain.
   append-only state marker; undo removes only the latest marker and restores the
   previous state.
 
-The supplied bank imports as 8 documents, 861 topics, 3,553 source records, and
+The original normalized bank imports as 8 documents, 861 topics, 3,553 source records, and
 4,123 PNG crops. Cleanup currently identifies 3,208 practiceable records and 345
 high-confidence source-outline rows. It separates 1,013 official past-exam
 records, 2 adapted exam records, 95 mock-paper records, 1,783 workbook records,
@@ -35,11 +35,20 @@ safe to infer. The classifier recognizes an exam year immediately associated
 with Mathematics I/II/III; descriptions that merely mention a year elsewhere
 are not included in the official heatmap.
 
+All question-bank source material was collected and organized by Bilibili
+creator **cxy (澄潇宇)**. Thanks to cxy. PDF authorship remains separate source
+metadata and is displayed on question detail pages when available.
+
 The original `/root/Downloads.7z` contains limits, single-variable integration,
 linear algebra, double integration, multivariable differentiation, differential
-equations, and improper integration. It does **not** contain a single-variable
-differentiation PDF. The catalog reports this source gap explicitly instead of
-pretending that a filter or importer lost those questions.
+equations, and improper integration. The later bookmarked single-variable
+differentiation PDF is imported separately at 160 DPI, preserving its PDF author
+metadata (`本本`), original source labels, and bookmark hierarchy.
+
+After that import, production contains 9 documents, 963 topics, 4,228 source
+records, 3,883 practiceable questions, and 4,830 authenticated crops. The new
+document contributes 675 questions and 707 crops (about 15.5 MiB): 281 official
+past-exam questions, 376 workbook questions, and 18 competition questions.
 
 ## Formula fidelity
 
@@ -83,6 +92,19 @@ transaction commits. Re-running the same import updates metadata and skips
 unchanged image bytes without duplicating questions, topics, or assets. Always
 take a PostgreSQL backup before importing a replacement bank.
 
+Import the bookmarked cxy single-variable differentiation PDF with:
+
+```bash
+python manage.py import_cxy_differentiation_pdf \
+  'drill/【A4 紧凑】一元微分做题本.pdf' --dpi 160 --dry-run
+python manage.py import_cxy_differentiation_pdf \
+  'drill/【A4 紧凑】一元微分做题本.pdf' --dpi 160
+```
+
+The default 160 DPI is intentionally only moderately above the older crops. It
+keeps mathematical strokes readable while adding roughly tens, not hundreds,
+of megabytes. The command accepts only 120–200 DPI and is idempotent.
+
 ## Routes
 
 - `/practice` — catalog and filters
@@ -93,5 +115,7 @@ take a PostgreSQL backup before importing a replacement bank.
 - `/api/drill/questions/<uuid>/` — detail and authenticated asset URLs
 - `POST /api/drill/questions/<uuid>/attempts/` — set mastered/review/reset state
 - `DELETE /api/drill/questions/<uuid>/attempts/` — undo the latest state change
-- `/api/drill/questions/<uuid>/similar/` — same-topic questions
+- `/api/drill/questions/<uuid>/similar/` — same-topic source counts
+- `/api/drill/questions/<uuid>/similar/?kind=past_exam` — official past exams
+- `/api/drill/questions/<uuid>/similar/?kind=practice` — mock/workbook practice
 - `/api/drill/heatmap/` — compact per-user official-exam state cells

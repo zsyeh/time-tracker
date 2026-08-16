@@ -45,6 +45,7 @@ onMounted(() => void loadIdentity())
         <div><i :style="{ width: `${Math.min(100, progress.attempted_questions / Math.max(1, progress.question_count) * 100)}%` }" /></div>
         <p>{{ progress.total_attempts }} attempts</p>
       </div>
+      <p class="sidebar-credit"><span>QUESTION SOURCES</span>Thanks to Bilibili creator <strong>cxy</strong> for collecting and organizing the question bank.</p>
       <div class="account">
         <span>{{ username.slice(0, 1).toUpperCase() }}</span>
         <div><strong>{{ username }}</strong><button @click="logout">Sign out</button></div>
@@ -53,4 +54,3 @@ onMounted(() => void loadIdentity())
     <main><RouterView /></main>
   </div>
 </template>
-

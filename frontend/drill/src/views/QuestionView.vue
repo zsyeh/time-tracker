@@ -9,6 +9,9 @@ const router = useRouter()
 const question = ref<QuestionDetail | null>(null)
 const similar = ref<QuestionSummary[]>([])
 const similarTopic = ref('')
+const similarKind = ref<'' | 'past_exam' | 'practice'>('')
+const similarCounts = ref({ past_exam: 0, practice: 0 })
+const similarLoading = ref(false)
 const loading = ref(true)
 const saving = ref(false)
 const error = ref('')
@@ -19,6 +22,9 @@ async function load() {
   error.value = ''
   similarOpen.value = false
   similar.value = []
+  similarTopic.value = ''
+  similarKind.value = ''
+  similarCounts.value = { past_exam: 0, practice: 0 }
   try {
     question.value = await api(`/api/drill/questions/${props.uuid}/`)
   } catch (reason) {
@@ -66,11 +72,31 @@ async function undo() {
 }
 
 async function showSimilar() {
-  similarOpen.value = true
-  if (similar.value.length) return
-  const response = await api<{ topic: string; results: QuestionSummary[] }>(`/api/drill/questions/${props.uuid}/similar/`)
-  similarTopic.value = response.topic
-  similar.value = response.results
+  similarOpen.value = !similarOpen.value
+  if (!similarOpen.value || similarTopic.value) return
+  try {
+    const response = await api<{ topic: string; counts: { past_exam: number; practice: number }; results: QuestionSummary[] }>(`/api/drill/questions/${props.uuid}/similar/`)
+    similarTopic.value = response.topic
+    similarCounts.value = response.counts
+  } catch (reason) {
+    error.value = (reason as Error).message
+  }
+}
+
+async function loadSimilar(kind: 'past_exam' | 'practice') {
+  similarKind.value = kind
+  similarLoading.value = true
+  similar.value = []
+  try {
+    const response = await api<{ topic: string; counts: { past_exam: number; practice: number }; results: QuestionSummary[] }>(`/api/drill/questions/${props.uuid}/similar/?kind=${kind}`)
+    similarTopic.value = response.topic
+    similarCounts.value = response.counts
+    similar.value = response.results
+  } catch (reason) {
+    error.value = (reason as Error).message
+  } finally {
+    similarLoading.value = false
+  }
 }
 
 watch(() => props.uuid, load)
@@ -89,6 +115,7 @@ onMounted(load)
       </header>
 
       <div class="render-note"><span>RENDER SOURCE</span><strong>{{ question.formula_source === 'tex' ? 'Structured TeX' : 'Original PDF crop' }}</strong><small v-if="question.formula_source !== 'tex'">The source PDF does not expose recoverable TeX. The lossless crop preserves formula fidelity.</small></div>
+      <div v-if="question.document_author || question.document_attribution" class="source-reference"><span>PDF REFERENCE</span><strong v-if="question.document_author">Author · {{ question.document_author }}</strong><small>{{ question.document_attribution }}</small></div>
       <article class="question-canvas">
         <img v-for="asset in question.assets" :key="asset.id" :src="asset.url" :width="asset.width" :height="asset.height" alt="Question content" loading="eager" decoding="async" />
         <pre v-if="!question.assets.length">{{ question.prompt_text }}</pre>
@@ -104,8 +131,14 @@ onMounted(load)
       <button class="similar-trigger" @click="showSimilar"><span>Practice similar questions</span><small>Same indexed knowledge topic</small><b>{{ similarOpen ? '↓' : '→' }}</b></button>
       <section v-if="similarOpen" class="similar-panel">
         <header><span>SIMILAR SET</span><strong>{{ similarTopic || 'No indexed topic' }}</strong></header>
+        <div class="similar-kind-picker">
+          <button :class="{ selected: similarKind === 'past_exam' }" :disabled="!similarCounts.past_exam" @click="loadSimilar('past_exam')"><span>OFFICIAL PAST EXAMS</span><strong>{{ similarCounts.past_exam }}</strong><small>Verified exam-source questions</small></button>
+          <button :class="{ selected: similarKind === 'practice' }" :disabled="!similarCounts.practice" @click="loadSimilar('practice')"><span>MOCK / PRACTICE</span><strong>{{ similarCounts.practice }}</strong><small>Workbooks, mock papers and other practice</small></button>
+        </div>
+        <p v-if="!similarKind">Choose which source type to practise.</p>
+        <p v-else-if="similarLoading">LOADING SIMILAR QUESTIONS…</p>
         <button v-for="item in similar" :key="item.uuid" @click="router.push(`/practice/${item.uuid}`)"><span>{{ item.display_label || `Question ${item.question_order}` }}</span><small>{{ item.document }} · {{ item.state }} · {{ item.attempt_count }} attempts</small><b>→</b></button>
-        <p v-if="!similar.length">No similar questions were indexed for this item.</p>
+        <p v-if="similarKind && !similarLoading && !similar.length">No questions of this source type were indexed for this topic.</p>
       </section>
     </template>
   </section>

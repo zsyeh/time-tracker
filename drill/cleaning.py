@@ -36,6 +36,7 @@ OUTLINE_PREFIX_RE = re.compile(
 LEADER_RE = re.compile(
     r'\s*(?:>{2,}|[.．·…]{3,}|[\uE000-\uF8FF]{3,}|[-—–_]{4,}).*$',
 )
+EMOJI_RE = re.compile(r'[\U0001F300-\U0001FAFF]')
 
 
 SOURCE_LABELS = {
@@ -74,6 +75,13 @@ def _plain_source_label(value: str) -> str:
     return _strip_outline_prefix(value) or value or 'Unlabelled question'
 
 
+def _keep_emoji(raw: str, normalized_label: str) -> str:
+    """Keep source-authored emoji when a past-exam label is normalized."""
+
+    emoji = ''.join(EMOJI_RE.findall(raw or ''))
+    return f'{emoji} {normalized_label}' if emoji else normalized_label
+
+
 def _exam_metadata(label: str) -> tuple[int | None, str]:
     match = PAST_EXAM_RE.search(label or '')
     if match:
@@ -101,12 +109,12 @@ def classify_source(label: str) -> SourceClassification:
             'mock_exam', False, year, variant, display, 'mock-paper marker', 0.96,
         )
     if year is not None and ADAPTED_RE.search(raw):
-        exam_name = f'{year} · {variant or "Past exam"} · Adapted'
+        exam_name = _keep_emoji(raw, f'{year} · {variant or "Past exam"} · Adapted')
         return SourceClassification(
             'adapted_exam', False, year, variant, exam_name, 'exam year plus adaptation marker', 0.98,
         )
     if year is not None:
-        exam_name = f'{year} · {variant or "Past exam"}'
+        exam_name = _keep_emoji(raw, f'{year} · {variant or "Past exam"}')
         return SourceClassification(
             'past_exam', True, year, variant, exam_name, 'official exam year and variant', 0.99,
         )
@@ -131,6 +139,8 @@ def clean_document_title(filename: str) -> str:
         return '二重积分'
     if '多元微分' in value:
         return '多元微分'
+    if '一元微分' in value:
+        return '一元微分'
     if '微分方程' in value:
         return '微分方程'
     if '极限' in value:

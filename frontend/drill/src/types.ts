@@ -22,6 +22,8 @@ export interface QuestionDetail extends QuestionSummary {
   latex_text: string
   content_mode: string
   formula_source: 'tex' | 'original_pdf_crop'
+  document_author: string
+  document_attribution: string
   breadcrumbs: Array<{ id: number; title: string; level: number }>
   assets: Array<{ id: number; url: string; width: number; height: number; position: number }>
 }
@@ -41,6 +43,8 @@ export interface Catalog {
   documents: Array<{
     id: number
     title: string
+    author: string
+    attribution: string
     question_count: number
     imported_count: number
     past_exam_count: number

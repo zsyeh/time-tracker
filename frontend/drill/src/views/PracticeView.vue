@@ -83,6 +83,8 @@ onMounted(async () => {
       <button v-if="questions?.results.length" class="primary-action" @click="router.push(`/practice/${questions.results[0].uuid}`)">Open next question <b>→</b></button>
     </header>
 
+    <aside class="collection-credit"><strong>THANKS TO CXY</strong><span>All question-bank source material was collected and organized by Bilibili creator cxy (澄潇宇). PDF authorship is shown separately when available.</span></aside>
+
     <div class="taxonomy-grid">
       <button :class="{ active: sourceCategory === '' }" @click="sourceCategory = ''"><span>ALL PRACTICE</span><strong>{{ catalog.summary.practiceable_count.toLocaleString() }}</strong><small>cleaned records</small></button>
       <button v-for="item in categoryOptions" :key="item.value" :class="[`category-${item.value}`, { active: sourceCategory === item.value }]" @click="sourceCategory = item.value"><span>{{ item.label.toUpperCase() }}</span><strong>{{ item.count.toLocaleString() }}</strong><small>{{ item.value === 'past_exam' ? 'verified official source' : 'source-labelled records' }}</small></button>

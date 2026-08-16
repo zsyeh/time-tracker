@@ -6,7 +6,7 @@ from urllib.parse import urlsplit
 
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
-from django.test import Client, TestCase, override_settings
+from django.test import Client, SimpleTestCase, TestCase, override_settings
 
 from .cleaning import classify_source, clean_document_title, clean_topic_title
 from .models import (
@@ -17,6 +17,7 @@ from .models import (
     QuestionDocument,
     QuestionTopic,
 )
+from .pdf_import import parse_question_pdf
 
 
 TEST_PNG = b'\x89PNG\r\n\x1a\nquestion-image'
@@ -32,6 +33,8 @@ class DrillApiTests(TestCase):
             source_id=1,
             filename='limits.pdf',
             title='Limits',
+            author='Source Author',
+            attribution='Question bank collected by cxy.',
             sha256='d' * 64,
             page_count=10,
         )
@@ -86,6 +89,17 @@ class DrillApiTests(TestCase):
             prompt_text='Unrelated',
             content_mode='text',
             fingerprint='c' * 64,
+        )
+        self.practice = Question.objects.create(
+            document=self.document,
+            topic=self.topic,
+            similarity_topic=self.topic,
+            question_order=4,
+            source_label='26版660第1题',
+            prompt_text='Practice',
+            content_mode='text',
+            fingerprint='e' * 64,
+            source_category='workbook',
         )
         self.asset = QuestionAsset.objects.create(
             source_id=1,
@@ -149,12 +163,23 @@ class DrillApiTests(TestCase):
         rows = self.client.get('/api/drill/questions/?unattempted=1').json()['results']
         self.assertIn(str(self.question.uuid), [row['uuid'] for row in rows])
 
-    def test_similar_questions_use_indexed_topic(self):
+    def test_similar_questions_require_explicit_source_kind(self):
         self.client.force_login(self.alice)
-        response = self.client.get(f'/api/drill/questions/{self.question.uuid}/similar/')
+        endpoint = f'/api/drill/questions/{self.question.uuid}/similar/'
+        summary = self.client.get(endpoint).json()
+        self.assertEqual(summary['results'], [])
+        self.assertEqual(summary['counts'], {'past_exam': 1, 'practice': 1})
+        response = self.client.get(f'{endpoint}?kind=past_exam')
         ids = [row['uuid'] for row in response.json()['results']]
         self.assertIn(str(self.similar.uuid), ids)
+        self.assertNotIn(str(self.practice.uuid), ids)
         self.assertNotIn(str(self.unrelated.uuid), ids)
+        practice_ids = [
+            row['uuid']
+            for row in self.client.get(f'{endpoint}?kind=practice').json()['results']
+        ]
+        self.assertIn(str(self.practice.uuid), practice_ids)
+        self.assertNotIn(str(self.similar.uuid), practice_ids)
 
     def test_detail_and_asset_are_authenticated(self):
         self.client.force_login(self.alice)
@@ -162,6 +187,8 @@ class DrillApiTests(TestCase):
         self.assertEqual(detail.status_code, 200)
         self.assertEqual(detail.json()['prompt_text'], 'PRIVATE QUESTION BODY')
         self.assertEqual(detail.json()['formula_source'], 'original_pdf_crop')
+        self.assertEqual(detail.json()['document_author'], 'Source Author')
+        self.assertEqual(detail.json()['document_attribution'], 'Question bank collected by cxy.')
         asset = self.client.get(f'/api/drill/assets/{self.asset.pk}/')
         self.assertEqual(asset.status_code, 200)
         self.assertEqual(asset.content, TEST_PNG)
@@ -226,6 +253,7 @@ class QuestionBankCleaningTests(TestCase):
             '定积分应用',
         )
         self.assertEqual(clean_document_title('【紧凑】多元微分.pdf'), '多元微分')
+        self.assertEqual(clean_document_title('【A4 紧凑】一元微分做题本.pdf'), '一元微分')
         self.assertEqual(
             clean_document_title('线代1000题打印版（密集不留空）(1).pdf'),
             '线性代数',
@@ -237,6 +265,22 @@ class QuestionBankCleaningTests(TestCase):
         self.assertEqual(classify_source('25 李永乐六套数一二三第三套').category, 'mock_exam')
         self.assertEqual(classify_source('26版660数二第509题').category, 'workbook')
         self.assertEqual(classify_source('北京市2008年竞赛题').category, 'competition')
+
+    def test_source_display_keeps_existing_emoji(self):
+        classification = classify_source('🐙 a)2024 数一')
+        self.assertEqual(classification.category, 'past_exam')
+        self.assertIn('🐙', classification.display_label)
+
+
+class CxyDifferentiationPdfTests(SimpleTestCase):
+    def test_bookmarks_author_and_question_labels_are_preserved(self):
+        parsed = parse_question_pdf(Path(__file__).with_name('【A4 紧凑】一元微分做题本.pdf'))
+        self.assertEqual(parsed.title, '一元微分')
+        self.assertEqual(parsed.author, '本本')
+        self.assertIn('cxy', parsed.attribution)
+        self.assertEqual(len(parsed.topics), 102)
+        self.assertEqual(len(parsed.questions), 675)
+        self.assertEqual(parsed.questions[0].source_label, 'a)1993 数二;880 第二章基础选择9')
 
 
 @override_settings(

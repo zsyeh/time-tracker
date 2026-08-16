@@ -8,3 +8,4 @@ django-allauth[mfa]>=65.8,<66.0
 cryptography>=42,<50
 dj-database-url>=2.2,<3.0
 psycopg[binary]>=3.2,<4.0
+PyMuPDF>=1.28,<2.0

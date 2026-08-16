@@ -117,6 +117,8 @@ class DrillCatalogView(APIView):
                 {
                     'id': item.pk,
                     'title': item.display_title or item.title,
+                    'author': item.author,
+                    'attribution': item.attribution,
                     'question_count': item.question_count,
                     'imported_count': item.imported_count,
                     'past_exam_count': item.past_exam_count,
@@ -205,6 +207,8 @@ class DrillQuestionDetailView(APIView):
             'latex_text': question.latex_text,
             'content_mode': question.content_mode,
             'formula_source': 'tex' if question.latex_text else 'original_pdf_crop',
+            'document_author': question.document.author,
+            'document_attribution': question.document.attribution,
             'breadcrumbs': topic_breadcrumbs(question.topic),
             'assets': [
                 {
@@ -227,16 +231,39 @@ class DrillSimilarQuestionView(APIView):
             uuid=question_uuid,
         )
         if question.similarity_topic_id is None:
-            return Response({'topic': None, 'results': []})
+            return Response({
+                'topic': None,
+                'kind': None,
+                'counts': {'past_exam': 0, 'practice': 0},
+                'results': [],
+            })
+        base = Question.objects.filter(
+            similarity_topic_id=question.similarity_topic_id,
+            is_practiceable=True,
+        ).exclude(pk=question.pk)
+        counts = base.aggregate(
+            past_exam=Count('id', filter=Q(source_category='past_exam')),
+            practice=Count('id', filter=~Q(source_category='past_exam')),
+        )
+        kind = request.query_params.get('kind', '').strip()
+        if kind == 'past_exam':
+            base = base.filter(source_category='past_exam')
+        elif kind == 'practice':
+            base = base.exclude(source_category='past_exam')
+        else:
+            return Response({
+                'topic': question.similarity_topic.display_title or question.similarity_topic.title,
+                'kind': None,
+                'counts': counts,
+                'results': [],
+            })
         queryset = question_progress(
-            Question.objects.filter(
-                similarity_topic_id=question.similarity_topic_id,
-                is_practiceable=True,
-            ).exclude(pk=question.pk).select_related('document', 'similarity_topic'),
-            request.user,
+            base.select_related('document', 'similarity_topic'), request.user,
         ).order_by('attempt_count', 'document_id', 'question_order')[:24]
         return Response({
             'topic': question.similarity_topic.display_title or question.similarity_topic.title,
+            'kind': kind,
+            'counts': counts,
             'results': QuestionSummarySerializer(queryset, many=True).data,
         })
 

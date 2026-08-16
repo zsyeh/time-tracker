@@ -16,6 +16,8 @@ class QuestionDocument(models.Model):
     filename = models.TextField()
     title = models.CharField(max_length=240)
     display_title = models.CharField(max_length=240, blank=True)
+    author = models.CharField(max_length=240, blank=True)
+    attribution = models.CharField(max_length=500, blank=True)
     sha256 = models.CharField(max_length=64, unique=True)
     page_count = models.PositiveIntegerField()
     parser_strategy = models.CharField(max_length=64, blank=True)
