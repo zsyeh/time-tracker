@@ -201,6 +201,11 @@ class DrillQuestionDetailView(APIView):
             ),
             uuid=question_uuid,
         )
+        next_question_uuid = Question.objects.filter(
+            document_id=question.document_id,
+            is_practiceable=True,
+            question_order__gt=question.question_order,
+        ).order_by('question_order').values_list('uuid', flat=True).first()
         payload = summary_payload(question)
         payload.update({
             'prompt_text': question.prompt_text,
@@ -209,11 +214,12 @@ class DrillQuestionDetailView(APIView):
             'formula_source': 'tex' if question.latex_text else 'original_pdf_crop',
             'document_author': question.document.author,
             'document_attribution': question.document.attribution,
+            'next_question_uuid': str(next_question_uuid) if next_question_uuid else None,
             'breadcrumbs': topic_breadcrumbs(question.topic),
             'assets': [
                 {
                     'id': asset.pk,
-                    'url': f'/api/drill/assets/{asset.pk}/',
+                    'url': f'/api/drill/assets/{asset.pk}/?v={asset.sha256[:16]}',
                     'width': asset.width,
                     'height': asset.height,
                     'position': asset.position,

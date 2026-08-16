@@ -126,6 +126,16 @@ onMounted(load)
         <div><button class="review" :class="{ selected: question.state === 'review' }" :disabled="saving" @click="record('review')">Needs review</button><button class="correct" :class="{ selected: question.state === 'mastered' }" :disabled="saving" @click="record('correct')">Mastered</button><button :disabled="saving || question.state === 'unattempted'" @click="record('reset')">Reset</button><button :disabled="saving || !question.can_undo" @click="undo">Undo</button></div>
       </div>
 
+      <button
+        class="next-question"
+        :disabled="!question.next_question_uuid"
+        @click="question.next_question_uuid && router.push(`/practice/${question.next_question_uuid}`)"
+      >
+        <span>{{ question.next_question_uuid ? 'Next question' : 'End of this chapter' }}</span>
+        <small>{{ question.next_question_uuid ? 'Continue in source order' : 'Return to the question bank to choose another set' }}</small>
+        <b>{{ question.next_question_uuid ? '→' : '✓' }}</b>
+      </button>
+
       <details v-if="question.source_label && question.source_label !== question.display_label" class="raw-provenance"><summary>View original imported label</summary><code>{{ question.source_label }}</code></details>
 
       <button class="similar-trigger" @click="showSimilar"><span>Practice similar questions</span><small>Same indexed knowledge topic</small><b>{{ similarOpen ? '↓' : '→' }}</b></button>

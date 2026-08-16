@@ -162,6 +162,12 @@ class QuestionAsset(models.Model):
     image_data = models.BinaryField()
     width = models.PositiveIntegerField()
     height = models.PositiveIntegerField()
+    source_page_index = models.PositiveIntegerField(null=True, blank=True)
+    source_x0 = models.FloatField(null=True, blank=True)
+    source_y0 = models.FloatField(null=True, blank=True)
+    source_x1 = models.FloatField(null=True, blank=True)
+    source_y1 = models.FloatField(null=True, blank=True)
+    render_dpi = models.PositiveSmallIntegerField(null=True, blank=True, db_index=True)
 
     class Meta:
         ordering = ('position', 'source_id')

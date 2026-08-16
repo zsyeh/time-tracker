@@ -47,6 +47,12 @@ class QuestionAttemptAdmin(admin.ModelAdmin):
 
 @admin.register(QuestionAsset)
 class QuestionAssetAdmin(admin.ModelAdmin):
-    list_display = ('source_id', 'question', 'position', 'width', 'height', 'mime_type')
-    fields = ('source_id', 'question', 'position', 'asset_type', 'sha256', 'mime_type', 'width', 'height')
+    list_display = (
+        'source_id', 'question', 'position', 'width', 'height', 'render_dpi', 'mime_type',
+    )
+    fields = (
+        'source_id', 'question', 'position', 'asset_type', 'sha256', 'mime_type',
+        'width', 'height', 'render_dpi', 'source_page_index',
+        'source_x0', 'source_y0', 'source_x1', 'source_y1',
+    )
     readonly_fields = fields

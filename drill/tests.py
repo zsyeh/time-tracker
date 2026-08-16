@@ -4,11 +4,13 @@ import tempfile
 from pathlib import Path
 from urllib.parse import urlsplit
 
+import pymupdf
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.test import Client, SimpleTestCase, TestCase, override_settings
 
 from .cleaning import classify_source, clean_document_title, clean_topic_title
+from .asset_rerender import LegacyCropLocator, render_blank_crop, render_pdf_crop
 from .models import (
     DrillLoginHandoff,
     Question,
@@ -189,11 +191,21 @@ class DrillApiTests(TestCase):
         self.assertEqual(detail.json()['formula_source'], 'original_pdf_crop')
         self.assertEqual(detail.json()['document_author'], 'Source Author')
         self.assertEqual(detail.json()['document_attribution'], 'Question bank collected by cxy.')
+        self.assertEqual(detail.json()['next_question_uuid'], str(self.similar.uuid))
+        self.assertEqual(
+            detail.json()['assets'][0]['url'],
+            f'/api/drill/assets/{self.asset.pk}/?v={self.asset.sha256[:16]}',
+        )
         asset = self.client.get(f'/api/drill/assets/{self.asset.pk}/')
         self.assertEqual(asset.status_code, 200)
         self.assertEqual(asset.content, TEST_PNG)
         self.client.logout()
         self.assertEqual(self.client.get(f'/api/drill/assets/{self.asset.pk}/').status_code, 403)
+
+    def test_last_practiceable_question_has_no_next_question(self):
+        self.client.force_login(self.alice)
+        detail = self.client.get(f'/api/drill/questions/{self.practice.uuid}/')
+        self.assertIsNone(detail.json()['next_question_uuid'])
 
     def test_progress_does_not_include_another_users_attempts(self):
         QuestionAttempt.objects.create(user=self.bob, question=self.question, result='correct')
@@ -281,6 +293,42 @@ class CxyDifferentiationPdfTests(SimpleTestCase):
         self.assertEqual(len(parsed.topics), 102)
         self.assertEqual(len(parsed.questions), 675)
         self.assertEqual(parsed.questions[0].source_label, 'a)1993 数二;880 第二章基础选择9')
+
+
+class QuestionAssetRerenderTests(SimpleTestCase):
+    def test_legacy_crop_can_be_located_and_rendered_at_180_dpi(self):
+        pdf = pymupdf.open()
+        page = pdf.new_page(width=200, height=300)
+        page.insert_text((20, 94), 'Integral and derivative question 42')
+        page.draw_line((20, 105), (170, 105))
+        source = page.get_pixmap(
+            matrix=pymupdf.Matrix(1.5, 1.5),
+            clip=pymupdf.Rect(0, 70, 200, 125),
+            colorspace=pymupdf.csRGB,
+            alpha=False,
+        ).tobytes('png')
+
+        location, _cursor = LegacyCropLocator(pdf).locate(source)
+        rendered, width, height = render_pdf_crop(pdf, location, 180)
+
+        self.assertEqual(location.page_index, 0)
+        self.assertAlmostEqual(location.y0, 70, delta=1)
+        self.assertEqual(width, 500)
+        self.assertGreater(height, 130)
+        self.assertTrue(rendered.startswith(b'\x89PNG\r\n\x1a\n'))
+
+    def test_blank_legacy_crop_can_be_scaled_without_pdf_coordinates(self):
+        source = pymupdf.Pixmap(pymupdf.csRGB, pymupdf.IRect(0, 0, 90, 30), False)
+        source.clear_with(255)
+        pdf = pymupdf.open()
+        pdf.new_page(width=60, height=60)
+
+        location, _cursor = LegacyCropLocator(pdf).locate(source.tobytes('png'))
+        rendered, width, height = render_blank_crop(150, 50, 180)
+
+        self.assertTrue(location.is_blank)
+        self.assertEqual((width, height), (150, 50))
+        self.assertTrue(rendered.startswith(b'\x89PNG\r\n\x1a\n'))
 
 
 @override_settings(

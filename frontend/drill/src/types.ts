@@ -24,6 +24,7 @@ export interface QuestionDetail extends QuestionSummary {
   formula_source: 'tex' | 'original_pdf_crop'
   document_author: string
   document_attribution: string
+  next_question_uuid: string | null
   breadcrumbs: Array<{ id: number; title: string; level: number }>
   assets: Array<{ id: number; url: string; width: number; height: number; position: number }>
 }

@@ -19,8 +19,10 @@ changing the WebAuthn RP ID or widening the session cookie to every subdomain.
   raw provenance.
 - `Question` has a deterministic UUID, a normalized similarity topic, a cleaned
   display label, a provenance category, and a record kind.
-- `QuestionAsset` stores the verified PNG bytes in PostgreSQL and is fetched only
-  from an authenticated, immutable-cache endpoint.
+- `QuestionAsset` stores the verified PNG bytes plus source PDF crop coordinates
+  in PostgreSQL and is fetched only from an authenticated, immutable-cache
+  endpoint. A content hash in the asset URL safely refreshes browser caches after
+  a source re-render.
 - `QuestionAttempt` belongs to one user. Frequencies, results, progress, and the
   past-paper heatmap are therefore isolated between accounts. A reset is an
   append-only state marker; undo removes only the latest marker and restores the
@@ -42,7 +44,7 @@ metadata and is displayed on question detail pages when available.
 The original `/root/Downloads.7z` contains limits, single-variable integration,
 linear algebra, double integration, multivariable differentiation, differential
 equations, and improper integration. The later bookmarked single-variable
-differentiation PDF is imported separately at 160 DPI, preserving its PDF author
+differentiation PDF is imported separately at 180 DPI, preserving its PDF author
 metadata (`本本`), original source labels, and bookmark hierarchy.
 
 After that import, production contains 9 documents, 963 topics, 4,228 source
@@ -96,19 +98,34 @@ Import the bookmarked cxy single-variable differentiation PDF with:
 
 ```bash
 python manage.py import_cxy_differentiation_pdf \
-  'drill/【A4 紧凑】一元微分做题本.pdf' --dpi 160 --dry-run
+  'drill/【A4 紧凑】一元微分做题本.pdf' --dpi 180 --dry-run
 python manage.py import_cxy_differentiation_pdf \
-  'drill/【A4 紧凑】一元微分做题本.pdf' --dpi 160
+  'drill/【A4 紧凑】一元微分做题本.pdf' --dpi 180
 ```
 
-The default 160 DPI is intentionally only moderately above the older crops. It
-keeps mathematical strokes readable while adding roughly tens, not hundreds,
-of megabytes. The command accepts only 120–200 DPI and is idempotent.
+The default 180 DPI keeps thin mathematical strokes readable while remaining
+well within the current disk budget. The command accepts only 120–200 DPI and
+is idempotent.
+
+Legacy normalized crops can be recovered from their exact source PDFs and
+re-rendered at the same 180 DPI without changing questions, attempts, UUIDs, or
+topic metadata. The command first locates every crop and refuses to mutate any
+row if a source file or crop cannot be verified:
+
+```bash
+python manage.py rerender_question_assets /safe/extracted-pdfs --dpi 180 --dry-run
+python manage.py rerender_question_assets /safe/extracted-pdfs --dpi 180
+```
+
+Always take a PostgreSQL backup first. Source page and clip coordinates are
+saved with each asset, so later re-renders are direct and do not need to recover
+the crop position again.
 
 ## Routes
 
 - `/practice` — catalog and filters
-- `/practice/<question_uuid>` — stable question detail and similar set
+- `/practice/<question_uuid>` — stable question detail, next-question navigation,
+  and similar set
 - `/heatmap` — per-user past-paper frequency heatmap
 - `/api/drill/catalog/` — lightweight books and topics
 - `/api/drill/questions/` — paginated lightweight summaries

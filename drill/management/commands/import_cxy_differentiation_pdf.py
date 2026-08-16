@@ -20,7 +20,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('pdf_path', type=Path)
-        parser.add_argument('--dpi', type=int, default=160)
+        parser.add_argument('--dpi', type=int, default=180)
         parser.add_argument('--dry-run', action='store_true')
         parser.add_argument('--force', action='store_true')
 
@@ -174,8 +174,19 @@ class Command(BaseCommand):
                         'asset', parsed.sha256, parsed_question.question_order, position, dpi,
                     )
                     expected_source_ids.append(source_id)
-                    existing = QuestionAsset.objects.filter(source_id=source_id).only('sha256').first()
+                    existing = QuestionAsset.objects.filter(source_id=source_id).only(
+                        'id', 'sha256', 'render_dpi', 'source_page_index',
+                        'source_x0', 'source_y0', 'source_x1', 'source_y1',
+                    ).first()
                     if existing is not None and existing.sha256 == image_sha:
+                        QuestionAsset.objects.filter(pk=existing.pk).update(
+                            render_dpi=dpi,
+                            source_page_index=segment.page_index,
+                            source_x0=segment.x0,
+                            source_y0=segment.y0,
+                            source_x1=segment.x1,
+                            source_y1=segment.y1,
+                        )
                         continue
                     QuestionAsset.objects.update_or_create(
                         source_id=source_id,
@@ -188,6 +199,12 @@ class Command(BaseCommand):
                             'image_data': image_data,
                             'width': width,
                             'height': height,
+                            'render_dpi': dpi,
+                            'source_page_index': segment.page_index,
+                            'source_x0': segment.x0,
+                            'source_y0': segment.y0,
+                            'source_x1': segment.x1,
+                            'source_y1': segment.y1,
                         },
                     )
                 QuestionAsset.objects.filter(question=question).exclude(
