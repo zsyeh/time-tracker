@@ -192,7 +192,14 @@ class CapacityConfig:
             raise ValueError(f'CONCURRENCY must be between 1 and {ABSOLUTE_MAX_CONCURRENCY}')
         if not 10 <= stage_seconds <= 600:
             raise ValueError('STAGE_SECONDS must be between 10 and 600')
-        public_url = values.get('PUBLIC_CHECK_URL', f'{origin}/accounts/login/')
+        # Check the real Vue shell, not the server-rendered login page. A fake
+        # share token still serves only the public shell; its data API is never
+        # requested. Missing frontend/dist therefore trips the availability
+        # guard without exposing or creating a share.
+        public_url = values.get(
+            'PUBLIC_CHECK_URL',
+            f'{origin}/share/capacity-availability-check',
+        )
         public_origin, _ = resolve_target(origin, allow_http=allow_http)
         if not public_url.startswith(public_origin + '/'):
             raise ValueError('PUBLIC_CHECK_URL must use the same tested origin')

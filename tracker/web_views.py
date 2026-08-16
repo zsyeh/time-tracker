@@ -15,12 +15,24 @@ from .models import LaunchToken, TimeLog
 from .services import ActiveSessionConflict, is_long_session, normalize_subject, start_session
 
 
-@lru_cache(maxsize=1)
+@lru_cache(maxsize=4)
+def _read_frontend_html(index_path, mtime_ns, size):
+    """Cache a deployed SPA index while still noticing atomic rebuilds."""
+
+    return index_path.read_text(encoding='utf-8')
+
+
 def _frontend_html():
     index_path = settings.FRONTEND_DIST / 'index.html'
-    if not index_path.exists():
+    try:
+        metadata = index_path.stat()
+    except OSError:
         return ''
-    return index_path.read_text(encoding='utf-8')
+    return _read_frontend_html(index_path, metadata.st_mtime_ns, metadata.st_size)
+
+
+# Existing tests and operational checks use this public cache reset hook.
+_frontend_html.cache_clear = _read_frontend_html.cache_clear
 
 
 @login_required

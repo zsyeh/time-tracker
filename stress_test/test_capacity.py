@@ -54,6 +54,10 @@ class CapacityAnalysisTests(unittest.TestCase):
                 'LOAD_TEST_KEY': TEST_KEY,
             }, Path(directory))
         self.assertEqual(config.probe_url, 'https://timer.example.com/api/stress-test/probe/')
+        self.assertEqual(
+            config.public_check_url,
+            'https://timer.example.com/share/capacity-availability-check',
+        )
         self.assertEqual(config.ramp_steps, (1.0, 5.0, 10.0, 20.0))
         self.assertEqual(config.seed, 20260815)
 

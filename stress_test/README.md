@@ -20,7 +20,8 @@ Read the code-derived and VPS-measured baseline first:
 - Real workload data belongs only to `loadtest_<run>_*` users. The default run
   deletes those users, their records, public test share, and auth sessions.
 - Load-test users never create GitHub outbox entries or launch GitHub sync.
-- Normal login availability is checked throughout the run.
+- The real Vue SPA shell is checked throughout the run; a missing production
+  frontend build stops the ramp even when the Django login page still works.
 - Sustained CPU, low memory, swap growth, database waits, configured network
   saturation, errors, p99, or queue growth stop further ramping.
 - No storage benchmark is implemented. The probe reads virtual `/proc`/`/sys`

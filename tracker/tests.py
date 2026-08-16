@@ -1861,6 +1861,21 @@ class SpaHistoryFallbackTests(TestCase):
         self.assertIn('no-store', public['Cache-Control'])
         self.assertIn("default-src 'self'", public['Content-Security-Policy'])
 
+    def test_spa_shell_recovers_when_build_appears_after_missing_response(self):
+        index_path = self.frontend_dist / 'index.html'
+        index_path.unlink()
+        _frontend_html.cache_clear()
+        missing = self.client.get('/share/capacity-availability-check')
+        self.assertEqual(missing.status_code, 503)
+
+        index_path.write_text(
+            '<!doctype html><div id="spa-rebuilt-test">SPA</div>',
+            encoding='utf-8',
+        )
+        recovered = self.client.get('/share/capacity-availability-check')
+        self.assertEqual(recovered.status_code, 200)
+        self.assertContains(recovered, 'spa-rebuilt-test')
+
     def test_spa_fallback_does_not_swallow_django_endpoint_namespaces(self):
         paths = (
             '/api/not-a-route/', '/accounts/not-a-route/', '/admin/not-a-route/',
