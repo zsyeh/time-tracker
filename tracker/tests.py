@@ -1851,6 +1851,11 @@ class SpaHistoryFallbackTests(TestCase):
                 self.assertContains(response, 'spa-history-test')
                 self.assertIn('private', response['Cache-Control'])
 
+    def test_apple_touch_icon_has_a_stable_root_url(self):
+        response = self.client.get('/icon-180.png')
+        self.assertEqual(response.status_code, 301)
+        self.assertEqual(response.url, '/static/tracker/icon-180.png')
+
     def test_private_deep_link_redirects_anonymous_but_share_shell_does_not(self):
         private = self.client.get(f'/sessions/{self.session.uuid}')
         self.assertEqual(private.status_code, 302)

@@ -1,5 +1,6 @@
 from django.contrib import admin
 from django.urls import include, path
+from django.views.generic import RedirectView
 from allauth.account.views import signup_by_passkey
 from allauth.mfa.webauthn.views import signup_webauthn
 
@@ -44,6 +45,14 @@ from tracker.web_views import (
 
 
 urlpatterns = [
+    path(
+        'icon-180.png',
+        RedirectView.as_view(
+            url='/static/tracker/icon-180.png',
+            permanent=True,
+        ),
+        name='apple_touch_icon',
+    ),
     path('admin/', admin.site.urls),
     # django-allauth normally exposes Passkey signup only alongside mandatory
     # email verification. This private instance uses its invite form instead.
