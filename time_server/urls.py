@@ -48,8 +48,8 @@ urlpatterns = [
     path(
         'icon-180.png',
         RedirectView.as_view(
-            url='/static/tracker/icon-180.png',
-            permanent=True,
+            url='/static/tracker/img9387-icon-180.png',
+            permanent=False,
         ),
         name='apple_touch_icon',
     ),

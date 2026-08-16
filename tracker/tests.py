@@ -1853,8 +1853,8 @@ class SpaHistoryFallbackTests(TestCase):
 
     def test_apple_touch_icon_has_a_stable_root_url(self):
         response = self.client.get('/icon-180.png')
-        self.assertEqual(response.status_code, 301)
-        self.assertEqual(response.url, '/static/tracker/icon-180.png')
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(response.url, '/static/tracker/img9387-icon-180.png')
 
     def test_private_deep_link_redirects_anonymous_but_share_shell_does_not(self):
         private = self.client.get(f'/sessions/{self.session.uuid}')
