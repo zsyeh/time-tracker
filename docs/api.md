@@ -37,6 +37,7 @@ public. Every response is restricted to the authenticated owner.
 | GET | `/api/export/markdown/` | Human-readable export |
 | POST | `/api/launch/<token>/start` | Public, token-scoped IoT start |
 | POST | `/api/disturbance/<token>/record` | Public, separately scoped disturbance counter for the current Session |
+| POST | `/api/stress-test/probe/` | Optional bearer-key capacity-test control/metrics endpoint with fixed actions only |
 
 Session/export filters: `subject`, `status`, `tag`, `date_from`, `date_to`, and `search`.
 The session list returns only timeline metadata, UUID, title, and review counters
@@ -113,6 +114,32 @@ only when the owner has a running Session. With no running Session it returns
 `no_active_session`; a running Session older than 12 hours is deleted and returns
 `stale_session_discarded`. GET is not accepted for either Shortcut API; configure
 the iOS `Get Contents of URL` action to use POST with no body.
+
+The capacity probe is disabled unless `STRESS_TEST_ENABLED=true` and a 32+
+character `STRESS_TEST_KEY` is configured. Clients send the key in the
+`Authorization: Bearer` header. Disabled and invalid-key requests return 404.
+The bounded JSON body accepts only fixed actions: `sample`/`preflight`, `begin`,
+`metrics`, `provision`, `prepare_finish`, and `cleanup`. It never accepts a
+command, SQL, path, or target URL. Host sampling reads Linux virtual counters;
+optional lower-frequency PostgreSQL sampling reads statistics views.
+
+`begin` returns a signed, short-lived run token. Supplying that token as
+`X-Load-Test-Run` on a normal authenticated API request enables response timing
+headers but grants no authentication or ownership permission. The outer timing
+middleware measures Django wall time, request-thread user/system CPU, ORM query
+count/write count/time, DRF JSON render time, and an optional trusted-proxy
+queue approximation.
+Normal traffic without a valid token pays only a disabled header check.
+
+Real workload fixtures require `STRESS_TEST_ALLOW_DATA_SETUP=true`. They use an
+exact `loadtest_<run>_*` username prefix, ordinary database sessions/CSRF, and
+normal API authorization. Cleanup can only address exact generated numeric
+usernames within that run prefix and remains available after fixture creation
+is switched off. Test
+finishes never enqueue or dispatch GitHub synchronization. Application and
+probe per-worker rate limits return 429 above the signed/server cap. No storage
+benchmark exists. See [`stress_test/README.md`](../stress_test/README.md) and
+[`stress_test/ARCHITECTURE_AUDIT.md`](../stress_test/ARCHITECTURE_AUDIT.md).
 
 For an eligible session, the finish endpoint accepts optional `title` and
 `details`; both may be empty. It also accepts `efficiency_grade` with `A` as the

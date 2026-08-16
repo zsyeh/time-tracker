@@ -16,6 +16,23 @@ disabled for `/launch/`, `/api/launch/`, and `/api/disturbance/` because their
 paths contain capability tokens. Prefer
 HTTP/2 and Certbot/another automated certificate issuer.
 
+The optional `/api/stress-test/probe/` location also disables access logging,
+not because its key is in the URI (it is not), but to ensure a CPU/network load
+test does not generate a storage-write workload. Keep the probe disabled outside
+planned tests and follow the bounded PC workflow in [`stress_test/`](../stress_test/).
+The same example sets a proxy-handoff timestamp and exposes Nginx upstream
+connect/header/response timing headers. Without that snippet, client latency,
+Django/DB/CPU, and host metrics still work, but queue and Nginx timing are
+reported as unavailable rather than guessed.
+
+The production/default cache remains file based. A separate controlled Redis
+experiment can install `requirements-loadtest-redis.txt` and set
+`DJANGO_CACHE_BACKEND=redis` plus `REDIS_CACHE_URL`; do not change the baseline
+deployment and Redis at the same time. Use identical seeded hot/cold runs before
+retaining the change.
+Use `DJANGO_CACHE_BACKEND=dummy` for the matching no-application-cache control;
+it is an experiment setting, not a recommended production default.
+
 ## Native systemd deployment
 
 Native production may keep the database selector in a mode-`600`, ignored

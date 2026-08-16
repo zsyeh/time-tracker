@@ -36,6 +36,7 @@ from tracker.api_views import (
     export_markdown,
 )
 from tracker.public_views import contact_view, guide_view, legal_view
+from tracker.stress_probe import StressTestProbeView
 from tracker.web_views import (
     LaunchDeviceView, LaunchDisturbanceView, direct_start_view,
     launch_browser_view, public_spa_view, spa_view,
@@ -62,6 +63,7 @@ urlpatterns = [
     ),
     path('api/auth/session/', auth_session, name='auth_session'),
     path('api/auth/logout/', auth_logout, name='auth_logout'),
+    path('api/stress-test/probe/', StressTestProbeView.as_view(), name='stress_test_probe'),
     path('api/sessions/', SessionListCreateView.as_view(), name='session_list'),
     path('api/sessions/<int:pk>/', SessionDetailView.as_view(), name='session_detail'),
     path('api/sessions/<int:pk>/finish/', SessionFinishView.as_view(), name='session_finish'),

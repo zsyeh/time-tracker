@@ -1,0 +1,3 @@
+-r requirements.txt
+# Optional controlled experiment only; the default application does not need Redis.
+redis>=4.5,<7.0

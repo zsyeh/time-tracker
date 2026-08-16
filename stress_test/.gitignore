@@ -1,0 +1,6 @@
+stress-test.env
+reports/
+load-test-results/
+load-test-comparison/
+load-test-capacity-plan/
+__pycache__/

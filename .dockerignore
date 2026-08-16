@@ -2,6 +2,11 @@
 .gitignore
 .env
 .env.*
+stress_test/stress-test.env
+stress_test/reports
+stress_test/load-test-results
+stress_test/load-test-comparison
+stress_test/load-test-capacity-plan
 .data-encryption.key
 .venv
 frontend/node_modules

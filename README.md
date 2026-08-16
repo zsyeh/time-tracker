@@ -53,6 +53,7 @@ curl -fsSL https://app.ehzsy.site/install/docker-compose.sh | sh -s -- study.exa
 - CSV、JSON、Markdown 完整导出；不嵌入任何 AI API。
 - 每个用户可在 Settings 中选择服务端管理的 AES-256-GCM 静态加密。开启后学习标题、Markdown、复盘、主观评分和 Issue 文本在数据库及数据库备份中只保存密文；趋势所需的最小运行元数据保持可索引。该功能不增加密码、不影响导出、GitHub 同步或明文公开分享，但不是端到端加密，服务器持钥者仍可解密。
 - 用户可按学科创建最多四级的任务预设（如 `Mathematics → Calculus → Limits`），把任意层设为首页一键按钮，并配置可复用内容标签。空标题会在存在预设时取叶子任务名；结束页可点选标签和最近标题，Trends 按任务路径与标签聚合。
+- 可选的密钥保护容量压测系统使用隔离账号跑真实 API workload，拆分 queue/app/CPU/DB 时间，采集主机、进程、网络和 PostgreSQL 指标，自动寻找 knee point 并推导安全 QPS/DAU。PC 工具与双语说明见 [`stress_test/`](stress_test/)，实际生产审计见 [`ARCHITECTURE_AUDIT.md`](stress_test/ARCHITECTURE_AUDIT.md)。默认关闭，无磁盘压测、无远程 shell。
 
 ## 本地开发
 
@@ -145,6 +146,7 @@ cd frontend && npm run build
 - `/api/sessions/<uuid>/`：按需读取或更新本人 Session 正文
 - `/api/sessions/<uuid>/share/`：创建、查看状态或撤销公开分享
 - `/api/public/shares/<token>/`：公开只读、最小字段 Session 文章
+- `/api/stress-test/probe/`：默认关闭、Bearer 密钥保护、仅支持固定动作的有界容量测试探针；只有显式打开隔离数据设置后才创建测试账号
 - `/api/invite-codes/`：普通用户每日单次邀请码与管理员高级邀请码管理
 - `/admin/`：管理员恢复入口
 - `/admin/tracker/invitecode/dashboard/`：管理员邀请码容量与访客记录

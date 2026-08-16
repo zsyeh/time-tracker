@@ -31,6 +31,7 @@ from .data_encryption import (
     user_encryption_enabled,
 )
 from .learning_log import dispatch_github_note_sync
+from .loadtest import is_loadtest_user
 from .models import (
     InviteCode, KnowledgePoint, LaunchToken, LearningIssue, SessionReview,
     SessionShare, SiteConfiguration, StudyTag, TaskPreset, TimeLog,
@@ -247,7 +248,11 @@ class SessionFinishView(APIView):
                 'maximum_hours': MAXIMUM_SESSION_HOURS,
                 'session': None,
             })
-        github_note = dispatch_github_note_sync(session.pk) if changed else {'status': 'unchanged'}
+        github_note = (
+            dispatch_github_note_sync(session.pk)
+            if changed and not is_loadtest_user(request.user)
+            else {'status': 'unchanged' if not changed else 'loadtest-skipped'}
+        )
         return Response({
             'changed': changed,
             'discarded': False,
@@ -446,13 +451,17 @@ class DashboardOverviewView(APIView):
         # deployment never receives an older cached response shape.
         cache_key = f'dashboard-overview:v8:{request.user.pk}:{days}:{version}:{config["fingerprint"]}:{int(math_visualization_enabled)}'
         payload = cache.get(cache_key)
+        cache_outcome = 'hit' if payload is not None else 'miss'
         if payload is None:
             payload = build_dashboard_overview(request.user, days, config=config['values'])
             payload['features'] = {
                 'math_visualization': math_visualization_enabled,
             }
             cache.set(cache_key, payload, timeout=60)
-        return Response(payload)
+        response = Response(payload)
+        if hasattr(request, 'loadtest_capability'):
+            response['X-Load-Test-Cache'] = cache_outcome
+        return response
 
 
 class RuntimeSettingsView(APIView):

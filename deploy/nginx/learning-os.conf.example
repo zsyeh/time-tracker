@@ -29,6 +29,21 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
     }
 
+    # The stress client can generate many requests. Disable access logging so
+    # CPU/network testing does not become an accidental disk-write benchmark.
+    # The secret remains in the Authorization header, never in this URI.
+    location = /api/stress-test/probe/ {
+        access_log off;
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Load-Test-Proxy-Start "t=$msec";
+        add_header X-Load-Test-Nginx-Upstream-Connect $upstream_connect_time always;
+        add_header X-Load-Test-Nginx-Upstream-Header $upstream_header_time always;
+        add_header X-Load-Test-Nginx-Upstream-Response $upstream_response_time always;
+    }
+
     # Share URLs are bearer capabilities. Do not persist either browser or API
     # token paths in access logs.
     location ^~ /share/ {
@@ -45,11 +60,19 @@ server {
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Load-Test-Proxy-Start "t=$msec";
+        add_header X-Load-Test-Nginx-Upstream-Connect $upstream_connect_time always;
+        add_header X-Load-Test-Nginx-Upstream-Header $upstream_header_time always;
+        add_header X-Load-Test-Nginx-Upstream-Response $upstream_response_time always;
     }
 
     location /static/ {
         proxy_pass http://127.0.0.1:8000;
         proxy_set_header Host $host;
+        proxy_set_header X-Load-Test-Proxy-Start "t=$msec";
+        add_header X-Load-Test-Nginx-Upstream-Connect $upstream_connect_time always;
+        add_header X-Load-Test-Nginx-Upstream-Header $upstream_header_time always;
+        add_header X-Load-Test-Nginx-Upstream-Response $upstream_response_time always;
         expires 1y;
         add_header Cache-Control "public, immutable" always;
         access_log off;
@@ -61,6 +84,13 @@ server {
         proxy_set_header Host $host;
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        # This timestamp is evaluated immediately before proxy handoff.  The
+        # Django delta therefore approximates Nginx handoff + socket backlog +
+        # Gunicorn scheduling, not client-to-Nginx network latency.
+        proxy_set_header X-Load-Test-Proxy-Start "t=$msec";
+        add_header X-Load-Test-Nginx-Upstream-Connect $upstream_connect_time always;
+        add_header X-Load-Test-Nginx-Upstream-Header $upstream_header_time always;
+        add_header X-Load-Test-Nginx-Upstream-Response $upstream_response_time always;
         proxy_read_timeout 60s;
     }
 }

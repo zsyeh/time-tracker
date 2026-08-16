@@ -39,6 +39,13 @@ def env_bool(name, default=False):
     return value.lower() in {'1', 'true', 'yes', 'on'}
 
 
+def env_float(name, default):
+    try:
+        return float(os.environ.get(name, default))
+    except (TypeError, ValueError):
+        return default
+
+
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
@@ -75,6 +82,9 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
+    # Inert unless a valid short-lived load-test run token is present.  Keeping
+    # this outermost includes session/auth database work in measured timings.
+    'tracker.loadtest.LoadTestTimingMiddleware',
     'django.middleware.security.SecurityMiddleware',
     'whitenoise.middleware.WhiteNoiseMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -246,6 +256,39 @@ DEFAULT_FROM_EMAIL = os.environ.get(
     EMAIL_HOST_USER or CONTACT_EMAIL,
 ).strip()
 
+# Optional remote capacity-test control. The PC generates load; the server only
+# exposes fixed bounded actions, isolated fixtures, and system/DB counters.
+# Keeping the key out of the URI prevents it from entering proxy access logs.
+STRESS_TEST_ENABLED = env_bool('STRESS_TEST_ENABLED', False)
+STRESS_TEST_KEY = os.environ.get('STRESS_TEST_KEY', '').strip()
+STRESS_TEST_MAX_RPS = max(1, min(env_int('STRESS_TEST_MAX_RPS', 20), 1000))
+STRESS_TEST_MAX_BODY_BYTES = max(
+    256,
+    min(env_int('STRESS_TEST_MAX_BODY_BYTES', 4096), 65536),
+)
+STRESS_TEST_ALLOW_DATA_SETUP = env_bool('STRESS_TEST_ALLOW_DATA_SETUP', False)
+STRESS_TEST_MAX_USERS = max(1, min(env_int('STRESS_TEST_MAX_USERS', 60), 10000))
+STRESS_TEST_MAX_HISTORY_ROWS = max(
+    100,
+    min(env_int('STRESS_TEST_MAX_HISTORY_ROWS', 20000), 200000),
+)
+STRESS_TEST_RUN_TTL_SECONDS = max(
+    300,
+    min(env_int('STRESS_TEST_RUN_TTL_SECONDS', 7200), 4 * 60 * 60),
+)
+STRESS_TEST_NETWORK_INTERFACE = os.environ.get(
+    'STRESS_TEST_NETWORK_INTERFACE',
+    '',
+).strip()
+STRESS_TEST_NETWORK_CAPACITY_MBPS = max(
+    0.0,
+    min(env_float('STRESS_TEST_NETWORK_CAPACITY_MBPS', 0), 100000.0),
+)
+STRESS_TEST_GUNICORN_PORT = max(
+    1,
+    min(env_int('STRESS_TEST_GUNICORN_PORT', 8000), 65535),
+)
+
 # Nginx terminates TLS on this host and forwards the original scheme.
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SECURE_SSL_REDIRECT = env_bool('DJANGO_SECURE_SSL_REDIRECT', not DEBUG)
@@ -287,6 +330,10 @@ MFA_PASSKEY_LOGIN_ENABLED = True
 MFA_WEBAUTHN_ALLOW_INSECURE_ORIGIN = DEBUG
 
 REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': [
+        'tracker.loadtest_renderers.LoadTestJSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    ],
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework.authentication.SessionAuthentication',
     ],
@@ -298,18 +345,46 @@ REST_FRAMEWORK = {
 }
 
 # Shared by Gunicorn workers without requiring an extra service. Dashboard
-# entries are short-lived and invalidated by TimeLog signals.
-CACHES = {
-    'default': {
-        'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
-        'LOCATION': os.environ.get(
-            'DJANGO_CACHE_PATH',
-            '/tmp/personal-learning-os-cache',
-        ),
-        'TIMEOUT': 60,
-        'OPTIONS': {'MAX_ENTRIES': 1000},
-    },
-}
+# entries are short-lived and invalidated by TimeLog signals. Redis is an
+# explicit experiment only; the production/default deployment remains file
+# cache until an identical before/after capacity run proves a benefit.
+CACHE_BACKEND_VARIANT = os.environ.get('DJANGO_CACHE_BACKEND', 'file').strip().lower()
+if CACHE_BACKEND_VARIANT == 'redis':
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': os.environ.get('REDIS_CACHE_URL', 'redis://127.0.0.1:6379/1'),
+            'TIMEOUT': 60,
+        },
+    }
+elif CACHE_BACKEND_VARIANT == 'dummy':
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.dummy.DummyCache',
+        },
+    }
+elif CACHE_BACKEND_VARIANT == 'locmem':
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.locmem.LocMemCache',
+            'LOCATION': 'time-tracker-loadtest-experiment',
+            'TIMEOUT': 60,
+            'OPTIONS': {'MAX_ENTRIES': 1000},
+        },
+    }
+else:
+    CACHE_BACKEND_VARIANT = 'file'
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.filebased.FileBasedCache',
+            'LOCATION': os.environ.get(
+                'DJANGO_CACHE_PATH',
+                '/tmp/personal-learning-os-cache',
+            ),
+            'TIMEOUT': 60,
+            'OPTIONS': {'MAX_ENTRIES': 1000},
+        },
+    }
 
 CSRF_TRUSTED_ORIGINS = [
     origin.strip()
