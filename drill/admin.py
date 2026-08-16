@@ -11,25 +11,28 @@ from .models import (
 
 @admin.register(QuestionDocument)
 class QuestionDocumentAdmin(admin.ModelAdmin):
-    list_display = ('title', 'page_count', 'parser_strategy', 'imported_at')
-    search_fields = ('title', 'filename', 'sha256')
+    list_display = ('display_title', 'title', 'page_count', 'parser_strategy', 'imported_at')
+    search_fields = ('display_title', 'title', 'filename', 'sha256')
 
 
 @admin.register(QuestionTopic)
 class QuestionTopicAdmin(admin.ModelAdmin):
-    list_display = ('title', 'document', 'level', 'sort_order')
+    list_display = ('display_title', 'title', 'document', 'level', 'sort_order')
     list_filter = ('document', 'level')
-    search_fields = ('title', 'normalized_title')
+    search_fields = ('display_title', 'title', 'normalized_title')
 
 
 @admin.register(Question)
 class QuestionAdmin(admin.ModelAdmin):
     list_display = (
-        'source_label', 'document', 'question_order', 'is_past_exam',
-        'exam_year', 'content_mode',
+        'display_label', 'document', 'question_order', 'source_category',
+        'record_kind', 'is_practiceable', 'exam_year', 'content_mode',
     )
-    list_filter = ('document', 'is_past_exam', 'exam_year', 'content_mode')
-    search_fields = ('source_label', 'prompt_text', 'fingerprint')
+    list_filter = (
+        'document', 'source_category', 'record_kind', 'is_practiceable',
+        'is_past_exam', 'exam_year', 'content_mode',
+    )
+    search_fields = ('display_label', 'source_label', 'prompt_text', 'fingerprint')
     readonly_fields = ('uuid', 'fingerprint')
 
 

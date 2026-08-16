@@ -1,12 +1,13 @@
 import hashlib
 import json
-import re
 import uuid
 from pathlib import Path, PureWindowsPath
 
+from django.core.management import call_command
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
 
+from drill.cleaning import classify_source, clean_document_title, clean_topic_title
 from drill.models import (
     Question,
     QuestionAsset,
@@ -15,10 +16,6 @@ from drill.models import (
 )
 
 
-PAST_EXAM_RE = re.compile(
-    r'(?<!\d)(19\d{2}|20(?:0\d|1\d|2[0-6]))\s*[,，、]?\s*数'
-    r'([一二三](?:\s*(?:[、,，]|数)?\s*[一二三])*)'
-)
 PNG_SIGNATURE = b'\x89PNG\r\n\x1a\n'
 
 
@@ -33,20 +30,6 @@ def load_json_lines(path):
                         raise CommandError(f'Invalid JSON in {path}:{line_number}: {exc}') from exc
     except OSError as exc:
         raise CommandError(f'Cannot read {path}: {exc}') from exc
-
-
-def document_title(filename):
-    value = Path(filename).stem
-    value = re.sub(r'[（(]\d+[）)]$', '', value)
-    return value.strip('【】 ') or filename
-
-
-def past_exam_metadata(label):
-    match = PAST_EXAM_RE.search(label or '')
-    if not match:
-        return False, None, ''
-    variants = ''.join(dict.fromkeys(re.findall(r'[一二三]', match.group(2))))
-    return True, int(match.group(1)), f'数{variants}'
 
 
 def stable_question_uuid(fingerprint):
@@ -89,6 +72,8 @@ class Command(BaseCommand):
             if not options['skip_assets']:
                 asset_count = self._import_assets(required['assets'], assets_root, questions)
 
+        call_command('clean_question_bank', stdout=self.stdout)
+
         self.stdout.write(self.style.SUCCESS(
             f'Question bank ready: {len(documents)} documents, {len(topics)} topics, '
             f'{len(questions)} questions, {asset_count} assets processed.'
@@ -102,7 +87,8 @@ class Command(BaseCommand):
                 source_id=source_id,
                 defaults={
                     'filename': row['filename'],
-                    'title': document_title(row['filename']),
+                    'title': Path(row['filename']).stem,
+                    'display_title': clean_document_title(row['filename']),
                     'sha256': row['sha256'],
                     'page_count': int(row['page_count']),
                     'parser_strategy': row.get('parser_strategy') or '',
@@ -126,6 +112,7 @@ class Command(BaseCommand):
                     'document': documents[document_id],
                     'parent': None,
                     'title': row['title'],
+                    'display_title': clean_topic_title(row['title']),
                     'normalized_title': row.get('normalized_title') or '',
                     'level': int(row['level']),
                     'sort_order': int(row['sort_order']),
@@ -171,7 +158,7 @@ class Command(BaseCommand):
             if topic_source_id is not None and topic is None:
                 raise CommandError(f'Question {source_id} references missing topic {topic_source_id}.')
             label = row.get('source_label') or ''
-            is_past_exam, exam_year, exam_variant = past_exam_metadata(label)
+            source = classify_source(label)
             fingerprint = row['fingerprint']
             question, _ = Question.objects.update_or_create(
                 fingerprint=fingerprint,
@@ -182,13 +169,17 @@ class Command(BaseCommand):
                     'similarity_topic': self._similarity_topic(topic),
                     'question_order': int(row['question_order']),
                     'source_label': label,
+                    'display_label': source.display_label,
                     'prompt_text': row.get('raw_text') or '',
                     'latex_text': row.get('latex_text') or '',
                     'content_mode': row['content_mode'],
                     'confidence': float(row.get('confidence', 1)),
-                    'is_past_exam': is_past_exam,
-                    'exam_year': exam_year,
-                    'exam_variant': exam_variant,
+                    'is_past_exam': source.is_past_exam,
+                    'source_category': source.category,
+                    'classification_reason': source.reason,
+                    'classification_confidence': source.confidence,
+                    'exam_year': source.year,
+                    'exam_variant': source.variant,
                 },
             )
             result[source_id] = question

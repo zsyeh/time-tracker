@@ -30,3 +30,4 @@ export const post = <T>(url: string, body: unknown) => api<T>(url, {
   body: JSON.stringify(body),
 })
 
+export const remove = <T>(url: string) => api<T>(url, { method: 'DELETE' })

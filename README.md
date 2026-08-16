@@ -28,8 +28,8 @@ curl -fsSL https://app.ehzsy.site/install/docker-compose.sh | sh -s -- study.exa
 
 ## 主要能力
 
-- 独立的 `drill.ehzsy.site` 刷题前端与计时前端共用 Django 账号和 PostgreSQL，但不会在 `timer.ehzsy.site` 添加入口。首次访问会自动回到 Timer 域名使用既有 Passkey，再通过 90 秒一次性凭证返回 Drill，无需重建原 Passkey。题库包含 3,553 道数学题和原始裁剪图；可按书目、知识点、真题和未做状态筛选，记录每次练习结果，并一键继续刷同知识点题目。
-- 真题热力图覆盖识别出的历年考试题：从未做过的格子保持空色，随个人练习频次逐级加深；题库是全站只读资源，作答次数和结果按用户严格隔离。
+- 独立的 `drill.ehzsy.site` 刷题前端与计时前端共用 Django 账号和 PostgreSQL，但不会在 `timer.ehzsy.site` 添加入口。首次访问会自动回到 Timer 域名使用既有 Passkey，再通过 90 秒一次性凭证返回 Drill，无需重建原 Passkey。源库的 3,553 条导入记录已清洗为 3,208 条可练习记录，345 条目录/分隔项默认隐藏；真题、真题改编、模拟卷、题册题、竞赛题和来源未明题分开筛选。
+- 真题热力图只覆盖可明确识别的官方历年考试题。题目状态统一为灰色未做、绿色已掌握、黄色待复习，可随时修改、重置或撤销最近一次修改；练习历史和结果按用户严格隔离。
 - 从 2026-05-23 开始的学习热力图；达到 5 小时的日期使用高对比亮绿色。
 - 点击任意日期查看 24 小时在线/未在线时间轴和当天每次学习标题；再点标题才显示正文详情。
 - 普通连续学习日、连续 5 小时日、历史最长连续日、达标日数、每日首次开始时间。
@@ -127,7 +127,7 @@ cd frontend && npm run build
 
 - `https://drill.ehzsy.site/practice`：独立刷题前端（使用与 Timer 相同的账号数据库）
 - `https://drill.ehzsy.site/practice/<uuid>`：稳定的题目页面及同类题入口
-- `https://drill.ehzsy.site/heatmap`：个人真题练习频次热力图
+- `https://drill.ehzsy.site/heatmap`：个人官方真题状态热力图
 - `/api/drill/*`：登录后可用的题库、作答、同类题、进度和图片 API
 - `/`：跳转到 `/today`
 - `/today`：Today

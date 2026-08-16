@@ -8,6 +8,7 @@ from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.test import Client, TestCase, override_settings
 
+from .cleaning import classify_source, clean_document_title, clean_topic_title
 from .models import (
     DrillLoginHandoff,
     Question,
@@ -58,6 +59,7 @@ class DrillApiTests(TestCase):
             content_mode='mixed',
             fingerprint='a' * 64,
             is_past_exam=True,
+            source_category='past_exam',
             exam_year=2024,
             exam_variant='数一',
         )
@@ -71,6 +73,7 @@ class DrillApiTests(TestCase):
             content_mode='text',
             fingerprint='b' * 64,
             is_past_exam=True,
+            source_category='past_exam',
             exam_year=2020,
             exam_variant='数二',
         )
@@ -119,6 +122,33 @@ class DrillApiTests(TestCase):
         self.assertEqual(created.status_code, 201)
         self.assertEqual(created.json()['attempt_count'], 1)
 
+    def test_question_state_can_be_changed_reset_and_undone(self):
+        self.client.force_login(self.alice)
+        endpoint = f'/api/drill/questions/{self.question.uuid}/attempts/'
+        mastered = self.client.post(
+            endpoint, {'result': 'correct'}, content_type='application/json',
+        ).json()
+        self.assertEqual(mastered['state'], 'mastered')
+        review = self.client.post(
+            endpoint, {'result': 'review'}, content_type='application/json',
+        ).json()
+        self.assertEqual(review['state'], 'review')
+        reset = self.client.post(
+            endpoint, {'result': 'reset'}, content_type='application/json',
+        ).json()
+        self.assertEqual(reset['state'], 'unattempted')
+        self.assertEqual(reset['attempt_count'], 2)
+        undone = self.client.delete(endpoint).json()
+        self.assertEqual(undone['state'], 'review')
+        self.assertTrue(undone['can_undo'])
+
+    def test_unattempted_filter_uses_current_state_after_reset(self):
+        QuestionAttempt.objects.create(user=self.alice, question=self.question, result='correct')
+        QuestionAttempt.objects.create(user=self.alice, question=self.question, result='reset')
+        self.client.force_login(self.alice)
+        rows = self.client.get('/api/drill/questions/?unattempted=1').json()['results']
+        self.assertIn(str(self.question.uuid), [row['uuid'] for row in rows])
+
     def test_similar_questions_use_indexed_topic(self):
         self.client.force_login(self.alice)
         response = self.client.get(f'/api/drill/questions/{self.question.uuid}/similar/')
@@ -131,6 +161,7 @@ class DrillApiTests(TestCase):
         detail = self.client.get(f'/api/drill/questions/{self.question.uuid}/')
         self.assertEqual(detail.status_code, 200)
         self.assertEqual(detail.json()['prompt_text'], 'PRIVATE QUESTION BODY')
+        self.assertEqual(detail.json()['formula_source'], 'original_pdf_crop')
         asset = self.client.get(f'/api/drill/assets/{self.asset.pk}/')
         self.assertEqual(asset.status_code, 200)
         self.assertEqual(asset.content, TEST_PNG)
@@ -183,8 +214,29 @@ class QuestionBankImportTests(TestCase):
         self.assertEqual(QuestionAsset.objects.count(), 1)
         question = Question.objects.get()
         self.assertTrue(question.is_past_exam)
+        self.assertEqual(question.source_category, 'past_exam')
         self.assertEqual(question.exam_year, 2023)
         self.assertEqual(bytes(QuestionAsset.objects.get().image_data), TEST_PNG)
+
+
+class QuestionBankCleaningTests(TestCase):
+    def test_topic_leaders_and_document_wrappers_are_cleaned(self):
+        self.assertEqual(
+            clean_topic_title('11. 定积分应用 >> ................................. 66'),
+            '定积分应用',
+        )
+        self.assertEqual(clean_document_title('【紧凑】多元微分.pdf'), '多元微分')
+        self.assertEqual(
+            clean_document_title('线代1000题打印版（密集不留空）(1).pdf'),
+            '线性代数',
+        )
+
+    def test_source_types_do_not_mix_past_mock_and_workbook(self):
+        self.assertEqual(classify_source('(3) 2019 数二').category, 'past_exam')
+        self.assertEqual(classify_source('(2) 2022 数二（改编）').category, 'adapted_exam')
+        self.assertEqual(classify_source('25 李永乐六套数一二三第三套').category, 'mock_exam')
+        self.assertEqual(classify_source('26版660数二第509题').category, 'workbook')
+        self.assertEqual(classify_source('北京市2008年竞赛题').category, 'competition')
 
 
 @override_settings(

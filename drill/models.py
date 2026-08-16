@@ -15,6 +15,7 @@ class QuestionDocument(models.Model):
     source_id = models.PositiveBigIntegerField(unique=True)
     filename = models.TextField()
     title = models.CharField(max_length=240)
+    display_title = models.CharField(max_length=240, blank=True)
     sha256 = models.CharField(max_length=64, unique=True)
     page_count = models.PositiveIntegerField()
     parser_strategy = models.CharField(max_length=64, blank=True)
@@ -45,6 +46,7 @@ class QuestionTopic(models.Model):
         related_name='children',
     )
     title = models.TextField()
+    display_title = models.TextField(blank=True)
     normalized_title = models.TextField(blank=True)
     level = models.PositiveSmallIntegerField()
     sort_order = models.PositiveIntegerField()
@@ -68,6 +70,20 @@ class QuestionTopic(models.Model):
 class Question(models.Model):
     """Stable canonical question imported from the supplied question bank."""
 
+    SOURCE_CATEGORY_CHOICES = [
+        ('past_exam', 'Past exam'),
+        ('adapted_exam', 'Adapted past exam'),
+        ('mock_exam', 'Mock paper'),
+        ('workbook', 'Workbook'),
+        ('competition', 'Competition'),
+        ('unclassified', 'Unclassified'),
+    ]
+    RECORD_KIND_CHOICES = [
+        ('question', 'Question'),
+        ('grouped', 'Grouped extract'),
+        ('section', 'Source outline'),
+    ]
+
     uuid = models.UUIDField(default=uuid_lib.uuid4, unique=True, editable=False)
     document = models.ForeignKey(
         QuestionDocument,
@@ -90,12 +106,28 @@ class Question(models.Model):
     )
     question_order = models.PositiveIntegerField()
     source_label = models.TextField(blank=True)
+    display_label = models.TextField(blank=True)
     prompt_text = models.TextField(blank=True)
     latex_text = models.TextField(blank=True)
     content_mode = models.CharField(max_length=12)
     fingerprint = models.CharField(max_length=64, unique=True)
     confidence = models.FloatField(default=1.0)
     is_past_exam = models.BooleanField(default=False, db_index=True)
+    source_category = models.CharField(
+        max_length=20,
+        choices=SOURCE_CATEGORY_CHOICES,
+        default='unclassified',
+        db_index=True,
+    )
+    record_kind = models.CharField(
+        max_length=12,
+        choices=RECORD_KIND_CHOICES,
+        default='question',
+        db_index=True,
+    )
+    is_practiceable = models.BooleanField(default=True, db_index=True)
+    classification_reason = models.CharField(max_length=200, blank=True)
+    classification_confidence = models.FloatField(default=0.0)
     exam_year = models.PositiveSmallIntegerField(null=True, blank=True, db_index=True)
     exam_variant = models.CharField(max_length=16, blank=True)
 
@@ -148,6 +180,7 @@ class QuestionAttempt(models.Model):
         ('done', 'Done'),
         ('correct', 'Correct'),
         ('review', 'Needs review'),
+        ('reset', 'Reset to unattempted'),
     ]
 
     user = models.ForeignKey(
