@@ -8,6 +8,7 @@ from django.db.models import Count
 
 from drill.asset_rerender import (
     CropLocation,
+    FormulaAwareCropAdjuster,
     LegacyCropLocator,
     render_blank_crop,
     render_pdf_crop,
@@ -26,6 +27,11 @@ class Command(BaseCommand):
             '--source-id', type=int, action='append',
             help='Limit work to one or more QuestionDocument source IDs.',
         )
+        parser.add_argument('--force', action='store_true')
+        parser.add_argument(
+            '--formula-aware-text-bounds', action='store_true',
+            help='Move link-anchor crop edges above tall PDF text/formula blocks.',
+        )
         parser.add_argument('--dry-run', action='store_true')
 
     def handle(self, *args, **options):
@@ -34,10 +40,15 @@ class Command(BaseCommand):
             raise CommandError(f'PDF directory does not exist: {pdf_directory}')
         dpi = options['dpi']
         source_dpi = options['source_dpi']
+        formula_aware = options['formula_aware_text_bounds']
         if not 144 <= dpi <= 240:
             raise CommandError('Target DPI must be between 144 and 240.')
         if not 72 <= source_dpi < dpi:
             raise CommandError('Source DPI must be at least 72 and lower than target DPI.')
+        if formula_aware and not options['source_id']:
+            raise CommandError(
+                '--formula-aware-text-bounds requires an explicit --source-id.'
+            )
 
         source_files = self._source_files(pdf_directory)
         documents_query = (
@@ -57,7 +68,7 @@ class Command(BaseCommand):
 
         plans = []
         for document in documents:
-            if not QuestionAsset.objects.filter(
+            if not options['force'] and not QuestionAsset.objects.filter(
                 question__document=document,
             ).exclude(render_dpi=dpi).exists():
                 self.stdout.write(f'{document.display_title}: already {dpi} DPI; skipped.')
@@ -65,7 +76,7 @@ class Command(BaseCommand):
             source_path = source_files[document.sha256]
             try:
                 plan, blank_count, ambiguous_count = self._build_plan(
-                    document, source_path, source_dpi,
+                    document, source_path, source_dpi, formula_aware,
                 )
             except (OSError, ValueError, pymupdf.FileDataError) as exc:
                 raise CommandError(f'Preflight failed for {document.filename}: {exc}') from exc
@@ -109,19 +120,23 @@ class Command(BaseCommand):
         return result
 
     @staticmethod
-    def _build_plan(document, source_path, source_dpi):
+    def _build_plan(document, source_path, source_dpi, formula_aware=False):
         plan = {}
         blank_count = 0
         ambiguous_count = 0
         previous_end = None
         with pymupdf.open(source_path) as pdf:
-            locator = LegacyCropLocator(pdf, source_dpi=source_dpi)
+            locator = None
+            adjuster = FormulaAwareCropAdjuster(pdf) if formula_aware else None
+            selected_fields = [
+                'id', 'render_dpi', 'source_page_index',
+                'source_x0', 'source_y0', 'source_x1', 'source_y1',
+            ]
+            if not formula_aware:
+                selected_fields.append('image_data')
             assets = QuestionAsset.objects.filter(
                 question__document=document,
-            ).order_by('source_id').only(
-                'id', 'image_data', 'render_dpi', 'source_page_index',
-                'source_x0', 'source_y0', 'source_x1', 'source_y1',
-            )
+            ).order_by('source_id').only(*selected_fields)
             for asset in assets.iterator(chunk_size=100):
                 if asset.source_page_index is not None:
                     location = CropLocation(
@@ -133,9 +148,13 @@ class Command(BaseCommand):
                         1.0,
                     )
                 else:
+                    if locator is None:
+                        locator = LegacyCropLocator(pdf, source_dpi=source_dpi)
                     location, previous_end = locator.locate(
                         bytes(asset.image_data), previous_end=previous_end,
                     )
+                if adjuster is not None:
+                    location = adjuster.adjust(location)
                 blank_count += int(location.is_blank)
                 ambiguous_count += int(location.ambiguous)
                 plan[asset.pk] = location

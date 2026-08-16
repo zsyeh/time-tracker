@@ -121,6 +121,21 @@ Always take a PostgreSQL backup first. Source page and clip coordinates are
 saved with each asset, so later re-renders are direct and do not need to recover
 the crop position again.
 
+Some PDFs place a question-link anchor at the vertical centre of a tall matrix.
+For a verified source document, formula-aware bounds include both PDF text
+blocks and vector determinant/bracket paths before re-rendering:
+
+```bash
+python manage.py rerender_question_assets /safe/extracted-pdfs \
+  --source-id 3 --dpi 180 --formula-aware-text-bounds --force --dry-run
+python manage.py rerender_question_assets /safe/extracted-pdfs \
+  --source-id 3 --dpi 180 --formula-aware-text-bounds --force
+```
+
+The option requires an explicit source ID so it cannot silently re-segment the
+whole bank. It leaves question UUIDs, attempts, classifications, and source
+labels unchanged.
+
 ## Routes
 
 - `/practice` — catalog and filters

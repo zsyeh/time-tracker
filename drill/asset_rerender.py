@@ -5,7 +5,7 @@ from __future__ import annotations
 import zlib
 from array import array
 from collections import Counter, defaultdict
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 import pymupdf
 
@@ -135,6 +135,73 @@ class LegacyCropLocator:
             ambiguous=len(candidates) > 1,
         )
         return location, (page_index, start_row + pixmap.height)
+
+
+class FormulaAwareCropAdjuster:
+    """Move text-link anchors above tall inline formula bounds.
+
+    Some source PDFs place the question label at the vertical centre of a
+    matrix. Their internal link anchor therefore cuts through the matrix. PDF
+    text blocks retain the complete formula bounds and let us move that edge to
+    a small margin above the formula without guessing from raster pixels.
+    """
+
+    def __init__(
+        self,
+        document: pymupdf.Document,
+        margin: float = 3.0,
+        tolerance: float = 1.5,
+        max_up: float = 90.0,
+    ):
+        self.document = document
+        self.margin = margin
+        self.tolerance = tolerance
+        self.max_up = max_up
+        self.page_blocks = []
+        for page in document:
+            blocks = [
+                pymupdf.Rect(block[:4])
+                for block in page.get_text('blocks')
+                if block[3] > block[1]
+            ]
+            # Determinant bars and some matrix brackets are PDF vector paths,
+            # not text. Their full-height bounds connect otherwise separate
+            # formula rows and reveal the true top of the expression.
+            blocks.extend(
+                pymupdf.Rect(drawing['rect'])
+                for drawing in page.get_drawings()
+                if drawing['rect'].y1 > drawing['rect'].y0
+            )
+            self.page_blocks.append(blocks)
+
+    def boundary(self, page_index: int, anchor: float) -> float:
+        page_height = self.document[page_index].rect.height
+        if anchor <= self.tolerance:
+            return 0.0
+        if anchor >= page_height - self.tolerance:
+            return page_height
+        overlapping_tops = [
+            block.y0
+            for block in self.page_blocks[page_index]
+            if block.y0 <= anchor + self.tolerance
+            and block.y1 >= anchor - self.tolerance
+            and anchor - block.y0 <= self.max_up
+        ]
+        if not overlapping_tops:
+            return anchor
+        return max(0.0, min(anchor, min(overlapping_tops) - self.margin))
+
+    def adjust(self, location: CropLocation) -> CropLocation:
+        if location.page_index is None or location.is_blank:
+            return location
+        y0 = self.boundary(location.page_index, location.y0)
+        y1 = self.boundary(location.page_index, location.y1)
+        if y1 <= y0 + 1.0:
+            raise ValueError(
+                f'Formula-aware bounds collapsed on page {location.page_index + 1}: '
+                f'{y0:.2f}–{y1:.2f}.'
+            )
+        return replace(location, y0=y0, y1=y1)
 
 
 def render_pdf_crop(

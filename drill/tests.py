@@ -10,7 +10,13 @@ from django.core.management import call_command
 from django.test import Client, SimpleTestCase, TestCase, override_settings
 
 from .cleaning import classify_source, clean_document_title, clean_topic_title
-from .asset_rerender import LegacyCropLocator, render_blank_crop, render_pdf_crop
+from .asset_rerender import (
+    CropLocation,
+    FormulaAwareCropAdjuster,
+    LegacyCropLocator,
+    render_blank_crop,
+    render_pdf_crop,
+)
 from .models import (
     DrillLoginHandoff,
     Question,
@@ -329,6 +335,26 @@ class QuestionAssetRerenderTests(SimpleTestCase):
         self.assertTrue(location.is_blank)
         self.assertEqual((width, height), (150, 50))
         self.assertTrue(rendered.startswith(b'\x89PNG\r\n\x1a\n'))
+
+    def test_formula_aware_bounds_include_matrix_above_question_anchor(self):
+        pdf = pymupdf.open()
+        page = pdf.new_page(width=240, height=300)
+        page.insert_text((20, 110), '4. Matrix question', fontsize=11)
+        page.insert_textbox(
+            pymupdf.Rect(120, 65, 220, 135),
+            '[ a  b ]\n[ c  d ]\n[ e  f ]',
+            fontsize=11,
+        )
+        page.draw_line((115, 58), (115, 137))
+        page.insert_text((20, 170), '5. Next question', fontsize=11)
+
+        adjusted = FormulaAwareCropAdjuster(pdf).adjust(
+            CropLocation(0, 0, 100, 240, 170, 1.0),
+        )
+
+        self.assertLess(adjusted.y0, 58)
+        self.assertLess(adjusted.y1, 170)
+        self.assertGreater(adjusted.y1, 145)
 
 
 @override_settings(
