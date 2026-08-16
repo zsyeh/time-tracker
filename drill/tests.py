@@ -213,6 +213,63 @@ class DrillApiTests(TestCase):
         detail = self.client.get(f'/api/drill/questions/{self.practice.uuid}/')
         self.assertIsNone(detail.json()['next_question_uuid'])
 
+    def test_next_question_keeps_the_same_source_category(self):
+        first_mock = Question.objects.create(
+            document=self.document,
+            topic=self.topic,
+            similarity_topic=self.topic,
+            question_order=5,
+            source_label='Mock paper one',
+            prompt_text='Mock one',
+            content_mode='text',
+            fingerprint='f' * 64,
+            source_category='mock_exam',
+        )
+        first_past_exam = Question.objects.create(
+            document=self.document,
+            topic=self.topic,
+            similarity_topic=self.topic,
+            question_order=6,
+            source_label='2019数一',
+            prompt_text='Interleaved past exam',
+            content_mode='text',
+            fingerprint='g' * 64,
+            source_category='past_exam',
+        )
+        second_mock = Question.objects.create(
+            document=self.document,
+            topic=self.topic,
+            similarity_topic=self.topic,
+            question_order=7,
+            source_label='Mock paper two',
+            prompt_text='Mock two',
+            content_mode='text',
+            fingerprint='h' * 64,
+            source_category='mock_exam',
+        )
+        second_past_exam = Question.objects.create(
+            document=self.document,
+            topic=self.topic,
+            similarity_topic=self.topic,
+            question_order=8,
+            source_label='2018数一',
+            prompt_text='Second past exam',
+            content_mode='text',
+            fingerprint='i' * 64,
+            source_category='past_exam',
+        )
+
+        self.client.force_login(self.alice)
+        mock_detail = self.client.get(f'/api/drill/questions/{first_mock.uuid}/')
+        past_exam_detail = self.client.get(
+            f'/api/drill/questions/{first_past_exam.uuid}/',
+        )
+
+        self.assertEqual(mock_detail.json()['next_question_uuid'], str(second_mock.uuid))
+        self.assertEqual(
+            past_exam_detail.json()['next_question_uuid'], str(second_past_exam.uuid),
+        )
+
     def test_progress_does_not_include_another_users_attempts(self):
         QuestionAttempt.objects.create(user=self.bob, question=self.question, result='correct')
         self.client.force_login(self.alice)

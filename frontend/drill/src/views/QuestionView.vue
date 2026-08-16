@@ -132,7 +132,7 @@ onMounted(load)
         @click="question.next_question_uuid && router.push(`/practice/${question.next_question_uuid}`)"
       >
         <span>{{ question.next_question_uuid ? 'Next question' : 'End of this chapter' }}</span>
-        <small>{{ question.next_question_uuid ? 'Continue in source order' : 'Return to the question bank to choose another set' }}</small>
+        <small>{{ question.next_question_uuid ? `Continue with ${question.source_category_label.toLowerCase()} questions` : 'Return to the question bank to choose another set' }}</small>
         <b>{{ question.next_question_uuid ? '→' : '✓' }}</b>
       </button>
 

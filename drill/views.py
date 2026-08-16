@@ -204,6 +204,7 @@ class DrillQuestionDetailView(APIView):
         next_question_uuid = Question.objects.filter(
             document_id=question.document_id,
             is_practiceable=True,
+            source_category=question.source_category,
             question_order__gt=question.question_order,
         ).order_by('question_order').values_list('uuid', flat=True).first()
         payload = summary_payload(question)
