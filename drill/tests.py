@@ -2,12 +2,20 @@ import hashlib
 import json
 import tempfile
 from pathlib import Path
+from urllib.parse import urlsplit
 
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
-from django.test import TestCase, override_settings
+from django.test import Client, TestCase, override_settings
 
-from .models import Question, QuestionAsset, QuestionAttempt, QuestionDocument, QuestionTopic
+from .models import (
+    DrillLoginHandoff,
+    Question,
+    QuestionAsset,
+    QuestionAttempt,
+    QuestionDocument,
+    QuestionTopic,
+)
 
 
 TEST_PNG = b'\x89PNG\r\n\x1a\nquestion-image'
@@ -204,3 +212,77 @@ class DrillHostRoutingTests(TestCase):
         self.assertContains(drill_response, 'DRILL FRONTEND')
         self.assertContains(timer_response, 'TIMER FRONTEND')
         self.assertEqual(blocked.status_code, 404)
+
+
+@override_settings(
+    SECURE_SSL_REDIRECT=False,
+    DEBUG=False,
+    ALLOWED_HOSTS=['timer.ehzsy.site', 'drill.ehzsy.site'],
+    DRILL_HOSTS={'drill.ehzsy.site'},
+    DRILL_ORIGIN='https://drill.ehzsy.site',
+    DRILL_AUTH_HOST='timer.ehzsy.site',
+    DRILL_AUTH_ORIGIN='https://timer.ehzsy.site',
+)
+class DrillPasskeyHandoffTests(TestCase):
+    def setUp(self):
+        self.user = get_user_model().objects.create_user('handoff-user', password='password')
+
+    def test_anonymous_drill_page_uses_timer_login_origin(self):
+        response = self.client.get(
+            '/practice?document=2',
+            HTTP_HOST='drill.ehzsy.site',
+            secure=True,
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.startswith(
+            'https://timer.ehzsy.site/drill-auth/start?',
+        ))
+        self.assertIn('next=%2Fpractice%3Fdocument%3D2', response.url)
+
+    def test_authenticated_timer_issues_hashed_one_time_login_for_drill(self):
+        timer = Client()
+        timer.force_login(self.user)
+        start = timer.get(
+            '/drill-auth/start?next=/heatmap',
+            HTTP_HOST='timer.ehzsy.site',
+            secure=True,
+        )
+        self.assertEqual(start.status_code, 302)
+        self.assertTrue(start.url.startswith(
+            'https://drill.ehzsy.site/drill-auth/complete/',
+        ))
+        raw_token = urlsplit(start.url).path.rsplit('/', 1)[1]
+        handoff = DrillLoginHandoff.objects.get()
+        self.assertNotEqual(handoff.token_digest, raw_token)
+        self.assertEqual(handoff.token_digest, DrillLoginHandoff.digest(raw_token))
+
+        drill = Client()
+        completed = drill.get(
+            f'/drill-auth/complete/{raw_token}',
+            HTTP_HOST='drill.ehzsy.site',
+            secure=True,
+        )
+        self.assertRedirects(
+            completed,
+            '/heatmap',
+            fetch_redirect_response=False,
+        )
+        self.assertEqual(int(drill.session['_auth_user_id']), self.user.pk)
+        self.assertFalse(DrillLoginHandoff.objects.exists())
+        replay = Client().get(
+            f'/drill-auth/complete/{raw_token}',
+            HTTP_HOST='drill.ehzsy.site',
+            secure=True,
+        )
+        self.assertEqual(replay.status_code, 404)
+
+    def test_external_return_url_is_replaced_with_practice(self):
+        timer = Client()
+        timer.force_login(self.user)
+        response = timer.get(
+            '/drill-auth/start?next=https://evil.example/steal',
+            HTTP_HOST='timer.ehzsy.site',
+            secure=True,
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertEqual(DrillLoginHandoff.objects.get().target_path, '/practice')

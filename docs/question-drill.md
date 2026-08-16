@@ -4,6 +4,14 @@ The drill is a separate Vue SPA served only on a configured drill hostname. It
 shares Django authentication and PostgreSQL with the Timer application, while
 keeping its routes, bundle, navigation, and visual system independent.
 
+Existing Passkeys are bound to the Timer WebAuthn relying-party domain and
+cannot be replayed directly on a sibling hostname. An anonymous Drill page
+therefore redirects through the Timer login page, where the existing Passkey is
+valid, then returns through a 90-second one-time handoff. Only the handoff hash
+is stored, it is deleted when consumed, external return URLs are rejected, and
+the Nginx example disables access logging for the completion path. This avoids
+changing the WebAuthn RP ID or widening the session cookie to every subdomain.
+
 ## Data model
 
 - `QuestionDocument` and `QuestionTopic` preserve the imported source hierarchy.
@@ -44,4 +52,3 @@ take a PostgreSQL backup before importing a replacement bank.
 - `/api/drill/questions/<uuid>/attempts/` — create one frequency event
 - `/api/drill/questions/<uuid>/similar/` — same-topic questions
 - `/api/drill/heatmap/` — compact per-user heatmap cells
-

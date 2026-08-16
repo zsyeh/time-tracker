@@ -189,6 +189,12 @@ DRILL_HOSTS = {
     for host in os.environ.get('DRILL_HOSTS', 'drill.ehzsy.site').split(',')
     if host.strip()
 }
+DRILL_ORIGIN = os.environ.get('DRILL_ORIGIN', 'https://drill.ehzsy.site').rstrip('/')
+DRILL_AUTH_HOST = os.environ.get('DRILL_AUTH_HOST', 'timer.ehzsy.site').strip().lower()
+DRILL_AUTH_ORIGIN = os.environ.get(
+    'DRILL_AUTH_ORIGIN',
+    f'https://{DRILL_AUTH_HOST}',
+).rstrip('/')
 
 STORAGES = {
     'default': {'BACKEND': 'django.core.files.storage.FileSystemStorage'},

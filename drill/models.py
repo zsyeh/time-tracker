@@ -1,4 +1,8 @@
+import hashlib
+import secrets
 import uuid as uuid_lib
+
+import datetime
 
 from django.conf import settings
 from django.db import models
@@ -165,3 +169,36 @@ class QuestionAttempt(models.Model):
     def __str__(self):
         return f'{self.user_id} · {self.question_id} · {self.result}'
 
+
+class DrillLoginHandoff(models.Model):
+    """Short-lived, one-time authentication handoff from Timer to Drill."""
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='+',
+    )
+    token_digest = models.CharField(max_length=64, unique=True, db_index=True)
+    target_path = models.CharField(max_length=500, default='/practice')
+    expires_at = models.DateTimeField(db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('-created_at',)
+
+    @staticmethod
+    def digest(raw_token):
+        return hashlib.sha256(raw_token.encode('ascii')).hexdigest()
+
+    @classmethod
+    def issue(cls, *, user, target_path, lifetime_seconds=90):
+        now = timezone.now()
+        cls.objects.filter(expires_at__lte=now).delete()
+        raw_token = f'drill_{secrets.token_urlsafe(32)}'
+        handoff = cls.objects.create(
+            user=user,
+            token_digest=cls.digest(raw_token),
+            target_path=target_path,
+            expires_at=now + datetime.timedelta(seconds=lifetime_seconds),
+        )
+        return handoff, raw_token

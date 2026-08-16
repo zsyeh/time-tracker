@@ -21,6 +21,15 @@ server {
     ssl_certificate_key /etc/letsencrypt/live/drill.example.com/privkey.pem;
     client_max_body_size 2m;
 
+    # The path contains a 90-second one-time login capability. Never log it.
+    location ^~ /drill-auth/complete/ {
+        access_log off;
+        proxy_pass http://127.0.0.1:8000;
+        proxy_set_header Host $host;
+        proxy_set_header X-Forwarded-Proto https;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+    }
+
     location /static/ {
         access_log off;
         proxy_pass http://127.0.0.1:8000;

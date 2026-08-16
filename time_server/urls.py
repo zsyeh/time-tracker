@@ -42,7 +42,7 @@ from tracker.web_views import (
     LaunchDeviceView, LaunchDisturbanceView, direct_start_view,
     launch_browser_view, public_spa_view, root_spa_view, spa_view,
 )
-from drill.web_views import drill_spa_view
+from drill.web_views import drill_login_complete, drill_login_start, drill_spa_view
 
 
 urlpatterns = [
@@ -108,6 +108,12 @@ urlpatterns = [
     path('api/export/json/', export_json, name='export_json'),
     path('api/export/markdown/', export_markdown, name='export_markdown'),
     path('api/drill/', include('drill.urls')),
+    path('drill-auth/start', drill_login_start, name='drill_login_start'),
+    path(
+        'drill-auth/complete/<str:raw_token>',
+        drill_login_complete,
+        name='drill_login_complete',
+    ),
     # Explicit SPA history fallbacks keep Django API/Auth/device endpoints out
     # of the catchment while allowing direct browser refreshes.
     path('today', spa_view, name='spa_today'),
