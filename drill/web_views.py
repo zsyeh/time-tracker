@@ -32,6 +32,18 @@ def is_drill_host(request):
     return hostname in settings.DRILL_HOSTS
 
 
+@never_cache
+def site_icon_redirect(request, icon_kind='touch'):
+    if is_drill_host(request):
+        filename = (
+            'drill-favicon-32.png'
+            if icon_kind == 'favicon'
+            else 'drill-icon-180.png'
+        )
+        return redirect(f'/static/drill/{filename}?v=img9392')
+    return redirect('/static/tracker/img9387-icon-180.png')
+
+
 def _safe_drill_target(value):
     parsed = urlsplit(value or '')
     if parsed.scheme or parsed.netloc or not parsed.path.startswith('/') or parsed.path.startswith('//'):

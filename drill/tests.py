@@ -421,6 +421,23 @@ class QuestionAssetRerenderTests(SimpleTestCase):
     DRILL_HOSTS={'drill.ehzsy.site'},
 )
 class DrillHostRoutingTests(TestCase):
+    def test_icons_are_drill_specific_without_changing_timer_icons(self):
+        drill_touch = self.client.get('/icon-180.png', HTTP_HOST='drill.ehzsy.site')
+        drill_favicon = self.client.get('/favicon.ico', HTTP_HOST='drill.ehzsy.site')
+        timer_touch = self.client.get('/icon-180.png', HTTP_HOST='timer.ehzsy.site')
+        timer_favicon = self.client.get('/favicon.ico', HTTP_HOST='timer.ehzsy.site')
+
+        self.assertEqual(
+            drill_touch.url,
+            '/static/drill/drill-icon-180.png?v=img9392',
+        )
+        self.assertEqual(
+            drill_favicon.url,
+            '/static/drill/drill-favicon-32.png?v=img9392',
+        )
+        self.assertEqual(timer_touch.url, '/static/tracker/img9387-icon-180.png')
+        self.assertEqual(timer_favicon.url, '/static/tracker/img9387-icon-180.png')
+
     def test_drill_root_uses_independent_frontend_and_timer_has_no_drill_route(self):
         user = get_user_model().objects.create_user('host-user', password='password')
         self.client.force_login(user)

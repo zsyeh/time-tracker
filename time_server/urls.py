@@ -1,6 +1,5 @@
 from django.contrib import admin
 from django.urls import include, path
-from django.views.generic import RedirectView
 from allauth.account.views import signup_by_passkey
 from allauth.mfa.webauthn.views import signup_webauthn
 
@@ -42,17 +41,26 @@ from tracker.web_views import (
     LaunchDeviceView, LaunchDisturbanceView, direct_start_view,
     launch_browser_view, public_spa_view, root_spa_view, spa_view,
 )
-from drill.web_views import drill_login_complete, drill_login_start, drill_spa_view
+from drill.web_views import (
+    drill_login_complete,
+    drill_login_start,
+    drill_spa_view,
+    site_icon_redirect,
+)
 
 
 urlpatterns = [
     path(
         'icon-180.png',
-        RedirectView.as_view(
-            url='/static/tracker/img9387-icon-180.png',
-            permanent=False,
-        ),
+        site_icon_redirect,
+        {'icon_kind': 'touch'},
         name='apple_touch_icon',
+    ),
+    path(
+        'favicon.ico',
+        site_icon_redirect,
+        {'icon_kind': 'favicon'},
+        name='favicon',
     ),
     path('admin/', admin.site.urls),
     # django-allauth normally exposes Passkey signup only alongside mandatory
