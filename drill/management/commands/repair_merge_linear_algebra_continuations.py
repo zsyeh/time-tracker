@@ -8,6 +8,61 @@ from drill.models import Question
 
 MERGES = (
     {
+        'parent_uuid': uuid.UUID('ccd18ac8-d8f0-5a45-9be1-9da7c177ae8c'),
+        'continuation_uuid': uuid.UUID('9163d89d-ac38-5b7d-af5a-ce7e32aafbfa'),
+        'label': '23 Zhang Yu Set 4 · symmetric matrix powers',
+        'prompt': (
+            'Let A be real symmetric, alpha=(0,-1,1)^T, beta=(1,0,-1)^T, '
+            'A alpha=3 beta, and A beta=3 alpha. Suppose rank(AB)<rank(B) for '
+            'some B. Orthogonally reduce x^T(A*+A)x, then for gamma=(2,0,-1)^T '
+            'find A^n gamma.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('ccd18ac8-d8f0-5a45-9be1-9da7c177ae8c'),
+        'continuation_uuid': uuid.UUID('5d066ef5-933d-55b0-9e15-37e5b840fc9b'),
+        'label': '23 Zhang Yu Set 4 · symmetric matrix powers',
+        'prompt': (
+            'Let A be real symmetric, alpha=(0,-1,1)^T, beta=(1,0,-1)^T, '
+            'A alpha=3 beta, and A beta=3 alpha. Suppose rank(AB)<rank(B) for '
+            'some B. Orthogonally reduce x^T(A*+A)x, then for gamma=(2,0,-1)^T '
+            'find A^n gamma.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('a6cc9a65-e063-55b8-8cc3-899ae2ccd213'),
+        'continuation_uuid': uuid.UUID('ade8b111-f871-54be-bb43-dd80edde54a5'),
+        'label': '23 Zhang Yu Set 1 · simultaneous congruence',
+        'prompt': (
+            'For f=x_1^2+x_2^2+2x_3^2-2x_1x_3 and '
+            'g=x_1^2+2x_3^2-2x_1x_2-2x_1x_3: find C reducing f to standard '
+            'form; diagonalize C^TBC orthogonally; then find T that reduces f '
+            'and g simultaneously.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('a6cc9a65-e063-55b8-8cc3-899ae2ccd213'),
+        'continuation_uuid': uuid.UUID('d24ba6a7-cabc-54d7-994e-a1f7f58e0129'),
+        'label': '23 Zhang Yu Set 1 · simultaneous congruence',
+        'prompt': (
+            'For f=x_1^2+x_2^2+2x_3^2-2x_1x_3 and '
+            'g=x_1^2+2x_3^2-2x_1x_2-2x_1x_3: find C reducing f to standard '
+            'form; diagonalize C^TBC orthogonally; then find T that reduces f '
+            'and g simultaneously.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('a6cc9a65-e063-55b8-8cc3-899ae2ccd213'),
+        'continuation_uuid': uuid.UUID('0356eeb2-85a6-5046-8b98-07bcb5373b47'),
+        'label': '23 Zhang Yu Set 1 · simultaneous congruence',
+        'prompt': (
+            'For f=x_1^2+x_2^2+2x_3^2-2x_1x_3 and '
+            'g=x_1^2+2x_3^2-2x_1x_2-2x_1x_3: find C reducing f to standard '
+            'form; diagonalize C^TBC orthogonally; then find T that reduces f '
+            'and g simultaneously.'
+        ),
+    },
+    {
         'parent_uuid': uuid.UUID('df2d23a7-fcb1-5198-840a-cbff5c60ce7b'),
         'continuation_uuid': uuid.UUID('3e95eb8f-c44e-52ef-aee0-706e24946105'),
         'label': '1995 Math III · orthogonal reduction of a quadratic form',
