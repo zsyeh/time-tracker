@@ -8,6 +8,46 @@ from drill.models import Question
 
 MERGES = (
     {
+        'parent_uuid': uuid.UUID('df2d23a7-fcb1-5198-840a-cbff5c60ce7b'),
+        'continuation_uuid': uuid.UUID('3e95eb8f-c44e-52ef-aee0-706e24946105'),
+        'label': '1995 Math III · orthogonal reduction of a quadratic form',
+        'prompt': (
+            'For f=4x_2^2-3x_3^2+4x_1x_2-4x_1x_3+8x_2x_3, write its '
+            'matrix expression, then use an orthogonal transformation to obtain '
+            'standard form and give the orthogonal matrix.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('df2d23a7-fcb1-5198-840a-cbff5c60ce7b'),
+        'continuation_uuid': uuid.UUID('0fcfcaa0-84e3-5b74-b6d0-d8864b6a7047'),
+        'label': '1995 Math III · orthogonal reduction of a quadratic form',
+        'prompt': (
+            'For f=4x_2^2-3x_3^2+4x_1x_2-4x_1x_3+8x_2x_3, write its '
+            'matrix expression, then use an orthogonal transformation to obtain '
+            'standard form and give the orthogonal matrix.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('9173cc00-697d-575d-82ad-8334f75a386f'),
+        'continuation_uuid': uuid.UUID('ef55f321-975d-549e-b0f9-1cff609bd671'),
+        'label': '2003 Math III · quadratic-form invariants',
+        'prompt': (
+            'Let f=a x_1^2+2x_2^2-2x_3^2+2b x_1x_3 with b>0. The sum of '
+            'the eigenvalues of its matrix is 1 and their product is -12. Find '
+            'a and b, then orthogonally reduce f to standard form and give Q.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('9173cc00-697d-575d-82ad-8334f75a386f'),
+        'continuation_uuid': uuid.UUID('b73ab79b-d643-5ee1-968c-c9ca99e93936'),
+        'label': '2003 Math III · quadratic-form invariants',
+        'prompt': (
+            'Let f=a x_1^2+2x_2^2-2x_3^2+2b x_1x_3 with b>0. The sum of '
+            'the eigenvalues of its matrix is 1 and their product is -12. Find '
+            'a and b, then orthogonally reduce f to standard form and give Q.'
+        ),
+    },
+    {
         'parent_uuid': uuid.UUID('11d6bd52-6039-5ffd-8a41-f73420f21225'),
         'continuation_uuid': uuid.UUID('428de67b-94da-503e-8db6-d96ec0cc039d'),
         'label': '2001 Math III · singular symmetric system',
