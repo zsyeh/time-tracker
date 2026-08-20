@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, onUnmounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { api, post, remove } from '../lib/api'
 import { cachedNoteDraft, cachedQuestion, clearNoteDraft, fetchQuestion, patchQuestionState, prefetchQuestion, storeNoteDraft } from '../lib/workspace'
 import type { QuestionDetail, QuestionSummary } from '../types'
@@ -8,6 +8,7 @@ import MarkdownAnswer from '../components/MarkdownAnswer.vue'
 
 const props = defineProps<{ uuid: string }>()
 const router = useRouter()
+const route = useRoute()
 const confidence = ref<number | null>(null)
 const note = ref('')
 
@@ -20,6 +21,33 @@ function navigationQuery() {
 
 function navigationQueryString() {
   return new URLSearchParams(navigationQuery()).toString()
+}
+
+function questionRouteQuery() {
+  const query: Record<string, string> = navigationQuery()
+  if (route.query.from === 'heatmap') {
+    query.from = 'heatmap'
+    query.heat_scope = String(route.query.heat_scope || 'all')
+    query.heat_question = String(route.query.heat_question || props.uuid)
+  }
+  return query
+}
+
+function backToEntryPoint() {
+  if (route.query.from === 'heatmap') {
+    void router.push({
+      path: '/heatmap',
+      query: {
+        mode: 'questions',
+        scope: ['past_exam', 'mock_exam', 'all'].includes(String(route.query.heat_scope))
+          ? String(route.query.heat_scope)
+          : 'all',
+        question: String(route.query.heat_question || props.uuid),
+      },
+    })
+    return
+  }
+  void router.push({ path: '/practice', query: navigationQuery() })
 }
 
 const question = ref<QuestionDetail | null>(null)
@@ -214,7 +242,7 @@ onUnmounted(() => {
 
 <template>
   <section class="page question-page">
-    <button class="back-link" @click="router.push({ path: '/practice', query: navigationQuery() })">← Question bank</button>
+    <button class="back-link" @click="backToEntryPoint">← {{ route.query.from === 'heatmap' ? 'Back to heatmap' : 'Question bank' }}</button>
     <p v-if="error" class="error-state">{{ error }}</p>
     <div v-if="loading" class="question-skeleton">LOADING QUESTION…</div>
     <template v-else-if="question">
@@ -223,7 +251,7 @@ onUnmounted(() => {
         <div class="attempt-counter"><span>CURRENT STATE</span><strong class="state-name" :class="`text-${question.state}`">{{ question.state === 'mastered' ? 'MASTERED' : question.state === 'review' ? 'REVIEW' : 'NOT STARTED' }}</strong><small>{{ question.attempt_count }} recorded attempts</small></div>
       </header>
 
-      <nav class="question-nav"><button :disabled="!question.previous_question_uuid" @click="question.previous_question_uuid && router.push({ path: `/practice/${question.previous_question_uuid}`, query: navigationQuery() })">← Previous</button><button :disabled="!question.next_question_uuid" @click="question.next_question_uuid && router.push({ path: `/practice/${question.next_question_uuid}`, query: navigationQuery() })">Next →</button></nav>
+      <nav class="question-nav"><button :disabled="!question.previous_question_uuid" @click="question.previous_question_uuid && router.push({ path: `/practice/${question.previous_question_uuid}`, query: questionRouteQuery() })">← Previous</button><button :disabled="!question.next_question_uuid" @click="question.next_question_uuid && router.push({ path: `/practice/${question.next_question_uuid}`, query: questionRouteQuery() })">Next →</button></nav>
 
       <div v-if="questionAssets(question).length" class="asset-toolbar question-asset-toolbar">
         <button type="button" @click="downloadAssets('question', questionAssets(question))">Save question image</button>
@@ -257,7 +285,7 @@ onUnmounted(() => {
       <button
         class="next-question"
         :disabled="!question.next_question_uuid"
-        @click="question.next_question_uuid && router.push({ path: `/practice/${question.next_question_uuid}`, query: navigationQuery() })"
+        @click="question.next_question_uuid && router.push({ path: `/practice/${question.next_question_uuid}`, query: questionRouteQuery() })"
       >
         <span>{{ question.next_question_uuid ? 'Next question' : 'End of this chapter' }}</span>
         <small>{{ question.next_question_uuid ? `Continue with ${question.source_category_label.toLowerCase()} questions` : 'Return to the question bank to choose another set' }}</small>
@@ -275,7 +303,7 @@ onUnmounted(() => {
         </div>
         <p v-if="!similarKind">Choose which source type to practise.</p>
         <p v-else-if="similarLoading">LOADING SIMILAR QUESTIONS…</p>
-        <button v-for="item in similar" :key="item.uuid" @click="router.push(`/practice/${item.uuid}`)"><span>{{ item.display_label || `Question ${item.question_order}` }}</span><small>{{ item.document }} · {{ item.state }} · {{ item.attempt_count }} attempts</small><b>→</b></button>
+        <button v-for="item in similar" :key="item.uuid" @click="router.push({ path: `/practice/${item.uuid}`, query: questionRouteQuery() })"><span>{{ item.display_label || `Question ${item.question_order}` }}</span><small>{{ item.document }} · {{ item.state }} · {{ item.attempt_count }} attempts</small><b>→</b></button>
         <p v-if="similarKind && !similarLoading && !similar.length">No questions of this source type were indexed for this topic.</p>
       </section>
     </template>
