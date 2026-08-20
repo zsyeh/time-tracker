@@ -15,6 +15,9 @@ export interface QuestionSummary {
   latest_result: 'done' | 'correct' | 'review' | 'reset' | null
   state: 'unattempted' | 'mastered' | 'review'
   can_undo: boolean
+  is_favorite: boolean
+  review_later: boolean
+  saved_note: string
   confidence?: number | null
   note?: string | null
 }
@@ -88,4 +91,41 @@ export interface Progress {
   past_exam_questions: number
   question_count: number
   past_exam_count: number
+}
+
+export interface CollectionPayload {
+  kind: 'favorite' | 'review_later'
+  count: number
+  next: string | null
+  previous: string | null
+  results: QuestionSummary[]
+}
+
+export interface BookFeel {
+  document_id: number
+  document: string
+  question_count: number
+  last_practiced_at: string | null
+  days_idle: number | null
+  feel_score: number | null
+  recent_attempts: number
+}
+
+export interface InsightPayload {
+  recent_questions: Array<{
+    uuid: string
+    label: string
+    document: string
+    topic: string
+    result: 'done' | 'correct' | 'review'
+    created_at: string
+  }>
+  recent_notes: Array<{
+    uuid: string
+    label: string
+    document: string
+    topic: string
+    note: string
+    updated_at: string
+  }>
 }

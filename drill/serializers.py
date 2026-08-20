@@ -11,6 +11,9 @@ class QuestionSummarySerializer(serializers.ModelSerializer):
     can_undo = serializers.SerializerMethodField()
     attempt_count = serializers.IntegerField(read_only=True, default=0)
     latest_result = serializers.CharField(read_only=True, allow_null=True, default=None)
+    is_favorite = serializers.BooleanField(read_only=True, default=False)
+    review_later = serializers.BooleanField(read_only=True, default=False)
+    saved_note = serializers.CharField(read_only=True, allow_blank=True, allow_null=True, default='')
 
     def get_document(self, obj):
         return obj.document.display_title or obj.document.title
@@ -36,6 +39,7 @@ class QuestionSummarySerializer(serializers.ModelSerializer):
             'topic', 'is_past_exam', 'source_category', 'source_category_label',
             'record_kind', 'exam_year', 'exam_variant', 'attempt_count',
             'latest_result', 'state', 'can_undo',
+            'is_favorite', 'review_later', 'saved_note',
         )
 
 
@@ -46,6 +50,17 @@ class QuestionAttemptCreateSerializer(serializers.Serializer):
     )
     confidence = serializers.IntegerField(min_value=0, max_value=100, required=False, allow_null=True)
     note = serializers.CharField(max_length=2000, required=False, allow_blank=True, allow_null=True)
+
+
+class QuestionUserStateSerializer(serializers.Serializer):
+    note = serializers.CharField(max_length=2000, required=False, allow_blank=True)
+    is_favorite = serializers.BooleanField(required=False)
+    review_later = serializers.BooleanField(required=False)
+
+    def validate(self, attrs):
+        if not attrs:
+            raise serializers.ValidationError('Provide note, is_favorite, or review_later.')
+        return attrs
 
 
 class PaperGenerateSerializer(serializers.Serializer):

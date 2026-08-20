@@ -39,7 +39,8 @@ CONTEXT_WORKBOOK_RE = re.compile(
 COMPETITION_RE = re.compile(r'(?:竞赛|奥林匹克)')
 ADAPTED_RE = re.compile(r'(?:改编|改造|变式)')
 OUTLINE_PREFIX_RE = re.compile(
-    r'^\s*(?:(?:\(?\d+\)?|[A-Za-z]|[ivxlcdmIVXLCDM]+)[.、)）]\s*)'
+    r'^\s*(?:(?:\(?\d+\)?|\(?[A-Za-z]{1,3}\)?|'
+    r'[ivxlcdmIVXLCDM]+|[一二三四五六七八九十]+)[.、)）]\s*)'
 )
 LEADER_RE = re.compile(
     r'\s*(?:>{2,}|[.．·…]{3,}|[\uE000-\uF8FF]{3,}|[-—–_]{4,}).*$',
@@ -65,6 +66,18 @@ SOURCE_LABELS = {
     'other_practice': 'Other practice',
     'unclassified': 'Unclassified',
 }
+
+REFERENCE_SOURCE_CATEGORIES = {
+    'past_exam',
+    'adapted_exam',
+    'mock_exam',
+    'workbook',
+    'competition',
+}
+REFERENCE_TOPIC_RE = re.compile(
+    r'^(?:\([A-Za-z]+\)\s*)?'
+    r'(?:姜晓千(?:真题同源)?(?:基础|强化)?|[\u4e00-\u9fff]{2,12}大学)$'
+)
 
 
 @dataclass(frozen=True)
@@ -143,6 +156,20 @@ def classify_source(label: str) -> SourceClassification:
     return SourceClassification(
         'unclassified', False, None, '', display, 'no reliable provenance marker', 0.35,
     )
+
+
+def is_question_reference_topic(title: str) -> bool:
+    """Return whether a TOC leaf names a question source rather than knowledge.
+
+    Some answer-book bookmarks contain one leaf per exercise, for example
+    ``880 ... #7`` or ``2019 Math I``.  They remain valuable provenance, but
+    using them as similarity topics creates one heatmap cell per question.
+    """
+
+    value = clean_topic_title(title)
+    if classify_source(value).category in REFERENCE_SOURCE_CATEGORIES:
+        return True
+    return bool(REFERENCE_TOPIC_RE.fullmatch(value))
 
 
 def classify_source_with_context(label: str, topic_title: str = '') -> SourceClassification:

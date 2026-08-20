@@ -15,6 +15,7 @@ from .cleaning import (
     classify_source_with_context,
     clean_document_title,
     clean_topic_title,
+    is_question_reference_topic,
 )
 from .asset_rerender import (
     CropLocation,
@@ -30,6 +31,7 @@ from .models import (
     QuestionAttempt,
     QuestionDocument,
     QuestionTopic,
+    QuestionUserState,
 )
 from .pdf_import import parse_question_pdf
 
@@ -231,6 +233,49 @@ class DrillApiTests(TestCase):
         detail = self.client.get(f'/api/drill/questions/{self.question.uuid}/').json()
         self.assertEqual(detail['confidence'], 75)
         self.assertEqual(detail['note'], '定义域边界需要复查')
+
+    def test_note_favorite_and_review_later_are_private_and_do_not_create_attempts(self):
+        endpoint = f'/api/drill/questions/{self.question.uuid}/state/'
+        self.client.force_login(self.alice)
+        response = self.client.post(
+            endpoint,
+            {'note': 'Check the boundary.', 'is_favorite': True, 'review_later': True},
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(QuestionAttempt.objects.filter(user=self.alice).count(), 0)
+        state = QuestionUserState.objects.get(user=self.alice, question=self.question)
+        self.assertTrue(state.is_favorite)
+        self.assertTrue(state.review_later)
+        self.assertEqual(state.note, 'Check the boundary.')
+        detail = self.client.get(f'/api/drill/questions/{self.question.uuid}/').json()
+        self.assertTrue(detail['is_favorite'])
+        self.assertTrue(detail['review_later'])
+        self.assertEqual(detail['note'], 'Check the boundary.')
+
+        favorites = self.client.get('/api/drill/collections/?kind=favorite').json()
+        queued = self.client.get('/api/drill/collections/?kind=review_later').json()
+        self.assertEqual([row['uuid'] for row in favorites['results']], [str(self.question.uuid)])
+        self.assertEqual([row['uuid'] for row in queued['results']], [str(self.question.uuid)])
+
+        self.client.force_login(self.bob)
+        self.assertEqual(self.client.get('/api/drill/collections/?kind=favorite').json()['count'], 0)
+        other_detail = self.client.get(f'/api/drill/questions/{self.question.uuid}/').json()
+        self.assertFalse(other_detail['is_favorite'])
+        self.assertEqual(other_detail['note'], '')
+
+    def test_feel_and_insight_are_user_scoped(self):
+        QuestionAttempt.objects.create(user=self.alice, question=self.question, result='correct')
+        QuestionAttempt.objects.create(user=self.bob, question=self.similar, result='review')
+        QuestionUserState.objects.create(user=self.alice, question=self.question, note='Recent note')
+        self.client.force_login(self.alice)
+        feel = self.client.get('/api/drill/feel/').json()['books'][0]
+        self.assertEqual(feel['feel_score'], 0)
+        self.assertEqual(feel['recent_attempts'], 1)
+        insight = self.client.get('/api/drill/insight/').json()
+        self.assertEqual(len(insight['recent_questions']), 1)
+        self.assertEqual(insight['recent_questions'][0]['uuid'], str(self.question.uuid))
+        self.assertEqual(insight['recent_notes'][0]['note'], 'Recent note')
 
     def test_attempt_confidence_validation_and_null_metadata(self):
         self.client.force_login(self.alice)
@@ -519,6 +564,9 @@ class QuestionBankCleaningTests(TestCase):
             clean_topic_title('11. 定积分应用 >> ................................. 66'),
             '定积分应用',
         )
+        self.assertEqual(clean_topic_title('(a)夹逼定理'), '夹逼定理')
+        self.assertEqual(clean_topic_title('(ab)定积分定义'), '定积分定义')
+        self.assertEqual(clean_topic_title('一、审敛'), '审敛')
         self.assertEqual(clean_document_title('【紧凑】多元微分.pdf'), '多元微分')
         self.assertEqual(clean_document_title('【A4 紧凑】一元微分做题本.pdf'), '一元微分')
         self.assertEqual(
@@ -537,6 +585,14 @@ class QuestionBankCleaningTests(TestCase):
         classification = classify_source('🐙 a)2024 数一')
         self.assertEqual(classification.category, 'past_exam')
         self.assertIn('🐙', classification.display_label)
+
+    def test_question_reference_topics_are_distinct_from_knowledge_topics(self):
+        self.assertTrue(is_question_reference_topic('26版660数二第509题'))
+        self.assertTrue(is_question_reference_topic('(c) 2019 数二'))
+        self.assertTrue(is_question_reference_topic('(b)姜晓千基础'))
+        self.assertTrue(is_question_reference_topic('清华大学'))
+        self.assertFalse(is_question_reference_topic('(a)夹逼定理'))
+        self.assertFalse(is_question_reference_topic('无穷小阶数'))
 
     def test_context_classification_never_promotes_unknown_practice_to_past_exam(self):
         mock = classify_source_with_context('25 八套数一二三第二套')
@@ -693,6 +749,60 @@ class AgentTopicClassificationTests(TestCase):
         self.assertEqual(self.question.similarity_topic, self.topic)
         self.assertEqual(self.question.topic_classification_source, 'answer-book-toc')
         self.assertGreaterEqual(self.question.topic_classification_confidence, 0.9)
+
+
+class TopicNormalizationCommandTests(TestCase):
+    def setUp(self):
+        self.document = QuestionDocument.objects.create(
+            source_id=998,
+            filename='limits.pdf',
+            title='Limits',
+            display_title='极限',
+            sha256='8' * 64,
+            page_count=1,
+        )
+        self.knowledge = QuestionTopic.objects.create(
+            source_id=9981,
+            document=self.document,
+            title='极限计算',
+            display_title='极限计算',
+            level=3,
+            sort_order=1,
+        )
+        self.reference = QuestionTopic.objects.create(
+            source_id=9982,
+            document=self.document,
+            parent=self.knowledge,
+            title='26版660数二第509题',
+            display_title='26版660数二第509题',
+            level=4,
+            sort_order=2,
+        )
+        self.question = Question.objects.create(
+            document=self.document,
+            topic=self.reference,
+            similarity_topic=self.reference,
+            question_order=1,
+            source_label='26版660数二第509题',
+            prompt_text='Question',
+            content_mode='image',
+            fingerprint='8' * 64,
+            topic_classification_source='answer-book-breadcrumb',
+        )
+
+    def test_normalization_is_dry_runnable_and_reversible(self):
+        call_command('normalize_question_topics', dry_run=True)
+        self.question.refresh_from_db()
+        self.assertEqual(self.question.similarity_topic, self.reference)
+
+        call_command('normalize_question_topics')
+        self.question.refresh_from_db()
+        self.assertEqual(self.question.topic, self.reference)
+        self.assertEqual(self.question.similarity_topic, self.knowledge)
+
+        call_command('normalize_question_topics', restore_source_topics=True)
+        self.question.refresh_from_db()
+        self.assertEqual(self.question.similarity_topic, self.reference)
 
 
 class SourceClassificationCommandTests(TestCase):

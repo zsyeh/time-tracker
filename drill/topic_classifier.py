@@ -2,7 +2,7 @@ import difflib
 import re
 from collections import defaultdict
 
-from .cleaning import clean_topic_title
+from .cleaning import clean_topic_title, is_question_reference_topic
 
 
 ANSWER_PDF_BY_DOCUMENT = {
@@ -56,9 +56,24 @@ class TopicMatcher:
     def __init__(self, topics):
         self.by_heading = defaultdict(list)
         self.paths = {}
+        self.by_id = {topic.pk: topic for topic in topics}
         for topic in topics:
             self.by_heading[heading_key(topic.display_title or topic.title)].append(topic)
             self.paths[topic.pk] = self._path(topic)
+
+    def knowledge_topic(self, topic):
+        """Promote an exercise-reference leaf to its nearest knowledge ancestor."""
+
+        seen = set()
+        while (
+            topic is not None
+            and topic.pk not in seen
+            and topic.parent_id
+            and is_question_reference_topic(topic.display_title or topic.title)
+        ):
+            seen.add(topic.pk)
+            topic = self.by_id.get(topic.parent_id) or topic.parent
+        return topic
 
     @staticmethod
     def _path(topic):
@@ -76,7 +91,7 @@ class TopicMatcher:
         for key in reversed(keys):
             candidates = self.by_heading.get(key, ())
             if len(candidates) == 1:
-                return candidates[0]
+                return self.knowledge_topic(candidates[0])
             if len(candidates) > 1:
                 ranked = sorted(
                     (
@@ -87,7 +102,7 @@ class TopicMatcher:
                     reverse=True,
                 )
                 if len(ranked) == 1 or ranked[0][0] > ranked[1][0]:
-                    return ranked[0][1]
+                    return self.knowledge_topic(ranked[0][1])
         return None
 
     def from_breadcrumb(self, source_label):

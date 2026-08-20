@@ -54,6 +54,18 @@ onMounted(() => {
         <RouterLink to="/paper" :class="{ active: route.name === 'paper' }">
           <i>03</i><span>Build Paper</span>
         </RouterLink>
+        <RouterLink to="/favorites" :class="{ active: route.name === 'favorites' }">
+          <i>04</i><span>Favorites</span>
+        </RouterLink>
+        <RouterLink to="/review-later" :class="{ active: route.name === 'review-later' }">
+          <i>05</i><span>Next Time</span>
+        </RouterLink>
+        <RouterLink to="/feel" :class="{ active: route.name === 'feel' }">
+          <i>06</i><span>Book Feel</span>
+        </RouterLink>
+        <RouterLink to="/insight" :class="{ active: route.name === 'insight' }">
+          <i>07</i><span>Insight</span>
+        </RouterLink>
       </nav>
       <div v-if="progress" class="sidebar-progress">
         <span>YOUR COVERAGE</span>

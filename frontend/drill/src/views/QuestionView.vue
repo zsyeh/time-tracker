@@ -9,7 +9,6 @@ import MarkdownAnswer from '../components/MarkdownAnswer.vue'
 const props = defineProps<{ uuid: string }>()
 const router = useRouter()
 const route = useRoute()
-const confidence = ref<number | null>(null)
 const note = ref('')
 
 function navigationQuery() {
@@ -29,6 +28,11 @@ function questionRouteQuery() {
     query.from = 'heatmap'
     query.heat_scope = String(route.query.heat_scope || 'all')
     query.heat_question = String(route.query.heat_question || props.uuid)
+  } else if (route.query.from === 'collection') {
+    query.from = 'collection'
+    query.collection = String(route.query.collection || 'favorite')
+  } else if (route.query.from === 'insight') {
+    query.from = 'insight'
   }
   return query
 }
@@ -47,6 +51,14 @@ function backToEntryPoint() {
     })
     return
   }
+  if (route.query.from === 'collection') {
+    void router.push(route.query.collection === 'review_later' ? '/review-later' : '/favorites')
+    return
+  }
+  if (route.query.from === 'insight') {
+    void router.push('/insight')
+    return
+  }
   void router.push({ path: '/practice', query: navigationQuery() })
 }
 
@@ -61,6 +73,8 @@ const saving = ref(false)
 const error = ref('')
 const similarOpen = ref(false)
 const answerOpen = ref(false)
+const stateSaving = ref(false)
+const noteSaved = ref(false)
 
 function questionAssets(loadedQuestion: QuestionDetail) {
   return loadedQuestion.question_assets || loadedQuestion.assets || []
@@ -88,7 +102,6 @@ let noteDraftDirty = false
 
 function useQuestion(loadedQuestion: QuestionDetail) {
   question.value = loadedQuestion
-  confidence.value = loadedQuestion.confidence
   const draft = cachedNoteDraft(props.uuid)
   note.value = draft === null ? loadedQuestion.note || '' : draft
 }
@@ -161,6 +174,8 @@ interface StateResponse {
   can_undo: boolean
   confidence: number | null
   note: string | null
+  is_favorite: boolean
+  review_later: boolean
 }
 
 function applyState(response: StateResponse) {
@@ -171,7 +186,9 @@ function applyState(response: StateResponse) {
   question.value.can_undo = response.can_undo
   question.value.confidence = response.confidence
   question.value.note = response.note
-  confidence.value = response.confidence
+  question.value.saved_note = response.note || ''
+  question.value.is_favorite = response.is_favorite
+  question.value.review_later = response.review_later
   note.value = response.note || ''
   patchQuestionState(props.uuid, response)
 }
@@ -179,13 +196,44 @@ function applyState(response: StateResponse) {
 async function record(result: 'correct' | 'review' | 'reset') {
   saving.value = true
   try {
-    const response = await post<StateResponse>(`/api/drill/questions/${props.uuid}/attempts/`, { result, confidence: confidence.value, note: note.value })
+    const response = await post<StateResponse>(`/api/drill/questions/${props.uuid}/attempts/`, { result, note: note.value })
     discardNoteDraft()
     applyState(response)
   } catch (reason) {
     error.value = (reason as Error).message
   } finally {
     saving.value = false
+  }
+}
+
+interface UserStateResponse {
+  note: string
+  is_favorite: boolean
+  review_later: boolean
+  updated_at: string
+}
+
+async function saveUserState(update: Partial<Pick<UserStateResponse, 'note' | 'is_favorite' | 'review_later'>>) {
+  if (!question.value) return
+  stateSaving.value = true
+  noteSaved.value = false
+  try {
+    const response = await post<UserStateResponse>(`/api/drill/questions/${props.uuid}/state/`, update)
+    question.value.note = response.note
+    question.value.saved_note = response.note
+    question.value.is_favorite = response.is_favorite
+    question.value.review_later = response.review_later
+    if ('note' in update) {
+      note.value = response.note
+      discardNoteDraft()
+      noteSaved.value = true
+      window.setTimeout(() => { noteSaved.value = false }, 1800)
+    }
+    patchQuestionState(props.uuid, response)
+  } catch (reason) {
+    error.value = (reason as Error).message
+  } finally {
+    stateSaving.value = false
   }
 }
 
@@ -242,7 +290,7 @@ onUnmounted(() => {
 
 <template>
   <section class="page question-page">
-    <button class="back-link" @click="backToEntryPoint">← {{ route.query.from === 'heatmap' ? 'Back to heatmap' : 'Question bank' }}</button>
+    <button class="back-link" @click="backToEntryPoint">← {{ route.query.from === 'heatmap' ? 'Back to heatmap' : route.query.from === 'collection' ? 'Back to saved questions' : route.query.from === 'insight' ? 'Back to insight' : 'Question bank' }}</button>
     <p v-if="error" class="error-state">{{ error }}</p>
     <div v-if="loading" class="question-skeleton">LOADING QUESTION…</div>
     <template v-else-if="question">
@@ -252,6 +300,11 @@ onUnmounted(() => {
       </header>
 
       <nav class="question-nav"><button :disabled="!question.previous_question_uuid" @click="question.previous_question_uuid && router.push({ path: `/practice/${question.previous_question_uuid}`, query: questionRouteQuery() })">← Previous</button><button :disabled="!question.next_question_uuid" @click="question.next_question_uuid && router.push({ path: `/practice/${question.next_question_uuid}`, query: questionRouteQuery() })">Next →</button></nav>
+
+      <div class="question-save-actions">
+        <button type="button" :class="{ active: question.is_favorite }" :disabled="stateSaving" @click="saveUserState({ is_favorite: !question.is_favorite })"><b>{{ question.is_favorite ? '★' : '☆' }}</b>{{ question.is_favorite ? 'Favorited' : 'Favorite' }}</button>
+        <button type="button" :class="{ active: question.review_later }" :disabled="stateSaving" @click="saveUserState({ review_later: !question.review_later })"><b>↻</b>{{ question.review_later ? 'Added to next time' : 'Add to next time' }}</button>
+      </div>
 
       <div v-if="questionAssets(question).length" class="asset-toolbar question-asset-toolbar">
         <button type="button" @click="downloadAssets('question', questionAssets(question))">Save question image</button>
@@ -278,7 +331,7 @@ onUnmounted(() => {
       </section>
 
       <div class="answer-bar">
-        <div><span>QUESTION STATE</span><small>Grey = not started, green = mastered, yellow = needs review. You can change, reset, or undo at any time.</small><label>Confidence <select v-model="confidence"><option :value="null">Not set</option><option v-for="value in [0, 25, 50, 75, 100]" :key="value" :value="value">{{ value }}/100</option></select></label><label>Note <textarea v-model="note" maxlength="2000" placeholder="Optional note" @input="cacheNoteDraft" /><small class="note-draft-hint">Unsaved text is kept in this browser for 3 days.</small></label></div>
+        <div><span>QUESTION STATE</span><small>Grey = not started, green = mastered, yellow = needs review. You can change, reset, or undo at any time.</small><label class="note-field">Note <textarea v-model="note" maxlength="2000" placeholder="Optional note" @input="cacheNoteDraft" /><span class="note-controls"><small class="note-draft-hint">Unsaved text is kept in this browser for 3 days.</small><button type="button" class="save-note" :disabled="stateSaving" @click="saveUserState({ note })">{{ noteSaved ? 'Saved ✓' : 'Save note' }}</button></span></label></div>
         <div><button class="review" :class="{ selected: question.state === 'review' }" :disabled="saving" @click="record('review')">Needs review</button><button class="correct" :class="{ selected: question.state === 'mastered' }" :disabled="saving" @click="record('correct')">Mastered</button><button :disabled="saving || question.state === 'unattempted'" @click="record('reset')">Reset</button><button :disabled="saving || !question.can_undo" @click="undo">Undo</button></div>
       </div>
 

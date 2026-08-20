@@ -220,6 +220,41 @@ class QuestionAttempt(models.Model):
         return f'{self.user_id} · {self.question_id} · {self.result}'
 
 
+class QuestionUserState(models.Model):
+    """Small, private per-user state that does not create an attempt."""
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='question_user_states',
+    )
+    question = models.ForeignKey(
+        Question,
+        on_delete=models.CASCADE,
+        related_name='user_states',
+    )
+    note = models.TextField(blank=True)
+    is_favorite = models.BooleanField(default=False, db_index=True)
+    review_later = models.BooleanField(default=False, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True, db_index=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=('user', 'question'),
+                name='drill_user_question_state_unique',
+            ),
+        ]
+        indexes = [
+            models.Index(fields=('user', 'is_favorite'), name='drill_state_favorite_idx'),
+            models.Index(fields=('user', 'review_later'), name='drill_state_review_idx'),
+        ]
+
+    def __str__(self):
+        return f'{self.user_id} · {self.question_id} · saved state'
+
+
 class DrillLoginHandoff(models.Model):
     """Short-lived, one-time authentication handoff from Timer to Drill."""
 

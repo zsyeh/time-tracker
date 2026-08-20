@@ -1,15 +1,24 @@
+import datetime
+
 from django.db import transaction
-from django.db.models import Count, OuterRef, Prefetch, Q, Subquery
+from django.db.models import Count, Exists, Max, OuterRef, Prefetch, Q, Subquery
 from django.http import Http404, HttpResponse, HttpResponseNotModified
 from django.shortcuts import get_object_or_404
+from django.utils import timezone
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .cleaning import SOURCE_LABELS
-from .models import Question, QuestionAsset, QuestionAttempt, QuestionDocument, QuestionTopic
-from .serializers import PaperGenerateSerializer, QuestionAttemptCreateSerializer, QuestionSummarySerializer
+from .models import (
+    Question, QuestionAsset, QuestionAttempt, QuestionDocument, QuestionTopic,
+    QuestionUserState,
+)
+from .serializers import (
+    PaperGenerateSerializer, QuestionAttemptCreateSerializer, QuestionSummarySerializer,
+    QuestionUserStateSerializer,
+)
 
 
 def question_progress(queryset, user):
@@ -17,6 +26,7 @@ def question_progress(queryset, user):
         user=user,
         question_id=OuterRef('pk'),
     ).order_by('-created_at', '-pk')
+    user_state = QuestionUserState.objects.filter(user=user, question_id=OuterRef('pk'))
     return queryset.annotate(
         attempt_count=Count(
             'attempts',
@@ -24,6 +34,9 @@ def question_progress(queryset, user):
         ),
         state_change_count=Count('attempts', filter=Q(attempts__user=user)),
         latest_result=Subquery(latest.values('result')[:1]),
+        is_favorite=Exists(user_state.filter(is_favorite=True)),
+        review_later=Exists(user_state.filter(review_later=True)),
+        saved_note=Subquery(user_state.values('note')[:1]),
     )
 
 
@@ -282,6 +295,12 @@ class DrillQuestionDetailView(APIView):
         position = next((index for index, item in enumerate(navigation) if item[0] == question.pk), -1)
         previous_question_uuid = navigation[position - 1][1] if position > 0 else None
         next_question_uuid = navigation[position + 1][1] if position >= 0 and position + 1 < len(navigation) else None
+        latest = QuestionAttempt.objects.filter(
+            user=request.user, question=question,
+        ).order_by('-created_at', '-pk').first()
+        user_state = QuestionUserState.objects.filter(
+            user=request.user, question=question,
+        ).first()
         payload = summary_payload(question)
         payload.update({
             'prompt_text': question.prompt_text,
@@ -290,10 +309,8 @@ class DrillQuestionDetailView(APIView):
             'formula_source': 'tex' if question.latex_text else 'original_pdf_crop',
             'document_author': question.document.author,
             'document_attribution': question.document.attribution,
-            'confidence': latest.confidence if (latest := QuestionAttempt.objects.filter(
-                user=request.user, question=question,
-            ).order_by('-created_at', '-pk').first()) else None,
-            'note': latest.note if latest else None,
+            'confidence': latest.confidence if latest else None,
+            'note': user_state.note if user_state else (latest.note if latest else ''),
             'next_question_uuid': str(next_question_uuid) if next_question_uuid else None,
             'previous_question_uuid': str(previous_question_uuid) if previous_question_uuid else None,
             'breadcrumbs': topic_breadcrumbs(question.topic),
@@ -399,13 +416,16 @@ class DrillQuestionAttemptView(APIView):
             state = 'mastered'
         else:
             state = 'unattempted'
+        user_state = QuestionUserState.objects.filter(user=user, question=question).first()
         return {
             'attempt_count': attempt_count,
             'latest_result': latest_result,
             'state': state,
             'can_undo': latest is not None,
             'confidence': latest.confidence if latest else None,
-            'note': latest.note if latest else None,
+            'note': user_state.note if user_state else (latest.note if latest else ''),
+            'is_favorite': user_state.is_favorite if user_state else False,
+            'review_later': user_state.review_later if user_state else False,
         }
 
     def post(self, request, question_uuid):
@@ -419,6 +439,12 @@ class DrillQuestionAttemptView(APIView):
             confidence=serializer.validated_data.get('confidence'),
             note=serializer.validated_data.get('note'),
         )
+        if serializer.validated_data.get('note') is not None:
+            QuestionUserState.objects.update_or_create(
+                user=request.user,
+                question=question,
+                defaults={'note': serializer.validated_data.get('note') or ''},
+            )
         return Response({
             'id': attempt.pk,
             'result': attempt.result,
@@ -440,6 +466,162 @@ class DrillQuestionAttemptView(APIView):
                 )
             latest.delete()
         return Response(self._payload(request.user, question))
+
+
+class DrillQuestionUserStateView(APIView):
+    def post(self, request, question_uuid):
+        serializer = QuestionUserStateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        question = get_object_or_404(Question, uuid=question_uuid, is_practiceable=True)
+        state, _ = QuestionUserState.objects.get_or_create(
+            user=request.user,
+            question=question,
+        )
+        for field, value in serializer.validated_data.items():
+            setattr(state, field, value)
+        state.save()
+        return Response({
+            'note': state.note,
+            'is_favorite': state.is_favorite,
+            'review_later': state.review_later,
+            'updated_at': state.updated_at,
+        })
+
+
+class DrillCollectionView(APIView):
+    def get(self, request):
+        kind = request.query_params.get('kind', 'favorite')
+        field = {'favorite': 'is_favorite', 'review_later': 'review_later'}.get(kind)
+        if field is None:
+            return Response({'detail': 'kind must be favorite or review_later.'}, status=400)
+        states = QuestionUserState.objects.filter(
+            user=request.user,
+            question__is_practiceable=True,
+            **{field: True},
+        ).order_by('-updated_at')
+        paginator = PageNumberPagination()
+        paginator.page_size = 24
+        state_page = paginator.paginate_queryset(states, request)
+        question_ids = [state.question_id for state in state_page]
+        questions = {
+            item.pk: item
+            for item in question_progress(
+                Question.objects.filter(pk__in=question_ids).select_related(
+                    'document', 'similarity_topic',
+                ),
+                request.user,
+            )
+        }
+        return Response({
+            'count': paginator.page.paginator.count,
+            'next': paginator.get_next_link(),
+            'previous': paginator.get_previous_link(),
+            'kind': kind,
+            'results': [summary_payload(questions[pk]) for pk in question_ids if pk in questions],
+        })
+
+
+class DrillBookFeelView(APIView):
+    def get(self, request):
+        documents = QuestionDocument.objects.filter(
+            questions__is_practiceable=True,
+        ).annotate(
+            question_count=Count('questions', filter=Q(questions__is_practiceable=True), distinct=True),
+            last_practiced_at=Max(
+                'questions__attempts__created_at',
+                filter=Q(
+                    questions__attempts__user=request.user,
+                    questions__attempts__result__in=('done', 'correct', 'review'),
+                ),
+            ),
+            recent_attempts=Count(
+                'questions__attempts',
+                filter=Q(
+                    questions__attempts__user=request.user,
+                    questions__attempts__result__in=('done', 'correct', 'review'),
+                    questions__attempts__created_at__gte=timezone.now() - datetime.timedelta(days=7),
+                ),
+            ),
+        ).distinct()
+        today = timezone.localdate()
+        books = []
+        for document in documents:
+            last_date = timezone.localtime(document.last_practiced_at).date() if document.last_practiced_at else None
+            days_idle = (today - last_date).days if last_date else None
+            books.append({
+                'document_id': document.pk,
+                'document': document.display_title or document.title,
+                'question_count': document.question_count,
+                'last_practiced_at': document.last_practiced_at,
+                'days_idle': days_idle,
+                'feel_score': -days_idle if days_idle is not None else None,
+                'recent_attempts': document.recent_attempts,
+            })
+        books.sort(key=lambda item: (item['feel_score'] is None, item['feel_score'] or 0, item['document']))
+        return Response({'books': books})
+
+
+class DrillInsightView(APIView):
+    def get(self, request):
+        recent_attempts = QuestionAttempt.objects.filter(
+            user=request.user,
+            result__in=('done', 'correct', 'review'),
+            question__is_practiceable=True,
+        ).select_related('question__document', 'question__similarity_topic')[:30]
+        saved_notes = QuestionUserState.objects.filter(
+            user=request.user,
+            question__is_practiceable=True,
+        ).exclude(note='').select_related('question__document', 'question__similarity_topic').order_by('-updated_at')[:30]
+        attempt_notes = QuestionAttempt.objects.filter(
+            user=request.user,
+            question__is_practiceable=True,
+        ).exclude(note__isnull=True).exclude(note='').select_related(
+            'question__document', 'question__similarity_topic',
+        ).order_by('-created_at', '-pk')[:30]
+
+        def question_identity(question):
+            return {
+                'uuid': str(question.uuid),
+                'label': question.display_label or question.source_label or f'Question {question.question_order}',
+                'document': question.document.display_title or question.document.title,
+                'topic': (
+                    question.similarity_topic.display_title or question.similarity_topic.title
+                ) if question.similarity_topic else 'General',
+            }
+
+        note_candidates = [
+            (item.updated_at, item.question, item.note)
+            for item in saved_notes
+        ] + [
+            (item.created_at, item.question, item.note)
+            for item in attempt_notes
+        ]
+        note_candidates.sort(key=lambda item: item[0], reverse=True)
+        note_payload = []
+        seen_question_ids = set()
+        for updated_at, question, note in note_candidates:
+            if question.pk in seen_question_ids:
+                continue
+            seen_question_ids.add(question.pk)
+            note_payload.append({
+                **question_identity(question),
+                'note': note,
+                'updated_at': updated_at,
+            })
+            if len(note_payload) == 30:
+                break
+
+        return Response({
+            'recent_questions': [
+                {
+                    **question_identity(item.question),
+                    'result': item.result,
+                    'created_at': item.created_at,
+                }
+                for item in recent_attempts
+            ],
+            'recent_notes': note_payload,
+        })
 
 
 class DrillHeatmapView(APIView):

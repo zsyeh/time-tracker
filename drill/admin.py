@@ -6,6 +6,7 @@ from .models import (
     QuestionAttempt,
     QuestionDocument,
     QuestionTopic,
+    QuestionUserState,
 )
 
 
@@ -48,6 +49,13 @@ class QuestionAttemptAdmin(admin.ModelAdmin):
     list_display = ('user', 'question', 'result', 'created_at')
     list_filter = ('result', 'created_at')
     search_fields = ('user__username', 'question__source_label')
+
+
+@admin.register(QuestionUserState)
+class QuestionUserStateAdmin(admin.ModelAdmin):
+    list_display = ('user', 'question', 'is_favorite', 'review_later', 'updated_at')
+    list_filter = ('is_favorite', 'review_later', 'updated_at')
+    search_fields = ('user__username', 'question__source_label', 'note')
 
 
 @admin.register(QuestionAsset)
