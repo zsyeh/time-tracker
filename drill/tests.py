@@ -10,6 +10,7 @@ from django.core.management import call_command
 from django.test import Client, SimpleTestCase, TestCase, override_settings
 
 from .cleaning import (
+    classify_record_kind,
     classify_source,
     classify_source_with_context,
     clean_document_title,
@@ -524,6 +525,33 @@ class QuestionBankCleaningTests(TestCase):
         self.assertEqual(generic.category, 'other_practice')
         self.assertFalse(generic.is_past_exam)
         self.assertLess(generic.confidence, workbook.confidence)
+
+    def test_short_outline_split_across_two_crops_is_not_practiceable(self):
+        kind, is_practiceable, _, confidence = classify_record_kind(
+            source_category='unclassified',
+            source_label='(2) 极坐标 >>',
+            prompt_text='(2) 极坐标 >>',
+            asset_count=2,
+            max_asset_height=244,
+        )
+
+        self.assertEqual(kind, 'section')
+        self.assertFalse(is_practiceable)
+        self.assertGreaterEqual(confidence, 0.9)
+
+    def test_known_linear_algebra_outline_is_not_practiceable_after_context_classification(self):
+        kind, is_practiceable, reason, confidence = classify_record_kind(
+            source_category='other_practice',
+            source_label='1.逆',
+            prompt_text='1.逆\na)具体矩阵求逆',
+            asset_count=1,
+            max_asset_height=147,
+        )
+
+        self.assertEqual(kind, 'section')
+        self.assertFalse(is_practiceable)
+        self.assertEqual(reason, 'recognized source-outline heading')
+        self.assertEqual(confidence, 0.99)
 
 
 class AgentSolutionImportTests(TestCase):

@@ -131,14 +131,20 @@ class Command(BaseCommand):
             selected_fields = [
                 'id', 'render_dpi', 'source_page_index',
                 'source_x0', 'source_y0', 'source_x1', 'source_y1',
+                'image_data',
             ]
-            if not formula_aware:
-                selected_fields.append('image_data')
             assets = QuestionAsset.objects.filter(
                 question__document=document,
             ).order_by('source_id').only(*selected_fields)
             for asset in assets.iterator(chunk_size=100):
-                if asset.source_page_index is not None:
+                has_complete_location = (
+                    asset.source_page_index is not None
+                    and asset.source_x0 is not None
+                    and asset.source_y0 is not None
+                    and asset.source_x1 is not None
+                    and asset.source_y1 is not None
+                )
+                if has_complete_location:
                     location = CropLocation(
                         asset.source_page_index,
                         asset.source_x0,

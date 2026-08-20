@@ -45,6 +45,15 @@ LEADER_RE = re.compile(
     r'\s*(?:>{2,}|[.．·…]{3,}|[\uE000-\uF8FF]{3,}|[-—–_]{4,}).*$',
 )
 EMOJI_RE = re.compile(r'[\U0001F300-\U0001FAFF]')
+KNOWN_OUTLINE_LABEL_RE = re.compile(
+    r'^\s*\d+[.、]\s*(?:'
+    r'逆|伴随矩阵|秩|高次幂|初等变换与初等矩阵|分块矩阵|矩阵分解|其他题型|'
+    r'向量有关计算|线性表示|向量组等价|线性相关与无关|极大无关组|'
+    r'解的判定|方程组求解|解的关系|矩阵方程|特征值特征向量|相似|'
+    r'相似对角化|实对称矩阵|标准型|规范形|求二次型的解|求二次型最值|'
+    r'正负惯性指数|合同|正定'
+    r')\s*$',
+)
 
 
 SOURCE_LABELS = {
@@ -223,12 +232,23 @@ def classify_record_kind(
     same_heading = bool(label) and (label == prompt or prompt.startswith(label))
     small_single_crop = asset_count == 1 and (max_asset_height or 10_000) <= 95
     has_outline_marker = '>>' in (source_label or '') or '>>' in (prompt_text or '')
+    short_multipage_heading = (
+        same_heading
+        and has_outline_marker
+        and len(prompt) <= 32
+        and asset_count <= 2
+    )
+
+    if KNOWN_OUTLINE_LABEL_RE.match(source_label or ''):
+        return 'section', False, 'recognized source-outline heading', 0.99
 
     if (
         source_category == 'unclassified'
         and same_heading
-        and small_single_crop
-        and (has_outline_marker or len(label) <= 32)
+        and (
+            (small_single_crop and (has_outline_marker or len(label) <= 32))
+            or short_multipage_heading
+        )
     ):
         return 'section', False, 'small source-outline row without question provenance', 0.93
     if asset_count >= 4:
