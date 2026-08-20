@@ -224,10 +224,10 @@ onUnmounted(() => {
 
       <nav class="question-nav"><button :disabled="!question.previous_question_uuid" @click="question.previous_question_uuid && router.push({ path: `/practice/${question.previous_question_uuid}`, query: navigationQuery() })">← Previous</button><button :disabled="!question.next_question_uuid" @click="question.next_question_uuid && router.push({ path: `/practice/${question.next_question_uuid}`, query: navigationQuery() })">Next →</button></nav>
 
+      <div v-if="questionAssets(question).length" class="asset-toolbar question-asset-toolbar">
+        <button type="button" @click="downloadAssets('question', questionAssets(question))">Save question image</button>
+      </div>
       <article class="question-canvas">
-        <div v-if="questionAssets(question).length" class="asset-toolbar">
-          <button type="button" @click="downloadAssets('question', questionAssets(question))">Save question image</button>
-        </div>
         <img v-for="asset in questionAssets(question)" :key="asset.id" :src="asset.url" :width="asset.width" :height="asset.height" alt="Question content" loading="eager" decoding="async" />
         <pre v-if="!questionAssets(question).length">{{ question.prompt_text }}</pre>
       </article>

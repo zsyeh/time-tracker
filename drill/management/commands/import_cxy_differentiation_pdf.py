@@ -20,7 +20,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('pdf_path', type=Path)
-        parser.add_argument('--dpi', type=int, default=180)
+        parser.add_argument('--dpi', type=int, default=200)
         parser.add_argument('--dry-run', action='store_true')
         parser.add_argument('--force', action='store_true')
 

@@ -4,6 +4,7 @@ import App from './App.vue'
 import HeatmapView from './views/HeatmapView.vue'
 import PracticeView from './views/PracticeView.vue'
 import QuestionView from './views/QuestionView.vue'
+import PaperView from './views/PaperView.vue'
 import './styles.css'
 
 const router = createRouter({
@@ -13,6 +14,7 @@ const router = createRouter({
     { path: '/practice', name: 'practice', component: PracticeView },
     { path: '/practice/:uuid', name: 'question', component: QuestionView, props: true },
     { path: '/heatmap', name: 'heatmap', component: HeatmapView },
+    { path: '/paper', name: 'paper', component: PaperView },
   ],
   scrollBehavior(_to, _from, savedPosition) {
     return savedPosition || { top: 0 }
@@ -20,4 +22,3 @@ const router = createRouter({
 })
 
 createApp(App).use(router).mount('#app')
-

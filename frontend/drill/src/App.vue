@@ -1,20 +1,23 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { api, post } from './lib/api'
+import { configureWorkspaceScope } from './lib/workspace'
 import type { Progress } from './types'
 
 const route = useRoute()
 const username = ref('')
 const progress = ref<Progress | null>(null)
+const sidebarOpen = ref(false)
+const landscape = ref(false)
+const identityReady = ref(false)
 
 async function loadIdentity() {
-  const [auth, data] = await Promise.all([
-    api<{ user: { username: string } }>('/api/auth/session/'),
-    api<Progress>('/api/drill/progress/'),
-  ])
+  const auth = await api<{ user: { username: string } }>('/api/auth/session/')
+  configureWorkspaceScope(auth.user.username)
   username.value = auth.user.username
-  progress.value = data
+  identityReady.value = true
+  progress.value = await api<Progress>('/api/drill/progress/')
 }
 
 async function logout() {
@@ -22,12 +25,22 @@ async function logout() {
   location.assign('/accounts/login/')
 }
 
-onMounted(() => void loadIdentity())
+watch(() => route.fullPath, () => {
+  if (landscape.value) sidebarOpen.value = false
+})
+
+onMounted(() => {
+  landscape.value = window.matchMedia('(orientation: landscape)').matches
+  void loadIdentity()
+})
 </script>
 
 <template>
-  <div class="drill-shell">
+  <div class="drill-shell" :class="{ 'drawer-open': sidebarOpen }">
+    <button class="drawer-toggle" type="button" aria-label="Open navigation" @click="sidebarOpen = true"><span /><span /><span /></button>
+    <button v-if="sidebarOpen" class="drawer-backdrop" type="button" aria-label="Close navigation" @click="sidebarOpen = false" />
     <aside class="drill-sidebar">
+      <button class="drawer-close" type="button" aria-label="Close navigation" @click="sidebarOpen = false">×</button>
       <RouterLink class="wordmark" to="/practice" aria-label="Drill home">
         <span>D</span><strong>DRILL</strong><small>QUESTION PRACTICE</small>
       </RouterLink>
@@ -37,6 +50,9 @@ onMounted(() => void loadIdentity())
         </RouterLink>
         <RouterLink to="/heatmap" :class="{ active: route.name === 'heatmap' }">
           <i>02</i><span>Past Papers</span>
+        </RouterLink>
+        <RouterLink to="/paper" :class="{ active: route.name === 'paper' }">
+          <i>03</i><span>Build Paper</span>
         </RouterLink>
       </nav>
       <div v-if="progress" class="sidebar-progress">
@@ -51,6 +67,6 @@ onMounted(() => void loadIdentity())
         <div><strong>{{ username }}</strong><button @click="logout">Sign out</button></div>
       </div>
     </aside>
-    <main><RouterView /></main>
+    <main><RouterView v-if="identityReady" /></main>
   </div>
 </template>

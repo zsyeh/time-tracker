@@ -1,4 +1,5 @@
 from functools import lru_cache
+import re
 from urllib.parse import urlencode, urlsplit
 
 from django.conf import settings
@@ -24,7 +25,13 @@ def _drill_html():
         metadata = index_path.stat()
     except OSError:
         return ''
-    return _read_drill_html(index_path, metadata.st_mtime_ns, metadata.st_size)
+    html = _read_drill_html(index_path, metadata.st_mtime_ns, metadata.st_size)
+    asset_version = str(metadata.st_mtime_ns)
+    return re.sub(
+        r'(/static/drill/assets/[^"\']+?)(?:\?[^"\']*)?(?=["\'])',
+        rf'\1?v={asset_version}',
+        html,
+    )
 
 
 def is_drill_host(request):

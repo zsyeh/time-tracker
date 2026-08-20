@@ -127,6 +127,96 @@ class DrillApiTests(TestCase):
         self.assertNotIn('prompt_text', first)
         self.assertNotIn('assets', first)
 
+    def test_generate_paper_respects_filters_and_is_not_persisted(self):
+        self.client.force_login(self.alice)
+        before = Question.objects.count()
+        response = self.client.post(
+            '/api/drill/papers/generate/',
+            {'count': 10, 'document': self.document.pk, 'source_category': 'past_exam'},
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertEqual(len(payload['questions']), 2)
+        self.assertTrue(all(item['source_category'] == 'past_exam' for item in payload['questions']))
+        self.assertEqual(Question.objects.count(), before)
+
+    def test_generate_unattempted_paper_is_user_scoped(self):
+        QuestionAttempt.objects.create(user=self.alice, question=self.question, result='correct')
+        QuestionAttempt.objects.create(user=self.bob, question=self.similar, result='correct')
+        self.client.force_login(self.alice)
+        response = self.client.post(
+            '/api/drill/papers/generate/',
+            {'count': 10, 'source_category': 'past_exam', 'unattempted': True},
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual([item['uuid'] for item in response.json()['questions']], [str(self.similar.uuid)])
+
+    def test_heatmap_supports_scopes_without_leaking_prompt(self):
+        self.client.force_login(self.alice)
+        mock = self.client.get('/api/drill/heatmap/?scope=mock_exam')
+        self.assertEqual(mock.status_code, 200)
+        self.assertEqual(mock.json()['question_count'], 0)
+        all_questions = self.client.get('/api/drill/heatmap/?scope=all').json()
+        self.assertEqual(all_questions['question_count'], 4)
+        self.assertNotIn('prompt_text', all_questions['groups'][0]['questions'][0])
+
+    def test_detail_navigation_respects_filter_context(self):
+        self.client.force_login(self.alice)
+        response = self.client.get(
+            f'/api/drill/questions/{self.question.uuid}/?topic={self.topic.pk}&source_category=past_exam',
+        )
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertIsNone(payload['previous_question_uuid'])
+        self.assertEqual(payload['next_question_uuid'], str(self.similar.uuid))
+
+    def test_detail_navigation_respects_search_and_unattempted_context(self):
+        QuestionAttempt.objects.create(user=self.alice, question=self.similar, result='correct')
+        self.client.force_login(self.alice)
+        response = self.client.get(
+            f'/api/drill/questions/{self.question.uuid}/?q=2024&unattempted=1',
+        )
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        self.assertIsNone(payload['previous_question_uuid'])
+        self.assertIsNone(payload['next_question_uuid'])
+
+    def test_attempt_metadata_is_optional_and_user_scoped(self):
+        self.client.force_login(self.alice)
+        response = self.client.post(
+            f'/api/drill/questions/{self.question.uuid}/attempts/',
+            {'result': 'review', 'confidence': 75, 'note': '定义域边界需要复查'},
+        )
+        self.assertEqual(response.status_code, 201)
+        attempt = QuestionAttempt.objects.get(user=self.alice, question=self.question)
+        self.assertEqual(attempt.confidence, 75)
+        self.assertEqual(attempt.note, '定义域边界需要复查')
+        self.assertEqual(response.json()['confidence'], 75)
+        detail = self.client.get(f'/api/drill/questions/{self.question.uuid}/').json()
+        self.assertEqual(detail['confidence'], 75)
+        self.assertEqual(detail['note'], '定义域边界需要复查')
+
+    def test_attempt_confidence_validation_and_null_metadata(self):
+        self.client.force_login(self.alice)
+        url = f'/api/drill/questions/{self.question.uuid}/attempts/'
+        for confidence in (-1, 101):
+            response = self.client.post(
+                url,
+                {'result': 'correct', 'confidence': confidence},
+                content_type='application/json',
+            )
+            self.assertEqual(response.status_code, 400)
+        response = self.client.post(
+            url,
+            {'result': 'correct', 'confidence': None, 'note': None},
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 201)
+        self.assertIsNone(response.json()['confidence'])
+        self.assertIsNone(response.json()['note'])
+
     def test_attempt_frequency_and_heatmap_are_private_per_user(self):
         QuestionAttempt.objects.create(user=self.alice, question=self.question, result='done')
         QuestionAttempt.objects.create(user=self.alice, question=self.question, result='correct')
@@ -207,6 +297,63 @@ class DrillApiTests(TestCase):
         self.assertEqual(asset.content, TEST_PNG)
         self.client.logout()
         self.assertEqual(self.client.get(f'/api/drill/assets/{self.asset.pk}/').status_code, 403)
+
+    def test_detail_separates_question_and_answer_assets_with_etag(self):
+        answer_data = b'\x89PNG\r\n\x1a\nanswer-image'
+        answer = QuestionAsset.objects.create(
+            source_id=2,
+            question=self.question,
+            asset_type='answer_crop',
+            sha256=hashlib.sha256(answer_data).hexdigest(),
+            image_data=answer_data,
+            width=120,
+            height=40,
+            source_page_index=3,
+            render_dpi=180,
+        )
+        self.client.force_login(self.alice)
+        payload = self.client.get(f'/api/drill/questions/{self.question.uuid}/').json()
+        self.assertTrue(payload['has_answer'])
+        self.assertEqual([item['id'] for item in payload['question_assets']], [self.asset.pk])
+        self.assertEqual([item['id'] for item in payload['answer_assets']], [answer.pk])
+        response = self.client.get(f'/api/drill/assets/{answer.pk}/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.content, answer_data)
+        self.assertEqual(
+            self.client.get(
+                f'/api/drill/assets/{answer.pk}/',
+                HTTP_IF_NONE_MATCH=response['ETag'],
+            ).status_code,
+            304,
+        )
+
+    def test_import_answer_crops_dry_run_does_not_write(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source = root / 'answers.pdf'
+            document = pymupdf.open()
+            page = document.new_page()
+            page.insert_text((50, 50), 'official answer')
+            document.save(source)
+            document.close()
+            mapping = root / 'mapping.jsonl'
+            mapping.write_text(json.dumps({
+                'question_uuid': str(self.question.uuid),
+                'source_pdf': source.name,
+                'page_indices': [1],
+                'crop_regions': [{
+                    'page_index': 1, 'x0': 0, 'y0': 0, 'x1': 595, 'y1': 842,
+                }],
+                'match_confidence': 1.0,
+                'review_required': False,
+            }) + '\n', encoding='utf-8')
+            call_command(
+                'import_answer_crops',
+                mapping=mapping,
+                source_root=root,
+                dry_run=True,
+            )
+        self.assertEqual(QuestionAsset.objects.filter(asset_type='answer_crop').count(), 0)
 
     def test_last_practiceable_question_has_no_next_question(self):
         self.client.force_login(self.alice)

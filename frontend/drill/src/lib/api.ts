@@ -3,7 +3,21 @@ function cookie(name: string): string {
   return item ? decodeURIComponent(item.split('=').slice(1).join('=')) : ''
 }
 
+const inflightGets = new Map<string, Promise<unknown>>()
+
 export async function api<T>(url: string, options: RequestInit = {}): Promise<T> {
+  const method = (options.method || 'GET').toUpperCase()
+  if (method === 'GET' && !options.signal) {
+    const existing = inflightGets.get(url)
+    if (existing) return existing as Promise<T>
+    const request = requestJson<T>(url, options).finally(() => inflightGets.delete(url))
+    inflightGets.set(url, request)
+    return request
+  }
+  return requestJson<T>(url, options)
+}
+
+async function requestJson<T>(url: string, options: RequestInit): Promise<T> {
   const headers = new Headers(options.headers)
   headers.set('Accept', 'application/json')
   if (options.body) headers.set('Content-Type', 'application/json')

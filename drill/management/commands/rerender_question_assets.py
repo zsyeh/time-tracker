@@ -21,7 +21,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('pdf_directory', type=Path)
-        parser.add_argument('--dpi', type=int, default=180)
+        parser.add_argument('--dpi', type=int, default=200)
         parser.add_argument('--source-dpi', type=int, default=108)
         parser.add_argument(
             '--source-id', type=int, action='append',

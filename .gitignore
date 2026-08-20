@@ -25,3 +25,8 @@ htmlcov/
 
 .DS_Store
 gunicorn.conf.py
+
+# Local production data, generated reports, and recoverable database dumps.
+backups/
+reports/
+work/

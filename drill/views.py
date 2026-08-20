@@ -9,7 +9,7 @@ from rest_framework.views import APIView
 
 from .cleaning import SOURCE_LABELS
 from .models import Question, QuestionAsset, QuestionAttempt, QuestionDocument, QuestionTopic
-from .serializers import QuestionAttemptCreateSerializer, QuestionSummarySerializer
+from .serializers import PaperGenerateSerializer, QuestionAttemptCreateSerializer, QuestionSummarySerializer
 
 
 def question_progress(queryset, user):
@@ -44,6 +44,43 @@ def topic_breadcrumbs(topic):
         })
         cursor = cursor.parent
     return list(reversed(result))
+
+
+def navigation_queryset(question, request):
+    queryset = Question.objects.filter(is_practiceable=True)
+    document_id = request.query_params.get('document')
+    topic_id = request.query_params.get('topic')
+    source_category = request.query_params.get('source_category', '').strip()
+    search = request.query_params.get('q', '').strip()
+    if document_id:
+        queryset = queryset.filter(document_id=document_id)
+    else:
+        queryset = queryset.filter(document_id=question.document_id)
+    if topic_id:
+        queryset = queryset.filter(similarity_topic_id=topic_id)
+    elif not source_category:
+        queryset = queryset.filter(source_category=question.source_category)
+    if source_category in {choice[0] for choice in Question.SOURCE_CATEGORY_CHOICES}:
+        queryset = queryset.filter(source_category=source_category)
+    if request.query_params.get('unattempted') == '1':
+        latest_state = QuestionAttempt.objects.filter(
+            user=request.user,
+            question_id=OuterRef('pk'),
+        ).order_by('-created_at', '-pk')
+        queryset = queryset.annotate(
+            navigation_latest_result=Subquery(latest_state.values('result')[:1]),
+        ).filter(
+            Q(navigation_latest_result__isnull=True) | Q(navigation_latest_result='reset'),
+        )
+    if search:
+        queryset = queryset.filter(
+            Q(source_label__icontains=search)
+            | Q(display_label__icontains=search)
+            | Q(prompt_text__icontains=search)
+            | Q(similarity_topic__title__icontains=search)
+            | Q(similarity_topic__display_title__icontains=search)
+        )
+    return queryset.order_by('document_id', 'question_order', 'pk')
 
 
 class DrillCatalogView(APIView):
@@ -187,10 +224,50 @@ class DrillQuestionListView(APIView):
         return paginator.get_paginated_response(QuestionSummarySerializer(page, many=True).data)
 
 
+class DrillPaperGenerateView(APIView):
+    """Generate an ephemeral, user-scoped paper without persisting duplicate rows."""
+
+    def post(self, request):
+        import secrets
+
+        serializer = PaperGenerateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        data = serializer.validated_data
+        queryset = Question.objects.filter(is_practiceable=True)
+        if data.get('document'):
+            queryset = queryset.filter(document_id=data['document'])
+        if data.get('topic'):
+            queryset = queryset.filter(similarity_topic_id=data['topic'])
+        if data.get('source_category'):
+            queryset = queryset.filter(source_category=data['source_category'])
+        if data['unattempted']:
+            attempted = QuestionAttempt.objects.filter(
+                user=request.user,
+                result__in=('done', 'correct', 'review'),
+            ).values_list('question_id', flat=True)
+            queryset = queryset.exclude(id__in=attempted)
+        candidate_ids = list(queryset.values_list('id', flat=True))
+        requested = data['count']
+        if not candidate_ids:
+            return Response({'detail': 'No questions match these filters.'}, status=400)
+        selected_ids = secrets.SystemRandom().sample(candidate_ids, min(requested, len(candidate_ids)))
+        questions = {
+            item.pk: item for item in question_progress(
+                Question.objects.filter(pk__in=selected_ids).select_related('document', 'similarity_topic'),
+                request.user,
+            )
+        }
+        return Response({
+            'requested_count': requested,
+            'available_count': len(candidate_ids),
+            'questions': [summary_payload(questions[pk]) for pk in selected_ids],
+        })
+
+
 class DrillQuestionDetailView(APIView):
     def get(self, request, question_uuid):
         assets = QuestionAsset.objects.only(
-            'id', 'question_id', 'position', 'width', 'height', 'mime_type', 'sha256',
+            'id', 'question_id', 'position', 'asset_type', 'width', 'height', 'mime_type', 'sha256',
         )
         question = get_object_or_404(
             question_progress(
@@ -201,12 +278,10 @@ class DrillQuestionDetailView(APIView):
             ),
             uuid=question_uuid,
         )
-        next_question_uuid = Question.objects.filter(
-            document_id=question.document_id,
-            is_practiceable=True,
-            source_category=question.source_category,
-            question_order__gt=question.question_order,
-        ).order_by('question_order').values_list('uuid', flat=True).first()
+        navigation = list(navigation_queryset(question, request).values_list('pk', 'uuid'))
+        position = next((index for index, item in enumerate(navigation) if item[0] == question.pk), -1)
+        previous_question_uuid = navigation[position - 1][1] if position > 0 else None
+        next_question_uuid = navigation[position + 1][1] if position >= 0 and position + 1 < len(navigation) else None
         payload = summary_payload(question)
         payload.update({
             'prompt_text': question.prompt_text,
@@ -215,8 +290,34 @@ class DrillQuestionDetailView(APIView):
             'formula_source': 'tex' if question.latex_text else 'original_pdf_crop',
             'document_author': question.document.author,
             'document_attribution': question.document.attribution,
+            'confidence': latest.confidence if (latest := QuestionAttempt.objects.filter(
+                user=request.user, question=question,
+            ).order_by('-created_at', '-pk').first()) else None,
+            'note': latest.note if latest else None,
             'next_question_uuid': str(next_question_uuid) if next_question_uuid else None,
+            'previous_question_uuid': str(previous_question_uuid) if previous_question_uuid else None,
             'breadcrumbs': topic_breadcrumbs(question.topic),
+            'question_assets': [
+                {
+                    'id': asset.pk,
+                    'url': f'/api/drill/assets/{asset.pk}/?v={asset.sha256[:16]}',
+                    'width': asset.width,
+                    'height': asset.height,
+                    'position': asset.position,
+                }
+                for asset in question.assets.all() if asset.asset_type == 'question_crop'
+            ],
+            'answer_assets': [
+                {
+                    'id': asset.pk,
+                    'url': f'/api/drill/assets/{asset.pk}/?v={asset.sha256[:16]}',
+                    'width': asset.width,
+                    'height': asset.height,
+                    'position': asset.position,
+                }
+                for asset in question.assets.all() if asset.asset_type == 'answer_crop'
+            ],
+            'has_answer': any(asset.asset_type == 'answer_crop' for asset in question.assets.all()),
             'assets': [
                 {
                     'id': asset.pk,
@@ -225,7 +326,7 @@ class DrillQuestionDetailView(APIView):
                     'height': asset.height,
                     'position': asset.position,
                 }
-                for asset in question.assets.all()
+                for asset in question.assets.all() if asset.asset_type == 'question_crop'
             ],
         })
         return Response(payload)
@@ -299,6 +400,8 @@ class DrillQuestionAttemptView(APIView):
             'latest_result': latest_result,
             'state': state,
             'can_undo': latest is not None,
+            'confidence': latest.confidence if latest else None,
+            'note': latest.note if latest else None,
         }
 
     def post(self, request, question_uuid):
@@ -309,6 +412,8 @@ class DrillQuestionAttemptView(APIView):
             user=request.user,
             question=question,
             result=serializer.validated_data['result'],
+            confidence=serializer.validated_data.get('confidence'),
+            note=serializer.validated_data.get('note'),
         )
         return Response({
             'id': attempt.pk,
@@ -335,9 +440,17 @@ class DrillQuestionAttemptView(APIView):
 
 class DrillHeatmapView(APIView):
     def get(self, request):
+        scope = request.query_params.get('scope', 'past_exam')
+        scope_filters = {
+            'past_exam': Q(source_category='past_exam'),
+            'mock_exam': Q(source_category='mock_exam'),
+            'all': Q(),
+        }
+        if scope not in scope_filters:
+            return Response({'detail': 'scope must be past_exam, mock_exam, or all.'}, status=400)
         questions = question_progress(
             Question.objects.filter(
-                source_category='past_exam', is_practiceable=True,
+                scope_filters[scope], is_practiceable=True,
             ).select_related(
                 'document', 'similarity_topic',
             ),
@@ -350,6 +463,7 @@ class DrillHeatmapView(APIView):
                 current = {
                     'document_id': question.document_id,
                     'document': question.document.display_title or question.document.title,
+                    'source_category': scope,
                     'questions': [],
                 }
                 groups.append(current)

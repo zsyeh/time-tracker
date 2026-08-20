@@ -151,3 +151,30 @@ labels unchanged.
 - `/api/drill/questions/<uuid>/similar/?kind=past_exam` — official past exams
 - `/api/drill/questions/<uuid>/similar/?kind=practice` — mock/workbook practice
 - `/api/drill/heatmap/` — compact per-user official-exam state cells
+- `POST /api/drill/papers/generate/` — ephemeral randomized paper (1–100 questions) filtered by book, topic, source and per-user unattempted state
+
+
+## 二期 Drill 工作区（安全优先）
+
+当前 Drill 前端以服务端为权威数据源，同时在浏览器保存轻量工作区状态：
+
+- Practice 状态使用版本化 key `drill.practice.state.v1` 保存 book、topic、source category、搜索词、页码和滚动位置；缓存仅包含筛选元数据，不保存题图或题面正文。
+- Catalog 使用版本化 `drill.taxonomy.v1` key 和 7 天 TTL 缓存；第二次进入可先显示本地 Book/Topic，再后台刷新。题目列表按用户与查询条件隔离在 5 分钟 session cache。
+- 搜索聚焦时先从本地 taxonomy 给出 Book/Topic 候选；单字符不触发远程全文搜索，稳定输入 2 个以上字符后使用 400ms 防抖、`AbortController`、sequence guard 和短期结果缓存。
+- Question 详情支持稳定的 previous/next 导航。进入题目时携带 Practice 的 `document`、`topic`、`source_category`、`q` 和 `unattempted` 查询上下文，导航优先留在当前集合；无上下文时使用稳定的 document/order 顺序。
+- Question detail 采用内存 + 用户隔离 session cache（24 小时 TTL、最多 120 项）并 stale-while-revalidate；next、previous 和空闲时 next+2 复用同一 inflight Promise，且只预热目标题首图的现有 HTTP immutable cache。
+- 横屏布局使用可收起的左侧抽屉导航，题目区域始终占满主视口；Question 页面不再提供 Focus 或 Browser Fullscreen 控件。题图保持原始比例，使用带 hash 的私有 immutable URL 缓存。
+- Heatmap 支持 `scope=past_exam`、`scope=mock_exam` 和 `scope=all`，compact cell 不返回 prompt 或图片；每个 scope 使用用户隔离的 2 分钟 session cache，Attempt 写入后立即失效。
+- Build Paper 通过 `/paper` 提供临时组卷；后端只返回轻量题目摘要，浏览器保存当前题目 UUID 列表，不为每份试卷创建数据库记录。
+- Attempt 继续区分题库识别置信度 `Question.confidence` 与用户作答置信度 `QuestionAttempt.confidence`；后者允许空值，范围为 0–100，并可绑定最多 2000 字符的批注。未提交 Note 以用户和题目 UUID 隔离在浏览器保存 3 天，成功提交后立即清除。
+- 题图导入和重渲染命令默认使用 200 DPI，仍支持 120–200 DPI 的显式 dry-run 与源 crop 校验；不会修改既有 Question UUID、Topic 或 Attempt。
+
+新增迁移：`drill.0006_questionattempt_metadata`。验证命令：
+
+```bash
+./.venv/bin/python manage.py makemigrations --check --dry-run
+cd frontend && npm run build:drill
+DATABASE_URL='' DATABASE_PATH=/tmp/time-tracker-drill-tests.sqlite3 ./.venv/bin/python manage.py test drill
+```
+
+生产数据库恢复前必须先执行 PostgreSQL dump，见 [`backup-and-restore.md`](backup-and-restore.md)。

@@ -44,3 +44,17 @@ class QuestionAttemptCreateSerializer(serializers.Serializer):
         choices=[choice[0] for choice in QuestionAttempt.RESULT_CHOICES],
         default='correct',
     )
+    confidence = serializers.IntegerField(min_value=0, max_value=100, required=False, allow_null=True)
+    note = serializers.CharField(max_length=2000, required=False, allow_blank=True, allow_null=True)
+
+
+class PaperGenerateSerializer(serializers.Serializer):
+    count = serializers.IntegerField(min_value=1, max_value=100, default=20)
+    document = serializers.IntegerField(required=False, allow_null=True, min_value=1)
+    topic = serializers.IntegerField(required=False, allow_null=True, min_value=1)
+    source_category = serializers.ChoiceField(
+        choices=[choice[0] for choice in Question.SOURCE_CATEGORY_CHOICES],
+        required=False,
+        allow_blank=True,
+    )
+    unattempted = serializers.BooleanField(required=False, default=False)

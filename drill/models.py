@@ -198,6 +198,8 @@ class QuestionAttempt(models.Model):
     )
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='attempts')
     result = models.CharField(max_length=12, choices=RESULT_CHOICES, default='done')
+    confidence = models.PositiveSmallIntegerField(null=True, blank=True)
+    note = models.TextField(null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now, db_index=True)
 
     class Meta:

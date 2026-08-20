@@ -15,6 +15,8 @@ export interface QuestionSummary {
   latest_result: 'done' | 'correct' | 'review' | 'reset' | null
   state: 'unattempted' | 'mastered' | 'review'
   can_undo: boolean
+  confidence?: number | null
+  note?: string | null
 }
 
 export interface QuestionDetail extends QuestionSummary {
@@ -24,9 +26,15 @@ export interface QuestionDetail extends QuestionSummary {
   formula_source: 'tex' | 'original_pdf_crop'
   document_author: string
   document_attribution: string
+  previous_question_uuid: string | null
   next_question_uuid: string | null
+  confidence: number | null
+  note: string | null
   breadcrumbs: Array<{ id: number; title: string; level: number }>
-  assets: Array<{ id: number; url: string; width: number; height: number; position: number }>
+  assets?: Array<{ id: number; url: string; width: number; height: number; position: number }>
+  question_assets?: Array<{ id: number; url: string; width: number; height: number; position: number }>
+  answer_assets: Array<{ id: number; url: string; width: number; height: number; position: number }>
+  has_answer: boolean
 }
 
 export interface Catalog {

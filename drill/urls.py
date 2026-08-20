@@ -4,6 +4,7 @@ from .views import (
     DrillAssetView,
     DrillCatalogView,
     DrillHeatmapView,
+    DrillPaperGenerateView,
     DrillProgressView,
     DrillQuestionAttemptView,
     DrillQuestionDetailView,
@@ -17,6 +18,7 @@ urlpatterns = [
     path('progress/', DrillProgressView.as_view(), name='drill_progress'),
     path('heatmap/', DrillHeatmapView.as_view(), name='drill_heatmap'),
     path('questions/', DrillQuestionListView.as_view(), name='drill_question_list'),
+    path('papers/generate/', DrillPaperGenerateView.as_view(), name='drill_paper_generate'),
     path(
         'questions/<uuid:question_uuid>/',
         DrillQuestionDetailView.as_view(),
@@ -34,4 +36,3 @@ urlpatterns = [
     ),
     path('assets/<int:asset_id>/', DrillAssetView.as_view(), name='drill_asset'),
 ]
-
