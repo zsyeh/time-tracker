@@ -8,6 +8,72 @@ from drill.models import Question
 
 MERGES = (
     {
+        'parent_uuid': uuid.UUID('3a7f1653-bb98-5536-8154-46c92e7a36bb'),
+        'continuation_uuid': uuid.UUID('7ec1d395-1957-5fd4-bee1-addee7a2fcc3'),
+        'label': '25 Li Yongle Set 6 · nilpotent chain',
+        'prompt': (
+            'Let A be a 3x3 matrix and let alpha_1, alpha_2, alpha_3 be three-dimensional '
+            'column vectors with alpha_3 nonzero. Suppose A alpha_1=alpha_2, '
+            'A alpha_2=alpha_3, and A alpha_3=0. Prove that alpha_1, alpha_2, alpha_3 '
+            'are linearly independent; find all eigenvalues and eigenvectors of A; '
+            'and compute det(A+2I).'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('78b97d07-0e51-5cec-9dbc-444a83355416'),
+        'continuation_uuid': uuid.UUID('b3bdf7cf-cd77-5193-bad4-a264ee7501a8'),
+        'label': '25 Zhang Yu Set 1 · adjugate matrix relation',
+        'prompt': (
+            'Let A be an invertible n x n matrix, let A* be its adjugate, and suppose '
+            'A B A* = 2 B A^{-1} + I. Prove that AB=BA; prove that A and B have '
+            'exactly the same eigenvectors; and determine whether A and B must be similar.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('78b97d07-0e51-5cec-9dbc-444a83355416'),
+        'continuation_uuid': uuid.UUID('8e16b3e3-4279-59b1-9e94-f599fc3182a7'),
+        'label': '25 Zhang Yu Set 1 · adjugate matrix relation',
+        'prompt': (
+            'Let A be an invertible n x n matrix, let A* be its adjugate, and suppose '
+            'A B A* = 2 B A^{-1} + I. Prove that AB=BA; prove that A and B have '
+            'exactly the same eigenvectors; and determine whether A and B must be similar.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('78b97d07-0e51-5cec-9dbc-444a83355416'),
+        'continuation_uuid': uuid.UUID('babb72e1-7707-5697-aaa3-133cf05d8147'),
+        'label': '25 Zhang Yu Set 1 · adjugate matrix relation',
+        'prompt': (
+            'Let A be an invertible n x n matrix, let A* be its adjugate, and suppose '
+            'A B A* = 2 B A^{-1} + I. Prove that AB=BA; prove that A and B have '
+            'exactly the same eigenvectors; and determine whether A and B must be similar.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('3a7f1653-bb98-5536-8154-46c92e7a36bb'),
+        'continuation_uuid': uuid.UUID('d68f1957-1bae-558b-8f16-515b380c6b0b'),
+        'label': '25 Li Yongle Set 6 · nilpotent chain',
+        'prompt': (
+            'Let A be a 3x3 matrix and let alpha_1, alpha_2, alpha_3 be three-dimensional '
+            'column vectors with alpha_3 nonzero. Suppose A alpha_1=alpha_2, '
+            'A alpha_2=alpha_3, and A alpha_3=0. Prove that alpha_1, alpha_2, alpha_3 '
+            'are linearly independent; find all eigenvalues and eigenvectors of A; '
+            'and compute det(A+2I).'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('3a7f1653-bb98-5536-8154-46c92e7a36bb'),
+        'continuation_uuid': uuid.UUID('4da15242-0415-5ced-a840-bd9a3501af31'),
+        'label': '25 Li Yongle Set 6 · nilpotent chain',
+        'prompt': (
+            'Let A be a 3x3 matrix and let alpha_1, alpha_2, alpha_3 be three-dimensional '
+            'column vectors with alpha_3 nonzero. Suppose A alpha_1=alpha_2, '
+            'A alpha_2=alpha_3, and A alpha_3=0. Prove that alpha_1, alpha_2, alpha_3 '
+            'are linearly independent; find all eigenvalues and eigenvectors of A; '
+            'and compute det(A+2I).'
+        ),
+    },
+    {
         'parent_uuid': uuid.UUID('1a4916e2-32d6-5042-8d9b-7e61311959b7'),
         'continuation_uuid': uuid.UUID('465ec07e-9563-536b-a7cb-5a67c298af84'),
         'label': '1999 Math II · parameterized linear dependence',
