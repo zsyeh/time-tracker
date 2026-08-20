@@ -8,6 +8,85 @@ from drill.models import Question
 
 MERGES = (
     {
+        'parent_uuid': uuid.UUID('11d6bd52-6039-5ffd-8a41-f73420f21225'),
+        'continuation_uuid': uuid.UUID('428de67b-94da-503e-8db6-d96ec0cc039d'),
+        'label': '2001 Math III · singular symmetric system',
+        'prompt': (
+            'Let A=[[1,1,a],[1,a,1],[a,1,1]] and beta=(1,1,-2)^T. '
+            'Given that Ax=beta is consistent but has more than one solution, '
+            'find a and an orthogonal Q such that Q^T A Q is diagonal.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('11d6bd52-6039-5ffd-8a41-f73420f21225'),
+        'continuation_uuid': uuid.UUID('9e888f44-0e71-56f5-9391-37a52a60deee'),
+        'label': '2001 Math III · singular symmetric system',
+        'prompt': (
+            'Let A=[[1,1,a],[1,a,1],[a,1,1]] and beta=(1,1,-2)^T. '
+            'Given that Ax=beta is consistent but has more than one solution, '
+            'find a and an orthogonal Q such that Q^T A Q is diagonal.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('0f559514-5189-5d0f-90fa-f537ae502fb2'),
+        'continuation_uuid': uuid.UUID('c8b75fbc-a779-5756-a44d-5012d490a7c4'),
+        'label': '1996 Math III · four-dimensional orthogonal reduction',
+        'prompt': (
+            'Let A=diag-block([[0,1],[1,0]],[[y,1],[1,2]]). Given that 3 is '
+            'an eigenvalue, find y; then find P such that (AP)^T(AP) is diagonal.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('0f559514-5189-5d0f-90fa-f537ae502fb2'),
+        'continuation_uuid': uuid.UUID('83f18f33-f21d-5cca-a90f-654f4c206c9f'),
+        'label': '1996 Math III · four-dimensional orthogonal reduction',
+        'prompt': (
+            'Let A=diag-block([[0,1],[1,0]],[[y,1],[1,2]]). Given that 3 is '
+            'an eigenvalue, find y; then find P such that (AP)^T(AP) is diagonal.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('7cc1fa0a-9b29-5e59-ae77-9b1cdfb960af'),
+        'continuation_uuid': uuid.UUID('392e166e-d014-5359-83c0-80771777a74d'),
+        'label': '1997 Math III · recover a symmetric matrix',
+        'prompt': (
+            'A real symmetric 3x3 matrix has eigenvalues 1,2,3. Eigenvectors for '
+            '1 and 2 are alpha_1=(-1,-1,1)^T and alpha_2=(1,-2,-1)^T. Find an '
+            'eigenvector for 3 and determine A.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('7cc1fa0a-9b29-5e59-ae77-9b1cdfb960af'),
+        'continuation_uuid': uuid.UUID('d727e2a8-4e0c-5221-baff-afe92ccb7477'),
+        'label': '1997 Math III · recover a symmetric matrix',
+        'prompt': (
+            'A real symmetric 3x3 matrix has eigenvalues 1,2,3. Eigenvectors for '
+            '1 and 2 are alpha_1=(-1,-1,1)^T and alpha_2=(1,-2,-1)^T. Find an '
+            'eigenvector for 3 and determine A.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('4b81fd06-4f4c-5851-afc2-2581c399f35e'),
+        'continuation_uuid': uuid.UUID('2a59308c-9fce-5212-a3aa-5f94d8ae88e0'),
+        'label': '25 Zhang Yu Set 5 · quadratic form from an eigenspace',
+        'prompt': (
+            'The real symmetric matrix of f=x^T A x has eigenvalues 1,1,-1, and '
+            'xi=(0,1,1)^T is an eigenvector for -1. Prove that every nonzero vector '
+            'orthogonal to xi is an eigenvector for 1, then find the expression for f.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('4b81fd06-4f4c-5851-afc2-2581c399f35e'),
+        'continuation_uuid': uuid.UUID('5698c74b-cf6d-57a7-88a1-f43df3923f66'),
+        'asset_limit': 1,
+        'label': '25 Zhang Yu Set 5 · quadratic form from an eigenspace',
+        'prompt': (
+            'The real symmetric matrix of f=x^T A x has eigenvalues 1,1,-1, and '
+            'xi=(0,1,1)^T is an eigenvector for -1. Prove that every nonzero vector '
+            'orthogonal to xi is an eigenvector for 1, then find the expression for f.'
+        ),
+    },
+    {
         'parent_uuid': uuid.UUID('02c7ab24-cd06-5d7d-962a-46a6505fb905'),
         'continuation_uuid': uuid.UUID('0bdfadb7-676a-5751-835a-5b1ddbd2a438'),
         'label': '25 Zhang Yu Set 7 · simultaneous diagonalization',
