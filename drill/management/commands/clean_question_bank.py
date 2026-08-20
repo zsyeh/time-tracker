@@ -7,6 +7,7 @@ from django.db.models import Count, Max
 from drill.cleaning import (
     classify_record_kind,
     classify_source,
+    classify_source_with_context,
     clean_document_title,
     clean_topic_title,
 )
@@ -39,7 +40,7 @@ class Command(BaseCommand):
                     topic.display_title = display_title
                     changed_topics.append(topic)
 
-            questions = Question.objects.annotate(
+            questions = Question.objects.select_related('topic').annotate(
                 cleanup_asset_count=Count('assets'),
                 cleanup_max_asset_height=Max('assets__height'),
             ).iterator(chunk_size=500)
@@ -52,6 +53,11 @@ class Command(BaseCommand):
                     asset_count=question.cleanup_asset_count,
                     max_asset_height=question.cleanup_max_asset_height,
                 )
+                if is_practiceable:
+                    topic_title = ''
+                    if question.topic_id:
+                        topic_title = question.topic.display_title or question.topic.title
+                    source = classify_source_with_context(question.source_label, topic_title)
                 values = {
                     'display_label': source.display_label,
                     'source_category': source.category,

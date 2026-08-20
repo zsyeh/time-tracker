@@ -28,14 +28,19 @@ class QuestionTopicAdmin(admin.ModelAdmin):
 class QuestionAdmin(admin.ModelAdmin):
     list_display = (
         'display_label', 'document', 'question_order', 'source_category',
-        'record_kind', 'is_practiceable', 'exam_year', 'content_mode',
+        'record_kind', 'is_practiceable', 'exam_year', 'content_mode', 'answer_source',
     )
     list_filter = (
         'document', 'source_category', 'record_kind', 'is_practiceable',
         'is_past_exam', 'exam_year', 'content_mode',
     )
-    search_fields = ('display_label', 'source_label', 'prompt_text', 'fingerprint')
-    readonly_fields = ('uuid', 'fingerprint')
+    search_fields = (
+        'display_label', 'source_label', 'prompt_text', 'answer_markdown', 'fingerprint',
+    )
+    readonly_fields = (
+        'uuid', 'fingerprint', 'answer_generated_at',
+        'topic_classification_source', 'topic_classification_confidence',
+    )
 
 
 @admin.register(QuestionAttempt)

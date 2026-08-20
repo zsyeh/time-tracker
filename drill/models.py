@@ -78,6 +78,7 @@ class Question(models.Model):
         ('mock_exam', 'Mock paper'),
         ('workbook', 'Workbook'),
         ('competition', 'Competition'),
+        ('other_practice', 'Other practice'),
         ('unclassified', 'Unclassified'),
     ]
     RECORD_KIND_CHOICES = [
@@ -132,6 +133,12 @@ class Question(models.Model):
     classification_confidence = models.FloatField(default=0.0)
     exam_year = models.PositiveSmallIntegerField(null=True, blank=True, db_index=True)
     exam_variant = models.CharField(max_length=16, blank=True)
+    answer_markdown = models.TextField(blank=True)
+    answer_source = models.CharField(max_length=32, blank=True)
+    answer_confidence = models.FloatField(null=True, blank=True)
+    answer_generated_at = models.DateTimeField(null=True, blank=True)
+    topic_classification_source = models.CharField(max_length=32, blank=True)
+    topic_classification_confidence = models.FloatField(null=True, blank=True)
 
     class Meta:
         ordering = ('document_id', 'question_order')

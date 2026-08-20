@@ -18,7 +18,10 @@ changing the WebAuthn RP ID or widening the session cookie to every subdomain.
   Separate display titles remove PDF table-of-contents leaders without replacing
   raw provenance.
 - `Question` has a deterministic UUID, a normalized similarity topic, a cleaned
-  display label, a provenance category, and a record kind.
+  display label, a provenance category, and a record kind. Questions without an
+  official answer crop may additionally hold a reviewed Agent solution as
+  Markdown/LaTeX, with its source, confidence, and generation time kept
+  separately from official source assets.
 - `QuestionAsset` stores the verified PNG bytes plus source PDF crop coordinates
   in PostgreSQL and is fetched only from an authenticated, immutable-cache
   endpoint. A content hash in the asset URL safely refreshes browser caches after
@@ -62,6 +65,51 @@ preserves the exact formula instead of presenting math OCR as trusted TeX. The
 question page labels the render source. Supplying the original `.tex` files (or a
 reviewed math-OCR export) is required before exact structured LaTeX can replace
 the crops safely.
+
+## Reviewed Agent solutions
+
+Agent solutions are not presented as official source answers. They appear only
+after the user opens the answer panel and reuse the Timer Session Markdown
+renderer, including KaTeX, code blocks, tables, enhanced Markdown, and the same
+DOMPurify policy. The renderer and its font/style chunk are lazy-loaded, so the
+question list and unopened question answers carry no Markdown-rendering cost.
+
+Import reviewed solutions by stable question UUID. The command validates every
+row before its transaction and refuses to overwrite an existing Agent solution
+unless explicitly requested:
+
+```bash
+python manage.py import_agent_solutions reviewed-solutions.jsonl --dry-run
+python manage.py import_agent_solutions reviewed-solutions.jsonl
+```
+
+Each JSONL row requires `question_uuid`, `answer_markdown`, and a numeric
+`confidence` from 0 to 1; `source` is optional. Review the original authenticated
+PDF crop rather than trusting damaged PDF text extraction.
+
+## Agent-assisted classification
+
+Visible practice rows use conservative source provenance. Strict official-exam
+recognition is unchanged. Unknown rows with explicit mock-set or workbook
+evidence in their source/topic context are promoted accordingly; everything
+else is labelled `Other practice`, never guessed to be an official past exam.
+The hidden source-outline rows remain `Unclassified` because they are not
+questions and do not appear in the practice catalog.
+
+```bash
+python manage.py classify_unclassified_sources --dry-run
+python manage.py classify_unclassified_sources
+```
+
+Recovered answer-book questions are assigned to existing knowledge topics from
+their preserved source page and the answer PDF bookmark ancestry. This avoids
+formula OCR and does not invent new topics. The source method and confidence
+are stored independently, and dry-run reports every unresolved UUID:
+
+```bash
+python manage.py classify_unassigned_topics /safe/answer-pdfs --dry-run
+python manage.py classify_unassigned_topics /safe/answer-pdfs
+```
 
 ## Reversible cleanup
 
@@ -145,6 +193,7 @@ labels unchanged.
 - `/api/drill/catalog/` — lightweight books and topics
 - `/api/drill/questions/` — paginated lightweight summaries
 - `/api/drill/questions/<uuid>/` — detail and authenticated asset URLs
+  plus an optional reviewed Agent Markdown solution
 - `POST /api/drill/questions/<uuid>/attempts/` — set mastered/review/reset state
 - `DELETE /api/drill/questions/<uuid>/attempts/` — undo the latest state change
 - `/api/drill/questions/<uuid>/similar/` — same-topic source counts
@@ -169,7 +218,9 @@ labels unchanged.
 - Attempt 继续区分题库识别置信度 `Question.confidence` 与用户作答置信度 `QuestionAttempt.confidence`；后者允许空值，范围为 0–100，并可绑定最多 2000 字符的批注。未提交 Note 以用户和题目 UUID 隔离在浏览器保存 3 天，成功提交后立即清除。
 - 题图导入和重渲染命令默认使用 200 DPI，仍支持 120–200 DPI 的显式 dry-run 与源 crop 校验；不会修改既有 Question UUID、Topic 或 Attempt。
 
-新增迁移：`drill.0006_questionattempt_metadata`。验证命令：
+新增迁移：`drill.0006_questionattempt_metadata`、
+`drill.0007_question_answer_confidence_and_more` 和
+`drill.0008_question_topic_classification_confidence_and_more`。验证命令：
 
 ```bash
 ./.venv/bin/python manage.py makemigrations --check --dry-run

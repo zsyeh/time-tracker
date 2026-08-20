@@ -318,6 +318,10 @@ class DrillQuestionDetailView(APIView):
                 for asset in question.assets.all() if asset.asset_type == 'answer_crop'
             ],
             'has_answer': any(asset.asset_type == 'answer_crop' for asset in question.assets.all()),
+            'answer_markdown': question.answer_markdown,
+            'answer_source': question.answer_source,
+            'answer_confidence': question.answer_confidence,
+            'answer_generated_at': question.answer_generated_at,
             'assets': [
                 {
                     'id': asset.pk,

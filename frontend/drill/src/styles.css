@@ -26,4 +26,6 @@
 @media(max-width:620px){.question-asset-toolbar{margin:12px 0 -18px}.asset-toolbar button{padding:6px 8px}}
 .paper-builder{grid-template-columns:90px minmax(150px,1fr) minmax(180px,1.4fr) minmax(150px,1fr) auto}
 .paper-page .result-meta button{border:0;background:transparent;color:#82918a;font:600 9px DM Mono,monospace;letter-spacing:.1em;cursor:pointer}
+.taxonomy-grid .category-other_practice strong{color:#9da7ad}.source-badge.category-other_practice{border-color:#41494e;color:#aeb7bc;background:#15191b}
+.agent-answer-block{margin-top:10px;padding:18px;border:1px solid #2d3833;border-radius:10px;background:#0e1412}.agent-answer-block>header{display:flex;justify-content:space-between;gap:12px;margin-bottom:16px;color:#8fa097;font:600 8px DM Mono,monospace;letter-spacing:.08em}.agent-answer-block>header strong{color:#9de2af}.agent-markdown-answer{border:0;background:transparent}.answer-rendering{color:#839088;font:9px DM Mono,monospace}
 @media(max-width:900px){.paper-builder{grid-template-columns:1fr 1fr}.paper-builder .toggle-row{grid-column:1/-1}}

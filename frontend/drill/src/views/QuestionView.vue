@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { api, post, remove } from '../lib/api'
 import { cachedNoteDraft, cachedQuestion, clearNoteDraft, fetchQuestion, patchQuestionState, prefetchQuestion, storeNoteDraft } from '../lib/workspace'
 import type { QuestionDetail, QuestionSummary } from '../types'
+import MarkdownAnswer from '../components/MarkdownAnswer.vue'
 
 const props = defineProps<{ uuid: string }>()
 const router = useRouter()
@@ -232,15 +233,19 @@ onUnmounted(() => {
         <pre v-if="!questionAssets(question).length">{{ question.prompt_text }}</pre>
       </article>
 
-      <section v-if="question.has_answer" class="official-answer">
+      <section v-if="question.has_answer || question.answer_markdown" class="official-answer">
         <button class="answer-toggle" :aria-expanded="answerOpen" @click="answerOpen = !answerOpen">
-          <span>{{ answerOpen ? 'Hide official answer' : 'Show official answer' }}</span><b>{{ answerOpen ? '↑' : '↓' }}</b>
+          <span>{{ answerOpen ? 'Hide answer' : (question.has_answer ? 'Show answer' : 'Show Agent solution') }}</span><b>{{ answerOpen ? '↑' : '↓' }}</b>
         </button>
         <div v-if="answerOpen" class="answer-canvas">
           <div v-if="question.answer_assets.length" class="asset-toolbar answer-asset-toolbar">
             <button type="button" @click="downloadAssets('answer', question.answer_assets)">Save answer image</button>
           </div>
           <img v-for="asset in question.answer_assets" :key="asset.id" :src="asset.url" :width="asset.width" :height="asset.height" alt="Official answer" loading="lazy" decoding="async" />
+          <div v-if="question.answer_markdown" class="agent-answer-block">
+            <header><strong>AGENT SOLUTION</strong><span>{{ question.answer_source || 'agent' }} · {{ question.answer_confidence === null ? 'unrated' : `${Math.round(question.answer_confidence * 100)}% confidence` }}</span></header>
+            <MarkdownAnswer :source="question.answer_markdown" />
+          </div>
         </div>
       </section>
 

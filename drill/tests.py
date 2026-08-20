@@ -9,7 +9,12 @@ from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.test import Client, SimpleTestCase, TestCase, override_settings
 
-from .cleaning import classify_source, clean_document_title, clean_topic_title
+from .cleaning import (
+    classify_source,
+    classify_source_with_context,
+    clean_document_title,
+    clean_topic_title,
+)
 from .asset_rerender import (
     CropLocation,
     FormulaAwareCropAdjuster,
@@ -126,6 +131,22 @@ class DrillApiTests(TestCase):
         first = response.json()['results'][0]
         self.assertNotIn('prompt_text', first)
         self.assertNotIn('assets', first)
+
+    def test_agent_markdown_solution_is_detail_only(self):
+        self.question.answer_markdown = '## Solution\n\n$\\int_0^1 x\\,dx=\\frac12$'
+        self.question.answer_source = 'codex-reviewed'
+        self.question.answer_confidence = 0.98
+        self.question.save(update_fields=(
+            'answer_markdown', 'answer_source', 'answer_confidence',
+        ))
+        self.client.force_login(self.alice)
+
+        listing = self.client.get('/api/drill/questions/').json()['results']
+        self.assertNotIn('answer_markdown', listing[0])
+        detail = self.client.get(f'/api/drill/questions/{self.question.uuid}/').json()
+        self.assertEqual(detail['answer_markdown'], self.question.answer_markdown)
+        self.assertEqual(detail['answer_source'], 'codex-reviewed')
+        self.assertEqual(detail['answer_confidence'], 0.98)
 
     def test_generate_paper_respects_filters_and_is_not_persisted(self):
         self.client.force_login(self.alice)
@@ -492,6 +513,172 @@ class QuestionBankCleaningTests(TestCase):
         classification = classify_source('🐙 a)2024 数一')
         self.assertEqual(classification.category, 'past_exam')
         self.assertIn('🐙', classification.display_label)
+
+    def test_context_classification_never_promotes_unknown_practice_to_past_exam(self):
+        mock = classify_source_with_context('25 八套数一二三第二套')
+        workbook = classify_source_with_context('0✖️∞', '26版660数一二三第7题')
+        generic = classify_source_with_context('求下列积分', '定积分计算')
+
+        self.assertEqual(mock.category, 'mock_exam')
+        self.assertEqual(workbook.category, 'workbook')
+        self.assertEqual(generic.category, 'other_practice')
+        self.assertFalse(generic.is_past_exam)
+        self.assertLess(generic.confidence, workbook.confidence)
+
+
+class AgentSolutionImportTests(TestCase):
+    def setUp(self):
+        document = QuestionDocument.objects.create(
+            source_id=991,
+            filename='agent.pdf',
+            title='Agent test',
+            sha256='9' * 64,
+            page_count=1,
+        )
+        self.question = Question.objects.create(
+            document=document,
+            question_order=1,
+            prompt_text='Solve x + 1 = 2.',
+            content_mode='text',
+            fingerprint='8' * 64,
+        )
+
+    def _fixture(self, directory):
+        path = Path(directory) / 'solutions.jsonl'
+        path.write_text(json.dumps({
+            'question_uuid': str(self.question.uuid),
+            'answer_markdown': '## Solution\n\n$x=1$.',
+            'confidence': 0.99,
+            'source': 'codex-reviewed',
+        }) + '\n', encoding='utf-8')
+        return path
+
+    def test_import_agent_solutions_dry_run_does_not_write(self):
+        with tempfile.TemporaryDirectory() as directory:
+            call_command('import_agent_solutions', self._fixture(directory), dry_run=True)
+        self.question.refresh_from_db()
+        self.assertEqual(self.question.answer_markdown, '')
+
+    def test_import_agent_solutions_writes_review_metadata(self):
+        with tempfile.TemporaryDirectory() as directory:
+            call_command('import_agent_solutions', self._fixture(directory))
+        self.question.refresh_from_db()
+        self.assertEqual(self.question.answer_source, 'codex-reviewed')
+        self.assertEqual(self.question.answer_confidence, 0.99)
+        self.assertIsNotNone(self.question.answer_generated_at)
+
+
+class AgentTopicClassificationTests(TestCase):
+    def setUp(self):
+        self.document = QuestionDocument.objects.create(
+            source_id=993,
+            filename='极限题目册.pdf',
+            title='Limits',
+            display_title='极限',
+            sha256='7' * 64,
+            page_count=1,
+        )
+        self.topic = QuestionTopic.objects.create(
+            source_id=993,
+            document=self.document,
+            title='求函数表达式',
+            display_title='求函数表达式',
+            level=3,
+            sort_order=1,
+        )
+        self.question = Question.objects.create(
+            document=self.document,
+            question_order=100001,
+            source_label='a) 880第一章基础填空1 >>',
+            prompt_text='Recovered question',
+            content_mode='image',
+            fingerprint='6' * 64,
+            classification_reason='recovered from answer-book pair',
+        )
+        QuestionAsset.objects.create(
+            source_id=993,
+            question=self.question,
+            asset_type='question_crop',
+            sha256=hashlib.sha256(TEST_PNG).hexdigest(),
+            image_data=TEST_PNG,
+            width=100,
+            height=30,
+            source_page_index=0,
+        )
+
+    def _answer_root(self, directory):
+        path = Path(directory) / '极限答案册.pdf'
+        pdf = pymupdf.open()
+        pdf.new_page()
+        pdf.set_toc([
+            [1, '1. 极限 >>', 1],
+            [2, 'A. 函数 >>', 1],
+            [3, '1. 求函数表达式 >>', 1],
+            [4, 'a) 880第一章基础填空1 >>', 1],
+        ])
+        pdf.save(path)
+        pdf.close()
+        for filename in (
+            '一元积分题库-答案.pdf', '线代1000题参考答案.pdf',
+            '二重积分题库答案.pdf', '多元微分大观-答案.pdf',
+            '微分方程大观-答案.pdf', '反常积分-答案.pdf',
+            '一元微分大观-答案.pdf',
+        ):
+            other = pymupdf.open()
+            other.new_page()
+            other.save(Path(directory) / filename)
+            other.close()
+        return Path(directory)
+
+    def test_answer_book_toc_classification_is_reversible_and_dry_runnable(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = self._answer_root(directory)
+            call_command('classify_unassigned_topics', root, dry_run=True)
+            self.question.refresh_from_db()
+            self.assertIsNone(self.question.similarity_topic_id)
+            call_command('classify_unassigned_topics', root)
+        self.question.refresh_from_db()
+        self.assertEqual(self.question.topic, self.topic)
+        self.assertEqual(self.question.similarity_topic, self.topic)
+        self.assertEqual(self.question.topic_classification_source, 'answer-book-toc')
+        self.assertGreaterEqual(self.question.topic_classification_confidence, 0.9)
+
+
+class SourceClassificationCommandTests(TestCase):
+    def test_only_visible_unclassified_questions_are_updated(self):
+        document = QuestionDocument.objects.create(
+            source_id=994,
+            filename='source.pdf',
+            title='Source',
+            display_title='Source',
+            sha256='5' * 64,
+            page_count=1,
+        )
+        question = Question.objects.create(
+            document=document,
+            question_order=1,
+            source_label='25 八套数一二三第二套',
+            content_mode='text',
+            fingerprint='4' * 64,
+        )
+        outline = Question.objects.create(
+            document=document,
+            question_order=2,
+            source_label='目录',
+            content_mode='text',
+            fingerprint='3' * 64,
+            record_kind='section',
+            is_practiceable=False,
+        )
+
+        call_command('classify_unclassified_sources', dry_run=True)
+        question.refresh_from_db()
+        self.assertEqual(question.source_category, 'unclassified')
+        call_command('classify_unclassified_sources')
+        question.refresh_from_db()
+        outline.refresh_from_db()
+        self.assertEqual(question.source_category, 'mock_exam')
+        self.assertEqual(outline.source_category, 'unclassified')
 
 
 class CxyDifferentiationPdfTests(SimpleTestCase):

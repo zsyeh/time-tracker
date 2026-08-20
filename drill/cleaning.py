@@ -28,6 +28,14 @@ WORKBOOK_RE = re.compile(
     r'综合选择|综合填空|综合解答|A\s*类|B\s*类|C\s*类|A\s*组|B\s*组|C\s*组))',
     re.IGNORECASE,
 )
+CONTEXT_MOCK_RE = re.compile(
+    r'(?:[二三四五六七八九十]|[2-9])套(?:数|试|卷)|'
+    r'(?:张宇|李林|李永乐|汤家凤|余丙森|合工大|超越|共创).{0,20}(?:四|五|六|八)套'
+)
+CONTEXT_WORKBOOK_RE = re.compile(
+    r'(?:0[.]?1w|魔法练习册|练习册|姜晓千|郭伟|线代\s*9\s*讲|张老师\s*1000|大观)',
+    re.IGNORECASE,
+)
 COMPETITION_RE = re.compile(r'(?:竞赛|奥林匹克)')
 ADAPTED_RE = re.compile(r'(?:改编|改造|变式)')
 OUTLINE_PREFIX_RE = re.compile(
@@ -45,6 +53,7 @@ SOURCE_LABELS = {
     'mock_exam': 'Mock paper',
     'workbook': 'Workbook',
     'competition': 'Competition',
+    'other_practice': 'Other practice',
     'unclassified': 'Unclassified',
 }
 
@@ -124,6 +133,35 @@ def classify_source(label: str) -> SourceClassification:
         )
     return SourceClassification(
         'unclassified', False, None, '', display, 'no reliable provenance marker', 0.35,
+    )
+
+
+def classify_source_with_context(label: str, topic_title: str = '') -> SourceClassification:
+    """Classify visible practice rows using reviewed contextual evidence.
+
+    This deliberately keeps the strict source-label classifier unchanged because
+    the PDF parser uses its unclassified result to distinguish labels from body
+    text. Context can promote an otherwise unknown row to a clearly marked mock
+    set or workbook; the honest fallback is Other practice, never Past exam.
+    """
+
+    strict = classify_source(label)
+    if strict.category != 'unclassified':
+        return strict
+    evidence = _normalize_space(f'{label} {topic_title}')
+    if CONTEXT_MOCK_RE.search(evidence):
+        return SourceClassification(
+            'mock_exam', False, None, '', strict.display_label,
+            'agent-reviewed mock-set marker in source/topic context', 0.92,
+        )
+    if WORKBOOK_RE.search(evidence) or CONTEXT_WORKBOOK_RE.search(evidence):
+        return SourceClassification(
+            'workbook', False, None, '', strict.display_label,
+            'agent-reviewed workbook marker in source/topic context', 0.93,
+        )
+    return SourceClassification(
+        'other_practice', False, None, '', strict.display_label,
+        'agent-reviewed fallback: practice source without official provenance', 0.68,
     )
 
 

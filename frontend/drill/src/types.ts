@@ -6,7 +6,7 @@ export interface QuestionSummary {
   display_label: string
   topic: string
   is_past_exam: boolean
-  source_category: 'past_exam' | 'adapted_exam' | 'mock_exam' | 'workbook' | 'competition' | 'unclassified'
+  source_category: 'past_exam' | 'adapted_exam' | 'mock_exam' | 'workbook' | 'competition' | 'other_practice' | 'unclassified'
   source_category_label: string
   record_kind: 'question' | 'grouped' | 'section'
   exam_year: number | null
@@ -35,6 +35,10 @@ export interface QuestionDetail extends QuestionSummary {
   question_assets?: Array<{ id: number; url: string; width: number; height: number; position: number }>
   answer_assets: Array<{ id: number; url: string; width: number; height: number; position: number }>
   has_answer: boolean
+  answer_markdown: string
+  answer_source: string
+  answer_confidence: number | null
+  answer_generated_at: string | null
 }
 
 export interface Catalog {
