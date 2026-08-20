@@ -8,6 +8,82 @@ from drill.models import Question
 
 MERGES = (
     {
+        'parent_uuid': uuid.UUID('809d8556-309b-500a-b791-bd5f7a6e059d'),
+        'continuation_uuid': uuid.UUID('bed0ceed-fe6a-5ebb-bab1-6eb7df041067'),
+        'label': '2023 Math I · congruent quadratic forms',
+        'prompt': (
+            'For f=x_1^2+2x_2^2+2x_3^2+2x_1x_2-2x_1x_3 and '
+            'g=y_1^2+y_2^2+y_3^2+2y_2y_3, find an invertible x=Py that '
+            'transforms f into g, and decide whether an orthogonal such '
+            'transformation exists.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('809d8556-309b-500a-b791-bd5f7a6e059d'),
+        'continuation_uuid': uuid.UUID('31060076-e037-5b62-9a13-4524fd16629f'),
+        'label': '2023 Math I · congruent quadratic forms',
+        'prompt': (
+            'For f=x_1^2+2x_2^2+2x_3^2+2x_1x_2-2x_1x_3 and '
+            'g=y_1^2+y_2^2+y_3^2+2y_2y_3, find an invertible x=Py that '
+            'transforms f into g, and decide whether an orthogonal such '
+            'transformation exists.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('45c49151-d260-53ac-a652-04c49b3a875c'),
+        'continuation_uuid': uuid.UUID('f4156f72-fe5a-575e-9c6b-8459e4fe8ac9'),
+        'label': '25 Zhang Yu Set 2 · generalized Rayleigh quotient',
+        'prompt': (
+            'Let f=(x_1-2x_2)^2 and '
+            'g=x_1^2-2x_1x_2+2x_2^2 with matrix B=[[1,-1],[-1,2]]. '
+            'Decide whether an invertible D with B=D^T D exists, then find '
+            'the maximum of f(x)/g(x) over nonzero x.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('45c49151-d260-53ac-a652-04c49b3a875c'),
+        'continuation_uuid': uuid.UUID('ffa801a0-037d-525f-bdad-dae5ca0e5edb'),
+        'asset_limit': 1,
+        'label': '25 Zhang Yu Set 2 · generalized Rayleigh quotient',
+        'prompt': (
+            'Let f=(x_1-2x_2)^2 and '
+            'g=x_1^2-2x_1x_2+2x_2^2 with matrix B=[[1,-1],[-1,2]]. '
+            'Decide whether an invertible D with B=D^T D exists, then find '
+            'the maximum of f(x)/g(x) over nonzero x.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('7219b757-44a6-500e-9838-aafb08c995d3'),
+        'continuation_uuid': uuid.UUID('5db728da-5096-5003-aa43-8337124716c8'),
+        'label': '25 Zhang Yu Set 3 · Householder quadratic form',
+        'prompt': (
+            'Let alpha=(1,1,1,1)^T/2 and A=I_4-2 alpha alpha^T. Find '
+            'orthogonal Q and diagonal Lambda with Q^T A Q=Lambda, then '
+            'decide whether x^T A x on R^4 has a maximum or minimum.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('7219b757-44a6-500e-9838-aafb08c995d3'),
+        'continuation_uuid': uuid.UUID('988d6ded-200c-5ece-a2c9-5397a75cfca0'),
+        'label': '25 Zhang Yu Set 3 · Householder quadratic form',
+        'prompt': (
+            'Let alpha=(1,1,1,1)^T/2 and A=I_4-2 alpha alpha^T. Find '
+            'orthogonal Q and diagonal Lambda with Q^T A Q=Lambda, then '
+            'decide whether x^T A x on R^4 has a maximum or minimum.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('282e704f-34d4-57e5-854f-1c0559ad180b'),
+        'continuation_uuid': uuid.UUID('77a2a59f-4a0f-5fe1-84d0-1c0c95f43459'),
+        'label': '25 Zhang Yu Set 8 · constrained quadratic-form maximum',
+        'prompt': (
+            'Let f=(x_1-x_2+x_3)^2+(x_2+x_3)^2+(x_1+a x_3)^2. '
+            'Given that f=0 has infinitely many solutions, find a. If eta_1 '
+            'is a unit eigenvector for the largest eigenvalue of the matrix of '
+            'f and x^T eta_1=0, find max f(x)/(x^T x).'
+        ),
+    },
+    {
         'parent_uuid': uuid.UUID('53e99f0a-0f0e-56af-9aa1-81e09429c404'),
         'continuation_uuid': uuid.UUID('1d9e96e7-8e9e-5039-ab8f-bd74e6e136ab'),
         'label': '2001 Math III · cofactor quadratic form',
