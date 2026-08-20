@@ -47,6 +47,15 @@ const loading = ref(true)
 const error = ref('')
 const scope = ref<'past_exam' | 'mock_exam' | 'all'>('all')
 const mode = ref<'topics' | 'questions'>('topics')
+const selectedTopic = ref<{
+  documentId: number
+  document: string
+  topic: HeatmapTopic
+} | null>(null)
+
+function previewTopic(documentId: number, document: string, topic: HeatmapTopic) {
+  selectedTopic.value = { documentId, document, topic }
+}
 
 function openTopic(documentId: number, topicId: number) {
   void router.push({
@@ -75,14 +84,17 @@ async function load() {
   }
 }
 
-watch([scope, mode], load)
+watch([scope, mode], () => {
+  selectedTopic.value = null
+  void load()
+})
 onMounted(load)
 </script>
 
 <template>
   <section class="page heatmap-page">
     <header class="page-header">
-      <div><span class="eyebrow">KNOWLEDGE COVERAGE</span><h1>One map for every book.</h1><p>Each cell is one indexed knowledge topic. Open a cell to practice that topic, or switch back to the question-level map.</p></div>
+      <div><span class="eyebrow">KNOWLEDGE COVERAGE</span><h1>One map for every book.</h1><p>Each cell is one indexed knowledge topic. Select a cell to preview it, then choose whether to enter that topic.</p></div>
       <div class="heat-controls">
         <div class="heat-mode"><button :class="{ active: mode === 'topics' }" @click="mode = 'topics'">Topics</button><button :class="{ active: mode === 'questions' }" @click="mode = 'questions'">Questions</button></div>
         <div class="heat-scope"><button :class="{ active: scope === 'all' }" @click="scope = 'all'">All</button><button :class="{ active: scope === 'past_exam' }" @click="scope = 'past_exam'">Past exams</button><button :class="{ active: scope === 'mock_exam' }" @click="scope = 'mock_exam'">Mock exams</button></div>
@@ -99,13 +111,32 @@ onMounted(load)
           <button
             v-for="item in group.topics"
             :key="item.topic_id"
-            :class="[`status-${item.state}`, `intensity-${item.intensity}`]"
+            :class="[`status-${item.state}`, `intensity-${item.intensity}`, { selected: selectedTopic?.topic.topic_id === item.topic_id }]"
+            :aria-pressed="selectedTopic?.topic.topic_id === item.topic_id"
             :aria-label="`${item.path}; ${item.coverage_percent}% covered; ${item.attempt_count} attempts`"
             :title="`${item.path} · ${item.attempted_question_count}/${item.question_count} covered · ${item.attempt_count} attempts${item.review_question_count ? ` · ${item.review_question_count} review` : ''}`"
-            @click="openTopic(group.document_id, item.topic_id)"
+            @click="previewTopic(group.document_id, group.document, item)"
           ><span>{{ item.topic }}</span></button>
         </div>
-        <div v-else class="question-heatmap">
+        <Transition name="topic-preview">
+          <aside v-if="mode === 'topics' && selectedTopic?.documentId === group.document_id" class="topic-preview-card">
+            <div class="topic-preview-copy">
+              <span>TOPIC PREVIEW · {{ selectedTopic.document }}</span>
+              <h3>{{ selectedTopic.topic.topic }}</h3>
+              <p>{{ selectedTopic.topic.path }}</p>
+            </div>
+            <dl>
+              <div><dt>COVERED</dt><dd>{{ selectedTopic.topic.attempted_question_count }} / {{ selectedTopic.topic.question_count }}</dd></div>
+              <div><dt>ATTEMPTS</dt><dd>{{ selectedTopic.topic.attempt_count }}</dd></div>
+              <div><dt>REVIEW</dt><dd>{{ selectedTopic.topic.review_question_count }}</dd></div>
+            </dl>
+            <div class="topic-preview-actions">
+              <button type="button" class="topic-preview-close" @click="selectedTopic = null">Close</button>
+              <button type="button" class="topic-preview-open" @click="openTopic(selectedTopic.documentId, selectedTopic.topic.topic_id)">Practice this topic <b>→</b></button>
+            </div>
+          </aside>
+        </Transition>
+        <div v-if="mode === 'questions'" class="question-heatmap">
           <button v-for="item in group.questions" :key="item.uuid" :class="`status-${item.state}`" :aria-label="`${item.label}; ${item.state}; ${item.attempt_count} attempts`" :title="`${item.label} · ${item.topic} · ${item.state} · ${item.attempt_count} attempts`" @click="router.push(`/practice/${item.uuid}`)"><span>{{ item.year }}</span></button>
         </div>
       </section>
