@@ -121,6 +121,8 @@ cd frontend && npm run build
 ./deploy/scripts/smoke-test.sh http://127.0.0.1:8000
 ```
 
+原生 VPS 部署使用 `deploy/scripts/deploy-native.sh`。该脚本会同时构建 Timer 与 Drill、执行数据库迁移、运行 `collectstatic`，然后重启服务并等待就绪。不要只运行 Vite 构建；否则新 HTML 可能引用尚未进入 `staticfiles` 的哈希资源，表现为前端白屏。
+
 安全优先：生产部署必须先使用 `scripts/postgres-backup.sh` 生成并校验 PostgreSQL dump，再停止 Web/MCP、执行迁移和前端构建，最后重启；需要回退时使用 `scripts/postgres-rollback.sh --yes`，脚本会先自动保留当前库备份。完整步骤见 [deployment](docs/deployment.md) 和 [backup/restore](docs/backup-and-restore.md)。2 GiB VPS 的实测 PostgreSQL 参数、磁盘预算、回滚和监控命令见 [PostgreSQL tuning report](docs/postgresql-tuning.md)；它是当前服务器基线，不是应当复制到其他机器的通用模板。
 
 ## 常用路由
