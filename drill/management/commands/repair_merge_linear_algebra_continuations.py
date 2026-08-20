@@ -8,6 +8,83 @@ from drill.models import Question
 
 MERGES = (
     {
+        'parent_uuid': uuid.UUID('53e99f0a-0f0e-56af-9aa1-81e09429c404'),
+        'continuation_uuid': uuid.UUID('1d9e96e7-8e9e-5039-ab8f-bd74e6e136ab'),
+        'label': '2001 Math III · cofactor quadratic form',
+        'prompt': (
+            'Let A be an invertible real symmetric n by n matrix, and let A_ij '
+            'denote the cofactor of a_ij. Write the quadratic form with '
+            'coefficients A_ij/det(A) in matrix form and prove that its matrix '
+            'is A^{-1}; then compare its canonical form with that of x^T A x.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('53e99f0a-0f0e-56af-9aa1-81e09429c404'),
+        'continuation_uuid': uuid.UUID('d8e5559c-32c4-5811-b8a2-96465b8f3cad'),
+        'label': '2001 Math III · cofactor quadratic form',
+        'prompt': (
+            'Let A be an invertible real symmetric n by n matrix, and let A_ij '
+            'denote the cofactor of a_ij. Write the quadratic form with '
+            'coefficients A_ij/det(A) in matrix form and prove that its matrix '
+            'is A^{-1}; then compare its canonical form with that of x^T A x.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('addc5255-83f7-5ca3-90ce-40dede2b70bd'),
+        'continuation_uuid': uuid.UUID('14edfe9f-651a-5293-85c8-d7a3c954f709'),
+        'label': '23 Zhang Yu Set 8 · recover a quadratic form',
+        'prompt': (
+            'A ternary quadratic form x^T A x has orthogonal standard form '
+            '2y_1^2-y_2^2-y_3^2 and adj(A) alpha=alpha for '
+            'alpha=(1,1,-1)^T. Find the orthogonal matrix Q, recover f, and '
+            'find an invertible x=Pz that gives its canonical form.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('addc5255-83f7-5ca3-90ce-40dede2b70bd'),
+        'continuation_uuid': uuid.UUID('28c80008-f2f6-5576-b7e1-63af21a4e698'),
+        'label': '23 Zhang Yu Set 8 · recover a quadratic form',
+        'prompt': (
+            'A ternary quadratic form x^T A x has orthogonal standard form '
+            '2y_1^2-y_2^2-y_3^2 and adj(A) alpha=alpha for '
+            'alpha=(1,1,-1)^T. Find the orthogonal matrix Q, recover f, and '
+            'find an invertible x=Pz that gives its canonical form.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('addc5255-83f7-5ca3-90ce-40dede2b70bd'),
+        'continuation_uuid': uuid.UUID('d93ad480-d137-57b9-9053-7611173cdecb'),
+        'label': '23 Zhang Yu Set 8 · recover a quadratic form',
+        'prompt': (
+            'A ternary quadratic form x^T A x has orthogonal standard form '
+            '2y_1^2-y_2^2-y_3^2 and adj(A) alpha=alpha for '
+            'alpha=(1,1,-1)^T. Find the orthogonal matrix Q, recover f, and '
+            'find an invertible x=Pz that gives its canonical form.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('f882636d-da3c-589d-b8af-eb3e428b241c'),
+        'continuation_uuid': uuid.UUID('a8035411-1ba9-5942-abb7-8f30307aa3ca'),
+        'activate_parent': True,
+        'label': '24 Zhang Yu Lecture 9 · matrix congruence',
+        'prompt': (
+            'Let A=[[2,2],[2,a]] and B=[[4,b],[3,1]], where a is a positive '
+            'integer. If an invertible C satisfies C^T A C=B, find a and b, '
+            'then find one such matrix C.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('f882636d-da3c-589d-b8af-eb3e428b241c'),
+        'continuation_uuid': uuid.UUID('a9c30cd9-ea79-5389-b876-aff84398fcf2'),
+        'activate_parent': True,
+        'label': '24 Zhang Yu Lecture 9 · matrix congruence',
+        'prompt': (
+            'Let A=[[2,2],[2,a]] and B=[[4,b],[3,1]], where a is a positive '
+            'integer. If an invertible C satisfies C^T A C=B, find a and b, '
+            'then find one such matrix C.'
+        ),
+    },
+    {
         'parent_uuid': uuid.UUID('ccd18ac8-d8f0-5a45-9be1-9da7c177ae8c'),
         'continuation_uuid': uuid.UUID('9163d89d-ac38-5b7d-af5a-ce7e32aafbfa'),
         'label': '23 Zhang Yu Set 4 · symmetric matrix powers',
@@ -490,8 +567,21 @@ class Command(BaseCommand):
             parent.prompt_text = spec['prompt']
             parent.content_mode = 'image'
             parent.confidence = 0.99
+            if spec.get('activate_parent'):
+                parent.is_practiceable = True
+                parent.record_kind = 'question'
             parent.save(
-                update_fields=('display_label', 'prompt_text', 'content_mode', 'confidence')
+                update_fields=(
+                    'display_label',
+                    'prompt_text',
+                    'content_mode',
+                    'confidence',
+                    *(
+                        ('is_practiceable', 'record_kind')
+                        if spec.get('activate_parent')
+                        else ()
+                    ),
+                )
             )
             continuation.is_practiceable = False
             continuation.record_kind = 'grouped'
