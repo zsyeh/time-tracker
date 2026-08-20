@@ -255,6 +255,45 @@ class QuestionUserState(models.Model):
         return f'{self.user_id} · {self.question_id} · saved state'
 
 
+class QuestionMarker(models.Model):
+    """Independent, combinable learning signals attached by one user."""
+
+    MARKER_CHOICES = [
+        ('overconfident', 'Overconfident'),
+        ('concept_gap', 'Concept Gap'),
+        ('rusty', 'Rusty'),
+        ('forgotten', 'Forgotten'),
+    ]
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='question_markers',
+    )
+    question = models.ForeignKey(
+        Question,
+        on_delete=models.CASCADE,
+        related_name='markers',
+    )
+    code = models.CharField(max_length=24, choices=MARKER_CHOICES)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=('user', 'question', 'code'),
+                name='drill_user_question_marker_unique',
+            ),
+        ]
+        indexes = [
+            models.Index(fields=('user', 'code'), name='drill_marker_user_code_idx'),
+            models.Index(fields=('user', 'question'), name='drill_marker_user_q_idx'),
+        ]
+
+    def __str__(self):
+        return f'{self.user_id} · {self.question_id} · {self.code}'
+
+
 class DrillLoginHandoff(models.Model):
     """Short-lived, one-time authentication handoff from Timer to Drill."""
 

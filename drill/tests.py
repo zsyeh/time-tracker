@@ -30,6 +30,7 @@ from .models import (
     QuestionAsset,
     QuestionAttempt,
     QuestionDocument,
+    QuestionMarker,
     QuestionTopic,
     QuestionUserState,
 )
@@ -276,6 +277,59 @@ class DrillApiTests(TestCase):
         self.assertEqual(len(insight['recent_questions']), 1)
         self.assertEqual(insight['recent_questions'][0]['uuid'], str(self.question.uuid))
         self.assertEqual(insight['recent_notes'][0]['note'], 'Recent note')
+
+    def test_multiple_learning_markers_coexist_with_state_and_are_private(self):
+        marker_url = f'/api/drill/questions/{self.question.uuid}/markers/'
+        self.client.force_login(self.alice)
+        response = self.client.post(
+            marker_url,
+            {'codes': ['overconfident', 'forgotten']},
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['markers'], ['overconfident', 'forgotten'])
+        self.client.post(
+            f'/api/drill/questions/{self.question.uuid}/attempts/',
+            {'result': 'correct'},
+            content_type='application/json',
+        )
+        detail = self.client.get(f'/api/drill/questions/{self.question.uuid}/').json()
+        self.assertEqual(detail['state'], 'mastered')
+        self.assertEqual(detail['markers'], ['overconfident', 'forgotten'])
+
+        filtered = self.client.get('/api/drill/questions/?marker=forgotten').json()['results']
+        self.assertEqual([row['uuid'] for row in filtered], [str(self.question.uuid)])
+        stats = {
+            row['code']: row['count']
+            for row in self.client.get('/api/drill/insight/').json()['marker_stats']
+        }
+        self.assertEqual(stats['overconfident'], 1)
+        self.assertEqual(stats['forgotten'], 1)
+        self.assertEqual(stats['rusty'], 0)
+
+        replaced = self.client.post(
+            marker_url,
+            {'codes': ['concept_gap', 'rusty']},
+            content_type='application/json',
+        )
+        self.assertEqual(replaced.json()['markers'], ['concept_gap', 'rusty'])
+        self.assertFalse(QuestionMarker.objects.filter(user=self.alice, code='forgotten').exists())
+
+        self.client.force_login(self.bob)
+        self.assertEqual(self.client.get('/api/drill/questions/?marker=rusty').json()['count'], 0)
+        self.assertEqual(
+            self.client.get(f'/api/drill/questions/{self.question.uuid}/').json()['markers'],
+            [],
+        )
+
+    def test_learning_marker_codes_are_validated(self):
+        self.client.force_login(self.alice)
+        response = self.client.post(
+            f'/api/drill/questions/{self.question.uuid}/markers/',
+            {'codes': ['not-a-marker']},
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 400)
 
     def test_attempt_confidence_validation_and_null_metadata(self):
         self.client.force_login(self.alice)

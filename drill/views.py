@@ -12,12 +12,12 @@ from rest_framework.views import APIView
 
 from .cleaning import SOURCE_LABELS
 from .models import (
-    Question, QuestionAsset, QuestionAttempt, QuestionDocument, QuestionTopic,
-    QuestionUserState,
+    Question, QuestionAsset, QuestionAttempt, QuestionDocument, QuestionMarker,
+    QuestionTopic, QuestionUserState,
 )
 from .serializers import (
-    PaperGenerateSerializer, QuestionAttemptCreateSerializer, QuestionSummarySerializer,
-    QuestionUserStateSerializer,
+    PaperGenerateSerializer, QuestionAttemptCreateSerializer,
+    QuestionMarkerSelectionSerializer, QuestionSummarySerializer, QuestionUserStateSerializer,
 )
 
 
@@ -65,6 +65,7 @@ def navigation_queryset(question, request):
     topic_id = request.query_params.get('topic')
     source_category = request.query_params.get('source_category', '').strip()
     search = request.query_params.get('q', '').strip()
+    marker = request.query_params.get('marker', '').strip()
     if document_id:
         queryset = queryset.filter(document_id=document_id)
     else:
@@ -93,6 +94,8 @@ def navigation_queryset(question, request):
             | Q(similarity_topic__title__icontains=search)
             | Q(similarity_topic__display_title__icontains=search)
         )
+    if marker in dict(QuestionMarker.MARKER_CHOICES):
+        queryset = queryset.filter(markers__user=request.user, markers__code=marker)
     return queryset.order_by('document_id', 'question_order', 'pk')
 
 
@@ -201,6 +204,7 @@ class DrillQuestionListView(APIView):
         topic_id = request.query_params.get('topic')
         source_category = request.query_params.get('source_category', '').strip()
         search = request.query_params.get('q', '').strip()
+        marker = request.query_params.get('marker', '').strip()
         if document_id:
             queryset = queryset.filter(document_id=document_id)
         if topic_id:
@@ -228,6 +232,8 @@ class DrillQuestionListView(APIView):
                 | Q(similarity_topic__title__icontains=search)
                 | Q(similarity_topic__display_title__icontains=search)
             )
+        if marker in dict(QuestionMarker.MARKER_CHOICES):
+            queryset = queryset.filter(markers__user=request.user, markers__code=marker)
         queryset = question_progress(queryset, request.user).order_by(
             'document_id', 'question_order',
         )
@@ -301,6 +307,9 @@ class DrillQuestionDetailView(APIView):
         user_state = QuestionUserState.objects.filter(
             user=request.user, question=question,
         ).first()
+        marker_codes = list(QuestionMarker.objects.filter(
+            user=request.user, question=question,
+        ).order_by('created_at', 'pk').values_list('code', flat=True))
         payload = summary_payload(question)
         payload.update({
             'prompt_text': question.prompt_text,
@@ -311,6 +320,7 @@ class DrillQuestionDetailView(APIView):
             'document_attribution': question.document.attribution,
             'confidence': latest.confidence if latest else None,
             'note': user_state.note if user_state else (latest.note if latest else ''),
+            'markers': marker_codes,
             'next_question_uuid': str(next_question_uuid) if next_question_uuid else None,
             'previous_question_uuid': str(previous_question_uuid) if previous_question_uuid else None,
             'breadcrumbs': topic_breadcrumbs(question.topic),
@@ -488,6 +498,25 @@ class DrillQuestionUserStateView(APIView):
         })
 
 
+class DrillQuestionMarkerView(APIView):
+    def post(self, request, question_uuid):
+        serializer = QuestionMarkerSelectionSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        question = get_object_or_404(Question, uuid=question_uuid, is_practiceable=True)
+        requested_codes = serializer.validated_data['codes']
+        with transaction.atomic():
+            current = QuestionMarker.objects.select_for_update().filter(
+                user=request.user, question=question,
+            )
+            current.exclude(code__in=requested_codes).delete()
+            existing = set(current.values_list('code', flat=True))
+            QuestionMarker.objects.bulk_create([
+                QuestionMarker(user=request.user, question=question, code=code)
+                for code in requested_codes if code not in existing
+            ])
+        return Response({'markers': requested_codes})
+
+
 class DrillCollectionView(APIView):
     def get(self, request):
         kind = request.query_params.get('kind', 'favorite')
@@ -611,6 +640,14 @@ class DrillInsightView(APIView):
             if len(note_payload) == 30:
                 break
 
+        marker_counts = {
+            row['code']: row['count']
+            for row in QuestionMarker.objects.filter(
+                user=request.user,
+                question__is_practiceable=True,
+            ).values('code').annotate(count=Count('question', distinct=True))
+        }
+
         return Response({
             'recent_questions': [
                 {
@@ -621,6 +658,10 @@ class DrillInsightView(APIView):
                 for item in recent_attempts
             ],
             'recent_notes': note_payload,
+            'marker_stats': [
+                {'code': code, 'label': label, 'count': marker_counts.get(code, 0)}
+                for code, label in QuestionMarker.MARKER_CHOICES
+            ],
         })
 
 

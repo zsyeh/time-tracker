@@ -33,9 +33,12 @@ onMounted(async () => {
     <header class="page-header"><div><span class="eyebrow">YOUR ACTIVITY</span><h1>Insight</h1><p>Recent questions and notes, without turning practice into a dashboard.</p></div></header>
     <p v-if="error" class="error-state">{{ error }}</p>
     <div v-else-if="loading" class="question-skeleton">LOADING INSIGHT…</div>
-    <div v-else class="insight-grid">
+    <template v-else>
+    <section class="marker-overview"><header><div><span class="eyebrow">LEARNING SIGNALS</span><h2>Marker overview</h2></div><small>Counts across your full question history.</small></header><div><button v-for="marker in data?.marker_stats" :key="marker.code" :disabled="!marker.count" @click="router.push({ path: '/practice', query: { marker: marker.code } })"><span>{{ marker.label }}</span><strong>{{ marker.count }}</strong><small>View questions →</small></button></div></section>
+    <div class="insight-grid">
       <section><header><span>RECENT QUESTIONS</span><strong>{{ data?.recent_questions.length || 0 }}</strong></header><div class="insight-list"><button v-for="item in data?.recent_questions" :key="`${item.uuid}-${item.created_at}`" @click="openQuestion(item.uuid)"><span><strong>{{ item.label }}</strong><small>{{ item.document }} · {{ item.topic }}</small></span><span><em :class="`text-${item.result === 'review' ? 'review' : 'mastered'}`">{{ item.result }}</em><time>{{ formatTime(item.created_at) }}</time></span></button><p v-if="!data?.recent_questions.length">No recent practice yet.</p></div></section>
       <section><header><span>RECENT NOTES</span><strong>{{ data?.recent_notes.length || 0 }}</strong></header><div class="insight-list note-list"><button v-for="item in data?.recent_notes" :key="item.uuid" @click="openQuestion(item.uuid)"><span><strong>{{ item.label }}</strong><small>{{ item.document }} · {{ item.topic }}</small><p>{{ item.note }}</p></span><time>{{ formatTime(item.updated_at) }}</time></button><p v-if="!data?.recent_notes.length">No saved notes yet.</p></div></section>
     </div>
+    </template>
   </section>
 </template>

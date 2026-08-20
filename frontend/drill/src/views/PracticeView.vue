@@ -21,6 +21,7 @@ const topicId = ref('')
 const search = ref('')
 const sourceCategory = ref('')
 const unattempted = ref(false)
+const markerCode = ref('')
 const page = ref(1)
 const lastQuestionUuid = ref('')
 let searchTimer = 0
@@ -60,6 +61,7 @@ function queryParams() {
   if (search.value.trim().length >= 2) params.set('q', search.value.trim())
   if (sourceCategory.value) params.set('source_category', sourceCategory.value)
   if (unattempted.value) params.set('unattempted', '1')
+  if (markerCode.value) params.set('marker', markerCode.value)
   return params
 }
 
@@ -127,7 +129,7 @@ watch(documentId, () => {
   if (!topics.value.some((topic) => String(topic.id) === topicId.value)) topicId.value = ''
   filtersChanged()
 })
-watch([topicId, sourceCategory, unattempted], filtersChanged)
+watch([topicId, sourceCategory, unattempted, markerCode], filtersChanged)
 watch(page, persistState)
 watch(search, persistState)
 
@@ -165,6 +167,7 @@ onMounted(async () => {
     if (route.query.topic !== undefined) topicId.value = String(route.query.topic || '')
     if (route.query.source_category !== undefined) sourceCategory.value = String(route.query.source_category || '')
     if (route.query.q !== undefined) search.value = String(route.query.q || '')
+    if (route.query.marker !== undefined) markerCode.value = String(route.query.marker || '')
     restoring = false
     catalog.value = cachedCatalog() || await fetchCatalog()
     await loadQuestions()
@@ -199,6 +202,8 @@ onUnmounted(() => {
     </div>
 
     <aside v-if="catalog.coverage.missing.length" class="source-gap"><strong>SOURCE GAP</strong><span>{{ catalog.coverage.missing.join(', ') }} is not present in <code>Downloads.7z</code>. It is not hidden by a filter.</span></aside>
+
+    <aside v-if="markerCode" class="marker-filter"><span>MARKER</span><strong>{{ markerCode === 'overconfident' ? 'Overconfident' : markerCode === 'concept_gap' ? 'Concept Gap' : markerCode === 'rusty' ? 'Rusty' : 'Forgotten' }}</strong><button type="button" @click="markerCode = ''">Clear</button></aside>
 
     <div class="filter-panel">
       <label class="search-field"><span>SEARCH</span><input v-model="search" placeholder="Source, topic, or question text" @focus="searchFocused = true" @blur="closeCandidatesLater" @input="searchChanged" /><div v-if="localCandidates.length" class="local-candidates"><button v-for="candidate in localCandidates" :key="`${candidate.kind}-${candidate.value}`" type="button" @mousedown.prevent="chooseCandidate(candidate)"><small>LOCAL {{ candidate.kind.toUpperCase() }}</small><strong>{{ candidate.label }}</strong></button></div></label>

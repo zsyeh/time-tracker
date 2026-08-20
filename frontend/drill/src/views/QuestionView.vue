@@ -3,17 +3,23 @@ import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api, post, remove } from '../lib/api'
 import { cachedNoteDraft, cachedQuestion, clearNoteDraft, fetchQuestion, patchQuestionState, prefetchQuestion, storeNoteDraft } from '../lib/workspace'
-import type { QuestionDetail, QuestionSummary } from '../types'
+import type { QuestionDetail, QuestionMarkerCode, QuestionSummary } from '../types'
 import MarkdownAnswer from '../components/MarkdownAnswer.vue'
 
 const props = defineProps<{ uuid: string }>()
 const router = useRouter()
 const route = useRoute()
 const note = ref('')
+const markerOptions: Array<{ code: QuestionMarkerCode; label: string }> = [
+  { code: 'overconfident', label: 'Overconfident' },
+  { code: 'concept_gap', label: 'Concept Gap' },
+  { code: 'rusty', label: 'Rusty' },
+  { code: 'forgotten', label: 'Forgotten' },
+]
 
 function navigationQuery() {
   const query = router.currentRoute.value.query
-  return Object.fromEntries(['document', 'topic', 'source_category', 'q', 'unattempted']
+  return Object.fromEntries(['document', 'topic', 'source_category', 'q', 'unattempted', 'marker']
     .filter((key) => query[key] !== undefined && query[key] !== '')
     .map((key) => [key, String(query[key])]))
 }
@@ -75,6 +81,7 @@ const similarOpen = ref(false)
 const answerOpen = ref(false)
 const stateSaving = ref(false)
 const noteSaved = ref(false)
+const markerSaving = ref(false)
 
 function questionAssets(loadedQuestion: QuestionDetail) {
   return loadedQuestion.question_assets || loadedQuestion.assets || []
@@ -101,7 +108,7 @@ let noteDraftTimer = 0
 let noteDraftDirty = false
 
 function useQuestion(loadedQuestion: QuestionDetail) {
-  question.value = loadedQuestion
+  question.value = { ...loadedQuestion, markers: loadedQuestion.markers || [] }
   const draft = cachedNoteDraft(props.uuid)
   note.value = draft === null ? loadedQuestion.note || '' : draft
 }
@@ -237,6 +244,28 @@ async function saveUserState(update: Partial<Pick<UserStateResponse, 'note' | 'i
   }
 }
 
+async function saveMarkers(codes: QuestionMarkerCode[]) {
+  if (!question.value) return
+  markerSaving.value = true
+  try {
+    const response = await post<{ markers: QuestionMarkerCode[] }>(`/api/drill/questions/${props.uuid}/markers/`, { codes })
+    question.value.markers = response.markers
+    patchQuestionState(props.uuid, { markers: response.markers })
+  } catch (reason) {
+    error.value = (reason as Error).message
+  } finally {
+    markerSaving.value = false
+  }
+}
+
+function toggleMarker(code: QuestionMarkerCode) {
+  if (!question.value) return
+  const active = question.value.markers.includes(code)
+  void saveMarkers(active
+    ? question.value.markers.filter((item) => item !== code)
+    : [...question.value.markers, code])
+}
+
 async function undo() {
   saving.value = true
   try {
@@ -334,6 +363,11 @@ onUnmounted(() => {
         <div><span>QUESTION STATE</span><small>Grey = not started, green = mastered, yellow = needs review. You can change, reset, or undo at any time.</small><label class="note-field">Note <textarea v-model="note" maxlength="2000" placeholder="Optional note" @input="cacheNoteDraft" /><span class="note-controls"><small class="note-draft-hint">Unsaved text is kept in this browser for 3 days.</small><button type="button" class="save-note" :disabled="stateSaving" @click="saveUserState({ note })">{{ noteSaved ? 'Saved ✓' : 'Save note' }}</button></span></label></div>
         <div><button class="review" :class="{ selected: question.state === 'review' }" :disabled="saving" @click="record('review')">Needs review</button><button class="correct" :class="{ selected: question.state === 'mastered' }" :disabled="saving" @click="record('correct')">Mastered</button><button :disabled="saving || question.state === 'unattempted'" @click="record('reset')">Reset</button><button :disabled="saving || !question.can_undo" @click="undo">Undo</button></div>
       </div>
+
+      <section class="learning-markers">
+        <header><div><span>LEARNING SIGNALS</span><small>Independent from question state. Select any that apply.</small></div><div><button type="button" :disabled="markerSaving" @click="saveMarkers(markerOptions.map((item) => item.code))">All</button><button type="button" :disabled="markerSaving || !question.markers.length" @click="saveMarkers([])">Clear</button></div></header>
+        <div><button v-for="marker in markerOptions" :key="marker.code" type="button" :class="{ active: question.markers.includes(marker.code) }" :disabled="markerSaving" @click="toggleMarker(marker.code)">{{ marker.label }}</button></div>
+      </section>
 
       <button
         class="next-question"

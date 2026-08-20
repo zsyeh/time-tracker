@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Question, QuestionAttempt
+from .models import Question, QuestionAttempt, QuestionMarker
 
 
 class QuestionSummarySerializer(serializers.ModelSerializer):
@@ -61,6 +61,21 @@ class QuestionUserStateSerializer(serializers.Serializer):
         if not attrs:
             raise serializers.ValidationError('Provide note, is_favorite, or review_later.')
         return attrs
+
+
+class QuestionMarkerSelectionSerializer(serializers.Serializer):
+    codes = serializers.ListField(
+        child=serializers.ChoiceField(
+            choices=[choice[0] for choice in QuestionMarker.MARKER_CHOICES],
+        ),
+        allow_empty=True,
+        max_length=len(QuestionMarker.MARKER_CHOICES),
+    )
+
+    def validate_codes(self, codes):
+        if len(codes) != len(set(codes)):
+            raise serializers.ValidationError('Marker codes must be unique.')
+        return codes
 
 
 class PaperGenerateSerializer(serializers.Serializer):

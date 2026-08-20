@@ -33,6 +33,7 @@ export interface QuestionDetail extends QuestionSummary {
   next_question_uuid: string | null
   confidence: number | null
   note: string | null
+  markers: QuestionMarkerCode[]
   breadcrumbs: Array<{ id: number; title: string; level: number }>
   assets?: Array<{ id: number; url: string; width: number; height: number; position: number }>
   question_assets?: Array<{ id: number; url: string; width: number; height: number; position: number }>
@@ -43,6 +44,8 @@ export interface QuestionDetail extends QuestionSummary {
   answer_confidence: number | null
   answer_generated_at: string | null
 }
+
+export type QuestionMarkerCode = 'overconfident' | 'concept_gap' | 'rusty' | 'forgotten'
 
 export interface Catalog {
   summary: {
@@ -112,6 +115,11 @@ export interface BookFeel {
 }
 
 export interface InsightPayload {
+  marker_stats: Array<{
+    code: QuestionMarkerCode
+    label: string
+    count: number
+  }>
   recent_questions: Array<{
     uuid: string
     label: string
