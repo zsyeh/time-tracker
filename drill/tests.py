@@ -630,6 +630,11 @@ class DrillPasskeyHandoffTests(TestCase):
         ))
         self.assertIn('next=%2Fpractice%3Fdocument%3D2', response.url)
 
+    def test_anonymous_paper_deep_link_preserves_target(self):
+        response = self.client.get('/paper', HTTP_HOST='drill.ehzsy.site', secure=True)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('next=%2Fpaper', response.url)
+
     def test_authenticated_timer_issues_hashed_one_time_login_for_drill(self):
         timer = Client()
         timer.force_login(self.user)
