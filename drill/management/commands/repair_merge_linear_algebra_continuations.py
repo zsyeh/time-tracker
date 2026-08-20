@@ -8,6 +8,91 @@ from drill.models import Question
 
 MERGES = (
     {
+        'parent_uuid': uuid.UUID('02c7ab24-cd06-5d7d-962a-46a6505fb905'),
+        'continuation_uuid': uuid.UUID('0bdfadb7-676a-5751-835a-5b1ddbd2a438'),
+        'label': '25 Zhang Yu Set 7 · simultaneous diagonalization',
+        'prompt': (
+            'Let A and B be 3x3 matrices satisfying AB=2A-B, and suppose A has '
+            'three distinct eigenvalues. Prove that AB=BA, and prove that there is '
+            'an invertible P such that P^{-1}AP and P^{-1}BP are both diagonal.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('02c7ab24-cd06-5d7d-962a-46a6505fb905'),
+        'continuation_uuid': uuid.UUID('99a7dde8-5b36-58a4-856f-189138c04fef'),
+        'asset_limit': 1,
+        'label': '25 Zhang Yu Set 7 · simultaneous diagonalization',
+        'prompt': (
+            'Let A and B be 3x3 matrices satisfying AB=2A-B, and suppose A has '
+            'three distinct eigenvalues. Prove that AB=BA, and prove that there is '
+            'an invertible P such that P^{-1}AP and P^{-1}BP are both diagonal.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('17465e1e-2824-5ec8-9526-22162d12cb52'),
+        'continuation_uuid': uuid.UUID('ad2f3103-7fcd-5bb1-a128-a49538db8b11'),
+        'label': '2023 Math II/III · diagonalize a linear transformation',
+        'prompt': (
+            'For every x=(x_1,x_2,x_3)^T, let Ax=(x_1+x_2+x_3, '
+            '2x_1-x_2+x_3, x_2-x_3)^T. Find A, then find an invertible matrix P '
+            'and diagonal matrix Lambda such that P^{-1}AP=Lambda.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('17465e1e-2824-5ec8-9526-22162d12cb52'),
+        'continuation_uuid': uuid.UUID('dc2343fb-4270-5518-a1f4-d9853beaead4'),
+        'label': '2023 Math II/III · diagonalize a linear transformation',
+        'prompt': (
+            'For every x=(x_1,x_2,x_3)^T, let Ax=(x_1+x_2+x_3, '
+            '2x_1-x_2+x_3, x_2-x_3)^T. Find A, then find an invertible matrix P '
+            'and diagonal matrix Lambda such that P^{-1}AP=Lambda.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('53737c8d-1b0c-5f8f-a7c3-25ef3a536ba9'),
+        'continuation_uuid': uuid.UUID('b4ecbe07-28df-57d2-8822-348386fd068f'),
+        'label': '25 Zhang Yu Set 6 · diagonalization in a given basis',
+        'prompt': (
+            'Let alpha_1, alpha_2, alpha_3 be linearly independent and suppose '
+            'A alpha_1=-alpha_1-3alpha_2-3alpha_3, '
+            'A alpha_2=4alpha_1+4alpha_2+alpha_3, and '
+            'A alpha_3=-2alpha_1+3alpha_3. Find an invertible P that diagonalizes A, '
+            'then find rank(A-6I).'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('53737c8d-1b0c-5f8f-a7c3-25ef3a536ba9'),
+        'continuation_uuid': uuid.UUID('b8555818-1197-56ab-99c5-552bb8f34a84'),
+        'label': '25 Zhang Yu Set 6 · diagonalization in a given basis',
+        'prompt': (
+            'Let alpha_1, alpha_2, alpha_3 be linearly independent and suppose '
+            'A alpha_1=-alpha_1-3alpha_2-3alpha_3, '
+            'A alpha_2=4alpha_1+4alpha_2+alpha_3, and '
+            'A alpha_3=-2alpha_1+3alpha_3. Find an invertible P that diagonalizes A, '
+            'then find rank(A-6I).'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('2cbe828c-cdf3-568e-8bc8-d416436a2d0a'),
+        'continuation_uuid': uuid.UUID('c52c13a5-fafb-56b0-9ba8-122ba4aa5443'),
+        'label': '1992 Math III · similar matrices with parameters',
+        'prompt': (
+            'Let A=[[-2,0,0],[2,x,2],[3,1,1]] and B=diag(-1,2,y), and suppose '
+            'A and B are similar. Find x and y, then find an invertible matrix P '
+            'such that P^{-1} A P=B.'
+        ),
+    },
+    {
+        'parent_uuid': uuid.UUID('2cbe828c-cdf3-568e-8bc8-d416436a2d0a'),
+        'continuation_uuid': uuid.UUID('b6465fd7-dc24-5874-9434-99756a51b782'),
+        'label': '1992 Math III · similar matrices with parameters',
+        'prompt': (
+            'Let A=[[-2,0,0],[2,x,2],[3,1,1]] and B=diag(-1,2,y), and suppose '
+            'A and B are similar. Find x and y, then find an invertible matrix P '
+            'such that P^{-1} A P=B.'
+        ),
+    },
+    {
         'parent_uuid': uuid.UUID('3a7f1653-bb98-5536-8154-46c92e7a36bb'),
         'continuation_uuid': uuid.UUID('7ec1d395-1957-5fd4-bee1-addee7a2fcc3'),
         'label': '25 Li Yongle Set 6 · nilpotent chain',
@@ -203,7 +288,12 @@ class Command(BaseCommand):
                 )
             except Question.DoesNotExist as exc:
                 raise CommandError(f'Missing continuation pair: {spec}') from exc
-            if not continuation.is_practiceable and not continuation.assets.exists():
+            if (
+                not continuation.is_practiceable
+                and continuation.classification_reason.startswith(
+                    'page-break continuation merged into question'
+                )
+            ):
                 continue
             if continuation.attempts.exists():
                 raise CommandError(
@@ -215,9 +305,10 @@ class Command(BaseCommand):
                 continue
 
             start = parent.assets.count()
-            for offset, asset in enumerate(
-                continuation.assets.select_for_update().order_by('position', 'id')
-            ):
+            assets = continuation.assets.select_for_update().order_by('position', 'id')
+            if spec.get('asset_limit') is not None:
+                assets = assets[: spec['asset_limit']]
+            for offset, asset in enumerate(assets):
                 asset.question = parent
                 asset.position = start + offset
                 asset.save(update_fields=('question', 'position'))
