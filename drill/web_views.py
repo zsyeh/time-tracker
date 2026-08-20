@@ -56,7 +56,10 @@ def _safe_drill_target(value):
     if parsed.scheme or parsed.netloc or not parsed.path.startswith('/') or parsed.path.startswith('//'):
         return '/practice'
     path = parsed.path
-    allowed = path in {'/', '/practice', '/heatmap', '/paper'} or path.startswith('/practice/')
+    allowed = path in {
+        '/', '/practice', '/heatmap', '/paper', '/favorites', '/review-later',
+        '/feel', '/insight',
+    } or path.startswith('/practice/')
     if not allowed:
         return '/practice'
     return path + (f'?{parsed.query}' if parsed.query else '')

@@ -135,5 +135,9 @@ urlpatterns = [
     path('practice/<uuid:question_uuid>', drill_spa_view, name='drill_question'),
     path('heatmap', drill_spa_view, name='drill_heatmap_page'),
     path('paper', drill_spa_view, name='drill_paper_page'),
+    path('favorites', drill_spa_view, name='drill_favorites_page'),
+    path('review-later', drill_spa_view, name='drill_review_later_page'),
+    path('feel', drill_spa_view, name='drill_feel_page'),
+    path('insight', drill_spa_view, name='drill_insight_page'),
     path('', root_spa_view, name='dashboard'),
 ]
