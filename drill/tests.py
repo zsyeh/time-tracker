@@ -180,9 +180,21 @@ class DrillApiTests(TestCase):
         mock = self.client.get('/api/drill/heatmap/?scope=mock_exam')
         self.assertEqual(mock.status_code, 200)
         self.assertEqual(mock.json()['question_count'], 0)
+        self.assertEqual(mock.json()['topic_count'], 0)
         all_questions = self.client.get('/api/drill/heatmap/?scope=all').json()
         self.assertEqual(all_questions['question_count'], 4)
         self.assertNotIn('prompt_text', all_questions['groups'][0]['questions'][0])
+        all_topics = self.client.get('/api/drill/heatmap/?scope=all&mode=topics').json()
+        self.assertEqual(all_topics['question_count'], 4)
+        self.assertEqual(all_topics['topic_count'], 2)
+        topic_cells = all_topics['groups'][0]['topics']
+        limits = next(item for item in topic_cells if item['topic'] == 'Limits')
+        self.assertEqual(limits['question_count'], 3)
+        self.assertEqual(limits['attempted_question_count'], 0)
+        self.assertEqual(limits['coverage_percent'], 0)
+        self.assertEqual(limits['intensity'], 0)
+        self.assertEqual(limits['state'], 'unattempted')
+        self.assertNotIn('prompt_text', limits)
 
     def test_detail_navigation_respects_filter_context(self):
         self.client.force_login(self.alice)
@@ -248,6 +260,11 @@ class DrillApiTests(TestCase):
         cells = {cell['uuid']: cell for group in groups for cell in group['questions']}
         self.assertEqual(cells[str(self.question.uuid)]['attempt_count'], 2)
         self.assertEqual(cells[str(self.similar.uuid)]['attempt_count'], 0)
+        topic = self.client.get('/api/drill/heatmap/?mode=topics').json()['groups'][0]['topics'][0]
+        self.assertEqual(topic['attempt_count'], 2)
+        self.assertEqual(topic['attempted_question_count'], 1)
+        self.assertEqual(topic['review_question_count'], 0)
+        self.assertEqual(topic['state'], 'progress')
         created = self.client.post(
             f'/api/drill/questions/{self.similar.uuid}/attempts/',
             {'result': 'review'},
@@ -255,6 +272,12 @@ class DrillApiTests(TestCase):
         )
         self.assertEqual(created.status_code, 201)
         self.assertEqual(created.json()['attempt_count'], 1)
+        updated_topic = self.client.get('/api/drill/heatmap/?mode=topics').json()['groups'][0]['topics'][0]
+        self.assertEqual(updated_topic['attempt_count'], 3)
+        self.assertEqual(updated_topic['attempted_question_count'], 2)
+        self.assertEqual(updated_topic['review_question_count'], 1)
+        self.assertEqual(updated_topic['coverage_percent'], 100)
+        self.assertEqual(updated_topic['state'], 'review')
 
     def test_question_state_can_be_changed_reset_and_undone(self):
         self.client.force_login(self.alice)

@@ -445,6 +445,7 @@ class DrillQuestionAttemptView(APIView):
 class DrillHeatmapView(APIView):
     def get(self, request):
         scope = request.query_params.get('scope', 'past_exam')
+        mode = request.query_params.get('mode', 'questions')
         scope_filters = {
             'past_exam': Q(source_category='past_exam'),
             'mock_exam': Q(source_category='mock_exam'),
@@ -452,16 +453,60 @@ class DrillHeatmapView(APIView):
         }
         if scope not in scope_filters:
             return Response({'detail': 'scope must be past_exam, mock_exam, or all.'}, status=400)
-        questions = question_progress(
+        if mode not in {'topics', 'questions'}:
+            return Response({'detail': 'mode must be topics or questions.'}, status=400)
+
+        questions = list(
             Question.objects.filter(
                 scope_filters[scope], is_practiceable=True,
-            ).select_related(
-                'document', 'similarity_topic',
-            ),
-            request.user,
-        ).order_by('document_id', 'question_order')
+            ).select_related('document', 'similarity_topic').only(
+                'id', 'uuid', 'document_id', 'document__title', 'document__display_title',
+                'similarity_topic_id', 'similarity_topic__title',
+                'similarity_topic__display_title', 'question_order', 'source_label',
+                'display_label', 'exam_year', 'exam_variant',
+            ).order_by('document_id', 'question_order')
+        )
+        attempt_filters = Q(question__is_practiceable=True)
+        if scope != 'all':
+            attempt_filters &= Q(question__source_category=scope)
+        progress = {}
+        for row in QuestionAttempt.objects.filter(
+            attempt_filters, user=request.user,
+        ).values(
+            'question_id', 'result',
+        ).order_by('question_id', '-created_at', '-pk'):
+            item = progress.setdefault(row['question_id'], {
+                'latest_result': row['result'],
+                'attempt_count': 0,
+            })
+            if row['result'] in {'done', 'correct', 'review'}:
+                item['attempt_count'] += 1
+
+        topic_metadata = {}
+        if mode == 'topics' and questions:
+            document_ids = {question.document_id for question in questions}
+            topic_metadata = {
+                row['id']: row
+                for row in QuestionTopic.objects.filter(
+                    document_id__in=document_ids,
+                ).values('id', 'parent_id', 'title', 'display_title')
+            }
+
+        def topic_path(topic_id):
+            result = []
+            visited = set()
+            while topic_id and topic_id not in visited:
+                visited.add(topic_id)
+                item = topic_metadata.get(topic_id)
+                if item is None:
+                    break
+                result.append(item['display_title'] or item['title'])
+                topic_id = item['parent_id']
+            return ' / '.join(reversed(result)) or 'General'
+
         groups = []
         current = None
+        unique_topic_ids = set()
         for question in questions:
             if current is None or current['document_id'] != question.document_id:
                 current = {
@@ -469,27 +514,82 @@ class DrillHeatmapView(APIView):
                     'document': question.document.display_title or question.document.title,
                     'source_category': scope,
                     'questions': [],
+                    'topics': [],
+                    '_topics_by_id': {},
                 }
                 groups.append(current)
-            current['questions'].append({
-                'uuid': str(question.uuid),
-                'order': question.question_order,
-                'label': question.display_label or question.source_label,
-                'topic': (
-                    question.similarity_topic.display_title or question.similarity_topic.title
-                ) if question.similarity_topic else '',
-                'year': question.exam_year,
-                'variant': question.exam_variant,
-                'attempt_count': question.attempt_count,
-                'latest_result': question.latest_result,
-                'state': (
-                    'review' if question.latest_result == 'review'
-                    else 'mastered' if question.latest_result in {'done', 'correct'}
-                    else 'unattempted'
-                ),
+            question_progress_item = progress.get(question.pk, {
+                'latest_result': None,
+                'attempt_count': 0,
             })
+            latest_result = question_progress_item['latest_result']
+            attempt_count = question_progress_item['attempt_count']
+            state = (
+                'review' if latest_result == 'review'
+                else 'mastered' if latest_result in {'done', 'correct'}
+                else 'unattempted'
+            )
+            if mode == 'questions':
+                current['questions'].append({
+                    'uuid': str(question.uuid),
+                    'order': question.question_order,
+                    'label': question.display_label or question.source_label,
+                    'topic': (
+                        question.similarity_topic.display_title or question.similarity_topic.title
+                    ) if question.similarity_topic else '',
+                    'year': question.exam_year,
+                    'variant': question.exam_variant,
+                    'attempt_count': attempt_count,
+                    'latest_result': latest_result,
+                    'state': state,
+                })
+            topic = question.similarity_topic
+            topic_id = topic.pk if topic else None
+            unique_topic_ids.add(topic_id)
+            if mode != 'topics':
+                continue
+            topic_cell = current['_topics_by_id'].get(topic_id)
+            if topic_cell is None:
+                topic_cell = {
+                    'topic_id': topic_id,
+                    'topic': (topic.display_title or topic.title) if topic else 'General',
+                    'path': topic_path(topic_id),
+                    'question_count': 0,
+                    'attempted_question_count': 0,
+                    'mastered_question_count': 0,
+                    'review_question_count': 0,
+                    'attempt_count': 0,
+                }
+                current['_topics_by_id'][topic_id] = topic_cell
+                current['topics'].append(topic_cell)
+            topic_cell['question_count'] += 1
+            topic_cell['attempt_count'] += attempt_count
+            if state != 'unattempted':
+                topic_cell['attempted_question_count'] += 1
+            if state == 'mastered':
+                topic_cell['mastered_question_count'] += 1
+            elif state == 'review':
+                topic_cell['review_question_count'] += 1
+
+        for group in groups:
+            group.pop('_topics_by_id', None)
+            for topic_cell in group['topics']:
+                total = topic_cell['question_count']
+                attempted = topic_cell['attempted_question_count']
+                topic_cell['coverage_percent'] = round(attempted * 100 / total)
+                topic_cell['intensity'] = (
+                    0 if attempted == 0 else min(4, max(1, (attempted * 4 + total - 1) // total))
+                )
+                topic_cell['state'] = (
+                    'review' if topic_cell['review_question_count']
+                    else 'mastered' if attempted == total
+                    else 'progress' if attempted
+                    else 'unattempted'
+                )
         return Response({
-            'question_count': sum(len(group['questions']) for group in groups),
+            'mode': mode,
+            'question_count': len(questions),
+            'topic_count': len(unique_topic_ids),
             'groups': groups,
             'levels': [0, 1, 2, 3, 4],
         })

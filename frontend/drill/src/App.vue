@@ -49,7 +49,7 @@ onMounted(() => {
           <i>01</i><span>Practice</span>
         </RouterLink>
         <RouterLink to="/heatmap" :class="{ active: route.name === 'heatmap' }">
-          <i>02</i><span>Past Papers</span>
+          <i>02</i><span>Heatmaps</span>
         </RouterLink>
         <RouterLink to="/paper" :class="{ active: route.name === 'paper' }">
           <i>03</i><span>Build Paper</span>
