@@ -103,8 +103,14 @@ def build_dashboard_overview(user, days=180, config=None):
     current_streak, longest_streak = _streak(active_dates, local_today)
     current_five_hour_streak, longest_five_hour_streak = _streak(five_hour_dates, local_today)
 
+    try:
+        exam_date = datetime.date.fromisoformat(config['exam_date'])
+    except (TypeError, ValueError):
+        exam_date = datetime.date(2026, 12, 26)
+
     heatmap = []
-    heatmap_day_count = max(0, (local_today - heatmap_first_day).days + 1)
+    heatmap_last_day = max(local_today, exam_date)
+    heatmap_day_count = max(0, (heatmap_last_day - heatmap_first_day).days + 1)
     for offset in range(heatmap_day_count):
         day = heatmap_first_day + datetime.timedelta(days=offset)
         row = daily.get(day, {'minutes': 0, 'sessions': 0, 'first_start': None})
@@ -124,6 +130,8 @@ def build_dashboard_overview(user, days=180, config=None):
             'first_start': row['first_start'],
             'level': level,
             'five_hour_goal': minutes >= FIVE_HOUR_MINUTES,
+            'is_future': day > local_today,
+            'is_exam_day': day == exam_date,
         })
 
     today_row = daily.get(local_today, {'minutes': 0, 'sessions': 0, 'first_start': None})
@@ -138,10 +146,6 @@ def build_dashboard_overview(user, days=180, config=None):
         mean = round(sum(start_minutes) / len(start_minutes))
         average_start = f'{mean // 60:02d}:{mean % 60:02d}'
 
-    try:
-        exam_date = datetime.date.fromisoformat(config['exam_date'])
-    except (TypeError, ValueError):
-        exam_date = datetime.date(2026, 12, 26)
     shortcuts = TaskPreset.objects.filter(
         user=user,
         is_active=True,

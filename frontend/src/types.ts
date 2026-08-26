@@ -86,6 +86,8 @@ export interface HeatmapDay {
   first_start: string | null
   level: 0 | 1 | 2 | 4
   five_hour_goal: boolean
+  is_future: boolean
+  is_exam_day: boolean
 }
 
 export interface Overview {

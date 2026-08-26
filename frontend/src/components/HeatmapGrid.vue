@@ -45,7 +45,7 @@ function timelineStyle(session: StudySessionSummary) {
 }
 
 async function openDay(day: HeatmapDay | null) {
-  if (!day) return
+  if (!day || day.is_future) return
   selected.value = day
   detailOpen.value = true
   loading.value = true
@@ -93,7 +93,7 @@ async function openSession(session: StudySessionSummary) {
       </div>
       <div class="legend" aria-label="Activity intensity legend">
         <span>LESS</span><i class="cell level-0" /><i class="cell level-1" /><i class="cell level-2" />
-        <i class="cell level-4" /><span>≥ 5H</span>
+        <i class="cell level-4" /><span>≥ 5H</span><i class="cell future-day" /><span>FUTURE</span><i class="cell exam-day" /><span>EXAM</span>
       </div>
     </div>
     <p class="section-note">Data starts on 23 May 2026. Select a day for its timeline and session titles.</p>
@@ -104,10 +104,10 @@ async function openSession(session: StudySessionSummary) {
           v-for="(day, index) in cells"
           :key="day?.date || `empty-${index}`"
           class="heat-cell"
-          :class="day ? `level-${day.level}` : 'empty-cell'"
-          :disabled="!day"
-          :aria-label="day ? `${day.date}, ${duration(day.minutes)}` : undefined"
-          :title="day ? `${day.date} · ${duration(day.minutes)} · ${day.sessions} sessions · first ${day.first_start || '--'}` : ''"
+          :class="day ? [`level-${day.level}`, { 'future-day': day.is_future, 'exam-day': day.is_exam_day }] : 'empty-cell'"
+          :disabled="!day || day.is_future"
+          :aria-label="day ? day.is_exam_day ? `${day.date}, exam day` : day.is_future ? `${day.date}, future` : `${day.date}, ${duration(day.minutes)}` : undefined"
+          :title="day ? day.is_exam_day ? `${day.date} · EXAM DAY` : day.is_future ? `${day.date} · FUTURE` : `${day.date} · ${duration(day.minutes)} · ${day.sessions} sessions · first ${day.first_start || '--'}` : ''"
           @click="openDay(day)"
         />
       </div>

@@ -1079,17 +1079,28 @@ class AnalyticsAndExportTests(TestCase):
         self.assertEqual(overview['summary']['five_hour_days'], 2)
         self.assertEqual(overview['summary']['longest_five_hour_streak'], 2)
         self.assertEqual(overview['summary']['current_streak'], 3)
-        self.assertEqual(overview['heatmap'][-1]['level'], 2)
-        self.assertEqual(overview['heatmap'][-2]['level'], 4)
+        heatmap_by_date = {row['date']: row for row in overview['heatmap']}
+        self.assertEqual(heatmap_by_date[today.isoformat()]['level'], 2)
+        self.assertEqual(heatmap_by_date[(today - datetime.timedelta(days=1)).isoformat()]['level'], 4)
+        self.assertFalse(heatmap_by_date[today.isoformat()]['is_future'])
         self.assertEqual(overview['summary']['average_start_time'], '08:00')
         self.assertEqual(overview['calendar']['today'], today.isoformat())
-        self.assertEqual(overview['calendar']['exam_date'], settings.TRACKER_EXAM_DATE)
+        exam_date = datetime.date.fromisoformat(overview['calendar']['exam_date'])
+        self.assertTrue(heatmap_by_date[exam_date.isoformat()]['is_exam_day'])
+        self.assertEqual(
+            overview['heatmap'][-1]['date'],
+            max(today, exam_date).isoformat(),
+        )
+        if exam_date > today:
+            tomorrow = heatmap_by_date[(today + datetime.timedelta(days=1)).isoformat()]
+            self.assertTrue(tomorrow['is_future'])
+            self.assertFalse(tomorrow['is_exam_day'])
         self.assertGreaterEqual(
             datetime.date.fromisoformat(overview['heatmap'][0]['date']),
             datetime.date.fromisoformat(settings.TRACKER_HEATMAP_START_DATE),
         )
         self.assertEqual(overview['calendar']['heatmap_start_date'], overview['heatmap'][0]['date'])
-        expected_days = max(0, (datetime.date.fromisoformat(settings.TRACKER_EXAM_DATE) - today).days)
+        expected_days = max(0, (exam_date - today).days)
         self.assertEqual(overview['calendar']['days_until_exam'], expected_days)
 
     def test_dashboard_uses_credited_duration_for_all_time_aggregates(self):
