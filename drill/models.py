@@ -12,7 +12,18 @@ from django.utils import timezone
 class QuestionDocument(models.Model):
     """One imported source book. Its content is shared by every account."""
 
+    WORKSPACE_CHOICES = [
+        ('drill', 'Mathematics drill'),
+        ('ei', 'Electronic information'),
+    ]
+
     source_id = models.PositiveBigIntegerField(unique=True)
+    workspace = models.CharField(
+        max_length=16,
+        choices=WORKSPACE_CHOICES,
+        default='drill',
+        db_index=True,
+    )
     filename = models.TextField()
     title = models.CharField(max_length=240)
     display_title = models.CharField(max_length=240, blank=True)
@@ -304,6 +315,11 @@ class DrillLoginHandoff(models.Model):
     )
     token_digest = models.CharField(max_length=64, unique=True, db_index=True)
     target_path = models.CharField(max_length=500, default='/practice')
+    target_site = models.CharField(
+        max_length=16,
+        choices=QuestionDocument.WORKSPACE_CHOICES,
+        default='drill',
+    )
     expires_at = models.DateTimeField(db_index=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -315,7 +331,7 @@ class DrillLoginHandoff(models.Model):
         return hashlib.sha256(raw_token.encode('ascii')).hexdigest()
 
     @classmethod
-    def issue(cls, *, user, target_path, lifetime_seconds=90):
+    def issue(cls, *, user, target_path, target_site='drill', lifetime_seconds=90):
         now = timezone.now()
         cls.objects.filter(expires_at__lte=now).delete()
         raw_token = f'drill_{secrets.token_urlsafe(32)}'
@@ -323,6 +339,7 @@ class DrillLoginHandoff(models.Model):
             user=user,
             token_digest=cls.digest(raw_token),
             target_path=target_path,
+            target_site=target_site,
             expires_at=now + datetime.timedelta(seconds=lifetime_seconds),
         )
         return handoff, raw_token

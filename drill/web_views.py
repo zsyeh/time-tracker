@@ -34,14 +34,26 @@ def _drill_html():
     )
 
 
-def is_drill_host(request):
+def practice_site(request):
     hostname = request.get_host().partition(':')[0].lower()
-    return hostname in settings.DRILL_HOSTS
+    if hostname in settings.EI_HOSTS:
+        return 'ei'
+    if hostname in settings.DRILL_HOSTS:
+        return 'drill'
+    return None
+
+
+def is_practice_host(request):
+    return practice_site(request) is not None
+
+
+def is_drill_host(request):
+    return practice_site(request) == 'drill'
 
 
 @never_cache
 def site_icon_redirect(request, icon_kind='touch'):
-    if is_drill_host(request):
+    if is_practice_host(request):
         filename = (
             'drill-favicon-32.png'
             if icon_kind == 'favicon'
@@ -65,19 +77,25 @@ def _safe_drill_target(value):
     return path + (f'?{parsed.query}' if parsed.query else '')
 
 
-def _timer_handoff_url(target_path):
-    return f'{settings.DRILL_AUTH_ORIGIN}/drill-auth/start?{urlencode({"next": target_path})}'
+def _practice_origin(site):
+    return settings.EI_ORIGIN if site == 'ei' else settings.DRILL_ORIGIN
+
+
+def _timer_handoff_url(target_path, site):
+    return f'{settings.DRILL_AUTH_ORIGIN}/drill-auth/start?{urlencode({"next": target_path, "site": site})}'
 
 
 @never_cache
 def drill_spa_view(request, **_route):
-    if not is_drill_host(request) and not settings.DEBUG:
+    site = practice_site(request)
+    if site is None and not settings.DEBUG:
         raise Http404
+    site = site or 'drill'
     if not request.user.is_authenticated:
         target_path = _safe_drill_target(request.get_full_path())
         if settings.DEBUG:
             return redirect(f'{settings.LOGIN_URL}?{urlencode({"next": target_path})}')
-        return redirect(_timer_handoff_url(target_path))
+        return redirect(_timer_handoff_url(target_path, site))
     html = _drill_html()
     if not html:
         return render(request, 'frontend_missing.html', status=503)
@@ -99,14 +117,23 @@ def drill_login_start(request):
     if hostname != settings.DRILL_AUTH_HOST and not settings.DEBUG:
         raise Http404
     target_path = _safe_drill_target(request.GET.get('next', '/practice'))
-    _, raw_token = DrillLoginHandoff.issue(user=request.user, target_path=target_path)
-    return redirect(f'{settings.DRILL_ORIGIN}/drill-auth/complete/{raw_token}')
+    target_site = request.GET.get('site', 'drill')
+    if target_site not in {'drill', 'ei'}:
+        raise Http404
+    _, raw_token = DrillLoginHandoff.issue(
+        user=request.user,
+        target_path=target_path,
+        target_site=target_site,
+    )
+    return redirect(f'{_practice_origin(target_site)}/drill-auth/complete/{raw_token}')
 
 
 @never_cache
 def drill_login_complete(request, raw_token):
-    if not is_drill_host(request) and not settings.DEBUG:
+    site = practice_site(request)
+    if site is None and not settings.DEBUG:
         raise Http404
+    site = site or 'drill'
     if len(raw_token) > 128:
         raise Http404
     with transaction.atomic():
@@ -116,6 +143,8 @@ def drill_login_complete(request, raw_token):
             user__is_active=True,
         ).first()
         if handoff is None:
+            raise Http404
+        if handoff.target_site != site:
             raise Http404
         user = handoff.user
         target_path = _safe_drill_target(handoff.target_path)

@@ -11,6 +11,9 @@ const progress = ref<Progress | null>(null)
 const sidebarOpen = ref(false)
 const landscape = ref(false)
 const identityReady = ref(false)
+const isEi = location.hostname.toLowerCase().startsWith('ei.')
+
+document.title = isEi ? 'EI · 892 Practice' : 'Drill · Question Practice'
 
 async function loadIdentity() {
   const auth = await api<{ user: { username: string } }>('/api/auth/session/')
@@ -36,13 +39,13 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="drill-shell" :class="{ 'drawer-open': sidebarOpen }">
+  <div class="drill-shell" :class="{ 'drawer-open': sidebarOpen, 'ei-workspace': isEi }">
     <button class="drawer-toggle" type="button" aria-label="Open navigation" @click="sidebarOpen = true"><span /><span /><span /></button>
     <button v-if="sidebarOpen" class="drawer-backdrop" type="button" aria-label="Close navigation" @click="sidebarOpen = false" />
     <aside class="drill-sidebar">
       <button class="drawer-close" type="button" aria-label="Close navigation" @click="sidebarOpen = false">×</button>
       <RouterLink class="wordmark" to="/practice" aria-label="Drill home">
-        <span>D</span><strong>DRILL</strong><small>QUESTION PRACTICE</small>
+        <span>{{ isEi ? 'EI' : 'D' }}</span><strong>{{ isEi ? '892 LAB' : 'DRILL' }}</strong><small>{{ isEi ? 'ELECTRONIC INFORMATION' : 'QUESTION PRACTICE' }}</small>
       </RouterLink>
       <nav>
         <RouterLink to="/practice" :class="{ active: route.name === 'practice' || route.name === 'question' }">
@@ -73,7 +76,7 @@ onMounted(() => {
         <div><i :style="{ width: `${Math.min(100, progress.attempted_questions / Math.max(1, progress.question_count) * 100)}%` }" /></div>
         <p>{{ progress.total_attempts }} attempts</p>
       </div>
-      <p class="sidebar-credit"><span>QUESTION SOURCES</span>Thanks to Bilibili creator <strong>cxy</strong> for collecting and organizing the question bank.</p>
+      <p class="sidebar-credit"><span>QUESTION SOURCES</span><template v-if="isEi">Owner-provided 892 electronic-information Markdown bank.</template><template v-else>Thanks to Bilibili creator <strong>cxy</strong> for collecting and organizing the question bank.</template></p>
       <div class="account">
         <span>{{ username.slice(0, 1).toUpperCase() }}</span>
         <div><strong>{{ username }}</strong><button @click="logout">Sign out</button></div>

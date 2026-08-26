@@ -190,6 +190,12 @@ DRILL_HOSTS = {
     if host.strip()
 }
 DRILL_ORIGIN = os.environ.get('DRILL_ORIGIN', 'https://drill.ehzsy.site').rstrip('/')
+EI_HOSTS = {
+    host.strip().lower()
+    for host in os.environ.get('EI_HOSTS', 'ei.ehzsy.site').split(',')
+    if host.strip()
+}
+EI_ORIGIN = os.environ.get('EI_ORIGIN', 'https://ei.ehzsy.site').rstrip('/')
 DRILL_AUTH_HOST = os.environ.get('DRILL_AUTH_HOST', 'timer.ehzsy.site').strip().lower()
 DRILL_AUTH_ORIGIN = os.environ.get(
     'DRILL_AUTH_ORIGIN',

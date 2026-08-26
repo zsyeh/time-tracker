@@ -68,9 +68,9 @@ def public_spa_view(request, **_route):
 def root_spa_view(request):
     """Select the independently built SPA by hostname at the shared root URI."""
 
-    from drill.web_views import drill_spa_view, is_drill_host
+    from drill.web_views import drill_spa_view, is_practice_host
 
-    if is_drill_host(request):
+    if is_practice_host(request):
         return drill_spa_view(request)
     return spa_view(request)
 

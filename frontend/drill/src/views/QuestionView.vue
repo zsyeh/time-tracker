@@ -340,7 +340,7 @@ onUnmounted(() => {
       </div>
       <article class="question-canvas">
         <img v-for="asset in questionAssets(question)" :key="asset.id" :src="asset.url" :width="asset.width" :height="asset.height" alt="Question content" loading="eager" decoding="async" />
-        <pre v-if="!questionAssets(question).length">{{ question.prompt_text }}</pre>
+        <MarkdownAnswer v-if="!questionAssets(question).length" class="question-markdown" :source="question.prompt_text" />
       </article>
 
       <section v-if="question.has_answer || question.answer_markdown" class="official-answer">
@@ -353,7 +353,7 @@ onUnmounted(() => {
           </div>
           <img v-for="asset in question.answer_assets" :key="asset.id" :src="asset.url" :width="asset.width" :height="asset.height" alt="Official answer" loading="lazy" decoding="async" />
           <div v-if="question.answer_markdown" class="agent-answer-block">
-            <header><strong>AGENT SOLUTION</strong><span>{{ question.answer_source || 'agent' }} · {{ question.answer_confidence === null ? 'unrated' : `${Math.round(question.answer_confidence * 100)}% confidence` }}</span></header>
+            <header><strong>{{ question.answer_source === 'provided-reference' ? 'REFERENCE ANSWER' : 'AGENT SOLUTION' }}</strong><span>{{ question.answer_source || 'agent' }} · {{ question.answer_confidence === null ? 'unrated' : `${Math.round(question.answer_confidence * 100)}% confidence` }}</span></header>
             <MarkdownAnswer :source="question.answer_markdown" />
           </div>
         </div>

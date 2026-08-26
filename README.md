@@ -29,6 +29,7 @@ curl -fsSL https://app.ehzsy.site/install/docker-compose.sh | sh -s -- study.exa
 ## 主要能力
 
 - 独立的 `drill.ehzsy.site` 刷题前端与计时前端共用 Django 账号和 PostgreSQL，但不会在 `timer.ehzsy.site` 添加入口。首次访问会自动回到 Timer 域名使用既有 Passkey，再通过 90 秒一次性凭证返回 Drill，无需重建原 Passkey。当前 4,228 条导入记录中有 3,883 条可练习记录，345 条目录/分隔项默认隐藏；全部题图都从原 PDF 以 180 DPI 渲染，并保留裁剪来源以便安全重建。题目页可按题册顺序进入下一题；同类题入口会先选择官方真题或模拟/题册练习，来源不会混淆。所有题库材料由 B 站 UP 主 cxy（澄潇宇）收集整理，**Thanks to cxy**；PDF 作者信息另行保留和展示。
+- `ei.ehzsy.site` 是独立的 892 电子信息专业综合训练入口，复用 Drill 的高性能训练交互与同一 Django 账号，但按 hostname 隔离目录、进度、收藏和作答记录。当前结构化 Markdown 题库包含 156 道基础例题与 60 道简答题，题干和参考答案均直接渲染 Markdown、LaTeX，不生成额外截图；首次访问同样经 Timer 的一次性凭证接力，继续使用原有 Passkey。
 - 真题热力图只覆盖可明确识别的官方历年考试题。题目状态统一为灰色未做、绿色已掌握、黄色待复习，可随时修改、重置或撤销最近一次修改；练习历史和结果按用户严格隔离。
 - 从 2026-05-23 开始的学习热力图；达到 5 小时的日期使用高对比亮绿色。
 - 点击任意日期查看 24 小时在线/未在线时间轴和当天每次学习标题；再点标题才显示正文详情。
@@ -130,6 +131,8 @@ cd frontend && npm run build
 - `https://drill.ehzsy.site/practice`：独立刷题前端（使用与 Timer 相同的账号数据库）
 - `https://drill.ehzsy.site/practice/<uuid>`：稳定的题目页面及同类题入口
 - `https://drill.ehzsy.site/heatmap`：个人官方真题状态热力图
+- `https://ei.ehzsy.site/practice`：892 电子信息专业综合训练
+- `https://ei.ehzsy.site/heatmap`：按 156 个知识点统计的个人 EI 热力图
 - `/api/drill/*`：登录后可用的题库、作答、同类题、进度和图片 API
 - `/`：跳转到 `/today`
 - `/today`：Today

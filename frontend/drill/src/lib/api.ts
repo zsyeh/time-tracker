@@ -25,7 +25,9 @@ async function requestJson<T>(url: string, options: RequestInit): Promise<T> {
   if (csrf) headers.set('X-CSRFToken', csrf)
   const response = await fetch(url, { ...options, headers, credentials: 'same-origin' })
   if (response.status === 401 || response.status === 403) {
-    location.assign(`/accounts/login/?next=${encodeURIComponent(location.pathname + location.search)}`)
+    const site = location.hostname.toLowerCase().startsWith('ei.') ? 'ei' : 'drill'
+    const next = location.pathname + location.search
+    location.assign(`https://timer.ehzsy.site/drill-auth/start?site=${site}&next=${encodeURIComponent(next)}`)
     throw new Error('Your session has expired.')
   }
   if (!response.ok) {

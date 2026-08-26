@@ -1,5 +1,6 @@
 import datetime
 
+from django.conf import settings
 from django.db import transaction
 from django.db.models import Count, Exists, Max, OuterRef, Prefetch, Q, Subquery
 from django.http import Http404, HttpResponse, HttpResponseNotModified
@@ -19,6 +20,15 @@ from .serializers import (
     PaperGenerateSerializer, QuestionAttemptCreateSerializer,
     QuestionMarkerSelectionSerializer, QuestionSummarySerializer, QuestionUserStateSerializer,
 )
+
+
+def request_workspace(request):
+    hostname = request.get_host().partition(':')[0].lower()
+    return 'ei' if hostname in settings.EI_HOSTS else 'drill'
+
+
+def workspace_questions(request):
+    return Question.objects.filter(document__workspace=request_workspace(request))
 
 
 def question_progress(queryset, user):
@@ -60,7 +70,7 @@ def topic_breadcrumbs(topic):
 
 
 def navigation_queryset(question, request):
-    queryset = Question.objects.filter(is_practiceable=True)
+    queryset = workspace_questions(request).filter(is_practiceable=True)
     document_id = request.query_params.get('document')
     topic_id = request.query_params.get('topic')
     source_category = request.query_params.get('source_category', '').strip()
@@ -101,7 +111,8 @@ def navigation_queryset(question, request):
 
 class DrillCatalogView(APIView):
     def get(self, request):
-        documents = QuestionDocument.objects.annotate(
+        workspace = request_workspace(request)
+        documents = QuestionDocument.objects.filter(workspace=workspace).annotate(
             imported_count=Count('questions', distinct=True),
             question_count=Count(
                 'questions', filter=Q(questions__is_practiceable=True), distinct=True,
@@ -122,6 +133,7 @@ class DrillCatalogView(APIView):
             ),
         ).filter(question_count__gt=0)
         topics = QuestionTopic.objects.filter(
+            document__workspace=workspace,
             similar_questions__is_practiceable=True,
             level__lte=4,
         ).annotate(
@@ -134,18 +146,22 @@ class DrillCatalogView(APIView):
         ).order_by('document_id', 'sort_order')
         category_counts = {
             row['source_category']: row['count']
-            for row in Question.objects.filter(is_practiceable=True).values(
+            for row in Question.objects.filter(
+                document__workspace=workspace, is_practiceable=True,
+            ).values(
                 'source_category',
             ).annotate(count=Count('id'))
         }
-        imported_count = Question.objects.count()
-        practiceable_count = Question.objects.filter(is_practiceable=True).count()
+        imported_count = Question.objects.filter(document__workspace=workspace).count()
+        practiceable_count = Question.objects.filter(
+            document__workspace=workspace, is_practiceable=True,
+        ).count()
         available_titles = [
             document.display_title or document.title
             for document in documents
         ]
         missing_titles = []
-        if not any('一元微分' in title for title in available_titles):
+        if workspace == 'drill' and not any('一元微分' in title for title in available_titles):
             missing_titles.append('一元微分 / Single-variable differentiation')
         return Response({
             'summary': {
@@ -197,7 +213,7 @@ class DrillCatalogView(APIView):
 
 class DrillQuestionListView(APIView):
     def get(self, request):
-        queryset = Question.objects.select_related('document', 'similarity_topic')
+        queryset = workspace_questions(request).select_related('document', 'similarity_topic')
         if request.query_params.get('include_structure') != '1':
             queryset = queryset.filter(is_practiceable=True)
         document_id = request.query_params.get('document')
@@ -252,7 +268,7 @@ class DrillPaperGenerateView(APIView):
         serializer = PaperGenerateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
-        queryset = Question.objects.filter(is_practiceable=True)
+        queryset = workspace_questions(request).filter(is_practiceable=True)
         if data.get('document'):
             queryset = queryset.filter(document_id=data['document'])
         if data.get('topic'):
@@ -272,7 +288,7 @@ class DrillPaperGenerateView(APIView):
         selected_ids = secrets.SystemRandom().sample(candidate_ids, min(requested, len(candidate_ids)))
         questions = {
             item.pk: item for item in question_progress(
-                Question.objects.filter(pk__in=selected_ids).select_related('document', 'similarity_topic'),
+                workspace_questions(request).filter(pk__in=selected_ids).select_related('document', 'similarity_topic'),
                 request.user,
             )
         }
@@ -290,7 +306,7 @@ class DrillQuestionDetailView(APIView):
         )
         question = get_object_or_404(
             question_progress(
-                Question.objects.select_related(
+                workspace_questions(request).select_related(
                     'document', 'topic', 'similarity_topic',
                 ).prefetch_related(Prefetch('assets', queryset=assets)),
                 request.user,
@@ -366,7 +382,7 @@ class DrillQuestionDetailView(APIView):
 class DrillSimilarQuestionView(APIView):
     def get(self, request, question_uuid):
         question = get_object_or_404(
-            Question.objects.select_related('similarity_topic'),
+            workspace_questions(request).select_related('similarity_topic'),
             uuid=question_uuid,
         )
         if question.similarity_topic_id is None:
@@ -376,7 +392,7 @@ class DrillSimilarQuestionView(APIView):
                 'counts': {'past_exam': 0, 'practice': 0},
                 'results': [],
             })
-        base = Question.objects.filter(
+        base = workspace_questions(request).filter(
             similarity_topic_id=question.similarity_topic_id,
             is_practiceable=True,
         ).exclude(pk=question.pk)
@@ -441,7 +457,7 @@ class DrillQuestionAttemptView(APIView):
     def post(self, request, question_uuid):
         serializer = QuestionAttemptCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        question = get_object_or_404(Question, uuid=question_uuid)
+        question = get_object_or_404(workspace_questions(request), uuid=question_uuid)
         attempt = QuestionAttempt.objects.create(
             user=request.user,
             question=question,
@@ -463,7 +479,7 @@ class DrillQuestionAttemptView(APIView):
         }, status=status.HTTP_201_CREATED)
 
     def delete(self, request, question_uuid):
-        question = get_object_or_404(Question, uuid=question_uuid)
+        question = get_object_or_404(workspace_questions(request), uuid=question_uuid)
         with transaction.atomic():
             latest = QuestionAttempt.objects.select_for_update().filter(
                 user=request.user,
@@ -482,7 +498,9 @@ class DrillQuestionUserStateView(APIView):
     def post(self, request, question_uuid):
         serializer = QuestionUserStateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        question = get_object_or_404(Question, uuid=question_uuid, is_practiceable=True)
+        question = get_object_or_404(
+            workspace_questions(request), uuid=question_uuid, is_practiceable=True,
+        )
         state, _ = QuestionUserState.objects.get_or_create(
             user=request.user,
             question=question,
@@ -502,7 +520,9 @@ class DrillQuestionMarkerView(APIView):
     def post(self, request, question_uuid):
         serializer = QuestionMarkerSelectionSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        question = get_object_or_404(Question, uuid=question_uuid, is_practiceable=True)
+        question = get_object_or_404(
+            workspace_questions(request), uuid=question_uuid, is_practiceable=True,
+        )
         requested_codes = serializer.validated_data['codes']
         with transaction.atomic():
             current = QuestionMarker.objects.select_for_update().filter(
@@ -526,6 +546,7 @@ class DrillCollectionView(APIView):
         states = QuestionUserState.objects.filter(
             user=request.user,
             question__is_practiceable=True,
+            question__document__workspace=request_workspace(request),
             **{field: True},
         ).order_by('-updated_at')
         paginator = PageNumberPagination()
@@ -535,7 +556,7 @@ class DrillCollectionView(APIView):
         questions = {
             item.pk: item
             for item in question_progress(
-                Question.objects.filter(pk__in=question_ids).select_related(
+                workspace_questions(request).filter(pk__in=question_ids).select_related(
                     'document', 'similarity_topic',
                 ),
                 request.user,
@@ -553,6 +574,7 @@ class DrillCollectionView(APIView):
 class DrillBookFeelView(APIView):
     def get(self, request):
         documents = QuestionDocument.objects.filter(
+            workspace=request_workspace(request),
             questions__is_practiceable=True,
         ).annotate(
             question_count=Count('questions', filter=Q(questions__is_practiceable=True), distinct=True),
@@ -596,14 +618,17 @@ class DrillInsightView(APIView):
             user=request.user,
             result__in=('done', 'correct', 'review'),
             question__is_practiceable=True,
+            question__document__workspace=request_workspace(request),
         ).select_related('question__document', 'question__similarity_topic')[:30]
         saved_notes = QuestionUserState.objects.filter(
             user=request.user,
             question__is_practiceable=True,
+            question__document__workspace=request_workspace(request),
         ).exclude(note='').select_related('question__document', 'question__similarity_topic').order_by('-updated_at')[:30]
         attempt_notes = QuestionAttempt.objects.filter(
             user=request.user,
             question__is_practiceable=True,
+            question__document__workspace=request_workspace(request),
         ).exclude(note__isnull=True).exclude(note='').select_related(
             'question__document', 'question__similarity_topic',
         ).order_by('-created_at', '-pk')[:30]
@@ -645,6 +670,7 @@ class DrillInsightView(APIView):
             for row in QuestionMarker.objects.filter(
                 user=request.user,
                 question__is_practiceable=True,
+                question__document__workspace=request_workspace(request),
             ).values('code').annotate(count=Count('question', distinct=True))
         }
 
@@ -680,7 +706,7 @@ class DrillHeatmapView(APIView):
             return Response({'detail': 'mode must be topics or questions.'}, status=400)
 
         questions = list(
-            Question.objects.filter(
+            workspace_questions(request).filter(
                 scope_filters[scope], is_practiceable=True,
             ).select_related('document', 'similarity_topic').only(
                 'id', 'uuid', 'document_id', 'document__title', 'document__display_title',
@@ -689,7 +715,10 @@ class DrillHeatmapView(APIView):
                 'display_label', 'exam_year', 'exam_variant',
             ).order_by('document_id', 'question_order')
         )
-        attempt_filters = Q(question__is_practiceable=True)
+        attempt_filters = Q(
+            question__is_practiceable=True,
+            question__document__workspace=request_workspace(request),
+        )
         if scope != 'all':
             attempt_filters &= Q(question__source_category=scope)
         progress = {}
@@ -820,7 +849,11 @@ class DrillHeatmapView(APIView):
 
 class DrillProgressView(APIView):
     def get(self, request):
-        attempts = QuestionAttempt.objects.filter(user=request.user)
+        workspace = request_workspace(request)
+        attempts = QuestionAttempt.objects.filter(
+            user=request.user,
+            question__document__workspace=workspace,
+        )
         aggregate = attempts.aggregate(
             total_attempts=Count('id', filter=Q(result__in=('done', 'correct', 'review'))),
             attempted_questions=Count(
@@ -843,8 +876,11 @@ class DrillProgressView(APIView):
                 distinct=True,
             ),
         )
-        aggregate['question_count'] = Question.objects.filter(is_practiceable=True).count()
+        aggregate['question_count'] = Question.objects.filter(
+            document__workspace=workspace, is_practiceable=True,
+        ).count()
         aggregate['past_exam_count'] = Question.objects.filter(
+            document__workspace=workspace,
             source_category='past_exam', is_practiceable=True,
         ).count()
         return Response(aggregate)
@@ -853,7 +889,9 @@ class DrillProgressView(APIView):
 class DrillAssetView(APIView):
     def get(self, request, asset_id):
         asset = get_object_or_404(
-            QuestionAsset.objects.only('image_data', 'mime_type', 'sha256'),
+            QuestionAsset.objects.filter(
+                question__document__workspace=request_workspace(request),
+            ).only('image_data', 'mime_type', 'sha256'),
             pk=asset_id,
         )
         etag = f'"{asset.sha256}"'

@@ -113,6 +113,21 @@ The root dispatcher serves `frontend/drill-dist` only when the request hostname
 is listed in `DRILL_HOSTS`; the Timer navigation does not link to it. See
 `deploy/nginx/drill.ehzsy.site.conf.example` for the separate virtual host.
 
+The electronic-information practice workspace reuses that lightweight training
+bundle and the same authenticated Django API, while host-level queryset scoping
+keeps its catalog and progress separate from the mathematics drill. Configure
+`EI_HOSTS=ei.example.com`, `EI_ORIGIN=https://ei.example.com`, add the origin to
+`CSRF_TRUSTED_ORIGINS`, and use `deploy/nginx/ei.ehzsy.site.conf.example`.
+Import the owner-provided structured bank idempotently with:
+
+```bash
+.venv/bin/python manage.py import_ei_markdown /path/to/892-question-bank.md
+```
+
+Anonymous EI visits are relayed through the Timer host using the same 90-second,
+single-use authentication handoff used by Drill; Passkeys therefore remain bound
+to the Timer relying-party domain.
+
 For an existing SQLite deployment, do not simply switch its database URL. Export
 and import data in a maintenance window, verify counts/totals, and retain the
 SQLite volume until validation is complete.

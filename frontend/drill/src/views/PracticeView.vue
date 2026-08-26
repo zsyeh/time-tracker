@@ -30,6 +30,7 @@ let requestSequence = 0
 let restoring = true
 const stateKey = 'drill.practice.state.v1'
 const searchFocused = ref(false)
+const isEi = location.hostname.toLowerCase().startsWith('ei.')
 
 const topics = computed(() => catalog.value.topics.filter((topic) => (
   !documentId.value || topic.document_id === Number(documentId.value)
@@ -190,11 +191,12 @@ onUnmounted(() => {
 <template>
   <section class="page practice-page">
     <header class="page-header">
-      <div><span class="eyebrow">CLEANED QUESTION INDEX</span><h1>Know what you are practising.</h1><p>{{ catalog.summary.practiceable_count.toLocaleString() }} practice records. {{ catalog.summary.outline_count.toLocaleString() }} source-outline rows are hidden.</p></div>
+      <div><span class="eyebrow">{{ isEi ? '892 FOUNDATION BANK' : 'CLEANED QUESTION INDEX' }}</span><h1>{{ isEi ? 'Electronic information practice.' : 'Know what you are practising.' }}</h1><p>{{ catalog.summary.practiceable_count.toLocaleString() }} practice records. {{ catalog.summary.outline_count.toLocaleString() }} source-outline rows are hidden.</p></div>
       <button v-if="lastQuestionUuid || questions?.results.length" class="primary-action" @pointerenter="prefetchQuestion(lastQuestionUuid || questions?.results[0]?.uuid || null, navigationQueryString())" @click="openQuestion(lastQuestionUuid || questions!.results[0].uuid)">{{ lastQuestionUuid ? 'Resume last question' : 'Open next question' }} <b>→</b></button>
     </header>
 
-    <aside class="collection-credit"><strong>THANKS TO CXY</strong><span>All question-bank source material was collected and organized by Bilibili creator cxy (澄潇宇). PDF authorship is shown separately when available.</span></aside>
+    <aside v-if="!isEi" class="collection-credit"><strong>THANKS TO CXY</strong><span>All question-bank source material was collected and organized by Bilibili creator cxy (澄潇宇). PDF authorship is shown separately when available.</span></aside>
+    <aside v-else class="collection-credit"><strong>892 · EI</strong><span>156 foundational examples and 60 short-answer questions imported from the owner-provided Markdown bank. Formulae are rendered from the original LaTeX.</span></aside>
 
     <div class="taxonomy-grid">
       <button :class="{ active: sourceCategory === '' }" @click="sourceCategory = ''"><span>ALL PRACTICE</span><strong>{{ catalog.summary.practiceable_count.toLocaleString() }}</strong><small>cleaned records</small></button>

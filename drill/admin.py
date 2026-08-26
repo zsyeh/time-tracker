@@ -14,8 +14,9 @@ from .models import (
 @admin.register(QuestionDocument)
 class QuestionDocumentAdmin(admin.ModelAdmin):
     list_display = (
-        'display_title', 'title', 'author', 'page_count', 'parser_strategy', 'imported_at',
+        'workspace', 'display_title', 'title', 'author', 'page_count', 'parser_strategy', 'imported_at',
     )
+    list_filter = ('workspace',)
     search_fields = ('display_title', 'title', 'author', 'attribution', 'filename', 'sha256')
 
 

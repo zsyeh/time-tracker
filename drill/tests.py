@@ -136,6 +136,51 @@ class DrillApiTests(TestCase):
         self.assertNotIn('prompt_text', first)
         self.assertNotIn('assets', first)
 
+    @override_settings(
+        ALLOWED_HOSTS=['testserver', 'ei.ehzsy.site'],
+        EI_HOSTS={'ei.ehzsy.site'},
+    )
+    def test_ei_host_has_an_isolated_question_workspace(self):
+        ei_document = QuestionDocument.objects.create(
+            source_id=892000000,
+            workspace='ei',
+            filename='892.md',
+            title='892 Electronic Information',
+            sha256='8' * 64,
+            page_count=0,
+        )
+        ei_topic = QuestionTopic.objects.create(
+            source_id=892000001,
+            document=ei_document,
+            title='Circuit Fundamentals',
+            level=1,
+            sort_order=1,
+        )
+        ei_question = Question.objects.create(
+            document=ei_document,
+            topic=ei_topic,
+            similarity_topic=ei_topic,
+            question_order=1,
+            source_label='CIR-01-01-P01',
+            prompt_text='EI ONLY',
+            content_mode='markdown',
+            fingerprint='8' * 64,
+        )
+        self.client.force_login(self.alice)
+
+        drill_results = self.client.get('/api/drill/questions/').json()['results']
+        ei_results = self.client.get(
+            '/api/drill/questions/', HTTP_HOST='ei.ehzsy.site',
+        ).json()['results']
+
+        self.assertNotIn(str(ei_question.uuid), [row['uuid'] for row in drill_results])
+        self.assertEqual([row['uuid'] for row in ei_results], [str(ei_question.uuid)])
+        blocked = self.client.get(
+            f'/api/drill/questions/{self.question.uuid}/',
+            HTTP_HOST='ei.ehzsy.site',
+        )
+        self.assertEqual(blocked.status_code, 404)
+
     def test_agent_markdown_solution_is_detail_only(self):
         self.question.answer_markdown = '## Solution\n\n$\\int_0^1 x\\,dx=\\frac12$'
         self.question.answer_source = 'codex-reviewed'
@@ -966,8 +1011,9 @@ class QuestionAssetRerenderTests(SimpleTestCase):
 @override_settings(
     SECURE_SSL_REDIRECT=False,
     DEBUG=False,
-    ALLOWED_HOSTS=['timer.ehzsy.site', 'drill.ehzsy.site'],
+    ALLOWED_HOSTS=['timer.ehzsy.site', 'drill.ehzsy.site', 'ei.ehzsy.site'],
     DRILL_HOSTS={'drill.ehzsy.site'},
+    EI_HOSTS={'ei.ehzsy.site'},
 )
 class DrillHostRoutingTests(TestCase):
     def test_icons_are_drill_specific_without_changing_timer_icons(self):
@@ -1000,9 +1046,11 @@ class DrillHostRoutingTests(TestCase):
             (drill / 'index.html').write_text('<html>DRILL FRONTEND</html>', encoding='utf-8')
             with self.settings(FRONTEND_DIST=timer, DRILL_FRONTEND_DIST=drill):
                 drill_response = self.client.get('/', HTTP_HOST='drill.ehzsy.site')
+                ei_response = self.client.get('/', HTTP_HOST='ei.ehzsy.site')
                 timer_response = self.client.get('/', HTTP_HOST='timer.ehzsy.site')
                 blocked = self.client.get('/practice', HTTP_HOST='timer.ehzsy.site')
         self.assertContains(drill_response, 'DRILL FRONTEND')
+        self.assertContains(ei_response, 'DRILL FRONTEND')
         self.assertContains(timer_response, 'TIMER FRONTEND')
         self.assertEqual(blocked.status_code, 404)
 
@@ -1010,9 +1058,11 @@ class DrillHostRoutingTests(TestCase):
 @override_settings(
     SECURE_SSL_REDIRECT=False,
     DEBUG=False,
-    ALLOWED_HOSTS=['timer.ehzsy.site', 'drill.ehzsy.site'],
+    ALLOWED_HOSTS=['timer.ehzsy.site', 'drill.ehzsy.site', 'ei.ehzsy.site'],
     DRILL_HOSTS={'drill.ehzsy.site'},
+    EI_HOSTS={'ei.ehzsy.site'},
     DRILL_ORIGIN='https://drill.ehzsy.site',
+    EI_ORIGIN='https://ei.ehzsy.site',
     DRILL_AUTH_HOST='timer.ehzsy.site',
     DRILL_AUTH_ORIGIN='https://timer.ehzsy.site',
 )
@@ -1036,6 +1086,36 @@ class DrillPasskeyHandoffTests(TestCase):
         response = self.client.get('/paper', HTTP_HOST='drill.ehzsy.site', secure=True)
         self.assertEqual(response.status_code, 302)
         self.assertIn('next=%2Fpaper', response.url)
+
+    def test_anonymous_ei_page_uses_timer_relay_and_preserves_site(self):
+        response = self.client.get(
+            '/practice?topic=3', HTTP_HOST='ei.ehzsy.site', secure=True,
+        )
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.startswith(
+            'https://timer.ehzsy.site/drill-auth/start?',
+        ))
+        self.assertIn('site=ei', response.url)
+        self.assertIn('next=%2Fpractice%3Ftopic%3D3', response.url)
+
+    def test_timer_handoff_can_target_ei(self):
+        timer = Client()
+        timer.force_login(self.user)
+        start = timer.get(
+            '/drill-auth/start?site=ei&next=/heatmap',
+            HTTP_HOST='timer.ehzsy.site',
+            secure=True,
+        )
+        self.assertTrue(start.url.startswith(
+            'https://ei.ehzsy.site/drill-auth/complete/',
+        ))
+        raw_token = urlsplit(start.url).path.rsplit('/', 1)[1]
+        completed = Client().get(
+            f'/drill-auth/complete/{raw_token}',
+            HTTP_HOST='ei.ehzsy.site',
+            secure=True,
+        )
+        self.assertRedirects(completed, '/heatmap', fetch_redirect_response=False)
 
     def test_authenticated_timer_issues_hashed_one_time_login_for_drill(self):
         timer = Client()
