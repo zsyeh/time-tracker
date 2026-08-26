@@ -9,13 +9,18 @@ from django.db import transaction
 from drill.models import Question, QuestionDocument, QuestionTopic
 
 
-DOCUMENT_SOURCE_ID = 892_000_000
-SOURCE_ID_BASE = 892_000_000_000
+DOCUMENT_SOURCE_ID_BASE = 892_100_000
+TOPIC_SOURCE_ID_BASE = 892_100_000_000
 HEADING_RE = re.compile(r'^(#{2,4})\s+(.+?)\s*$', re.MULTILINE)
 
 
 def stable_uuid(problem_id):
     return uuid.uuid5(uuid.NAMESPACE_URL, f'https://ei.ehzsy.site/questions/{problem_id}')
+
+
+def stable_topic_source_id(key):
+    digest = hashlib.sha256(key.encode('utf-8')).digest()
+    return TOPIC_SOURCE_ID_BASE + int.from_bytes(digest[:6], 'big')
 
 
 def field(block, name):
@@ -58,25 +63,15 @@ class Command(BaseCommand):
                 f'Expected 156 base and 60 short-answer questions; found {base_count} and {short_count}.'
             )
         with transaction.atomic():
-            document, _ = QuestionDocument.objects.update_or_create(
-                source_id=DOCUMENT_SOURCE_ID,
-                defaults={
-                    'workspace': 'ei',
-                    'filename': path.name,
-                    'title': '892 电子信息专业综合',
-                    'display_title': '892 电子信息专业综合基础题库',
-                    'author': '',
-                    'attribution': 'Imported from the owner-provided Markdown question bank.',
-                    'sha256': hashlib.sha256(source.encode('utf-8')).hexdigest(),
-                    'page_count': 0,
-                    'parser_strategy': 'structured_markdown_v1',
-                    'relation_type': 'question_answer_pairs',
-                },
-            )
-            topics = self.import_topics(document, records)
-            imported = self.import_questions(document, records, topics)
+            documents = self.import_documents(path, source, records)
+            topics = self.import_topics(documents, records)
+            imported = self.import_questions(documents, records, topics)
+            QuestionDocument.objects.filter(
+                workspace='ei',
+                parser_strategy='structured_markdown_v1',
+            ).exclude(pk__in=[item.pk for item in documents.values()]).delete()
         self.stdout.write(self.style.SUCCESS(
-            f'EI question bank ready: {len(topics)} topics and {imported} questions '
+            f'EI question bank ready: {len(documents)} books, {len(topics)} topics and {imported} questions '
             f'({base_count} base, {short_count} short-answer).'
         ))
 
@@ -138,42 +133,66 @@ class Command(BaseCommand):
                 })
         return records
 
-    def import_topics(self, document, records):
-        ordered = []
-        seen = set()
-        for record in records:
-            for key, title, level, parent_key in (
-                (f'major:{record["major"]}', record['major'], 1, None),
-                (f'group:{record["group"]}', record['group'], 2, f'major:{record["major"]}'),
-            ):
-                if key not in seen:
-                    seen.add(key)
-                    ordered.append((key, title, level, parent_key))
-            if record['kind'] == 'base':
-                key = f'kp:{record["kp_id"]}'
-                if key not in seen:
-                    seen.add(key)
-                    ordered.append((key, record['title'], 3, f'group:{record["group"]}'))
+    def import_documents(self, path, source, records):
+        majors = list(dict.fromkeys(record['major'] for record in records))
         result = {}
-        for order, (key, title, level, parent_key) in enumerate(ordered, 1):
-            source_id = SOURCE_ID_BASE + order
-            topic, _ = QuestionTopic.objects.update_or_create(
-                source_id=source_id,
+        source_digest = hashlib.sha256(source.encode('utf-8')).hexdigest()
+        for index, major in enumerate(majors, 1):
+            document, _ = QuestionDocument.objects.update_or_create(
+                source_id=DOCUMENT_SOURCE_ID_BASE + index,
                 defaults={
-                    'document': document,
-                    'parent': result.get(parent_key),
-                    'title': title,
-                    'display_title': title,
-                    'normalized_title': key,
-                    'level': level,
-                    'sort_order': order,
+                    'workspace': 'ei',
+                    'filename': f'{path.name}#{major}',
+                    'title': f'892 · {major}',
+                    'display_title': f'892 · {major}',
+                    'author': '',
+                    'attribution': 'Imported from the owner-provided Markdown question bank.',
+                    'sha256': hashlib.sha256(f'{source_digest}:{major}'.encode()).hexdigest(),
+                    'page_count': 0,
+                    'parser_strategy': 'structured_markdown_v1',
+                    'relation_type': 'question_answer_pairs',
                 },
             )
-            result[key] = topic
+            result[major] = document
         return result
 
-    def import_questions(self, document, records, topics):
-        for order, record in enumerate(records, 1):
+    def import_topics(self, documents, records):
+        result = {}
+        for major, document in documents.items():
+            ordered = []
+            seen = set()
+            for record in (item for item in records if item['major'] == major):
+                group_key = f'group:{record["group"]}'
+                if group_key not in seen:
+                    seen.add(group_key)
+                    ordered.append((group_key, record['group'], 1, None))
+                if record['kind'] == 'base':
+                    key = f'kp:{record["kp_id"]}'
+                    if key not in seen:
+                        seen.add(key)
+                        ordered.append((key, record['title'], 2, group_key))
+            for order, (key, title, level, parent_key) in enumerate(ordered, 1):
+                source_id = stable_topic_source_id(f'{major}:{key}')
+                topic, _ = QuestionTopic.objects.update_or_create(
+                    source_id=source_id,
+                    defaults={
+                        'document': document,
+                        'parent': result.get(parent_key),
+                        'title': title,
+                        'display_title': title,
+                        'normalized_title': key,
+                        'level': level,
+                        'sort_order': order,
+                    },
+                )
+                result[key] = topic
+        return result
+
+    def import_questions(self, documents, records, topics):
+        orders = {major: 0 for major in documents}
+        for record in records:
+            document = documents[record['major']]
+            orders[record['major']] += 1
             fingerprint = hashlib.sha256(f'ei-892:{record["code"]}'.encode()).hexdigest()
             topic = topics.get(f'kp:{record["kp_id"]}') or topics[f'group:{record["group"]}']
             Question.objects.update_or_create(
@@ -183,7 +202,7 @@ class Command(BaseCommand):
                     'document': document,
                     'topic': topic,
                     'similarity_topic': topic,
-                    'question_order': order,
+                    'question_order': orders[record['major']],
                     'source_label': record['code'],
                     'display_label': record['title'],
                     'prompt_text': record['prompt'],
