@@ -2,6 +2,7 @@ from django.urls import path
 
 from .views import (
     DrillAssetView,
+    DrillActivityHeatmapView,
     DrillCatalogView,
     DrillHeatmapView,
     DrillBookFeelView,
@@ -22,6 +23,7 @@ urlpatterns = [
     path('catalog/', DrillCatalogView.as_view(), name='drill_catalog'),
     path('progress/', DrillProgressView.as_view(), name='drill_progress'),
     path('heatmap/', DrillHeatmapView.as_view(), name='drill_heatmap'),
+    path('heatmap/activity/', DrillActivityHeatmapView.as_view(), name='drill_activity_heatmap'),
     path('collections/', DrillCollectionView.as_view(), name='drill_collections'),
     path('feel/', DrillBookFeelView.as_view(), name='drill_book_feel'),
     path('insight/', DrillInsightView.as_view(), name='drill_insight'),

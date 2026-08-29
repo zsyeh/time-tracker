@@ -8,6 +8,7 @@ import pymupdf
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
 from django.test import Client, SimpleTestCase, TestCase, override_settings
+from django.utils import timezone
 
 from .cleaning import (
     classify_record_kind,
@@ -243,6 +244,59 @@ class DrillApiTests(TestCase):
         self.assertEqual(limits['intensity'], 0)
         self.assertEqual(limits['state'], 'unattempted')
         self.assertNotIn('prompt_text', limits)
+
+    def test_activity_heatmap_is_user_and_workspace_scoped(self):
+        ei_document = QuestionDocument.objects.create(
+            source_id=99,
+            workspace='ei',
+            filename='ei.md',
+            title='Signals',
+            sha256='9' * 64,
+            page_count=1,
+        )
+        ei_topic = QuestionTopic.objects.create(
+            source_id=99,
+            document=ei_document,
+            title='Signals',
+            level=1,
+            sort_order=1,
+        )
+        ei_question = Question.objects.create(
+            document=ei_document,
+            topic=ei_topic,
+            similarity_topic=ei_topic,
+            question_order=1,
+            source_label='EI 1',
+            prompt_text='Private EI question',
+            content_mode='text',
+            fingerprint='9' * 64,
+        )
+        now = timezone.now()
+        QuestionAttempt.objects.create(user=self.alice, question=self.question, result='done', created_at=now)
+        QuestionAttempt.objects.create(user=self.alice, question=self.question, result='correct', created_at=now)
+        QuestionAttempt.objects.create(user=self.alice, question=self.question, result='reset', created_at=now)
+        QuestionAttempt.objects.create(user=self.bob, question=self.similar, result='review', created_at=now)
+        QuestionAttempt.objects.create(user=self.alice, question=ei_question, result='done', created_at=now)
+
+        self.client.force_login(self.alice)
+        response = self.client.get('/api/drill/heatmap/activity/')
+        self.assertEqual(response.status_code, 200)
+        payload = response.json()
+        today = timezone.localdate().isoformat()
+        today_cell = next(day for day in payload['overall']['days'] if day['date'] == today)
+        self.assertEqual(payload['overall']['total_attempts'], 2)
+        self.assertEqual(payload['overall']['active_days'], 1)
+        self.assertEqual(today_cell['count'], 2)
+        self.assertEqual(today_cell['level'], 2)
+        self.assertEqual(len(payload['overall']['days']), 371)
+        self.assertEqual(len(payload['books']), 1)
+        self.assertEqual(payload['books'][0]['document'], 'Limits')
+        self.assertEqual(payload['books'][0]['total_attempts'], 2)
+
+        ei_response = self.client.get('/api/drill/heatmap/activity/', HTTP_HOST='ei.ehzsy.site')
+        self.assertEqual(ei_response.status_code, 200)
+        self.assertEqual(ei_response.json()['overall']['total_attempts'], 1)
+        self.assertEqual(ei_response.json()['books'][0]['document'], 'Signals')
 
     def test_detail_navigation_respects_filter_context(self):
         self.client.force_login(self.alice)

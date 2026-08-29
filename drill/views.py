@@ -3,6 +3,7 @@ import datetime
 from django.conf import settings
 from django.db import transaction
 from django.db.models import Count, Exists, Max, OuterRef, Prefetch, Q, Subquery
+from django.db.models.functions import TruncDate
 from django.http import Http404, HttpResponse, HttpResponseNotModified
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -844,6 +845,99 @@ class DrillHeatmapView(APIView):
             'topic_count': len(unique_topic_ids),
             'groups': groups,
             'levels': [0, 1, 2, 3, 4],
+        })
+
+
+class DrillActivityHeatmapView(APIView):
+    """Return a compact, user-scoped GitHub-style activity calendar."""
+
+    @staticmethod
+    def activity_level(count):
+        # Fixed bands keep colors comparable between the all-books view and each book.
+        for level, minimum in reversed(tuple(enumerate((0, 1, 2, 3, 4, 6, 9, 13, 20)))):
+            if count >= minimum:
+                return level
+        return 0
+
+    def get(self, request):
+        workspace = request_workspace(request)
+        today = timezone.localdate()
+        # Render 53 complete Sunday-to-Saturday columns, including the current week.
+        calendar_end = today + datetime.timedelta(days=(5 - today.weekday()) % 7)
+        calendar_start = calendar_end - datetime.timedelta(days=(53 * 7 - 1))
+        current_timezone = timezone.get_current_timezone()
+        range_start = timezone.make_aware(
+            datetime.datetime.combine(calendar_start, datetime.time.min), current_timezone,
+        )
+        range_end = timezone.make_aware(
+            datetime.datetime.combine(today + datetime.timedelta(days=1), datetime.time.min),
+            current_timezone,
+        )
+        documents = list(
+            QuestionDocument.objects.filter(workspace=workspace)
+            .values('id', 'title', 'display_title')
+            .order_by('id')
+        )
+        rows = QuestionAttempt.objects.filter(
+            user=request.user,
+            question__document__workspace=workspace,
+            result__in=('done', 'correct', 'review'),
+            created_at__gte=range_start,
+            created_at__lt=range_end,
+        ).annotate(
+            activity_date=TruncDate('created_at', tzinfo=current_timezone),
+        ).values(
+            'activity_date', 'question__document_id',
+        ).annotate(
+            count=Count('id'),
+        ).order_by()
+
+        overall_counts = {}
+        book_counts = {}
+        for row in rows:
+            day = row['activity_date']
+            count = row['count']
+            overall_counts[day] = overall_counts.get(day, 0) + count
+            book_counts.setdefault(row['question__document_id'], {})[day] = count
+
+        def calendar(counts):
+            days = []
+            total = 0
+            active_days = 0
+            maximum = 0
+            for offset in range(53 * 7):
+                day = calendar_start + datetime.timedelta(days=offset)
+                count = counts.get(day, 0)
+                total += count
+                active_days += int(count > 0)
+                maximum = max(maximum, count)
+                days.append({
+                    'date': day.isoformat(),
+                    'count': count,
+                    'level': self.activity_level(count),
+                    'is_future': day > today,
+                })
+            return {
+                'total_attempts': total,
+                'active_days': active_days,
+                'max_daily_count': maximum,
+                'days': days,
+            }
+
+        return Response({
+            'start_date': calendar_start.isoformat(),
+            'end_date': calendar_end.isoformat(),
+            'today': today.isoformat(),
+            'levels': list(range(9)),
+            'overall': calendar(overall_counts),
+            'books': [
+                {
+                    'document_id': document['id'],
+                    'document': document['display_title'] or document['title'],
+                    **calendar(book_counts.get(document['id'], {})),
+                }
+                for document in documents
+            ],
         })
 
 
