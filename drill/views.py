@@ -862,15 +862,16 @@ class DrillActivityHeatmapView(APIView):
     def get(self, request):
         workspace = request_workspace(request)
         today = timezone.localdate()
-        # Render 53 complete Sunday-to-Saturday columns, including the current week.
-        calendar_end = today + datetime.timedelta(days=(5 - today.weekday()) % 7)
-        calendar_start = calendar_end - datetime.timedelta(days=(53 * 7 - 1))
+        calendar_start = datetime.date(today.year, 7, 20)
+        calendar_end = datetime.date(today.year, 12, 19)
         current_timezone = timezone.get_current_timezone()
         range_start = timezone.make_aware(
             datetime.datetime.combine(calendar_start, datetime.time.min), current_timezone,
         )
         range_end = timezone.make_aware(
-            datetime.datetime.combine(today + datetime.timedelta(days=1), datetime.time.min),
+            datetime.datetime.combine(
+                min(today, calendar_end) + datetime.timedelta(days=1), datetime.time.min,
+            ),
             current_timezone,
         )
         documents = list(
@@ -905,7 +906,7 @@ class DrillActivityHeatmapView(APIView):
             total = 0
             active_days = 0
             maximum = 0
-            for offset in range(53 * 7):
+            for offset in range((calendar_end - calendar_start).days + 1):
                 day = calendar_start + datetime.timedelta(days=offset)
                 count = counts.get(day, 0)
                 total += count
