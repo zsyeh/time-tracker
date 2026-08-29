@@ -1143,6 +1143,11 @@ class DrillPasskeyHandoffTests(TestCase):
         self.assertEqual(response.status_code, 302)
         self.assertIn('next=%2Fpaper', response.url)
 
+    def test_anonymous_activity_deep_link_preserves_target(self):
+        response = self.client.get('/activity', HTTP_HOST='drill.ehzsy.site', secure=True)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('next=%2Factivity', response.url)
+
     def test_anonymous_ei_page_uses_timer_relay_and_preserves_site(self):
         response = self.client.get(
             '/practice?topic=3', HTTP_HOST='ei.ehzsy.site', secure=True,

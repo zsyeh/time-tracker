@@ -133,6 +133,7 @@ urlpatterns = [
     path('share/<str:raw_token>', public_spa_view, name='spa_public_share'),
     path('practice', drill_spa_view, name='drill_practice'),
     path('practice/<uuid:question_uuid>', drill_spa_view, name='drill_question'),
+    path('activity', drill_spa_view, name='drill_activity_page'),
     path('heatmap', drill_spa_view, name='drill_heatmap_page'),
     path('paper', drill_spa_view, name='drill_paper_page'),
     path('favorites', drill_spa_view, name='drill_favorites_page'),

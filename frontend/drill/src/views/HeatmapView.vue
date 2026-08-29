@@ -3,7 +3,6 @@ import { nextTick, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api } from '../lib/api'
 import { cachedHeatmap, storeHeatmap } from '../lib/workspace'
-import ActivityCalendar from '../components/ActivityCalendar.vue'
 
 interface HeatmapQuestion {
   uuid: string
@@ -42,29 +41,11 @@ interface HeatmapPayload {
   }>
 }
 
-interface ActivityCalendarData {
-  total_attempts: number
-  active_days: number
-  max_daily_count: number
-  days: Array<{ date: string; count: number; level: number; is_future: boolean }>
-}
-
-interface ActivityPayload {
-  start_date: string
-  end_date: string
-  today: string
-  overall: ActivityCalendarData
-  books: Array<ActivityCalendarData & { document_id: number; document: string }>
-}
-
 const router = useRouter()
 const route = useRoute()
 const data = ref<HeatmapPayload | null>(null)
 const loading = ref(true)
 const error = ref('')
-const activity = ref<ActivityPayload | null>(null)
-const activityLoading = ref(true)
-const activityError = ref('')
 const initialScope = ['past_exam', 'mock_exam', 'all'].includes(String(route.query.scope))
   ? String(route.query.scope) as 'past_exam' | 'mock_exam' | 'all'
   : 'all'
@@ -168,33 +149,13 @@ async function load() {
   }
 }
 
-async function loadActivity() {
-  const cacheKey = 'activity'
-  const cached = cachedHeatmap<ActivityPayload>(cacheKey)
-  if (cached) activity.value = cached
-  activityLoading.value = !cached
-  activityError.value = ''
-  try {
-    const value = await api<ActivityPayload>('/api/drill/heatmap/activity/')
-    activity.value = value
-    storeHeatmap(cacheKey, value)
-  } catch (reason) {
-    activityError.value = (reason as Error).message
-  } finally {
-    activityLoading.value = false
-  }
-}
-
 watch([scope, mode], () => {
   selectedTopic.value = null
   selectedQuestion.value = null
   pendingQuestionUuid = ''
   void load()
 })
-onMounted(() => {
-  void load()
-  void loadActivity()
-})
+onMounted(load)
 </script>
 
 <template>
@@ -207,36 +168,6 @@ onMounted(() => {
         <div class="heat-legend"><i class="status-unattempted" /><span>NOT STARTED</span><i class="status-progress" /><span>IN PROGRESS</span><i class="status-mastered" /><span>MASTERED</span><i class="status-review" /><span>REVIEW</span></div>
       </div>
     </header>
-    <section class="activity-section">
-      <div class="activity-section-heading">
-        <div><span class="eyebrow">DAILY PRACTICE</span><h2>Practice activity</h2><p>GitHub-style intensity reflects completed question attempts. Reset events are excluded.</p></div>
-        <div class="activity-legend"><span>LESS</span><i v-for="level in 9" :key="level" :class="`activity-level-${level - 1}`" /><span>MORE</span></div>
-      </div>
-      <p v-if="activityError" class="error-state">{{ activityError }}</p>
-      <div v-else-if="activityLoading" class="question-skeleton activity-skeleton">BUILDING ACTIVITY…</div>
-      <template v-else-if="activity">
-        <ActivityCalendar
-          eyebrow="ALL BOOKS"
-          title="All practice"
-          :total-attempts="activity.overall.total_attempts"
-          :active-days="activity.overall.active_days"
-          :max-daily-count="activity.overall.max_daily_count"
-          :days="activity.overall.days"
-        />
-        <div class="book-activity-grid">
-          <ActivityCalendar
-            v-for="book in activity.books"
-            :key="book.document_id"
-            eyebrow="BOOK"
-            :title="book.document"
-            :total-attempts="book.total_attempts"
-            :active-days="book.active_days"
-            :max-daily-count="book.max_daily_count"
-            :days="book.days"
-          />
-        </div>
-      </template>
-    </section>
     <p v-if="error" class="error-state">{{ error }}</p>
     <div v-else-if="loading" class="question-skeleton">BUILDING HEATMAP…</div>
     <template v-else-if="data">
