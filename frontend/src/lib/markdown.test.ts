@@ -5,6 +5,21 @@ import { describe, expect, it } from 'vitest'
 import { renderMarkdown } from './markdown'
 
 describe('renderMarkdown security', () => {
+  it('renders inline and display TeX used by EI questions', () => {
+    const rendered = renderMarkdown([
+      '某电阻两端电压为 $12\\,\\text{V}$，电流为 $2\\,\\text{A}$。',
+      '',
+      '$$R=\\frac{U}{I}=6\\,\\Omega$$',
+    ].join('\n'))
+    const container = document.createElement('div')
+    container.innerHTML = rendered
+
+    expect(container.querySelectorAll('.katex').length).toBe(3)
+    expect(container.querySelector('.katex-display')).not.toBeNull()
+    expect(container.textContent).toContain('12')
+    expect(container.textContent).toContain('R')
+  })
+
   it('keeps shared Markdown inert while preserving safe links', () => {
     const rendered = renderMarkdown([
       '<script>window.pwned = true</script>',
