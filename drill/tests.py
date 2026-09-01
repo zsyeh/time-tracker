@@ -22,8 +22,11 @@ from .asset_rerender import (
     CropLocation,
     FormulaAwareCropAdjuster,
     LegacyCropLocator,
+    crop_pixmap_rows,
+    reframe_crop_image,
     render_blank_crop,
     render_pdf_crop,
+    trailing_edge_fragment_start,
 )
 from .models import (
     DrillLoginHandoff,
@@ -1009,6 +1012,34 @@ class CxyDifferentiationPdfTests(SimpleTestCase):
 
 
 class QuestionAssetRerenderTests(SimpleTestCase):
+    def test_cut_formula_fragment_can_be_moved_to_following_crop(self):
+        pdf = pymupdf.open()
+        page = pdf.new_page(width=220, height=180)
+        page.insert_text((20, 82), 'Previous question', fontsize=10)
+        page.draw_line((95, 112), (95, 128), width=2)
+        page.draw_line((80, 118), (150, 118), width=2)
+        previous = page.get_pixmap(
+            matrix=pymupdf.Matrix(2.5, 2.5),
+            clip=pymupdf.Rect(0, 60, 220, 120), alpha=False,
+        ).tobytes('png')
+        current = page.get_pixmap(
+            matrix=pymupdf.Matrix(2.5, 2.5),
+            clip=pymupdf.Rect(0, 120, 220, 165), alpha=False,
+        ).tobytes('png')
+
+        fragment_start = trailing_edge_fragment_start(previous, 180)
+        self.assertIsNotNone(fragment_start)
+        previous_pixmap = pymupdf.Pixmap(previous)
+        fragment = crop_pixmap_rows(previous, fragment_start, previous_pixmap.height, 180)
+        repaired, width, height, leading_height = reframe_crop_image(
+            current, 180, leading_fragment=fragment,
+        )
+
+        self.assertEqual(width, pymupdf.Pixmap(current).width)
+        self.assertGreater(leading_height, 0)
+        self.assertEqual(height, pymupdf.Pixmap(current).height + leading_height)
+        self.assertTrue(repaired.startswith(b'\x89PNG\r\n\x1a\n'))
+
     def test_legacy_crop_can_be_located_and_rendered_at_180_dpi(self):
         pdf = pymupdf.open()
         page = pdf.new_page(width=200, height=300)
@@ -1062,6 +1093,75 @@ class QuestionAssetRerenderTests(SimpleTestCase):
         self.assertLess(adjusted.y0, 58)
         self.assertLess(adjusted.y1, 170)
         self.assertGreater(adjusted.y1, 145)
+
+
+class QuestionCropEdgeRepairCommandTests(TestCase):
+    def test_command_moves_cut_fragment_and_is_dry_runnable(self):
+        document = QuestionDocument.objects.create(
+            source_id=881,
+            filename='edge.pdf',
+            title='Edge formulas',
+            display_title='Edge formulas',
+            sha256='e' * 64,
+            page_count=1,
+            parser_strategy='TocLinkParser',
+        )
+        first = Question.objects.create(
+            document=document,
+            question_order=1,
+            source_label='First',
+            content_mode='image',
+            fingerprint='1' * 64,
+        )
+        second = Question.objects.create(
+            document=document,
+            question_order=2,
+            source_label='Second',
+            content_mode='image',
+            fingerprint='2' * 64,
+        )
+        pdf = pymupdf.open()
+        page = pdf.new_page(width=220, height=180)
+        page.insert_text((20, 82), 'Previous question', fontsize=10)
+        page.draw_line((95, 112), (95, 128), width=2)
+        page.draw_line((80, 118), (150, 118), width=2)
+        first_png = page.get_pixmap(
+            matrix=pymupdf.Matrix(2.5, 2.5),
+            clip=pymupdf.Rect(0, 60, 220, 120), alpha=False,
+        ).tobytes('png')
+        second_png = page.get_pixmap(
+            matrix=pymupdf.Matrix(2.5, 2.5),
+            clip=pymupdf.Rect(0, 120, 220, 165), alpha=False,
+        ).tobytes('png')
+        first_asset = QuestionAsset.objects.create(
+            source_id=8811, question=first, asset_type='question_crop', position=0,
+            sha256=hashlib.sha256(first_png).hexdigest(), image_data=first_png,
+            width=pymupdf.Pixmap(first_png).width, height=pymupdf.Pixmap(first_png).height,
+            source_page_index=0, source_x0=0, source_y0=60, source_x1=220, source_y1=120,
+            render_dpi=180,
+        )
+        second_asset = QuestionAsset.objects.create(
+            source_id=8812, question=second, asset_type='question_crop', position=0,
+            sha256=hashlib.sha256(second_png).hexdigest(), image_data=second_png,
+            width=pymupdf.Pixmap(second_png).width, height=pymupdf.Pixmap(second_png).height,
+            source_page_index=0, source_x0=0, source_y0=120, source_x1=220, source_y1=165,
+            render_dpi=180,
+        )
+        original_total_height = first_asset.height + second_asset.height
+
+        call_command('repair_question_crop_edges', source_id=[881], dry_run=True)
+        document.refresh_from_db()
+        self.assertNotIn('edge-safe-v1', document.parser_strategy)
+
+        call_command('repair_question_crop_edges', source_id=[881])
+        document.refresh_from_db()
+        first_asset.refresh_from_db()
+        second_asset.refresh_from_db()
+        self.assertIn('edge-safe-v1', document.parser_strategy)
+        self.assertLess(first_asset.height, pymupdf.Pixmap(first_png).height)
+        self.assertGreater(second_asset.height, pymupdf.Pixmap(second_png).height)
+        self.assertEqual(first_asset.height + second_asset.height, original_total_height)
+        self.assertLess(second_asset.source_y0, 120)
 
 
 @override_settings(

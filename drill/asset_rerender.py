@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import zlib
+import math
 from array import array
 from collections import Counter, defaultdict
 from dataclasses import dataclass, replace
@@ -230,3 +231,88 @@ def render_blank_crop(width: int, height: int, dpi: int) -> tuple[bytes, int, in
     pixmap.clear_with(255)
     pixmap.set_dpi(dpi, dpi)
     return pixmap.tobytes('png'), pixmap.width, pixmap.height
+
+
+def trailing_edge_fragment_start(
+    image_data: bytes,
+    dpi: int,
+    *,
+    max_points: float = 18.0,
+    separator_points: float = 3.0,
+    edge_points: float = 1.5,
+) -> int | None:
+    """Locate ink cut by the lower edge after a safe blank-row separator.
+
+    Legacy question crops meet at PDF link anchors. Tall integrals, matrices and
+    limits can start above that anchor, leaving their upper fragment at the end
+    of the preceding crop. We only recover a fragment when ink reaches the crop
+    edge and a real whitespace run separates it from the preceding question.
+    """
+    pixmap = pymupdf.Pixmap(image_data)
+    if pixmap.n not in {3, 4}:
+        pixmap = pymupdf.Pixmap(pymupdf.csRGB, pixmap)
+    max_rows = max(1, math.ceil(max_points * dpi / 72.0))
+    separator_rows = max(3, math.ceil(separator_points * dpi / 72.0))
+    edge_rows = max(2, math.ceil(edge_points * dpi / 72.0))
+    start = max(0, pixmap.height - max_rows)
+    samples = bytes(pixmap.samples)
+    dark_rows = []
+    for y in range(start, pixmap.height):
+        row = samples[y * pixmap.stride:(y + 1) * pixmap.stride]
+        dark_pixels = row[0::pixmap.n].translate(_DARK_PIXEL_TABLE).count(1)
+        dark_rows.append(dark_pixels > 2)
+    if not any(dark_rows[-edge_rows:]):
+        return None
+
+    last_separator_end = None
+    run_start = None
+    for index, is_dark in enumerate(dark_rows):
+        if not is_dark and run_start is None:
+            run_start = index
+        elif is_dark and run_start is not None:
+            if index - run_start >= separator_rows:
+                last_separator_end = index
+            run_start = None
+    if last_separator_end is None or not any(dark_rows[last_separator_end:]):
+        return None
+    return start + last_separator_end
+
+
+def crop_pixmap_rows(image_data: bytes, y0: int, y1: int, dpi: int) -> bytes:
+    source = pymupdf.Pixmap(image_data)
+    y0 = max(0, min(source.height, y0))
+    y1 = max(y0, min(source.height, y1))
+    output = pymupdf.Pixmap(
+        pymupdf.csRGB, pymupdf.IRect(0, 0, source.width, max(1, y1 - y0)), False,
+    )
+    output.clear_with(255)
+    source.set_origin(0, -y0)
+    output.copy(source, pymupdf.IRect(0, 0, source.width, max(1, y1 - y0)))
+    output.set_dpi(dpi, dpi)
+    return output.tobytes('png')
+
+
+def reframe_crop_image(
+    image_data: bytes,
+    dpi: int,
+    *,
+    leading_fragment: bytes | None = None,
+    trim_bottom_rows: int = 0,
+) -> tuple[bytes, int, int, int]:
+    """Prepend a recovered edge fragment and optionally remove it from source."""
+    current = pymupdf.Pixmap(image_data)
+    leading = pymupdf.Pixmap(leading_fragment) if leading_fragment else None
+    body_height = max(1, current.height - max(0, trim_bottom_rows))
+    leading_height = leading.height if leading else 0
+    width = current.width
+    output = pymupdf.Pixmap(
+        pymupdf.csRGB, pymupdf.IRect(0, 0, width, leading_height + body_height), False,
+    )
+    output.clear_with(255)
+    if leading is not None:
+        leading.set_origin(0, 0)
+        output.copy(leading, pymupdf.IRect(0, 0, min(width, leading.width), leading_height))
+    current.set_origin(0, leading_height)
+    output.copy(current, pymupdf.IRect(0, leading_height, width, leading_height + body_height))
+    output.set_dpi(dpi, dpi)
+    return output.tobytes('png'), width, output.height, leading_height
