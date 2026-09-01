@@ -153,6 +153,7 @@ class FormulaAwareCropAdjuster:
         margin: float = 3.0,
         tolerance: float = 1.5,
         max_up: float = 90.0,
+        include_drawings: bool = True,
     ):
         self.document = document
         self.margin = margin
@@ -168,11 +169,12 @@ class FormulaAwareCropAdjuster:
             # Determinant bars and some matrix brackets are PDF vector paths,
             # not text. Their full-height bounds connect otherwise separate
             # formula rows and reveal the true top of the expression.
-            blocks.extend(
-                pymupdf.Rect(drawing['rect'])
-                for drawing in page.get_drawings()
-                if drawing['rect'].y1 > drawing['rect'].y0
-            )
+            if include_drawings:
+                blocks.extend(
+                    pymupdf.Rect(drawing['rect'])
+                    for drawing in page.get_drawings()
+                    if drawing['rect'].y1 > drawing['rect'].y0
+                )
             self.page_blocks.append(blocks)
 
     def boundary(self, page_index: int, anchor: float) -> float:

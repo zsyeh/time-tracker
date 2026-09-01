@@ -1010,6 +1010,17 @@ class CxyDifferentiationPdfTests(SimpleTestCase):
         self.assertEqual(len(parsed.questions), 675)
         self.assertEqual(parsed.questions[0].source_label, 'a)1993 数二;880 第二章基础选择9')
 
+    def test_formula_bounds_and_trailing_lines_are_inside_question_crops(self):
+        parsed = parse_question_pdf(Path(__file__).with_name('【A4 紧凑】一元微分做题本.pdf'))
+        tall_formula = next(item for item in parsed.questions if item.source_label.startswith('f )1994'))
+        grouped_source = next(
+            item for item in parsed.questions
+            if item.source_label.startswith('(13) 姜晓千真题同源150')
+        )
+
+        self.assertLess(tall_formula.segments[0].y0, 653)
+        self.assertGreater(grouped_source.segments[0].y1, 269.7)
+
 
 class QuestionAssetRerenderTests(SimpleTestCase):
     def test_cut_formula_fragment_can_be_moved_to_following_crop(self):

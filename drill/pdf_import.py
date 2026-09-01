@@ -16,6 +16,7 @@ from pathlib import Path
 
 import pymupdf
 
+from .asset_rerender import FormulaAwareCropAdjuster
 from .cleaning import classify_source, clean_topic_title
 
 
@@ -160,9 +161,9 @@ def _question_segments(
     end_page, end_y = end if end is not None else (start_page, _content_bottom(document, start_page))
     segments = []
     for page_index in range(start_page, end_page + 1):
-        y0 = max(CONTENT_TOP, start_y - 4.0) if page_index == start_page else CONTENT_TOP
+        y0 = max(CONTENT_TOP, start_y) if page_index == start_page else CONTENT_TOP
         y1 = (
-            min(_content_bottom(document, page_index), end_y - 6.0)
+            min(_content_bottom(document, page_index), end_y)
             if page_index == end_page
             else _content_bottom(document, page_index)
         )
@@ -208,6 +209,17 @@ def parse_question_pdf(path: Path | str) -> ParsedQuestionDocument:
         if not source_lines:
             raise ValueError('No conservative provenance-labelled questions were found.')
 
+        # This PDF uses vector page decorations near the content boundary.
+        # Text blocks retain formula extents without mistaking those lines for math.
+        crop_adjuster = FormulaAwareCropAdjuster(document, include_drawings=False)
+        safe_question_starts = {
+            index: (
+                line.page_index,
+                max(CONTENT_TOP, crop_adjuster.boundary(line.page_index, line.y0)),
+            )
+            for index, line in enumerate(source_lines, 1)
+        }
+
         question_events = {
             (line.page_index, line.y0, 1, index): line
             for index, line in enumerate(source_lines, 1)
@@ -228,11 +240,11 @@ def parse_question_pdf(path: Path | str) -> ParsedQuestionDocument:
 
         boundaries = sorted(
             [(topic.page_index, topic.y) for topic in topics]
-            + [(line.page_index, line.y0) for line in source_lines]
+            + list(safe_question_starts.values())
         )
         questions = []
         for index, line in enumerate(source_lines, 1):
-            start = (line.page_index, line.y0)
+            start = safe_question_starts[index]
             end = next((boundary for boundary in boundaries if boundary > start), None)
             segments = _question_segments(document, start, end)
             questions.append(ParsedQuestion(
