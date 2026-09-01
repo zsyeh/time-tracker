@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { View } from '@element-plus/icons-vue'
 import { api, post } from '../lib/api'
+import { heatmapLevelClass } from '../lib/heatmap'
 import type { HeatmapDay, Page, ReviewTrend as ReviewTrendType, StudySession, StudySessionSummary } from '../types'
 import MarkdownPreview from './MarkdownPreview.vue'
 import ReviewTrend from './ReviewTrend.vue'
@@ -93,7 +94,7 @@ async function openSession(session: StudySessionSummary) {
       </div>
       <div class="legend" aria-label="Activity intensity legend">
         <span>LESS</span><i class="cell level-0" /><i class="cell level-1" /><i class="cell level-2" />
-        <i class="cell level-4" /><span>≥ 5H</span><i class="cell future-day" /><span>FUTURE</span><i class="cell exam-day" /><span>EXAM</span>
+        <i class="cell level-4" /><span>≥5H</span><i class="cell level-8-plus" /><span>&gt;8H</span><i class="cell level-10-plus" /><span>&gt;10H</span><i class="cell level-12-plus" /><span>&gt;12H</span><i class="cell future-day" /><span>FUTURE</span><i class="cell exam-day" /><span>EXAM</span>
       </div>
     </div>
     <p class="section-note">Data starts on 23 May 2026. Select a day for its timeline and session titles.</p>
@@ -104,7 +105,7 @@ async function openSession(session: StudySessionSummary) {
           v-for="(day, index) in cells"
           :key="day?.date || `empty-${index}`"
           class="heat-cell"
-          :class="day ? [`level-${day.level}`, { 'future-day': day.is_future, 'exam-day': day.is_exam_day }] : 'empty-cell'"
+          :class="day ? [heatmapLevelClass(day), { 'future-day': day.is_future, 'exam-day': day.is_exam_day }] : 'empty-cell'"
           :disabled="!day || day.is_future"
           :aria-label="day ? day.is_exam_day ? `${day.date}, exam day` : day.is_future ? `${day.date}, future` : `${day.date}, ${duration(day.minutes)}` : undefined"
           :title="day ? day.is_exam_day ? `${day.date} · EXAM DAY` : day.is_future ? `${day.date} · FUTURE` : `${day.date} · ${duration(day.minutes)} · ${day.sessions} sessions · first ${day.first_start || '--'}` : ''"

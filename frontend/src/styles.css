@@ -317,3 +317,7 @@ body{background:radial-gradient(circle at 82% -10%,rgba(var(--accent-rgb),.09),t
 
 /* Calendar states must remain stable across every selectable accent theme. */
 .cell.future-day,.heat-cell.future-day{background:#2b2d33!important;border-color:#3b3e47!important;box-shadow:none!important;cursor:default}.heat-cell.future-day:hover{outline:0;transform:none}.cell.exam-day,.heat-cell.exam-day{background:#74131e!important;border-color:#b13947!important;box-shadow:0 0 9px rgba(150,24,40,.38)!important;opacity:1}
+.cell.level-8-plus,.heat-cell.level-8-plus{background:#f06fae;border-color:#ff9bc8;box-shadow:0 0 7px rgba(240,111,174,.32)}
+.cell.level-10-plus,.heat-cell.level-10-plus{background:#ff8a3d;border-color:#ffb078;box-shadow:0 0 7px rgba(255,138,61,.34)}
+.cell.level-12-plus,.heat-cell.level-12-plus{background:linear-gradient(135deg,#ff4d6d 0 20%,#ffad42 20% 40%,#f4eb62 40% 58%,#57d68d 58% 76%,#65a9ff 76% 88%,#b77cff 88%);border-color:#ffe5a6;box-shadow:0 0 8px rgba(255,130,170,.4)}
+.heatmap-panel .legend{flex-wrap:wrap;justify-content:flex-end}
