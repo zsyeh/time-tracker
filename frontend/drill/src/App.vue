@@ -54,23 +54,26 @@ onMounted(() => {
         <RouterLink to="/activity" :class="{ active: route.name === 'activity' }">
           <i>02</i><span>Activity</span>
         </RouterLink>
+        <RouterLink to="/book-activity" :class="{ active: route.name === 'book-activity' }">
+          <i>03</i><span>Book Check-ins</span>
+        </RouterLink>
         <RouterLink to="/heatmap" :class="{ active: route.name === 'heatmap' }">
-          <i>03</i><span>Knowledge</span>
+          <i>04</i><span>Knowledge</span>
         </RouterLink>
         <RouterLink to="/paper" :class="{ active: route.name === 'paper' }">
-          <i>04</i><span>Build Paper</span>
+          <i>05</i><span>Build Paper</span>
         </RouterLink>
         <RouterLink to="/favorites" :class="{ active: route.name === 'favorites' }">
-          <i>05</i><span>Favorites</span>
+          <i>06</i><span>Favorites</span>
         </RouterLink>
         <RouterLink to="/review-later" :class="{ active: route.name === 'review-later' }">
-          <i>06</i><span>Next Time</span>
+          <i>07</i><span>Next Time</span>
         </RouterLink>
         <RouterLink to="/feel" :class="{ active: route.name === 'feel' }">
-          <i>07</i><span>Book Feel</span>
+          <i>08</i><span>Book Feel</span>
         </RouterLink>
         <RouterLink to="/insight" :class="{ active: route.name === 'insight' }">
-          <i>08</i><span>Insight</span>
+          <i>09</i><span>Insight</span>
         </RouterLink>
       </nav>
       <div v-if="progress" class="sidebar-progress">

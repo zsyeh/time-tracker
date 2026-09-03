@@ -335,64 +335,70 @@ onUnmounted(() => {
         <button type="button" :class="{ active: question.review_later }" :disabled="stateSaving" @click="saveUserState({ review_later: !question.review_later })"><b>↻</b>{{ question.review_later ? 'Added to next time' : 'Add to next time' }}</button>
       </div>
 
-      <div v-if="questionAssets(question).length" class="asset-toolbar question-asset-toolbar">
-        <button type="button" @click="downloadAssets('question', questionAssets(question))">Save question image</button>
-      </div>
-      <article class="question-canvas">
-        <img v-for="asset in questionAssets(question)" :key="asset.id" :src="asset.url" :width="asset.width" :height="asset.height" alt="Question content" loading="eager" decoding="async" />
-        <MarkdownAnswer v-if="!questionAssets(question).length" class="question-markdown" :source="question.prompt_text" />
-      </article>
-
-      <section v-if="question.has_answer || question.answer_markdown" class="official-answer">
-        <button class="answer-toggle" :aria-expanded="answerOpen" @click="answerOpen = !answerOpen">
-          <span>{{ answerOpen ? 'Hide answer' : (question.has_answer ? 'Show answer' : 'Show Agent solution') }}</span><b>{{ answerOpen ? '↑' : '↓' }}</b>
-        </button>
-        <div v-if="answerOpen" class="answer-canvas">
-          <div v-if="question.answer_assets.length" class="asset-toolbar answer-asset-toolbar">
-            <button type="button" @click="downloadAssets('answer', question.answer_assets)">Save answer image</button>
+      <div class="question-workbench">
+        <div class="question-problem-pane">
+          <div v-if="questionAssets(question).length" class="asset-toolbar question-asset-toolbar">
+            <button type="button" @click="downloadAssets('question', questionAssets(question))">Save question image</button>
           </div>
-          <img v-for="asset in question.answer_assets" :key="asset.id" :src="asset.url" :width="asset.width" :height="asset.height" alt="Official answer" loading="lazy" decoding="async" />
-          <div v-if="question.answer_markdown" class="agent-answer-block">
-            <header><strong>{{ question.answer_source === 'provided-reference' ? 'REFERENCE ANSWER' : 'AGENT SOLUTION' }}</strong><span>{{ question.answer_source || 'agent' }} · {{ question.answer_confidence === null ? 'unrated' : `${Math.round(question.answer_confidence * 100)}% confidence` }}</span></header>
-            <MarkdownAnswer :source="question.answer_markdown" />
+          <article class="question-canvas">
+            <img v-for="asset in questionAssets(question)" :key="asset.id" :src="asset.url" :width="asset.width" :height="asset.height" alt="Question content" loading="eager" decoding="async" />
+            <MarkdownAnswer v-if="!questionAssets(question).length" class="question-markdown" :source="question.prompt_text" />
+          </article>
+
+          <section v-if="question.has_answer || question.answer_markdown" class="official-answer">
+            <button class="answer-toggle" :aria-expanded="answerOpen" @click="answerOpen = !answerOpen">
+              <span>{{ answerOpen ? 'Hide answer' : (question.has_answer ? 'Show answer' : 'Show Agent solution') }}</span><b>{{ answerOpen ? '↑' : '↓' }}</b>
+            </button>
+            <div v-if="answerOpen" class="answer-canvas">
+              <div v-if="question.answer_assets.length" class="asset-toolbar answer-asset-toolbar">
+                <button type="button" @click="downloadAssets('answer', question.answer_assets)">Save answer image</button>
+              </div>
+              <img v-for="asset in question.answer_assets" :key="asset.id" :src="asset.url" :width="asset.width" :height="asset.height" alt="Official answer" loading="lazy" decoding="async" />
+              <div v-if="question.answer_markdown" class="agent-answer-block">
+                <header><strong>{{ question.answer_source === 'provided-reference' ? 'REFERENCE ANSWER' : 'AGENT SOLUTION' }}</strong><span>{{ question.answer_source || 'agent' }} · {{ question.answer_confidence === null ? 'unrated' : `${Math.round(question.answer_confidence * 100)}% confidence` }}</span></header>
+                <MarkdownAnswer :source="question.answer_markdown" />
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <aside class="question-control-pane">
+          <div class="answer-bar">
+            <div><span>QUESTION STATE</span><small>Grey = not started, green = mastered, yellow = needs review. You can change, reset, or undo at any time.</small><label class="note-field">Note <textarea v-model="note" maxlength="2000" placeholder="Optional note" @input="cacheNoteDraft" /><span class="note-controls"><small class="note-draft-hint">Unsaved text is kept in this browser for 3 days.</small><button type="button" class="save-note" :disabled="stateSaving" @click="saveUserState({ note })">{{ noteSaved ? 'Saved ✓' : 'Save note' }}</button></span></label></div>
+            <div><button class="review" :class="{ selected: question.state === 'review' }" :disabled="saving" @click="record('review')">Needs review</button><button class="correct" :class="{ selected: question.state === 'mastered' }" :disabled="saving" @click="record('correct')">Mastered</button><button :disabled="saving || question.state === 'unattempted'" @click="record('reset')">Reset</button><button :disabled="saving || !question.can_undo" @click="undo">Undo</button></div>
           </div>
-        </div>
-      </section>
 
-      <div class="answer-bar">
-        <div><span>QUESTION STATE</span><small>Grey = not started, green = mastered, yellow = needs review. You can change, reset, or undo at any time.</small><label class="note-field">Note <textarea v-model="note" maxlength="2000" placeholder="Optional note" @input="cacheNoteDraft" /><span class="note-controls"><small class="note-draft-hint">Unsaved text is kept in this browser for 3 days.</small><button type="button" class="save-note" :disabled="stateSaving" @click="saveUserState({ note })">{{ noteSaved ? 'Saved ✓' : 'Save note' }}</button></span></label></div>
-        <div><button class="review" :class="{ selected: question.state === 'review' }" :disabled="saving" @click="record('review')">Needs review</button><button class="correct" :class="{ selected: question.state === 'mastered' }" :disabled="saving" @click="record('correct')">Mastered</button><button :disabled="saving || question.state === 'unattempted'" @click="record('reset')">Reset</button><button :disabled="saving || !question.can_undo" @click="undo">Undo</button></div>
+          <section class="learning-markers">
+            <header><div><span>LEARNING SIGNALS</span><small>Independent from question state. Select any that apply.</small></div><div><button type="button" :disabled="markerSaving" @click="saveMarkers(markerOptions.map((item) => item.code))">All</button><button type="button" :disabled="markerSaving || !question.markers.length" @click="saveMarkers([])">Clear</button></div></header>
+            <div><button v-for="marker in markerOptions" :key="marker.code" type="button" :class="{ active: question.markers.includes(marker.code) }" :disabled="markerSaving" @click="toggleMarker(marker.code)">{{ marker.label }}</button></div>
+          </section>
+
+          <button
+            class="next-question"
+            :disabled="!question.next_question_uuid"
+            @click="question.next_question_uuid && router.push({ path: `/practice/${question.next_question_uuid}`, query: questionRouteQuery() })"
+          >
+            <span>{{ question.next_question_uuid ? 'Next question' : 'End of this chapter' }}</span>
+            <small>{{ question.next_question_uuid ? `Continue with ${question.source_category_label.toLowerCase()} questions` : 'Return to the question bank to choose another set' }}</small>
+            <b>{{ question.next_question_uuid ? '→' : '✓' }}</b>
+          </button>
+
+          <details v-if="question.source_label && question.source_label !== question.display_label" class="raw-provenance"><summary>View original imported label</summary><code>{{ question.source_label }}</code></details>
+
+          <button class="similar-trigger" @click="showSimilar"><span>Practice similar questions</span><small>Same indexed knowledge topic</small><b>{{ similarOpen ? '↓' : '→' }}</b></button>
+          <section v-if="similarOpen" class="similar-panel">
+            <header><span>SIMILAR SET</span><strong>{{ similarTopic || 'No indexed topic' }}</strong></header>
+            <div class="similar-kind-picker">
+              <button :class="{ selected: similarKind === 'past_exam' }" :disabled="!similarCounts.past_exam" @click="loadSimilar('past_exam')"><span>OFFICIAL PAST EXAMS</span><strong>{{ similarCounts.past_exam }}</strong><small>Verified exam-source questions</small></button>
+              <button :class="{ selected: similarKind === 'practice' }" :disabled="!similarCounts.practice" @click="loadSimilar('practice')"><span>MOCK / PRACTICE</span><strong>{{ similarCounts.practice }}</strong><small>Workbooks, mock papers and other practice</small></button>
+            </div>
+            <p v-if="!similarKind">Choose which source type to practise.</p>
+            <p v-else-if="similarLoading">LOADING SIMILAR QUESTIONS…</p>
+            <button v-for="item in similar" :key="item.uuid" @click="router.push({ path: `/practice/${item.uuid}`, query: questionRouteQuery() })"><span>{{ item.display_label || `Question ${item.question_order}` }}</span><small>{{ item.document }} · {{ item.state }} · {{ item.attempt_count }} attempts</small><b>→</b></button>
+            <p v-if="similarKind && !similarLoading && !similar.length">No questions of this source type were indexed for this topic.</p>
+          </section>
+        </aside>
       </div>
-
-      <section class="learning-markers">
-        <header><div><span>LEARNING SIGNALS</span><small>Independent from question state. Select any that apply.</small></div><div><button type="button" :disabled="markerSaving" @click="saveMarkers(markerOptions.map((item) => item.code))">All</button><button type="button" :disabled="markerSaving || !question.markers.length" @click="saveMarkers([])">Clear</button></div></header>
-        <div><button v-for="marker in markerOptions" :key="marker.code" type="button" :class="{ active: question.markers.includes(marker.code) }" :disabled="markerSaving" @click="toggleMarker(marker.code)">{{ marker.label }}</button></div>
-      </section>
-
-      <button
-        class="next-question"
-        :disabled="!question.next_question_uuid"
-        @click="question.next_question_uuid && router.push({ path: `/practice/${question.next_question_uuid}`, query: questionRouteQuery() })"
-      >
-        <span>{{ question.next_question_uuid ? 'Next question' : 'End of this chapter' }}</span>
-        <small>{{ question.next_question_uuid ? `Continue with ${question.source_category_label.toLowerCase()} questions` : 'Return to the question bank to choose another set' }}</small>
-        <b>{{ question.next_question_uuid ? '→' : '✓' }}</b>
-      </button>
-
-      <details v-if="question.source_label && question.source_label !== question.display_label" class="raw-provenance"><summary>View original imported label</summary><code>{{ question.source_label }}</code></details>
-
-      <button class="similar-trigger" @click="showSimilar"><span>Practice similar questions</span><small>Same indexed knowledge topic</small><b>{{ similarOpen ? '↓' : '→' }}</b></button>
-      <section v-if="similarOpen" class="similar-panel">
-        <header><span>SIMILAR SET</span><strong>{{ similarTopic || 'No indexed topic' }}</strong></header>
-        <div class="similar-kind-picker">
-          <button :class="{ selected: similarKind === 'past_exam' }" :disabled="!similarCounts.past_exam" @click="loadSimilar('past_exam')"><span>OFFICIAL PAST EXAMS</span><strong>{{ similarCounts.past_exam }}</strong><small>Verified exam-source questions</small></button>
-          <button :class="{ selected: similarKind === 'practice' }" :disabled="!similarCounts.practice" @click="loadSimilar('practice')"><span>MOCK / PRACTICE</span><strong>{{ similarCounts.practice }}</strong><small>Workbooks, mock papers and other practice</small></button>
-        </div>
-        <p v-if="!similarKind">Choose which source type to practise.</p>
-        <p v-else-if="similarLoading">LOADING SIMILAR QUESTIONS…</p>
-        <button v-for="item in similar" :key="item.uuid" @click="router.push({ path: `/practice/${item.uuid}`, query: questionRouteQuery() })"><span>{{ item.display_label || `Question ${item.question_order}` }}</span><small>{{ item.document }} · {{ item.state }} · {{ item.attempt_count }} attempts</small><b>→</b></button>
-        <p v-if="similarKind && !similarLoading && !similar.length">No questions of this source type were indexed for this topic.</p>
-      </section>
     </template>
   </section>
 </template>

@@ -30,23 +30,24 @@ onMounted(load)
 </script>
 
 <template>
-  <section class="page activity-page">
+  <section class="page activity-page book-checkin-page">
     <header class="page-header activity-page-header">
-      <div><span class="eyebrow">DAILY PRACTICE</span><h1>Practice activity.</h1><p>Daily volume from July 20 through December 19. Reset events are excluded.</p></div>
+      <div><span class="eyebrow">BOOK CHECK-INS</span><h1>Daily rhythm by book.</h1><p>Each book has its own July 20–December 19 calendar. Reset events are excluded.</p></div>
       <div class="activity-legend"><span>LESS</span><i v-for="level in 9" :key="level" :class="`activity-level-${level - 1}`" /><span>MORE</span></div>
     </header>
     <p v-if="error" class="error-state">{{ error }}</p>
-    <div v-else-if="loading" class="question-skeleton activity-skeleton">BUILDING ACTIVITY…</div>
-    <template v-else-if="activity">
+    <div v-else-if="loading" class="question-skeleton activity-skeleton">BUILDING BOOK CALENDARS…</div>
+    <div v-else-if="activity" class="book-activity-list">
       <ActivityCalendar
-        eyebrow="ALL BOOKS"
-        title="All practice"
-        :total-attempts="activity.overall.total_attempts"
-        :active-days="activity.overall.active_days"
-        :max-daily-count="activity.overall.max_daily_count"
-        :days="activity.overall.days"
+        v-for="book in activity.books"
+        :key="book.document_id"
+        eyebrow="BOOK"
+        :title="book.document"
+        :total-attempts="book.total_attempts"
+        :active-days="book.active_days"
+        :max-daily-count="book.max_daily_count"
+        :days="book.days"
       />
-      <RouterLink class="activity-route-card" to="/book-activity"><span>BOOK CHECK-INS</span><strong>Open {{ activity.books.length }} individual calendars</strong><b>→</b></RouterLink>
-    </template>
+    </div>
   </section>
 </template>

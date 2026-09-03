@@ -96,6 +96,28 @@ export interface Progress {
   past_exam_count: number
 }
 
+export interface ActivityDay {
+  date: string
+  count: number
+  level: number
+  is_future: boolean
+}
+
+export interface ActivityCalendarData {
+  total_attempts: number
+  active_days: number
+  max_daily_count: number
+  days: ActivityDay[]
+}
+
+export interface ActivityPayload {
+  start_date: string
+  end_date: string
+  today: string
+  overall: ActivityCalendarData
+  books: Array<ActivityCalendarData & { document_id: number; document: string }>
+}
+
 export interface CollectionPayload {
   kind: 'favorite' | 'review_later'
   count: number

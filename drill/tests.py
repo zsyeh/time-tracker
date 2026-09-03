@@ -1214,10 +1214,14 @@ class DrillHostRoutingTests(TestCase):
             with self.settings(FRONTEND_DIST=timer, DRILL_FRONTEND_DIST=drill):
                 drill_response = self.client.get('/', HTTP_HOST='drill.ehzsy.site')
                 ei_response = self.client.get('/', HTTP_HOST='ei.ehzsy.site')
+                drill_book_activity = self.client.get('/book-activity', HTTP_HOST='drill.ehzsy.site')
+                ei_book_activity = self.client.get('/book-activity', HTTP_HOST='ei.ehzsy.site')
                 timer_response = self.client.get('/', HTTP_HOST='timer.ehzsy.site')
                 blocked = self.client.get('/practice', HTTP_HOST='timer.ehzsy.site')
         self.assertContains(drill_response, 'DRILL FRONTEND')
         self.assertContains(ei_response, 'DRILL FRONTEND')
+        self.assertContains(drill_book_activity, 'DRILL FRONTEND')
+        self.assertContains(ei_book_activity, 'DRILL FRONTEND')
         self.assertContains(timer_response, 'TIMER FRONTEND')
         self.assertEqual(blocked.status_code, 404)
 
@@ -1258,6 +1262,11 @@ class DrillPasskeyHandoffTests(TestCase):
         response = self.client.get('/activity', HTTP_HOST='drill.ehzsy.site', secure=True)
         self.assertEqual(response.status_code, 302)
         self.assertIn('next=%2Factivity', response.url)
+
+    def test_anonymous_book_activity_deep_link_preserves_target(self):
+        response = self.client.get('/book-activity', HTTP_HOST='drill.ehzsy.site', secure=True)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('next=%2Fbook-activity', response.url)
 
     def test_anonymous_ei_page_uses_timer_relay_and_preserves_site(self):
         response = self.client.get(

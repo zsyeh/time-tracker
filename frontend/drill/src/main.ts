@@ -3,6 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router'
 import App from './App.vue'
 import HeatmapView from './views/HeatmapView.vue'
 import ActivityView from './views/ActivityView.vue'
+import BookActivityView from './views/BookActivityView.vue'
 import PracticeView from './views/PracticeView.vue'
 import QuestionView from './views/QuestionView.vue'
 import PaperView from './views/PaperView.vue'
@@ -19,6 +20,7 @@ const router = createRouter({
     { path: '/practice/:uuid', name: 'question', component: QuestionView, props: true },
     { path: '/heatmap', name: 'heatmap', component: HeatmapView },
     { path: '/activity', name: 'activity', component: ActivityView },
+    { path: '/book-activity', name: 'book-activity', component: BookActivityView },
     { path: '/paper', name: 'paper', component: PaperView },
     { path: '/favorites', name: 'favorites', component: CollectionView, props: { kind: 'favorite' } },
     { path: '/review-later', name: 'review-later', component: CollectionView, props: { kind: 'review_later' } },
