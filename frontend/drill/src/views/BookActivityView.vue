@@ -32,7 +32,7 @@ onMounted(load)
 <template>
   <section class="page activity-page book-checkin-page">
     <header class="page-header activity-page-header">
-      <div><span class="eyebrow">BOOK CHECK-INS</span><h1>Daily rhythm by book.</h1><p>Each book has its own July 20–December 19 calendar. Reset events are excluded.</p></div>
+      <div><span class="eyebrow">Book activity</span><h1>Book check-ins</h1><p>Each book has its own July 20–December 19 calendar. Reset events are excluded.</p></div>
       <div class="activity-legend"><span>LESS</span><i v-for="level in 9" :key="level" :class="`activity-level-${level - 1}`" /><span>MORE</span></div>
     </header>
     <p v-if="error" class="error-state">{{ error }}</p>

@@ -161,7 +161,7 @@ onMounted(load)
 <template>
   <section class="page heatmap-page">
     <header class="page-header">
-      <div><span class="eyebrow">KNOWLEDGE COVERAGE</span><h1>One map for every book.</h1><p>Every topic and question cell opens a preview first. Enter only after confirming the item.</p></div>
+      <div><span class="eyebrow">Knowledge map</span><h1>Coverage by book</h1><p>Every topic and question cell opens a preview before navigation.</p></div>
       <div class="heat-controls">
         <div class="heat-mode"><button :class="{ active: mode === 'topics' }" @click="mode = 'topics'">Topics</button><button :class="{ active: mode === 'questions' }" @click="mode = 'questions'">Questions</button></div>
         <div class="heat-scope"><button :class="{ active: scope === 'all' }" @click="scope = 'all'">All</button><button :class="{ active: scope === 'past_exam' }" @click="scope = 'past_exam'">Past exams</button><button :class="{ active: scope === 'mock_exam' }" @click="scope = 'mock_exam'">Mock exams</button></div>

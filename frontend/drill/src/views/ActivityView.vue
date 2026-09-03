@@ -32,7 +32,7 @@ onMounted(load)
 <template>
   <section class="page activity-page">
     <header class="page-header activity-page-header">
-      <div><span class="eyebrow">DAILY PRACTICE</span><h1>Practice activity.</h1><p>Daily volume from July 20 through December 19. Reset events are excluded.</p></div>
+      <div><span class="eyebrow">Daily practice</span><h1>Practice activity</h1><p>Daily volume from July 20 through December 19. Reset events are excluded.</p></div>
       <div class="activity-legend"><span>LESS</span><i v-for="level in 9" :key="level" :class="`activity-level-${level - 1}`" /><span>MORE</span></div>
     </header>
     <p v-if="error" class="error-state">{{ error }}</p>

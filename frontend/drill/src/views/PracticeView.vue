@@ -191,7 +191,7 @@ onUnmounted(() => {
 <template>
   <section class="page practice-page">
     <header class="page-header">
-      <div><span class="eyebrow">{{ isEi ? '892 FOUNDATION BANK' : 'CLEANED QUESTION INDEX' }}</span><h1>{{ isEi ? 'Electronic information practice.' : 'Know what you are practising.' }}</h1><p>{{ catalog.summary.practiceable_count.toLocaleString() }} practice records. {{ catalog.summary.outline_count.toLocaleString() }} source-outline rows are hidden.</p></div>
+      <div><span class="eyebrow">{{ isEi ? '892 foundation bank' : 'Question index' }}</span><h1>{{ isEi ? 'Electronic information' : 'Question bank' }}</h1><p>{{ catalog.summary.practiceable_count.toLocaleString() }} practice records. {{ catalog.summary.outline_count.toLocaleString() }} source-outline rows are hidden.</p></div>
       <button v-if="lastQuestionUuid || questions?.results.length" class="primary-action" @pointerenter="prefetchQuestion(lastQuestionUuid || questions?.results[0]?.uuid || null, navigationQueryString())" @click="openQuestion(lastQuestionUuid || questions!.results[0].uuid)">{{ lastQuestionUuid ? 'Resume last question' : 'Open next question' }} <b>→</b></button>
     </header>
 

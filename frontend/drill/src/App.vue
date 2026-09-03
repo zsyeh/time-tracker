@@ -9,7 +9,6 @@ const route = useRoute()
 const username = ref('')
 const progress = ref<Progress | null>(null)
 const sidebarOpen = ref(false)
-const landscape = ref(false)
 const identityReady = ref(false)
 const isEi = location.hostname.toLowerCase().startsWith('ei.')
 
@@ -29,51 +28,50 @@ async function logout() {
 }
 
 watch(() => route.fullPath, () => {
-  if (landscape.value) sidebarOpen.value = false
+  sidebarOpen.value = false
 })
 
 onMounted(() => {
-  landscape.value = window.matchMedia('(orientation: landscape)').matches
   void loadIdentity()
 })
 </script>
 
 <template>
   <div class="drill-shell" :class="{ 'drawer-open': sidebarOpen, 'ei-workspace': isEi }">
-    <button class="drawer-toggle" type="button" aria-label="Open navigation" @click="sidebarOpen = true"><span /><span /><span /></button>
+    <button class="drawer-toggle" type="button" aria-label="Open navigation" aria-controls="drill-navigation" :aria-expanded="sidebarOpen" @click="sidebarOpen = true"><span /><span /><span /></button>
     <button v-if="sidebarOpen" class="drawer-backdrop" type="button" aria-label="Close navigation" @click="sidebarOpen = false" />
-    <aside class="drill-sidebar">
+    <aside id="drill-navigation" class="drill-sidebar">
       <button class="drawer-close" type="button" aria-label="Close navigation" @click="sidebarOpen = false">×</button>
       <RouterLink class="wordmark" to="/practice" aria-label="Drill home">
         <span>{{ isEi ? 'EI' : 'D' }}</span><strong>{{ isEi ? '892 LAB' : 'DRILL' }}</strong><small>{{ isEi ? 'ELECTRONIC INFORMATION' : 'QUESTION PRACTICE' }}</small>
       </RouterLink>
       <nav>
         <RouterLink to="/practice" :class="{ active: route.name === 'practice' || route.name === 'question' }">
-          <i>01</i><span>Practice</span>
+          <span>Practice</span>
         </RouterLink>
         <RouterLink to="/activity" :class="{ active: route.name === 'activity' }">
-          <i>02</i><span>Activity</span>
+          <span>Activity</span>
         </RouterLink>
         <RouterLink to="/book-activity" :class="{ active: route.name === 'book-activity' }">
-          <i>03</i><span>Book Check-ins</span>
+          <span>Book Check-ins</span>
         </RouterLink>
         <RouterLink to="/heatmap" :class="{ active: route.name === 'heatmap' }">
-          <i>04</i><span>Knowledge</span>
+          <span>Knowledge</span>
         </RouterLink>
         <RouterLink to="/paper" :class="{ active: route.name === 'paper' }">
-          <i>05</i><span>Build Paper</span>
+          <span>Build Paper</span>
         </RouterLink>
         <RouterLink to="/favorites" :class="{ active: route.name === 'favorites' }">
-          <i>06</i><span>Favorites</span>
+          <span>Favorites</span>
         </RouterLink>
         <RouterLink to="/review-later" :class="{ active: route.name === 'review-later' }">
-          <i>07</i><span>Next Time</span>
+          <span>Next Time</span>
         </RouterLink>
         <RouterLink to="/feel" :class="{ active: route.name === 'feel' }">
-          <i>08</i><span>Book Feel</span>
+          <span>Book Feel</span>
         </RouterLink>
         <RouterLink to="/insight" :class="{ active: route.name === 'insight' }">
-          <i>09</i><span>Insight</span>
+          <span>Insight</span>
         </RouterLink>
       </nav>
       <div v-if="progress" class="sidebar-progress">

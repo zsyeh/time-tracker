@@ -1,6 +1,6 @@
 import { createApp } from 'vue'
 import { ElLoading } from 'element-plus'
-import 'element-plus/dist/index.css'
+import './elementStyles'
 import App from './App.vue'
 import { elementComponents } from './elementComponents'
 import router from './router'

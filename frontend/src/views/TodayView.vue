@@ -14,6 +14,10 @@ const todayHours = computed(() => props.overview ? `${Math.floor(props.overview.
 const trackedSubjectStats = computed(() => buildSubjectTimeStats(props.overview))
 const maxTodaySubject = computed(() => Math.max(1, ...(props.overview?.today_subject_totals.map((item) => item.minutes) || [])))
 const todayProgress = computed(() => Math.min(100, Math.round((props.overview?.today.minutes || 0) / 300 * 100)))
+const targetRemaining = computed(() => {
+  const minutes = Math.max(0, 300 - (props.overview?.today.minutes || 0))
+  return minutes ? `${Math.floor(minutes / 60)}h ${minutes % 60}m` : 'Complete'
+})
 const statusLabel = computed(() => todayProgress.value >= 100 ? 'TARGET MET' : props.overview?.active_session ? 'SESSION ACTIVE' : 'NO ACTIVE SESSION')
 const todayLabel = computed(() => props.overview?.calendar.today.replaceAll('-', '.') || '----.--.--')
 const weekdayLabel = computed(() => {
@@ -25,9 +29,9 @@ const weekdayLabel = computed(() => {
 
 <template>
   <div>
-    <section class="hero exam-hero">
-      <div class="date-block"><span class="eyebrow">TODAY / {{ weekdayLabel }}</span><h1>{{ todayLabel }}</h1><p>LOCAL DATE · ASIA/SHANGHAI</p><p v-if="overview?.private_display.homepage_content" class="homepage-content">{{ overview.private_display.homepage_content }}</p><p v-if="overview?.private_display.study_room_code" class="study-room-code">STUDY ROOM · {{ overview.private_display.study_room_code }}</p></div>
-      <div class="exam-countdown"><span>{{ overview?.private_display.countdown_label || '2026 POSTGRADUATE EXAM' }}</span><div><b>{{ overview?.calendar.days_until_exam ?? '--' }}</b><small>DAYS</small></div><time>{{ overview?.calendar.exam_date || '2026-12-26' }}</time></div>
+    <section class="page-header today-header">
+      <div><span class="eyebrow">{{ weekdayLabel }}</span><h1>Today</h1><p>{{ todayLabel }} · Asia/Shanghai</p><p v-if="overview?.private_display.homepage_content" class="homepage-content">{{ overview.private_display.homepage_content }}</p><p v-if="overview?.private_display.study_room_code" class="study-room-code">Study room · {{ overview.private_display.study_room_code }}</p></div>
+      <div class="exam-countdown"><span>{{ overview?.private_display.countdown_label || '2026 Postgraduate Exam' }}</span><div><b>{{ overview?.calendar.days_until_exam ?? '--' }}</b><small>days remaining</small></div><time>{{ overview?.calendar.exam_date || '2026-12-26' }}</time></div>
     </section>
     <ActiveSession :session="overview?.active_session || null" :shortcuts="overview?.task_shortcuts || []" @changed="emit('changed')" />
     <section v-if="overview" class="status-overview panel">
@@ -35,19 +39,25 @@ const weekdayLabel = computed(() => {
       <div class="status-copy"><span class="eyebrow">DAILY STATUS</span><h2>{{ statusLabel }}</h2><p>Completed sessions only. Active duration remains hidden.</p></div>
       <dl><div><dt>FIRST START</dt><dd>{{ overview.today.first_start || '--' }}</dd></div><div><dt>SESSIONS</dt><dd>{{ overview.today.sessions }}</dd></div><div><dt>DATE</dt><dd>{{ overview.calendar.today.slice(5) }}</dd></div></dl>
     </section>
-    <section v-if="overview" class="metrics-grid">
-      <MetricCard label="TODAY" :value="todayHours" :hint="`First start ${overview.today.first_start || '--'}`" tone="goal" />
-      <MetricCard label="CURRENT STREAK" :value="overview.summary.current_streak" suffix="days" :hint="`Longest ${overview.summary.longest_streak} days`" />
-      <MetricCard label="5H STREAK" :value="overview.summary.current_five_hour_streak" suffix="days" :hint="`Longest ${overview.summary.longest_five_hour_streak} days`" tone="goal" />
-      <MetricCard label="5H DAYS" :value="overview.summary.five_hour_days" suffix="days" hint="Last 180 days" tone="warm" />
-      <MetricCard label="AVG. START" :value="overview.summary.average_start_time || '--'" hint="First session per active day" tone="blue" />
-      <MetricCard label="ACTIVE DAYS" :value="overview.summary.active_days" suffix="days" :hint="`${overview.summary.session_count} completed sessions`" />
+    <section v-if="overview" class="metrics-surface panel" aria-label="Study metrics">
+      <div class="metrics-primary">
+        <MetricCard label="Today" :value="todayHours" :hint="`First start ${overview.today.first_start || '--'}`" tone="goal" importance="primary" />
+        <MetricCard label="5H target" :value="targetRemaining" :hint="todayProgress >= 100 ? 'Target reached' : `${todayProgress}% complete`" importance="primary" />
+        <MetricCard label="Current streak" :value="overview.summary.current_streak" suffix="days" :hint="`Longest ${overview.summary.longest_streak} days`" importance="primary" />
+      </div>
+      <div class="metrics-secondary">
+        <MetricCard label="5H streak" :value="overview.summary.current_five_hour_streak" suffix="days" :hint="`Best ${overview.summary.longest_five_hour_streak} days`" />
+        <MetricCard label="5H days" :value="overview.summary.five_hour_days" suffix="days" hint="Last 180 days" />
+        <MetricCard label="Average start" :value="overview.summary.average_start_time || '--'" hint="Active days" />
+        <MetricCard label="Active days" :value="overview.summary.active_days" suffix="days" :hint="`${overview.summary.session_count} sessions`" />
+      </div>
     </section>
-    <section v-if="overview" class="subject-time-grid" aria-label="Study time by subject">
-      <article v-for="item in trackedSubjectStats" :key="item.subject" class="panel subject-time-card" :class="`subject-time-${item.subject}`">
+    <section v-if="overview" class="subject-time-grid panel" aria-label="Study time by subject">
+      <header class="subject-time-heading"><div><span class="eyebrow">Subjects</span><h2>Study distribution</h2></div><span>Last {{ overview.range_days }} days</span></header>
+      <article v-for="item in trackedSubjectStats" :key="item.subject" class="subject-time-card" :class="`subject-time-${item.subject}`">
         <header><span>{{ item.label }}</span><i /></header>
         <strong>{{ item.duration }}</strong>
-        <footer><span>LAST {{ overview.range_days }} DAYS</span><b>{{ item.share }}% OF TOTAL</b></footer>
+        <footer><span>{{ item.share }}% of total</span><i :style="{ width: `${item.share}%` }" /></footer>
       </article>
     </section>
     <section v-if="overview" class="panel subject-strip">

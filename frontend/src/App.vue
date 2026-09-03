@@ -96,7 +96,7 @@ onBeforeUnmount(() => {
     <aside class="sidebar">
       <BrandIdentity />
       <GlobalSearch ref="globalSearch" />
-      <nav><span class="nav-section">WORKSPACE</span><button v-for="item in nav" :key="item.id" :class="{ active: activeSection === item.id }" @click="router.push(item.to)"><el-icon><component :is="item.icon" /></el-icon><span>{{ item.label }}</span></button></nav>
+      <nav aria-label="Primary navigation"><span class="nav-section">Workspace</span><RouterLink v-for="item in nav" :key="item.id" :to="item.to" :class="{ active: activeSection === item.id }"><el-icon><component :is="item.icon" /></el-icon><span>{{ item.label }}</span></RouterLink></nav>
       <div class="sidebar-user"><span>{{ username.slice(0, 1).toUpperCase() }}</span><div><b>{{ username }}</b><button @click="logout">Sign out</button></div></div>
     </aside>
     <main class="main-content" v-loading.fullscreen.lock="loading">
