@@ -20,6 +20,8 @@ from django.test.utils import CaptureQueriesContext
 from django.urls import reverse
 from django.utils import timezone
 
+from allauth.mfa.models import Authenticator
+
 from .analytics import build_dashboard_overview
 from .learning_log import (
     archive_completed_task,
@@ -309,6 +311,22 @@ class AuthenticationPolicyTests(TestCase):
         self.assertEqual(limited.status_code, 200)
         self.assertContains(limited, 'Too many failed login attempts. Try again later.')
         self.assertContains(limited, 'Continue with Passkey')
+
+    def test_password_or_passkey_are_alternative_credentials_not_two_factors(self):
+        Authenticator.objects.create(
+            user=self.user,
+            type=Authenticator.Type.WEBAUTHN,
+            data={'name': 'Test Passkey'},
+        )
+
+        response = self.client.post('/accounts/login/', {
+            'login': self.user.username,
+            'password': 'correct',
+        })
+
+        self.assertEqual(response.status_code, 302)
+        self.assertNotIn('/accounts/2fa/authenticate/', response.url)
+        self.assertEqual(int(self.client.session['_auth_user_id']), self.user.pk)
 
 
 @override_settings(SECURE_SSL_REDIRECT=False, PASSWORD_HASHERS=TEST_PASSWORD_HASHERS)

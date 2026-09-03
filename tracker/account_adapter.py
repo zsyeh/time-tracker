@@ -16,8 +16,22 @@ class PrivateAccountAdapter(DefaultAccountAdapter):
         return password
 
     def get_login_stages(self):
-        """Enable the local Passkey-only signup flow without requiring email signup."""
-        stages = super().get_login_stages()
+        """Offer password and Passkey as independent, single-step login methods.
+
+        django-allauth models WebAuthn credentials inside its MFA application.
+        Its default stages consequently ask for a Passkey after a successful
+        password login whenever the account has one.  This instance treats a
+        password *or* a passwordless Passkey as a complete credential instead.
+        The Passkey signup stage remains available for Passkey-only accounts.
+        """
+        second_factor_stages = {
+            'allauth.mfa.stages.AuthenticateStage',
+            'allauth.mfa.stages.TrustStage',
+        }
+        stages = [
+            stage for stage in super().get_login_stages()
+            if stage not in second_factor_stages
+        ]
         passkey_stage = 'allauth.mfa.webauthn.stages.PasskeySignupStage'
         if passkey_stage not in stages:
             stages.append(passkey_stage)

@@ -344,7 +344,7 @@ onMounted(() => { load(); loadRuntime(); loadAccess(); loadEncryption(); loadOrg
       </article>
       <article class="panel settings-card">
         <div class="card-title"><div><span class="eyebrow">PASSKEY</span><h2>Secure access</h2></div><span class="secure-badge">WebAuthn</span></div>
-        <p>Use a platform authenticator or security key. Passwords are optional; Passkey-only accounts are supported.</p>
+        <p>Passkey and password are alternative sign-in methods. Either one completes login; no second factor is required. Passwords are optional, and Passkey-only accounts are supported.</p>
         <div class="settings-actions"><a class="el-button el-button--primary" href="/accounts/2fa/webauthn/add/">Add Passkey</a><a class="text-link" href="/accounts/2fa/">Manage</a></div>
       </article>
       <article class="panel settings-card">
