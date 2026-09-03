@@ -192,6 +192,16 @@ button { color: inherit; }
 .question-canvas img { width: auto; max-width: 100%; height: auto; margin: 0 auto; display: block; }
 .question-canvas pre { color: #202124; white-space: pre-wrap; font: 14px/1.8 Georgia, serif; }
 .question-markdown, .question-markdown .markdown-body { color: #202124; font: 15px/1.8 Inter, sans-serif; }
+.question-canvas .question-markdown.markdown-preview-shell,
+.agent-answer-block .agent-markdown-answer.markdown-preview-shell {
+  --accent: #2e7047;
+  --accent-rgb: 46, 112, 71;
+  --math-color: #151619;
+  --math-display-color: #151619;
+  --math-border: #d5d6d8;
+  --math-background: #ecece8;
+  --math-shadow: none;
+}
 .question-markdown .markdown-body :where(h1, h2, h3, h4, strong), .question-markdown .katex { color: #151619; }
 .question-markdown .markdown-body pre, .question-markdown .markdown-body code { color: #202124; background: #eaebed; }
 .official-answer { margin-top: 9px; }
