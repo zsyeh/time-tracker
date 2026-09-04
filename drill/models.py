@@ -97,8 +97,33 @@ class Question(models.Model):
         ('grouped', 'Grouped extract'),
         ('section', 'Source outline'),
     ]
+    SUBJECT_CHOICES = [
+        ('math2', 'Mathematics II'),
+        ('ei', 'Electronic information'),
+        ('other', 'Other'),
+    ]
+    QUESTION_TYPE_CHOICES = [
+        ('unknown', 'Unclassified'),
+        ('single_choice', 'Single choice'),
+        ('fill_blank', 'Fill in the blank'),
+        ('solution', 'Solution'),
+    ]
+    QUESTION_TYPE_SOURCE_CHOICES = [
+        ('', 'Not classified'),
+        ('rule', 'Rule-assisted batch'),
+        ('agent', 'Agent batch'),
+        ('human', 'Human verified'),
+        ('import', 'Source metadata'),
+    ]
 
     uuid = models.UUIDField(default=uuid_lib.uuid4, unique=True, editable=False)
+    subject = models.CharField(
+        max_length=16,
+        choices=SUBJECT_CHOICES,
+        blank=True,
+        default='',
+        db_index=True,
+    )
     document = models.ForeignKey(
         QuestionDocument,
         on_delete=models.CASCADE,
@@ -150,6 +175,22 @@ class Question(models.Model):
     answer_generated_at = models.DateTimeField(null=True, blank=True)
     topic_classification_source = models.CharField(max_length=32, blank=True)
     topic_classification_confidence = models.FloatField(null=True, blank=True)
+    question_type = models.CharField(
+        max_length=20,
+        choices=QUESTION_TYPE_CHOICES,
+        default='unknown',
+        db_index=True,
+    )
+    question_type_source = models.CharField(
+        max_length=12,
+        choices=QUESTION_TYPE_SOURCE_CHOICES,
+        blank=True,
+        default='',
+    )
+    question_type_confidence = models.FloatField(null=True, blank=True)
+    question_type_human_verified = models.BooleanField(default=False, db_index=True)
+    difficulty = models.PositiveSmallIntegerField(null=True, blank=True)
+    estimated_time_minutes = models.PositiveSmallIntegerField(null=True, blank=True)
 
     class Meta:
         ordering = ('document_id', 'question_order')
@@ -166,6 +207,14 @@ class Question(models.Model):
 
     def __str__(self):
         return self.source_label or f'{self.document.title} #{self.question_order}'
+
+    def save(self, *args, **kwargs):
+        if not self.subject and self.document_id:
+            workspace = self.document.workspace if 'document' in self._state.fields_cache else (
+                QuestionDocument.objects.only('workspace').get(pk=self.document_id).workspace
+            )
+            self.subject = 'math2' if workspace == 'drill' else 'ei'
+        super().save(*args, **kwargs)
 
 
 class QuestionAsset(models.Model):

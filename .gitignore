@@ -30,3 +30,4 @@ gunicorn.conf.py
 backups/
 reports/
 work/
+*_review.jsonl

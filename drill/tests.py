@@ -39,6 +39,9 @@ from .models import (
     QuestionUserState,
 )
 from .pdf_import import parse_question_pdf
+from .question_type_classifier import classify_question_type
+from .management.commands.import_ei_paired_pdfs import Anchor as PairedPdfAnchor
+from .management.commands.import_ei_paired_pdfs import Command as PairedPdfImportCommand
 
 
 TEST_PNG = b'\x89PNG\r\n\x1a\nquestion-image'
@@ -1417,3 +1420,54 @@ class DrillPasskeyHandoffTests(TestCase):
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(DrillLoginHandoff.objects.get().target_path, '/practice')
+
+
+class PairedPdfCropTests(SimpleTestCase):
+    def test_cross_page_segment_ends_at_next_anchor(self):
+        current = PairedPdfAnchor('8-15', 8, 15, 141, 430.0)
+        following = PairedPdfAnchor('8-16', 8, 16, 142, 59.0)
+
+        end_page, end_y = PairedPdfImportCommand.segment_end(current, following)
+
+        self.assertEqual(end_page, 142)
+        self.assertEqual(end_y, 59.0)
+
+    def test_vertical_trim_removes_blank_tail_and_isolated_footer(self):
+        document = pymupdf.open()
+        page = document.new_page(width=600, height=800)
+        page.insert_text((36, 48), '2-4 question content', fontsize=12)
+        page.insert_text((292, 780), '17', fontsize=9)
+
+        top, bottom = PairedPdfImportCommand.vertical_trim_bounds(page, page.rect)
+
+        self.assertLessEqual(top, 40)
+        self.assertGreater(bottom, 650)
+
+    def test_vertical_trim_preserves_content_near_page_bottom(self):
+        document = pymupdf.open()
+        page = document.new_page(width=600, height=800)
+        page.insert_text((36, 48), 'question content', fontsize=12)
+        page.insert_text((36, 750), 'continued derivation', fontsize=12)
+
+        _top, bottom = PairedPdfImportCommand.vertical_trim_bounds(page, page.rect)
+
+        self.assertLess(bottom, 70)
+
+
+class QuestionTypeClassifierTests(SimpleTestCase):
+    def test_detects_choice_from_option_structure(self):
+        decision = classify_question_type('下列结论正确的是( ) A. 1 B. 2 C. 3 D. 4')
+        self.assertEqual(decision.label, 'single_choice')
+        self.assertGreaterEqual(decision.confidence, 0.9)
+
+    def test_detects_fill_blank(self):
+        decision = classify_question_type('设 f(x)=x，则 f\'(1)=_____.')
+        self.assertEqual(decision.label, 'fill_blank')
+
+    def test_detects_open_solution(self):
+        decision = classify_question_type('计算二重积分并说明换元过程。')
+        self.assertEqual(decision.label, 'solution')
+
+    def test_keeps_ambiguous_text_unclassified(self):
+        decision = classify_question_type('2024 数二 第 5 题')
+        self.assertEqual(decision.label, 'unknown')
