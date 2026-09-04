@@ -32,8 +32,9 @@ LABEL_RE = re.compile(
     # and occasionally prefix a problem with ``P``.  Keep the strict end
     # delimiter so textbook section labels such as ``1.1.3`` are not mistaken
     # for an exercise.
-    r'^\s*(?:[\[【(（]\s*)?(?:题\s*)?(?:P\s*)?(?P<chapter>[1-9]\d?)\s*(?:[-—–一.]|\s+)\s*(?P<number>\d{1,3})(?:\s|题|[、:：\]】)）]|$)',
+    r'^\s*(?:[\[【(（]\s*)?(?:习题\s*)?(?:题\s*)?(?:P\s*)?(?P<chapter>[1-9]\d?)\s*(?:[-—–一.]|\s+)\s*(?P<number>\d{1,3})(?:\s|题|[、:：\]】)）]|$)',
 )
+SOLUTION_RE = re.compile(r'^\s*(?:解|答)\s*[：:]')
 
 
 PAIR_SOURCES = {
@@ -54,6 +55,13 @@ PAIR_SOURCES = {
         'question_file': '数电课后题做题本.pdf',
         'answer_file': '数电课后指导与答案.pdf',
         'allowed_chapters': {1, 2, 3, 4, 5, 6},
+    },
+    'communication': {
+        'document_title': '892 · 通信原理',
+        'question_file': '通信课后题与答案.pdf',
+        'answer_file': '通信课后题与答案.pdf',
+        'allowed_chapters': {1, 2, 3, 4, 5},
+        'combined_solution_pdf': True,
     },
 }
 
@@ -85,7 +93,7 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument('source_root', type=Path)
-        parser.add_argument('--subjects', default=','.join(PAIR_SOURCES), help='Comma-separated: signal,analog,digital')
+        parser.add_argument('--subjects', default=','.join(PAIR_SOURCES), help='Comma-separated import source names.')
         parser.add_argument('--dpi', type=int, default=150)
         parser.add_argument('--dry-run', action='store_true')
         parser.add_argument('--limit', type=int, default=0, help='Maximum matched pairs per subject, for audit runs.')
@@ -137,7 +145,10 @@ class Command(BaseCommand):
         answer_pdf = pymupdf.open(answer_path)
         try:
             question_anchors = self.find_anchors(question_pdf, dpi)
-            answer_anchors = self.find_anchors(answer_pdf, dpi)
+            if config.get('combined_solution_pdf'):
+                answer_anchors = self.find_solution_anchors(question_pdf, question_anchors)
+            else:
+                answer_anchors = self.find_anchors(answer_pdf, dpi)
         finally:
             question_pdf.close()
             answer_pdf.close()
@@ -166,7 +177,7 @@ class Command(BaseCommand):
             # the syllabus, but an excluded neighbouring chapter must still
             # terminate the preceding crop.
             'all_question_anchors': question_anchors,
-            'all_answer_anchors': answer_anchors,
+            'all_answer_anchors': question_anchors if config.get('combined_solution_pdf') else answer_anchors,
             'pairs': pairs,
         }
 
@@ -217,6 +228,31 @@ class Command(BaseCommand):
                     seen.add(label)
                     anchors.append(Anchor(label, chapter, number, page_index, max(0, y - 3)))
         return anchors
+
+    def find_solution_anchors(self, document, question_anchors):
+        """Locate the explicit 解:/答: that belongs to each in-document exercise."""
+        by_page = {}
+        for page_index, page in enumerate(document):
+            by_page[page_index] = self.pdf_text_lines(page)
+        ordered = sorted(question_anchors, key=lambda item: (item.page_index, item.y))
+        solutions = []
+        for index, question in enumerate(ordered):
+            following = ordered[index + 1] if index + 1 < len(ordered) else None
+            found = None
+            for page_index in range(question.page_index, (following.page_index if following else len(document) - 1) + 1):
+                for text, _x, y in by_page[page_index]:
+                    if page_index == question.page_index and y <= question.y:
+                        continue
+                    if following and page_index == following.page_index and y >= following.y:
+                        break
+                    if SOLUTION_RE.match(text):
+                        found = Anchor(question.label, question.chapter, question.number, page_index, max(0, y - 3))
+                        break
+                if found:
+                    break
+            if found:
+                solutions.append(found)
+        return solutions
 
     @staticmethod
     def pdf_text_lines(page):
@@ -335,8 +371,8 @@ class Command(BaseCommand):
 
     def store_segment_assets(self, question, document, anchor, anchors, dpi, asset_type, subject, label):
         ordered = sorted(anchors, key=lambda item: (item.page_index, item.y))
-        current_index = ordered.index(anchor)
-        next_anchor = ordered[current_index + 1] if current_index + 1 < len(ordered) else None
+        current_key = (anchor.page_index, anchor.y)
+        next_anchor = next((item for item in ordered if (item.page_index, item.y) > current_key), None)
         end_page = next_anchor.page_index if next_anchor else anchor.page_index
         end_y = next_anchor.y if next_anchor and next_anchor.page_index == anchor.page_index else None
         existing_ids = []
