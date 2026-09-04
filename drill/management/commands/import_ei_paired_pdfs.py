@@ -32,7 +32,7 @@ LABEL_RE = re.compile(
     # and occasionally prefix a problem with ``P``.  Keep the strict end
     # delimiter so textbook section labels such as ``1.1.3`` are not mistaken
     # for an exercise.
-    r'^\s*(?:P\s*)?(?P<chapter>[1-9]\d?)\s*(?:[-—–一.]|\s+)\s*(?P<number>\d{1,3})(?:\s|题|[\.、:：]|$)',
+    r'^\s*(?:[\[【(（]\s*)?(?:题\s*)?(?:P\s*)?(?P<chapter>[1-9]\d?)\s*(?:[-—–一.]|\s+)\s*(?P<number>\d{1,3})(?:\s|题|[、:：\]】)）]|$)',
 )
 
 
