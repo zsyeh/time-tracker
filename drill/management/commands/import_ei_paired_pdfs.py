@@ -7,11 +7,13 @@ source crops losslessly as authenticated QuestionAsset rows.
 """
 
 import hashlib
+import os
 import re
 import subprocess
 import tempfile
 import uuid
 from collections import defaultdict
+from concurrent.futures import ThreadPoolExecutor
 from dataclasses import dataclass
 from pathlib import Path
 
@@ -88,6 +90,7 @@ class Command(BaseCommand):
         parser.add_argument('--dry-run', action='store_true')
         parser.add_argument('--limit', type=int, default=0, help='Maximum matched pairs per subject, for audit runs.')
         parser.add_argument('--min-match-rate', type=float, default=0.70)
+        parser.add_argument('--ocr-workers', type=int, default=1, help='Bounded local OCR workers (1-4; default 1 for small VPSes).')
 
     def handle(self, *args, **options):
         root = options['source_root'].expanduser().resolve()
@@ -96,6 +99,9 @@ class Command(BaseCommand):
         dpi = options['dpi']
         if dpi < 100 or dpi > 200:
             raise CommandError('--dpi must be between 100 and 200.')
+        self.ocr_workers = options['ocr_workers']
+        if self.ocr_workers < 1 or self.ocr_workers > 4:
+            raise CommandError('--ocr-workers must be between 1 and 4.')
         subjects = [item.strip() for item in options['subjects'].split(',') if item.strip()]
         unknown = set(subjects) - set(PAIR_SOURCES)
         if unknown:
@@ -179,10 +185,24 @@ class Command(BaseCommand):
         anchors = []
         with tempfile.TemporaryDirectory(prefix='ei-pdf-ocr-') as temporary:
             temp_root = Path(temporary)
+            page_lines = {}
+            ocr_jobs = []
             for page_index, page in enumerate(document):
                 lines = self.pdf_text_lines(page)
                 if not any(LABEL_RE.match(text) for text, _x, _y in lines):
-                    lines = self.ocr_lines(page, min(dpi, 100), temp_root / f'{page_index:04d}.png')
+                    output = temp_root / f'{page_index:04d}.png'
+                    scale = min(dpi, 100) / 72
+                    clip = pymupdf.Rect(0, 0, page.rect.width * 0.32, page.rect.height)
+                    page.get_pixmap(matrix=pymupdf.Matrix(scale, scale), clip=clip, alpha=False).save(output)
+                    ocr_jobs.append((page_index, output, scale))
+                else:
+                    page_lines[page_index] = lines
+            if ocr_jobs:
+                with ThreadPoolExecutor(max_workers=self.ocr_workers) as executor:
+                    for page_index, lines in executor.map(self.ocr_image_lines, ocr_jobs):
+                        page_lines[page_index] = lines
+            for page_index, page in enumerate(document):
+                lines = page_lines[page_index]
                 seen = set()
                 page_width = page.rect.width
                 for text, x, y in lines:
@@ -210,16 +230,12 @@ class Command(BaseCommand):
         return lines
 
     @staticmethod
-    def ocr_lines(page, dpi, output):
-        scale = dpi / 72
-        # Exercise numbers sit in the left margin.  Scanning the entire
-        # formula-heavy page is both slower and less accurate, while the
-        # visible material itself is retained from the original PDF below.
-        clip = pymupdf.Rect(0, 0, page.rect.width * 0.32, page.rect.height)
-        page.get_pixmap(matrix=pymupdf.Matrix(scale, scale), clip=clip, alpha=False).save(output)
+    def ocr_image_lines(job):
+        _page_index, output, scale = job
         result = subprocess.run(
             ['tesseract', str(output), 'stdout', '-l', 'eng', '--psm', '11', 'tsv'],
             check=True, capture_output=True, text=True,
+            env={**os.environ, 'OMP_THREAD_LIMIT': '1'},
         )
         grouped = defaultdict(list)
         for row in result.stdout.splitlines()[1:]:
@@ -236,7 +252,7 @@ class Command(BaseCommand):
         for words in grouped.values():
             words.sort()
             lines.append((' '.join(item[2] for item in words), words[0][0] / scale, words[0][1] / scale))
-        return lines
+        return _page_index, lines
 
     def import_subject(self, report, dpi):
         config = report['config']
