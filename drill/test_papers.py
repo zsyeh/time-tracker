@@ -108,3 +108,49 @@ class PaperGeneratorTests(TestCase):
         selected = list(paper.items.values_list('question_id', flat=True))
         Question.objects.exclude(pk__in=selected).first().delete()
         self.assertEqual(selected, list(paper.items.values_list('question_id', flat=True)))
+
+    def test_api_persists_paper_and_keeps_answers_out_of_exam_mode(self):
+        self.questions[0].answer_markdown = '## Correct answer'
+        self.questions[0].save(update_fields=('answer_markdown',))
+        self.client.force_login(self.user)
+        response = self.client.post(
+            '/api/drill/papers/',
+            {'blueprint': self.blueprint.code, 'seed': 123},
+            content_type='application/json',
+            secure=True,
+        )
+        self.assertEqual(response.status_code, 201)
+        payload = response.json()
+        self.assertEqual(len(payload['items']), 6)
+        self.assertNotIn('answer_markdown', payload['items'][0]['question'])
+        paper_uuid = payload['uuid']
+
+        review = self.client.get(f'/api/drill/papers/{paper_uuid}/review/', secure=True)
+        self.assertEqual(review.status_code, 200)
+        self.assertIn('answer_markdown', review.json()['items'][0]['question'])
+        self.assertEqual(self.client.get('/api/drill/papers/', secure=True).json()['results'][0]['uuid'], paper_uuid)
+
+    def test_other_user_cannot_access_paper(self):
+        paper = PaperGenerator().generate(user=self.user, blueprint=self.blueprint, seed=4)
+        other = get_user_model().objects.create_user('paper-other', password='x')
+        self.client.force_login(other)
+        self.assertEqual(self.client.get(f'/api/drill/papers/{paper.uuid}/', secure=True).status_code, 404)
+        self.assertEqual(self.client.get(f'/api/drill/papers/{paper.uuid}/review/', secure=True).status_code, 404)
+
+    def test_item_update_records_answer_and_learning_result(self):
+        paper = PaperGenerator().generate(user=self.user, blueprint=self.blueprint, seed=5)
+        item = paper.items.first()
+        self.client.force_login(self.user)
+        response = self.client.patch(
+            f'/api/drill/papers/{paper.uuid}/items/{item.position}/',
+            {'user_answer': 'My work', 'result': 'incorrect', 'time_spent_seconds': 90},
+            content_type='application/json',
+            secure=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        item.refresh_from_db()
+        self.assertEqual(item.user_answer, 'My work')
+        self.assertEqual(item.time_spent_seconds, 90)
+        self.assertTrue(QuestionAttempt.objects.filter(
+            user=self.user, question=item.question, result='review',
+        ).exists())

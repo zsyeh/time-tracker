@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Question, QuestionAttempt, QuestionMarker
+from .models import ExamBlueprint, Question, QuestionAttempt, QuestionMarker
 
 
 class QuestionSummarySerializer(serializers.ModelSerializer):
@@ -88,3 +88,30 @@ class PaperGenerateSerializer(serializers.Serializer):
         allow_blank=True,
     )
     unattempted = serializers.BooleanField(required=False, default=False)
+
+
+class ExamPaperCreateSerializer(serializers.Serializer):
+    blueprint = serializers.SlugRelatedField(
+        slug_field='code',
+        queryset=ExamBlueprint.objects.filter(is_active=True, subject='math2'),
+    )
+    seed = serializers.IntegerField(min_value=0, max_value=2 ** 63 - 1, required=False)
+    include_mastered = serializers.BooleanField(required=False, default=False)
+    cooldown_days = serializers.IntegerField(min_value=0, max_value=365, required=False)
+
+
+class ExamPaperStatusSerializer(serializers.Serializer):
+    action = serializers.ChoiceField(choices=('start', 'complete'))
+
+
+class ExamPaperItemUpdateSerializer(serializers.Serializer):
+    user_answer = serializers.CharField(required=False, allow_blank=True, max_length=10000)
+    result = serializers.ChoiceField(
+        choices=('unanswered', 'correct', 'incorrect', 'review'), required=False,
+    )
+    time_spent_seconds = serializers.IntegerField(min_value=0, max_value=10800, required=False, allow_null=True)
+
+    def validate(self, attrs):
+        if not attrs:
+            raise serializers.ValidationError('Provide an answer, result, or time spent.')
+        return attrs

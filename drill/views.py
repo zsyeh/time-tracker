@@ -2,7 +2,7 @@ import datetime
 
 from django.conf import settings
 from django.db import transaction
-from django.db.models import Count, Exists, Max, OuterRef, Prefetch, Q, Subquery
+from django.db.models import Count, Exists, Max, OuterRef, Prefetch, Q, Subquery, Sum
 from django.db.models.functions import TruncDate
 from django.http import Http404, HttpResponse, HttpResponseNotModified
 from django.shortcuts import get_object_or_404
@@ -14,11 +14,14 @@ from rest_framework.views import APIView
 
 from .cleaning import SOURCE_LABELS
 from .models import (
-    Question, QuestionAsset, QuestionAttempt, QuestionDocument, QuestionMarker,
-    QuestionTopic, QuestionUserState,
+    ExamBlueprint, ExamPaper, ExamPaperItem, Question, QuestionAsset,
+    QuestionAttempt, QuestionDocument, QuestionMarker, QuestionTopic,
+    QuestionUserState,
 )
+from .paper_generator import PaperGenerationError, PaperGenerator
 from .serializers import (
-    PaperGenerateSerializer, QuestionAttemptCreateSerializer,
+    ExamPaperCreateSerializer, ExamPaperItemUpdateSerializer,
+    ExamPaperStatusSerializer, PaperGenerateSerializer, QuestionAttemptCreateSerializer,
     QuestionMarkerSelectionSerializer, QuestionSummarySerializer, QuestionUserStateSerializer,
 )
 
@@ -53,6 +56,109 @@ def question_progress(queryset, user):
 
 def summary_payload(question):
     return QuestionSummarySerializer(question).data
+
+
+def paper_queryset(user):
+    assets = QuestionAsset.objects.only(
+        'id', 'question_id', 'position', 'asset_type', 'width', 'height',
+        'mime_type', 'sha256',
+    )
+    return ExamPaper.objects.filter(user=user).select_related('blueprint').prefetch_related(
+        Prefetch(
+            'items',
+            queryset=ExamPaperItem.objects.select_related(
+                'section', 'question__document', 'question__topic',
+                'question__similarity_topic',
+            ).prefetch_related(Prefetch('question__assets', queryset=assets)).order_by('position'),
+        ),
+    )
+
+
+def paper_item_payload(item, *, review, latest_result=None):
+    question = item.question
+    payload = {
+        'position': item.position,
+        'score': float(item.score),
+        'user_answer': item.user_answer,
+        'result': item.result,
+        'time_spent_seconds': item.time_spent_seconds,
+        'question': {
+            'uuid': str(question.uuid),
+            'display_label': question.display_label or question.source_label,
+            'source_label': question.source_label,
+            'document': question.document.display_title or question.document.title,
+            'topic': (
+                question.similarity_topic.display_title or question.similarity_topic.title
+                if question.similarity_topic else ''
+            ),
+            'question_type': question.question_type,
+            'prompt_text': question.prompt_text,
+            'latex_text': question.latex_text,
+            'content_mode': question.content_mode,
+            'question_assets': [
+                {
+                    'id': asset.pk,
+                    'url': f'/api/drill/assets/{asset.pk}/?v={asset.sha256[:16]}',
+                    'width': asset.width,
+                    'height': asset.height,
+                    'position': asset.position,
+                }
+                for asset in question.assets.all() if asset.asset_type == 'question_crop'
+            ],
+        },
+    }
+    if review:
+        payload['question'].update({
+            'answer_markdown': question.answer_markdown,
+            'answer_source': question.answer_source,
+            'answer_assets': [
+                {
+                    'id': asset.pk,
+                    'url': f'/api/drill/assets/{asset.pk}/?v={asset.sha256[:16]}',
+                    'width': asset.width,
+                    'height': asset.height,
+                    'position': asset.position,
+                }
+                for asset in question.assets.all() if asset.asset_type == 'answer_crop'
+            ],
+            'mastery_state': (
+                'mastered' if latest_result in ('done', 'correct')
+                else 'review' if latest_result == 'review' else 'unattempted'
+            ),
+        })
+    return payload
+
+
+def exam_paper_payload(paper, *, review=False):
+    items = list(paper.items.all())
+    latest_by_question = {}
+    if review and items:
+        attempts = QuestionAttempt.objects.filter(
+            user=paper.user,
+            question_id__in=[item.question_id for item in items],
+        ).order_by('question_id', '-created_at', '-pk').distinct('question_id')
+        latest_by_question = {attempt.question_id: attempt.result for attempt in attempts}
+    return {
+        'uuid': str(paper.uuid),
+        'title': paper.blueprint.title,
+        'blueprint': paper.blueprint.code,
+        'mode': paper.mode,
+        'status': paper.status,
+        'seed': paper.seed,
+        'duration_minutes': paper.blueprint.duration_minutes,
+        'total_score': paper.blueprint.total_score,
+        'created_at': paper.created_at,
+        'started_at': paper.started_at,
+        'completed_at': paper.completed_at,
+        'items': [
+            paper_item_payload(
+                item,
+                review=review,
+                latest_result=latest_by_question.get(item.question_id),
+            )
+            for item in items
+        ],
+    }
 
 
 def topic_breadcrumbs(topic):
@@ -352,6 +458,168 @@ class DrillPaperGenerateView(APIView):
             'available_count': len(candidate_ids),
             'questions': [summary_payload(questions[pk]) for pk in selected_ids],
         })
+
+
+class DrillBlueprintListView(APIView):
+    def get(self, request):
+        if request_workspace(request) != 'drill':
+            raise Http404
+        blueprints = ExamBlueprint.objects.filter(
+            subject='math2', is_active=True,
+        ).prefetch_related('sections').order_by('mode', '-version')
+        return Response({
+            'results': [
+                {
+                    'uuid': str(blueprint.uuid),
+                    'code': blueprint.code,
+                    'title': blueprint.title,
+                    'mode': blueprint.mode,
+                    'version': blueprint.version,
+                    'duration_minutes': blueprint.duration_minutes,
+                    'total_score': blueprint.total_score,
+                    'cooldown_days': blueprint.cooldown_days,
+                    'question_count': sum(item.question_count for item in blueprint.sections.all()),
+                    'sections': [
+                        {
+                            'title': item.title,
+                            'question_type': item.question_type,
+                            'question_count': item.question_count,
+                            'score_per_question': float(item.score_per_question),
+                        }
+                        for item in blueprint.sections.all()
+                    ],
+                }
+                for blueprint in blueprints
+            ],
+        })
+
+
+class DrillPaperListCreateView(APIView):
+    def get(self, request):
+        if request_workspace(request) != 'drill':
+            raise Http404
+        papers = ExamPaper.objects.filter(user=request.user).select_related('blueprint').annotate(
+            question_count=Count('items'),
+            answered_count=Count('items', filter=~Q(items__result='unanswered')),
+            correct_count=Count('items', filter=Q(items__result='correct')),
+            time_spent_seconds=Sum('items__time_spent_seconds'),
+            earned_score=Sum('items__score', filter=Q(items__result='correct')),
+        )[:100]
+        return Response({'results': [
+            {
+                'uuid': str(paper.uuid),
+                'title': paper.blueprint.title,
+                'blueprint': paper.blueprint.code,
+                'mode': paper.mode,
+                'status': paper.status,
+                'created_at': paper.created_at,
+                'completed_at': paper.completed_at,
+                'duration_minutes': paper.blueprint.duration_minutes,
+                'total_score': paper.blueprint.total_score,
+                'question_count': paper.question_count,
+                'answered_count': paper.answered_count,
+                'correct_count': paper.correct_count,
+                'time_spent_seconds': paper.time_spent_seconds or 0,
+                'earned_score': float(paper.earned_score or 0),
+            }
+            for paper in papers
+        ]})
+
+    def post(self, request):
+        if request_workspace(request) != 'drill':
+            raise Http404
+        serializer = ExamPaperCreateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        values = serializer.validated_data
+        try:
+            paper = PaperGenerator().generate(
+                user=request.user,
+                blueprint=values['blueprint'],
+                seed=values.get('seed'),
+                include_mastered=values['include_mastered'],
+                cooldown_days=values.get('cooldown_days'),
+            )
+        except PaperGenerationError as error:
+            return Response({
+                'detail': str(error),
+                'section': error.section,
+                'required': error.required,
+                'available': error.available,
+            }, status=status.HTTP_400_BAD_REQUEST)
+        paper = paper_queryset(request.user).get(pk=paper.pk)
+        return Response(exam_paper_payload(paper), status=status.HTTP_201_CREATED)
+
+
+class DrillPaperDetailView(APIView):
+    def get_object(self, request, paper_uuid):
+        if request_workspace(request) != 'drill':
+            raise Http404
+        return get_object_or_404(paper_queryset(request.user), uuid=paper_uuid)
+
+    def get(self, request, paper_uuid):
+        return Response(exam_paper_payload(self.get_object(request, paper_uuid)))
+
+    def patch(self, request, paper_uuid):
+        serializer = ExamPaperStatusSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        paper = self.get_object(request, paper_uuid)
+        now = timezone.now()
+        if serializer.validated_data['action'] == 'start':
+            if paper.started_at is None:
+                paper.started_at = now
+            if paper.status == 'generated':
+                paper.status = 'in_progress'
+            paper.save(update_fields=('started_at', 'status'))
+        else:
+            if paper.started_at is None:
+                paper.started_at = now
+            paper.completed_at = now
+            paper.status = 'completed'
+            paper.save(update_fields=('started_at', 'completed_at', 'status'))
+        return Response(exam_paper_payload(paper_queryset(request.user).get(pk=paper.pk)))
+
+
+class DrillPaperReviewView(APIView):
+    def get(self, request, paper_uuid):
+        if request_workspace(request) != 'drill':
+            raise Http404
+        paper = get_object_or_404(paper_queryset(request.user), uuid=paper_uuid)
+        return Response(exam_paper_payload(paper, review=True))
+
+
+class DrillPaperItemView(APIView):
+    def patch(self, request, paper_uuid, position):
+        if request_workspace(request) != 'drill':
+            raise Http404
+        serializer = ExamPaperItemUpdateSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        with transaction.atomic():
+            item = get_object_or_404(
+                ExamPaperItem.objects.select_for_update().select_related('paper'),
+                paper__uuid=paper_uuid,
+                paper__user=request.user,
+                position=position,
+            )
+            previous_result = item.result
+            for field, value in serializer.validated_data.items():
+                setattr(item, field, value)
+            item.submitted_at = timezone.now()
+            item.save(update_fields=(*serializer.validated_data.keys(), 'submitted_at'))
+            if item.result != previous_result and item.result in ('correct', 'incorrect', 'review'):
+                QuestionAttempt.objects.create(
+                    user=request.user,
+                    question=item.question,
+                    result='correct' if item.result == 'correct' else 'review',
+                )
+        return Response({
+            'position': item.position,
+            'user_answer': item.user_answer,
+            'result': item.result,
+            'time_spent_seconds': item.time_spent_seconds,
+            'submitted_at': item.submitted_at,
+        })
+
+
 
 
 class DrillQuestionDetailView(APIView):

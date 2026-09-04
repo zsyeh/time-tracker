@@ -159,3 +159,85 @@ export interface InsightPayload {
     updated_at: string
   }>
 }
+
+export type PaperMode = 'standard' | 'intensive' | 'weak'
+export type PaperStatus = 'generated' | 'in_progress' | 'completed'
+export type PaperItemResult = 'unanswered' | 'correct' | 'incorrect' | 'review'
+
+export interface ExamBlueprintSection {
+  title: string
+  question_type: 'single_choice' | 'fill_blank' | 'solution'
+  question_count: number
+  score_per_question: number
+}
+
+export interface ExamBlueprint {
+  uuid: string
+  code: string
+  title: string
+  mode: PaperMode
+  version: number
+  duration_minutes: number
+  total_score: number
+  cooldown_days: number
+  question_count: number
+  sections: ExamBlueprintSection[]
+}
+
+export interface ExamPaperQuestion {
+  uuid: string
+  display_label: string
+  source_label: string
+  document: string
+  topic: string
+  question_type: 'single_choice' | 'fill_blank' | 'solution'
+  prompt_text: string
+  latex_text: string
+  content_mode: string
+  question_assets: Array<{ id: number; url: string; width: number; height: number; position: number }>
+  answer_markdown?: string
+  answer_source?: string
+  answer_assets?: Array<{ id: number; url: string; width: number; height: number; position: number }>
+  mastery_state?: 'unattempted' | 'mastered' | 'review'
+}
+
+export interface ExamPaperItem {
+  position: number
+  score: number
+  user_answer: string
+  result: PaperItemResult
+  time_spent_seconds: number | null
+  question: ExamPaperQuestion
+}
+
+export interface ExamPaper {
+  uuid: string
+  title: string
+  blueprint: string
+  mode: PaperMode
+  status: PaperStatus
+  seed: number
+  duration_minutes: number
+  total_score: number
+  created_at: string
+  started_at: string | null
+  completed_at: string | null
+  items: ExamPaperItem[]
+}
+
+export interface ExamPaperSummary {
+  uuid: string
+  title: string
+  blueprint: string
+  mode: PaperMode
+  status: PaperStatus
+  created_at: string
+  completed_at: string | null
+  duration_minutes: number
+  total_score: number
+  question_count: number
+  answered_count: number
+  correct_count: number
+  time_spent_seconds: number
+  earned_score: number
+}

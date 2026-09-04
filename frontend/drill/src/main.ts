@@ -6,7 +6,10 @@ import ActivityView from './views/ActivityView.vue'
 import BookActivityView from './views/BookActivityView.vue'
 import PracticeView from './views/PracticeView.vue'
 import QuestionView from './views/QuestionView.vue'
-import PaperView from './views/PaperView.vue'
+import PapersView from './views/PapersView.vue'
+import PaperNewView from './views/PaperNewView.vue'
+import PaperExamView from './views/PaperExamView.vue'
+import PaperReviewView from './views/PaperReviewView.vue'
 import CollectionView from './views/CollectionView.vue'
 import FeelView from './views/FeelView.vue'
 import InsightView from './views/InsightView.vue'
@@ -22,7 +25,11 @@ const router = createRouter({
     { path: '/heatmap', name: 'heatmap', component: HeatmapView },
     { path: '/activity', name: 'activity', component: ActivityView },
     { path: '/book-activity', name: 'book-activity', component: BookActivityView },
-    { path: '/paper', name: 'paper', component: PaperView },
+    { path: '/paper', redirect: '/papers/new' },
+    { path: '/papers', name: 'papers', component: PapersView },
+    { path: '/papers/new', name: 'paper-new', component: PaperNewView },
+    { path: '/papers/:uuid', name: 'paper-exam', component: PaperExamView, props: true },
+    { path: '/papers/:uuid/review', name: 'paper-review', component: PaperReviewView, props: true },
     { path: '/favorites', name: 'favorites', component: CollectionView, props: { kind: 'favorite' } },
     { path: '/review-later', name: 'review-later', component: CollectionView, props: { kind: 'review_later' } },
     { path: '/feel', name: 'feel', component: FeelView },

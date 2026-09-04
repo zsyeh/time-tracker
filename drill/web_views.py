@@ -69,9 +69,9 @@ def _safe_drill_target(value):
         return '/practice'
     path = parsed.path
     allowed = path in {
-        '/', '/practice', '/activity', '/book-activity', '/heatmap', '/paper', '/favorites', '/review-later',
+        '/', '/practice', '/activity', '/book-activity', '/heatmap', '/paper', '/papers', '/favorites', '/review-later',
         '/feel', '/insight',
-    } or path.startswith('/practice/')
+    } or path.startswith('/practice/') or path.startswith('/papers/')
     if not allowed:
         return '/practice'
     return path + (f'?{parsed.query}' if parsed.query else '')

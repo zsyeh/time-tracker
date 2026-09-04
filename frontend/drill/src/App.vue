@@ -61,7 +61,7 @@ onMounted(() => {
         <RouterLink to="/heatmap" :class="{ active: route.name === 'heatmap' }">
           <span>{{ t('knowledge') }}</span>
         </RouterLink>
-        <RouterLink to="/paper" :class="{ active: route.name === 'paper' }">
+        <RouterLink to="/papers" :class="{ active: String(route.name || '').startsWith('paper') }">
           <span>{{ t('buildPaper') }}</span>
         </RouterLink>
         <RouterLink to="/favorites" :class="{ active: route.name === 'favorites' }">
