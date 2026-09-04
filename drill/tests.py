@@ -1291,12 +1291,16 @@ class DrillHostRoutingTests(TestCase):
                 ei_response = self.client.get('/', HTTP_HOST='ei.ehzsy.site')
                 drill_book_activity = self.client.get('/book-activity', HTTP_HOST='drill.ehzsy.site')
                 ei_book_activity = self.client.get('/book-activity', HTTP_HOST='ei.ehzsy.site')
+                drill_papers = self.client.get('/papers', HTTP_HOST='drill.ehzsy.site')
+                drill_paper_new = self.client.get('/papers/new', HTTP_HOST='drill.ehzsy.site')
                 timer_response = self.client.get('/', HTTP_HOST='timer.ehzsy.site')
                 blocked = self.client.get('/practice', HTTP_HOST='timer.ehzsy.site')
         self.assertContains(drill_response, 'DRILL FRONTEND')
         self.assertContains(ei_response, 'DRILL FRONTEND')
         self.assertContains(drill_book_activity, 'DRILL FRONTEND')
         self.assertContains(ei_book_activity, 'DRILL FRONTEND')
+        self.assertContains(drill_papers, 'DRILL FRONTEND')
+        self.assertContains(drill_paper_new, 'DRILL FRONTEND')
         self.assertContains(timer_response, 'TIMER FRONTEND')
         self.assertEqual(blocked.status_code, 404)
 
@@ -1332,6 +1336,11 @@ class DrillPasskeyHandoffTests(TestCase):
         response = self.client.get('/paper', HTTP_HOST='drill.ehzsy.site', secure=True)
         self.assertEqual(response.status_code, 302)
         self.assertIn('next=%2Fpaper', response.url)
+
+    def test_anonymous_papers_deep_link_preserves_target(self):
+        response = self.client.get('/papers/new', HTTP_HOST='drill.ehzsy.site', secure=True)
+        self.assertEqual(response.status_code, 302)
+        self.assertIn('next=%2Fpapers%2Fnew', response.url)
 
     def test_anonymous_activity_deep_link_preserves_target(self):
         response = self.client.get('/activity', HTTP_HOST='drill.ehzsy.site', secure=True)
