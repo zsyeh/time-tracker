@@ -55,6 +55,14 @@ PAIR_SOURCES = {
         'question_file': '数电课后题做题本.pdf',
         'answer_file': '数电课后指导与答案.pdf',
         'allowed_chapters': {1, 2, 3, 4, 5, 6},
+        # At higher raster scales Tesseract breaks the book's small bracketed
+        # labels into separate tokens. The original 100 DPI pass preserves the
+        # complete ``[题 2.12]`` line and has the higher verified match rate.
+        'anchor_dpi': 100,
+        # The exercise and guide PDFs contain different supersets. Import only
+        # their 28 exact-label intersections; never fall back to sequence
+        # matching merely to inflate coverage.
+        'min_match_rate': 0.45,
     },
     'communication': {
         'document_title': '892 · 通信原理',
@@ -107,6 +115,10 @@ class Command(BaseCommand):
         parser.add_argument('source_root', type=Path)
         parser.add_argument('--subjects', default=','.join(PAIR_SOURCES), help='Comma-separated import source names.')
         parser.add_argument('--dpi', type=int, default=150)
+        parser.add_argument(
+            '--anchor-dpi', type=int, default=180,
+            help='Resolution used only for exercise-label OCR (default 180).',
+        )
         parser.add_argument('--dry-run', action='store_true')
         parser.add_argument('--limit', type=int, default=0, help='Maximum matched pairs per subject, for audit runs.')
         parser.add_argument('--min-match-rate', type=float, default=0.70)
@@ -119,6 +131,9 @@ class Command(BaseCommand):
         dpi = options['dpi']
         if dpi < 100 or dpi > 200:
             raise CommandError('--dpi must be between 100 and 200.')
+        self.anchor_dpi = options['anchor_dpi']
+        if self.anchor_dpi < 120 or self.anchor_dpi > 240:
+            raise CommandError('--anchor-dpi must be between 120 and 240.')
         self.ocr_workers = options['ocr_workers']
         if self.ocr_workers < 1 or self.ocr_workers > 4:
             raise CommandError('--ocr-workers must be between 1 and 4.')
@@ -158,12 +173,16 @@ class Command(BaseCommand):
         try:
             question_anchors = (
                 self.find_flat_numbered_anchors(question_pdf)
-                if config.get('flat_numbered') else self.find_anchors(question_pdf, dpi)
+                if config.get('flat_numbered') else self.find_anchors(
+                    question_pdf, config.get('anchor_dpi', self.anchor_dpi),
+                )
             )
             if config.get('combined_solution_pdf'):
                 answer_anchors = self.find_solution_anchors(question_pdf, question_anchors)
             else:
-                answer_anchors = self.find_anchors(answer_pdf, dpi)
+                answer_anchors = self.find_anchors(
+                    answer_pdf, config.get('anchor_dpi', self.anchor_dpi),
+                )
         finally:
             question_pdf.close()
             answer_pdf.close()
@@ -183,9 +202,10 @@ class Command(BaseCommand):
             pairs = pairs[:limit]
         denominator = max(1, min(len(questions), len(answers)))
         rate = len(pairs) / denominator
-        if rate < min_match_rate:
+        required_rate = config.get('min_match_rate', min_match_rate)
+        if rate < required_rate:
             raise CommandError(
-                f'{subject} pairing rate is {rate:.1%} ({len(pairs)}/{denominator}), below {min_match_rate:.0%}; '
+                f'{subject} pairing rate is {rate:.1%} ({len(pairs)}/{denominator}), below {required_rate:.0%}; '
                 'refusing to import unmatched material.'
             )
         return {
@@ -214,7 +234,7 @@ class Command(BaseCommand):
             return matches[0]
         return direct
 
-    def find_anchors(self, document, dpi):
+    def find_anchors(self, document, anchor_dpi):
         anchors = []
         with tempfile.TemporaryDirectory(prefix='ei-pdf-ocr-') as temporary:
             temp_root = Path(temporary)
@@ -224,16 +244,23 @@ class Command(BaseCommand):
                 lines = self.pdf_text_lines(page)
                 if not any(LABEL_RE.match(text) for text, _x, _y in lines):
                     output = temp_root / f'{page_index:04d}.png'
-                    scale = min(dpi, 100) / 72
+                    scale = anchor_dpi / 72
                     clip = pymupdf.Rect(0, 0, page.rect.width * 0.32, page.rect.height)
-                    page.get_pixmap(matrix=pymupdf.Matrix(scale, scale), clip=clip, alpha=False).save(output)
+                    page.get_pixmap(
+                        matrix=pymupdf.Matrix(scale, scale), clip=clip, alpha=False,
+                    ).save(output)
                     ocr_jobs.append((page_index, output, scale))
                 else:
                     page_lines[page_index] = lines
             if ocr_jobs:
-                with ThreadPoolExecutor(max_workers=self.ocr_workers) as executor:
-                    for page_index, lines in executor.map(self.ocr_image_lines, ocr_jobs):
+                if self.ocr_workers == 1:
+                    results = map(self.ocr_image_lines, ocr_jobs)
+                    for page_index, lines in results:
                         page_lines[page_index] = lines
+                else:
+                    with ThreadPoolExecutor(max_workers=self.ocr_workers) as executor:
+                        for page_index, lines in executor.map(self.ocr_image_lines, ocr_jobs):
+                            page_lines[page_index] = lines
             for page_index, page in enumerate(document):
                 lines = page_lines[page_index]
                 seen = set()
@@ -334,6 +361,12 @@ class Command(BaseCommand):
         ).first()
         if document is None:
             raise CommandError(f'EI document is missing: {config["document_title"]}')
+        # A corrected OCR pass can change a previously misread label. Hide the
+        # old batch first, then re-enable only pairs validated in this run.
+        Question.objects.filter(
+            document=document,
+            source_label__startswith=f'{report["subject"]} · ',
+        ).update(is_practiceable=False)
         question_pdf = pymupdf.open(report['question_path'])
         answer_pdf = pymupdf.open(report['answer_path'])
         try:
@@ -408,8 +441,7 @@ class Command(BaseCommand):
         ordered = sorted(anchors, key=lambda item: (item.page_index, item.y))
         current_key = (anchor.page_index, anchor.y)
         next_anchor = next((item for item in ordered if (item.page_index, item.y) > current_key), None)
-        end_page = next_anchor.page_index if next_anchor else anchor.page_index
-        end_y = next_anchor.y if next_anchor and next_anchor.page_index == anchor.page_index else None
+        end_page, end_y = self.segment_end(anchor, next_anchor)
         existing_ids = []
         position = 0
         for page_index in range(anchor.page_index, end_page + 1):
@@ -420,7 +452,19 @@ class Command(BaseCommand):
                 continue
             rect = pymupdf.Rect(0, y0, page.rect.width, y1)
             scale = dpi / 72
-            image_data = page.get_pixmap(matrix=pymupdf.Matrix(scale, scale), clip=rect, alpha=False).tobytes('png')
+            trim_top, trim_bottom = self.vertical_trim_bounds(page, rect)
+            if trim_top or trim_bottom:
+                rect = pymupdf.Rect(
+                    rect.x0,
+                    rect.y0 + trim_top,
+                    rect.x1,
+                    rect.y1 - trim_bottom,
+                )
+            pixmap = page.get_pixmap(matrix=pymupdf.Matrix(scale, scale), clip=rect, alpha=False)
+            width, height = pixmap.width, pixmap.height
+            if height < 8:
+                continue
+            image_data = pixmap.tobytes('png')
             digest = hashlib.sha256(image_data).hexdigest()
             # Page-boundary crops can occasionally produce the identical blank
             # fragment twice.  The data model intentionally deduplicates by
@@ -441,8 +485,8 @@ class Command(BaseCommand):
                     'sha256': digest,
                     'mime_type': 'image/png',
                     'image_data': image_data,
-                    'width': round(rect.width * scale),
-                    'height': round(rect.height * scale),
+                    'width': width,
+                    'height': height,
                     'source_page_index': page_index,
                     'source_x0': rect.x0,
                     'source_y0': rect.y0,
@@ -454,3 +498,69 @@ class Command(BaseCommand):
             existing_ids.append(asset.pk)
             position += 1
         QuestionAsset.objects.filter(question=question, asset_type=asset_type).exclude(pk__in=existing_ids).delete()
+
+    @staticmethod
+    def segment_end(anchor, next_anchor):
+        """Clip at the next exercise even when that exercise starts on a new page."""
+        if next_anchor is None:
+            return anchor.page_index, None
+        return next_anchor.page_index, next_anchor.y
+
+    @staticmethod
+    def vertical_trim_bounds(page, rect):
+        """Remove blank page tails and isolated footer numbers, preserving width."""
+        preview_scale = 0.5
+        pixmap = page.get_pixmap(
+            matrix=pymupdf.Matrix(preview_scale, preview_scale),
+            clip=rect,
+            colorspace=pymupdf.csGRAY,
+            alpha=False,
+        )
+        width, height = pixmap.width, pixmap.height
+        # Convert the threshold comparison in C through bytes.translate, then
+        # only sum one compact grayscale row at a time in Python.
+        ink_map = bytes.maketrans(bytes(range(256)), bytes(1 if value < 245 else 0 for value in range(256)))
+        thresholded = pixmap.samples.translate(ink_map)
+        minimum_ink = max(2, round(width * 0.0008))
+        occupied = []
+        for y in range(height):
+            row_start = y * width
+            ink = sum(thresholded[row_start:row_start + width])
+            if ink >= minimum_ink:
+                occupied.append(y)
+        if not occupied:
+            return 0, 0
+
+        # Split content into row groups. A tiny final group separated by a
+        # large gap at the page bottom is a page number/footer, not an answer.
+        groups = []
+        start = previous = occupied[0]
+        join_gap = max(8, round(height * 0.008))
+        for y in occupied[1:]:
+            if y - previous > join_gap:
+                groups.append((start, previous))
+                start = y
+            previous = y
+        groups.append((start, previous))
+        if len(groups) > 1:
+            footer_start, footer_end = groups[-1]
+            previous_end = groups[-2][1]
+            footer_x = []
+            for y in range(footer_start, footer_end + 1):
+                row_start = y * width
+                footer_x.extend(
+                    x for x, value in enumerate(thresholded[row_start:row_start + width]) if value
+                )
+            footer_width = max(footer_x) - min(footer_x) + 1 if footer_x else width
+            if (
+                footer_start > height * 0.95
+                and footer_start - previous_end > height * 0.08
+                and footer_end - footer_start < height * 0.05
+                and footer_width < width * 0.15
+            ):
+                groups.pop()
+
+        padding = max(8, round(12 * width / 1240))
+        top = max(0, groups[0][0] - padding)
+        bottom = min(height, groups[-1][1] + padding + 1)
+        return top / preview_scale, (height - bottom) / preview_scale
