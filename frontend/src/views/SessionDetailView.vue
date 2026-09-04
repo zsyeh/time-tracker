@@ -7,6 +7,7 @@ import { api, patch, post, remove } from '../lib/api'
 import type { ReviewTrend as ReviewTrendType, SessionShareStatus, StudySession } from '../types'
 import MarkdownPreview from '../components/MarkdownPreview.vue'
 import ReviewTrend from '../components/ReviewTrend.vue'
+import PageHeader from '../components/layout/PageHeader.vue'
 
 const props = defineProps<{ uuid: string }>()
 const router = useRouter()
@@ -95,45 +96,32 @@ onMounted(load)
 </script>
 
 <template>
-  <div class="view-stack session-article-view" v-loading="loading">
-    <section v-if="notFound" class="panel resource-not-found">
-      <span class="eyebrow">SESSION / NOT FOUND</span><h1>Session unavailable</h1><p>This resource does not exist or is not available to your account.</p><el-button type="primary" @click="router.push('/sessions')">Back to Sessions</el-button>
+  <div class="workspace-view session-article-view" v-loading="loading">
+    <section v-if="notFound" class="resource-not-found">
+      <PageHeader title="Session unavailable" metadata="This resource is missing or private"><template #actions><button type="button" class="header-action" @click="router.push('/sessions')"><el-icon><Back /></el-icon> Sessions</button></template></PageHeader>
+      <div class="empty-workspace"><span>404</span><h2>Session unavailable</h2><p>This resource does not exist or is not available to your account.</p></div>
     </section>
 
     <template v-else-if="session">
-      <section class="page-intro session-article-heading">
-        <div><button type="button" class="article-back" @click="router.push('/sessions')"><el-icon><Back /></el-icon> SESSION HISTORY</button><span class="eyebrow">SESSION ARTICLE / {{ session.uuid }}</span><h1>{{ session.title || 'Untitled session' }}</h1><p>{{ session.subject_label }}<span v-if="session.task_path"> · {{ session.task_path }}</span> · permanent private resource</p></div>
-        <el-button v-if="!editing" :icon="EditPen" @click="editing = true">Edit</el-button>
-      </section>
-
-      <section class="panel session-article-card session-detail-page">
-        <dl><div><dt>SUBJECT</dt><dd>{{ session.subject_label }}</dd></div><div><dt>START</dt><dd>{{ localDate(session.start_time) }}</dd></div><div><dt>END</dt><dd>{{ localDate(session.end_time) }}</dd></div><div><dt>CREDITED</dt><dd>{{ duration(session.credited_duration_minutes) }}</dd></div><div><dt>ACTUAL</dt><dd>{{ duration(session.duration_minutes) }}</dd></div><div><dt>EFFICIENCY</dt><dd>{{ session.efficiency_grade }} · ×{{ session.efficiency_coefficient.toFixed(2) }}</dd></div></dl>
-        <p class="session-disturbance-summary"><b>{{ session.disturbance_count }}</b> DISTURBANCE{{ session.disturbance_count === 1 ? '' : 'S' }}<span v-if="session.last_disturbance_at"> · LAST {{ localDate(session.last_disturbance_at) }}</span></p>
-        <div v-if="session.tags.length" class="completion-tags"><span>TAGS</span><button v-for="tag in session.tags" :key="tag.id" type="button" class="selected">#{{ tag.name }}</button></div>
-        <ReviewTrend v-if="session.status === 'completed'" :trend="reviewTrend" :loading="loading" />
-        <el-form v-if="editing" label-position="top" class="simple-review review-editor">
-          <el-form-item label="Title"><el-input v-model="edit.title" maxlength="500" show-word-limit /></el-form-item>
-          <el-form-item label="Markdown source"><el-input v-model="edit.details" type="textarea" :rows="20" /></el-form-item>
-          <MarkdownPreview :source="edit.details" />
-          <div class="editor-actions"><el-button @click="editing = false">Cancel</el-button><el-button type="primary" @click="save">Save changes</el-button></div>
-        </el-form>
-        <MarkdownPreview v-else :key="session.uuid" :source="session.details" default-open allow-fullscreen empty-text="No details were recorded for this session." />
-      </section>
-
-      <section v-if="session.status === 'completed'" class="panel session-share-card">
-        <div class="share-heading"><div><span class="eyebrow">PUBLIC SHARE</span><h2>Read-only article link</h2></div><span class="share-state" :class="`state-${share?.status || 'private'}`">{{ (share?.status || 'private').toUpperCase() }}</span></div>
-        <p>Private by default. Public links expose only the article fields and can be revoked immediately.</p>
-        <div v-if="!share?.is_active" class="share-create-row">
-          <label><span>OPTIONAL EXPIRY</span><el-input v-model="expiry" type="datetime-local" /></label>
-          <el-button type="primary" :icon="Link" :loading="sharing" @click="createShare">Create share link</el-button>
-        </div>
-        <div v-else class="share-active-row">
-          <div><b>Link is active</b><small v-if="share.expires_at">Expires {{ localDate(share.expires_at) }}</small><small v-else>No expiry</small></div>
-          <div class="share-actions"><el-button v-if="revealedShareUrl" :icon="CopyDocument" @click="copyShare">Copy link</el-button><el-button type="danger" plain @click="revokeShare">Revoke</el-button></div>
-        </div>
-        <div v-if="revealedShareUrl" class="share-reveal"><el-icon><View /></el-icon><a :href="revealedShareUrl" target="_blank" rel="noopener noreferrer nofollow">{{ revealedShareUrl }}</a></div>
-        <p v-else-if="share?.is_active" class="share-once-note">For security, only the token hash is stored. Revoke and create a new link if the original URL was not saved.</p>
-      </section>
+      <PageHeader context="Sessions" :title="session.title || 'Untitled session'" :metadata="`${session.subject_label}${session.task_path ? ` · ${session.task_path}` : ''}`"><template #actions><button type="button" class="header-action" @click="router.push('/sessions')"><el-icon><Back /></el-icon> Sessions</button><el-button v-if="!editing" :icon="EditPen" @click="editing = true">Edit</el-button></template></PageHeader>
+      <div class="session-detail-workspace">
+        <main class="session-document">
+          <div class="document-identity"><span>Session article</span><small>{{ session.uuid }}</small></div>
+          <el-form v-if="editing" label-position="top" class="simple-review review-editor">
+            <el-form-item label="Title"><el-input v-model="edit.title" maxlength="500" show-word-limit /></el-form-item>
+            <el-form-item label="Markdown source"><el-input v-model="edit.details" type="textarea" :rows="20" /></el-form-item>
+            <MarkdownPreview :source="edit.details" />
+            <div class="editor-actions"><el-button @click="editing = false">Cancel</el-button><el-button type="primary" @click="save">Save changes</el-button></div>
+          </el-form>
+          <MarkdownPreview v-else :key="session.uuid" :source="session.details" default-open allow-fullscreen empty-text="No details were recorded for this session." />
+        </main>
+        <aside class="session-context-rail" aria-label="Session context">
+          <section class="context-section"><header><span>Properties</span><b :class="`state-${session.status}`">{{ session.status }}</b></header><dl class="context-properties"><div><dt>Subject</dt><dd>{{ session.subject_label }}</dd></div><div><dt>Started</dt><dd>{{ localDate(session.start_time) }}</dd></div><div><dt>Ended</dt><dd>{{ localDate(session.end_time) }}</dd></div><div><dt>Credited</dt><dd>{{ duration(session.credited_duration_minutes) }}</dd></div><div><dt>Actual</dt><dd>{{ duration(session.duration_minutes) }}</dd></div><div><dt>Efficiency</dt><dd>{{ session.efficiency_grade }} · ×{{ session.efficiency_coefficient.toFixed(2) }}</dd></div><div><dt>Disturbances</dt><dd>{{ session.disturbance_count }}</dd></div></dl></section>
+          <section v-if="session.tags.length" class="context-section"><header><span>Tags</span></header><div class="context-tags"><span v-for="tag in session.tags" :key="tag.id">#{{ tag.name }}</span></div></section>
+          <section v-if="session.status === 'completed'" class="context-section"><header><span>Review activity</span><b>{{ reviewTrend?.total || 0 }}</b></header><ReviewTrend :trend="reviewTrend" :loading="loading" /></section>
+          <section v-if="session.status === 'completed'" class="context-section share-context"><header><span>Public share</span><b class="share-state" :class="`state-${share?.status || 'private'}`">{{ share?.status || 'private' }}</b></header><p>Read-only and revocable. Private metadata is never included.</p><template v-if="!share?.is_active"><el-input v-model="expiry" type="datetime-local" aria-label="Optional share expiry" /><el-button type="primary" :icon="Link" :loading="sharing" @click="createShare">Create link</el-button></template><template v-else><small v-if="share.expires_at">Expires {{ localDate(share.expires_at) }}</small><small v-else>No expiry</small><div class="share-actions"><el-button v-if="revealedShareUrl" :icon="CopyDocument" @click="copyShare">Copy</el-button><el-button type="danger" plain @click="revokeShare">Revoke</el-button></div></template><div v-if="revealedShareUrl" class="share-reveal"><el-icon><View /></el-icon><a :href="revealedShareUrl" target="_blank" rel="noopener noreferrer nofollow">Open shared article</a></div><p v-else-if="share?.is_active" class="share-once-note">Only the token hash remains. Create a new link if the original was not saved.</p></section>
+        </aside>
+      </div>
     </template>
   </div>
 </template>

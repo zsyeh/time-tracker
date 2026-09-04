@@ -301,19 +301,26 @@ onMounted(() => { load(); loadRuntime(); loadAccess(); loadEncryption(); loadOrg
 
 <template>
   <div class="view-stack">
-    <PageHeader title="Settings" metadata="Workspace preferences and access" />
+    <PageHeader context="Workspace" title="Settings" metadata="Preferences and access" />
     <div class="settings-layout">
       <nav class="settings-index" aria-label="Settings sections">
+        <span>Workspace</span>
+        <a href="#general">General</a>
         <a href="#appearance">Appearance</a>
-        <a href="#privacy">Privacy</a>
-        <a href="#access">Access</a>
-        <a href="#data">Data</a>
+        <a v-if="isSuperuser" href="#instance">Tracking</a>
+        <span>Content</span>
         <a href="#organization">Organization</a>
+        <span>Account</span>
+        <a href="#privacy">Security</a>
+        <a href="#access">Access</a>
         <a href="#invitations">Invitations</a>
-        <a href="#shortcuts">Shortcuts</a>
+        <a href="#data">Data</a>
+        <span>Automation</span>
+        <a href="#shortcuts">Integrations</a>
       </nav>
       <div class="settings-content">
-    <section class="settings-sections">
+    <section id="general" class="settings-category">
+      <header class="settings-category-header"><div><span>General</span><h2>Workspace defaults</h2></div><p>Identity, schedule, and visual preferences.</p></header>
       <article v-if="isSuperuser" id="instance" class="setting-section instance-settings" v-loading="runtimeLoading">
         <div class="card-title"><div><span class="eyebrow">LOCAL INSTANCE</span><h2>Homepage and schedule</h2></div><span class="env-badge">.ENV ↔ WEB</span></div>
         <p>These display values are read from the local environment file. Saving updates only the fields shown here and applies them immediately.</p>
@@ -342,6 +349,9 @@ onMounted(() => { load(); loadRuntime(); loadAccess(); loadEncryption(); loadOrg
           <button v-for="item in themes" :key="item.id" type="button" :class="{ active: theme === item.id }" @click="setTheme(item.id)"><i :style="{ background: item.color }" /><span>{{ item.label }}</span><b>{{ theme === item.id ? 'SELECTED' : '' }}</b></button>
         </div>
       </article>
+    </section>
+    <section class="settings-category">
+      <header class="settings-category-header"><div><span>Security</span><h2>Privacy and access</h2></div><p>Storage protection and account credentials.</p></header>
       <article id="privacy" class="setting-section encryption-card" v-loading="encryptionLoading">
         <div class="card-title">
           <div><span class="eyebrow">STORAGE PRIVACY</span><h2>Private content at rest</h2></div>
@@ -360,7 +370,10 @@ onMounted(() => { load(); loadRuntime(); loadAccess(); loadEncryption(); loadOrg
         <p>Passkey and password are alternative sign-in methods. Either one completes login; no second factor is required. Passwords are optional, and Passkey-only accounts are supported.</p>
         <div class="settings-actions"><a class="el-button el-button--primary" href="/accounts/2fa/webauthn/add/">Add Passkey</a><a class="text-link" href="/accounts/2fa/">Manage</a></div>
       </article>
-      <article id="data" class="setting-section">
+    </section>
+    <section id="data" class="settings-category">
+      <header class="settings-category-header"><div><span>Data</span><h2>Portability and administration</h2></div><p>Exports and instance controls.</p></header>
+      <article class="setting-section">
         <div class="card-title"><div><span class="eyebrow">PORTABLE DATA</span><h2>Data export</h2></div></div>
         <p>Export raw sessions and structured review fields without summary truncation.</p>
         <div class="export-actions"><a href="/api/export/csv/">CSV</a><a href="/api/export/json/">JSON</a><a href="/api/export/markdown/">Markdown</a></div>
@@ -371,8 +384,8 @@ onMounted(() => { load(); loadRuntime(); loadAccess(); loadEncryption(); loadOrg
         <div class="settings-actions"><a class="el-button el-button--primary" href="/admin/">Open Django Admin</a><a class="text-link" href="/admin/tracker/invitecode/dashboard/">Invitation dashboard</a><a class="text-link" href="/admin/tracker/invitecode/auth-recovery/">Reset login status</a></div>
       </article>
     </section>
-    <section id="organization" class="settings-detail-section organization-panel">
-      <div class="section-heading"><div><span class="eyebrow">CONTENT ORGANIZATION</span><h2>Task presets and tags</h2></div><el-button type="primary" @click="openPresetEditor()">New task preset</el-button></div>
+    <section id="organization" class="settings-category settings-detail-section organization-panel">
+      <header class="settings-category-header"><div><span>Organization</span><h2>Task presets and tags</h2></div><el-button type="primary" @click="openPresetEditor()">New task preset</el-button></header>
       <p class="section-note">Build up to four custom levels below a subject. Mark any task as a homepage shortcut; its tags are preselected when the Session starts.</p>
       <div class="tag-manager">
         <div class="tag-create"><el-input v-model="tagName" maxlength="64" placeholder="New tag name" @keyup.enter="createStudyTag" /><el-select v-model="tagColor" aria-label="Tag color"><el-option label="Green" value="green" /><el-option label="Blue" value="blue" /><el-option label="Pink" value="pink" /><el-option label="Yellow" value="yellow" /><el-option label="Purple" value="purple" /></el-select><el-button @click="createStudyTag">Add tag</el-button></div>
@@ -388,8 +401,8 @@ onMounted(() => { load(); loadRuntime(); loadAccess(); loadEncryption(); loadOrg
         </template>
       </el-tree>
     </section>
-    <section id="invitations" class="settings-detail-section token-panel invite-panel">
-      <div class="section-heading"><div><span class="eyebrow">{{ isAdmin ? 'ADMIN / REGISTRATION' : 'ACCOUNT / SHARING' }}</span><h2>Invite codes</h2></div><div class="invite-heading-actions"><a v-if="isAdmin" class="text-link" href="/admin/tracker/invitecode/dashboard/">Full visitor log</a><el-button type="primary" :disabled="!dailyInviteAvailable" @click="inviteOpen = true">{{ dailyInviteAvailable ? 'Generate invite' : 'Daily invite used' }}</el-button></div></div>
+    <section id="invitations" class="settings-category settings-detail-section token-panel invite-panel">
+      <header class="settings-category-header"><div><span>Access</span><h2>Invite codes</h2></div><div class="invite-heading-actions"><a v-if="isAdmin" class="text-link" href="/admin/tracker/invitecode/dashboard/">Full visitor log</a><el-button type="primary" :disabled="!dailyInviteAvailable" @click="inviteOpen = true">{{ dailyInviteAvailable ? 'Generate invite' : 'Daily invite used' }}</el-button></div></header>
       <p class="section-note">{{ isAdmin ? 'Choose 1–100 uses per code. Raw codes are shown once and stored as hashes.' : 'You can generate one single-use invite per Shanghai calendar day. You can see the username after it is redeemed.' }}</p>
       <el-empty v-if="!invites.length" description="No invite codes" />
       <article v-for="invite in invites" :key="invite.id" class="token-row invite-row">
@@ -398,8 +411,8 @@ onMounted(() => { load(); loadRuntime(); loadAccess(); loadEncryption(); loadOrg
         <div><el-button v-if="invite.is_active" text type="danger" @click="revokeInvite(invite)">Revoke</el-button></div>
       </article>
     </section>
-    <section id="shortcuts" class="settings-detail-section token-panel">
-      <div class="section-heading"><div><span class="eyebrow">SHORTCUT CAPABILITIES</span><h2>Start and disturbance URIs</h2></div><el-button type="primary" @click="open = true">New capability</el-button></div>
+    <section id="shortcuts" class="settings-category settings-detail-section token-panel">
+      <header class="settings-category-header"><div><span>Integrations</span><h2>Start and disturbance URIs</h2></div><el-button type="primary" @click="open = true">New capability</el-button></header>
       <p class="section-note">No sign-in is required when a valid secret URI is called. Start and disturbance use separate random secrets. Each can be copied only when created or regenerated.</p>
       <el-empty v-if="!tokens.length" description="No launch tokens" />
       <article v-for="token in tokens" :key="token.id" class="token-row capability-row">

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue'
+import { computed, onBeforeUnmount, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { Clock, DataAnalysis, Expand, Fold, Guide, List, Setting } from '@element-plus/icons-vue'
 import GlobalSearch from '../GlobalSearch.vue'
@@ -15,6 +15,8 @@ const activeSection = computed(() => route.name === 'session-detail' ? 'sessions
 const activeSubject = computed(() => String(route.query.subject || ''))
 
 watch(() => route.fullPath, () => { mobileOpen.value = false })
+watch(mobileOpen, (value) => document.body.classList.toggle('navigation-drawer-open', value))
+onBeforeUnmount(() => document.body.classList.remove('navigation-drawer-open'))
 </script>
 
 <template>
@@ -22,7 +24,7 @@ watch(() => route.fullPath, () => { mobileOpen.value = false })
   <button type="button" class="mobile-sidebar-open" aria-label="Open navigation" aria-controls="app-sidebar" :aria-expanded="mobileOpen" @click="mobileOpen = true"><el-icon><Expand /></el-icon></button>
   <button v-if="mobileOpen" type="button" class="sidebar-backdrop" aria-label="Close navigation" @click="mobileOpen = false" />
 
-  <aside id="app-sidebar" class="sidebar" :class="{ 'mobile-open': mobileOpen }">
+  <aside id="app-sidebar" class="sidebar" :class="{ 'mobile-open': mobileOpen }" @keydown.esc="mobileOpen = false">
     <div class="sidebar-topline"><WorkspaceSwitcher /><button type="button" class="mobile-sidebar-close" aria-label="Close navigation" @click="mobileOpen = false">×</button></div>
     <GlobalSearch />
 

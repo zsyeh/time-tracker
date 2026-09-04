@@ -32,7 +32,7 @@ function scrollToSession() {
 
 <template>
   <div class="today-view">
-    <PageHeader title="Today" :metadata="headerMetadata">
+    <PageHeader context="Workspace" title="Today" :metadata="headerMetadata">
       <template #actions><button type="button" class="header-action" @click="scrollToSession">{{ overview?.active_session ? 'View session' : 'Start session' }}</button></template>
     </PageHeader>
     <div v-if="overview?.private_display.homepage_content || overview?.private_display.study_room_code" class="today-private-note">
@@ -42,8 +42,10 @@ function scrollToSession() {
 
     <section v-if="overview" class="today-section daily-progress-section" aria-labelledby="daily-progress-title">
       <header class="section-toolbar"><div><h2 id="daily-progress-title">Daily progress</h2><span>Completed sessions only</span></div><span>{{ targetRemaining }}</span></header>
-      <div class="daily-progress-main"><div><strong>{{ todayHours }}</strong><span>/ 5h</span></div><b>{{ todayProgress }}%</b></div>
-      <div class="daily-progress-track" role="progressbar" aria-label="Five hour study target" aria-valuemin="0" aria-valuemax="100" :aria-valuenow="todayProgress"><i :style="{ width: `${todayProgress}%` }" /></div>
+      <div class="today-overview-grid">
+        <div class="daily-progress-block"><div class="daily-progress-main"><div><strong>{{ todayHours }}</strong><span>/ 5h</span></div><b>{{ todayProgress }}%</b></div><div class="daily-progress-track" role="progressbar" aria-label="Five hour study target" aria-valuemin="0" aria-valuemax="100" :aria-valuenow="todayProgress"><i :style="{ width: `${todayProgress}%` }" /></div><p>{{ todayProgress >= 100 ? 'Daily target complete' : `${targetRemaining} to the daily target` }}</p></div>
+        <div class="overview-secondary"><article><span>Active days</span><strong>{{ overview.summary.active_days }}</strong><small>Last {{ overview.range_days }} days</small></article><article><span>5H days</span><strong>{{ overview.summary.five_hour_days }}</strong><small>Best streak {{ overview.summary.longest_five_hour_streak }}d</small></article><article><span>Total</span><strong>{{ Math.floor(overview.summary.total_minutes / 60) }}h</strong><small>{{ overview.summary.session_count }} sessions</small></article></div>
+      </div>
       <dl class="daily-stat-columns">
         <div><dt>First start</dt><dd>{{ overview.today.first_start || '—' }}</dd></div>
         <div><dt>Sessions</dt><dd>{{ overview.today.sessions }}</dd></div>

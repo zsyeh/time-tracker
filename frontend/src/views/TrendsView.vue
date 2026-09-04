@@ -69,15 +69,18 @@ onBeforeUnmount(() => { resizeObserver?.disconnect(); chart?.dispose() })
 
 <template>
   <div class="view-stack">
-    <PageHeader title="Trends" :metadata="`${rangeDays} days`">
+    <PageHeader context="Workspace" title="Trends" :metadata="`${rangeDays} days`">
       <template #actions><div class="header-segmented" aria-label="Trend range"><button v-for="days in ([7, 30, 60, 180] as const)" :key="days" :class="{ active: rangeDays === days }" @click="rangeDays = days">{{ days }}D</button></div></template>
     </PageHeader>
-    <section class="panel chart-panel"><div class="chart-toolbar"><div class="segmented-control" aria-label="Chart metric"><button :class="{ active: chartMetric === 'duration' }" @click="chartMetric = 'duration'">Duration</button><button :class="{ active: chartMetric === 'start' }" @click="chartMetric = 'start'">First start</button></div><b>Daily</b></div><div ref="chartEl" class="trend-chart" /></section>
-    <section class="trend-summary" v-if="overview">
-      <article class="insight"><span>Average first start</span><strong>{{ overview.summary.average_start_time || '--' }}</strong><p>Active days only</p></article>
-      <article class="insight goal"><span>5H target days</span><strong>{{ overview.summary.five_hour_days }}</strong><p>{{ overview.summary.current_five_hour_streak }}-day current streak</p></article>
-      <article class="insight"><span>Total completed</span><strong>{{ Math.floor(overview.summary.total_minutes / 60) }}h</strong><p>{{ overview.summary.session_count }} sessions</p></article>
-    </section>
+    <div class="trend-analytics-grid">
+      <section class="panel chart-panel"><div class="chart-toolbar"><div class="segmented-control" aria-label="Chart metric"><button :class="{ active: chartMetric === 'duration' }" @click="chartMetric = 'duration'">Duration</button><button :class="{ active: chartMetric === 'start' }" @click="chartMetric = 'start'">First start</button></div><b>Daily · {{ rangeDays }} days</b></div><div ref="chartEl" class="trend-chart" /></section>
+      <aside v-if="overview" class="trend-summary" aria-label="Trend summary">
+        <header><span>Overview</span><b>{{ rangeDays }}D</b></header>
+        <article class="insight"><span>Average first start</span><strong>{{ overview.summary.average_start_time || '--' }}</strong><p>Active days only</p></article>
+        <article class="insight goal"><span>5H target days</span><strong>{{ overview.summary.five_hour_days }}</strong><p>{{ overview.summary.current_five_hour_streak }}-day current streak</p></article>
+        <article class="insight"><span>Total completed</span><strong>{{ Math.floor(overview.summary.total_minutes / 60) }}h</strong><p>{{ overview.summary.session_count }} sessions</p></article>
+      </aside>
+    </div>
     <section v-if="overview" class="trend-section subject-time-grid" aria-label="Study time by subject">
       <header class="subject-time-heading"><div><span class="eyebrow">Subjects</span><h2>Study distribution</h2></div><span>Last {{ overview.range_days }} days</span></header>
       <article v-for="item in trackedSubjectStats" :key="item.subject" class="subject-time-card" :class="`subject-time-${item.subject}`">
