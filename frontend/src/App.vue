@@ -1,10 +1,8 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { Clock, DataAnalysis, Guide, List, Search as SearchIcon, Setting } from '@element-plus/icons-vue'
-import BrandIdentity from './components/BrandIdentity.vue'
-import GlobalSearch from './components/GlobalSearch.vue'
+import AppSidebar from './components/navigation/AppSidebar.vue'
 import { api, post } from './lib/api'
 import { mathVisualizationEnabled } from './lib/featureFlags'
 import type { Overview } from './types'
@@ -12,25 +10,19 @@ import type { FormulaLaunchRequest } from './math-visualizer/core/formulaRouter'
 
 const MathLabView = defineAsyncComponent(() => import('./views/MathLabView.vue'))
 const route = useRoute()
-const router = useRouter()
 const overview = ref<Overview | null>(null)
 const loading = ref(false)
 const username = ref('')
-const globalSearch = ref<InstanceType<typeof GlobalSearch> | null>(null)
+function readSidebarCollapsed() {
+  try { return localStorage.getItem('learning-os.sidebar.collapsed') === 'true' }
+  catch { return false }
+}
+const sidebarCollapsed = ref(readSidebarCollapsed())
 const mathLabLaunch = ref<FormulaLaunchRequest | null>(null)
 const mathLabOpen = ref(false)
 const mathLabDialog = ref<HTMLDialogElement | null>(null)
 let mathLabReturnTarget: HTMLElement | null = null
 
-const nav = [
-  { id: 'today', label: 'Today', icon: Clock, to: '/today' },
-  { id: 'trends', label: 'Trends', icon: DataAnalysis, to: '/trends' },
-  { id: 'sessions', label: 'Sessions', icon: List, to: '/sessions' },
-  { id: 'issues', label: 'Issues', icon: Guide, to: '/issues' },
-  { id: 'settings', label: 'Settings', icon: Setting, to: '/settings' },
-] as const
-
-const activeSection = computed(() => route.name === 'session-detail' ? 'sessions' : route.name)
 const isPublicRoute = computed(() => route.meta.public === true)
 
 async function load() {
@@ -79,6 +71,9 @@ function onMathLabDialogClose() {
 watch(isPublicRoute, (isPublic) => {
   if (!isPublic && !overview.value) void load()
 }, { immediate: true })
+watch(sidebarCollapsed, (value) => {
+  try { localStorage.setItem('learning-os.sidebar.collapsed', String(value)) } catch { /* Storage may be unavailable. */ }
+})
 
 onMounted(() => window.addEventListener('learning-os-open-math-lab', openMathLab))
 onBeforeUnmount(() => {
@@ -92,15 +87,9 @@ onBeforeUnmount(() => {
     <RouterView />
   </div>
 
-  <div v-else class="app-shell">
-    <aside class="sidebar">
-      <BrandIdentity />
-      <GlobalSearch ref="globalSearch" />
-      <nav aria-label="Primary navigation"><span class="nav-section">Workspace</span><RouterLink v-for="item in nav" :key="item.id" :to="item.to" :class="{ active: activeSection === item.id }"><el-icon><component :is="item.icon" /></el-icon><span>{{ item.label }}</span></RouterLink></nav>
-      <div class="sidebar-user"><span>{{ username.slice(0, 1).toUpperCase() }}</span><div><b>{{ username }}</b><button @click="logout">Sign out</button></div></div>
-    </aside>
+  <div v-else class="app-shell" :class="{ 'sidebar-collapsed': sidebarCollapsed }">
+    <AppSidebar v-model:collapsed="sidebarCollapsed" :username="username" @logout="logout" />
     <main class="main-content" v-loading.fullscreen.lock="loading">
-      <div class="mobile-header"><BrandIdentity /><div class="mobile-tools"><el-button circle aria-label="Open global search" @click="globalSearch?.open()"><el-icon><SearchIcon /></el-icon></el-button><el-dropdown trigger="click"><el-button>Menu</el-button><template #dropdown><el-dropdown-menu><el-dropdown-item v-for="item in nav" :key="item.id" @click="router.push(item.to)">{{ item.label }}</el-dropdown-item><el-dropdown-item divided @click="logout">Sign out</el-dropdown-item></el-dropdown-menu></template></el-dropdown></div></div>
       <RouterView v-slot="{ Component }">
         <component v-if="route.name === 'today' || route.name === 'trends'" :is="Component" :overview="overview" @changed="load" />
         <component v-else-if="route.name === 'settings'" :is="Component" @changed="load" />

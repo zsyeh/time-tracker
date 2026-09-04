@@ -4,6 +4,7 @@ import { ElMessage } from 'element-plus'
 import { api, patch, post, remove } from '../lib/api'
 import type { Issue, Page } from '../types'
 import MarkdownPreview from '../components/MarkdownPreview.vue'
+import PageHeader from '../components/layout/PageHeader.vue'
 
 const rows = ref<Issue[]>([])
 const open = ref(false)
@@ -37,11 +38,8 @@ onMounted(load)
 
 <template>
   <div class="view-stack">
-    <section class="page-intro action-intro">
-      <div><span class="eyebrow">ISSUE ANALYSIS</span><h1>Issues</h1><p>Track recurring errors, their resolution, and repeat frequency.</p></div>
-      <el-button type="primary" @click="open = true">New issue</el-button>
-    </section>
-    <section class="panel issue-board" v-loading="loading">
+    <PageHeader title="Issues" :metadata="`${rows.filter(row => !row.resolved).length} open`"><template #actions><el-button type="primary" @click="open = true">New issue</el-button></template></PageHeader>
+    <section class="issue-board" v-loading="loading">
       <div class="board-heading"><span>OPEN {{ rows.filter(row => !row.resolved).length }}</span><span>RESOLVED {{ rows.filter(row => row.resolved).length }}</span></div>
       <el-empty v-if="!rows.length" description="No issues recorded" />
       <article v-for="row in rows" :key="row.id" class="issue-row" :class="{ resolved: row.resolved }">

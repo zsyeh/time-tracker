@@ -86,18 +86,14 @@ async function openSession(session: StudySessionSummary) {
 </script>
 
 <template>
-  <section class="panel heatmap-panel">
-    <div class="section-heading">
-      <div>
-        <span class="eyebrow">ACTIVITY / DRILLDOWN</span>
-        <h2>Study activity</h2>
-      </div>
+  <section class="heatmap-panel">
+    <div class="heatmap-meta">
+      <p class="section-note">Data starts on 23 May 2026. Select a day for its timeline and session titles.</p>
       <div class="legend" aria-label="Activity intensity legend">
         <span>LESS</span><i class="cell level-0" /><i class="cell level-1" /><i class="cell level-2" />
         <i class="cell level-4" /><span>≥5H</span><i class="cell level-8-plus" /><span>&gt;8H</span><i class="cell level-10-plus" /><span>&gt;10H</span><i class="cell level-12-plus" /><span>&gt;12H</span><i class="cell future-day" /><span>FUTURE</span><i class="cell exam-day" /><span>EXAM</span>
       </div>
     </div>
-    <p class="section-note">Data starts on 23 May 2026. Select a day for its timeline and session titles.</p>
     <div class="heatmap-scroll">
       <div class="weekday-labels"><span>S</span><span>M</span><span>T</span><span>W</span><span>T</span><span>F</span><span>S</span></div>
       <div class="heatmap-grid">

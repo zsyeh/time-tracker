@@ -2,68 +2,73 @@
 import { computed } from 'vue'
 import ActiveSession from '../components/ActiveSession.vue'
 import HeatmapGrid from '../components/HeatmapGrid.vue'
-import MetricCard from '../components/MetricCard.vue'
-import { buildSubjectTimeStats } from '../lib/subjectStats'
+import PageHeader from '../components/layout/PageHeader.vue'
 import type { Overview } from '../types'
 
 const props = defineProps<{ overview: Overview | null }>()
 const emit = defineEmits<{ changed: [] }>()
 
-const subjectLabels: Record<string, string> = { math: 'Mathematics', english: 'English', major: 'Major', training: 'Training' }
-const todayHours = computed(() => props.overview ? `${Math.floor(props.overview.today.minutes / 60)}h ${props.overview.today.minutes % 60}m` : '--')
-const trackedSubjectStats = computed(() => buildSubjectTimeStats(props.overview))
-const maxTodaySubject = computed(() => Math.max(1, ...(props.overview?.today_subject_totals.map((item) => item.minutes) || [])))
-const todayProgress = computed(() => Math.min(100, Math.round((props.overview?.today.minutes || 0) / 300 * 100)))
+const subjectLabels: Record<string, string> = { math: 'Mathematics', english: 'English', major: 'Major / 892', training: 'Training' }
+const todayMinutes = computed(() => props.overview?.today.minutes || 0)
+const todayHours = computed(() => `${Math.floor(todayMinutes.value / 60)}h ${todayMinutes.value % 60}m`)
+const todayProgress = computed(() => Math.min(100, Math.round(todayMinutes.value / 300 * 100)))
 const targetRemaining = computed(() => {
-  const minutes = Math.max(0, 300 - (props.overview?.today.minutes || 0))
-  return minutes ? `${Math.floor(minutes / 60)}h ${minutes % 60}m` : 'Complete'
+  const minutes = Math.max(0, 300 - todayMinutes.value)
+  return minutes ? `${Math.floor(minutes / 60)}h ${minutes % 60}m left` : 'Complete'
 })
-const statusLabel = computed(() => todayProgress.value >= 100 ? 'TARGET MET' : props.overview?.active_session ? 'SESSION ACTIVE' : 'NO ACTIVE SESSION')
-const todayLabel = computed(() => props.overview?.calendar.today.replaceAll('-', '.') || '----.--.--')
-const weekdayLabel = computed(() => {
-  if (!props.overview) return 'TODAY'
-  return new Intl.DateTimeFormat('en-US', { weekday: 'long', timeZone: 'Asia/Shanghai' })
-    .format(new Date(`${props.overview.calendar.today}T12:00:00+08:00`)).toUpperCase()
+const maxTodaySubject = computed(() => Math.max(1, ...(props.overview?.today_subject_totals.map((item) => item.minutes) || [])))
+const todayLabel = computed(() => props.overview?.calendar.today
+  ? new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', timeZone: 'Asia/Shanghai' }).format(new Date(`${props.overview.calendar.today}T12:00:00+08:00`))
+  : 'Today')
+const headerMetadata = computed(() => {
+  const days = props.overview?.calendar.days_until_exam
+  return `${todayLabel.value}${days === undefined ? '' : ` · Exam in ${days} days`}`
 })
+
+function scrollToSession() {
+  document.getElementById('session-control')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+}
 </script>
 
 <template>
-  <div>
-    <section class="page-header today-header">
-      <div><span class="eyebrow">{{ weekdayLabel }}</span><h1>Today</h1><p>{{ todayLabel }} · Asia/Shanghai</p><p v-if="overview?.private_display.homepage_content" class="homepage-content">{{ overview.private_display.homepage_content }}</p><p v-if="overview?.private_display.study_room_code" class="study-room-code">Study room · {{ overview.private_display.study_room_code }}</p></div>
-      <div class="exam-countdown"><span>{{ overview?.private_display.countdown_label || '2026 Postgraduate Exam' }}</span><div><b>{{ overview?.calendar.days_until_exam ?? '--' }}</b><small>days remaining</small></div><time>{{ overview?.calendar.exam_date || '2026-12-26' }}</time></div>
+  <div class="today-view">
+    <PageHeader title="Today" :metadata="headerMetadata">
+      <template #actions><button type="button" class="header-action" @click="scrollToSession">{{ overview?.active_session ? 'View session' : 'Start session' }}</button></template>
+    </PageHeader>
+    <div v-if="overview?.private_display.homepage_content || overview?.private_display.study_room_code" class="today-private-note">
+      <span v-if="overview.private_display.homepage_content">{{ overview.private_display.homepage_content }}</span>
+      <span v-if="overview.private_display.study_room_code">Study room · <b>{{ overview.private_display.study_room_code }}</b></span>
+    </div>
+
+    <section v-if="overview" class="today-section daily-progress-section" aria-labelledby="daily-progress-title">
+      <header class="section-toolbar"><div><h2 id="daily-progress-title">Daily progress</h2><span>Completed sessions only</span></div><span>{{ targetRemaining }}</span></header>
+      <div class="daily-progress-main"><div><strong>{{ todayHours }}</strong><span>/ 5h</span></div><b>{{ todayProgress }}%</b></div>
+      <div class="daily-progress-track" role="progressbar" aria-label="Five hour study target" aria-valuemin="0" aria-valuemax="100" :aria-valuenow="todayProgress"><i :style="{ width: `${todayProgress}%` }" /></div>
+      <dl class="daily-stat-columns">
+        <div><dt>First start</dt><dd>{{ overview.today.first_start || '—' }}</dd></div>
+        <div><dt>Sessions</dt><dd>{{ overview.today.sessions }}</dd></div>
+        <div><dt>Current streak</dt><dd>{{ overview.summary.current_streak }} days</dd></div>
+        <div><dt>5H streak</dt><dd>{{ overview.summary.current_five_hour_streak }} days</dd></div>
+      </dl>
     </section>
-    <ActiveSession :session="overview?.active_session || null" :shortcuts="overview?.task_shortcuts || []" @changed="emit('changed')" />
-    <section v-if="overview" class="status-overview panel">
-      <div class="status-ring" :style="{ '--status-progress': `${todayProgress * 3.6}deg` }"><div><strong>{{ todayProgress }}</strong><span>%</span><small>5H TARGET</small></div></div>
-      <div class="status-copy"><span class="eyebrow">DAILY STATUS</span><h2>{{ statusLabel }}</h2><p>Completed sessions only. Active duration remains hidden.</p></div>
-      <dl><div><dt>FIRST START</dt><dd>{{ overview.today.first_start || '--' }}</dd></div><div><dt>SESSIONS</dt><dd>{{ overview.today.sessions }}</dd></div><div><dt>DATE</dt><dd>{{ overview.calendar.today.slice(5) }}</dd></div></dl>
+
+    <section id="session-control" class="today-section session-control-section" aria-labelledby="session-control-title">
+      <header class="section-toolbar"><div><h2 id="session-control-title">Session</h2><span>{{ overview?.active_session ? 'In progress' : 'Choose a subject or saved task' }}</span></div></header>
+      <ActiveSession :session="overview?.active_session || null" :shortcuts="overview?.task_shortcuts || []" @changed="emit('changed')" />
     </section>
-    <section v-if="overview" class="metrics-surface panel" aria-label="Study metrics">
-      <div class="metrics-primary">
-        <MetricCard label="Today" :value="todayHours" :hint="`First start ${overview.today.first_start || '--'}`" tone="goal" importance="primary" />
-        <MetricCard label="5H target" :value="targetRemaining" :hint="todayProgress >= 100 ? 'Target reached' : `${todayProgress}% complete`" importance="primary" />
-        <MetricCard label="Current streak" :value="overview.summary.current_streak" suffix="days" :hint="`Longest ${overview.summary.longest_streak} days`" importance="primary" />
+
+    <section v-if="overview" class="today-section today-subject-section" aria-labelledby="today-subject-title">
+      <header class="section-toolbar"><div><h2 id="today-subject-title">Subjects</h2><span>Today</span></div><span>{{ todayHours }} total</span></header>
+      <div class="today-subject-list">
+        <article v-for="item in overview.today_subject_totals" :key="item.subject" :class="`subject-${item.subject}`">
+          <i class="subject-dot" /><strong>{{ subjectLabels[item.subject] }}</strong><span>{{ item.minutes }}m</span><div><i :style="{ width: `${item.minutes / maxTodaySubject * 100}%` }" /></div>
+        </article>
       </div>
-      <div class="metrics-secondary">
-        <MetricCard label="5H streak" :value="overview.summary.current_five_hour_streak" suffix="days" :hint="`Best ${overview.summary.longest_five_hour_streak} days`" />
-        <MetricCard label="5H days" :value="overview.summary.five_hour_days" suffix="days" hint="Last 180 days" />
-        <MetricCard label="Average start" :value="overview.summary.average_start_time || '--'" hint="Active days" />
-        <MetricCard label="Active days" :value="overview.summary.active_days" suffix="days" :hint="`${overview.summary.session_count} sessions`" />
-      </div>
     </section>
-    <section v-if="overview" class="subject-time-grid panel" aria-label="Study time by subject">
-      <header class="subject-time-heading"><div><span class="eyebrow">Subjects</span><h2>Study distribution</h2></div><span>Last {{ overview.range_days }} days</span></header>
-      <article v-for="item in trackedSubjectStats" :key="item.subject" class="subject-time-card" :class="`subject-time-${item.subject}`">
-        <header><span>{{ item.label }}</span><i /></header>
-        <strong>{{ item.duration }}</strong>
-        <footer><span>{{ item.share }}% of total</span><i :style="{ width: `${item.share}%` }" /></footer>
-      </article>
+
+    <section v-if="overview" class="today-section activity-section" aria-labelledby="activity-title">
+      <header class="section-toolbar"><div><h2 id="activity-title">Activity</h2><span>Study consistency and daily drilldown</span></div><span>Last {{ overview.range_days }} days</span></header>
+      <HeatmapGrid :days="overview.heatmap" />
     </section>
-    <section v-if="overview" class="panel subject-strip">
-      <div><span class="eyebrow">BREAKDOWN</span><h2>Today by subject</h2></div>
-      <div class="subject-bars"><article v-for="item in overview.today_subject_totals" :key="item.subject"><span>{{ subjectLabels[item.subject] }}</span><div><i :class="`subject-${item.subject}`" :style="{ width: `${Math.max(item.minutes ? 5 : 0, item.minutes / maxTodaySubject * 100)}%` }" /></div><b>{{ item.minutes }}m</b></article></div>
-    </section>
-    <HeatmapGrid v-if="overview" :days="overview.heatmap" />
   </div>
 </template>

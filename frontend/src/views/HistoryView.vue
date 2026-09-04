@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { EditPen, View } from '@element-plus/icons-vue'
 import { api, patch, post } from '../lib/api'
 import type { Page, ReviewTrend as ReviewTrendType, StudySession, StudySessionSummary } from '../types'
 import MarkdownPreview from '../components/MarkdownPreview.vue'
 import ReviewTrend from '../components/ReviewTrend.vue'
+import PageHeader from '../components/layout/PageHeader.vue'
 
 const loading = ref(false)
 const router = useRouter()
+const route = useRoute()
 const rows = ref<StudySessionSummary[]>([])
 const total = ref(0)
 const page = ref(1)
@@ -20,6 +22,14 @@ const editing = ref(false)
 const reviewTrend = ref<ReviewTrendType | null>(null)
 const filters = reactive({ search: '', subject: '', status: '' })
 const edit = reactive({ title: '', details: '' })
+const sessionGroups = computed(() => {
+  const groups = new Map<string, StudySessionSummary[]>()
+  for (const row of rows.value) {
+    const key = new Date(row.start_time).toLocaleDateString('en-CA')
+    groups.set(key, [...(groups.get(key) || []), row])
+  }
+  return [...groups.entries()].map(([date, sessions]) => ({ date, sessions }))
+})
 
 function duration(minutes: number) { return minutes >= 60 ? `${Math.floor(minutes / 60)}h ${minutes % 60}m` : `${minutes}m` }
 function efficiency(session: StudySessionSummary) {
@@ -64,21 +74,34 @@ async function inspect(row: StudySessionSummary) {
 }
 async function save() { if (!expanded.value) return; try { expanded.value = await patch(`/api/sessions/${expanded.value.uuid}/`, edit); editing.value = false; ElMessage.success('Session updated'); await load() } catch (error) { ElMessage.error((error as Error).message) } }
 function search() { page.value = 1; load() }
-onMounted(load)
+function scrollToFilters() { document.getElementById('session-filters')?.scrollIntoView({ block: 'center' }) }
+watch(() => route.query.subject, (value) => {
+  const subject = ['math', 'english', 'major', 'training'].includes(String(value)) ? String(value) : ''
+  if (filters.subject === subject) return
+  filters.subject = subject
+  search()
+})
+onMounted(() => {
+  filters.subject = ['math', 'english', 'major', 'training'].includes(String(route.query.subject)) ? String(route.query.subject) : ''
+  void load()
+})
 </script>
 
 <template>
   <div class="view-stack">
-    <section class="page-intro"><span class="eyebrow">SESSION ARCHIVE</span><h1>Sessions</h1><p>Search titles and open the full details only when needed.</p></section>
-    <section class="panel filters"><el-input v-model="filters.search" clearable placeholder="Search title or details" @keyup.enter="search" /><el-select v-model="filters.subject" clearable placeholder="All subjects"><el-option label="Mathematics" value="math" /><el-option label="English" value="english" /><el-option label="Major" value="major" /><el-option label="Training" value="training" /></el-select><el-select v-model="filters.status" clearable placeholder="All statuses"><el-option label="Completed" value="completed" /><el-option label="Running" value="running" /></el-select><el-button type="primary" @click="search">Apply</el-button></section>
-    <section class="panel history-panel" v-loading="loading">
+    <PageHeader title="Sessions" :metadata="`${total} records`"><template #actions><button type="button" class="header-action secondary" @click="scrollToFilters">Filter and search</button></template></PageHeader>
+    <section id="session-filters" class="filters"><el-input v-model="filters.search" clearable placeholder="Search title or details" @keyup.enter="search" /><el-select v-model="filters.subject" clearable placeholder="All subjects"><el-option label="Mathematics" value="math" /><el-option label="English" value="english" /><el-option label="Major" value="major" /><el-option label="Training" value="training" /></el-select><el-select v-model="filters.status" clearable placeholder="All statuses"><el-option label="Completed" value="completed" /><el-option label="Running" value="running" /></el-select><el-button type="primary" @click="search">Apply</el-button></section>
+    <section class="history-panel" v-loading="loading">
       <el-empty v-if="!rows.length && !loading" description="No matching sessions" />
-      <article v-for="row in rows" :key="row.uuid" class="history-row" @click="openArticle(row)">
-        <time><b>{{ new Date(row.start_time).getDate().toString().padStart(2, '0') }}</b><span>{{ new Date(row.start_time).toLocaleDateString('en-US', { month: 'short' }) }}</span></time>
-        <i :class="`subject-dot subject-${row.subject}`" />
-        <div class="history-main"><strong>{{ row.title || (row.status === 'running' ? `${row.subject_label} session` : 'Untitled session') }}</strong><p>{{ row.task_path || (row.status === 'running' ? 'Session in progress' : 'Markdown review available') }}<span v-if="row.tags.length"> · {{ row.tags.map((tag) => `#${tag.name}`).join(' ') }}</span></p><small>{{ row.subject_label }} · {{ new Date(row.start_time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) }} · {{ row.status }}</small></div>
-        <div class="history-actions"><span v-if="row.status !== 'running'" class="duration-badge"><b>{{ duration(row.credited_duration_minutes) }}</b><small>{{ efficiency(row) }}</small></span><b v-else class="running-badge">IN SESSION</b><button v-if="row.status === 'completed'" type="button" class="review-eye" :aria-label="`Review ${row.title || 'session'}`" @click.stop="inspect(row)"><el-icon><View /></el-icon><span>{{ row.review_count || 0 }}</span></button></div>
-      </article>
+      <section v-for="group in sessionGroups" :key="group.date" class="session-group">
+        <header><time>{{ group.date }}</time><span>{{ group.sessions.length }} session{{ group.sessions.length === 1 ? '' : 's' }}</span></header>
+        <article v-for="row in group.sessions" :key="row.uuid" class="history-row" @click="openArticle(row)">
+          <i :class="`subject-dot subject-${row.subject}`" />
+          <div class="history-main"><strong>{{ row.title || (row.status === 'running' ? `${row.subject_label} session` : 'Untitled session') }}</strong><p>{{ row.task_path || (row.status === 'running' ? 'Session in progress' : 'Markdown review available') }}<span v-if="row.tags.length"> · {{ row.tags.map((tag) => `#${tag.name}`).join(' ') }}</span></p><small>{{ row.subject_label }} · {{ row.status }}</small></div>
+          <time class="session-start">{{ new Date(row.start_time).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' }) }}</time>
+          <div class="history-actions"><span v-if="row.status !== 'running'" class="duration-badge"><b>{{ duration(row.credited_duration_minutes) }}</b><small>{{ efficiency(row) }}</small></span><b v-else class="running-badge">IN SESSION</b><button v-if="row.status === 'completed'" type="button" class="review-eye" :aria-label="`Review ${row.title || 'session'}`" @click.stop="inspect(row)"><el-icon><View /></el-icon><span>{{ row.review_count || 0 }}</span></button></div>
+        </article>
+      </section>
       <el-pagination v-if="total > 20" v-model:current-page="page" layout="prev, pager, next" :total="total" :page-size="20" @current-change="load" />
     </section>
     <el-drawer v-model="drawerOpen" size="min(760px, 96vw)" class="review-drawer" destroy-on-close>

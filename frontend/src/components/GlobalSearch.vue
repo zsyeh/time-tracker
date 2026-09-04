@@ -119,7 +119,7 @@ defineExpose({ open })
 
 <template>
   <button type="button" class="global-search-trigger" aria-label="Open global search" @click="open">
-    <el-icon><Search /></el-icon><span>Search everything</span><kbd>⌘ K</kbd>
+    <el-icon><Search /></el-icon><span>Search</span><kbd>⌘K</kbd>
   </button>
 
   <el-dialog v-model="searchOpen" class="global-search-dialog" width="min(720px, 94vw)" :show-close="false" append-to-body @opened="inputRef?.focus()">
