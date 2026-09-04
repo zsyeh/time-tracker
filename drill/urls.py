@@ -13,6 +13,7 @@ from .views import (
     DrillPaperDetailView,
     DrillPaperItemView,
     DrillPaperListCreateView,
+    DrillPaperPdfView,
     DrillPaperReviewView,
     DrillProgressView,
     DrillQuestionAttemptView,
@@ -38,6 +39,11 @@ urlpatterns = [
     path('papers/', DrillPaperListCreateView.as_view(), name='drill_papers'),
     path('papers/<uuid:paper_uuid>/', DrillPaperDetailView.as_view(), name='drill_paper_detail'),
     path('papers/<uuid:paper_uuid>/review/', DrillPaperReviewView.as_view(), name='drill_paper_review'),
+    path(
+        'papers/<uuid:paper_uuid>/pdf/<str:kind>/',
+        DrillPaperPdfView.as_view(),
+        name='drill_paper_pdf',
+    ),
     path(
         'papers/<uuid:paper_uuid>/items/<int:position>/',
         DrillPaperItemView.as_view(),

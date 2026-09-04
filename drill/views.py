@@ -19,6 +19,7 @@ from .models import (
     QuestionUserState,
 )
 from .paper_generator import PaperGenerationError, PaperGenerator
+from .paper_pdf import render_paper_pdf
 from .serializers import (
     ExamPaperCreateSerializer, ExamPaperItemUpdateSerializer,
     ExamPaperStatusSerializer, PaperGenerateSerializer, QuestionAttemptCreateSerializer,
@@ -618,6 +619,19 @@ class DrillPaperItemView(APIView):
             'time_spent_seconds': item.time_spent_seconds,
             'submitted_at': item.submitted_at,
         })
+
+
+class DrillPaperPdfView(APIView):
+    def get(self, request, paper_uuid, kind):
+        if request_workspace(request) != 'drill' or kind not in ('questions', 'solutions'):
+            raise Http404
+        paper = get_object_or_404(paper_queryset(request.user), uuid=paper_uuid)
+        pdf = render_paper_pdf(paper, solutions=kind == 'solutions')
+        response = HttpResponse(pdf, content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="math2-{paper.uuid}-{kind}.pdf"'
+        response['Cache-Control'] = 'private, no-store'
+        response['X-Content-Type-Options'] = 'nosniff'
+        return response
 
 
 

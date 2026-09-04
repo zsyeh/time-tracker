@@ -9,6 +9,7 @@ from .models import (
     QuestionDocument, QuestionTopic,
 )
 from .paper_generator import PaperGenerationError, PaperGenerator
+from .paper_pdf import render_paper_pdf
 
 
 class PaperGeneratorTests(TestCase):
@@ -154,3 +155,22 @@ class PaperGeneratorTests(TestCase):
         self.assertTrue(QuestionAttempt.objects.filter(
             user=self.user, question=item.question, result='review',
         ).exists())
+
+    def test_pdf_renderers_read_live_question_and_solution_data(self):
+        paper = PaperGenerator().generate(user=self.user, blueprint=self.blueprint, seed=15)
+        question = paper.items.first().question
+        question.answer_markdown = '## Solution\n\nUse $x=1$.'
+        question.save(update_fields=('answer_markdown',))
+
+        question_pdf = render_paper_pdf(paper, solutions=False)
+        solution_pdf = render_paper_pdf(paper, solutions=True)
+
+        self.assertTrue(question_pdf.startswith(b'%PDF'))
+        self.assertTrue(solution_pdf.startswith(b'%PDF'))
+        self.assertGreater(len(solution_pdf), 500)
+        self.client.force_login(self.user)
+        response = self.client.get(
+            f'/api/drill/papers/{paper.uuid}/pdf/solutions/', secure=True,
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'application/pdf')
