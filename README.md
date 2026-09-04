@@ -131,9 +131,25 @@ cd frontend && npm run build
 - `https://drill.ehzsy.site/practice`：独立刷题前端（使用与 Timer 相同的账号数据库）
 - `https://drill.ehzsy.site/practice/<uuid>`：稳定的题目页面及同类题入口
 - `https://drill.ehzsy.site/heatmap`：个人官方真题状态热力图
+- `https://drill.ehzsy.site/papers`：数学二智能组卷历史
+- `https://drill.ehzsy.site/papers/new`：标准模拟、强化卷、弱点训练入口
+- `https://drill.ehzsy.site/papers/<uuid>`：固定题序的考试模式
+- `https://drill.ehzsy.site/papers/<uuid>/review`：答案、解析与学习状态复盘
 - `https://ei.ehzsy.site/practice`：892 电子信息专业综合训练
 - `https://ei.ehzsy.site/heatmap`：按 156 个知识点统计的个人 EI 热力图
 - `/api/drill/*`：登录后可用的题库、作答、同类题、进度和图片 API
+
+数学二组卷使用版本化 `ExamBlueprint`，题型数量是硬约束，章节/知识点分散是软约束。默认排除当前用户已掌握和 cooldown 内刚做过的题；Paper 只保存 Question 外键、顺序、分值与生成 seed，不复制题干、图片、答案或解析。题目卷和解析卷 PDF 都从数据库关系实时生成。
+
+题型元数据可先运行可解释规则，再把低置信度集合交给 Agent 批处理：
+
+```bash
+python manage.py classify_question_types --apply --export-review question_type_review.jsonl
+# Agent 为每行补充 question_type 与 confidence 后：
+python manage.py classify_question_types --import-agent agent_labels.jsonl
+```
+
+允许标签为 `single_choice`、`fill_blank`、`solution`。人工确认记录不会被后续批处理覆盖；低置信度记录保持 `unknown`，不会进入严格 Blueprint。
 - `/`：跳转到 `/today`
 - `/today`：Today
 - `/trends`：趋势

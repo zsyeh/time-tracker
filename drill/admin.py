@@ -1,6 +1,10 @@
 from django.contrib import admin
 
 from .models import (
+    ExamBlueprint,
+    ExamBlueprintSection,
+    ExamPaper,
+    ExamPaperItem,
     Question,
     QuestionAsset,
     QuestionAttempt,
@@ -31,10 +35,11 @@ class QuestionTopicAdmin(admin.ModelAdmin):
 class QuestionAdmin(admin.ModelAdmin):
     list_display = (
         'display_label', 'document', 'question_order', 'source_category',
-        'record_kind', 'is_practiceable', 'exam_year', 'content_mode', 'answer_source',
+        'record_kind', 'question_type', 'is_practiceable', 'exam_year', 'content_mode', 'answer_source',
     )
     list_filter = (
-        'document', 'source_category', 'record_kind', 'is_practiceable',
+        'document', 'subject', 'source_category', 'record_kind', 'question_type',
+        'question_type_source', 'question_type_human_verified', 'is_practiceable',
         'is_past_exam', 'exam_year', 'content_mode',
     )
     search_fields = (
@@ -78,3 +83,32 @@ class QuestionAssetAdmin(admin.ModelAdmin):
         'source_x0', 'source_y0', 'source_x1', 'source_y1',
     )
     readonly_fields = fields
+
+
+class ExamBlueprintSectionInline(admin.TabularInline):
+    model = ExamBlueprintSection
+    extra = 0
+
+
+@admin.register(ExamBlueprint)
+class ExamBlueprintAdmin(admin.ModelAdmin):
+    list_display = ('title', 'subject', 'mode', 'version', 'duration_minutes', 'total_score', 'is_active')
+    list_filter = ('subject', 'mode', 'is_active')
+    search_fields = ('title', 'code')
+    readonly_fields = ('uuid', 'created_at')
+    inlines = (ExamBlueprintSectionInline,)
+
+
+class ExamPaperItemInline(admin.TabularInline):
+    model = ExamPaperItem
+    extra = 0
+    readonly_fields = ('section', 'question', 'position', 'score', 'selected_fingerprint')
+
+
+@admin.register(ExamPaper)
+class ExamPaperAdmin(admin.ModelAdmin):
+    list_display = ('uuid', 'user', 'blueprint', 'mode', 'status', 'created_at', 'completed_at')
+    list_filter = ('mode', 'status', 'created_at')
+    search_fields = ('uuid', 'user__username', 'blueprint__title')
+    readonly_fields = ('uuid', 'seed', 'created_at')
+    inlines = (ExamPaperItemInline,)
