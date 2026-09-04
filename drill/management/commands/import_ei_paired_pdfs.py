@@ -366,7 +366,7 @@ class Command(BaseCommand):
 
     @staticmethod
     def paired_order(subject, chapter, number):
-        subject_order = {'signal': 1, 'analog': 2, 'digital': 3}[subject]
+        subject_order = {'signal': 1, 'analog': 2, 'digital': 3, 'communication': 4}[subject]
         return 100_000 + subject_order * 10_000 + chapter * 100 + number
 
     def store_segment_assets(self, question, document, anchor, anchors, dpi, asset_type, subject, label):
