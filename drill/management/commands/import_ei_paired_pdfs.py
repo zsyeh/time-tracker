@@ -387,6 +387,15 @@ class Command(BaseCommand):
             scale = dpi / 72
             image_data = page.get_pixmap(matrix=pymupdf.Matrix(scale, scale), clip=rect, alpha=False).tobytes('png')
             digest = hashlib.sha256(image_data).hexdigest()
+            # Page-boundary crops can occasionally produce the identical blank
+            # fragment twice.  The data model intentionally deduplicates by
+            # (question, sha256), so retain the first copy rather than turning
+            # an otherwise valid paired import into a transaction failure.
+            duplicate = QuestionAsset.objects.filter(question=question, sha256=digest).first()
+            if duplicate is not None:
+                existing_ids.append(duplicate.pk)
+                position += 1
+                continue
             source_key = f'ei-pdf-pair:{subject}:{label}:{asset_type}:{position}'
             asset, _ = QuestionAsset.objects.update_or_create(
                 source_id=stable_positive_id(ASSET_ID_BASE, source_key),
