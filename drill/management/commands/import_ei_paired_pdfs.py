@@ -63,6 +63,18 @@ PAIR_SOURCES = {
         'allowed_chapters': {1, 2, 3, 4, 5},
         'combined_solution_pdf': True,
     },
+    'circuit': {
+        'document_title': '892 · 电路原理',
+        'question_file': '电路简答.pdf',
+        'answer_file': '电路简答.pdf',
+        'allowed_chapters': {1},
+        # The supplied circuit review sheet is a flat numbered list.  Items
+        # 12-16 cover three-phase/filter extensions outside the supplied 892
+        # outline, so do not import them.
+        'allowed_numbers': set(range(1, 12)),
+        'combined_solution_pdf': True,
+        'flat_numbered': True,
+    },
 }
 
 
@@ -144,7 +156,10 @@ class Command(BaseCommand):
         question_pdf = pymupdf.open(question_path)
         answer_pdf = pymupdf.open(answer_path)
         try:
-            question_anchors = self.find_anchors(question_pdf, dpi)
+            question_anchors = (
+                self.find_flat_numbered_anchors(question_pdf)
+                if config.get('flat_numbered') else self.find_anchors(question_pdf, dpi)
+            )
             if config.get('combined_solution_pdf'):
                 answer_anchors = self.find_solution_anchors(question_pdf, question_anchors)
             else:
@@ -153,8 +168,15 @@ class Command(BaseCommand):
             question_pdf.close()
             answer_pdf.close()
         allowed = config['allowed_chapters']
-        questions = {item.label: item for item in question_anchors if item.chapter in allowed}
-        answers = {item.label: item for item in answer_anchors if item.chapter in allowed}
+        allowed_numbers = config.get('allowed_numbers')
+        questions = {
+            item.label: item for item in question_anchors
+            if item.chapter in allowed and (allowed_numbers is None or item.number in allowed_numbers)
+        }
+        answers = {
+            item.label: item for item in answer_anchors
+            if item.chapter in allowed and (allowed_numbers is None or item.number in allowed_numbers)
+        }
         pairs = [(label, questions[label], answers[label]) for label in questions.keys() & answers.keys()]
         pairs.sort(key=lambda item: (item[1].chapter, item[1].number))
         if limit:
@@ -253,6 +275,19 @@ class Command(BaseCommand):
             if found:
                 solutions.append(found)
         return solutions
+
+    @staticmethod
+    def find_flat_numbered_anchors(document):
+        """Read review sheets whose questions are numbered 1、2、… rather than by chapter."""
+        numbered = re.compile(r'^\s*(?P<number>\d{1,3})\s*[、.．]')
+        anchors = []
+        for page_index, page in enumerate(document):
+            for text, x, y in Command.pdf_text_lines(page):
+                match = numbered.match(text)
+                if match and x <= page.rect.width * 0.42:
+                    number = int(match.group('number'))
+                    anchors.append(Anchor(canonical_label(1, number), 1, number, page_index, max(0, y - 3)))
+        return anchors
 
     @staticmethod
     def pdf_text_lines(page):
@@ -366,7 +401,7 @@ class Command(BaseCommand):
 
     @staticmethod
     def paired_order(subject, chapter, number):
-        subject_order = {'signal': 1, 'analog': 2, 'digital': 3, 'communication': 4}[subject]
+        subject_order = {'signal': 1, 'analog': 2, 'digital': 3, 'communication': 4, 'circuit': 5}[subject]
         return 100_000 + subject_order * 10_000 + chapter * 100 + number
 
     def store_segment_assets(self, question, document, anchor, anchors, dpi, asset_type, subject, label):
