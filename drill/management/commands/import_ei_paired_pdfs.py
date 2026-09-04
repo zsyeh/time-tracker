@@ -26,7 +26,11 @@ SOURCE_ID_BASE = 892_300_000
 TOPIC_ID_BASE = 892_300_000_000
 ASSET_ID_BASE = 892_300_000_000_000
 LABEL_RE = re.compile(
-    r'^\s*(?P<chapter>[1-9]\d?)\s*(?:[-—–一]|\s+)\s*(?P<number>\d{1,3})(?:\s|题|[\.、:：]|$)',
+    # Signal workbooks use ``2-5``; the analog/digital books use ``2.5``
+    # and occasionally prefix a problem with ``P``.  Keep the strict end
+    # delimiter so textbook section labels such as ``1.1.3`` are not mistaken
+    # for an exercise.
+    r'^\s*(?:P\s*)?(?P<chapter>[1-9]\d?)\s*(?:[-—–一.]|\s+)\s*(?P<number>\d{1,3})(?:\s|题|[\.、:：]|$)',
 )
 
 
