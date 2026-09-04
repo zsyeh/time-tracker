@@ -354,6 +354,132 @@ class QuestionMarker(models.Model):
         return f'{self.user_id} · {self.question_id} · {self.code}'
 
 
+class ExamBlueprint(models.Model):
+    """Immutable-by-convention, versioned composition rules for one paper mode."""
+
+    MODE_CHOICES = [
+        ('standard', 'Standard mock'),
+        ('intensive', 'Intensive'),
+        ('weak', 'Weak-point training'),
+    ]
+
+    uuid = models.UUIDField(default=uuid_lib.uuid4, unique=True, editable=False)
+    code = models.SlugField(max_length=80, unique=True)
+    title = models.CharField(max_length=160)
+    subject = models.CharField(max_length=16, choices=Question.SUBJECT_CHOICES, db_index=True)
+    mode = models.CharField(max_length=16, choices=MODE_CHOICES, db_index=True)
+    version = models.PositiveSmallIntegerField(default=1)
+    duration_minutes = models.PositiveSmallIntegerField()
+    total_score = models.PositiveSmallIntegerField()
+    cooldown_days = models.PositiveSmallIntegerField(default=14)
+    is_active = models.BooleanField(default=True, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('subject', 'mode', '-version')
+        constraints = [
+            models.UniqueConstraint(
+                fields=('subject', 'mode', 'version'),
+                name='drill_blueprint_subject_mode_version_unique',
+            ),
+        ]
+
+    def __str__(self):
+        return f'{self.title} v{self.version}'
+
+
+class ExamBlueprintSection(models.Model):
+    blueprint = models.ForeignKey(
+        ExamBlueprint,
+        on_delete=models.CASCADE,
+        related_name='sections',
+    )
+    order = models.PositiveSmallIntegerField()
+    title = models.CharField(max_length=120)
+    question_type = models.CharField(max_length=20, choices=Question.QUESTION_TYPE_CHOICES)
+    question_count = models.PositiveSmallIntegerField()
+    score_per_question = models.DecimalField(max_digits=5, decimal_places=2)
+    chapter_weights = models.JSONField(default=dict, blank=True)
+    difficulty_weights = models.JSONField(default=dict, blank=True)
+    max_per_topic = models.PositiveSmallIntegerField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('blueprint_id', 'order')
+        constraints = [
+            models.UniqueConstraint(
+                fields=('blueprint', 'order'),
+                name='drill_blueprint_section_order_unique',
+            ),
+        ]
+
+    def __str__(self):
+        return f'{self.blueprint.code} · {self.title}'
+
+
+class ExamPaper(models.Model):
+    STATUS_CHOICES = [
+        ('generated', 'Generated'),
+        ('in_progress', 'In progress'),
+        ('completed', 'Completed'),
+    ]
+
+    uuid = models.UUIDField(default=uuid_lib.uuid4, unique=True, editable=False)
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='exam_papers',
+    )
+    blueprint = models.ForeignKey(
+        ExamBlueprint,
+        on_delete=models.PROTECT,
+        related_name='papers',
+    )
+    seed = models.PositiveBigIntegerField()
+    mode = models.CharField(max_length=16, choices=ExamBlueprint.MODE_CHOICES)
+    status = models.CharField(max_length=16, choices=STATUS_CHOICES, default='generated', db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    started_at = models.DateTimeField(null=True, blank=True)
+    completed_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('-created_at', '-pk')
+        indexes = [models.Index(fields=('user', 'created_at'), name='drill_paper_user_time_idx')]
+
+    def __str__(self):
+        return f'{self.user_id} · {self.blueprint.code} · {self.uuid}'
+
+
+class ExamPaperItem(models.Model):
+    RESULT_CHOICES = [
+        ('unanswered', 'Unanswered'),
+        ('correct', 'Correct'),
+        ('incorrect', 'Incorrect'),
+        ('review', 'Needs review'),
+    ]
+
+    paper = models.ForeignKey(ExamPaper, on_delete=models.CASCADE, related_name='items')
+    section = models.ForeignKey(ExamBlueprintSection, on_delete=models.PROTECT, related_name='+')
+    question = models.ForeignKey(Question, on_delete=models.PROTECT, related_name='paper_items')
+    position = models.PositiveSmallIntegerField()
+    score = models.DecimalField(max_digits=5, decimal_places=2)
+    selected_fingerprint = models.CharField(max_length=64)
+    user_answer = models.TextField(blank=True)
+    result = models.CharField(max_length=16, choices=RESULT_CHOICES, default='unanswered', db_index=True)
+    time_spent_seconds = models.PositiveIntegerField(null=True, blank=True)
+    submitted_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('paper_id', 'position')
+        constraints = [
+            models.UniqueConstraint(fields=('paper', 'position'), name='drill_paper_item_position_unique'),
+            models.UniqueConstraint(fields=('paper', 'question'), name='drill_paper_item_question_unique'),
+        ]
+        indexes = [models.Index(fields=('paper', 'position'), name='drill_paper_item_order_idx')]
+
+    def __str__(self):
+        return f'{self.paper_id} · {self.position} · {self.question_id}'
+
+
 class DrillLoginHandoff(models.Model):
     """Short-lived, one-time authentication handoff from Timer to Drill."""
 
