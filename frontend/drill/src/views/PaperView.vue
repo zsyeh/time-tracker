@@ -4,8 +4,10 @@ import { useRouter } from 'vue-router'
 import { post } from '../lib/api'
 import { fetchCatalog } from '../lib/workspace'
 import type { Catalog, QuestionSummary } from '../types'
+import { useUiPreferences } from '../lib/uiPreferences'
 
 const router = useRouter()
+const { t } = useUiPreferences()
 const catalog = ref<Catalog | null>(null)
 const count = ref(20)
 const documentId = ref('')
@@ -54,7 +56,7 @@ onMounted(async () => {
 
 <template>
   <section class="page paper-page">
-    <header class="page-header"><div><span class="eyebrow">Question selection</span><h1>Custom paper</h1><p>Generated locally for this browser. No duplicate paper rows are stored in the database.</p></div><button class="primary-action" :disabled="loading" @click="generate">{{ loading ? 'Generating…' : 'Generate paper' }} <b>→</b></button></header>
+    <header class="page-header"><div><span class="eyebrow">{{ t('questionSelection') }}</span><h1>{{ t('customPaper') }}</h1><p>Generated locally for this browser. No duplicate paper rows are stored in the database.</p></div><button class="primary-action" :disabled="loading" @click="generate">{{ loading ? t('generating') : t('generatePaper') }} <b>→</b></button></header>
     <div class="paper-builder filter-panel">
       <label><span>QUESTIONS</span><input v-model.number="count" type="number" min="1" max="100" /></label>
       <label><span>BOOK</span><select v-model="documentId" @change="topicId = ''"><option value="">All books</option><option v-for="item in catalog?.documents" :key="item.id" :value="item.id">{{ item.title }}</option></select></label>

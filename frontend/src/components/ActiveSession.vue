@@ -4,8 +4,10 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { api, post } from '../lib/api'
 import type { CompletionOptions, EfficiencyGrade, StudySession, Subject, TaskPreset, TaskShortcut } from '../types'
 import MarkdownPreview from './MarkdownPreview.vue'
+import { useUiPreferences } from '../lib/uiPreferences'
 
 const props = defineProps<{ session: StudySession | null; shortcuts?: TaskShortcut[] }>()
+const { t } = useUiPreferences()
 const emit = defineEmits<{ changed: [] }>()
 const finishOpen = ref(false)
 const saving = ref(false)
@@ -28,10 +30,10 @@ const optionsLoaded = ref(false)
 const taskBrowserOpen = ref(false)
 const taskSelection = ref<Array<string | number>>([])
 const cascaderProps = { checkStrictly: true, expandTrigger: 'hover' as const }
-const subjects: Array<{ id: Subject; label: string; shortcut: string }> = [
-  { id: 'math', label: 'Mathematics', shortcut: 'M' }, { id: 'english', label: 'English', shortcut: 'E' },
-  { id: 'major', label: 'Major', shortcut: 'P' }, { id: 'training', label: 'Training', shortcut: 'T' },
-]
+const subjects = computed<Array<{ id: Subject; label: string; shortcut: string }>>(() => [
+  { id: 'math', label: t('mathematics'), shortcut: 'M' }, { id: 'english', label: t('english'), shortcut: 'E' },
+  { id: 'major', label: t('major'), shortcut: 'P' }, { id: 'training', label: t('training'), shortcut: 'T' },
+])
 async function start(subject: Subject) {
   try {
     await post('/api/sessions/', { subject })
@@ -63,7 +65,7 @@ const presetMenuOptions = computed<TaskMenuNode[]>(() => {
   const active = completionOptions.value.presets.filter((preset) => preset.is_active)
   const nodes = new Map<number, TaskMenuNode>()
   active.forEach((preset) => nodes.set(preset.id, { value: preset.id, label: preset.name, children: [] }))
-  const roots = new Map<Subject, TaskMenuNode[]>(subjects.map((subject) => [subject.id, []]))
+  const roots = new Map<Subject, TaskMenuNode[]>(subjects.value.map((subject) => [subject.id, []]))
   active.forEach((preset) => {
     const node = nodes.get(preset.id)!
     const parent = preset.parent ? nodes.get(preset.parent) : null
@@ -77,7 +79,7 @@ const presetMenuOptions = computed<TaskMenuNode[]>(() => {
       else delete item.children
     })
   }
-  return subjects.flatMap((subject) => {
+  return subjects.value.flatMap((subject) => {
     const children = roots.get(subject.id) || []
     trimAndSort(children)
     return children.length ? [{ value: `subject:${subject.id}`, label: subject.label, children }] : []
@@ -171,12 +173,12 @@ async function abandon() {
 <template>
   <section class="focus-panel" :class="{ active: session }">
     <template v-if="session">
-      <div><span class="pulse-dot" /><span class="eyebrow">SESSION IN PROGRESS</span><h2>{{ session.task_path || session.subject_label }}</h2><p>{{ session.task_path ? session.subject_label : session.topic || session.chapter || 'Start time recorded.' }}<span v-if="session.disturbance_count" class="active-disturbance-count"> · {{ session.disturbance_count }} disturbance{{ session.disturbance_count === 1 ? '' : 's' }}</span></p></div>
-      <div class="hidden-timer" aria-label="Active duration hidden"><span>TIMER HIDDEN</span><small>Visible after completion</small></div>
-      <div class="active-actions"><el-button plain @click="abandon">Discard</el-button><el-button type="primary" @click="prepareFinish">Finish & review</el-button></div>
+      <div><span class="pulse-dot" /><span class="eyebrow">{{ t('sessionInProgress') }}</span><h2>{{ session.task_path || session.subject_label }}</h2><p>{{ session.task_path ? session.subject_label : session.topic || session.chapter || t('startRecorded') }}<span v-if="session.disturbance_count" class="active-disturbance-count"> · {{ session.disturbance_count }} {{ t('disturbances').toLocaleLowerCase() }}</span></p></div>
+      <div class="hidden-timer" aria-label="Active duration hidden"><span>{{ t('timerHidden') }}</span><small>{{ t('visibleAfter') }}</small></div>
+      <div class="active-actions"><el-button plain @click="abandon">{{ t('discard') }}</el-button><el-button type="primary" @click="prepareFinish">{{ t('finishReview') }}</el-button></div>
     </template>
     <template v-else>
-      <div><span class="eyebrow">START SESSION</span><h2>Select a task or subject.</h2><p>Start time is recorded automatically. Duplicate starts are ignored.</p></div>
+      <div><span class="eyebrow">{{ t('startSession') }}</span><h2>{{ t('selectTask') }}</h2><p>{{ t('automaticStart') }}</p></div>
       <div class="start-action-stack">
         <div v-if="shortcuts?.length" class="preset-shortcuts">
           <button v-for="preset in shortcuts" :key="preset.id" type="button" @click="startPreset(preset)"><span>{{ preset.subject_label }}</span><b>{{ preset.path }}</b><small v-if="preset.tags.length">{{ preset.tags.map((tag) => `#${tag.name}`).join(' ') }}</small></button>
@@ -184,22 +186,22 @@ async function abandon() {
         <div class="subject-actions">
           <button v-for="item in subjects" :key="item.id" :class="`subject-button subject-${item.id}`" @click="start(item.id)"><b>{{ item.shortcut }}</b><span>{{ item.label }}</span></button>
         </div>
-        <button type="button" class="browse-task-button" @click="openTaskBrowser">Browse nested task presets</button>
+        <button type="button" class="browse-task-button" @click="openTaskBrowser">{{ t('browseTasks') }}</button>
       </div>
     </template>
   </section>
 
-  <el-dialog v-model="taskBrowserOpen" title="Choose a task preset" width="min(680px, 94vw)">
+  <el-dialog v-model="taskBrowserOpen" :title="t('choosePreset')" width="min(680px, 94vw)">
     <p class="task-browser-note">Browse by subject and up to four task levels. Any level can start a Session.</p>
     <el-cascader v-model="taskSelection" :options="presetMenuOptions" :props="cascaderProps" filterable clearable placeholder="Subject → task → subtask" class="task-browser-cascader" />
     <div v-if="selectedPreset" class="task-browser-selection"><span>{{ selectedPreset.subject_label }}</span><strong>{{ selectedPreset.path }}</strong><small v-if="selectedPreset.tags.length">{{ selectedPreset.tags.map((tag) => `#${tag.name}`).join(' ') }}</small></div>
-    <template #footer><el-button @click="taskBrowserOpen = false">Cancel</el-button><el-button type="primary" :disabled="!selectedPreset" @click="startSelectedPreset">Start selected task</el-button></template>
+    <template #footer><el-button @click="taskBrowserOpen = false">{{ t('cancel') }}</el-button><el-button type="primary" :disabled="!selectedPreset" @click="startSelectedPreset">{{ t('startSelected') }}</el-button></template>
   </el-dialog>
 
-  <el-dialog v-model="finishOpen" title="Complete session" width="min(760px, 94vw)" destroy-on-close>
+  <el-dialog v-model="finishOpen" :title="t('completeSession')" width="min(760px, 94vw)" destroy-on-close>
     <el-form label-position="top" class="review-form simple-review">
       <div class="efficiency-assessment">
-        <div><span>EFFICIENCY ASSESSMENT</span><small>Credited time = actual duration × coefficient</small></div>
+        <div><span>{{ t('efficiencyAssessment') }}</span><small>{{ t('creditedFormula') }}</small></div>
         <div class="efficiency-options" role="radiogroup" aria-label="Efficiency grade">
           <button
             v-for="item in efficiencyGrades"
@@ -212,13 +214,13 @@ async function abandon() {
           ><b>{{ item.grade }}</b><span>×{{ item.coefficient }}</span></button>
         </div>
       </div>
-      <el-form-item label="Title · Optional"><el-input v-model="form.title" maxlength="500" show-word-limit :placeholder="session?.task_path ? `Defaults to ${session.task_path.split(' › ').at(-1)}` : 'Leave empty to finish without notes'" /></el-form-item>
-      <div v-if="completionOptions.recent_titles.length" class="completion-suggestions"><span>RECENT NOTES</span><button v-for="title in completionOptions.recent_titles" :key="title" type="button" @click="form.title = title">{{ title }}</button></div>
-      <el-form-item label="Markdown details · Optional"><el-input v-model="form.details" type="textarea" :rows="14" placeholder="Optional Markdown. TeX formulas support $...$, $$...$$, \(...\), and \[...\]." /></el-form-item>
+      <el-form-item :label="t('titleOptional')"><el-input v-model="form.title" maxlength="500" show-word-limit :placeholder="session?.task_path ? `Defaults to ${session.task_path.split(' › ').at(-1)}` : 'Leave empty to finish without notes'" /></el-form-item>
+      <div v-if="completionOptions.recent_titles.length" class="completion-suggestions"><span>{{ t('recentNotes') }}</span><button v-for="title in completionOptions.recent_titles" :key="title" type="button" @click="form.title = title">{{ title }}</button></div>
+      <el-form-item :label="t('markdownOptional')"><el-input v-model="form.details" type="textarea" :rows="14" placeholder="Optional Markdown. TeX formulas support $...$, $$...$$, \(...\), and \[...\]." /></el-form-item>
       <MarkdownPreview :source="form.details" />
       <div v-if="completionOptions.tags.length" class="completion-tags"><span>TAGS</span><button v-for="tag in completionOptions.tags" :key="tag.id" type="button" :class="{ selected: form.tag_ids.includes(tag.id) }" @click="toggleTag(tag.id)">#{{ tag.name }}</button></div>
-      <p class="minimum-note">You may leave both fields empty. Sessions under 25 minutes or over 12 hours are deleted automatically.</p>
+      <p class="minimum-note">{{ t('emptyAllowed') }}</p>
     </el-form>
-    <template #footer><el-button @click="finishOpen = false">Continue session</el-button><el-button type="primary" :loading="saving" @click="finish">Save & finish</el-button></template>
+    <template #footer><el-button @click="finishOpen = false">{{ t('continueSession') }}</el-button><el-button type="primary" :loading="saving" @click="finish">{{ t('saveFinish') }}</el-button></template>
   </el-dialog>
 </template>

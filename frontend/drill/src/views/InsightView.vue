@@ -3,8 +3,10 @@ import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '../lib/api'
 import type { InsightPayload } from '../types'
+import { useUiPreferences } from '../lib/uiPreferences'
 
 const router = useRouter()
+const { t } = useUiPreferences()
 const data = ref<InsightPayload | null>(null)
 const loading = ref(true)
 const error = ref('')
@@ -30,7 +32,7 @@ onMounted(async () => {
 
 <template>
   <section class="page insight-page">
-    <header class="page-header"><div><span class="eyebrow">YOUR ACTIVITY</span><h1>Insight</h1><p>Recent questions and notes, without turning practice into a dashboard.</p></div></header>
+    <header class="page-header"><div><span class="eyebrow">{{ t('yourActivity') }}</span><h1>{{ t('insight') }}</h1><p>Recent questions and notes, without turning practice into a dashboard.</p></div></header>
     <p v-if="error" class="error-state">{{ error }}</p>
     <div v-else-if="loading" class="question-skeleton">LOADING INSIGHT…</div>
     <template v-else>

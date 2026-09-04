@@ -6,10 +6,13 @@ import GlobalSearch from '../GlobalSearch.vue'
 import SidebarItem from './SidebarItem.vue'
 import SidebarSection from './SidebarSection.vue'
 import WorkspaceSwitcher from './WorkspaceSwitcher.vue'
+import SidebarPreferences from './SidebarPreferences.vue'
+import { useUiPreferences } from '../../lib/uiPreferences'
 
 const props = defineProps<{ username: string; collapsed: boolean }>()
 const emit = defineEmits<{ 'update:collapsed': [value: boolean]; logout: [] }>()
 const route = useRoute()
+const { t } = useUiPreferences()
 const mobileOpen = ref(false)
 const activeSection = computed(() => route.name === 'session-detail' ? 'sessions' : route.name)
 const activeSubject = computed(() => String(route.query.subject || ''))
@@ -29,25 +32,26 @@ onBeforeUnmount(() => document.body.classList.remove('navigation-drawer-open'))
     <GlobalSearch />
 
     <nav class="sidebar-navigation" aria-label="Primary navigation">
-      <SidebarItem label="Today" to="/today" :icon="Clock" :active="activeSection === 'today'" />
-      <SidebarSection title="Workspace" storage-key="learning-os.sidebar.workspace">
-        <SidebarItem label="Trends" to="/trends" :icon="DataAnalysis" :active="activeSection === 'trends'" />
-        <SidebarItem label="Sessions" to="/sessions" :icon="List" :active="activeSection === 'sessions' && !activeSubject" />
-        <SidebarItem label="Issues" to="/issues" :icon="Guide" :active="activeSection === 'issues'" />
+      <SidebarItem :label="t('today')" to="/today" :icon="Clock" :active="activeSection === 'today'" />
+      <SidebarSection :title="t('workspace')" storage-key="learning-os.sidebar.workspace">
+        <SidebarItem :label="t('trends')" to="/trends" :icon="DataAnalysis" :active="activeSection === 'trends'" />
+        <SidebarItem :label="t('sessions')" to="/sessions" :icon="List" :active="activeSection === 'sessions' && !activeSubject" />
+        <SidebarItem :label="t('issues')" to="/issues" :icon="Guide" :active="activeSection === 'issues'" />
       </SidebarSection>
-      <SidebarSection title="Subjects" storage-key="learning-os.sidebar.subjects">
-        <SidebarItem label="Mathematics" :to="{ path: '/sessions', query: { subject: 'math' } }" :active="activeSection === 'sessions' && activeSubject === 'math'" />
-        <SidebarItem label="English" :to="{ path: '/sessions', query: { subject: 'english' } }" :active="activeSection === 'sessions' && activeSubject === 'english'" />
-        <SidebarItem label="Major / 892" :to="{ path: '/sessions', query: { subject: 'major' } }" :active="activeSection === 'sessions' && activeSubject === 'major'" />
-        <SidebarItem label="Training" :to="{ path: '/sessions', query: { subject: 'training' } }" :active="activeSection === 'sessions' && activeSubject === 'training'" />
+      <SidebarSection :title="t('subjects')" storage-key="learning-os.sidebar.subjects">
+        <SidebarItem :label="t('mathematics')" :to="{ path: '/sessions', query: { subject: 'math' } }" :active="activeSection === 'sessions' && activeSubject === 'math'" />
+        <SidebarItem :label="t('english')" :to="{ path: '/sessions', query: { subject: 'english' } }" :active="activeSection === 'sessions' && activeSubject === 'english'" />
+        <SidebarItem :label="t('major')" :to="{ path: '/sessions', query: { subject: 'major' } }" :active="activeSection === 'sessions' && activeSubject === 'major'" />
+        <SidebarItem :label="t('training')" :to="{ path: '/sessions', query: { subject: 'training' } }" :active="activeSection === 'sessions' && activeSubject === 'training'" />
       </SidebarSection>
     </nav>
 
     <div class="sidebar-spacer" />
     <nav class="sidebar-utilities" aria-label="Utility navigation">
-      <SidebarItem label="Settings" to="/settings" :icon="Setting" :active="activeSection === 'settings'" />
-      <button type="button" class="sidebar-collapse" @click="emit('update:collapsed', true)"><el-icon><Fold /></el-icon><span>Hide sidebar</span></button>
+      <SidebarPreferences />
+      <SidebarItem :label="t('settings')" to="/settings" :icon="Setting" :active="activeSection === 'settings'" />
+      <button type="button" class="sidebar-collapse" @click="emit('update:collapsed', true)"><el-icon><Fold /></el-icon><span>{{ t('hideSidebar') }}</span></button>
     </nav>
-    <div class="sidebar-account"><span>{{ username.slice(0, 1).toUpperCase() }}</span><div><strong>{{ username }}</strong><button type="button" @click="emit('logout')">Sign out</button></div></div>
+    <div class="sidebar-account"><span>{{ username.slice(0, 1).toUpperCase() }}</span><div><strong>{{ username }}</strong><button type="button" @click="emit('logout')">{{ t('signOut') }}</button></div></div>
   </aside>
 </template>

@@ -82,6 +82,7 @@ const answerOpen = ref(false)
 const stateSaving = ref(false)
 const noteSaved = ref(false)
 const markerSaving = ref(false)
+const nextLoading = ref(false)
 
 function questionAssets(loadedQuestion: QuestionDetail) {
   return loadedQuestion.question_assets || loadedQuestion.assets || []
@@ -305,6 +306,30 @@ async function loadSimilar(kind: 'past_exam' | 'practice') {
   }
 }
 
+async function goToNext() {
+  if (!question.value || nextLoading.value) return
+  nextLoading.value = true
+  error.value = ''
+  try {
+    // Refresh navigation at click time so changes made in another tab/device
+    // cannot send the user to a question that is now mastered.
+    const refreshed = await fetchQuestion(props.uuid, navigationQueryString(), true)
+    question.value.next_question_uuid = refreshed.next_question_uuid
+    if (!refreshed.next_question_uuid) {
+      error.value = 'No unmastered questions remain in this source set.'
+      return
+    }
+    await router.push({
+      path: `/practice/${refreshed.next_question_uuid}`,
+      query: questionRouteQuery(),
+    })
+  } catch (reason) {
+    error.value = (reason as Error).message
+  } finally {
+    nextLoading.value = false
+  }
+}
+
 watch(() => props.uuid, (_uuid, previousUuid) => {
   flushNoteDraft(previousUuid)
   void load()
@@ -328,7 +353,7 @@ onUnmounted(() => {
         <div class="attempt-counter"><span>CURRENT STATE</span><strong class="state-name" :class="`text-${question.state}`">{{ question.state === 'mastered' ? 'MASTERED' : question.state === 'review' ? 'REVIEW' : 'NOT STARTED' }}</strong><small>{{ question.attempt_count }} recorded attempts</small></div>
       </header>
 
-      <nav class="question-nav"><button :disabled="!question.previous_question_uuid" @click="question.previous_question_uuid && router.push({ path: `/practice/${question.previous_question_uuid}`, query: questionRouteQuery() })">← Previous</button><button :disabled="!question.next_question_uuid" @click="question.next_question_uuid && router.push({ path: `/practice/${question.next_question_uuid}`, query: questionRouteQuery() })">Next →</button></nav>
+      <nav class="question-nav"><button :disabled="!question.previous_question_uuid" @click="question.previous_question_uuid && router.push({ path: `/practice/${question.previous_question_uuid}`, query: questionRouteQuery() })">← Previous</button><button :disabled="!question.next_question_uuid || nextLoading" @click="goToNext">{{ nextLoading ? 'Finding next…' : 'Next →' }}</button></nav>
 
       <div class="question-save-actions">
         <button type="button" :class="{ active: question.is_favorite }" :disabled="stateSaving" @click="saveUserState({ is_favorite: !question.is_favorite })"><b>{{ question.is_favorite ? '★' : '☆' }}</b>{{ question.is_favorite ? 'Favorited' : 'Favorite' }}</button>
@@ -375,11 +400,11 @@ onUnmounted(() => {
 
           <button
             class="next-question"
-            :disabled="!question.next_question_uuid"
-            @click="question.next_question_uuid && router.push({ path: `/practice/${question.next_question_uuid}`, query: questionRouteQuery() })"
+            :disabled="!question.next_question_uuid || nextLoading"
+            @click="goToNext"
           >
-            <span>{{ question.next_question_uuid ? 'Next question' : 'End of this chapter' }}</span>
-            <small>{{ question.next_question_uuid ? `Continue with ${question.source_category_label.toLowerCase()} questions` : 'Return to the question bank to choose another set' }}</small>
+            <span>{{ nextLoading ? 'Finding next question…' : question.next_question_uuid ? 'Next unmastered question' : 'Source set complete' }}</span>
+            <small>{{ question.next_question_uuid ? `Continue across topics and books with ${question.source_category_label.toLowerCase()} questions` : 'No unmastered questions remain in this source set' }}</small>
             <b>{{ question.next_question_uuid ? '→' : '✓' }}</b>
           </button>
 

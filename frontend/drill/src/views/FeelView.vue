@@ -3,8 +3,10 @@ import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '../lib/api'
 import type { BookFeel } from '../types'
+import { useUiPreferences } from '../lib/uiPreferences'
 
 const router = useRouter()
+const { t } = useUiPreferences()
 const books = ref<BookFeel[]>([])
 const loading = ref(true)
 const error = ref('')
@@ -28,7 +30,7 @@ onMounted(async () => {
 
 <template>
   <section class="page feel-page">
-    <header class="page-header"><div><span class="eyebrow">PRACTICE RECENCY</span><h1>Book Feel</h1><p>Today is 0. Each inactive day subtracts one point.</p></div></header>
+    <header class="page-header"><div><span class="eyebrow">{{ t('practiceRecency') }}</span><h1>{{ t('bookFeel') }}</h1><p>Today is 0. Each inactive day subtracts one point.</p></div></header>
     <p v-if="error" class="error-state">{{ error }}</p>
     <div v-else-if="loading" class="question-skeleton">CALCULATING BOOK FEEL…</div>
     <div v-else class="feel-grid">

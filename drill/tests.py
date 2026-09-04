@@ -608,6 +608,78 @@ class DrillApiTests(TestCase):
         detail = self.client.get(f'/api/drill/questions/{self.practice.uuid}/')
         self.assertIsNone(detail.json()['next_question_uuid'])
 
+    def test_next_question_skips_mastered_and_crosses_book_boundary(self):
+        next_document = QuestionDocument.objects.create(
+            source_id=2,
+            filename='derivatives.pdf',
+            title='Derivatives',
+            sha256='2' * 64,
+            page_count=5,
+        )
+        next_topic = QuestionTopic.objects.create(
+            source_id=20,
+            document=next_document,
+            title='Single-variable differentiation',
+            level=2,
+            sort_order=1,
+        )
+        next_book_question = Question.objects.create(
+            document=next_document,
+            topic=next_topic,
+            similarity_topic=next_topic,
+            question_order=1,
+            source_label='2018数一',
+            prompt_text='Next book past exam',
+            content_mode='text',
+            fingerprint='2' * 64,
+            source_category='past_exam',
+        )
+        QuestionAttempt.objects.create(
+            user=self.alice, question=self.similar, result='correct',
+        )
+        self.client.force_login(self.alice)
+
+        detail = self.client.get(f'/api/drill/questions/{self.question.uuid}/')
+
+        self.assertEqual(
+            detail.json()['next_question_uuid'], str(next_book_question.uuid),
+        )
+
+    def test_next_question_wraps_within_source_set_and_is_user_scoped(self):
+        next_document = QuestionDocument.objects.create(
+            source_id=3,
+            filename='integrals.pdf',
+            title='Integrals',
+            sha256='3' * 64,
+            page_count=5,
+        )
+        next_topic = QuestionTopic.objects.create(
+            source_id=30,
+            document=next_document,
+            title='Integration',
+            level=2,
+            sort_order=1,
+        )
+        last_question = Question.objects.create(
+            document=next_document,
+            topic=next_topic,
+            similarity_topic=next_topic,
+            question_order=1,
+            source_label='2017数一',
+            prompt_text='Last ordered past exam',
+            content_mode='text',
+            fingerprint='3' * 64,
+            source_category='past_exam',
+        )
+        QuestionAttempt.objects.create(
+            user=self.bob, question=self.question, result='correct',
+        )
+        self.client.force_login(self.alice)
+
+        detail = self.client.get(f'/api/drill/questions/{last_question.uuid}/')
+
+        self.assertEqual(detail.json()['next_question_uuid'], str(self.question.uuid))
+
     def test_next_question_keeps_the_same_source_category(self):
         first_mock = Question.objects.create(
             document=self.document,

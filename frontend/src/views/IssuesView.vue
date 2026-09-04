@@ -9,8 +9,10 @@ import PageHeader from '../components/layout/PageHeader.vue'
 import PageToolbar from '../components/layout/PageToolbar.vue'
 import MenuPopover from '../components/ui/MenuPopover.vue'
 import ToolbarChip from '../components/ui/ToolbarChip.vue'
+import { useUiPreferences } from '../lib/uiPreferences'
 
 const rows = ref<Issue[]>([])
+const { t } = useUiPreferences()
 const open = ref(false)
 const loading = ref(false)
 const query = ref('')
@@ -70,24 +72,24 @@ onMounted(load)
 
 <template>
   <div class="workspace-view issues-view">
-    <PageHeader context="Workspace" title="Issues" :metadata="`${activeCount} active · ${resolvedCount} resolved`"><template #actions><el-button type="primary" @click="open = true">New issue</el-button></template></PageHeader>
+    <PageHeader :context="t('workspace')" :title="t('issues')" :metadata="t('openCount', { count: activeCount, resolved: resolvedCount })"><template #actions><el-button type="primary" @click="open = true">{{ t('newIssue') }}</el-button></template></PageHeader>
     <PageToolbar label="Issue filters and display">
-      <ToolbarChip label="Active" :count="activeCount" :active="statusFilter === 'active'" :pressed="statusFilter === 'active'" @click="statusFilter = 'active'" />
-      <ToolbarChip label="Resolved" :count="resolvedCount" :active="statusFilter === 'resolved'" :pressed="statusFilter === 'resolved'" @click="statusFilter = 'resolved'" />
-      <ToolbarChip label="All" :count="rows.length" :active="statusFilter === 'all'" :pressed="statusFilter === 'all'" @click="statusFilter = 'all'" />
+      <ToolbarChip :label="t('active')" :count="activeCount" :active="statusFilter === 'active'" :pressed="statusFilter === 'active'" @click="statusFilter = 'active'" />
+      <ToolbarChip :label="t('resolved')" :count="resolvedCount" :active="statusFilter === 'resolved'" :pressed="statusFilter === 'resolved'" @click="statusFilter = 'resolved'" />
+      <ToolbarChip :label="t('all')" :count="rows.length" :active="statusFilter === 'all'" :pressed="statusFilter === 'all'" @click="statusFilter = 'all'" />
       <template #actions>
-        <label class="toolbar-search"><el-icon><Search /></el-icon><input v-model="query" type="search" placeholder="Search issues" aria-label="Search issues" /></label>
-        <MenuPopover label="Filter" align="end">
-          <template #trigger><el-icon><Filter /></el-icon><span>Filter</span><b v-if="subjectFilter || typeFilter" class="control-count">{{ Number(Boolean(subjectFilter)) + Number(Boolean(typeFilter)) }}</b></template>
+        <label class="toolbar-search"><el-icon><Search /></el-icon><input v-model="query" type="search" :placeholder="t('searchIssues')" :aria-label="t('searchIssues')" /></label>
+        <MenuPopover :label="t('filter')" align="end">
+          <template #trigger><el-icon><Filter /></el-icon><span>{{ t('filter') }}</span><b v-if="subjectFilter || typeFilter" class="control-count">{{ Number(Boolean(subjectFilter)) + Number(Boolean(typeFilter)) }}</b></template>
           <div class="menu-section"><span>Subject</span><button type="button" class="menu-option" :class="{ selected: !subjectFilter }" @click="subjectFilter = ''"><i />All subjects<small>⌘A</small></button><button v-for="(label, key) in subjects" :key="key" type="button" class="menu-option" :class="{ selected: subjectFilter === key }" @click="subjectFilter = key"><i />{{ label }}</button></div>
           <div class="menu-section"><span>Issue type</span><button type="button" class="menu-option" :class="{ selected: !typeFilter }" @click="typeFilter = ''"><i />All types</button><button v-for="(label, key) in labels" :key="key" type="button" class="menu-option" :class="{ selected: typeFilter === key }" @click="typeFilter = key"><i />{{ label }}</button></div>
         </MenuPopover>
-        <MenuPopover label="Properties" align="end">
-          <template #trigger><el-icon><View /></el-icon><span>Display</span></template>
+        <MenuPopover :label="t('properties')" align="end">
+          <template #trigger><el-icon><View /></el-icon><span>{{ t('display') }}</span></template>
           <div class="menu-section"><span>Visible properties</span><label v-for="(_, key) in properties" :key="key" class="menu-toggle"><span>{{ key === 'repeats' ? 'Repeat count' : key }}</span><el-switch v-model="properties[key]" size="small" /></label></div>
         </MenuPopover>
-        <MenuPopover label="View options" align="end">
-          <template #trigger><el-icon><Operation /></el-icon><span>View</span></template>
+        <MenuPopover :label="t('view')" align="end">
+          <template #trigger><el-icon><Operation /></el-icon><span>{{ t('view') }}</span></template>
           <div class="menu-section"><span>Group by</span><button v-for="option in (['status', 'subject', 'type', 'none'] as const)" :key="option" type="button" class="menu-option" :class="{ selected: groupBy === option }" @click="groupBy = option"><i />{{ option }}</button></div>
           <div class="menu-section"><span>Density</span><button v-for="option in (['compact', 'comfortable'] as const)" :key="option" type="button" class="menu-option" :class="{ selected: density === option }" @click="density = option"><i />{{ option }}</button></div>
         </MenuPopover>

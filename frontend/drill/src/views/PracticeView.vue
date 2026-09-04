@@ -4,8 +4,10 @@ import { useRoute, useRouter } from 'vue-router'
 import { api } from '../lib/api'
 import { cachedCatalog, cachedQuestionPage, fetchCatalog, prefetchQuestion, storeQuestionPage } from '../lib/workspace'
 import type { Catalog, Page, QuestionSummary } from '../types'
+import { useUiPreferences } from '../lib/uiPreferences'
 
 const router = useRouter()
+const { t } = useUiPreferences()
 const route = useRoute()
 const catalog = ref<Catalog>({
   summary: { imported_count: 0, practiceable_count: 0, outline_count: 0, categories: [] },
@@ -191,8 +193,8 @@ onUnmounted(() => {
 <template>
   <section class="page practice-page">
     <header class="page-header">
-      <div><span class="eyebrow">{{ isEi ? '892 foundation bank' : 'Question index' }}</span><h1>{{ isEi ? 'Electronic information' : 'Question bank' }}</h1><p>{{ catalog.summary.practiceable_count.toLocaleString() }} practice records. {{ catalog.summary.outline_count.toLocaleString() }} source-outline rows are hidden.</p></div>
-      <button v-if="lastQuestionUuid || questions?.results.length" class="primary-action" @pointerenter="prefetchQuestion(lastQuestionUuid || questions?.results[0]?.uuid || null, navigationQueryString())" @click="openQuestion(lastQuestionUuid || questions!.results[0].uuid)">{{ lastQuestionUuid ? 'Resume last question' : 'Open next question' }} <b>→</b></button>
+      <div><span class="eyebrow">{{ isEi ? t('foundationBank') : t('questionIndex') }}</span><h1>{{ isEi ? t('electronicInformation') : t('questionBank') }}</h1><p>{{ catalog.summary.practiceable_count.toLocaleString() }} practice records. {{ catalog.summary.outline_count.toLocaleString() }} source-outline rows are hidden.</p></div>
+      <button v-if="lastQuestionUuid || questions?.results.length" class="primary-action" @pointerenter="prefetchQuestion(lastQuestionUuid || questions?.results[0]?.uuid || null, navigationQueryString())" @click="openQuestion(lastQuestionUuid || questions!.results[0].uuid)">{{ lastQuestionUuid ? t('resumeLast') : t('openNext') }} <b>→</b></button>
     </header>
 
     <aside v-if="!isEi" class="collection-credit"><strong>THANKS TO CXY</strong><span>All question-bank source material was collected and organized by Bilibili creator cxy (澄潇宇). PDF authorship is shown separately when available.</span></aside>

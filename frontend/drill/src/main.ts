@@ -10,6 +10,7 @@ import PaperView from './views/PaperView.vue'
 import CollectionView from './views/CollectionView.vue'
 import FeelView from './views/FeelView.vue'
 import InsightView from './views/InsightView.vue'
+import { initializeUiPreferences } from './lib/uiPreferences'
 import './styles.css'
 
 const router = createRouter({
@@ -32,4 +33,5 @@ const router = createRouter({
   },
 })
 
+initializeUiPreferences()
 createApp(App).use(router).mount('#app')

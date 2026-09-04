@@ -110,6 +110,60 @@ def navigation_queryset(question, request):
     return queryset.order_by('document_id', 'question_order', 'pk')
 
 
+def navigation_with_latest_result(queryset, user):
+    latest = QuestionAttempt.objects.filter(
+        user=user,
+        question_id=OuterRef('pk'),
+    ).order_by('-created_at', '-pk')
+    return queryset.annotate(
+        next_latest_result=Subquery(latest.values('result')[:1]),
+    )
+
+
+def unmastered_navigation(queryset, user):
+    """Keep navigation user-scoped and skip questions already mastered."""
+    return navigation_with_latest_result(queryset, user).filter(
+        Q(next_latest_result__isnull=True)
+        | Q(next_latest_result__in=('review', 'reset')),
+    )
+
+
+def next_unmastered_question(question, request, navigation):
+    """Return the next eligible question, crossing topic/book boundaries and wrapping once."""
+    position = next(
+        (index for index, item in enumerate(navigation) if item[0] == question.pk),
+        -1,
+    )
+    for pk, question_uuid, latest_result in navigation[position + 1:]:
+        if latest_result not in {'done', 'correct'}:
+            return question_uuid
+
+    # The current filtered topic or book has ended. Continue through the same
+    # question source category across the workspace, then wrap to its first
+    # remaining question. This preserves past-exam/mock continuity while making
+    # the next action useful at every topic and book boundary.
+    fallback = workspace_questions(request).filter(
+        is_practiceable=True,
+        source_category=question.source_category,
+    ).exclude(pk=question.pk)
+    fallback = unmastered_navigation(fallback, request.user).order_by(
+        'document_id', 'question_order', 'pk',
+    )
+    current_key = (question.document_id, question.question_order, question.pk)
+    following = fallback.filter(
+        Q(document_id__gt=current_key[0])
+        | Q(document_id=current_key[0], question_order__gt=current_key[1])
+        | Q(
+            document_id=current_key[0],
+            question_order=current_key[1],
+            pk__gt=current_key[2],
+        )
+    ).values_list('uuid', flat=True).first()
+    if following:
+        return following
+    return fallback.values_list('uuid', flat=True).first()
+
+
 class DrillCatalogView(APIView):
     def get(self, request):
         workspace = request_workspace(request)
@@ -314,10 +368,14 @@ class DrillQuestionDetailView(APIView):
             ),
             uuid=question_uuid,
         )
-        navigation = list(navigation_queryset(question, request).values_list('pk', 'uuid'))
+        navigation = list(
+            navigation_with_latest_result(
+                navigation_queryset(question, request), request.user,
+            ).values_list('pk', 'uuid', 'next_latest_result')
+        )
         position = next((index for index, item in enumerate(navigation) if item[0] == question.pk), -1)
         previous_question_uuid = navigation[position - 1][1] if position > 0 else None
-        next_question_uuid = navigation[position + 1][1] if position >= 0 and position + 1 < len(navigation) else None
+        next_question_uuid = next_unmastered_question(question, request, navigation)
         latest = QuestionAttempt.objects.filter(
             user=request.user, question=question,
         ).order_by('-created_at', '-pk').first()

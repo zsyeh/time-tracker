@@ -6,8 +6,10 @@ import { Search } from '@element-plus/icons-vue'
 import { api } from '../lib/api'
 import type { GlobalSearchResponse, GlobalSearchResult, Issue, StudySession } from '../types'
 import MarkdownPreview from './MarkdownPreview.vue'
+import { useUiPreferences } from '../lib/uiPreferences'
 
 const router = useRouter()
+const { t } = useUiPreferences()
 const searchOpen = ref(false)
 const detailOpen = ref(false)
 const query = ref('')
@@ -118,8 +120,8 @@ defineExpose({ open })
 </script>
 
 <template>
-  <button type="button" class="global-search-trigger" aria-label="Open global search" @click="open">
-    <el-icon><Search /></el-icon><span>Search</span><kbd>⌘K</kbd>
+  <button type="button" class="global-search-trigger" :aria-label="t('search')" @click="open">
+    <el-icon><Search /></el-icon><span>{{ t('search') }}</span><kbd>⌘K</kbd>
   </button>
 
   <el-dialog v-model="searchOpen" class="global-search-dialog" width="min(720px, 94vw)" :show-close="false" append-to-body @opened="inputRef?.focus()">

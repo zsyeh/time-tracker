@@ -7,6 +7,17 @@
     <meta name="robots" content="noindex,nofollow" />
     <link rel="icon" type="image/png" sizes="32x32" href="/static/drill/drill-favicon-32.png?v=img9392" />
     <link rel="apple-touch-icon" sizes="180x180" href="/static/drill/drill-icon-180.png?v=img9392" />
+    <script>
+      try {
+        const schemeCookie = document.cookie.match(/(?:^|; )learning_os_color_scheme=([^;]+)/)?.[1]
+        const languageCookie = document.cookie.match(/(?:^|; )learning_os_ui_language=([^;]+)/)?.[1]
+        const scheme = decodeURIComponent(schemeCookie || '') || localStorage.getItem('learning-os-color-scheme') || 'dark'
+        const language = decodeURIComponent(languageCookie || '') || localStorage.getItem('learning-os-ui-language') || 'en'
+        document.documentElement.dataset.colorScheme = scheme === 'light' ? 'light' : 'dark'
+        document.documentElement.lang = ['en', 'zh-CN', 'ja'].includes(language) ? language : 'en'
+        document.documentElement.style.colorScheme = scheme === 'light' ? 'light' : 'dark'
+      } catch (_) { document.documentElement.dataset.colorScheme = 'dark' }
+    </script>
     <title>Drill · Question Practice</title>
   </head>
   <body>

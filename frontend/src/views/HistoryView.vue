@@ -11,8 +11,10 @@ import PageHeader from '../components/layout/PageHeader.vue'
 import PageToolbar from '../components/layout/PageToolbar.vue'
 import MenuPopover from '../components/ui/MenuPopover.vue'
 import ToolbarChip from '../components/ui/ToolbarChip.vue'
+import { useUiPreferences } from '../lib/uiPreferences'
 
 const loading = ref(false)
+const { language, t } = useUiPreferences()
 const router = useRouter()
 const route = useRoute()
 const rows = ref<StudySessionSummary[]>([])
@@ -29,8 +31,8 @@ const sortBy = ref<'newest' | 'oldest' | 'duration'>('newest')
 const density = ref<'compact' | 'comfortable'>('compact')
 const properties = reactive({ tags: true, start: true, duration: true, efficiency: true })
 const edit = reactive({ title: '', details: '' })
-const subjects = { math: 'Mathematics', english: 'English', major: 'Major / 892', training: 'Training' }
-const activeSubjectLabel = computed(() => subjects[filters.subject as keyof typeof subjects] || filters.subject)
+const subjects = computed(() => ({ math: t('mathematics'), english: t('english'), major: t('major'), training: t('training') }))
+const activeSubjectLabel = computed(() => subjects.value[filters.subject as keyof typeof subjects.value] || filters.subject)
 const sortedRows = computed(() => [...rows.value].sort((left, right) => {
   if (sortBy.value === 'duration') return right.credited_duration_minutes - left.credited_duration_minutes
   const delta = new Date(right.start_time).getTime() - new Date(left.start_time).getTime()
@@ -58,9 +60,9 @@ function dateGroupLabel(value: string) {
   const yesterday = new Date(today)
   yesterday.setDate(today.getDate() - 1)
   const key = date.toLocaleDateString('en-CA')
-  if (key === today.toLocaleDateString('en-CA')) return 'Today'
+  if (key === today.toLocaleDateString('en-CA')) return t('today')
   if (key === yesterday.toLocaleDateString('en-CA')) return 'Yesterday'
-  return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: date.getFullYear() === today.getFullYear() ? undefined : 'numeric' })
+  return date.toLocaleDateString(language.value, { month: 'long', day: 'numeric', year: date.getFullYear() === today.getFullYear() ? undefined : 'numeric' })
 }
 async function load() {
   loading.value = true
@@ -115,24 +117,24 @@ onMounted(() => {
 
 <template>
   <div class="workspace-view sessions-view">
-    <PageHeader context="Workspace" title="Sessions" :metadata="`${total} records`" />
+    <PageHeader :context="t('workspace')" :title="t('sessions')" :metadata="t('records', { count: total })" />
     <PageToolbar label="Session filters and display">
-      <ToolbarChip label="All sessions" :active="!filters.subject && !filters.status" @click="filters.subject = ''; filters.status = ''; search()" />
+      <ToolbarChip :label="t('allSessions')" :active="!filters.subject && !filters.status" @click="filters.subject = ''; filters.status = ''; search()" />
       <ToolbarChip v-if="filters.subject" :label="activeSubjectLabel" active @click="filters.subject = ''; search()"><template #suffix><span aria-hidden="true">×</span></template></ToolbarChip>
       <ToolbarChip v-if="filters.status" :label="filters.status" active @click="filters.status = ''; search()"><template #suffix><span aria-hidden="true">×</span></template></ToolbarChip>
       <template #actions>
-        <label class="toolbar-search"><el-icon><Search /></el-icon><input v-model="filters.search" type="search" placeholder="Search sessions" aria-label="Search sessions" @keyup.enter="search" /><button v-if="filters.search" type="button" aria-label="Clear search" @click="filters.search = ''; search()">×</button></label>
-        <MenuPopover label="Filter" align="end">
-          <template #trigger><el-icon><Filter /></el-icon><span>Filter</span><b v-if="filters.subject || filters.status" class="control-count">{{ Number(Boolean(filters.subject)) + Number(Boolean(filters.status)) }}</b></template>
+        <label class="toolbar-search"><el-icon><Search /></el-icon><input v-model="filters.search" type="search" :placeholder="t('searchSessions')" :aria-label="t('searchSessions')" @keyup.enter="search" /><button v-if="filters.search" type="button" aria-label="Clear search" @click="filters.search = ''; search()">×</button></label>
+        <MenuPopover :label="t('filter')" align="end">
+          <template #trigger><el-icon><Filter /></el-icon><span>{{ t('filter') }}</span><b v-if="filters.subject || filters.status" class="control-count">{{ Number(Boolean(filters.subject)) + Number(Boolean(filters.status)) }}</b></template>
           <div class="menu-section"><span>Subject</span><button type="button" class="menu-option" :class="{ selected: !filters.subject }" @click="filters.subject = ''; search()"><i />All subjects</button><button v-for="(label, key) in subjects" :key="key" type="button" class="menu-option" :class="{ selected: filters.subject === key }" @click="filters.subject = key; search()"><i />{{ label }}</button></div>
           <div class="menu-section"><span>Status</span><button type="button" class="menu-option" :class="{ selected: !filters.status }" @click="filters.status = ''; search()"><i />All statuses</button><button v-for="option in ['completed', 'running']" :key="option" type="button" class="menu-option" :class="{ selected: filters.status === option }" @click="filters.status = option; search()"><i />{{ option }}</button></div>
         </MenuPopover>
-        <MenuPopover label="Properties" align="end">
-          <template #trigger><el-icon><View /></el-icon><span>Display</span></template>
+        <MenuPopover :label="t('properties')" align="end">
+          <template #trigger><el-icon><View /></el-icon><span>{{ t('display') }}</span></template>
           <div class="menu-section"><span>Visible properties</span><label class="menu-toggle"><span>Tags</span><el-switch v-model="properties.tags" size="small" /></label><label class="menu-toggle"><span>Start time</span><el-switch v-model="properties.start" size="small" /></label><label class="menu-toggle"><span>Duration</span><el-switch v-model="properties.duration" size="small" /></label><label class="menu-toggle"><span>Efficiency</span><el-switch v-model="properties.efficiency" size="small" /></label></div>
         </MenuPopover>
-        <MenuPopover label="View options" align="end">
-          <template #trigger><el-icon><Operation /></el-icon><span>View</span></template>
+        <MenuPopover :label="t('view')" align="end">
+          <template #trigger><el-icon><Operation /></el-icon><span>{{ t('view') }}</span></template>
           <div class="menu-section"><span>Group by</span><button v-for="option in (['date', 'subject', 'status', 'none'] as const)" :key="option" type="button" class="menu-option" :class="{ selected: groupBy === option }" @click="groupBy = option"><i />{{ option }}</button></div>
           <div class="menu-section"><span>Sort current page</span><button v-for="option in (['newest', 'oldest', 'duration'] as const)" :key="option" type="button" class="menu-option" :class="{ selected: sortBy === option }" @click="sortBy = option"><i />{{ option }}</button></div>
           <div class="menu-section"><span>Density</span><button v-for="option in (['compact', 'comfortable'] as const)" :key="option" type="button" class="menu-option" :class="{ selected: density === option }" @click="density = option"><i />{{ option }}</button></div>

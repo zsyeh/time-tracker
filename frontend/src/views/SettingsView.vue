@@ -4,8 +4,10 @@ import { ElMessage, ElMessageBox } from 'element-plus'
 import { api, patch, post, put, remove } from '../lib/api'
 import type { DataEncryptionStatus, InviteCode, LaunchToken, RuntimeSettingsResponse, RuntimeSettingsValues, StudyTag, Subject, TaskPreset } from '../types'
 import PageHeader from '../components/layout/PageHeader.vue'
+import { useUiPreferences, type UiLanguage, type UiScheme } from '../lib/uiPreferences'
 
 const emit = defineEmits<{ changed: [] }>()
+const { language, scheme, setLanguage, setScheme, t } = useUiPreferences()
 
 const tokens = ref<LaunchToken[]>([])
 const open = ref(false)
@@ -301,22 +303,22 @@ onMounted(() => { load(); loadRuntime(); loadAccess(); loadEncryption(); loadOrg
 
 <template>
   <div class="view-stack">
-    <PageHeader context="Workspace" title="Settings" metadata="Preferences and access" />
+    <PageHeader :context="t('workspace')" :title="t('settings')" :metadata="t('preferencesAccess')" />
     <div class="settings-layout">
       <nav class="settings-index" aria-label="Settings sections">
-        <span>Workspace</span>
-        <a href="#general">General</a>
-        <a href="#appearance">Appearance</a>
-        <a v-if="isSuperuser" href="#instance">Tracking</a>
-        <span>Content</span>
-        <a href="#organization">Organization</a>
-        <span>Account</span>
-        <a href="#privacy">Security</a>
-        <a href="#access">Access</a>
-        <a href="#invitations">Invitations</a>
-        <a href="#data">Data</a>
-        <span>Automation</span>
-        <a href="#shortcuts">Integrations</a>
+        <span>{{ t('workspace') }}</span>
+        <a href="#general">{{ t('general') }}</a>
+        <a href="#appearance">{{ t('appearance') }}</a>
+        <a v-if="isSuperuser" href="#instance">{{ t('tracking') }}</a>
+        <span>{{ t('content') }}</span>
+        <a href="#organization">{{ t('organization') }}</a>
+        <span>{{ t('account') }}</span>
+        <a href="#privacy">{{ t('security') }}</a>
+        <a href="#access">{{ t('access') }}</a>
+        <a href="#invitations">{{ t('invitations') }}</a>
+        <a href="#data">{{ t('data') }}</a>
+        <span>{{ t('automation') }}</span>
+        <a href="#shortcuts">{{ t('integrations') }}</a>
       </nav>
       <div class="settings-content">
     <section id="general" class="settings-category">
@@ -343,7 +345,11 @@ onMounted(() => { load(); loadRuntime(); loadAccess(); loadEncryption(); loadOrg
         </el-form>
       </article>
       <article id="appearance" class="setting-section theme-card">
-        <div class="card-title"><div><span class="eyebrow">APPEARANCE</span><h2>Theme color</h2></div></div>
+        <div class="card-title"><div><span class="eyebrow">{{ t('appearance') }}</span><h2>Interface</h2></div></div>
+        <div class="ui-preference-rows">
+          <label><span><strong>{{ t('appearance') }}</strong><small>{{ t('dark') }} / {{ t('light') }}</small></span><select :value="scheme" @change="setScheme(($event.target as HTMLSelectElement).value as UiScheme)"><option value="dark">{{ t('dark') }}</option><option value="light">{{ t('light') }}</option></select></label>
+          <label><span><strong>{{ t('language') }}</strong><small>English · 中文 · 日本語</small></span><select :value="language" @change="setLanguage(($event.target as HTMLSelectElement).value as UiLanguage)"><option value="en">English</option><option value="zh-CN">中文</option><option value="ja">日本語</option></select></label>
+        </div>
         <p>Choose one accent. Activity heatmap colors stay consistent for comparison.</p>
         <div class="theme-options">
           <button v-for="item in themes" :key="item.id" type="button" :class="{ active: theme === item.id }" @click="setTheme(item.id)"><i :style="{ background: item.color }" /><span>{{ item.label }}</span><b>{{ theme === item.id ? 'SELECTED' : '' }}</b></button>

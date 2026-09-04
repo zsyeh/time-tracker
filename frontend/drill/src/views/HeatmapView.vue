@@ -3,6 +3,9 @@ import { nextTick, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api } from '../lib/api'
 import { cachedHeatmap, storeHeatmap } from '../lib/workspace'
+import { useUiPreferences } from '../lib/uiPreferences'
+
+const { t } = useUiPreferences()
 
 interface HeatmapQuestion {
   uuid: string
@@ -161,7 +164,7 @@ onMounted(load)
 <template>
   <section class="page heatmap-page">
     <header class="page-header">
-      <div><span class="eyebrow">Knowledge map</span><h1>Coverage by book</h1><p>Every topic and question cell opens a preview before navigation.</p></div>
+      <div><span class="eyebrow">{{ t('knowledgeMap') }}</span><h1>{{ t('coverageByBook') }}</h1><p>Every topic and question cell opens a preview before navigation.</p></div>
       <div class="heat-controls">
         <div class="heat-mode"><button :class="{ active: mode === 'topics' }" @click="mode = 'topics'">Topics</button><button :class="{ active: mode === 'questions' }" @click="mode = 'questions'">Questions</button></div>
         <div class="heat-scope"><button :class="{ active: scope === 'all' }" @click="scope = 'all'">All</button><button :class="{ active: scope === 'past_exam' }" @click="scope = 'past_exam'">Past exams</button><button :class="{ active: scope === 'mock_exam' }" @click="scope = 'mock_exam'">Mock exams</button></div>

@@ -4,8 +4,10 @@ import ActivityCalendar from '../components/ActivityCalendar.vue'
 import { api } from '../lib/api'
 import { cachedHeatmap, storeHeatmap } from '../lib/workspace'
 import type { ActivityPayload } from '../types'
+import { useUiPreferences } from '../lib/uiPreferences'
 
 const activity = ref<ActivityPayload | null>(null)
+const { t } = useUiPreferences()
 const loading = ref(true)
 const error = ref('')
 
@@ -32,7 +34,7 @@ onMounted(load)
 <template>
   <section class="page activity-page">
     <header class="page-header activity-page-header">
-      <div><span class="eyebrow">Daily practice</span><h1>Practice activity</h1><p>Daily volume from July 20 through December 19. Reset events are excluded.</p></div>
+      <div><span class="eyebrow">{{ t('dailyPractice') }}</span><h1>{{ t('practiceActivity') }}</h1><p>Daily volume from July 20 through December 19. Reset events are excluded.</p></div>
       <div class="activity-legend"><span>LESS</span><i v-for="level in 9" :key="level" :class="`activity-level-${level - 1}`" /><span>MORE</span></div>
     </header>
     <p v-if="error" class="error-state">{{ error }}</p>
