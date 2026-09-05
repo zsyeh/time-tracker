@@ -57,13 +57,22 @@ class Command(BaseCommand):
             for offset in range(0, len(pending), options['workers'] * 2):
                 batch = pending[offset:offset + options['workers'] * 2]
                 evidence = [self.evidence(question) for question in batch]
+                preliminary = [
+                    classify_question_type_evidence(
+                        item['metadata_text'], answer_markdown=item['answer_markdown'],
+                        question_ratio=item['question_ratio'], answer_ratio=item['answer_ratio'],
+                    )
+                    for item in evidence
+                ]
                 ocr_results = executor.map(
-                    lambda item: self.ocr(item['image_data'], options['language']), evidence,
+                    lambda pair: '' if pair[1].confidence >= 0.85 else self.ocr(
+                        pair[0]['image_data'], options['language'],
+                    ),
+                    zip(evidence, preliminary),
                 )
-                for item, ocr_text in zip(evidence, ocr_results):
-                    decision = classify_question_type_evidence(
-                        item['metadata_text'], ocr_text=ocr_text,
-                        answer_markdown=item['answer_markdown'],
+                for item, initial, ocr_text in zip(evidence, preliminary, ocr_results):
+                    decision = initial if initial.confidence >= 0.85 else classify_question_type_evidence(
+                        item['metadata_text'], ocr_text=ocr_text, answer_markdown=item['answer_markdown'],
                         question_ratio=item['question_ratio'], answer_ratio=item['answer_ratio'],
                     )
                     row = {
