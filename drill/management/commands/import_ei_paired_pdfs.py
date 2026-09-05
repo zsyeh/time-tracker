@@ -34,7 +34,7 @@ LABEL_RE = re.compile(
     # for an exercise.
     r'^\s*(?:[\[【(（]\s*)?(?:习题\s*)?(?:题\s*)?(?:P\s*)?(?P<chapter>[1-9]\d?)\s*(?:[-—–一.]|\s+)\s*(?P<number>\d{1,3})(?:\s|题|[、:：\]】)）]|$)',
 )
-SOLUTION_RE = re.compile(r'^\s*(?:解|答)\s*[：:]')
+SOLUTION_RE = re.compile(r'^\s*(?:解|答案?)\s*[：:]')
 
 
 PAIR_SOURCES = {
@@ -290,9 +290,12 @@ class Command(BaseCommand):
             found = None
             for page_index in range(question.page_index, (following.page_index if following else len(document) - 1) + 1):
                 for text, _x, y in by_page[page_index]:
-                    if page_index == question.page_index and y <= question.y:
+                    # Anchor crops include 3pt of top padding. Compare against
+                    # the original text baseline so a nearby solution line
+                    # immediately above the question is never assigned to it.
+                    if page_index == question.page_index and y <= question.y + 3.1:
                         continue
-                    if following and page_index == following.page_index and y >= following.y:
+                    if following and page_index == following.page_index and y >= following.y + 3.1:
                         break
                     if SOLUTION_RE.match(text):
                         found = Anchor(question.label, question.chapter, question.number, page_index, max(0, y - 3))
@@ -325,6 +328,7 @@ class Command(BaseCommand):
         for words in grouped.values():
             words.sort()
             lines.append((' '.join(item[2] for item in words), words[0][0], words[0][1]))
+        lines.sort(key=lambda item: (item[2], item[1]))
         return lines
 
     @staticmethod
@@ -350,6 +354,7 @@ class Command(BaseCommand):
         for words in grouped.values():
             words.sort()
             lines.append((' '.join(item[2] for item in words), words[0][0] / scale, words[0][1] / scale))
+        lines.sort(key=lambda item: (item[2], item[1]))
         return _page_index, lines
 
     def import_subject(self, report, dpi):
@@ -365,7 +370,7 @@ class Command(BaseCommand):
         # old batch first, then re-enable only pairs validated in this run.
         Question.objects.filter(
             document=document,
-            source_label__startswith=f'{report["subject"]} · ',
+            source_label__regex=rf'^{re.escape(report["subject"])} · \d+-\d+$',
         ).update(is_practiceable=False)
         question_pdf = pymupdf.open(report['question_path'])
         answer_pdf = pymupdf.open(report['answer_path'])
@@ -441,7 +446,7 @@ class Command(BaseCommand):
         ordered = sorted(anchors, key=lambda item: (item.page_index, item.y))
         current_key = (anchor.page_index, anchor.y)
         next_anchor = next((item for item in ordered if (item.page_index, item.y) > current_key), None)
-        end_page, end_y = self.segment_end(anchor, next_anchor)
+        end_page, end_y = self.segment_end(anchor, next_anchor, len(document))
         existing_ids = []
         position = 0
         for page_index in range(anchor.page_index, end_page + 1):
@@ -462,7 +467,7 @@ class Command(BaseCommand):
                 )
             pixmap = page.get_pixmap(matrix=pymupdf.Matrix(scale, scale), clip=rect, alpha=False)
             width, height = pixmap.width, pixmap.height
-            if height < 8:
+            if height < 8 or not self.has_meaningful_ink(pixmap):
                 continue
             image_data = pixmap.tobytes('png')
             digest = hashlib.sha256(image_data).hexdigest()
@@ -476,8 +481,22 @@ class Command(BaseCommand):
                 position += 1
                 continue
             source_key = f'ei-pdf-pair:{subject}:{label}:{asset_type}:{position}'
+            source_id = stable_positive_id(ASSET_ID_BASE, source_key)
+            asset = QuestionAsset.objects.filter(source_id=source_id).first()
+            # A captured paper pins its source crop through QuestionRevision.
+            # Never change that binary in place: preserve the historical image
+            # and leave this source item untouched until a revision-aware asset
+            # supersession path is introduced.
+            if asset is not None and asset.revision_links.exists():
+                existing_ids.append(asset.pk)
+                if asset.sha256 != digest:
+                    self.stderr.write(
+                        f'Skipped crop update for pinned asset {asset.pk} ({subject} {label}).'
+                    )
+                position += 1
+                continue
             asset, _ = QuestionAsset.objects.update_or_create(
-                source_id=stable_positive_id(ASSET_ID_BASE, source_key),
+                source_id=source_id,
                 defaults={
                     'question': question,
                     'position': position,
@@ -500,11 +519,30 @@ class Command(BaseCommand):
         QuestionAsset.objects.filter(question=question, asset_type=asset_type).exclude(pk__in=existing_ids).delete()
 
     @staticmethod
-    def segment_end(anchor, next_anchor):
-        """Clip at the next exercise even when that exercise starts on a new page."""
+    def segment_end(anchor, next_anchor, page_count):
+        """Clip at the next exercise, retaining all pages of the final item."""
         if next_anchor is None:
-            return anchor.page_index, None
+            # OCR may fail to see a later label. Never let one missed anchor
+            # absorb the remainder of a large answer book; four source pages
+            # covers the verified longest EI exercise while keeping failure
+            # bounded and visible during crop audits.
+            return min(page_count - 1, anchor.page_index + 3), None
         return next_anchor.page_index, next_anchor.y
+
+    @staticmethod
+    def has_meaningful_ink(pixmap):
+        """Reject page-boundary slivers containing only scan noise or whitespace."""
+        # bytes.translate performs the threshold pass in C. EI scans are
+        # grayscale-in-RGB, so counting dark channels is equivalent to three
+        # counts per inked pixel without a costly Python loop over megapixels.
+        ink_map = bytes.maketrans(
+            bytes(range(256)), bytes(1 if value < 240 else 0 for value in range(256)),
+        )
+        dark_channels = sum(pixmap.samples.translate(ink_map))
+        return dark_channels >= max(
+            36 * min(3, pixmap.n),
+            round(pixmap.width * pixmap.height * 0.00004 * min(3, pixmap.n)),
+        )
 
     @staticmethod
     def vertical_trim_bounds(page, rect):

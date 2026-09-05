@@ -58,20 +58,33 @@ class Command(BaseCommand):
         try:
             with transaction.atomic():
                 for asset in assets.iterator(chunk_size=50):
+                    if asset.revision_links.exists():
+                        self.stdout.write(f'{subject}: skipped pinned asset {asset.pk}.')
+                        continue
                     document = documents[asset.asset_type]
                     page = document[asset.source_page_index]
                     rect = pymupdf.Rect(
                         asset.source_x0, asset.source_y0, asset.source_x1, asset.source_y1,
                     ) & page.rect
                     trim_top, trim_bottom = PairImporter.vertical_trim_bounds(page, rect)
-                    if not trim_top and not trim_bottom:
+                    # Legacy cross-page tails can be pure white while still
+                    # surviving the trim heuristic because of a single scan
+                    # artifact. Render short tails once so they can be safely
+                    # discarded rather than appearing as blank answer images.
+                    if not trim_top and not trim_bottom and asset.height >= 80:
                         continue
-                    rect.y0 += trim_top
-                    rect.y1 -= trim_bottom
+                    if trim_top or trim_bottom:
+                        rect.y0 += trim_top
+                        rect.y1 -= trim_bottom
                     scale = dpi / 72
                     pixmap = page.get_pixmap(
                         matrix=pymupdf.Matrix(scale, scale), clip=rect, alpha=False,
                     )
+                    if not PairImporter.has_meaningful_ink(pixmap):
+                        changed += 1
+                        if not dry_run:
+                            asset.delete()
+                        continue
                     image_data = pixmap.tobytes('png')
                     digest = hashlib.sha256(image_data).hexdigest()
                     changed += 1

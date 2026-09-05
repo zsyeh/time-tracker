@@ -1437,10 +1437,28 @@ class PairedPdfCropTests(SimpleTestCase):
         current = PairedPdfAnchor('8-15', 8, 15, 141, 430.0)
         following = PairedPdfAnchor('8-16', 8, 16, 142, 59.0)
 
-        end_page, end_y = PairedPdfImportCommand.segment_end(current, following)
+        end_page, end_y = PairedPdfImportCommand.segment_end(current, following, 200)
 
         self.assertEqual(end_page, 142)
         self.assertEqual(end_y, 59.0)
+
+    def test_final_segment_is_cross_page_but_bounded(self):
+        current = PairedPdfAnchor('8-36', 8, 36, 141, 430.0)
+
+        end_page, end_y = PairedPdfImportCommand.segment_end(current, None, 500)
+
+        self.assertEqual(end_page, 144)
+        self.assertIsNone(end_y)
+
+    def test_meaningful_ink_rejects_blank_page_tail(self):
+        document = pymupdf.open()
+        page = document.new_page(width=600, height=40)
+        blank = page.get_pixmap(alpha=False)
+        page.insert_text((36, 24), 'continued answer', fontsize=12)
+        content = page.get_pixmap(alpha=False)
+
+        self.assertFalse(PairedPdfImportCommand.has_meaningful_ink(blank))
+        self.assertTrue(PairedPdfImportCommand.has_meaningful_ink(content))
 
     def test_vertical_trim_removes_blank_tail_and_isolated_footer(self):
         document = pymupdf.open()
