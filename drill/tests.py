@@ -39,7 +39,7 @@ from .models import (
     QuestionUserState,
 )
 from .pdf_import import parse_question_pdf
-from .question_type_classifier import classify_question_type
+from .question_type_classifier import classify_question_type, classify_question_type_evidence
 from .management.commands.import_ei_paired_pdfs import Anchor as PairedPdfAnchor
 from .management.commands.import_ei_paired_pdfs import Command as PairedPdfImportCommand
 
@@ -1480,3 +1480,23 @@ class QuestionTypeClassifierTests(SimpleTestCase):
     def test_keeps_ambiguous_text_unclassified(self):
         decision = classify_question_type('2024 数二 第 5 题')
         self.assertEqual(decision.label, 'unknown')
+
+    def test_agent_evidence_detects_ocr_option_layout(self):
+        decision = classify_question_type_evidence(
+            '2024 数二', ocr_text='A. first\nB. second\nC. third\nD. fourth',
+        )
+        self.assertEqual(decision.label, 'single_choice')
+        self.assertGreaterEqual(decision.confidence, 0.95)
+
+    def test_agent_evidence_uses_answer_choice_key(self):
+        decision = classify_question_type_evidence(
+            '1987 数二', answer_markdown='**C.** The function is unbounded.',
+        )
+        self.assertEqual(decision.label, 'single_choice')
+
+    def test_agent_evidence_keeps_layout_inference_auditable(self):
+        decision = classify_question_type_evidence(
+            'unstructured source', question_ratio=0.1, answer_ratio=0.4,
+        )
+        self.assertEqual(decision.label, 'fill_blank')
+        self.assertLess(decision.confidence, 0.75)
