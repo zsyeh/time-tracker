@@ -99,6 +99,23 @@ class PaperGeneratorTests(TestCase):
         )
         self.assertIn(choice.pk, {item.pk for item in pool})
 
+    def test_low_confidence_agent_label_is_not_used_in_strict_paper(self):
+        choice = next(item for item in self.questions if item.question_type == 'single_choice')
+        choice.question_type_source = 'agent'
+        choice.question_type_confidence = 0.62
+        choice.question_type_human_verified = False
+        choice.save(update_fields=(
+            'question_type_source', 'question_type_confidence',
+            'question_type_human_verified',
+        ))
+
+        pool = PaperGenerator().candidate_pool(
+            user=self.user, blueprint=self.blueprint, question_type='single_choice',
+            include_mastered=False, cooldown_days=0, excluded_ids=set(),
+        )
+
+        self.assertNotIn(choice.pk, {item.pk for item in pool})
+
     def test_insufficient_candidates_raise_clear_error(self):
         self.blueprint.sections.filter(question_type='single_choice').update(question_count=20)
         with self.assertRaises(PaperGenerationError) as raised:

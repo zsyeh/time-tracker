@@ -103,6 +103,9 @@ class PaperGenerator:
             is_practiceable=True,
             record_kind='question',
             question_type=question_type,
+        ).filter(
+            Q(question_type_human_verified=True)
+            | Q(question_type_confidence__gte=0.75),
         ).exclude(pk__in=excluded_ids).select_related('document', 'similarity_topic').annotate(
             latest_result_for_paper=Subquery(latest.values('result')[:1]),
             latest_attempt_at=Subquery(latest.values('created_at')[:1]),
