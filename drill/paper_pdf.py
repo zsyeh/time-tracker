@@ -97,14 +97,17 @@ class PaperPdfRenderer:
         return page, y
 
     def question_pages(self, item):
-        question = item.question
-        assets = [asset for asset in question.assets.all() if asset.asset_type == 'question_crop']
+        revision = item.question_revision
+        assets = [
+            link.asset for link in revision.revision_assets.all()
+            if link.asset_type == 'question_crop'
+        ]
         page, y = self.add_assets(item, assets, 'Question')
         if not assets:
-            y = self.add_text(page, y, question.prompt_text or question.source_label)
+            y = self.add_text(page, y, revision.prompt_text or revision.source_label)
         if not self.solutions:
-            answer_height = 34 if question.question_type == 'single_choice' else (
-                60 if question.question_type == 'fill_blank' else 150
+            answer_height = 34 if revision.question_type == 'single_choice' else (
+                60 if revision.question_type == 'fill_blank' else 150
             )
             if y + answer_height > A4[1] - MARGIN:
                 page, y = self.new_content_page(item, 'Answer space')
@@ -115,13 +118,16 @@ class PaperPdfRenderer:
                 )
 
     def solution_pages(self, item):
-        question = item.question
-        assets = [asset for asset in question.assets.all() if asset.asset_type == 'answer_crop']
+        revision = item.question_revision
+        assets = [
+            link.asset for link in revision.revision_assets.all()
+            if link.asset_type == 'answer_crop'
+        ]
         page, y = self.add_assets(item, assets, 'Answer / explanation')
-        if question.answer_markdown:
+        if revision.answer_markdown:
             if y > A4[1] - 180:
                 page, y = self.new_content_page(item, 'Explanation · continued')
-            self.add_text(page, y, plain_markdown(question.answer_markdown), fontsize=8.5)
+            self.add_text(page, y, plain_markdown(revision.answer_markdown), fontsize=8.5)
         elif not assets:
             self.add_text(page, y, 'No source answer is currently available.')
 

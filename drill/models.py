@@ -1,11 +1,12 @@
 import hashlib
+import json
 import secrets
 import uuid as uuid_lib
 
 import datetime
 
 from django.conf import settings
-from django.db import models
+from django.db import models, transaction
 from django.utils import timezone
 
 
@@ -250,6 +251,137 @@ class QuestionAsset(models.Model):
         return f'Asset {self.source_id} for {self.question_id}'
 
 
+class QuestionRevision(models.Model):
+    """Lightweight immutable snapshot used by persisted exam papers.
+
+    Text fields are snapshotted once. Binary crops remain deduplicated in
+    ``QuestionAsset`` and are pinned through protected revision references.
+    """
+
+    uuid = models.UUIDField(default=uuid_lib.uuid4, unique=True, editable=False)
+    question = models.ForeignKey(
+        Question, on_delete=models.CASCADE, related_name='revisions',
+    )
+    number = models.PositiveIntegerField()
+    content_hash = models.CharField(max_length=64)
+    document_title = models.CharField(max_length=240)
+    topic_title = models.TextField(blank=True)
+    source_label = models.TextField(blank=True)
+    display_label = models.TextField(blank=True)
+    prompt_text = models.TextField(blank=True)
+    latex_text = models.TextField(blank=True)
+    content_mode = models.CharField(max_length=12)
+    question_type = models.CharField(max_length=20, choices=Question.QUESTION_TYPE_CHOICES)
+    source_category = models.CharField(max_length=20, choices=Question.SOURCE_CATEGORY_CHOICES)
+    exam_year = models.PositiveSmallIntegerField(null=True, blank=True)
+    exam_variant = models.CharField(max_length=16, blank=True)
+    difficulty = models.PositiveSmallIntegerField(null=True, blank=True)
+    estimated_time_minutes = models.PositiveSmallIntegerField(null=True, blank=True)
+    answer_markdown = models.TextField(blank=True)
+    answer_source = models.CharField(max_length=32, blank=True)
+    answer_confidence = models.FloatField(null=True, blank=True)
+    assets = models.ManyToManyField(
+        QuestionAsset, through='QuestionRevisionAsset', related_name='question_revisions',
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('question_id', '-number')
+        constraints = [
+            models.UniqueConstraint(
+                fields=('question', 'number'), name='drill_revision_question_number_unique',
+            ),
+            models.UniqueConstraint(
+                fields=('question', 'content_hash'), name='drill_revision_question_hash_unique',
+            ),
+        ]
+        indexes = [models.Index(fields=('question', '-number'), name='drill_revision_latest_idx')]
+
+    def __str__(self):
+        return f'{self.question_id} · revision {self.number}'
+
+    @classmethod
+    def capture(cls, question):
+        """Return the matching immutable revision, creating it atomically."""
+        with transaction.atomic():
+            # Keep nullable topic joins out of the FOR UPDATE statement:
+            # PostgreSQL rejects row locks on the nullable side of an outer join.
+            locked = Question.objects.select_for_update().get(pk=question.pk)
+            assets = list(locked.assets.order_by('asset_type', 'position', 'pk'))
+            topic = locked.similarity_topic or locked.topic
+            values = {
+                'document_title': locked.document.display_title or locked.document.title,
+                'topic_title': (topic.display_title or topic.title) if topic else '',
+                'source_label': locked.source_label,
+                'display_label': locked.display_label,
+                'prompt_text': locked.prompt_text,
+                'latex_text': locked.latex_text,
+                'content_mode': locked.content_mode,
+                'question_type': locked.question_type,
+                'source_category': locked.source_category,
+                'exam_year': locked.exam_year,
+                'exam_variant': locked.exam_variant,
+                'difficulty': locked.difficulty,
+                'estimated_time_minutes': locked.estimated_time_minutes,
+                'answer_markdown': locked.answer_markdown,
+                'answer_source': locked.answer_source,
+                'answer_confidence': locked.answer_confidence,
+            }
+            digest_payload = {
+                **values,
+                'assets': [
+                    [asset.pk, asset.sha256, asset.asset_type, asset.position]
+                    for asset in assets
+                ],
+            }
+            content_hash = hashlib.sha256(json.dumps(
+                digest_payload, ensure_ascii=False, sort_keys=True,
+                separators=(',', ':'), default=str,
+            ).encode('utf-8')).hexdigest()
+            existing = cls.objects.filter(
+                question=locked, content_hash=content_hash,
+            ).first()
+            if existing:
+                return existing
+            latest_number = cls.objects.filter(question=locked).aggregate(
+                models.Max('number'),
+            )['number__max'] or 0
+            revision = cls.objects.create(
+                question=locked, number=latest_number + 1,
+                content_hash=content_hash, **values,
+            )
+            QuestionRevisionAsset.objects.bulk_create([
+                QuestionRevisionAsset(
+                    revision=revision, asset=asset,
+                    position=asset.position, asset_type=asset.asset_type,
+                )
+                for asset in assets
+            ])
+            return revision
+
+
+class QuestionRevisionAsset(models.Model):
+    revision = models.ForeignKey(
+        QuestionRevision, on_delete=models.CASCADE, related_name='revision_assets',
+    )
+    asset = models.ForeignKey(
+        QuestionAsset, on_delete=models.PROTECT, related_name='revision_links',
+    )
+    position = models.PositiveSmallIntegerField()
+    asset_type = models.CharField(max_length=24)
+
+    class Meta:
+        ordering = ('revision_id', 'asset_type', 'position', 'pk')
+        constraints = [
+            models.UniqueConstraint(
+                fields=('revision', 'asset'), name='drill_revision_asset_unique',
+            ),
+        ]
+
+    def __str__(self):
+        return f'{self.revision_id} · {self.asset_type} · {self.position}'
+
+
 class QuestionAttempt(models.Model):
     RESULT_CHOICES = [
         ('done', 'Done'),
@@ -460,6 +592,9 @@ class ExamPaperItem(models.Model):
     paper = models.ForeignKey(ExamPaper, on_delete=models.CASCADE, related_name='items')
     section = models.ForeignKey(ExamBlueprintSection, on_delete=models.PROTECT, related_name='+')
     question = models.ForeignKey(Question, on_delete=models.PROTECT, related_name='paper_items')
+    question_revision = models.ForeignKey(
+        QuestionRevision, on_delete=models.PROTECT, related_name='paper_items',
+    )
     position = models.PositiveSmallIntegerField()
     score = models.DecimalField(max_digits=5, decimal_places=2)
     selected_fingerprint = models.CharField(max_length=64)

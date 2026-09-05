@@ -11,7 +11,7 @@ from django.utils import timezone
 
 from .models import (
     ExamBlueprint, ExamPaper, ExamPaperItem, Question, QuestionAttempt,
-    QuestionMarker, QuestionUserState,
+    QuestionMarker, QuestionRevision, QuestionUserState,
 )
 
 
@@ -80,6 +80,7 @@ class PaperGenerator:
                     paper=paper,
                     section=section,
                     question=question,
+                    question_revision=QuestionRevision.capture(question),
                     position=position,
                     score=section.score_per_question,
                     selected_fingerprint=question.fingerprint,

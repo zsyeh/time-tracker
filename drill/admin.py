@@ -10,6 +10,8 @@ from .models import (
     QuestionAttempt,
     QuestionDocument,
     QuestionMarker,
+    QuestionRevision,
+    QuestionRevisionAsset,
     QuestionTopic,
     QuestionUserState,
 )
@@ -85,6 +87,24 @@ class QuestionAssetAdmin(admin.ModelAdmin):
     readonly_fields = fields
 
 
+class QuestionRevisionAssetInline(admin.TabularInline):
+    model = QuestionRevisionAsset
+    extra = 0
+    can_delete = False
+    readonly_fields = ('asset', 'asset_type', 'position')
+
+
+@admin.register(QuestionRevision)
+class QuestionRevisionAdmin(admin.ModelAdmin):
+    list_display = ('question', 'number', 'question_type', 'document_title', 'created_at')
+    list_filter = ('question_type', 'source_category', 'created_at')
+    search_fields = ('question__uuid', 'source_label', 'display_label', 'content_hash')
+    readonly_fields = tuple(
+        field.name for field in QuestionRevision._meta.fields
+    )
+    inlines = (QuestionRevisionAssetInline,)
+
+
 class ExamBlueprintSectionInline(admin.TabularInline):
     model = ExamBlueprintSection
     extra = 0
@@ -102,7 +122,9 @@ class ExamBlueprintAdmin(admin.ModelAdmin):
 class ExamPaperItemInline(admin.TabularInline):
     model = ExamPaperItem
     extra = 0
-    readonly_fields = ('section', 'question', 'position', 'score', 'selected_fingerprint')
+    readonly_fields = (
+        'section', 'question', 'question_revision', 'position', 'score', 'selected_fingerprint',
+    )
 
 
 @admin.register(ExamPaper)

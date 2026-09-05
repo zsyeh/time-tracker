@@ -1,12 +1,13 @@
 import datetime
 
 from django.contrib.auth import get_user_model
+from django.db.models.deletion import ProtectedError
 from django.test import TestCase
 from django.utils import timezone
 
 from .models import (
     ExamBlueprint, ExamBlueprintSection, Question, QuestionAttempt,
-    QuestionDocument, QuestionTopic,
+    QuestionAsset, QuestionDocument, QuestionRevision, QuestionTopic,
 )
 from .paper_generator import PaperGenerationError, PaperGenerator
 from .paper_pdf import render_paper_pdf
@@ -76,6 +77,7 @@ class PaperGeneratorTests(TestCase):
         self.assertEqual(counts, {'single_choice': 2, 'fill_blank': 2, 'solution': 2})
         self.assertEqual(len(first_order), len(set(first_order)))
         self.assertEqual(first_order, list(paper.items.values_list('question_id', flat=True)))
+        self.assertFalse(paper.items.filter(question_revision__isnull=True).exists())
 
     def test_topic_cap_avoids_abnormal_concentration(self):
         paper = PaperGenerator().generate(user=self.user, blueprint=self.blueprint, seed=9)
@@ -156,11 +158,45 @@ class PaperGeneratorTests(TestCase):
             user=self.user, question=item.question, result='review',
         ).exists())
 
-    def test_pdf_renderers_read_live_question_and_solution_data(self):
+    def test_paper_revision_freezes_text_and_answer_for_review(self):
         paper = PaperGenerator().generate(user=self.user, blueprint=self.blueprint, seed=15)
-        question = paper.items.first().question
-        question.answer_markdown = '## Solution\n\nUse $x=1$.'
-        question.save(update_fields=('answer_markdown',))
+        item = paper.items.select_related('question', 'question_revision').first()
+        old_revision = item.question_revision
+        item.question.prompt_text = 'changed after paper generation'
+        item.question.answer_markdown = '## New answer that must not leak into the old paper'
+        item.question.save(update_fields=('prompt_text', 'answer_markdown'))
+        new_revision = QuestionRevision.capture(item.question)
+
+        self.assertNotEqual(old_revision.pk, new_revision.pk)
+        self.assertEqual(old_revision.prompt_text, 'question')
+        self.assertEqual(old_revision.answer_markdown, '')
+        self.client.force_login(self.user)
+        review = self.client.get(f'/api/drill/papers/{paper.uuid}/review/', secure=True)
+        matching = next(
+            row for row in review.json()['items']
+            if row['question']['uuid'] == str(item.question.uuid)
+        )
+        self.assertEqual(matching['question']['prompt_text'], 'question')
+        self.assertEqual(matching['question']['answer_markdown'], '')
+
+    def test_revision_pins_existing_binary_asset_without_copying_it(self):
+        question = self.questions[0]
+        asset = QuestionAsset.objects.create(
+            source_id=7999, question=question, position=0,
+            asset_type='question_crop', sha256='d' * 64,
+            image_data=b'asset', width=10, height=10,
+        )
+        revision = QuestionRevision.capture(question)
+
+        self.assertEqual(revision.revision_assets.get().asset_id, asset.pk)
+        with self.assertRaises(ProtectedError):
+            asset.delete()
+
+    def test_pdf_renderers_read_pinned_question_revision(self):
+        Question.objects.filter(pk__in=[item.pk for item in self.questions]).update(
+            answer_markdown='## Solution\n\nUse $x=1$.',
+        )
+        paper = PaperGenerator().generate(user=self.user, blueprint=self.blueprint, seed=15)
 
         question_pdf = render_paper_pdf(paper, solutions=False)
         solution_pdf = render_paper_pdf(paper, solutions=True)

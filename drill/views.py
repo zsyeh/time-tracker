@@ -16,7 +16,7 @@ from .cleaning import SOURCE_LABELS
 from .models import (
     ExamBlueprint, ExamPaper, ExamPaperItem, Question, QuestionAsset,
     QuestionAttempt, QuestionDocument, QuestionMarker, QuestionTopic,
-    QuestionUserState,
+    QuestionRevisionAsset, QuestionUserState,
 )
 from .paper_generator import PaperGenerationError, PaperGenerator
 from .paper_pdf import render_paper_pdf
@@ -60,23 +60,26 @@ def summary_payload(question):
 
 
 def paper_queryset(user):
-    assets = QuestionAsset.objects.only(
-        'id', 'question_id', 'position', 'asset_type', 'width', 'height',
-        'mime_type', 'sha256',
+    revision_assets = QuestionRevisionAsset.objects.select_related('asset').only(
+        'revision_id', 'position', 'asset_type', 'asset__id', 'asset__width',
+        'asset__height', 'asset__mime_type', 'asset__sha256',
     )
     return ExamPaper.objects.filter(user=user).select_related('blueprint').prefetch_related(
         Prefetch(
             'items',
             queryset=ExamPaperItem.objects.select_related(
-                'section', 'question__document', 'question__topic',
-                'question__similarity_topic',
-            ).prefetch_related(Prefetch('question__assets', queryset=assets)).order_by('position'),
+                'section', 'question', 'question_revision',
+            ).prefetch_related(Prefetch(
+                'question_revision__revision_assets', queryset=revision_assets,
+            )).order_by('position'),
         ),
     )
 
 
 def paper_item_payload(item, *, review, latest_result=None):
     question = item.question
+    revision = item.question_revision
+    revision_assets = list(revision.revision_assets.all())
     payload = {
         'position': item.position,
         'score': float(item.score),
@@ -85,42 +88,41 @@ def paper_item_payload(item, *, review, latest_result=None):
         'time_spent_seconds': item.time_spent_seconds,
         'question': {
             'uuid': str(question.uuid),
-            'display_label': question.display_label or question.source_label,
-            'source_label': question.source_label,
-            'document': question.document.display_title or question.document.title,
-            'topic': (
-                question.similarity_topic.display_title or question.similarity_topic.title
-                if question.similarity_topic else ''
-            ),
-            'question_type': question.question_type,
-            'prompt_text': question.prompt_text,
-            'latex_text': question.latex_text,
-            'content_mode': question.content_mode,
+            'revision_uuid': str(revision.uuid),
+            'revision_number': revision.number,
+            'display_label': revision.display_label or revision.source_label,
+            'source_label': revision.source_label,
+            'document': revision.document_title,
+            'topic': revision.topic_title,
+            'question_type': revision.question_type,
+            'prompt_text': revision.prompt_text,
+            'latex_text': revision.latex_text,
+            'content_mode': revision.content_mode,
             'question_assets': [
                 {
-                    'id': asset.pk,
-                    'url': f'/api/drill/assets/{asset.pk}/?v={asset.sha256[:16]}',
-                    'width': asset.width,
-                    'height': asset.height,
-                    'position': asset.position,
+                    'id': link.asset.pk,
+                    'url': f'/api/drill/assets/{link.asset.pk}/?v={link.asset.sha256[:16]}',
+                    'width': link.asset.width,
+                    'height': link.asset.height,
+                    'position': link.position,
                 }
-                for asset in question.assets.all() if asset.asset_type == 'question_crop'
+                for link in revision_assets if link.asset_type == 'question_crop'
             ],
         },
     }
     if review:
         payload['question'].update({
-            'answer_markdown': question.answer_markdown,
-            'answer_source': question.answer_source,
+            'answer_markdown': revision.answer_markdown,
+            'answer_source': revision.answer_source,
             'answer_assets': [
                 {
-                    'id': asset.pk,
-                    'url': f'/api/drill/assets/{asset.pk}/?v={asset.sha256[:16]}',
-                    'width': asset.width,
-                    'height': asset.height,
-                    'position': asset.position,
+                    'id': link.asset.pk,
+                    'url': f'/api/drill/assets/{link.asset.pk}/?v={link.asset.sha256[:16]}',
+                    'width': link.asset.width,
+                    'height': link.asset.height,
+                    'position': link.position,
                 }
-                for asset in question.assets.all() if asset.asset_type == 'answer_crop'
+                for link in revision_assets if link.asset_type == 'answer_crop'
             ],
             'mastery_state': (
                 'mastered' if latest_result in ('done', 'correct')

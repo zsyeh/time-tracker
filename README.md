@@ -139,7 +139,7 @@ cd frontend && npm run build
 - `https://ei.ehzsy.site/heatmap`：按 156 个知识点统计的个人 EI 热力图
 - `/api/drill/*`：登录后可用的题库、作答、同类题、进度和图片 API
 
-数学二组卷使用版本化 `ExamBlueprint`，题型数量是硬约束，章节/知识点分散是软约束。默认排除当前用户已掌握和 cooldown 内刚做过的题；Paper 只保存 Question 外键、顺序、分值与生成 seed，不复制题干、图片、答案或解析。题目卷和解析卷 PDF 都从数据库关系实时生成。
+数学二组卷使用版本化 `ExamBlueprint`，题型数量是硬约束，章节/知识点分散是软约束。默认排除当前用户已掌握和 cooldown 内刚做过的题；Paper 只保存 Question/QuestionRevision 外键、顺序、分值与生成 seed，不在 PaperItem 复制题干、图片、答案或解析。轻量 `QuestionRevision` 固定生成当时的文本与资源引用，后续修改原题不会改变历史卷。题目卷和解析卷 PDF 都从固定 revision 重新生成。
 
 题型元数据可先运行可解释规则，再把低置信度集合交给 Agent 批处理：
 
@@ -147,9 +147,12 @@ cd frontend && npm run build
 python manage.py classify_question_types --apply --export-review question_type_review.jsonl
 # Agent 为每行补充 question_type 与 confidence 后：
 python manage.py classify_question_types --import-agent agent_labels.jsonl
+
+# 或使用可恢复的本地 OCR/版式 Agent 直接处理图片型题库：
+python manage.py agent_classify_question_types --apply --workers 2
 ```
 
-允许标签为 `single_choice`、`fill_blank`、`solution`。人工确认记录不会被后续批处理覆盖；低置信度记录保持 `unknown`，不会进入严格 Blueprint。
+允许标签为 `single_choice`、`fill_blank`、`solution`。OCR Agent 综合来源标签、题目图片中的选项/空格结构、答案形式与版式，保存理由和置信度；低于 0.75 的结果仍作为待复核集合。人工确认记录不会被后续批处理覆盖。
 - `/`：跳转到 `/today`
 - `/today`：Today
 - `/trends`：趋势
