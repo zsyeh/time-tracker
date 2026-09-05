@@ -99,6 +99,52 @@ class PaperGeneratorTests(TestCase):
         )
         self.assertIn(choice.pk, {item.pk for item in pool})
 
+    def test_recently_generated_paper_questions_observe_cooldown(self):
+        paper = PaperGenerator().generate(user=self.user, blueprint=self.blueprint, seed=77)
+        selected = set(paper.items.values_list('question_id', flat=True))
+
+        pool = PaperGenerator().candidate_pool(
+            user=self.user, blueprint=self.blueprint, question_type='single_choice',
+            include_mastered=False, cooldown_days=14, excluded_ids=set(),
+        )
+
+        self.assertTrue(selected)
+        self.assertTrue(selected.isdisjoint({item.pk for item in pool}))
+
+    def test_same_seed_is_reproducible_without_cooldown(self):
+        first = PaperGenerator().generate(
+            user=self.user, blueprint=self.blueprint, seed=12345, cooldown_days=0,
+        )
+        second = PaperGenerator().generate(
+            user=self.user, blueprint=self.blueprint, seed=12345, cooldown_days=0,
+        )
+
+        self.assertEqual(
+            list(first.items.values_list('question_id', flat=True)),
+            list(second.items.values_list('question_id', flat=True)),
+        )
+
+    def test_repeated_generation_preserves_all_hard_constraints(self):
+        expected = {'single_choice': 2, 'fill_blank': 2, 'solution': 2}
+        for seed in range(50):
+            paper = PaperGenerator().generate(
+                user=self.user, blueprint=self.blueprint,
+                seed=seed, cooldown_days=0,
+            )
+            ids = list(paper.items.values_list('question_id', flat=True))
+            counts = {
+                question_type: paper.items.filter(
+                    question_revision__question_type=question_type,
+                ).count()
+                for question_type in expected
+            }
+            self.assertEqual(counts, expected)
+            self.assertEqual(len(ids), len(set(ids)))
+            self.assertEqual(
+                list(paper.items.values_list('position', flat=True)),
+                list(range(1, 7)),
+            )
+
     def test_low_confidence_agent_label_is_not_used_in_strict_paper(self):
         choice = next(item for item in self.questions if item.question_type == 'single_choice')
         choice.question_type_source = 'agent'

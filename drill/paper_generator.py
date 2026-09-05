@@ -46,16 +46,23 @@ class PaperGenerator:
             raise PaperGenerationError('The selected blueprint has no sections.')
         cooldown = blueprint.cooldown_days if cooldown_days is None else cooldown_days
         selected_ids = set()
+        selected_topic_counts = {}
         selected = []
+        candidate_cache = {}
         for section in sections:
-            candidates = self.candidate_pool(
-                user=user,
-                blueprint=blueprint,
-                question_type=section.question_type,
-                include_mastered=include_mastered,
-                cooldown_days=cooldown,
-                excluded_ids=selected_ids,
-            )
+            if section.question_type not in candidate_cache:
+                candidate_cache[section.question_type] = self.candidate_pool(
+                    user=user,
+                    blueprint=blueprint,
+                    question_type=section.question_type,
+                    include_mastered=include_mastered,
+                    cooldown_days=cooldown,
+                    excluded_ids=set(),
+                )
+            candidates = [
+                question for question in candidate_cache[section.question_type]
+                if question.pk not in selected_ids
+            ]
             if len(candidates) < section.question_count:
                 raise PaperGenerationError(
                     f'Not enough eligible {section.get_question_type_display().lower()} questions '
@@ -64,9 +71,16 @@ class PaperGenerator:
                     required=section.question_count,
                     available=len(candidates),
                 )
-            chosen = self.choose_for_section(candidates, section, blueprint.mode, rng)
+            chosen = self.choose_for_section(
+                candidates, section, blueprint.mode, rng,
+                prior_topic_counts=selected_topic_counts,
+            )
             selected.extend((section, question) for question in chosen)
             selected_ids.update(question.pk for question in chosen)
+            for question in chosen:
+                topic_id = question.similarity_topic_id or question.topic_id
+                if topic_id:
+                    selected_topic_counts[topic_id] = selected_topic_counts.get(topic_id, 0) + 1
 
         with transaction.atomic():
             paper = ExamPaper.objects.create(
@@ -129,17 +143,32 @@ class PaperGenerator:
             )
         if cooldown_days:
             cutoff = timezone.now() - datetime.timedelta(days=cooldown_days)
-            queryset = queryset.filter(
+            recently_selected = ExamPaperItem.objects.filter(
+                paper__user=user,
+                paper__created_at__gte=cutoff,
+                question_id=OuterRef('pk'),
+            )
+            queryset = queryset.annotate(
+                recently_selected_for_paper=Exists(recently_selected),
+            ).filter(
                 Q(latest_attempt_at__isnull=True) | Q(latest_attempt_at__lt=cutoff),
+                recently_selected_for_paper=False,
             )
         return list(queryset.order_by('document_id', 'question_order', 'pk'))
 
-    def choose_for_section(self, candidates, section, mode, rng):
+    def choose_for_section(self, candidates, section, mode, rng, prior_topic_counts=None):
+        prior_topic_counts = prior_topic_counts or {}
         ranked = [
             RankedCandidate(question=item, score=self.rank(item, section, mode, rng))
             for item in candidates
         ]
-        ranked.sort(key=lambda item: (-item.score, item.question.pk))
+        ranked.sort(key=lambda item: (
+            prior_topic_counts.get(
+                item.question.similarity_topic_id or item.question.topic_id, 0,
+            ),
+            -item.score,
+            item.question.pk,
+        ))
         chosen = []
         chosen_ids = set()
         topic_counts = {}
