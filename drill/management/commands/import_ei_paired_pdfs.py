@@ -34,7 +34,18 @@ LABEL_RE = re.compile(
     # for an exercise.
     r'^\s*(?:[\[【(（]\s*)?(?:习题\s*)?(?:题\s*)?(?:P\s*)?(?P<chapter>[1-9]\d?)\s*(?:[-—–一.]|\s+)\s*(?P<number>\d{1,3})(?:\s|题|[、:：\]】)）]|$)',
 )
-SOLUTION_RE = re.compile(r'^\s*(?:解|答案?)\s*[：:]')
+SOLUTION_RE = re.compile(
+    r'^\s*(?:'
+    r'解(?:\s*[：:]|\s+|$)'
+    r'|答案?\s*[：:]'
+    r'|证明(?:\s*[：:]|\s+|$)'
+    r')',
+)
+COMMUNICATION_LABEL_RE = re.compile(
+    r'^\s*习题\s*(?P<chapter>[1-9]\d?)\s*[.．]\s*'
+    r'(?P<number>\d{1,3})(?:\s|$)',
+)
+CHAPTER_BOUNDARY_RE = re.compile(r'^\s*第[一二三四五六七八九十\d]+章\s*习题')
 
 
 PAIR_SOURCES = {
@@ -171,18 +182,22 @@ class Command(BaseCommand):
         question_pdf = pymupdf.open(question_path)
         answer_pdf = pymupdf.open(answer_path)
         try:
-            question_anchors = (
-                self.find_flat_numbered_anchors(question_pdf)
-                if config.get('flat_numbered') else self.find_anchors(
+            if subject == 'communication':
+                question_anchors = self.find_communication_anchors(question_pdf)
+            elif config.get('flat_numbered'):
+                question_anchors = self.find_flat_numbered_anchors(question_pdf)
+            else:
+                question_anchors = self.find_anchors(
                     question_pdf, config.get('anchor_dpi', self.anchor_dpi),
                 )
-            )
             if config.get('combined_solution_pdf'):
                 answer_anchors = self.find_solution_anchors(question_pdf, question_anchors)
+                chapter_boundaries = self.find_chapter_boundaries(question_pdf)
             else:
                 answer_anchors = self.find_anchors(
                     answer_pdf, config.get('anchor_dpi', self.anchor_dpi),
                 )
+                chapter_boundaries = []
         finally:
             question_pdf.close()
             answer_pdf.close()
@@ -208,6 +223,10 @@ class Command(BaseCommand):
                 f'{subject} pairing rate is {rate:.1%} ({len(pairs)}/{denominator}), below {required_rate:.0%}; '
                 'refusing to import unmatched material.'
             )
+        segment_boundaries = list(question_anchors)
+        if config.get('combined_solution_pdf'):
+            segment_boundaries.extend(chapter_boundaries)
+            segment_boundaries.sort(key=lambda item: (item.page_index, item.y))
         return {
             'subject': subject,
             'config': config,
@@ -219,7 +238,8 @@ class Command(BaseCommand):
             # the syllabus, but an excluded neighbouring chapter must still
             # terminate the preceding crop.
             'all_question_anchors': question_anchors,
-            'all_answer_anchors': question_anchors if config.get('combined_solution_pdf') else answer_anchors,
+            'all_question_boundaries': segment_boundaries,
+            'all_answer_anchors': segment_boundaries if config.get('combined_solution_pdf') else answer_anchors,
             'pairs': pairs,
         }
 
@@ -305,6 +325,49 @@ class Command(BaseCommand):
             if found:
                 solutions.append(found)
         return solutions
+
+    @staticmethod
+    def find_communication_anchors(document):
+        """Read only real ``习题 C.N`` headings in physical source order.
+
+        The communication answer book repeats labels such as ``习题1.2 所示``
+        inside another question and contains many bare decimal expressions.
+        Requiring the source prefix and a strictly increasing number within a
+        chapter prevents those references from replacing the canonical anchor.
+        """
+        anchors = []
+        last_chapter = 0
+        last_number = 0
+        for page_index, page in enumerate(document):
+            for text, _x, y in Command.pdf_text_lines(page):
+                match = COMMUNICATION_LABEL_RE.match(text)
+                if not match:
+                    continue
+                chapter = int(match.group('chapter'))
+                number = int(match.group('number'))
+                if chapter < last_chapter or (
+                    chapter == last_chapter and number <= last_number
+                ):
+                    continue
+                last_chapter = chapter
+                last_number = number
+                anchors.append(Anchor(
+                    canonical_label(chapter, number), chapter, number,
+                    page_index, max(0, y - 3),
+                ))
+        return anchors
+
+    @staticmethod
+    def find_chapter_boundaries(document):
+        boundaries = []
+        for page_index, page in enumerate(document):
+            for text, _x, y in Command.pdf_text_lines(page):
+                if CHAPTER_BOUNDARY_RE.match(text):
+                    boundaries.append(Anchor(
+                        f'chapter-boundary-{page_index}-{round(y)}', 0, 0,
+                        page_index, max(0, y - 3),
+                    ))
+        return boundaries
 
     @staticmethod
     def find_flat_numbered_anchors(document):
@@ -407,9 +470,15 @@ class Command(BaseCommand):
                         'classification_confidence': 1.0,
                     },
                 )
+                question_boundaries = report['all_question_boundaries']
+                if config.get('combined_solution_pdf'):
+                    # In a combined source the solution begins before the next
+                    # question. End the problem crop at that exact boundary so
+                    # the answer remains hidden until the user opens it.
+                    question_boundaries = question_boundaries + [answer_anchor]
                 self.store_segment_assets(
                     question, question_pdf, question_anchor,
-                    report['all_question_anchors'], dpi, 'question_crop', report['subject'], label,
+                    question_boundaries, dpi, 'question_crop', report['subject'], label,
                 )
                 self.store_segment_assets(
                     question, answer_pdf, answer_anchor,

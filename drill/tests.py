@@ -1433,6 +1433,29 @@ class DrillPasskeyHandoffTests(TestCase):
 
 
 class PairedPdfCropTests(SimpleTestCase):
+    def test_communication_anchors_ignore_repeated_question_reference(self):
+        document = pymupdf.open()
+        page = document.new_page(width=600, height=800)
+        page.insert_text((36, 60), '习题1.1 first', fontsize=12, fontname='china-s')
+        page.insert_text((36, 120), '习题1.2 second', fontsize=12, fontname='china-s')
+        page.insert_text((36, 180), '习题1.1 shown above', fontsize=12, fontname='china-s')
+        page.insert_text((36, 240), '习题1.3 third', fontsize=12, fontname='china-s')
+
+        anchors = PairedPdfImportCommand.find_communication_anchors(document)
+
+        self.assertEqual([item.label for item in anchors], ['1-1', '1-2', '1-3'])
+
+    def test_combined_source_detects_chapter_crop_boundary(self):
+        document = pymupdf.open()
+        page = document.new_page(width=600, height=800)
+        page.insert_text((36, 240), '第六章习题', fontsize=12, fontname='china-s')
+
+        boundaries = PairedPdfImportCommand.find_chapter_boundaries(document)
+
+        self.assertEqual(len(boundaries), 1)
+        self.assertGreater(boundaries[0].y, 200)
+        self.assertLess(boundaries[0].y, 240)
+
     def test_cross_page_segment_ends_at_next_anchor(self):
         current = PairedPdfAnchor('8-15', 8, 15, 141, 430.0)
         following = PairedPdfAnchor('8-16', 8, 16, 142, 59.0)
