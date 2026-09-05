@@ -176,12 +176,12 @@ class Command(BaseCommand):
             known = None
             for index, row in enumerate(group):
                 previous[index] = known
-                if self.is_context_anchor(row):
+                if Command.is_context_anchor(row):
                     known = row
             known = None
             for index in range(len(group) - 1, -1, -1):
                 following[index] = known
-                if self.is_context_anchor(group[index]):
+                if Command.is_context_anchor(group[index]):
                     known = group[index]
             for index, row in enumerate(group):
                 before, after = previous[index], following[index]
