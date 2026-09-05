@@ -17,6 +17,30 @@ from .models import (
 )
 
 
+class QuestionTypeConfidenceFilter(admin.SimpleListFilter):
+    title = 'question type confidence'
+    parameter_name = 'question_type_confidence_band'
+
+    def lookups(self, request, model_admin):
+        return (
+            ('low', 'Low confidence (< 0.75)'),
+            ('strong', 'Strong evidence (≥ 0.85)'),
+            ('unclassified', 'No classification'),
+        )
+
+    def queryset(self, request, queryset):
+        if self.value() == 'low':
+            return queryset.filter(
+                question_type_confidence__lt=0.75,
+                question_type_human_verified=False,
+            )
+        if self.value() == 'strong':
+            return queryset.filter(question_type_confidence__gte=0.85)
+        if self.value() == 'unclassified':
+            return queryset.filter(question_type='unknown')
+        return queryset
+
+
 @admin.register(QuestionDocument)
 class QuestionDocumentAdmin(admin.ModelAdmin):
     list_display = (
@@ -43,7 +67,8 @@ class QuestionAdmin(admin.ModelAdmin):
     )
     list_filter = (
         'document', 'subject', 'source_category', 'record_kind', 'question_type',
-        'question_type_source', 'question_type_human_verified', 'is_practiceable',
+        'question_type_source', QuestionTypeConfidenceFilter,
+        'question_type_human_verified', 'is_practiceable',
         'is_past_exam', 'exam_year', 'content_mode',
     )
     search_fields = (
