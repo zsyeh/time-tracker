@@ -37,7 +37,9 @@ class QuestionTopicAdmin(admin.ModelAdmin):
 class QuestionAdmin(admin.ModelAdmin):
     list_display = (
         'display_label', 'document', 'question_order', 'source_category',
-        'record_kind', 'question_type', 'is_practiceable', 'exam_year', 'content_mode', 'answer_source',
+        'record_kind', 'question_type', 'question_type_source',
+        'question_type_confidence', 'question_type_human_verified',
+        'is_practiceable', 'exam_year', 'content_mode', 'answer_source',
     )
     list_filter = (
         'document', 'subject', 'source_category', 'record_kind', 'question_type',
