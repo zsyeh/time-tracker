@@ -1500,3 +1500,10 @@ class QuestionTypeClassifierTests(SimpleTestCase):
         )
         self.assertEqual(decision.label, 'fill_blank')
         self.assertLess(decision.confidence, 0.75)
+
+    def test_agent_evidence_can_use_bounded_same_topic_neighbors(self):
+        decision = classify_question_type_evidence(
+            'unstructured source', neighbor_type='fill_blank', neighbor_span=6,
+        )
+        self.assertEqual(decision.label, 'fill_blank')
+        self.assertGreaterEqual(decision.confidence, 0.85)

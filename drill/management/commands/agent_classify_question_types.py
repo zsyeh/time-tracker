@@ -2,6 +2,7 @@
 
 import json
 import subprocess
+from collections import defaultdict
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
@@ -46,6 +47,7 @@ class Command(BaseCommand):
         if options['apply']:
             self.apply_rows(cached_eligible)
         pending = [question for question in questions if str(question.uuid) not in cached]
+        neighbor_context = self.neighbor_context()
         self.stdout.write(
             f'Agent classification: {len(questions)} unresolved, '
             f'{len(cached)} cached, {len(pending)} OCR pending.'
@@ -56,11 +58,12 @@ class Command(BaseCommand):
         ) as executor:
             for offset in range(0, len(pending), options['workers'] * 2):
                 batch = pending[offset:offset + options['workers'] * 2]
-                evidence = [self.evidence(question) for question in batch]
+                evidence = [self.evidence(question, neighbor_context.get(question.pk)) for question in batch]
                 preliminary = [
                     classify_question_type_evidence(
                         item['metadata_text'], answer_markdown=item['answer_markdown'],
                         question_ratio=item['question_ratio'], answer_ratio=item['answer_ratio'],
+                        neighbor_type=item['neighbor_type'], neighbor_span=item['neighbor_span'],
                     )
                     for item in evidence
                 ]
@@ -74,6 +77,7 @@ class Command(BaseCommand):
                     decision = initial if initial.confidence >= 0.85 else classify_question_type_evidence(
                         item['metadata_text'], ocr_text=ocr_text, answer_markdown=item['answer_markdown'],
                         question_ratio=item['question_ratio'], answer_ratio=item['answer_ratio'],
+                        neighbor_type=item['neighbor_type'], neighbor_span=item['neighbor_span'],
                     )
                     row = {
                         'uuid': item['uuid'], 'question_type': decision.label,
@@ -129,7 +133,7 @@ class Command(BaseCommand):
         return rows
 
     @staticmethod
-    def evidence(question):
+    def evidence(question, neighbor=None):
         assets = list(question.assets.only(
             'image_data', 'width', 'height', 'asset_type', 'position',
         ).order_by('asset_type', 'position', 'pk'))
@@ -147,7 +151,55 @@ class Command(BaseCommand):
             'image_data': bytes(primary.image_data) if primary else b'',
             'question_ratio': sum(asset.height / max(asset.width, 1) for asset in question_assets),
             'answer_ratio': sum(asset.height / max(asset.width, 1) for asset in answer_assets),
+            'neighbor_type': neighbor[0] if neighbor else '',
+            'neighbor_span': neighbor[1] if neighbor else 0,
         }
+
+    @staticmethod
+    def neighbor_context():
+        groups = defaultdict(list)
+        rows = Question.objects.filter(
+            subject='math2', is_practiceable=True, record_kind='question',
+        ).values(
+            'pk', 'document_id', 'similarity_topic_id', 'topic_id',
+            'question_order', 'question_type', 'question_type_confidence',
+            'question_type_human_verified',
+        )
+        for row in rows:
+            key = (row['document_id'], row['similarity_topic_id'] or row['topic_id'])
+            groups[key].append(row)
+        context = {}
+        for group in groups.values():
+            group.sort(key=lambda row: (row['question_order'], row['pk']))
+            previous = [None] * len(group)
+            following = [None] * len(group)
+            known = None
+            for index, row in enumerate(group):
+                previous[index] = known
+                if self.is_context_anchor(row):
+                    known = row
+            known = None
+            for index in range(len(group) - 1, -1, -1):
+                following[index] = known
+                if self.is_context_anchor(group[index]):
+                    known = group[index]
+            for index, row in enumerate(group):
+                before, after = previous[index], following[index]
+                if row['question_type'] != 'unknown' or not before or not after:
+                    continue
+                if before['question_type'] != after['question_type']:
+                    continue
+                span = after['question_order'] - before['question_order']
+                if 0 < span <= 16:
+                    context[row['pk']] = (before['question_type'], span)
+        return context
+
+    @staticmethod
+    def is_context_anchor(row):
+        return row['question_type'] != 'unknown' and (
+            row['question_type_human_verified']
+            or (row['question_type_confidence'] or 0) >= 0.85
+        )
 
     @staticmethod
     def ocr(image_data, language):

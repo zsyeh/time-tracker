@@ -58,6 +58,8 @@ def classify_question_type_evidence(
     answer_markdown='',
     question_ratio=0.0,
     answer_ratio=0.0,
+    neighbor_type='',
+    neighbor_span=0,
 ):
     """Combine source metadata, OCR structure and answer layout.
 
@@ -91,6 +93,12 @@ def classify_question_type_evidence(
     direct = classify_question_type(combined)
     if direct.label != 'unknown':
         return QuestionTypeDecision(direct.label, direct.confidence, f'OCR/text evidence: {direct.reason}')
+
+    if neighbor_type in {'single_choice', 'fill_blank', 'solution'} and 0 < neighbor_span <= 16:
+        return QuestionTypeDecision(
+            neighbor_type, 0.87,
+            'The nearest classified questions on both sides share this type within the same topic.',
+        )
 
     # Layout is supporting evidence only. It is never treated as a verified
     # label, and low-confidence results remain easy to audit or overwrite.
