@@ -111,3 +111,18 @@ growing event table.
 Passkey/WebAuthn credentials are managed by django-allauth MFA. Only public
 credential material and counters are stored; authenticator private keys never
 reach the server.
+
+## Drill papers and question revisions
+
+`ExamBlueprint` and ordered `ExamBlueprintSection` rows describe a versioned
+Mathematics II paper structure. `ExamPaper` stores the owner, blueprint, seed,
+mode and lifecycle timestamps. `ExamPaperItem` stores only ordering, score,
+the user's response, and foreign keys to `Question` plus `QuestionRevision`;
+it never embeds a second copy of the live question payload.
+
+`QuestionRevision` is created on demand when a paper is generated. It snapshots
+the question/answer text and display metadata, while `QuestionRevisionAsset`
+pins existing content-addressed `QuestionAsset` rows with `PROTECT`. This keeps
+binary crops deduplicated and prevents deletion of an asset used by a historical
+paper. A changed canonical Question produces a new content hash and revision;
+existing papers continue reading the revision selected at generation time.
