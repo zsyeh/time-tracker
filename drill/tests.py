@@ -42,6 +42,7 @@ from .pdf_import import parse_question_pdf
 from .question_type_classifier import classify_question_type, classify_question_type_evidence
 from .management.commands.import_ei_paired_pdfs import Anchor as PairedPdfAnchor
 from .management.commands.import_ei_paired_pdfs import Command as PairedPdfImportCommand
+from .management.commands.agent_classify_question_types import Command as AgentTypeCommand
 
 
 TEST_PNG = b'\x89PNG\r\n\x1a\nquestion-image'
@@ -1507,3 +1508,31 @@ class QuestionTypeClassifierTests(SimpleTestCase):
         )
         self.assertEqual(decision.label, 'fill_blank')
         self.assertGreaterEqual(decision.confidence, 0.85)
+
+
+class QuestionTypeAgentContextTests(TestCase):
+    def test_neighbor_context_uses_two_high_confidence_topic_anchors(self):
+        document = QuestionDocument.objects.create(
+            source_id=998001, filename='context.pdf', title='Context',
+            sha256='9' * 64, page_count=1,
+        )
+        topic = QuestionTopic.objects.create(
+            source_id=998002, document=document, title='Topic',
+            level=1, sort_order=1,
+        )
+        questions = []
+        for order, question_type, confidence in (
+            (1, 'fill_blank', 0.95), (2, 'unknown', None), (3, 'fill_blank', 0.9),
+        ):
+            questions.append(Question.objects.create(
+                document=document, topic=topic, similarity_topic=topic,
+                question_order=order, source_label=str(order), prompt_text='question',
+                content_mode='text', fingerprint=f'{998000 + order:064x}',
+                subject='math2', question_type=question_type,
+                question_type_source='rule' if confidence else '',
+                question_type_confidence=confidence,
+            ))
+
+        context = AgentTypeCommand.neighbor_context()
+
+        self.assertEqual(context[questions[1].pk], ('fill_blank', 2))
