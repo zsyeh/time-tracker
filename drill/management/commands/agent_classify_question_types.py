@@ -37,6 +37,14 @@ class Command(BaseCommand):
         if options['limit']:
             queryset = queryset[:options['limit']]
         questions = list(queryset)
+        question_uuids = {str(question.uuid) for question in questions}
+        cached_eligible = [
+            row for uuid, row in cached.items()
+            if uuid in question_uuids
+            and row['confidence'] >= options['minimum_confidence']
+        ]
+        if options['apply']:
+            self.apply_rows(cached_eligible)
         pending = [question for question in questions if str(question.uuid) not in cached]
         self.stdout.write(
             f'Agent classification: {len(questions)} unresolved, '
@@ -66,29 +74,32 @@ class Command(BaseCommand):
                     cached[item['uuid']] = row
                     output.write(json.dumps(row, ensure_ascii=False) + '\n')
                     output.flush()
+                    if options['apply'] and decision.confidence >= options['minimum_confidence']:
+                        self.apply_rows([row])
                 self.stdout.write(f'Processed {min(offset + len(batch), len(pending))}/{len(pending)}')
 
-        question_uuids = {str(question.uuid) for question in questions}
         eligible = [
             row for uuid, row in cached.items()
             if uuid in question_uuids
             and row['confidence'] >= options['minimum_confidence']
         ]
-        if options['apply']:
-            with transaction.atomic():
-                for row in eligible:
-                    Question.objects.filter(
-                        uuid=row['uuid'], subject='math2', question_type='unknown',
-                        question_type_human_verified=False,
-                    ).update(
-                        question_type=row['question_type'], question_type_source='agent',
-                        question_type_confidence=row['confidence'],
-                    )
         counts = {}
         for row in eligible:
             counts[row['question_type']] = counts.get(row['question_type'], 0) + 1
         low = sum(row['confidence'] < 0.75 for row in eligible)
         self.stdout.write(json.dumps({'eligible': len(eligible), 'low_confidence': low, 'labels': counts}, ensure_ascii=False))
+
+    @staticmethod
+    def apply_rows(rows):
+        with transaction.atomic():
+            for row in rows:
+                Question.objects.filter(
+                    uuid=row['uuid'], subject='math2', question_type='unknown',
+                    question_type_human_verified=False,
+                ).update(
+                    question_type=row['question_type'], question_type_source='agent',
+                    question_type_confidence=row['confidence'],
+                )
 
     @staticmethod
     def read_cache(path):
