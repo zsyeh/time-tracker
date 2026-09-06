@@ -17,6 +17,7 @@ PAST_EXAM_RE = re.compile(
     r'(?:数(?:学)?\s*)(?P<variants>[一二三](?:\s*(?:[、,，]|数)?\s*[一二三])*)'
 )
 GENERIC_PAST_EXAM_RE = re.compile(rf'(?<!\d)(?P<year>{YEAR})\s*(?:年)?\s*真题')
+EXAM_VARIANT_RE = re.compile(r'数(?:学)?\s*(?P<variants>[一二三](?:\s*[一二三])*)')
 MOCK_RE = re.compile(
     r'(?:模拟(?:题|卷|套)?|预测(?:题|卷|套)?|押题(?:题|卷|套)?|'
     r'(?:张宇|李永乐|李艳芳|李林|余丙森|汤家凤|王式安|武忠祥|合工大|超越|共创)'
@@ -124,11 +125,26 @@ def _exam_metadata(label: str) -> tuple[int | None, str]:
     return None, ''
 
 
+def infer_exam_variant(label: str) -> str:
+    """Return the union of every explicitly named mathematics variant.
+
+    Exercise and mock-paper labels often omit a year or cite several sources,
+    for example ``数一第8套; 数二第三套``. Reading only the first occurrence
+    can incorrectly exclude material that is also intended for Mathematics II.
+    """
+    found = set()
+    for match in EXAM_VARIANT_RE.finditer(label or ''):
+        found.update(re.findall(r'[一二三]', match.group('variants')))
+    ordered = ''.join(value for value in '一二三' if value in found)
+    return f'数{ordered}' if ordered else ''
+
+
 def classify_source(label: str) -> SourceClassification:
     """Classify provenance conservatively; never infer an official exam from a book name."""
 
     raw = _normalize_space(label)
     year, variant = _exam_metadata(raw)
+    variant = infer_exam_variant(raw) or variant
     display = _plain_source_label(raw)
 
     if COMPETITION_RE.search(raw):
@@ -151,10 +167,10 @@ def classify_source(label: str) -> SourceClassification:
         )
     if WORKBOOK_RE.search(raw):
         return SourceClassification(
-            'workbook', False, None, '', display, 'workbook or exercise-set marker', 0.96,
+            'workbook', False, None, variant, display, 'workbook or exercise-set marker', 0.96,
         )
     return SourceClassification(
-        'unclassified', False, None, '', display, 'no reliable provenance marker', 0.35,
+        'unclassified', False, None, variant, display, 'no reliable provenance marker', 0.35,
     )
 
 
@@ -187,16 +203,16 @@ def classify_source_with_context(label: str, topic_title: str = '') -> SourceCla
     evidence = _normalize_space(f'{label} {topic_title}')
     if CONTEXT_MOCK_RE.search(evidence):
         return SourceClassification(
-            'mock_exam', False, None, '', strict.display_label,
+            'mock_exam', False, None, infer_exam_variant(evidence), strict.display_label,
             'agent-reviewed mock-set marker in source/topic context', 0.92,
         )
     if WORKBOOK_RE.search(evidence) or CONTEXT_WORKBOOK_RE.search(evidence):
         return SourceClassification(
-            'workbook', False, None, '', strict.display_label,
+            'workbook', False, None, infer_exam_variant(evidence), strict.display_label,
             'agent-reviewed workbook marker in source/topic context', 0.93,
         )
     return SourceClassification(
-        'other_practice', False, None, '', strict.display_label,
+        'other_practice', False, None, infer_exam_variant(evidence), strict.display_label,
         'agent-reviewed fallback: practice source without official provenance', 0.68,
     )
 

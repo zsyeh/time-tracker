@@ -8,6 +8,7 @@ from pathlib import Path
 
 from django.core.management.base import BaseCommand, CommandError
 from django.db import transaction
+from django.db.models import Q
 from drill.models import Question
 from drill.question_type_classifier import classify_question_type_evidence
 
@@ -22,6 +23,13 @@ class Command(BaseCommand):
         parser.add_argument('--language', default='eng')
         parser.add_argument('--cache', type=Path, default=Path('question_type_agent_review.jsonl'))
         parser.add_argument('--minimum-confidence', type=float, default=0.5)
+        parser.add_argument(
+            '--promote-neighbor-consensus', action='store_true',
+            help=(
+                'Re-review low-confidence labels using matching high-confidence '
+                'questions on both sides in the same topic, then stop.'
+            ),
+        )
 
     def handle(self, *args, **options):
         if not 1 <= options['workers'] <= 8:
@@ -30,6 +38,9 @@ class Command(BaseCommand):
             raise CommandError('--minimum-confidence must be between 0 and 1.')
         cache_path = options['cache'].expanduser().resolve()
         cache_path.parent.mkdir(parents=True, exist_ok=True)
+        if options['promote_neighbor_consensus']:
+            self.promote_neighbor_consensus(cache_path, apply=options['apply'])
+            return
         cached = self.read_cache(cache_path)
         queryset = Question.objects.filter(
             subject='math2', is_practiceable=True, record_kind='question',
@@ -103,16 +114,76 @@ class Command(BaseCommand):
         self.stdout.write(json.dumps({'eligible': len(eligible), 'low_confidence': low, 'labels': counts}, ensure_ascii=False))
 
     @staticmethod
-    def apply_rows(rows):
+    def apply_rows(rows, *, maximum_existing_confidence=None):
         with transaction.atomic():
             for row in rows:
-                Question.objects.filter(
+                questions = Question.objects.filter(
                     uuid=row['uuid'], subject='math2', question_type='unknown',
                     question_type_human_verified=False,
-                ).update(
-                    question_type=row['question_type'], question_type_source='agent',
+                )
+                if maximum_existing_confidence is not None:
+                    questions = Question.objects.filter(
+                        uuid=row['uuid'], subject='math2',
+                        question_type_human_verified=False,
+                    ).filter(
+                        Q(question_type_confidence__lt=maximum_existing_confidence)
+                        | Q(question_type_confidence__isnull=True),
+                    )
+                questions.update(
+                    question_type=row['question_type'], question_type_source=(
+                        'neighbor' if row.get('reason', '').startswith(
+                            'High-confidence questions on both sides'
+                        ) else 'agent'
+                    ),
                     question_type_confidence=row['confidence'],
                 )
+
+    def promote_neighbor_consensus(self, cache_path, *, apply):
+        """Promote only labels bracketed by matching strong topic anchors.
+
+        Context is calculated before any writes, so newly promoted rows cannot
+        recursively become anchors and propagate a mistaken label through a
+        long run of ambiguous questions.
+        """
+        context = self.neighbor_context()
+        questions = Question.objects.filter(
+            subject='math2', is_practiceable=True, record_kind='question',
+            question_type_human_verified=False,
+        ).filter(
+            Q(question_type_confidence__lt=0.75)
+            | Q(question_type_confidence__isnull=True),
+        ).only('pk', 'uuid').order_by('pk')
+        rows = []
+        for question in questions.iterator(chunk_size=500):
+            neighbor = context.get(question.pk)
+            if not neighbor:
+                continue
+            label, span = neighbor
+            rows.append({
+                'uuid': str(question.uuid),
+                'question_type': label,
+                'confidence': 0.87,
+                'reason': (
+                    'High-confidence questions on both sides in the same topic '
+                    f'use this type (anchor span {span}).'
+                ),
+                'ocr_excerpt': '',
+            })
+        if apply:
+            self.apply_rows(rows, maximum_existing_confidence=0.75)
+        if rows:
+            with cache_path.open('a', encoding='utf-8') as output:
+                for row in rows:
+                    output.write(json.dumps(row, ensure_ascii=False) + '\n')
+        verb = 'Promoted' if apply else 'Validated'
+        counts = defaultdict(int)
+        for row in rows:
+            counts[row['question_type']] += 1
+        self.stdout.write(json.dumps({
+            'action': verb.lower(),
+            'neighbor_consensus': len(rows),
+            'labels': dict(sorted(counts.items())),
+        }, ensure_ascii=False))
 
     @staticmethod
     def read_cache(path):
@@ -185,7 +256,7 @@ class Command(BaseCommand):
                     known = group[index]
             for index, row in enumerate(group):
                 before, after = previous[index], following[index]
-                if row['question_type'] != 'unknown' or not before or not after:
+                if Command.is_context_anchor(row) or not before or not after:
                     continue
                 if before['question_type'] != after['question_type']:
                     continue

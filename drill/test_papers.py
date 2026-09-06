@@ -1,12 +1,14 @@
 import datetime
 
 from django.contrib.auth import get_user_model
+from django.core.management import call_command
+from django.core.management.base import CommandError
 from django.db.models.deletion import ProtectedError
 from django.test import TestCase
 from django.utils import timezone
 
 from .models import (
-    ExamBlueprint, ExamBlueprintSection, Question, QuestionAttempt,
+    ExamBlueprint, ExamBlueprintSection, ExamPaper, Question, QuestionAttempt,
     QuestionAsset, QuestionDocument, QuestionRevision, QuestionTopic,
 )
 from .paper_generator import PaperGenerationError, PaperGenerator
@@ -36,7 +38,8 @@ class PaperGeneratorTests(TestCase):
                 self.questions.append(Question.objects.create(
                     document=self.document, topic=topic, similarity_topic=topic,
                     question_order=order, source_label=f'{question_type}-{index}',
-                    display_label=f'{question_type}-{index}', prompt_text='question',
+                    display_label=f'{question_type}-{index}',
+                    prompt_text='A complete standalone question prompt.',
                     content_mode='text', fingerprint=f'{order:064x}',
                     subject='math2', question_type=question_type,
                     question_type_source='human', question_type_confidence=1,
@@ -124,6 +127,38 @@ class PaperGeneratorTests(TestCase):
             list(second.items.values_list('question_id', flat=True)),
         )
 
+    def test_empty_paper_can_be_regenerated_without_changing_its_identity(self):
+        paper = PaperGenerator().generate(
+            user=self.user, blueprint=self.blueprint, seed=101, cooldown_days=0,
+        )
+        old_uuid = paper.uuid
+        old_ids = list(paper.items.values_list('question_id', flat=True))
+
+        call_command(
+            'regenerate_empty_exam_paper', str(paper.uuid), seed=202, apply=True,
+        )
+
+        paper.refresh_from_db()
+        new_ids = list(paper.items.values_list('question_id', flat=True))
+        self.assertEqual(paper.uuid, old_uuid)
+        self.assertEqual(paper.seed, 202)
+        self.assertEqual(paper.status, 'generated')
+        self.assertNotEqual(new_ids, old_ids)
+        self.assertEqual(ExamPaper.objects.filter(user=self.user).count(), 1)
+
+    def test_paper_with_user_activity_cannot_be_regenerated(self):
+        paper = PaperGenerator().generate(
+            user=self.user, blueprint=self.blueprint, seed=303, cooldown_days=0,
+        )
+        item = paper.items.first()
+        item.user_answer = 'work in progress'
+        item.save(update_fields=('user_answer',))
+
+        with self.assertRaises(CommandError):
+            call_command(
+                'regenerate_empty_exam_paper', str(paper.uuid), seed=404, apply=True,
+            )
+
     def test_repeated_generation_preserves_all_hard_constraints(self):
         expected = {'single_choice': 2, 'fill_blank': 2, 'solution': 2}
         for seed in range(50):
@@ -145,15 +180,146 @@ class PaperGeneratorTests(TestCase):
                 list(range(1, 7)),
             )
 
-    def test_low_confidence_agent_label_is_not_used_in_strict_paper(self):
+    def test_weak_agent_label_is_not_used_in_strict_paper(self):
         choice = next(item for item in self.questions if item.question_type == 'single_choice')
         choice.question_type_source = 'agent'
-        choice.question_type_confidence = 0.62
+        choice.question_type_confidence = 0.86
         choice.question_type_human_verified = False
         choice.save(update_fields=(
             'question_type_source', 'question_type_confidence',
             'question_type_human_verified',
         ))
+
+        pool = PaperGenerator().candidate_pool(
+            user=self.user, blueprint=self.blueprint, question_type='single_choice',
+            include_mastered=False, cooldown_days=0, excluded_ids=set(),
+        )
+
+        self.assertNotIn(choice.pk, {item.pk for item in pool})
+
+    def test_neighbor_consensus_label_is_used_in_strict_paper(self):
+        choice = next(item for item in self.questions if item.question_type == 'single_choice')
+        choice.question_type_source = 'neighbor'
+        choice.question_type_confidence = 0.87
+        choice.question_type_human_verified = False
+        choice.save(update_fields=(
+            'question_type_source', 'question_type_confidence',
+            'question_type_human_verified',
+        ))
+
+        pool = PaperGenerator().candidate_pool(
+            user=self.user, blueprint=self.blueprint, question_type='single_choice',
+            include_mastered=False, cooldown_days=0, excluded_ids=set(),
+        )
+
+        self.assertIn(choice.pk, {item.pk for item in pool})
+
+    def test_choice_requires_stronger_agent_evidence_than_a_single_marker(self):
+        choice = next(item for item in self.questions if item.question_type == 'single_choice')
+        choice.question_type_source = 'agent'
+        choice.question_type_confidence = 0.91
+        choice.question_type_human_verified = False
+        choice.save(update_fields=(
+            'question_type_source', 'question_type_confidence',
+            'question_type_human_verified',
+        ))
+
+        pool = PaperGenerator().candidate_pool(
+            user=self.user, blueprint=self.blueprint, question_type='single_choice',
+            include_mastered=False, cooldown_days=0, excluded_ids=set(),
+        )
+
+        self.assertNotIn(choice.pk, {item.pk for item in pool})
+
+    def test_math_one_or_three_past_exam_is_not_used_in_math_two_paper(self):
+        choice = next(item for item in self.questions if item.question_type == 'single_choice')
+        choice.is_past_exam = True
+        choice.source_category = 'past_exam'
+        choice.exam_variant = '数三'
+        choice.save(update_fields=('is_past_exam', 'source_category', 'exam_variant'))
+
+        pool = PaperGenerator().candidate_pool(
+            user=self.user, blueprint=self.blueprint, question_type='single_choice',
+            include_mastered=False, cooldown_days=0, excluded_ids=set(),
+        )
+
+        self.assertNotIn(choice.pk, {item.pk for item in pool})
+
+    def test_explicit_non_math_two_adapted_question_is_not_used(self):
+        choice = next(item for item in self.questions if item.question_type == 'single_choice')
+        choice.source_category = 'adapted_exam'
+        choice.exam_variant = '数三'
+        choice.save(update_fields=('source_category', 'exam_variant'))
+
+        pool = PaperGenerator().candidate_pool(
+            user=self.user, blueprint=self.blueprint, question_type='single_choice',
+            include_mastered=False, cooldown_days=0, excluded_ids=set(),
+        )
+
+        self.assertNotIn(choice.pk, {item.pk for item in pool})
+
+    def test_legacy_grouped_fragment_is_not_used_in_formal_paper(self):
+        choice = next(item for item in self.questions if item.question_type == 'single_choice')
+        choice.source_label = 'Legacy question >>'
+        choice.save(update_fields=('source_label',))
+
+        pool = PaperGenerator().candidate_pool(
+            user=self.user, blueprint=self.blueprint, question_type='single_choice',
+            include_mastered=False, cooldown_days=0, excluded_ids=set(),
+        )
+
+        self.assertNotIn(choice.pk, {item.pk for item in pool})
+
+    def test_prompt_with_linked_fragment_marker_is_not_used(self):
+        choice = next(item for item in self.questions if item.question_type == 'single_choice')
+        choice.prompt_text = 'Current question\nnext linked question >>'
+        choice.save(update_fields=('prompt_text',))
+
+        pool = PaperGenerator().candidate_pool(
+            user=self.user, blueprint=self.blueprint, question_type='single_choice',
+            include_mastered=False, cooldown_days=0, excluded_ids=set(),
+        )
+
+        self.assertNotIn(choice.pk, {item.pk for item in pool})
+
+    def test_prompt_with_second_source_anchor_is_not_used(self):
+        choice = next(item for item in self.questions if item.question_type == 'single_choice')
+        choice.prompt_text = 'Current complete question\n(k)26 版660 数二第247题'
+        choice.save(update_fields=('prompt_text',))
+
+        pool = PaperGenerator().candidate_pool(
+            user=self.user, blueprint=self.blueprint, question_type='single_choice',
+            include_mastered=False, cooldown_days=0, excluded_ids=set(),
+        )
+
+        self.assertNotIn(choice.pk, {item.pk for item in pool})
+
+    def test_short_image_fragment_is_not_used_in_formal_paper(self):
+        choice = next(item for item in self.questions if item.question_type == 'single_choice')
+        choice.content_mode = 'image'
+        choice.save(update_fields=('content_mode',))
+        QuestionAsset.objects.create(
+            source_id=7999, question=choice, position=0,
+            asset_type='question_crop', sha256='6' * 64,
+            image_data=b'short-fragment', width=1200, height=80,
+        )
+
+        pool = PaperGenerator().candidate_pool(
+            user=self.user, blueprint=self.blueprint, question_type='single_choice',
+            include_mastered=False, cooldown_days=0, excluded_ids=set(),
+        )
+
+        self.assertNotIn(choice.pk, {item.pk for item in pool})
+
+    def test_short_crop_cannot_hide_a_nominal_text_record(self):
+        choice = next(item for item in self.questions if item.question_type == 'single_choice')
+        choice.prompt_text = 'Short imported label'
+        choice.save(update_fields=('prompt_text',))
+        QuestionAsset.objects.create(
+            source_id=7998, question=choice, position=0,
+            asset_type='question_crop', sha256='5' * 64,
+            image_data=b'short-fragment', width=1200, height=41,
+        )
 
         pool = PaperGenerator().candidate_pool(
             user=self.user, blueprint=self.blueprint, question_type='single_choice',
@@ -231,7 +397,7 @@ class PaperGeneratorTests(TestCase):
         new_revision = QuestionRevision.capture(item.question)
 
         self.assertNotEqual(old_revision.pk, new_revision.pk)
-        self.assertEqual(old_revision.prompt_text, 'question')
+        self.assertEqual(old_revision.prompt_text, 'A complete standalone question prompt.')
         self.assertEqual(old_revision.answer_markdown, '')
         self.client.force_login(self.user)
         review = self.client.get(f'/api/drill/papers/{paper.uuid}/review/', secure=True)
@@ -239,7 +405,10 @@ class PaperGeneratorTests(TestCase):
             row for row in review.json()['items']
             if row['question']['uuid'] == str(item.question.uuid)
         )
-        self.assertEqual(matching['question']['prompt_text'], 'question')
+        self.assertEqual(
+            matching['question']['prompt_text'],
+            'A complete standalone question prompt.',
+        )
         self.assertEqual(matching['question']['answer_markdown'], '')
 
     def test_revision_pins_existing_binary_asset_without_copying_it(self):

@@ -113,6 +113,7 @@ class Question(models.Model):
         ('', 'Not classified'),
         ('rule', 'Rule-assisted batch'),
         ('agent', 'Agent batch'),
+        ('neighbor', 'Neighbor consensus'),
         ('human', 'Human verified'),
         ('import', 'Source metadata'),
     ]

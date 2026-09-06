@@ -9,13 +9,25 @@ CHOICE_PATTERNS = (
     re.compile(r'(?:^|\s)[AaＡ]\s*[.．、].{0,500}(?:^|\s)[BbＢ]\s*[.．、]', re.S),
     re.compile(r'(?:下列|以下).{0,80}(?:正确|错误|成立|不成立|收敛|发散).{0,20}(?:是|为)?\s*[（(]', re.S),
 )
+FOUR_OPTION_PATTERN = re.compile(
+    r'A\s*[.．、].{0,320}?B\s*[.．、].{0,320}?'
+    r'C\s*[.．、].{0,320}?D\s*[.．、]',
+    re.S | re.I,
+)
 FILL_PATTERNS = (
     re.compile(r'_{3,}|＿{2,}|…{3,}'),
     re.compile(r'(?:填空|填入空格|应填|横线上).{0,30}', re.S),
 )
 SOLUTION_PATTERNS = (
-    re.compile(r'(?:^|[。；;\s])(?:求|计算|证明|试证|讨论|解(?:方程|不等式)|判定|确定)(?!值为)[^，。]{0,80}'),
+    re.compile(
+        r'(?:^|[。；;，,:：\s])(?:求|计\s*算|证\s*明|试\s*证|讨论|'
+        r'解(?:方程|不等式)|判定|确定)(?!值为)[^，。]{0,80}',
+    ),
     re.compile(r'(?:\([一二三四五六七八九十IVXivx]+\)|（[一二三四五六七八九十IVXivx]+）).{0,80}(?:求|证明|计算)', re.S),
+    re.compile(
+        r'(?:^|[.;:\s])(?:find|compute|calculate|evaluate|prove|show|determine|solve)\b',
+        re.I,
+    ),
 )
 EXPLICIT_CHOICE_PATTERN = re.compile(r'(?:选择|单选|多选)', re.I)
 EXPLICIT_FILL_PATTERN = re.compile(r'(?:填空|填入空格|应填|横线上)', re.I)
@@ -39,6 +51,11 @@ def classify_question_type(text):
     normalized = ' '.join((text or '').split())
     if not normalized:
         return QuestionTypeDecision('unknown', 0.0, 'No searchable question text.')
+    if FOUR_OPTION_PATTERN.search(normalized):
+        return QuestionTypeDecision(
+            'single_choice', 0.98,
+            'A-D option sequence detected despite compact PDF text spacing.',
+        )
     choice_hits = sum(bool(pattern.search(normalized)) for pattern in CHOICE_PATTERNS)
     if choice_hits >= 2:
         return QuestionTypeDecision('single_choice', 0.98, 'Option structure and choice stem detected.')

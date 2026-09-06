@@ -17,6 +17,7 @@ from .cleaning import (
     clean_document_title,
     clean_topic_title,
     is_question_reference_topic,
+    infer_exam_variant,
 )
 from .asset_rerender import (
     CropLocation,
@@ -815,6 +816,11 @@ class QuestionBankCleaningTests(TestCase):
         self.assertEqual(classify_source('26版660数二第509题').category, 'workbook')
         self.assertEqual(classify_source('北京市2008年竞赛题').category, 'competition')
 
+    def test_exam_variant_unions_every_explicit_source(self):
+        self.assertEqual(infer_exam_variant('25 张宇数一第八套; 数二第三套'), '数一二')
+        self.assertEqual(classify_source('25 张宇八套数一三第六套').variant, '数一三')
+        self.assertEqual(classify_source('26版660数二第509题').variant, '数二')
+
     def test_source_display_keeps_existing_emoji(self):
         classification = classify_source('🐙 a)2024 数一')
         self.assertEqual(classification.category, 'past_exam')
@@ -1511,6 +1517,13 @@ class QuestionTypeClassifierTests(SimpleTestCase):
         self.assertEqual(decision.label, 'single_choice')
         self.assertGreaterEqual(decision.confidence, 0.9)
 
+    def test_detects_compact_choice_when_a_coefficient_touches_option_a(self):
+        decision = classify_question_type(
+            '横坐标是( ). 1A. ln2+3 B. -ln2+3 C. -8ln2+3 D. 8ln2+3',
+        )
+        self.assertEqual(decision.label, 'single_choice')
+        self.assertGreaterEqual(decision.confidence, 0.98)
+
     def test_detects_fill_blank(self):
         decision = classify_question_type('设 f(x)=x，则 f\'(1)=_____.')
         self.assertEqual(decision.label, 'fill_blank')
@@ -1518,6 +1531,21 @@ class QuestionTypeClassifierTests(SimpleTestCase):
     def test_detects_open_solution(self):
         decision = classify_question_type('计算二重积分并说明换元过程。')
         self.assertEqual(decision.label, 'solution')
+
+    def test_detects_solution_instruction_after_chinese_punctuation(self):
+        decision = classify_question_type('函数连续，证明其在原点取得极值。')
+        self.assertEqual(decision.label, 'solution')
+
+    def test_detects_solution_instruction_split_by_pdf_text_extraction(self):
+        decision = classify_question_type('若 g(x,y)=f(xy,x²+y²)，证 明其在原点取得极值。')
+        self.assertEqual(decision.label, 'solution')
+
+    def test_detects_english_open_solution(self):
+        decision = classify_question_type(
+            'Find a and b, then determine an invertible matrix C.',
+        )
+        self.assertEqual(decision.label, 'solution')
+        self.assertGreaterEqual(decision.confidence, 0.85)
 
     def test_keeps_ambiguous_text_unclassified(self):
         decision = classify_question_type('2024 数二 第 5 题')
@@ -1577,3 +1605,40 @@ class QuestionTypeAgentContextTests(TestCase):
         context = AgentTypeCommand.neighbor_context()
 
         self.assertEqual(context[questions[1].pk], ('fill_blank', 2))
+
+    def test_neighbor_context_can_recheck_a_low_confidence_label(self):
+        document = QuestionDocument.objects.create(
+            source_id=998011, filename='recheck.pdf', title='Recheck',
+            sha256='8' * 64, page_count=1,
+        )
+        topic = QuestionTopic.objects.create(
+            source_id=998012, document=document, title='Topic',
+            level=1, sort_order=1,
+        )
+        questions = []
+        for order, question_type, confidence in (
+            (1, 'single_choice', 0.95),
+            (2, 'solution', 0.55),
+            (3, 'single_choice', 0.91),
+        ):
+            questions.append(Question.objects.create(
+                document=document, topic=topic, similarity_topic=topic,
+                question_order=order, source_label=str(order), prompt_text='question',
+                content_mode='text', fingerprint=f'{998010 + order:064x}',
+                subject='math2', question_type=question_type,
+                question_type_source='agent', question_type_confidence=confidence,
+            ))
+
+        context = AgentTypeCommand.neighbor_context()
+
+        self.assertEqual(context[questions[1].pk], ('single_choice', 2))
+
+        with tempfile.TemporaryDirectory() as directory:
+            AgentTypeCommand().promote_neighbor_consensus(
+                Path(directory) / 'review.jsonl', apply=True,
+            )
+
+        questions[1].refresh_from_db()
+        self.assertEqual(questions[1].question_type, 'single_choice')
+        self.assertEqual(questions[1].question_type_source, 'neighbor')
+        self.assertEqual(questions[1].question_type_confidence, 0.87)
