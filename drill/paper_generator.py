@@ -48,6 +48,7 @@ class PaperGenerator:
         cooldown = blueprint.cooldown_days if cooldown_days is None else cooldown_days
         selected_ids = set()
         selected_topic_counts = {}
+        selected_document_counts = {}
         selected = []
         candidate_cache = {}
         for section in sections:
@@ -75,10 +76,14 @@ class PaperGenerator:
             chosen = self.choose_for_section(
                 candidates, section, blueprint.mode, rng,
                 prior_topic_counts=selected_topic_counts,
+                prior_document_counts=selected_document_counts,
             )
             selected.extend((section, question) for question in chosen)
             selected_ids.update(question.pk for question in chosen)
             for question in chosen:
+                selected_document_counts[question.document_id] = (
+                    selected_document_counts.get(question.document_id, 0) + 1
+                )
                 topic_id = question.similarity_topic_id or question.topic_id
                 if topic_id:
                     selected_topic_counts[topic_id] = selected_topic_counts.get(topic_id, 0) + 1
@@ -157,19 +162,26 @@ class PaperGenerator:
         ).filter(trusted_type).exclude(
             pk__in=excluded_ids,
         ).exclude(
-            # ``>>`` marks legacy linked/grouped fragments. They remain useful
-            # in ordinary practice, but are too often joined or incomplete for
-            # a formal, timed paper.
-            source_label__contains='>>',
-        ).exclude(
-            prompt_text__contains='>>',
+            Q(topic__display_title__regex=r'数[一三].*专项')
+            | Q(topic__title__regex=r'数[一三].*专项')
+            | Q(similarity_topic__display_title__regex=r'数[一三].*专项')
+            | Q(similarity_topic__title__regex=r'数[一三].*专项'),
         ).exclude(
             # A second source-style roman marker inside one parsed prompt is a
             # strong signal that adjacent exercises were joined into one row.
             prompt_text__regex=(
                 r'\n\s*\(?[a-zivx]{1,5}\)?\s*'
-                r'(?:19|20|2[0-9]\s*版|[689]00|1000|姜)'
+                r'(?:19|20|2[0-9]\s*版|660|880|900|1000|姜)'
             ),
+        ).exclude(
+            # A bare bookmark such as ``d) >>`` has no stable question
+            # identity and commonly points at a joined continuation crop.
+            source_label__regex=r'^\s*\(?[a-zivx]{1,5}\)?\s*(?:>>)?\s*$',
+        ).exclude(
+            # The legacy Daguan batch currently mixes worked-solution images
+            # into ``question_crop`` rows. Keep it available for manual
+            # practice, but quarantine it from timed papers until recropped.
+            source_label__contains='大观',
         ).select_related('document', 'similarity_topic').annotate(
             has_readable_question_crop=Exists(readable_question_crop),
             has_any_question_crop=Exists(any_question_crop),
@@ -212,42 +224,71 @@ class PaperGenerator:
             )
         return list(queryset.order_by('document_id', 'question_order', 'pk'))
 
-    def choose_for_section(self, candidates, section, mode, rng, prior_topic_counts=None):
+    def choose_for_section(
+        self, candidates, section, mode, rng, prior_topic_counts=None,
+        prior_document_counts=None,
+    ):
         prior_topic_counts = prior_topic_counts or {}
+        prior_document_counts = prior_document_counts or {}
         ranked = [
             RankedCandidate(question=item, score=self.rank(item, section, mode, rng))
             for item in candidates
         ]
-        ranked.sort(key=lambda item: (
-            prior_topic_counts.get(
-                item.question.similarity_topic_id or item.question.topic_id, 0,
-            ),
-            -item.score,
-            item.question.pk,
-        ))
         chosen = []
         chosen_ids = set()
         topic_counts = {}
+        document_counts = {}
         topic_cap = section.max_per_topic
-        for candidate in ranked:
-            topic_id = candidate.question.similarity_topic_id or candidate.question.topic_id
-            if topic_cap and topic_id and topic_counts.get(topic_id, 0) >= topic_cap:
-                continue
-            chosen.append(candidate.question)
-            chosen_ids.add(candidate.question.pk)
+        while len(chosen) < section.question_count:
+            available = [item for item in ranked if item.question.pk not in chosen_ids]
+            capped = [
+                item for item in available
+                if not topic_cap
+                or not (item.question.similarity_topic_id or item.question.topic_id)
+                or topic_counts.get(
+                    item.question.similarity_topic_id or item.question.topic_id, 0,
+                ) < topic_cap
+            ]
+            # Topic caps are soft, but only relax after all compliant choices
+            # have been exhausted. Question-type counts remain hard.
+            pool = capped or available
+            if not pool:
+                break
+            pool.sort(key=lambda item: self.paper_balance_key(
+                item, section, prior_document_counts, document_counts,
+                prior_topic_counts, topic_counts,
+            ))
+            selected = pool[0].question
+            chosen.append(selected)
+            chosen_ids.add(selected.pk)
+            document_counts[selected.document_id] = (
+                document_counts.get(selected.document_id, 0) + 1
+            )
+            topic_id = selected.similarity_topic_id or selected.topic_id
             if topic_id:
                 topic_counts[topic_id] = topic_counts.get(topic_id, 0) + 1
-            if len(chosen) == section.question_count:
-                return chosen
-        # The diversity cap is a soft constraint. Relax it only after every
-        # available topic has had a fair chance; question-type counts stay hard.
-        for candidate in ranked:
-            if candidate.question.pk in chosen_ids:
-                continue
-            chosen.append(candidate.question)
-            if len(chosen) == section.question_count:
-                return chosen
         return chosen
+
+    @staticmethod
+    def paper_balance_key(
+        candidate, section, prior_document_counts, document_counts,
+        prior_topic_counts, topic_counts,
+    ):
+        question = candidate.question
+        document_title = question.document.display_title or question.document.title
+        desired_weight = max(0.1, float(section.chapter_weights.get(
+            f'document:{document_title}', 1.0,
+        )))
+        document_load = (
+            prior_document_counts.get(question.document_id, 0)
+            + document_counts.get(question.document_id, 0)
+        ) / desired_weight
+        topic_id = question.similarity_topic_id or question.topic_id
+        topic_load = (
+            prior_topic_counts.get(topic_id, 0) + topic_counts.get(topic_id, 0)
+            if topic_id else 0
+        )
+        return document_load, topic_load, -candidate.score, question.pk
 
     @staticmethod
     def rank(question, section, mode, rng):

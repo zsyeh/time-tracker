@@ -1,4 +1,5 @@
 import datetime
+import random
 
 from django.contrib.auth import get_user_model
 from django.core.management import call_command
@@ -245,6 +246,18 @@ class PaperGeneratorTests(TestCase):
 
         self.assertNotIn(choice.pk, {item.pk for item in pool})
 
+    def test_math_one_special_topic_is_not_used_in_math_two_paper(self):
+        choice = next(item for item in self.questions if item.question_type == 'single_choice')
+        choice.similarity_topic.display_title = '数一专项'
+        choice.similarity_topic.save(update_fields=('display_title',))
+
+        pool = PaperGenerator().candidate_pool(
+            user=self.user, blueprint=self.blueprint, question_type='single_choice',
+            include_mastered=False, cooldown_days=0, excluded_ids=set(),
+        )
+
+        self.assertNotIn(choice.pk, {item.pk for item in pool})
+
     def test_explicit_non_math_two_adapted_question_is_not_used(self):
         choice = next(item for item in self.questions if item.question_type == 'single_choice')
         choice.source_category = 'adapted_exam'
@@ -258,7 +271,7 @@ class PaperGeneratorTests(TestCase):
 
         self.assertNotIn(choice.pk, {item.pk for item in pool})
 
-    def test_legacy_grouped_fragment_is_not_used_in_formal_paper(self):
+    def test_single_legacy_link_marker_keeps_a_complete_question_eligible(self):
         choice = next(item for item in self.questions if item.question_type == 'single_choice')
         choice.source_label = 'Legacy question >>'
         choice.save(update_fields=('source_label',))
@@ -268,11 +281,11 @@ class PaperGeneratorTests(TestCase):
             include_mastered=False, cooldown_days=0, excluded_ids=set(),
         )
 
-        self.assertNotIn(choice.pk, {item.pk for item in pool})
+        self.assertIn(choice.pk, {item.pk for item in pool})
 
-    def test_prompt_with_linked_fragment_marker_is_not_used(self):
+    def test_prompt_with_second_source_anchor_is_not_used(self):
         choice = next(item for item in self.questions if item.question_type == 'single_choice')
-        choice.prompt_text = 'Current question\nnext linked question >>'
+        choice.prompt_text = 'Current complete question\n(k)26 版660 数二第247题'
         choice.save(update_fields=('prompt_text',))
 
         pool = PaperGenerator().candidate_pool(
@@ -282,10 +295,34 @@ class PaperGeneratorTests(TestCase):
 
         self.assertNotIn(choice.pk, {item.pk for item in pool})
 
-    def test_prompt_with_second_source_anchor_is_not_used(self):
+    def test_prompt_with_second_880_roman_anchor_is_not_used(self):
         choice = next(item for item in self.questions if item.question_type == 'single_choice')
-        choice.prompt_text = 'Current complete question\n(k)26 版660 数二第247题'
+        choice.prompt_text = 'Current complete question\nvi)\n880 第一章拓展3 >>'
         choice.save(update_fields=('prompt_text',))
+
+        pool = PaperGenerator().candidate_pool(
+            user=self.user, blueprint=self.blueprint, question_type='single_choice',
+            include_mastered=False, cooldown_days=0, excluded_ids=set(),
+        )
+
+        self.assertNotIn(choice.pk, {item.pk for item in pool})
+
+    def test_bare_bookmark_fragment_is_not_used(self):
+        choice = next(item for item in self.questions if item.question_type == 'single_choice')
+        choice.source_label = 'd) >>'
+        choice.save(update_fields=('source_label',))
+
+        pool = PaperGenerator().candidate_pool(
+            user=self.user, blueprint=self.blueprint, question_type='single_choice',
+            include_mastered=False, cooldown_days=0, excluded_ids=set(),
+        )
+
+        self.assertNotIn(choice.pk, {item.pk for item in pool})
+
+    def test_unverified_daguan_crop_batch_is_not_used(self):
+        choice = next(item for item in self.questions if item.question_type == 'single_choice')
+        choice.source_label = '多元微分大观 · worked image'
+        choice.save(update_fields=('source_label',))
 
         pool = PaperGenerator().candidate_pool(
             user=self.user, blueprint=self.blueprint, question_type='single_choice',
@@ -327,6 +364,42 @@ class PaperGeneratorTests(TestCase):
         )
 
         self.assertNotIn(choice.pk, {item.pk for item in pool})
+
+    def test_cross_section_document_load_is_balanced_before_rank_score(self):
+        other_document = QuestionDocument.objects.create(
+            source_id=7201, workspace='drill', filename='other.pdf',
+            title='Other chapter', display_title='Other chapter',
+            sha256='8' * 64, page_count=1,
+        )
+        candidates = []
+        for index in range(2):
+            topic = QuestionTopic.objects.create(
+                source_id=7202 + index, document=other_document,
+                title=f'Other topic {index}', display_title=f'Other topic {index}',
+                level=1, sort_order=index,
+            )
+            candidates.append(Question.objects.create(
+                document=other_document, topic=topic, similarity_topic=topic,
+                question_order=index + 1, source_label=f'other-{index}',
+                display_label=f'other-{index}',
+                prompt_text='A complete standalone question prompt.',
+                content_mode='text', fingerprint=f'{7202 + index:064x}',
+                subject='math2', question_type='single_choice',
+                question_type_source='human', question_type_confidence=1,
+                question_type_human_verified=True,
+            ))
+        section = self.blueprint.sections.get(question_type='single_choice')
+
+        chosen = PaperGenerator().choose_for_section(
+            [
+                item for item in self.questions
+                if item.question_type == 'single_choice'
+            ] + candidates,
+            section, 'standard', random.Random(1),
+            prior_document_counts={self.document.pk: 4},
+        )
+
+        self.assertEqual({item.document_id for item in chosen}, {other_document.pk})
 
     def test_insufficient_candidates_raise_clear_error(self):
         self.blueprint.sections.filter(question_type='single_choice').update(question_count=20)
