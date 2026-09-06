@@ -3,10 +3,42 @@ set -eu
 
 project_root=$(CDPATH= cd -- "$(dirname -- "$0")/../.." && pwd)
 service_name=${TIME_TRACKER_SERVICE:-time-tracker-web.service}
+build_swap_path=''
+
+cleanup_build_swap() {
+    if [ -n "$build_swap_path" ]; then
+        swapoff "$build_swap_path" || true
+        rm -f "$build_swap_path"
+    fi
+}
+
+prepare_build_memory() {
+    total_memory_kb=$(awk '/^MemTotal:/ {print $2}' /proc/meminfo)
+    swap_count=$(awk 'END {print NR - 1}' /proc/swaps)
+    available_disk_kb=$(df -Pk /var/tmp | awk 'NR == 2 {print $4}')
+    if [ "$total_memory_kb" -lt 3145728 ] \
+        && [ "$swap_count" -eq 0 ] \
+        && [ "$available_disk_kb" -gt 2097152 ]; then
+        build_swap_path=/var/tmp/time-tracker-build.swap
+        if [ -e "$build_swap_path" ]; then
+            echo "Refusing to overwrite existing $build_swap_path" >&2
+            exit 1
+        fi
+        fallocate -l 1536M "$build_swap_path"
+        chmod 600 "$build_swap_path"
+        mkswap "$build_swap_path" >/dev/null
+        swapon "$build_swap_path"
+        echo "Enabled temporary build swap for this low-memory VPS."
+    fi
+}
+
+trap cleanup_build_swap EXIT INT TERM
 
 cd "$project_root"
 
 .venv/bin/python manage.py check
+prepare_build_memory
+export NODE_OPTIONS=${NODE_OPTIONS:---max-old-space-size=1024}
 (
     cd frontend
     npm run build

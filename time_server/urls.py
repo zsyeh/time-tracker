@@ -37,6 +37,7 @@ from tracker.api_views import (
 )
 from tracker.public_views import contact_view, guide_view, legal_view
 from tracker.stress_probe import StressTestProbeView
+from tracker.ops_dashboard import dashboard_action
 from tracker.web_views import (
     LaunchDeviceView, LaunchDisturbanceView, direct_start_view,
     launch_browser_view, public_spa_view, root_spa_view, spa_view,
@@ -122,6 +123,7 @@ urlpatterns = [
         drill_login_complete,
         name='drill_login_complete',
     ),
+    path('dashboard/action/', dashboard_action, name='dashboard_action'),
     # Explicit SPA history fallbacks keep Django API/Auth/device endpoints out
     # of the catchment while allowing direct browser refreshes.
     path('today', spa_view, name='spa_today'),

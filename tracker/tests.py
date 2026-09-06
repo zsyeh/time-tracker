@@ -48,9 +48,67 @@ from .models import (
 )
 from .data_encryption import DataEncryptionError, PAYLOAD_PREFIX
 from .web_views import _frontend_html
+from .ops_dashboard import operations_dashboard
 
 TEST_PASSWORD_HASHERS = ['django.contrib.auth.hashers.MD5PasswordHasher']
 TEST_DATA_ENCRYPTION_KEY = base64.urlsafe_b64encode(b'E' * 32).decode('ascii')
+
+
+@override_settings(
+    SECURE_SSL_REDIRECT=False,
+    DEBUG=False,
+    ALLOWED_HOSTS=['timer.ehzsy.site', 'dash.ehzsy.site'],
+    DASH_HOSTS={'dash.ehzsy.site'},
+    DASH_ORIGIN='https://dash.ehzsy.site',
+    DRILL_AUTH_ORIGIN='https://timer.ehzsy.site',
+)
+class OperationsDashboardTests(TestCase):
+    def setUp(self):
+        User = get_user_model()
+        self.admin = User.objects.create_superuser('ops-admin', password='password')
+        self.member = User.objects.create_user('ops-member', password='password')
+
+    def test_anonymous_dashboard_uses_timer_login_handoff(self):
+        response = self.client.get('/', HTTP_HOST='dash.ehzsy.site', secure=True)
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(response.url.startswith('https://timer.ehzsy.site/drill-auth/start?'))
+        self.assertIn('site=dash', response.url)
+
+    def test_non_superuser_cannot_view_dashboard(self):
+        self.client.force_login(self.member)
+        response = self.client.get('/', HTTP_HOST='dash.ehzsy.site', secure=True)
+        self.assertEqual(response.status_code, 403)
+
+    @mock.patch('tracker.ops_dashboard._service_rows')
+    def test_superuser_sees_service_and_resource_status(self, service_rows):
+        service_rows.return_value = [{
+            'name': 'Drill', 'host': 'drill.ehzsy.site', 'url': 'https://drill.ehzsy.site/',
+            'healthy': True, 'detail': 'HTTP 302 · assets verified',
+        }]
+        self.client.force_login(self.admin)
+        response = self.client.get('/', HTTP_HOST='dash.ehzsy.site', secure=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'All systems operational')
+        self.assertContains(response, 'Repair frontend assets')
+
+    @mock.patch('tracker.ops_dashboard._schedule_restart')
+    def test_restart_action_uses_fixed_operation(self, schedule_restart):
+        schedule_restart.return_value = subprocess.CompletedProcess([], 0, '', '')
+        self.client.force_login(self.admin)
+        response = self.client.post(
+            '/dashboard/action/', {'action': 'restart_web'},
+            HTTP_HOST='dash.ehzsy.site', secure=True,
+        )
+        self.assertRedirects(response, '/', fetch_redirect_response=False)
+        schedule_restart.assert_called_once_with()
+
+    def test_unknown_dashboard_action_is_not_executed(self):
+        self.client.force_login(self.admin)
+        response = self.client.post(
+            '/dashboard/action/', {'action': 'arbitrary_command'},
+            HTTP_HOST='dash.ehzsy.site', secure=True,
+        )
+        self.assertEqual(response.status_code, 404)
 
 
 def completed_session(

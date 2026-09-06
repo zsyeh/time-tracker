@@ -628,7 +628,7 @@ class DrillLoginHandoff(models.Model):
     target_path = models.CharField(max_length=500, default='/practice')
     target_site = models.CharField(
         max_length=16,
-        choices=QuestionDocument.WORKSPACE_CHOICES,
+        choices=[*QuestionDocument.WORKSPACE_CHOICES, ('dash', 'Operations dashboard')],
         default='drill',
     )
     expires_at = models.DateTimeField(db_index=True)

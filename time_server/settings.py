@@ -196,6 +196,12 @@ EI_HOSTS = {
     if host.strip()
 }
 EI_ORIGIN = os.environ.get('EI_ORIGIN', 'https://ei.ehzsy.site').rstrip('/')
+DASH_HOSTS = {
+    host.strip().lower()
+    for host in os.environ.get('DASH_HOSTS', 'dash.ehzsy.site').split(',')
+    if host.strip()
+}
+DASH_ORIGIN = os.environ.get('DASH_ORIGIN', 'https://dash.ehzsy.site').rstrip('/')
 DRILL_AUTH_HOST = os.environ.get('DRILL_AUTH_HOST', 'timer.ehzsy.site').strip().lower()
 DRILL_AUTH_ORIGIN = os.environ.get(
     'DRILL_AUTH_ORIGIN',
@@ -413,7 +419,8 @@ CSRF_TRUSTED_ORIGINS = [
     origin.strip()
     for origin in os.environ.get(
         'CSRF_TRUSTED_ORIGINS',
-        'https://timer.ehzsy.site,https://timer.ehzsy.space,https://drill.ehzsy.site',
+        'https://timer.ehzsy.site,https://timer.ehzsy.space,https://drill.ehzsy.site,'
+        'https://ei.ehzsy.site,https://dash.ehzsy.site',
     ).split(',')
     if origin.strip()
 ]

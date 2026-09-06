@@ -43,6 +43,13 @@ def practice_site(request):
     return None
 
 
+def handoff_site(request):
+    hostname = request.get_host().partition(':')[0].lower()
+    if hostname in settings.DASH_HOSTS:
+        return 'dash'
+    return practice_site(request)
+
+
 def is_practice_host(request):
     return practice_site(request) is not None
 
@@ -63,11 +70,13 @@ def site_icon_redirect(request, icon_kind='touch'):
     return redirect('/static/tracker/img9387-icon-180.png')
 
 
-def _safe_drill_target(value):
+def _safe_drill_target(value, site='drill'):
     parsed = urlsplit(value or '')
     if parsed.scheme or parsed.netloc or not parsed.path.startswith('/') or parsed.path.startswith('//'):
-        return '/practice'
+        return '/' if site == 'dash' else '/practice'
     path = parsed.path
+    if site == 'dash':
+        return path + (f'?{parsed.query}' if parsed.query else '') if path == '/' else '/'
     allowed = path in {
         '/', '/practice', '/activity', '/book-activity', '/heatmap', '/paper', '/papers', '/favorites', '/review-later',
         '/feel', '/insight',
@@ -77,7 +86,9 @@ def _safe_drill_target(value):
     return path + (f'?{parsed.query}' if parsed.query else '')
 
 
-def _practice_origin(site):
+def _target_origin(site):
+    if site == 'dash':
+        return settings.DASH_ORIGIN
     return settings.EI_ORIGIN if site == 'ei' else settings.DRILL_ORIGIN
 
 
@@ -116,21 +127,21 @@ def drill_login_start(request):
     hostname = request.get_host().partition(':')[0].lower()
     if hostname != settings.DRILL_AUTH_HOST and not settings.DEBUG:
         raise Http404
-    target_path = _safe_drill_target(request.GET.get('next', '/practice'))
     target_site = request.GET.get('site', 'drill')
-    if target_site not in {'drill', 'ei'}:
+    if target_site not in {'drill', 'ei', 'dash'}:
         raise Http404
+    target_path = _safe_drill_target(request.GET.get('next', '/practice'), target_site)
     _, raw_token = DrillLoginHandoff.issue(
         user=request.user,
         target_path=target_path,
         target_site=target_site,
     )
-    return redirect(f'{_practice_origin(target_site)}/drill-auth/complete/{raw_token}')
+    return redirect(f'{_target_origin(target_site)}/drill-auth/complete/{raw_token}')
 
 
 @never_cache
 def drill_login_complete(request, raw_token):
-    site = practice_site(request)
+    site = handoff_site(request)
     if site is None and not settings.DEBUG:
         raise Http404
     site = site or 'drill'
@@ -147,7 +158,7 @@ def drill_login_complete(request, raw_token):
         if handoff.target_site != site:
             raise Http404
         user = handoff.user
-        target_path = _safe_drill_target(handoff.target_path)
+        target_path = _safe_drill_target(handoff.target_path, site)
         handoff.delete()
         login(request, user, backend='django.contrib.auth.backends.ModelBackend')
     response = redirect(target_path)

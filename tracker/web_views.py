@@ -69,7 +69,10 @@ def root_spa_view(request):
     """Select the independently built SPA by hostname at the shared root URI."""
 
     from drill.web_views import drill_spa_view, is_practice_host
+    from .ops_dashboard import is_dashboard_host, operations_dashboard
 
+    if is_dashboard_host(request):
+        return operations_dashboard(request)
     if is_practice_host(request):
         return drill_spa_view(request)
     return spa_view(request)

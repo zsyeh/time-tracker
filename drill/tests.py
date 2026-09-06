@@ -1389,6 +1389,30 @@ class DrillPasskeyHandoffTests(TestCase):
         )
         self.assertRedirects(completed, '/heatmap', fetch_redirect_response=False)
 
+    @override_settings(
+        DASH_HOSTS={'dash.ehzsy.site'},
+        DASH_ORIGIN='https://dash.ehzsy.site',
+        ALLOWED_HOSTS=['timer.ehzsy.site', 'drill.ehzsy.site', 'ei.ehzsy.site', 'dash.ehzsy.site'],
+    )
+    def test_timer_handoff_can_target_operations_dashboard(self):
+        timer = Client()
+        timer.force_login(self.user)
+        start = timer.get(
+            '/drill-auth/start?site=dash&next=/',
+            HTTP_HOST='timer.ehzsy.site', secure=True,
+        )
+        self.assertTrue(start.url.startswith(
+            'https://dash.ehzsy.site/drill-auth/complete/',
+        ))
+        raw_token = urlsplit(start.url).path.rsplit('/', 1)[1]
+        dashboard = Client()
+        completed = dashboard.get(
+            f'/drill-auth/complete/{raw_token}',
+            HTTP_HOST='dash.ehzsy.site', secure=True,
+        )
+        self.assertRedirects(completed, '/', fetch_redirect_response=False)
+        self.assertEqual(int(dashboard.session['_auth_user_id']), self.user.pk)
+
     def test_authenticated_timer_issues_hashed_one_time_login_for_drill(self):
         timer = Client()
         timer.force_login(self.user)
