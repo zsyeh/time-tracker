@@ -41,6 +41,7 @@ class PaperGeneratorTests(TestCase):
                     question_order=order, source_label=f'{question_type}-{index}',
                     display_label=f'{question_type}-{index}',
                     prompt_text='A complete standalone question prompt.',
+                    answer_markdown='## Source solution',
                     content_mode='text', fingerprint=f'{order:064x}',
                     subject='math2', question_type=question_type,
                     question_type_source='human', question_type_confidence=1,
@@ -160,6 +161,30 @@ class PaperGeneratorTests(TestCase):
                 'regenerate_empty_exam_paper', str(paper.uuid), seed=404, apply=True,
             )
 
+    def test_empty_paper_can_be_rebuilt_from_visually_audited_questions(self):
+        paper = PaperGenerator().generate(
+            user=self.user, blueprint=self.blueprint, seed=505, cooldown_days=0,
+        )
+        ordered = []
+        for question_type in ('single_choice', 'fill_blank', 'solution'):
+            ordered.extend(sorted(
+                (item for item in self.questions if item.question_type == question_type),
+                key=lambda item: item.pk,
+            )[:2])
+
+        call_command(
+            'regenerate_empty_exam_paper', str(paper.uuid),
+            question_ids=','.join(str(item.pk) for item in ordered),
+            seed=606, apply=True,
+        )
+
+        paper.refresh_from_db()
+        self.assertEqual(paper.seed, 606)
+        self.assertEqual(
+            list(paper.items.order_by('position').values_list('question_id', flat=True)),
+            [item.pk for item in ordered],
+        )
+
     def test_repeated_generation_preserves_all_hard_constraints(self):
         expected = {'single_choice': 2, 'fill_blank': 2, 'solution': 2}
         for seed in range(50):
@@ -190,6 +215,18 @@ class PaperGeneratorTests(TestCase):
             'question_type_source', 'question_type_confidence',
             'question_type_human_verified',
         ))
+
+        pool = PaperGenerator().candidate_pool(
+            user=self.user, blueprint=self.blueprint, question_type='single_choice',
+            include_mastered=False, cooldown_days=0, excluded_ids=set(),
+        )
+
+        self.assertNotIn(choice.pk, {item.pk for item in pool})
+
+    def test_question_without_an_answer_is_not_used_in_paper(self):
+        choice = next(item for item in self.questions if item.question_type == 'single_choice')
+        choice.answer_markdown = ''
+        choice.save(update_fields=('answer_markdown',))
 
         pool = PaperGenerator().candidate_pool(
             user=self.user, blueprint=self.blueprint, question_type='single_choice',
@@ -428,12 +465,45 @@ class PaperGeneratorTests(TestCase):
         payload = response.json()
         self.assertEqual(len(payload['items']), 6)
         self.assertNotIn('answer_markdown', payload['items'][0]['question'])
+        self.assertEqual(payload['items'][0]['question']['display_label'], 'Question 01')
         paper_uuid = payload['uuid']
 
         review = self.client.get(f'/api/drill/papers/{paper_uuid}/review/', secure=True)
         self.assertEqual(review.status_code, 200)
         self.assertIn('answer_markdown', review.json()['items'][0]['question'])
         self.assertEqual(self.client.get('/api/drill/papers/', secure=True).json()['results'][0]['uuid'], paper_uuid)
+
+    def test_paper_uses_crop_without_sending_duplicate_ocr(self):
+        question = self.questions[0]
+        question.prompt_text = 'Noisy OCR that must not be rendered beside the crop.'
+        question.latex_text = 'duplicate latex OCR'
+        question.save(update_fields=('prompt_text', 'latex_text'))
+        QuestionAsset.objects.create(
+            source_id=7997, question=question, position=0,
+            asset_type='question_crop', sha256='c' * 64,
+            image_data=b'asset', width=400, height=200,
+        )
+        choice_questions = [
+            item for item in self.questions if item.question_type == 'single_choice'
+        ]
+        for excluded in choice_questions[1:-1]:
+            QuestionAttempt.objects.create(
+                user=self.user, question=excluded, result='correct',
+            )
+        self.client.force_login(self.user)
+        response = self.client.post(
+            '/api/drill/papers/',
+            {'blueprint': self.blueprint.code, 'seed': 17},
+            content_type='application/json', secure=True,
+        )
+        self.assertEqual(response.status_code, 201)
+        matching = next(
+            row for row in response.json()['items']
+            if row['question']['uuid'] == str(question.uuid)
+        )
+        self.assertTrue(matching['question']['question_assets'])
+        self.assertEqual(matching['question']['prompt_text'], '')
+        self.assertEqual(matching['question']['latex_text'], '')
 
     def test_other_user_cannot_access_paper(self):
         paper = PaperGenerator().generate(user=self.user, blueprint=self.blueprint, seed=4)
@@ -471,7 +541,7 @@ class PaperGeneratorTests(TestCase):
 
         self.assertNotEqual(old_revision.pk, new_revision.pk)
         self.assertEqual(old_revision.prompt_text, 'A complete standalone question prompt.')
-        self.assertEqual(old_revision.answer_markdown, '')
+        self.assertEqual(old_revision.answer_markdown, '## Source solution')
         self.client.force_login(self.user)
         review = self.client.get(f'/api/drill/papers/{paper.uuid}/review/', secure=True)
         matching = next(
@@ -482,7 +552,7 @@ class PaperGeneratorTests(TestCase):
             matching['question']['prompt_text'],
             'A complete standalone question prompt.',
         )
-        self.assertEqual(matching['question']['answer_markdown'], '')
+        self.assertEqual(matching['question']['answer_markdown'], '## Source solution')
 
     def test_revision_pins_existing_binary_asset_without_copying_it(self):
         question = self.questions[0]

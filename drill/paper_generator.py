@@ -150,6 +150,9 @@ class PaperGenerator:
         any_question_crop = QuestionAsset.objects.filter(
             question_id=OuterRef('pk'), asset_type='question_crop',
         )
+        answer_crop = QuestionAsset.objects.filter(
+            question_id=OuterRef('pk'), asset_type='answer_crop', height__gte=60,
+        )
         queryset = Question.objects.filter(
             subject=blueprint.subject,
             document__workspace='drill',
@@ -185,7 +188,9 @@ class PaperGenerator:
         ).select_related('document', 'similarity_topic').annotate(
             has_readable_question_crop=Exists(readable_question_crop),
             has_any_question_crop=Exists(any_question_crop),
+            has_answer_crop=Exists(answer_crop),
             paper_prompt_length=Length('prompt_text'),
+            paper_answer_length=Length('answer_markdown'),
             latest_result_for_paper=Subquery(latest.values('result')[:1]),
             latest_attempt_at=Subquery(latest.values('created_at')[:1]),
             paper_attempt_count=Count('attempts', filter=Q(attempts__user=user), distinct=True),
@@ -203,6 +208,11 @@ class PaperGenerator:
         ).filter(
             Q(has_readable_question_crop=True)
             | Q(has_any_question_crop=False, paper_prompt_length__gte=24),
+        ).filter(
+            # A timed paper must remain reviewable. Questions without either a
+            # source answer crop or a written solution stay available in
+            # ordinary practice, but cannot enter a generated paper.
+            Q(has_answer_crop=True) | Q(paper_answer_length__gte=8),
         )
         if not include_mastered:
             queryset = queryset.filter(

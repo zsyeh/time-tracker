@@ -80,6 +80,16 @@ def paper_item_payload(item, *, review, latest_result=None):
     question = item.question
     revision = item.question_revision
     revision_assets = list(revision.revision_assets.all())
+    question_assets = [
+        {
+            'id': link.asset.pk,
+            'url': f'/api/drill/assets/{link.asset.pk}/?v={link.asset.sha256[:16]}',
+            'width': link.asset.width,
+            'height': link.asset.height,
+            'position': link.position,
+        }
+        for link in revision_assets if link.asset_type == 'question_crop'
+    ]
     payload = {
         'position': item.position,
         'score': float(item.score),
@@ -90,24 +100,19 @@ def paper_item_payload(item, *, review, latest_result=None):
             'uuid': str(question.uuid),
             'revision_uuid': str(revision.uuid),
             'revision_number': revision.number,
-            'display_label': revision.display_label or revision.source_label,
+            # Paper position is the readable, stable title. Imported source labels
+            # often contain OCR fragments and can span several lines.
+            'display_label': f'Question {item.position:02d}',
             'source_label': revision.source_label,
             'document': revision.document_title,
             'topic': revision.topic_title,
             'question_type': revision.question_type,
-            'prompt_text': revision.prompt_text,
-            'latex_text': revision.latex_text,
+            # Cropped source images are authoritative in papers. Do not duplicate
+            # noisy OCR beside them; text remains available for image-less records.
+            'prompt_text': '' if question_assets else revision.prompt_text,
+            'latex_text': '' if question_assets else revision.latex_text,
             'content_mode': revision.content_mode,
-            'question_assets': [
-                {
-                    'id': link.asset.pk,
-                    'url': f'/api/drill/assets/{link.asset.pk}/?v={link.asset.sha256[:16]}',
-                    'width': link.asset.width,
-                    'height': link.asset.height,
-                    'position': link.position,
-                }
-                for link in revision_assets if link.asset_type == 'question_crop'
-            ],
+            'question_assets': question_assets,
         },
     }
     if review:
