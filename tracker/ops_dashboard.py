@@ -9,6 +9,7 @@ import shutil
 import subprocess
 import sys
 import time
+from datetime import datetime
 from pathlib import Path
 from urllib.parse import urlencode
 
@@ -23,6 +24,7 @@ from django.views.decorators.http import require_POST
 
 WEB_SERVICE = 'time-tracker-web.service'
 NGINX_SERVICE = 'nginx.service'
+DEPLOY_SCRIPT = Path(__file__).resolve().parent.parent / 'deploy' / 'scripts' / 'deploy-native.sh'
 
 
 def is_dashboard_host(request):
@@ -110,6 +112,42 @@ def _memory_metrics():
     }
 
 
+def _recent_oom_incident():
+    """Report the latest kernel OOM kill without marking recovered services down."""
+
+    result = _run_checked((
+        'journalctl', '-k', '--since=-24 hours', '--no-pager', '-o', 'short-iso',
+        '--grep=Out of memory: Killed process', '-n', '1',
+    ), timeout=3)
+    if result.returncode != 0:
+        return {'detected': False, 'detail': 'Kernel incident history unavailable'}
+    events = [
+        line.strip() for line in result.stdout.splitlines()
+        if 'Out of memory: Killed process' in line
+    ]
+    if not events:
+        return {'detected': False, 'detail': 'No kernel OOM kills in the last 24 hours'}
+    return {'detected': True, 'detail': events[-1][-220:]}
+
+
+def _build_metrics():
+    builds = []
+    for name, path in (
+        ('Timer', settings.FRONTEND_DIST / 'index.html'),
+        ('Drill / EI', settings.DRILL_FRONTEND_DIST / 'index.html'),
+    ):
+        try:
+            metadata = path.stat()
+            built_at = datetime.fromtimestamp(metadata.st_mtime).astimezone()
+            detail = built_at.strftime('%Y-%m-%d %H:%M:%S %Z')
+            healthy = metadata.st_size > 0
+        except OSError:
+            detail = 'Build index missing'
+            healthy = False
+        builds.append({'name': name, 'healthy': healthy, 'detail': detail})
+    return builds
+
+
 def _human_bytes(value):
     size = float(value)
     for unit in ('B', 'KB', 'MB', 'GB', 'TB'):
@@ -167,6 +205,9 @@ def operations_dashboard(request):
         'memory': memory,
         'load': f'{load[0]:.2f} / {load[1]:.2f} / {load[2]:.2f}',
         'cores': os.cpu_count() or 1,
+        'builds': _build_metrics(),
+        'oom_incident': _recent_oom_incident(),
+        'checked_at': datetime.now().astimezone(),
     }
     context['all_healthy'] = all(item['healthy'] for item in context['services'])
     return render(request, 'operations/dashboard.html', context)
@@ -181,6 +222,14 @@ def _schedule_restart():
     return _run_checked((
         'systemd-run', f'--unit={unit_name}', '--on-active=2s',
         '/bin/systemctl', 'restart', WEB_SERVICE,
+    ), timeout=5)
+
+
+def _schedule_safe_deploy():
+    unit_name = f'time-tracker-dashboard-deploy-{int(time.time())}'
+    return _run_checked((
+        'systemd-run', f'--unit={unit_name}', '--collect',
+        '/bin/sh', str(DEPLOY_SCRIPT),
     ), timeout=5)
 
 
@@ -206,6 +255,9 @@ def dashboard_action(request):
         if result.returncode == 0:
             result = _schedule_restart()
         label = 'Static assets repaired and web restart scheduled'
+    elif action == 'safe_deploy':
+        result = _schedule_safe_deploy()
+        label = 'Safe frontend rebuild and deployment queued'
     else:
         raise Http404
 

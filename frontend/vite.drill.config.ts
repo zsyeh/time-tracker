@@ -10,11 +10,12 @@ export default defineConfig({
   plugins: [vue()],
   base: '/static/drill/',
   build: {
-    outDir: resolve(projectDir, 'drill-dist'),
+    // The deploy script overrides this with a staging directory so a failed
+    // build can never empty the live Drill bundle.
+    outDir: process.env.TIME_TRACKER_DRILL_VITE_OUT_DIR || resolve(projectDir, 'drill-dist'),
     emptyOutDir: true,
     sourcemap: false,
     cssCodeSplit: true,
     chunkSizeWarningLimit: 500,
   },
 })
-

@@ -89,7 +89,7 @@ class OperationsDashboardTests(TestCase):
         response = self.client.get('/', HTTP_HOST='dash.ehzsy.site', secure=True)
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'All systems operational')
-        self.assertContains(response, 'Repair frontend assets')
+        self.assertContains(response, 'Safe rebuild &amp; deploy')
 
     @mock.patch('tracker.ops_dashboard._schedule_restart')
     def test_restart_action_uses_fixed_operation(self, schedule_restart):
@@ -101,6 +101,17 @@ class OperationsDashboardTests(TestCase):
         )
         self.assertRedirects(response, '/', fetch_redirect_response=False)
         schedule_restart.assert_called_once_with()
+
+    @mock.patch('tracker.ops_dashboard._schedule_safe_deploy')
+    def test_safe_deploy_action_uses_fixed_script(self, schedule_safe_deploy):
+        schedule_safe_deploy.return_value = subprocess.CompletedProcess([], 0, '', '')
+        self.client.force_login(self.admin)
+        response = self.client.post(
+            '/dashboard/action/', {'action': 'safe_deploy'},
+            HTTP_HOST='dash.ehzsy.site', secure=True,
+        )
+        self.assertRedirects(response, '/', fetch_redirect_response=False)
+        schedule_safe_deploy.assert_called_once_with()
 
     def test_unknown_dashboard_action_is_not_executed(self):
         self.client.force_login(self.admin)

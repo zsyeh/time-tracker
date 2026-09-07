@@ -55,9 +55,27 @@
     </section>
 
     <section>
+      <div class="section-heading"><h2>Deployments</h2><span>Checked {{ checked_at|date:"H:i:s T" }}</span></div>
+      <div class="build-list">
+        {% for build in builds %}
+          <div class="build-row">
+            <span class="status-dot {% if build.healthy %}healthy{% else %}degraded{% endif %}"></span>
+            <strong>{{ build.name }}</strong>
+            <span>{{ build.detail }}</span>
+          </div>
+        {% endfor %}
+      </div>
+      <div class="incident-row {% if oom_incident.detected %}degraded{% endif %}">
+        <strong>{% if oom_incident.detected %}OOM detected in last 24h{% else %}Memory incident history{% endif %}</strong>
+        <span>{{ oom_incident.detail }}</span>
+      </div>
+    </section>
+
+    <section>
       <div class="section-heading"><h2>Actions</h2><span>Administrator-only, fixed operations</span></div>
       <div class="actions">
-        <form method="post" action="/dashboard/action/">{% csrf_token %}<input type="hidden" name="action" value="repair_assets"><button class="button primary" type="submit">Repair frontend assets</button></form>
+        <form method="post" action="/dashboard/action/">{% csrf_token %}<input type="hidden" name="action" value="safe_deploy"><button class="button primary" type="submit">Safe rebuild &amp; deploy</button></form>
+        <form method="post" action="/dashboard/action/">{% csrf_token %}<input type="hidden" name="action" value="repair_assets"><button class="button" type="submit">Republish current assets</button></form>
         <form method="post" action="/dashboard/action/">{% csrf_token %}<input type="hidden" name="action" value="restart_web"><button class="button" type="submit">Restart web service</button></form>
         <form method="post" action="/dashboard/action/">{% csrf_token %}<input type="hidden" name="action" value="reload_nginx"><button class="button" type="submit">Validate & reload Nginx</button></form>
         <a class="button" href="https://timer.ehzsy.site/admin/" target="_blank" rel="noreferrer">Open Django admin</a>

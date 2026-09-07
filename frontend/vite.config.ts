@@ -5,7 +5,9 @@ export default defineConfig({
   plugins: [vue()],
   base: '/static/app/',
   build: {
-    outDir: 'dist',
+    // Native deployment builds into a staging directory first. Keeping the
+    // default makes local `npm run build` behaviour unchanged.
+    outDir: process.env.TIME_TRACKER_VITE_OUT_DIR || 'dist',
     emptyOutDir: true,
     sourcemap: false,
     cssCodeSplit: true,
