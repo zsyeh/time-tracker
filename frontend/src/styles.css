@@ -289,6 +289,12 @@ kbd { margin-left: auto; padding: 0; border: 0; color: var(--text-tertiary); bac
 .section-note { margin: 6px 0 16px; font-size: 12px; }
 
 /* Today */
+.today-countdown-strip { min-height: 43px; padding: 6px 2px; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.today-countdown-strip > div { min-width: 0; display: flex; align-items: baseline; gap: 8px; }
+.today-countdown-strip > div span { overflow: hidden; color: var(--text-secondary); font-size: 11px; font-weight: 550; text-overflow: ellipsis; white-space: nowrap; }
+.today-countdown-strip time { color: var(--text-tertiary); font-size: 10px; white-space: nowrap; }
+.today-countdown-strip p { margin: 0; flex: none; display: flex; align-items: baseline; gap: 4px; color: var(--text-tertiary); font-size: 10px; }
+.today-countdown-strip strong { color: var(--text-primary); font-size: 17px; font-variant-numeric: tabular-nums; font-weight: 620; letter-spacing: -.02em; }
 .today-private-note { min-height: 31px; padding: 7px 2px; border-bottom: 1px solid var(--border-subtle); color: var(--text-tertiary); display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 10px; }
 .today-private-note b { color: var(--text-secondary); font-weight: 550; }
 .today-section { padding: 20px 2px 22px; border-bottom: 1px solid var(--border-subtle); }
@@ -854,6 +860,7 @@ kbd { margin-left: auto; padding: 0; border: 0; color: var(--text-tertiary); bac
   .main-content { padding-inline: 12px; }
   .application-page-header { margin-inline: -12px; padding-right: 12px; }
   .application-page-title > span { display: none; }
+  .today-countdown-strip > div { align-items: flex-start; flex-direction: column; gap: 1px; }
   .header-segmented button { padding-inline: 5px; }
   .page-toolbar { min-height: 42px; }
   .page-toolbar-actions { max-width: 58%; }

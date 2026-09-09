@@ -24,10 +24,9 @@ const maxTodaySubject = computed(() => Math.max(1, ...(props.overview?.today_sub
 const todayLabel = computed(() => props.overview?.calendar.today
   ? new Intl.DateTimeFormat(language.value, { month: 'short', day: 'numeric', timeZone: 'Asia/Shanghai' }).format(new Date(`${props.overview.calendar.today}T12:00:00+08:00`))
   : t('today'))
-const headerMetadata = computed(() => {
-  const days = props.overview?.calendar.days_until_exam
-  return `${todayLabel.value}${days === undefined ? '' : ` · ${t('examIn', { days })}`}`
-})
+const examDateLabel = computed(() => props.overview?.calendar.exam_date
+  ? new Intl.DateTimeFormat(language.value, { year: 'numeric', month: 'short', day: 'numeric', timeZone: 'Asia/Shanghai' }).format(new Date(`${props.overview.calendar.exam_date}T12:00:00+08:00`))
+  : '')
 
 function scrollToSession() {
   document.getElementById('session-control')?.scrollIntoView({ behavior: 'smooth', block: 'center' })
@@ -36,9 +35,13 @@ function scrollToSession() {
 
 <template>
   <div class="today-view">
-    <PageHeader :context="t('workspace')" :title="t('today')" :metadata="headerMetadata">
+    <PageHeader :context="t('workspace')" :title="t('today')" :metadata="todayLabel">
       <template #actions><button type="button" class="header-action" @click="scrollToSession">{{ overview?.active_session ? t('viewSession') : t('startSession') }}</button></template>
     </PageHeader>
+    <div v-if="overview" class="today-countdown-strip" aria-label="Exam countdown">
+      <div><span>{{ overview.private_display.countdown_label }}</span><time :datetime="overview.calendar.exam_date">{{ examDateLabel }}</time></div>
+      <p><strong>{{ overview.calendar.days_until_exam }}</strong><span>{{ t('days') }}</span></p>
+    </div>
     <div v-if="overview?.private_display.homepage_content || overview?.private_display.study_room_code" class="today-private-note">
       <span v-if="overview.private_display.homepage_content">{{ overview.private_display.homepage_content }}</span>
       <span v-if="overview.private_display.study_room_code">{{ t('studyRoom') }} · <b>{{ overview.private_display.study_room_code }}</b></span>
