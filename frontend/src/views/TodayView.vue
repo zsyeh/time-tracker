@@ -12,10 +12,12 @@ const emit = defineEmits<{ changed: [] }>()
 const { language, t } = useUiPreferences()
 const subjectLabels = computed<Record<string, string>>(() => ({ math: t('mathematics'), english: t('english'), major: t('major'), training: t('training') }))
 const todayMinutes = computed(() => props.overview?.today.minutes || 0)
+const dailyTargetMinutes = computed(() => props.overview?.daily_target.minutes || 300)
+const dailyTargetHours = computed(() => props.overview?.daily_target.hours || 5)
 const todayHours = computed(() => `${Math.floor(todayMinutes.value / 60)}h ${todayMinutes.value % 60}m`)
-const todayProgress = computed(() => Math.min(100, Math.round(todayMinutes.value / 300 * 100)))
+const todayProgress = computed(() => Math.min(100, Math.round(todayMinutes.value / dailyTargetMinutes.value * 100)))
 const targetRemaining = computed(() => {
-  const minutes = Math.max(0, 300 - todayMinutes.value)
+  const minutes = Math.max(0, dailyTargetMinutes.value - todayMinutes.value)
   return minutes ? t('remaining', { value: `${Math.floor(minutes / 60)}h ${minutes % 60}m` }) : t('complete')
 })
 const maxTodaySubject = computed(() => Math.max(1, ...(props.overview?.today_subject_totals.map((item) => item.minutes) || [])))
@@ -45,7 +47,7 @@ function scrollToSession() {
     <section v-if="overview" class="today-section daily-progress-section" aria-labelledby="daily-progress-title">
       <header class="section-toolbar"><div><h2 id="daily-progress-title">{{ t('dailyProgress') }}</h2><span>{{ t('completedOnly') }}</span></div><span>{{ targetRemaining }}</span></header>
       <div class="today-overview-grid">
-        <div class="daily-progress-block"><div class="daily-progress-main"><div><strong>{{ todayHours }}</strong><span>/ 5h</span></div><b>{{ todayProgress }}%</b></div><div class="daily-progress-track" role="progressbar" aria-label="Five hour study target" aria-valuemin="0" aria-valuemax="100" :aria-valuenow="todayProgress"><i :style="{ width: `${todayProgress}%` }" /></div><p>{{ todayProgress >= 100 ? t('targetComplete') : t('toTarget', { value: targetRemaining }) }}</p></div>
+        <div class="daily-progress-block"><div class="daily-progress-main"><div><strong>{{ todayHours }}</strong><span>/ {{ dailyTargetHours }}h</span></div><b>{{ todayProgress }}%</b></div><div class="daily-progress-track" role="progressbar" :aria-label="`${dailyTargetHours} hour study target`" aria-valuemin="0" aria-valuemax="100" :aria-valuenow="todayProgress"><i :style="{ width: `${todayProgress}%` }" /></div><p>{{ todayProgress >= 100 ? t('targetComplete') : t('toTarget', { value: targetRemaining }) }}</p></div>
         <div class="overview-secondary"><article><span>{{ t('activeDays') }}</span><strong>{{ overview.summary.active_days }}</strong><small>{{ t('lastDays', { days: overview.range_days }) }}</small></article><article><span>{{ t('fiveHourDays') }}</span><strong>{{ overview.summary.five_hour_days }}</strong><small>{{ t('bestStreak', { days: overview.summary.longest_five_hour_streak }) }}</small></article><article><span>{{ t('total') }}</span><strong>{{ Math.floor(overview.summary.total_minutes / 60) }}h</strong><small>{{ overview.summary.session_count }} {{ t('sessions').toLocaleLowerCase() }}</small></article></div>
       </div>
       <dl class="daily-stat-columns">

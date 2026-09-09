@@ -8,6 +8,8 @@ from .runtime_settings import runtime_config
 
 
 FIVE_HOUR_MINUTES = 300
+EIGHT_HOUR_MINUTES = 480
+TEN_HOUR_MINUTES = 600
 
 
 def _local(value):
@@ -32,6 +34,45 @@ def _streak(dates, today):
     return current, longest
 
 
+def adaptive_daily_target(daily_minutes, tracking_start, today):
+    """Calculate today's target from completed calendar days.
+
+    The state machine deliberately stops at yesterday so an unfinished current
+    day cannot demote its own target. A miss at any elevated stage resets the
+    following day to the five-hour base target.
+    """
+    target = FIVE_HOUR_MINUTES
+    five_hour_streak = 0
+    eight_hour_streak = 0
+    cursor = tracking_start
+    yesterday = today - datetime.timedelta(days=1)
+    while cursor <= yesterday:
+        minutes = daily_minutes.get(cursor, 0)
+        if target == FIVE_HOUR_MINUTES:
+            if minutes >= FIVE_HOUR_MINUTES:
+                five_hour_streak += 1
+                if five_hour_streak >= 3:
+                    target = EIGHT_HOUR_MINUTES
+                    eight_hour_streak = 0
+            else:
+                five_hour_streak = 0
+        elif target == EIGHT_HOUR_MINUTES:
+            if minutes >= EIGHT_HOUR_MINUTES:
+                eight_hour_streak += 1
+                if eight_hour_streak >= 7:
+                    target = TEN_HOUR_MINUTES
+            else:
+                target = FIVE_HOUR_MINUTES
+                five_hour_streak = 0
+                eight_hour_streak = 0
+        elif minutes < TEN_HOUR_MINUTES:
+            target = FIVE_HOUR_MINUTES
+            five_hour_streak = 0
+            eight_hour_streak = 0
+        cursor += datetime.timedelta(days=1)
+    return target
+
+
 def build_dashboard_overview(user, days=180, config=None):
     days = max(7, min(int(days), 366))
     config = config or runtime_config(user=user)['values']
@@ -45,8 +86,9 @@ def build_dashboard_overview(user, days=180, config=None):
     except (TypeError, ValueError):
         configured_heatmap_start = datetime.date(2026, 5, 23)
     heatmap_first_day = max(first_day, configured_heatmap_start)
+    query_first_day = min(first_day, configured_heatmap_start)
     boundary = timezone.make_aware(
-        datetime.datetime.combine(first_day, datetime.time.min),
+        datetime.datetime.combine(query_first_day, datetime.time.min),
         timezone.get_current_timezone(),
     )
     sessions = list(
@@ -62,6 +104,8 @@ def build_dashboard_overview(user, days=180, config=None):
     active = TimeLog.objects.filter(user=user, status='running').prefetch_related('tags').first()
 
     daily = defaultdict(lambda: {'minutes': 0, 'sessions': 0, 'first_start': None})
+    target_daily_minutes = defaultdict(int)
+    range_session_count = 0
     by_subject = defaultdict(int)
     by_week = defaultdict(int)
     by_month = defaultdict(int)
@@ -72,6 +116,10 @@ def build_dashboard_overview(user, days=180, config=None):
         credited_minutes = session.credited_duration_minutes
         local_start = _local(session.start_time)
         day = local_start.date()
+        target_daily_minutes[day] += credited_minutes
+        if day < first_day:
+            continue
+        range_session_count += 1
         row = daily[day]
         row['minutes'] += credited_minutes
         row['sessions'] += 1
@@ -135,6 +183,9 @@ def build_dashboard_overview(user, days=180, config=None):
         })
 
     today_row = daily.get(local_today, {'minutes': 0, 'sessions': 0, 'first_start': None})
+    daily_target_minutes = adaptive_daily_target(
+        target_daily_minutes, configured_heatmap_start, local_today,
+    )
     total_minutes = sum(row['minutes'] for row in daily.values())
     start_minutes = []
     for row in daily.values():
@@ -168,10 +219,14 @@ def build_dashboard_overview(user, days=180, config=None):
             'countdown_label': config['countdown_label'],
         },
         'today': today_row,
+        'daily_target': {
+            'minutes': daily_target_minutes,
+            'hours': daily_target_minutes // 60,
+        },
         'active_session': serialize_session(active, now) if active else None,
         'summary': {
             'total_minutes': total_minutes,
-            'session_count': len(sessions),
+            'session_count': range_session_count,
             'active_days': len(active_dates),
             'five_hour_days': len(five_hour_dates),
             'current_streak': current_streak,

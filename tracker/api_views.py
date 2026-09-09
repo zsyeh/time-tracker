@@ -449,7 +449,7 @@ class DashboardOverviewView(APIView):
         math_visualization_enabled = SiteConfiguration.math_visualization_is_enabled()
         # Keep a payload schema version in the key so a zero-downtime frontend
         # deployment never receives an older cached response shape.
-        cache_key = f'dashboard-overview:v8:{request.user.pk}:{days}:{version}:{config["fingerprint"]}:{int(math_visualization_enabled)}'
+        cache_key = f'dashboard-overview:v9:{request.user.pk}:{days}:{version}:{config["fingerprint"]}:{int(math_visualization_enabled)}'
         payload = cache.get(cache_key)
         cache_outcome = 'hit' if payload is not None else 'miss'
         if payload is None:
