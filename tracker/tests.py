@@ -121,6 +121,22 @@ class OperationsDashboardTests(TestCase):
         )
         self.assertEqual(response.status_code, 404)
 
+    @mock.patch('tracker.ops_dashboard._tail_log')
+    def test_recent_usage_counts_fixed_windows(self, tail_log):
+        from datetime import datetime as native_datetime
+        from tracker.ops_dashboard import _recent_service_usage
+
+        tail_log.return_value = (
+            '127.0.0.1 - - [07/Sep/2026:11:52:00 +0800] "GET / HTTP/2.0" 200 1\n'
+            '127.0.0.1 - - [07/Sep/2026:11:10:00 +0800] "GET /api/ HTTP/2.0" 200 1\n'
+            '127.0.0.1 - - [06/Sep/2026:13:00:00 +0800] "GET / HTTP/2.0" 200 1\n'
+        )
+        now = native_datetime.strptime('07/Sep/2026:12:00:00 +0800', '%d/%b/%Y:%H:%M:%S %z')
+        rows = _recent_service_usage(now=now)
+        self.assertEqual(rows[0]['15m'], 2)
+        self.assertEqual(rows[0]['1h'], 4)
+        self.assertEqual(rows[0]['24h'], 6)
+
 
 def completed_session(
     user,

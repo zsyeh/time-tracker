@@ -25,6 +25,13 @@ from django.views.decorators.http import require_POST
 WEB_SERVICE = 'time-tracker-web.service'
 NGINX_SERVICE = 'nginx.service'
 DEPLOY_SCRIPT = Path(__file__).resolve().parent.parent / 'deploy' / 'scripts' / 'deploy-native.sh'
+SERVICE_USAGE_LOGS = (
+    ('Timer', Path('/var/log/nginx/timer.ehzsy.site.access.log')),
+    ('Drill', Path('/var/log/nginx/drill.ehzsy.site.access.log')),
+)
+NGINX_TIME_RE = re.compile(
+    r'\[(?P<timestamp>\d{2}/[A-Za-z]{3}/\d{4}:\d{2}:\d{2}:\d{2} [+-]\d{4})\]'
+)
 
 
 def is_dashboard_host(request):
@@ -148,6 +155,57 @@ def _build_metrics():
     return builds
 
 
+def _tail_log(path, byte_limit=4 * 1024 * 1024):
+    try:
+        with path.open('rb') as handle:
+            handle.seek(0, os.SEEK_END)
+            size = handle.tell()
+            handle.seek(max(size - byte_limit, 0))
+            payload = handle.read()
+    except OSError:
+        return ''
+    if size > byte_limit:
+        payload = payload.partition(b'\n')[2]
+    return payload.decode('utf-8', errors='replace')
+
+
+def _recent_service_usage(now=None):
+    """Summarize bounded Nginx logs; static assets are excluded by Nginx."""
+
+    now = now or datetime.now().astimezone()
+    rows = []
+    for name, log_path in SERVICE_USAGE_LOGS:
+        counts = {'15m': 0, '1h': 0, '24h': 0}
+        latest = None
+        # Include the first rotated file so a quiet service still has a complete
+        # 24-hour view across the normal daily log rotation boundary.
+        content = _tail_log(Path(f'{log_path}.1')) + _tail_log(log_path)
+        for match in NGINX_TIME_RE.finditer(content):
+            try:
+                occurred_at = datetime.strptime(
+                    match.group('timestamp'), '%d/%b/%Y:%H:%M:%S %z',
+                )
+            except ValueError:
+                continue
+            age = (now - occurred_at).total_seconds()
+            if age < 0 or age > 86400:
+                continue
+            counts['24h'] += 1
+            if age <= 3600:
+                counts['1h'] += 1
+            if age <= 900:
+                counts['15m'] += 1
+            if latest is None or occurred_at > latest:
+                latest = occurred_at
+        rows.append({
+            'name': name,
+            **counts,
+            'latest': latest.astimezone().strftime('%H:%M:%S') if latest else 'No recent requests',
+            'available': log_path.exists(),
+        })
+    return rows
+
+
 def _human_bytes(value):
     size = float(value)
     for unit in ('B', 'KB', 'MB', 'GB', 'TB'):
@@ -208,6 +266,7 @@ def operations_dashboard(request):
         'builds': _build_metrics(),
         'oom_incident': _recent_oom_incident(),
         'checked_at': datetime.now().astimezone(),
+        'usage': _recent_service_usage(),
     }
     context['all_healthy'] = all(item['healthy'] for item in context['services'])
     return render(request, 'operations/dashboard.html', context)

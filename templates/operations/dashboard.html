@@ -72,6 +72,22 @@
     </section>
 
     <section>
+      <div class="section-heading"><h2>Recent usage</h2><span>Dynamic requests only · static assets excluded</span></div>
+      <div class="usage-table">
+        <div class="usage-head"><span>Service</span><span>15 min</span><span>1 hour</span><span>24 hours</span><span>Last request</span></div>
+        {% for item in usage %}
+          <div class="usage-row">
+            <strong>{{ item.name }}</strong>
+            <span>{{ item.15m }}</span>
+            <span>{{ item.1h }}</span>
+            <span>{{ item.24h }}</span>
+            <small>{{ item.latest }}</small>
+          </div>
+        {% endfor %}
+      </div>
+    </section>
+
+    <section>
       <div class="section-heading"><h2>Actions</h2><span>Administrator-only, fixed operations</span></div>
       <div class="actions">
         <form method="post" action="/dashboard/action/">{% csrf_token %}<input type="hidden" name="action" value="safe_deploy"><button class="button primary" type="submit">Safe rebuild &amp; deploy</button></form>

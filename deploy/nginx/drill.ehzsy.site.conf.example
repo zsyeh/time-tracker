@@ -20,6 +20,8 @@ server {
     ssl_certificate /etc/letsencrypt/live/drill.example.com/fullchain.pem;
     ssl_certificate_key /etc/letsencrypt/live/drill.example.com/privkey.pem;
     client_max_body_size 2m;
+    # Dedicated dynamic-request log powers the administrator operations panel.
+    access_log /var/log/nginx/drill.ehzsy.site.access.log;
 
     # The path contains a 90-second one-time login capability. Never log it.
     location ^~ /drill-auth/complete/ {

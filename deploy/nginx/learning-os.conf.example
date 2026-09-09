@@ -4,6 +4,9 @@ server {
 
     # Configure ssl_certificate / ssl_certificate_key with Certbot or your CA.
     client_max_body_size 2m;
+    # Dedicated dynamic-request log powers the administrator operations panel.
+    # Static assets and sensitive capability paths below remain excluded.
+    access_log /var/log/nginx/timer.ehzsy.site.access.log;
 
     location ^~ /launch/ {
         access_log off;
