@@ -66,10 +66,13 @@ PAIR_SOURCES = {
         'question_file': '数电课后题做题本.pdf',
         'answer_file': '数电课后指导与答案.pdf',
         'allowed_chapters': {1, 2, 3, 4, 5, 6},
-        # At higher raster scales Tesseract breaks the book's small bracketed
-        # labels into separate tokens. The original 100 DPI pass preserves the
-        # complete ``[题 2.12]`` line and has the higher verified match rate.
+        # Keep the verified 100 DPI question/answer pairing, then use a second
+        # 150 DPI question-only pass to recover crop boundaries such as
+        # ``[题 1.3]`` that disappear at the lower resolution.  The 150 DPI
+        # pass is deliberately not used for pairing because it recognizes
+        # fewer labels in the separate answer book.
         'anchor_dpi': 100,
+        'boundary_anchor_dpi': 150,
         # The exercise and guide PDFs contain different supersets. Import only
         # their 28 exact-label intersections; never fall back to sequence
         # matching merely to inflate coverage.
@@ -224,6 +227,16 @@ class Command(BaseCommand):
                 'refusing to import unmatched material.'
             )
         segment_boundaries = list(question_anchors)
+        boundary_anchor_dpi = config.get('boundary_anchor_dpi')
+        if boundary_anchor_dpi:
+            question_pdf = pymupdf.open(question_path)
+            try:
+                supplemental = self.find_anchors(question_pdf, boundary_anchor_dpi)
+            finally:
+                question_pdf.close()
+            segment_boundaries = self.merge_boundary_anchors(
+                segment_boundaries, supplemental,
+            )
         if config.get('combined_solution_pdf'):
             segment_boundaries.extend(chapter_boundaries)
             segment_boundaries.sort(key=lambda item: (item.page_index, item.y))
@@ -234,6 +247,7 @@ class Command(BaseCommand):
             'answer_path': answer_path,
             'question_count': len(questions),
             'answer_count': len(answers),
+            'question_boundary_count': len(segment_boundaries),
             # Keep every anchor for clipping.  Pair eligibility is limited to
             # the syllabus, but an excluded neighbouring chapter must still
             # terminate the preceding crop.
@@ -253,6 +267,48 @@ class Command(BaseCommand):
         if len(matches) == 1:
             return matches[0]
         return direct
+
+    @staticmethod
+    def merge_boundary_anchors(primary, supplemental):
+        """Add only source-order-consistent supplemental crop boundaries.
+
+        OCR at a second resolution is useful for segmentation but can invent
+        labels.  A supplemental label is accepted only when its numeric label
+        lies strictly between the nearest reliable primary labels in physical
+        PDF order.  Primary anchors always win for duplicate labels.
+        """
+        merged = list(primary)
+        primary_labels = {item.label for item in primary}
+        supplemental = sorted(supplemental, key=lambda item: (item.page_index, item.y))
+        for candidate in supplemental:
+            if candidate.label in primary_labels:
+                continue
+            candidate_position = (candidate.page_index, candidate.y)
+            ordered_merged = sorted(merged, key=lambda item: (item.page_index, item.y))
+            before = [
+                item for item in ordered_merged
+                if (item.page_index, item.y) < candidate_position
+            ]
+            after = [
+                item for item in ordered_merged
+                if (item.page_index, item.y) > candidate_position
+            ]
+            candidate_label = (candidate.chapter, candidate.number)
+            if before and candidate_label <= (before[-1].chapter, before[-1].number):
+                continue
+            if after and candidate_label >= (after[0].chapter, after[0].number):
+                continue
+            if any(
+                item.label == candidate.label
+                or (
+                    item.page_index == candidate.page_index
+                    and abs(item.y - candidate.y) < 8.0
+                )
+                for item in merged
+            ):
+                continue
+            merged.append(candidate)
+        return sorted(merged, key=lambda item: (item.page_index, item.y))
 
     def find_anchors(self, document, anchor_dpi):
         anchors = []
@@ -295,7 +351,10 @@ class Command(BaseCommand):
                     if label in seen:
                         continue
                     seen.add(label)
-                    anchors.append(Anchor(label, chapter, number, page_index, max(0, y - 3)))
+                    anchors.append(Anchor(
+                        label, chapter, number, page_index,
+                        self.visual_line_top(page, y),
+                    ))
         return anchors
 
     def find_solution_anchors(self, document, question_anchors):
@@ -318,7 +377,10 @@ class Command(BaseCommand):
                     if following and page_index == following.page_index and y >= following.y + 3.1:
                         break
                     if SOLUTION_RE.match(text):
-                        found = Anchor(question.label, question.chapter, question.number, page_index, max(0, y - 3))
+                        found = Anchor(
+                            question.label, question.chapter, question.number,
+                            page_index, self.visual_line_top(document[page_index], y),
+                        )
                         break
                 if found:
                     break
@@ -353,7 +415,7 @@ class Command(BaseCommand):
                 last_number = number
                 anchors.append(Anchor(
                     canonical_label(chapter, number), chapter, number,
-                    page_index, max(0, y - 3),
+                    page_index, Command.visual_line_top(page, y),
                 ))
         return anchors
 
@@ -379,8 +441,46 @@ class Command(BaseCommand):
                 match = numbered.match(text)
                 if match and x <= page.rect.width * 0.42:
                     number = int(match.group('number'))
-                    anchors.append(Anchor(canonical_label(1, number), 1, number, page_index, max(0, y - 3)))
+                    anchors.append(Anchor(
+                        canonical_label(1, number), 1, number, page_index,
+                        Command.visual_line_top(page, y),
+                    ))
         return anchors
+
+    @staticmethod
+    def visual_line_top(page, anchor_y, padding=3.0):
+        """Return the top of the whole visual row containing an anchor.
+
+        PyMuPDF groups a formula and its textual label into separate blocks.
+        The numerator, superscript, or radical can therefore start well above
+        the ``习题``/``解`` word used as the crop anchor.  Cropping at that
+        word's y-coordinate splits the formula between adjacent assets.  Use
+        the vertical extent of nearby glyphs to retain the complete visual
+        row, while the lower-bound overlap guard excludes the preceding line.
+
+        OCR-only scanned pages do not expose PDF words; those keep the legacy
+        padded OCR coordinate.
+        """
+        words = page.get_text('words')
+        if not words:
+            return max(0, anchor_y - padding)
+        nearest_distance = min(abs(word[1] - anchor_y) for word in words)
+        anchor_word = min(
+            (word for word in words if abs(word[1] - anchor_y) <= nearest_distance + 0.5),
+            key=lambda word: word[0],
+        )
+        anchor_right = anchor_word[2]
+        candidates = [anchor_y]
+        candidates.extend(
+            y0
+            for x0, y0, _x1, y1, _text, _block, _line, _word in words
+            if x0 >= anchor_right + 0.5
+            and y0 >= anchor_y - 24.0
+            and y1 >= anchor_y - 8.0
+            and y0 <= anchor_y + 18.0
+        )
+        visual_top = min(candidates)
+        return max(0, visual_top - padding)
 
     @staticmethod
     def pdf_text_lines(page):
@@ -659,8 +759,13 @@ class Command(BaseCommand):
                     x for x, value in enumerate(thresholded[row_start:row_start + width]) if value
                 )
             footer_width = max(footer_x) - min(footer_x) + 1 if footer_x else width
+            footer_page_y = rect.y0 + footer_start / preview_scale
             if (
-                footer_start > height * 0.95
+                # A crop can begin halfway down a source page.  Judge the
+                # footer against the physical page rather than the cropped
+                # fragment, otherwise a real page number at ~91% page height
+                # leaves hundreds of blank rows before a cross-page tail.
+                footer_page_y > page.rect.height * 0.88
                 and footer_start - previous_end > height * 0.08
                 and footer_end - footer_start < height * 0.05
                 and footer_width < width * 0.15

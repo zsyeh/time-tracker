@@ -91,7 +91,9 @@ class Command(BaseCommand):
                     (item for item in boundaries if self.anchor_key(item) > self.anchor_key(question)),
                     None,
                 )
-                solution = self.find_solution(page_lines, question, following, len(document))
+                solution = self.find_solution(
+                    document, page_lines, question, following, len(document),
+                )
                 # Some dense answer keys place ``答案: D`` and the next
                 # question on virtually the same baseline. A full-width crop
                 # cannot separate those two records without leaking the next
@@ -131,12 +133,25 @@ class Command(BaseCommand):
             page_lines[page_index] = lines
             for text, _x, y in lines:
                 if LESSON_RE.match(text):
-                    lesson_rows.append((page_index, max(0, y - 3), re.sub(r'\s+', ' ', text).strip()))
+                    lesson_rows.append((
+                        page_index, CropImporter.visual_line_top(page, y),
+                        re.sub(r'\s+', ' ', text).strip(),
+                    ))
                 elif SUBSECTION_RE.match(text):
-                    section_rows.append((page_index, max(0, y - 3), re.sub(r'\s+', ' ', text).strip()))
+                    section_rows.append((
+                        page_index, CropImporter.visual_line_top(page, y),
+                        re.sub(r'\s+', ' ', text).strip(),
+                    ))
                 match = QUESTION_RE.match(text)
                 if match:
-                    question_rows.append((page_index, max(0, y - 3), int(match.group('number'))))
+                    anchor_y = CropImporter.visual_line_top(page, y)
+                    anchor_y = Command.after_preceding_solution(
+                        page, lines, y, anchor_y,
+                    )
+                    question_rows.append((
+                        page_index, anchor_y,
+                        int(match.group('number')),
+                    ))
         lessons = [
             Anchor(f'lesson-{index}', index, 0, page, y)
             for index, (page, y, _title) in enumerate(lesson_rows, 1)
@@ -165,7 +180,32 @@ class Command(BaseCommand):
         return lessons, sections, questions, page_lines
 
     @staticmethod
-    def find_solution(page_lines, question, following, page_count):
+    def after_preceding_solution(page, lines, question_y, anchor_y):
+        """Do not include a tightly packed previous answer in a question crop.
+
+        Some Fengkao pages place ``答案: D`` immediately above the next cyan
+        question row. Their embedded font gives the next ``题`` word an
+        unusually tall bounding box, so the normal top padding overlaps the
+        answer. Clamp the question start below that answer's real glyph box.
+        """
+        nearby_solutions = [
+            y for text, _x, y in lines
+            if SOLUTION_RE.match(text) and 0 <= question_y - y <= 8.0
+        ]
+        if not nearby_solutions:
+            return anchor_y
+        solution_y = max(nearby_solutions)
+        solution_bottoms = [
+            y1 for _x0, y0, _x1, y1, _text, _block, _line, _word
+            in page.get_text('words')
+            if abs(y0 - solution_y) <= 1.5
+        ]
+        if not solution_bottoms:
+            return anchor_y
+        return max(anchor_y, max(solution_bottoms) + 2.0)
+
+    @staticmethod
+    def find_solution(document, page_lines, question, following, page_count):
         last_page = following.page_index if following else min(question.page_index + 3, page_count - 1)
         for page_index in range(question.page_index, last_page + 1):
             for text, _x, y in page_lines[page_index]:
@@ -188,7 +228,8 @@ class Command(BaseCommand):
                 if SOLUTION_RE.match(text):
                     return Anchor(
                         question.label, question.chapter, question.number,
-                        page_index, max(0, y - 3),
+                        page_index,
+                        CropImporter.visual_line_top(document[page_index], y),
                     )
         return None
 

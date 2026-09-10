@@ -43,6 +43,7 @@ from .pdf_import import parse_question_pdf
 from .question_type_classifier import classify_question_type, classify_question_type_evidence
 from .management.commands.import_ei_paired_pdfs import Anchor as PairedPdfAnchor
 from .management.commands.import_ei_paired_pdfs import Command as PairedPdfImportCommand
+from .management.commands.import_ei_honey_pdfs import Command as HoneyPdfImportCommand
 from .management.commands.agent_classify_question_types import Command as AgentTypeCommand
 
 
@@ -1463,6 +1464,92 @@ class DrillPasskeyHandoffTests(TestCase):
 
 
 class PairedPdfCropTests(SimpleTestCase):
+    def test_honey_question_starts_after_tightly_packed_previous_answer(self):
+        document = pymupdf.open()
+        page = document.new_page(width=600, height=800)
+        page.insert_text((36, 120), '答案:D', fontsize=12, fontname='china-s')
+        page.insert_text((36, 124), '题2. next question', fontsize=12, fontname='china-s')
+        lines = PairedPdfImportCommand.pdf_text_lines(page)
+        question_y = next(y for text, _x, y in lines if text.startswith('题2'))
+        answer_bottom = max(
+            word[3] for word in page.get_text('words')
+            if word[4].startswith('答案')
+        )
+
+        anchor_y = HoneyPdfImportCommand.after_preceding_solution(
+            page, lines, question_y,
+            PairedPdfImportCommand.visual_line_top(page, question_y),
+        )
+
+        self.assertGreater(anchor_y, answer_bottom)
+
+    def test_supplemental_boundaries_must_fit_reliable_source_order(self):
+        primary = [
+            PairedPdfAnchor('1-2', 1, 2, 1, 40.0),
+            PairedPdfAnchor('1-5', 1, 5, 4, 40.0),
+        ]
+        supplemental = [
+            PairedPdfAnchor('9-9', 9, 9, 2, 20.0),
+            PairedPdfAnchor('1-3', 1, 3, 2, 40.0),
+            PairedPdfAnchor('1-4', 1, 4, 3, 40.0),
+        ]
+
+        merged = PairedPdfImportCommand.merge_boundary_anchors(
+            primary, supplemental,
+        )
+
+        self.assertEqual(
+            [item.label for item in merged],
+            ['1-2', '1-3', '1-4', '1-5'],
+        )
+
+    def test_visual_line_top_includes_formula_glyphs_above_label(self):
+        document = pymupdf.open()
+        page = document.new_page(width=600, height=800)
+        page.insert_text((36, 120), '习题1.1 question', fontsize=12, fontname='china-s')
+        page.insert_text((320, 109), '2', fontsize=8)
+        label_y = next(
+            word[1] for word in page.get_text('words')
+            if word[4].startswith('习题1.1')
+        )
+        formula_y = next(word[1] for word in page.get_text('words') if word[4] == '2')
+
+        anchor_y = PairedPdfImportCommand.visual_line_top(page, label_y)
+
+        self.assertLess(anchor_y, label_y - 3)
+        self.assertLessEqual(anchor_y, formula_y)
+
+    def test_visual_line_top_does_not_absorb_preceding_answer_label(self):
+        document = pymupdf.open()
+        page = document.new_page(width=600, height=800)
+        page.insert_text((36, 120), '答案:D', fontsize=12, fontname='china-s')
+        page.insert_text((36, 121), '题2.', fontsize=12, fontname='china-s')
+        question_y = next(
+            word[1] for word in page.get_text('words') if word[4].startswith('题2')
+        )
+        answer_y = next(
+            word[1] for word in page.get_text('words') if word[4].startswith('答案')
+        )
+
+        anchor_y = PairedPdfImportCommand.visual_line_top(page, question_y)
+
+        self.assertAlmostEqual(anchor_y, question_y - 3.0, places=1)
+        self.assertLess(answer_y, question_y)
+
+    def test_solution_anchor_keeps_full_first_formula_row(self):
+        document = pymupdf.open()
+        page = document.new_page(width=600, height=800)
+        page.insert_text((36, 60), '习题1.1 question', fontsize=12, fontname='china-s')
+        page.insert_text((36, 150), '解: answer', fontsize=12, fontname='china-s')
+        page.insert_text((260, 139), '2', fontsize=8)
+        questions = PairedPdfImportCommand.find_communication_anchors(document)
+
+        solutions = PairedPdfImportCommand().find_solution_anchors(document, questions)
+
+        formula_y = next(word[1] for word in page.get_text('words') if word[4] == '2')
+        self.assertEqual(len(solutions), 1)
+        self.assertLessEqual(solutions[0].y, formula_y)
+
     def test_communication_anchors_ignore_repeated_question_reference(self):
         document = pymupdf.open()
         page = document.new_page(width=600, height=800)
@@ -1523,6 +1610,17 @@ class PairedPdfCropTests(SimpleTestCase):
 
         self.assertLessEqual(top, 40)
         self.assertGreater(bottom, 650)
+
+    def test_vertical_trim_removes_footer_from_midpage_crop(self):
+        document = pymupdf.open()
+        page = document.new_page(width=600, height=800)
+        page.insert_text((36, 430), 'question content', fontsize=12)
+        page.insert_text((292, 735), '17', fontsize=9)
+        rect = pymupdf.Rect(0, 400, 600, 800)
+
+        _top, bottom = PairedPdfImportCommand.vertical_trim_bounds(page, rect)
+
+        self.assertGreater(bottom, 300)
 
     def test_vertical_trim_preserves_content_near_page_bottom(self):
         document = pymupdf.open()
