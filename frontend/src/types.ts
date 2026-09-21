@@ -98,6 +98,7 @@ export interface Overview {
   private_display: { study_room_code: string; homepage_content: string; countdown_label: string }
   today: { minutes: number; sessions: number; first_start: string | null }
   daily_target: { minutes: number; hours: number }
+  subject_targets: { math: { minutes: number; hours: number } }
   active_session: StudySession | null
   summary: {
     total_minutes: number

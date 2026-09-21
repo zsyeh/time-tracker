@@ -1206,7 +1206,7 @@ class AnalyticsAndExportTests(TestCase):
         expected_days = max(0, (exam_date - today).days)
         self.assertEqual(overview['calendar']['days_until_exam'], expected_days)
 
-    def test_daily_target_increases_after_three_completed_five_hour_days(self):
+    def test_daily_target_is_fixed_at_eight_hours_and_exposes_math_target(self):
         today = timezone.localdate()
         for days_ago in (3, 2, 1):
             completed_session(self.user, day=today - datetime.timedelta(days=days_ago), minutes=300)
@@ -1214,8 +1214,9 @@ class AnalyticsAndExportTests(TestCase):
         overview = build_dashboard_overview(self.user, 7)
 
         self.assertEqual(overview['daily_target'], {'minutes': 480, 'hours': 8})
+        self.assertEqual(overview['subject_targets']['math'], {'minutes': 240, 'hours': 4})
 
-    def test_daily_target_reaches_ten_hours_after_seven_eight_hour_stage_days(self):
+    def test_daily_target_does_not_increase_after_long_streak(self):
         today = timezone.localdate()
         start = today - datetime.timedelta(days=10)
         daily = {
@@ -1223,9 +1224,9 @@ class AnalyticsAndExportTests(TestCase):
             for offset in range(10)
         }
 
-        self.assertEqual(adaptive_daily_target(daily, start, today), 600)
+        self.assertEqual(adaptive_daily_target(daily, start, today), 480)
 
-    def test_daily_target_resets_to_five_hours_after_an_elevated_stage_miss(self):
+    def test_daily_target_does_not_reset_after_a_missed_day(self):
         today = timezone.localdate()
         start = today - datetime.timedelta(days=4)
         daily = {
@@ -1236,18 +1237,7 @@ class AnalyticsAndExportTests(TestCase):
             today: 600,
         }
 
-        self.assertEqual(adaptive_daily_target(daily, start, today), 300)
-
-    def test_ten_hour_stage_miss_resets_directly_to_five_hours(self):
-        today = timezone.localdate()
-        start = today - datetime.timedelta(days=11)
-        daily = {
-            start + datetime.timedelta(days=offset): 300 if offset < 3 else 480
-            for offset in range(10)
-        }
-        daily[today - datetime.timedelta(days=1)] = 599
-
-        self.assertEqual(adaptive_daily_target(daily, start, today), 300)
+        self.assertEqual(adaptive_daily_target(daily, start, today), 480)
 
     def test_dashboard_uses_credited_duration_for_all_time_aggregates(self):
         today = timezone.localdate()

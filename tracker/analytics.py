@@ -10,6 +10,8 @@ from .runtime_settings import runtime_config
 FIVE_HOUR_MINUTES = 300
 EIGHT_HOUR_MINUTES = 480
 TEN_HOUR_MINUTES = 600
+DAILY_TARGET_MINUTES = EIGHT_HOUR_MINUTES
+MATH_DAILY_TARGET_MINUTES = 240
 
 
 def _local(value):
@@ -35,42 +37,13 @@ def _streak(dates, today):
 
 
 def adaptive_daily_target(daily_minutes, tracking_start, today):
-    """Calculate today's target from completed calendar days.
+    """Return the fixed daily target.
 
-    The state machine deliberately stops at yesterday so an unfinished current
-    day cannot demote its own target. A miss at any elevated stage resets the
-    following day to the five-hour base target.
+    Keep the historical function signature for callers that imported it while
+    making the product rule explicit: the target no longer rises or resets in
+    response to streaks.
     """
-    target = FIVE_HOUR_MINUTES
-    five_hour_streak = 0
-    eight_hour_streak = 0
-    cursor = tracking_start
-    yesterday = today - datetime.timedelta(days=1)
-    while cursor <= yesterday:
-        minutes = daily_minutes.get(cursor, 0)
-        if target == FIVE_HOUR_MINUTES:
-            if minutes >= FIVE_HOUR_MINUTES:
-                five_hour_streak += 1
-                if five_hour_streak >= 3:
-                    target = EIGHT_HOUR_MINUTES
-                    eight_hour_streak = 0
-            else:
-                five_hour_streak = 0
-        elif target == EIGHT_HOUR_MINUTES:
-            if minutes >= EIGHT_HOUR_MINUTES:
-                eight_hour_streak += 1
-                if eight_hour_streak >= 7:
-                    target = TEN_HOUR_MINUTES
-            else:
-                target = FIVE_HOUR_MINUTES
-                five_hour_streak = 0
-                eight_hour_streak = 0
-        elif minutes < TEN_HOUR_MINUTES:
-            target = FIVE_HOUR_MINUTES
-            five_hour_streak = 0
-            eight_hour_streak = 0
-        cursor += datetime.timedelta(days=1)
-    return target
+    return DAILY_TARGET_MINUTES
 
 
 def build_dashboard_overview(user, days=180, config=None):
@@ -104,7 +77,6 @@ def build_dashboard_overview(user, days=180, config=None):
     active = TimeLog.objects.filter(user=user, status='running').prefetch_related('tags').first()
 
     daily = defaultdict(lambda: {'minutes': 0, 'sessions': 0, 'first_start': None})
-    target_daily_minutes = defaultdict(int)
     range_session_count = 0
     by_subject = defaultdict(int)
     by_week = defaultdict(int)
@@ -116,7 +88,6 @@ def build_dashboard_overview(user, days=180, config=None):
         credited_minutes = session.credited_duration_minutes
         local_start = _local(session.start_time)
         day = local_start.date()
-        target_daily_minutes[day] += credited_minutes
         if day < first_day:
             continue
         range_session_count += 1
@@ -183,9 +154,7 @@ def build_dashboard_overview(user, days=180, config=None):
         })
 
     today_row = daily.get(local_today, {'minutes': 0, 'sessions': 0, 'first_start': None})
-    daily_target_minutes = adaptive_daily_target(
-        target_daily_minutes, configured_heatmap_start, local_today,
-    )
+    daily_target_minutes = DAILY_TARGET_MINUTES
     total_minutes = sum(row['minutes'] for row in daily.values())
     start_minutes = []
     for row in daily.values():
@@ -222,6 +191,12 @@ def build_dashboard_overview(user, days=180, config=None):
         'daily_target': {
             'minutes': daily_target_minutes,
             'hours': daily_target_minutes // 60,
+        },
+        'subject_targets': {
+            'math': {
+                'minutes': MATH_DAILY_TARGET_MINUTES,
+                'hours': MATH_DAILY_TARGET_MINUTES // 60,
+            },
         },
         'active_session': serialize_session(active, now) if active else None,
         'summary': {

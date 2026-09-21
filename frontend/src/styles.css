@@ -312,6 +312,12 @@ kbd { margin-left: auto; padding: 0; border: 0; color: var(--text-tertiary); bac
 .daily-progress-track { height: 4px; margin-top: 11px; overflow: hidden; border-radius: 2px; background: var(--border-subtle); }
 .daily-progress-track i { height: 100%; border-radius: inherit; background: var(--accent); display: block; }
 .daily-progress-block > p { margin: 9px 0 0; color: var(--text-tertiary); font-size: 9px; }
+.math-target-progress { margin-top: 16px; padding-top: 13px; border-top: 1px solid var(--border-subtle); }
+.math-target-progress > div:first-child { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.math-target-progress span { color: var(--text-secondary); font-size: 10px; font-weight: 550; }
+.math-target-progress b { color: var(--text-tertiary); font: 500 10px ui-monospace, SFMono-Regular, Menlo, monospace; white-space: nowrap; }
+.math-target-progress .daily-progress-track { margin-top: 8px; }
+.math-target-progress .daily-progress-track i { background: var(--subject-math); }
 .overview-secondary { border-left: 1px solid var(--border-subtle); display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .overview-secondary article { min-width: 0; padding: 16px 13px; border-left: 1px solid var(--border-subtle); }
 .overview-secondary article:first-child { border-left: 0; }
