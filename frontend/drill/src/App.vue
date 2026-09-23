@@ -11,6 +11,17 @@ const username = ref('')
 const progress = ref<Progress | null>(null)
 const sidebarOpen = ref(false)
 const identityReady = ref(false)
+const sidebarStateKey = 'drill.sidebar.collapsed.v1'
+const storedSidebarState = (() => {
+  try {
+    const value = localStorage.getItem(sidebarStateKey)
+    return value === null ? null : value === 'true'
+  } catch {
+    return null
+  }
+})()
+const hasSidebarPreference = ref(storedSidebarState !== null)
+const sidebarCollapsed = ref(storedSidebarState ?? route.name === 'question')
 const isEi = location.hostname.toLowerCase().startsWith('ei.')
 const workspaceIcon = '/static/drill/drill-icon-180.png?v=img9392'
 const { language, scheme, setLanguage, setScheme, t } = useUiPreferences()
@@ -30,8 +41,15 @@ async function logout() {
   location.assign('/accounts/login/')
 }
 
+function setSidebarCollapsed(value: boolean) {
+  sidebarCollapsed.value = value
+  hasSidebarPreference.value = true
+  try { localStorage.setItem(sidebarStateKey, String(value)) } catch { /* Keep the in-memory preference. */ }
+}
+
 watch(() => route.fullPath, () => {
   sidebarOpen.value = false
+  if (!hasSidebarPreference.value) sidebarCollapsed.value = route.name === 'question'
 })
 
 onMounted(() => {
@@ -40,11 +58,13 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="drill-shell" :class="{ 'drawer-open': sidebarOpen, 'ei-workspace': isEi }">
+  <div class="drill-shell" :class="{ 'drawer-open': sidebarOpen, 'sidebar-collapsed': sidebarCollapsed, 'ei-workspace': isEi }">
     <button class="drawer-toggle" type="button" aria-label="Open navigation" aria-controls="drill-navigation" :aria-expanded="sidebarOpen" @click="sidebarOpen = true"><span /><span /><span /></button>
+    <button class="sidebar-expand" type="button" aria-label="Show sidebar" title="Show sidebar" @click="setSidebarCollapsed(false)"><span /><span /><span /></button>
     <button v-if="sidebarOpen" class="drawer-backdrop" type="button" aria-label="Close navigation" @click="sidebarOpen = false" />
     <aside id="drill-navigation" class="drill-sidebar">
       <button class="drawer-close" type="button" aria-label="Close navigation" @click="sidebarOpen = false">×</button>
+      <button class="sidebar-collapse" type="button" aria-label="Hide sidebar" title="Hide sidebar" @click="setSidebarCollapsed(true)">‹</button>
       <RouterLink class="wordmark" to="/practice" aria-label="Drill home">
         <img :src="workspaceIcon" alt="" aria-hidden="true" /><strong>{{ isEi ? '892 LAB' : 'DRILL' }}</strong><small>{{ isEi ? 'ELECTRONIC INFORMATION' : 'QUESTION PRACTICE' }}</small>
       </RouterLink>

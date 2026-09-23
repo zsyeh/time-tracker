@@ -80,7 +80,7 @@ const error = ref('')
 const similarOpen = ref(false)
 const answerOpen = ref(false)
 const stateSaving = ref(false)
-const noteSaved = ref(false)
+const noteSaveState = ref<'idle' | 'dirty' | 'saving' | 'saved'>('idle')
 const markerSaving = ref(false)
 const nextLoading = ref(false)
 
@@ -106,23 +106,32 @@ function downloadAssets(kind: 'question' | 'answer', assets: QuestionDetail['ans
 }
 let loadSequence = 0
 let noteDraftTimer = 0
+let noteAutoSaveTimer = 0
+let noteSavedTimer = 0
 let noteDraftDirty = false
 
 function useQuestion(loadedQuestion: QuestionDetail) {
   question.value = { ...loadedQuestion, markers: loadedQuestion.markers || [] }
   const draft = cachedNoteDraft(props.uuid)
   note.value = draft === null ? loadedQuestion.note || '' : draft
+  noteSaveState.value = draft !== null && draft !== (loadedQuestion.note || '') ? 'dirty' : 'idle'
 }
 
 function cacheNoteDraft() {
   window.clearTimeout(noteDraftTimer)
+  window.clearTimeout(noteAutoSaveTimer)
+  window.clearTimeout(noteSavedTimer)
   noteDraftDirty = true
+  noteSaveState.value = 'dirty'
   const uuid = props.uuid
   const value = note.value
   noteDraftTimer = window.setTimeout(() => {
     storeNoteDraft(uuid, value)
     noteDraftDirty = false
   }, 300)
+  noteAutoSaveTimer = window.setTimeout(() => {
+    if (props.uuid === uuid && note.value === value) void saveNote()
+  }, 5000)
 }
 
 function flushNoteDraft(uuid = props.uuid) {
@@ -132,10 +141,11 @@ function flushNoteDraft(uuid = props.uuid) {
   noteDraftDirty = false
 }
 
-function discardNoteDraft() {
+function discardNoteDraft(uuid = props.uuid) {
   window.clearTimeout(noteDraftTimer)
+  window.clearTimeout(noteAutoSaveTimer)
   noteDraftDirty = false
-  clearNoteDraft(props.uuid)
+  clearNoteDraft(uuid)
 }
 
 function schedulePrefetch(loadedQuestion: QuestionDetail) {
@@ -207,6 +217,8 @@ async function record(result: 'correct' | 'review' | 'reset') {
     const response = await post<StateResponse>(`/api/drill/questions/${props.uuid}/attempts/`, { result, note: note.value })
     discardNoteDraft()
     applyState(response)
+    noteSaveState.value = 'idle'
+    if (result === 'correct') await goToNext()
   } catch (reason) {
     error.value = (reason as Error).message
   } finally {
@@ -221,27 +233,50 @@ interface UserStateResponse {
   updated_at: string
 }
 
-async function saveUserState(update: Partial<Pick<UserStateResponse, 'note' | 'is_favorite' | 'review_later'>>) {
+async function saveUserState(update: Partial<Pick<UserStateResponse, 'is_favorite' | 'review_later'>>) {
   if (!question.value) return
   stateSaving.value = true
-  noteSaved.value = false
   try {
     const response = await post<UserStateResponse>(`/api/drill/questions/${props.uuid}/state/`, update)
     question.value.note = response.note
     question.value.saved_note = response.note
     question.value.is_favorite = response.is_favorite
     question.value.review_later = response.review_later
-    if ('note' in update) {
-      note.value = response.note
-      discardNoteDraft()
-      noteSaved.value = true
-      window.setTimeout(() => { noteSaved.value = false }, 1800)
-    }
     patchQuestionState(props.uuid, response)
   } catch (reason) {
     error.value = (reason as Error).message
   } finally {
     stateSaving.value = false
+  }
+}
+
+async function saveNote() {
+  if (!question.value || noteSaveState.value === 'saving') return
+  window.clearTimeout(noteAutoSaveTimer)
+  window.clearTimeout(noteSavedTimer)
+  const uuid = props.uuid
+  const value = note.value
+  noteSaveState.value = 'saving'
+  try {
+    const response = await post<UserStateResponse>(`/api/drill/questions/${uuid}/state/`, { note: value })
+    if (props.uuid !== uuid || !question.value) return
+    question.value.note = response.note
+    question.value.saved_note = response.note
+    question.value.is_favorite = response.is_favorite
+    question.value.review_later = response.review_later
+    patchQuestionState(uuid, response)
+    if (note.value === value) {
+      discardNoteDraft(uuid)
+      noteSaveState.value = 'saved'
+      noteSavedTimer = window.setTimeout(() => {
+        if (noteSaveState.value === 'saved') noteSaveState.value = 'idle'
+      }, 1800)
+    } else {
+      cacheNoteDraft()
+    }
+  } catch (reason) {
+    noteSaveState.value = 'dirty'
+    error.value = (reason as Error).message
   }
 }
 
@@ -331,13 +366,18 @@ async function goToNext() {
 }
 
 watch(() => props.uuid, (_uuid, previousUuid) => {
+  window.clearTimeout(noteAutoSaveTimer)
+  window.clearTimeout(noteSavedTimer)
   flushNoteDraft(previousUuid)
+  noteSaveState.value = 'idle'
   void load()
 })
 onMounted(() => {
   void load()
 })
 onUnmounted(() => {
+  window.clearTimeout(noteAutoSaveTimer)
+  window.clearTimeout(noteSavedTimer)
   flushNoteDraft()
 })
 </script>
@@ -389,7 +429,7 @@ onUnmounted(() => {
 
         <aside class="question-control-pane">
           <div class="answer-bar">
-            <div><span>QUESTION STATE</span><small>Grey = not started, green = mastered, yellow = needs review. You can change, reset, or undo at any time.</small><label class="note-field">Note <textarea v-model="note" maxlength="2000" placeholder="Optional note" @input="cacheNoteDraft" /><span class="note-controls"><small class="note-draft-hint">Unsaved text is kept in this browser for 3 days.</small><button type="button" class="save-note" :disabled="stateSaving" @click="saveUserState({ note })">{{ noteSaved ? 'Saved ✓' : 'Save note' }}</button></span></label></div>
+            <div><span>QUESTION STATE</span><small>Grey = not started, green = mastered, yellow = needs review. You can change, reset, or undo at any time.</small><label class="note-field">Note <textarea v-model="note" maxlength="2000" placeholder="Optional note" @input="cacheNoteDraft" /><span class="note-controls"><small class="note-draft-hint">{{ noteSaveState === 'saving' ? 'Saving to server…' : noteSaveState === 'saved' ? 'Saved to server.' : 'Autosaves after 5 seconds without changes.' }}</small><button type="button" class="save-note" :disabled="noteSaveState === 'saving'" @click="saveNote">{{ noteSaveState === 'saving' ? 'Saving…' : noteSaveState === 'saved' ? 'Saved ✓' : 'Save note' }}</button></span></label></div>
             <div><button class="review" :class="{ selected: question.state === 'review' }" :disabled="saving" @click="record('review')">Needs review</button><button class="correct" :class="{ selected: question.state === 'mastered' }" :disabled="saving" @click="record('correct')">Mastered</button><button :disabled="saving || question.state === 'unattempted'" @click="record('reset')">Reset</button><button :disabled="saving || !question.can_undo" @click="undo">Undo</button></div>
           </div>
 
