@@ -138,6 +138,7 @@ urlpatterns = [
     path('activity', drill_spa_view, name='drill_activity_page'),
     path('book-activity', drill_spa_view, name='drill_book_activity_page'),
     path('heatmap', drill_spa_view, name='drill_heatmap_page'),
+    path('selected-heatmap', drill_spa_view, name='drill_selected_heatmap_page'),
     path('paper', drill_spa_view, name='drill_paper_page'),
     path('papers', drill_spa_view, name='drill_papers_page'),
     path('papers/new', drill_spa_view, name='drill_paper_new_page'),

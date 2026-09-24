@@ -78,7 +78,7 @@ def _safe_drill_target(value, site='drill'):
     if site == 'dash':
         return path + (f'?{parsed.query}' if parsed.query else '') if path == '/' else '/'
     allowed = path in {
-        '/', '/practice', '/activity', '/book-activity', '/heatmap', '/paper', '/papers', '/favorites', '/review-later',
+        '/', '/practice', '/activity', '/book-activity', '/heatmap', '/selected-heatmap', '/paper', '/papers', '/favorites', '/review-later',
         '/feel', '/insight',
     } or path.startswith('/practice/') or path.startswith('/papers/')
     if not allowed:
