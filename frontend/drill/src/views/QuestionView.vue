@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api, post, remove } from '../lib/api'
 import { cachedNoteDraft, cachedQuestion, clearNoteDraft, fetchQuestion, patchQuestionState, prefetchQuestion, storeNoteDraft } from '../lib/workspace'
@@ -110,9 +110,42 @@ let noteAutoSaveTimer = 0
 let noteSavedTimer = 0
 let noteDraftDirty = false
 let questionOpenedAt = performance.now()
+let questionTimerInterval = 0
+const timingCountdown = ref(5)
+const timingElapsedSeconds = ref(0)
+const timingFinalized = ref(false)
+
+const formattedQuestionTime = computed(() => {
+  const seconds = timingElapsedSeconds.value
+  const hours = Math.floor(seconds / 3600)
+  const minutes = Math.floor((seconds % 3600) / 60)
+  const remainder = seconds % 60
+  return hours
+    ? `${hours}:${String(minutes).padStart(2, '0')}:${String(remainder).padStart(2, '0')}`
+    : `${minutes}:${String(remainder).padStart(2, '0')}`
+})
+
+function updateQuestionTimer() {
+  if (timingFinalized.value) return
+  const elapsedMilliseconds = performance.now() - questionOpenedAt
+  timingCountdown.value = Math.max(0, Math.ceil((5000 - elapsedMilliseconds) / 1000))
+  timingElapsedSeconds.value = elapsedMilliseconds > 5000
+    ? Math.ceil((elapsedMilliseconds - 5000) / 1000)
+    : 0
+}
+
+function resetQuestionTimer() {
+  window.clearInterval(questionTimerInterval)
+  questionOpenedAt = performance.now()
+  timingCountdown.value = 5
+  timingElapsedSeconds.value = 0
+  timingFinalized.value = false
+  questionTimerInterval = window.setInterval(updateQuestionTimer, 500)
+}
 
 function recordedQuestionSeconds() {
-  const seconds = Math.ceil((performance.now() - questionOpenedAt - 5000) / 1000)
+  updateQuestionTimer()
+  const seconds = timingElapsedSeconds.value
   return seconds >= 1 && seconds <= 43200 ? seconds : null
 }
 
@@ -231,6 +264,12 @@ async function record(result: 'correct' | 'review' | 'reset') {
     discardNoteDraft()
     applyState(response)
     noteSaveState.value = 'idle'
+    if (result === 'correct' || result === 'review') {
+      timingFinalized.value = true
+      window.clearInterval(questionTimerInterval)
+    } else {
+      resetQuestionTimer()
+    }
     if (result === 'correct') await goToNext()
   } catch (reason) {
     error.value = (reason as Error).message
@@ -319,6 +358,7 @@ async function undo() {
   saving.value = true
   try {
     applyState(await remove<StateResponse>(`/api/drill/questions/${props.uuid}/attempts/`))
+    resetQuestionTimer()
   } catch (reason) {
     error.value = (reason as Error).message
   } finally {
@@ -383,13 +423,15 @@ watch(() => props.uuid, (_uuid, previousUuid) => {
   window.clearTimeout(noteSavedTimer)
   flushNoteDraft(previousUuid)
   noteSaveState.value = 'idle'
-  questionOpenedAt = performance.now()
+  resetQuestionTimer()
   void load()
 })
 onMounted(() => {
+  resetQuestionTimer()
   void load()
 })
 onUnmounted(() => {
+  window.clearInterval(questionTimerInterval)
   window.clearTimeout(noteAutoSaveTimer)
   window.clearTimeout(noteSavedTimer)
   flushNoteDraft()
@@ -443,7 +485,7 @@ onUnmounted(() => {
 
         <aside class="question-control-pane">
           <div class="answer-bar">
-            <div><span>QUESTION STATE</span><small>Grey = not started, green = mastered, yellow = needs review. You can change, reset, or undo at any time.</small><label class="note-field">Note <textarea v-model="note" maxlength="2000" placeholder="Optional note" @input="cacheNoteDraft" /><span class="note-controls"><small class="note-draft-hint">{{ noteSaveState === 'saving' ? 'Saving to server…' : noteSaveState === 'saved' ? 'Saved to server.' : 'Autosaves after 5 seconds without changes.' }}</small><button type="button" class="save-note" :disabled="noteSaveState === 'saving'" @click="saveNote">{{ noteSaveState === 'saving' ? 'Saving…' : noteSaveState === 'saved' ? 'Saved ✓' : 'Save note' }}</button></span></label></div>
+            <div><div class="question-timer" :class="{ active: !timingCountdown && !timingFinalized, saved: timingFinalized }"><span>{{ timingFinalized ? 'TIME SAVED' : timingCountdown ? 'TIMER READY' : 'SOLVING TIME' }}</span><strong>{{ timingFinalized || !timingCountdown ? formattedQuestionTime : `Starts in ${timingCountdown}s` }}</strong></div><span>QUESTION STATE</span><small>Grey = not started, green = mastered, yellow = needs review. You can change, reset, or undo at any time.</small><label class="note-field">Note <textarea v-model="note" maxlength="2000" placeholder="Optional note" @input="cacheNoteDraft" /><span class="note-controls"><small class="note-draft-hint">{{ noteSaveState === 'saving' ? 'Saving to server…' : noteSaveState === 'saved' ? 'Saved to server.' : 'Autosaves after 5 seconds without changes.' }}</small><button type="button" class="save-note" :disabled="noteSaveState === 'saving'" @click="saveNote">{{ noteSaveState === 'saving' ? 'Saving…' : noteSaveState === 'saved' ? 'Saved ✓' : 'Save note' }}</button></span></label></div>
             <div><button class="review" :class="{ selected: question.state === 'review' }" :disabled="saving" @click="record('review')">Needs review</button><button class="correct" :class="{ selected: question.state === 'mastered' }" :disabled="saving" @click="record('correct')">Mastered</button><button :disabled="saving || question.state === 'unattempted'" @click="record('reset')">Reset</button><button :disabled="saving || !question.can_undo" @click="undo">Undo</button></div>
           </div>
 

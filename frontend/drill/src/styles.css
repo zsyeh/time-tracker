@@ -256,6 +256,11 @@ button { color: inherit; }
 .answer-bar span, .answer-bar small { display: block; }
 .answer-bar span, .learning-markers > header span { color: var(--text-secondary); font-size: 9px; font-weight: 550; }
 .answer-bar small, .learning-markers > header small { margin-top: 3px; color: var(--text-tertiary); font-size: 8px; }
+.question-timer { margin-bottom: 11px; padding-bottom: 10px; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.question-timer span { color: var(--text-tertiary); font-size: 8px; letter-spacing: .06em; }
+.question-timer strong { color: var(--text-secondary); font: 600 14px ui-monospace, SFMono-Regular, Menlo, monospace; font-variant-numeric: tabular-nums; }
+.question-timer.active strong { color: var(--accent); }
+.question-timer.saved strong { color: var(--success); }
 .note-field { margin-top: 10px; color: var(--text-secondary); display: flex; align-items: flex-start; flex-direction: column; font-size: 9px; }
 .note-field textarea { width: 100%; min-height: 76px; margin-top: 5px; padding: 8px; resize: vertical; border: 1px solid var(--border-default); border-radius: var(--radius-sm); outline: 0; color: var(--text-secondary); background: var(--bg-sidebar); font-size: 10px; }
 .note-field textarea:focus { border-color: var(--accent); box-shadow: var(--focus-ring); }
