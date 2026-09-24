@@ -50,6 +50,14 @@ class QuestionAttemptCreateSerializer(serializers.Serializer):
     )
     confidence = serializers.IntegerField(min_value=0, max_value=100, required=False, allow_null=True)
     note = serializers.CharField(max_length=2000, required=False, allow_blank=True, allow_null=True)
+    time_spent_seconds = serializers.IntegerField(
+        min_value=1, max_value=43200, required=False, allow_null=True,
+    )
+
+    def validate(self, attrs):
+        if attrs.get('result') not in {'correct', 'review'}:
+            attrs.pop('time_spent_seconds', None)
+        return attrs
 
 
 class QuestionUserStateSerializer(serializers.Serializer):

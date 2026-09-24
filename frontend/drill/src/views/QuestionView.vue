@@ -109,6 +109,12 @@ let noteDraftTimer = 0
 let noteAutoSaveTimer = 0
 let noteSavedTimer = 0
 let noteDraftDirty = false
+let questionOpenedAt = performance.now()
+
+function recordedQuestionSeconds() {
+  const seconds = Math.ceil((performance.now() - questionOpenedAt - 5000) / 1000)
+  return seconds >= 1 && seconds <= 43200 ? seconds : null
+}
 
 function useQuestion(loadedQuestion: QuestionDetail) {
   question.value = { ...loadedQuestion, markers: loadedQuestion.markers || [] }
@@ -214,7 +220,14 @@ function applyState(response: StateResponse) {
 async function record(result: 'correct' | 'review' | 'reset') {
   saving.value = true
   try {
-    const response = await post<StateResponse>(`/api/drill/questions/${props.uuid}/attempts/`, { result, note: note.value })
+    const timeSpentSeconds = result === 'correct' || result === 'review'
+      ? recordedQuestionSeconds()
+      : null
+    const response = await post<StateResponse>(`/api/drill/questions/${props.uuid}/attempts/`, {
+      result,
+      note: note.value,
+      ...(timeSpentSeconds === null ? {} : { time_spent_seconds: timeSpentSeconds }),
+    })
     discardNoteDraft()
     applyState(response)
     noteSaveState.value = 'idle'
@@ -370,6 +383,7 @@ watch(() => props.uuid, (_uuid, previousUuid) => {
   window.clearTimeout(noteSavedTimer)
   flushNoteDraft(previousUuid)
   noteSaveState.value = 'idle'
+  questionOpenedAt = performance.now()
   void load()
 })
 onMounted(() => {

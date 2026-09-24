@@ -400,6 +400,7 @@ class QuestionAttempt(models.Model):
     result = models.CharField(max_length=12, choices=RESULT_CHOICES, default='done')
     confidence = models.PositiveSmallIntegerField(null=True, blank=True)
     note = models.TextField(null=True, blank=True)
+    time_spent_seconds = models.PositiveIntegerField(null=True, blank=True)
     created_at = models.DateTimeField(default=timezone.now, db_index=True)
 
     class Meta:

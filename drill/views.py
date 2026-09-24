@@ -813,6 +813,7 @@ class DrillQuestionAttemptView(APIView):
             result=serializer.validated_data['result'],
             confidence=serializer.validated_data.get('confidence'),
             note=serializer.validated_data.get('note'),
+            time_spent_seconds=serializer.validated_data.get('time_spent_seconds'),
         )
         if serializer.validated_data.get('note') is not None:
             QuestionUserState.objects.update_or_create(
@@ -824,6 +825,7 @@ class DrillQuestionAttemptView(APIView):
             'id': attempt.pk,
             'result': attempt.result,
             'created_at': attempt.created_at,
+            'time_spent_seconds': attempt.time_spent_seconds,
             **self._payload(request.user, question),
         }, status=status.HTTP_201_CREATED)
 

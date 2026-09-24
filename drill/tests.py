@@ -364,6 +364,36 @@ class DrillApiTests(TestCase):
         self.assertEqual(detail['confidence'], 75)
         self.assertEqual(detail['note'], '定义域边界需要复查')
 
+    def test_attempt_time_is_saved_only_for_completed_question_states(self):
+        endpoint = f'/api/drill/questions/{self.question.uuid}/attempts/'
+        self.client.force_login(self.alice)
+        mastered = self.client.post(
+            endpoint,
+            {'result': 'correct', 'time_spent_seconds': 83},
+            content_type='application/json',
+        )
+        self.assertEqual(mastered.status_code, 201)
+        self.assertEqual(mastered.json()['time_spent_seconds'], 83)
+        self.assertEqual(
+            QuestionAttempt.objects.get(pk=mastered.json()['id']).time_spent_seconds,
+            83,
+        )
+
+        reset = self.client.post(
+            endpoint,
+            {'result': 'reset', 'time_spent_seconds': 25},
+            content_type='application/json',
+        )
+        self.assertEqual(reset.status_code, 201)
+        self.assertIsNone(reset.json()['time_spent_seconds'])
+
+        too_long = self.client.post(
+            endpoint,
+            {'result': 'review', 'time_spent_seconds': 43201},
+            content_type='application/json',
+        )
+        self.assertEqual(too_long.status_code, 400)
+
     def test_note_favorite_and_review_later_are_private_and_do_not_create_attempts(self):
         endpoint = f'/api/drill/questions/{self.question.uuid}/state/'
         self.client.force_login(self.alice)
