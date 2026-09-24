@@ -194,8 +194,22 @@ function recordedQuestionSeconds() {
   return seconds >= 1 && seconds <= 43200 ? seconds : null
 }
 
+function formatRecordedDuration(seconds: number) {
+  const hours = Math.floor(seconds / 3600)
+  const minutes = Math.floor((seconds % 3600) / 60)
+  const remainder = seconds % 60
+  if (hours) return `${hours}h ${minutes}m ${remainder}s`
+  if (minutes) return `${minutes}m ${remainder}s`
+  return `${remainder}s`
+}
+
 function useQuestion(loadedQuestion: QuestionDetail) {
-  question.value = { ...loadedQuestion, markers: loadedQuestion.markers || [] }
+  question.value = {
+    ...loadedQuestion,
+    markers: loadedQuestion.markers || [],
+    last_time_spent_seconds: loadedQuestion.last_time_spent_seconds ?? null,
+    last_timed_at: loadedQuestion.last_timed_at ?? null,
+  }
   const draft = cachedNoteDraft(props.uuid)
   note.value = draft === null ? loadedQuestion.note || '' : draft
   noteSaveState.value = draft !== null && draft !== (loadedQuestion.note || '') ? 'dirty' : 'idle'
@@ -278,6 +292,8 @@ interface StateResponse {
   note: string | null
   is_favorite: boolean
   review_later: boolean
+  last_time_spent_seconds: number | null
+  last_timed_at: string | null
 }
 
 function applyState(response: StateResponse) {
@@ -291,6 +307,8 @@ function applyState(response: StateResponse) {
   question.value.saved_note = response.note || ''
   question.value.is_favorite = response.is_favorite
   question.value.review_later = response.review_later
+  question.value.last_time_spent_seconds = response.last_time_spent_seconds
+  question.value.last_timed_at = response.last_timed_at
   note.value = response.note || ''
   patchQuestionState(props.uuid, response)
 }
@@ -500,7 +518,7 @@ onBeforeRouteLeave(async () => {
     <template v-else-if="question">
       <header class="question-header">
         <div><span class="eyebrow">{{ question.document }} · {{ String(question.question_order).padStart(4, '0') }}</span><h1>{{ question.display_label || `Question ${question.question_order}` }}</h1><p>{{ question.breadcrumbs.map((item) => item.title).join(' / ') }}</p><div class="question-badges"><span class="source-badge" :class="`category-${question.source_category}`">{{ question.source_category_label }}</span><span v-if="question.record_kind === 'grouped'" class="source-badge">Grouped source extract</span></div></div>
-        <div class="attempt-counter"><span>CURRENT STATE</span><strong class="state-name" :class="`text-${question.state}`">{{ question.state === 'mastered' ? 'MASTERED' : question.state === 'review' ? 'REVIEW' : 'NOT STARTED' }}</strong><small>{{ question.attempt_count }} recorded attempts</small></div>
+        <div class="attempt-counter"><span>CURRENT STATE</span><strong class="state-name" :class="`text-${question.state}`">{{ question.state === 'mastered' ? 'MASTERED' : question.state === 'review' ? 'REVIEW' : 'NOT STARTED' }}</strong><small>{{ question.attempt_count }} recorded attempts</small><small v-if="question.last_time_spent_seconds !== null" class="last-solving-time">Last time · {{ formatRecordedDuration(question.last_time_spent_seconds) }}</small></div>
       </header>
 
       <nav class="question-nav"><button :disabled="!question.previous_question_uuid" @click="question.previous_question_uuid && router.push({ path: `/practice/${question.previous_question_uuid}`, query: questionRouteQuery() })">← Previous</button><button :disabled="!question.next_question_uuid || nextLoading" @click="goToNext">{{ nextLoading ? 'Finding next…' : 'Next →' }}</button></nav>

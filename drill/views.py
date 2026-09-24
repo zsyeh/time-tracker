@@ -670,6 +670,12 @@ class DrillQuestionDetailView(APIView):
         latest = QuestionAttempt.objects.filter(
             user=request.user, question=question,
         ).order_by('-created_at', '-pk').first()
+        last_timed = QuestionAttempt.objects.filter(
+            user=request.user,
+            question=question,
+            result__in=('done', 'correct', 'review'),
+            time_spent_seconds__isnull=False,
+        ).order_by('-created_at', '-pk').first()
         user_state = QuestionUserState.objects.filter(
             user=request.user, question=question,
         ).first()
@@ -685,6 +691,8 @@ class DrillQuestionDetailView(APIView):
             'document_author': question.document.author,
             'document_attribution': question.document.attribution,
             'confidence': latest.confidence if latest else None,
+            'last_time_spent_seconds': last_timed.time_spent_seconds if last_timed else None,
+            'last_timed_at': last_timed.created_at if last_timed else None,
             'note': user_state.note if user_state else (latest.note if latest else ''),
             'markers': marker_codes,
             'next_question_uuid': str(next_question_uuid) if next_question_uuid else None,
@@ -786,6 +794,12 @@ class DrillQuestionAttemptView(APIView):
             result__in=('done', 'correct', 'review'),
         ).count()
         latest_result = latest.result if latest else None
+        last_timed = QuestionAttempt.objects.filter(
+            user=user,
+            question=question,
+            result__in=('done', 'correct', 'review'),
+            time_spent_seconds__isnull=False,
+        ).order_by('-created_at', '-pk').first()
         if latest_result == 'review':
             state = 'review'
         elif latest_result in {'done', 'correct'}:
@@ -802,6 +816,8 @@ class DrillQuestionAttemptView(APIView):
             'note': user_state.note if user_state else (latest.note if latest else ''),
             'is_favorite': user_state.is_favorite if user_state else False,
             'review_later': user_state.review_later if user_state else False,
+            'last_time_spent_seconds': last_timed.time_spent_seconds if last_timed else None,
+            'last_timed_at': last_timed.created_at if last_timed else None,
         }
 
     def post(self, request, question_uuid):

@@ -32,6 +32,8 @@ export interface QuestionDetail extends QuestionSummary {
   previous_question_uuid: string | null
   next_question_uuid: string | null
   confidence: number | null
+  last_time_spent_seconds: number | null
+  last_timed_at: string | null
   note: string | null
   markers: QuestionMarkerCode[]
   breadcrumbs: Array<{ id: number; title: string; level: number }>

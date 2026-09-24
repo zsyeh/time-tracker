@@ -416,6 +416,13 @@ class DrillApiTests(TestCase):
         self.assertEqual(completed.status_code, 201)
         self.assertGreaterEqual(completed.json()['time_spent_seconds'], 89)
         self.assertLessEqual(completed.json()['time_spent_seconds'], 90)
+        self.assertEqual(
+            completed.json()['last_time_spent_seconds'],
+            completed.json()['time_spent_seconds'],
+        )
+        detail = self.client.get(f'/api/drill/questions/{self.question.uuid}/').json()
+        self.assertEqual(detail['last_time_spent_seconds'], completed.json()['time_spent_seconds'])
+        self.assertIsNotNone(detail['last_timed_at'])
         state.refresh_from_db()
         self.assertIsNone(state.active_timing_started_at)
 

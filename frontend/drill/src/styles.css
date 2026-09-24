@@ -204,6 +204,7 @@ button { color: inherit; }
 .attempt-counter { min-width: 124px; padding-left: 16px; border-left: 1px solid var(--border-subtle); text-align: right; }
 .attempt-counter span, .attempt-counter small { display: block; color: var(--text-tertiary); font-size: 8px; }
 .attempt-counter strong { margin: 3px 0 1px; display: block; font-size: 12px; font-weight: 600; }
+.attempt-counter .last-solving-time { margin-top: 5px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
 .text-mastered { color: var(--success) !important; }
 .text-review { color: var(--warning) !important; }
 .text-unattempted { color: var(--text-tertiary) !important; }
