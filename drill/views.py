@@ -1,6 +1,7 @@
 import datetime
 
 from django.conf import settings
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import transaction
 from django.db.models import Count, Exists, Max, OuterRef, Prefetch, Q, Subquery, Sum
 from django.db.models.functions import TruncDate
@@ -961,25 +962,42 @@ class DrillBookFeelView(APIView):
 
 
 class DrillInsightView(APIView):
+    page_size = 20
+
+    def paginate(self, items, page_number):
+        paginator = Paginator(items, self.page_size)
+        try:
+            page = paginator.page(page_number)
+        except (EmptyPage, PageNotAnInteger):
+            page = paginator.page(paginator.num_pages)
+        return page, {
+            'count': paginator.count,
+            'page': page.number,
+            'page_size': self.page_size,
+            'total_pages': paginator.num_pages,
+            'next_page': page.next_page_number() if page.has_next() else None,
+            'previous_page': page.previous_page_number() if page.has_previous() else None,
+        }
+
     def get(self, request):
         recent_attempts = QuestionAttempt.objects.filter(
             user=request.user,
             result__in=('done', 'correct', 'review'),
             question__is_practiceable=True,
             question__document__workspace=request_workspace(request),
-        ).select_related('question__document', 'question__similarity_topic')[:30]
+        ).select_related('question__document', 'question__similarity_topic').order_by('-created_at', '-pk')
         saved_notes = QuestionUserState.objects.filter(
             user=request.user,
             question__is_practiceable=True,
             question__document__workspace=request_workspace(request),
-        ).exclude(note='').select_related('question__document', 'question__similarity_topic').order_by('-updated_at')[:30]
+        ).exclude(note='').select_related('question__document', 'question__similarity_topic').order_by('-updated_at')
         attempt_notes = QuestionAttempt.objects.filter(
             user=request.user,
             question__is_practiceable=True,
             question__document__workspace=request_workspace(request),
         ).exclude(note__isnull=True).exclude(note='').select_related(
             'question__document', 'question__similarity_topic',
-        ).order_by('-created_at', '-pk')[:30]
+        ).order_by('-created_at', '-pk')
 
         def question_identity(question):
             return {
@@ -1010,8 +1028,12 @@ class DrillInsightView(APIView):
                 'note': note,
                 'updated_at': updated_at,
             })
-            if len(note_payload) == 30:
-                break
+        question_page, question_pagination = self.paginate(
+            recent_attempts, request.query_params.get('questions_page', 1),
+        )
+        note_page, note_pagination = self.paginate(
+            note_payload, request.query_params.get('notes_page', 1),
+        )
 
         marker_counts = {
             row['code']: row['count']
@@ -1023,15 +1045,21 @@ class DrillInsightView(APIView):
         }
 
         return Response({
-            'recent_questions': [
+            'recent_questions': {
+                **question_pagination,
+                'results': [
                 {
                     **question_identity(item.question),
                     'result': item.result,
                     'created_at': item.created_at,
                 }
-                for item in recent_attempts
-            ],
-            'recent_notes': note_payload,
+                for item in question_page.object_list
+                ],
+            },
+            'recent_notes': {
+                **note_pagination,
+                'results': list(note_page.object_list),
+            },
             'marker_stats': [
                 {'code': code, 'label': label, 'count': marker_counts.get(code, 0)}
                 for code, label in QuestionMarker.MARKER_CHOICES
@@ -1043,6 +1071,7 @@ class DrillHeatmapView(APIView):
     def get(self, request):
         scope = request.query_params.get('scope', 'past_exam')
         mode = request.query_params.get('mode', 'questions')
+        collection = request.query_params.get('collection', '')
         scope_filters = {
             'past_exam': Q(source_category='past_exam'),
             'mock_exam': Q(source_category='mock_exam'),
@@ -1052,15 +1081,22 @@ class DrillHeatmapView(APIView):
             return Response({'detail': 'scope must be past_exam, mock_exam, or all.'}, status=400)
         if mode not in {'topics', 'questions'}:
             return Response({'detail': 'mode must be topics or questions.'}, status=400)
+        if collection not in {'', 'selected'}:
+            return Response({'detail': 'collection must be selected or omitted.'}, status=400)
+        if collection == 'selected' and request_workspace(request) != 'drill':
+            raise Http404
 
-        questions = list(
-            workspace_questions(request).filter(
+        question_queryset = workspace_questions(request).filter(
                 scope_filters[scope], is_practiceable=True,
-            ).select_related('document', 'similarity_topic').only(
+            )
+        if collection == 'selected':
+            question_queryset = question_queryset.filter(answer_source='daguan_answer_guide_pdf')
+        questions = list(
+            question_queryset.select_related('document', 'similarity_topic').only(
                 'id', 'uuid', 'document_id', 'document__title', 'document__display_title',
                 'similarity_topic_id', 'similarity_topic__title',
                 'similarity_topic__display_title', 'question_order', 'source_label',
-                'display_label', 'exam_year', 'exam_variant',
+                'display_label', 'exam_year', 'exam_variant', 'answer_source',
             ).order_by('document_id', 'question_order')
         )
         attempt_filters = Q(
@@ -1069,6 +1105,8 @@ class DrillHeatmapView(APIView):
         )
         if scope != 'all':
             attempt_filters &= Q(question__source_category=scope)
+        if collection == 'selected':
+            attempt_filters &= Q(question__answer_source='daguan_answer_guide_pdf')
         progress = {}
         for row in QuestionAttempt.objects.filter(
             attempt_filters, user=request.user,

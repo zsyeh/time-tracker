@@ -10,6 +10,8 @@ const { t } = useUiPreferences()
 const data = ref<InsightPayload | null>(null)
 const loading = ref(true)
 const error = ref('')
+const questionsPage = ref(1)
+const notesPage = ref(1)
 
 function openQuestion(uuid: string) {
   void router.push({ path: `/practice/${uuid}`, query: { from: 'insight' } })
@@ -19,15 +21,26 @@ function formatTime(value: string) {
   return new Intl.DateTimeFormat(undefined, { month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }).format(new Date(value))
 }
 
-onMounted(async () => {
+async function load() {
+  loading.value = true
+  error.value = ''
   try {
-    data.value = await api<InsightPayload>('/api/drill/insight/')
+    data.value = await api<InsightPayload>(`/api/drill/insight/?questions_page=${questionsPage.value}&notes_page=${notesPage.value}`)
   } catch (reason) {
     error.value = (reason as Error).message
   } finally {
     loading.value = false
   }
-})
+}
+
+async function changePage(kind: 'questions' | 'notes', page: number | null) {
+  if (!page || loading.value) return
+  if (kind === 'questions') questionsPage.value = page
+  else notesPage.value = page
+  await load()
+}
+
+onMounted(load)
 </script>
 
 <template>
@@ -38,8 +51,8 @@ onMounted(async () => {
     <template v-else>
     <section class="marker-overview"><header><div><span class="eyebrow">LEARNING SIGNALS</span><h2>Marker overview</h2></div><small>Counts across your full question history.</small></header><div><button v-for="marker in data?.marker_stats" :key="marker.code" :disabled="!marker.count" @click="router.push({ path: '/practice', query: { marker: marker.code } })"><span>{{ marker.label }}</span><strong>{{ marker.count }}</strong><small>View questions →</small></button></div></section>
     <div class="insight-grid">
-      <section><header><span>RECENT QUESTIONS</span><strong>{{ data?.recent_questions.length || 0 }}</strong></header><div class="insight-list"><button v-for="item in data?.recent_questions" :key="`${item.uuid}-${item.created_at}`" @click="openQuestion(item.uuid)"><span><strong>{{ item.label }}</strong><small>{{ item.document }} · {{ item.topic }}</small></span><span><em :class="`text-${item.result === 'review' ? 'review' : 'mastered'}`">{{ item.result }}</em><time>{{ formatTime(item.created_at) }}</time></span></button><p v-if="!data?.recent_questions.length">No recent practice yet.</p></div></section>
-      <section><header><span>RECENT NOTES</span><strong>{{ data?.recent_notes.length || 0 }}</strong></header><div class="insight-list note-list"><button v-for="item in data?.recent_notes" :key="item.uuid" @click="openQuestion(item.uuid)"><span><strong>{{ item.label }}</strong><small>{{ item.document }} · {{ item.topic }}</small><p>{{ item.note }}</p></span><time>{{ formatTime(item.updated_at) }}</time></button><p v-if="!data?.recent_notes.length">No saved notes yet.</p></div></section>
+      <section><header><span>RECENT QUESTIONS</span><strong>{{ data?.recent_questions.count || 0 }}</strong></header><div class="insight-list"><button v-for="item in data?.recent_questions.results" :key="`${item.uuid}-${item.created_at}`" @click="openQuestion(item.uuid)"><span><strong>{{ item.label }}</strong><small>{{ item.document }} · {{ item.topic }}</small></span><span><em :class="`text-${item.result === 'review' ? 'review' : 'mastered'}`">{{ item.result }}</em><time>{{ formatTime(item.created_at) }}</time></span></button><p v-if="!data?.recent_questions.results.length">No recent practice yet.</p></div><footer class="insight-pagination"><button :disabled="!data?.recent_questions.previous_page || loading" @click="changePage('questions', data?.recent_questions.previous_page || null)">Previous</button><span>{{ data?.recent_questions.page }} / {{ data?.recent_questions.total_pages }}</span><button :disabled="!data?.recent_questions.next_page || loading" @click="changePage('questions', data?.recent_questions.next_page || null)">Next</button></footer></section>
+      <section><header><span>RECENT NOTES</span><strong>{{ data?.recent_notes.count || 0 }}</strong></header><div class="insight-list note-list"><button v-for="item in data?.recent_notes.results" :key="item.uuid" @click="openQuestion(item.uuid)"><span><strong>{{ item.label }}</strong><small>{{ item.document }} · {{ item.topic }}</small><p>{{ item.note }}</p></span><time>{{ formatTime(item.updated_at) }}</time></button><p v-if="!data?.recent_notes.results.length">No saved notes yet.</p></div><footer class="insight-pagination"><button :disabled="!data?.recent_notes.previous_page || loading" @click="changePage('notes', data?.recent_notes.previous_page || null)">Previous</button><span>{{ data?.recent_notes.page }} / {{ data?.recent_notes.total_pages }}</span><button :disabled="!data?.recent_notes.next_page || loading" @click="changePage('notes', data?.recent_notes.next_page || null)">Next</button></footer></section>
     </div>
     </template>
   </section>

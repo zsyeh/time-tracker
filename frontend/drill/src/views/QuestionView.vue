@@ -30,8 +30,8 @@ function navigationQueryString() {
 
 function questionRouteQuery() {
   const query: Record<string, string> = navigationQuery()
-  if (route.query.from === 'heatmap') {
-    query.from = 'heatmap'
+  if (route.query.from === 'heatmap' || route.query.from === 'selected-heatmap') {
+    query.from = String(route.query.from)
     query.heat_scope = String(route.query.heat_scope || 'all')
     query.heat_question = String(route.query.heat_question || props.uuid)
   } else if (route.query.from === 'collection') {
@@ -44,9 +44,9 @@ function questionRouteQuery() {
 }
 
 function backToEntryPoint() {
-  if (route.query.from === 'heatmap') {
+  if (route.query.from === 'heatmap' || route.query.from === 'selected-heatmap') {
     void router.push({
-      path: '/heatmap',
+      path: route.query.from === 'selected-heatmap' ? '/selected-heatmap' : '/heatmap',
       query: {
         mode: 'questions',
         scope: ['past_exam', 'mock_exam', 'all'].includes(String(route.query.heat_scope))
@@ -384,7 +384,7 @@ onUnmounted(() => {
 
 <template>
   <section class="page question-page">
-    <button class="back-link" @click="backToEntryPoint">← {{ route.query.from === 'heatmap' ? 'Back to heatmap' : route.query.from === 'collection' ? 'Back to saved questions' : route.query.from === 'insight' ? 'Back to insight' : 'Question bank' }}</button>
+    <button class="back-link" @click="backToEntryPoint">← {{ route.query.from === 'selected-heatmap' ? 'Back to selected heatmap' : route.query.from === 'heatmap' ? 'Back to heatmap' : route.query.from === 'collection' ? 'Back to saved questions' : route.query.from === 'insight' ? 'Back to insight' : 'Question bank' }}</button>
     <p v-if="error" class="error-state">{{ error }}</p>
     <div v-if="loading" class="question-skeleton">LOADING QUESTION…</div>
     <template v-else-if="question">

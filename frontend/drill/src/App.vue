@@ -81,6 +81,9 @@ onMounted(() => {
         <RouterLink to="/heatmap" :class="{ active: route.name === 'heatmap' }">
           <span>{{ t('knowledge') }}</span>
         </RouterLink>
+        <RouterLink v-if="!isEi" to="/selected-heatmap" :class="{ active: route.name === 'selected-heatmap' }">
+          <span>{{ t('selectedHeatmap') }}</span>
+        </RouterLink>
         <RouterLink to="/papers" :class="{ active: String(route.name || '').startsWith('paper') }">
           <span>{{ t('buildPaper') }}</span>
         </RouterLink>

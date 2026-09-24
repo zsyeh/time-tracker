@@ -254,6 +254,25 @@ class DrillApiTests(TestCase):
         self.assertEqual(limits['state'], 'unattempted')
         self.assertNotIn('prompt_text', limits)
 
+    def test_selected_heatmap_only_contains_curated_drill_questions(self):
+        self.question.answer_source = 'daguan_answer_guide_pdf'
+        self.question.save(update_fields=['answer_source'])
+        self.client.force_login(self.alice)
+        payload = self.client.get('/api/drill/heatmap/?scope=all&collection=selected').json()
+        uuids = {
+            item['uuid']
+            for group in payload['groups']
+            for item in group['questions']
+        }
+        self.assertEqual(uuids, {str(self.question.uuid)})
+        self.assertEqual(
+            self.client.get(
+                '/api/drill/heatmap/?scope=all&collection=selected',
+                HTTP_HOST='ei.ehzsy.site',
+            ).status_code,
+            404,
+        )
+
     def test_activity_heatmap_is_user_and_workspace_scoped(self):
         ei_document = QuestionDocument.objects.create(
             source_id=99,
@@ -384,9 +403,9 @@ class DrillApiTests(TestCase):
         self.assertEqual(feel['feel_score'], 0)
         self.assertEqual(feel['recent_attempts'], 1)
         insight = self.client.get('/api/drill/insight/').json()
-        self.assertEqual(len(insight['recent_questions']), 1)
-        self.assertEqual(insight['recent_questions'][0]['uuid'], str(self.question.uuid))
-        self.assertEqual(insight['recent_notes'][0]['note'], 'Recent note')
+        self.assertEqual(insight['recent_questions']['count'], 1)
+        self.assertEqual(insight['recent_questions']['results'][0]['uuid'], str(self.question.uuid))
+        self.assertEqual(insight['recent_notes']['results'][0]['note'], 'Recent note')
 
     def test_multiple_learning_markers_coexist_with_state_and_are_private(self):
         marker_url = f'/api/drill/questions/{self.question.uuid}/markers/'

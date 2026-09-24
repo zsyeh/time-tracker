@@ -23,6 +23,7 @@ const router = createRouter({
     { path: '/practice', name: 'practice', component: PracticeView },
     { path: '/practice/:uuid', name: 'question', component: QuestionView, props: true },
     { path: '/heatmap', name: 'heatmap', component: HeatmapView },
+    { path: '/selected-heatmap', name: 'selected-heatmap', component: HeatmapView, props: { selectedOnly: true } },
     { path: '/activity', name: 'activity', component: ActivityView },
     { path: '/book-activity', name: 'book-activity', component: BookActivityView },
     { path: '/paper', redirect: '/papers/new' },

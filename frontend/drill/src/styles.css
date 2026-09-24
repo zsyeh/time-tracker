@@ -480,6 +480,11 @@ button { color: inherit; }
 .insight-list small, .insight-list time { color: var(--text-tertiary); font-size: 8px; }
 .insight-list em { font-size: 8px; font-style: normal; }
 .insight-list > p { margin: 0; padding: 20px 13px; color: var(--text-tertiary); font-size: 9px; }
+.insight-pagination { min-height: 38px; padding: 6px 10px; border-top: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.insight-pagination button { min-height: 26px; padding: 0 9px; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); color: var(--text-secondary); background: var(--bg-surface); font: inherit; font-size: 9px; cursor: pointer; }
+.insight-pagination button:hover:not(:disabled) { border-color: var(--border-default); color: var(--text-primary); background: var(--bg-surface-hover); }
+.insight-pagination button:disabled { opacity: .35; cursor: default; }
+.insight-pagination span { color: var(--text-tertiary); font-size: 8px; font-variant-numeric: tabular-nums; }
 .note-list > button > span p { margin: 2px 0 0; color: var(--text-secondary); font-size: 9px; line-height: 1.5; white-space: pre-wrap; }
 .note-list > button > time { flex: none; }
 

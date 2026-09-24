@@ -5,6 +5,7 @@ import { api } from '../lib/api'
 import { cachedHeatmap, storeHeatmap } from '../lib/workspace'
 import { useUiPreferences } from '../lib/uiPreferences'
 
+const props = withDefaults(defineProps<{ selectedOnly?: boolean }>(), { selectedOnly: false })
 const { t } = useUiPreferences()
 
 interface HeatmapQuestion {
@@ -95,7 +96,7 @@ function openQuestion(documentId: number, question: HeatmapQuestion) {
   }))
   const query: Record<string, string> = {
     document: String(documentId),
-    from: 'heatmap',
+    from: props.selectedOnly ? 'selected-heatmap' : 'heatmap',
     heat_scope: scope.value,
     heat_question: question.uuid,
   }
@@ -131,7 +132,8 @@ async function restoreQuestionSelection(payload: HeatmapPayload) {
 async function load() {
   const requestedScope = scope.value
   const requestedMode = mode.value
-  const cacheKey = `${requestedMode}:${requestedScope}`
+  const collection = props.selectedOnly ? 'selected' : ''
+  const cacheKey = `${collection || 'all'}:${requestedMode}:${requestedScope}`
   const cached = cachedHeatmap<HeatmapPayload>(cacheKey)
   if (cached) {
     data.value = cached
@@ -140,7 +142,7 @@ async function load() {
   loading.value = !cached
   error.value = ''
   try {
-    const value = await api<HeatmapPayload>(`/api/drill/heatmap/?scope=${requestedScope}&mode=${requestedMode}`)
+    const value = await api<HeatmapPayload>(`/api/drill/heatmap/?scope=${requestedScope}&mode=${requestedMode}${collection ? `&collection=${collection}` : ''}`)
     if (scope.value !== requestedScope || mode.value !== requestedMode) return
     data.value = value
     storeHeatmap(cacheKey, value)
@@ -164,7 +166,7 @@ onMounted(load)
 <template>
   <section class="page heatmap-page">
     <header class="page-header">
-      <div><span class="eyebrow">{{ t('knowledgeMap') }}</span><h1>{{ t('coverageByBook') }}</h1><p>Every topic and question cell opens a preview before navigation.</p></div>
+      <div><span class="eyebrow">{{ props.selectedOnly ? t('selectedHeatmap') : t('knowledgeMap') }}</span><h1>{{ props.selectedOnly ? t('selectedHeatmap') : t('coverageByBook') }}</h1><p>{{ props.selectedOnly ? 'Curated Da Guan questions, grouped by source book and knowledge topic.' : 'Every topic and question cell opens a preview before navigation.' }}</p></div>
       <div class="heat-controls">
         <div class="heat-mode"><button :class="{ active: mode === 'topics' }" @click="mode = 'topics'">Topics</button><button :class="{ active: mode === 'questions' }" @click="mode = 'questions'">Questions</button></div>
         <div class="heat-scope"><button :class="{ active: scope === 'all' }" @click="scope = 'all'">All</button><button :class="{ active: scope === 'past_exam' }" @click="scope = 'past_exam'">Past exams</button><button :class="{ active: scope === 'mock_exam' }" @click="scope = 'mock_exam'">Mock exams</button></div>

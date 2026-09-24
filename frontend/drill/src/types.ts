@@ -142,7 +142,7 @@ export interface InsightPayload {
     label: string
     count: number
   }>
-  recent_questions: Array<{
+  recent_questions: InsightPage<{
     uuid: string
     label: string
     document: string
@@ -150,7 +150,7 @@ export interface InsightPayload {
     result: 'done' | 'correct' | 'review'
     created_at: string
   }>
-  recent_notes: Array<{
+  recent_notes: InsightPage<{
     uuid: string
     label: string
     document: string
@@ -158,6 +158,16 @@ export interface InsightPayload {
     note: string
     updated_at: string
   }>
+}
+
+export interface InsightPage<T> {
+  count: number
+  page: number
+  page_size: number
+  total_pages: number
+  next_page: number | null
+  previous_page: number | null
+  results: T[]
 }
 
 export type PaperMode = 'standard' | 'intensive' | 'weak'
