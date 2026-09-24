@@ -53,8 +53,21 @@
   --text-primary: #202024;
   --text-secondary: #5f5f68;
   --text-tertiary: #85858f;
+  --accent: #28784a;
+  --accent-hover: #21643e;
+  --accent-rgb: 40, 120, 74;
+  --success: #1f7445;
+  --warning: #8a5b00;
+  --danger: #b23843;
   --accent-muted: rgba(var(--accent-rgb), .1);
   --focus-ring: 0 0 0 3px rgba(var(--accent-rgb), .18);
+}
+
+[data-color-scheme="light"] .ei-workspace {
+  --accent: #28699f;
+  --accent-hover: #215985;
+  --accent-rgb: 40, 105, 159;
+  --accent-muted: rgba(40, 105, 159, .1);
 }
 
 * { box-sizing: border-box; }
@@ -180,12 +193,19 @@ button { color: inherit; }
 .category-past_exam { color: #8cb5df; border-color: #34506c; }
 .category-mock_exam, .category-adapted_exam { color: #d3b670; border-color: #624f27; }
 .category-workbook, .category-other_practice, .category-competition { color: var(--text-secondary); }
+[data-color-scheme="light"] .category-past_exam { color: #245e91; border-color: #8fb6d8; background: #edf5fb; }
+[data-color-scheme="light"] .category-mock_exam, [data-color-scheme="light"] .category-adapted_exam { color: #7b5200; border-color: #d2ad62; background: #fff7df; }
 .attempt-mark { width: 23px; height: 23px; border: 1px solid var(--border-default); border-radius: 4px; background: var(--bg-sidebar); display: grid; place-items: center; font: 8px ui-monospace, monospace; }
 .status-unattempted { border-color: var(--border-default) !important; background: #222329 !important; }
 .status-progress { border-color: #56766a !important; background: #28473d !important; }
 .status-mastered { border-color: #3f8b5c !important; background: #28633f !important; }
 .status-review { border-color: #a17e38 !important; background: #674e20 !important; }
 .status-overdue { border-color: #b94a52 !important; background: #762f36 !important; }
+[data-color-scheme="light"] .status-unattempted { border-color: #c9cdd3 !important; background: #eef0f2 !important; }
+[data-color-scheme="light"] .status-progress { border-color: #6eaa89 !important; background: #d9eee2 !important; }
+[data-color-scheme="light"] .status-mastered { border-color: #348858 !important; background: #b8e2c7 !important; }
+[data-color-scheme="light"] .status-review { border-color: #ad7714 !important; background: #ffebb1 !important; }
+[data-color-scheme="light"] .status-overdue { border-color: #be4650 !important; background: #f5c6ca !important; }
 .row-arrow { color: var(--text-tertiary); }
 .question-row:hover .row-arrow { color: var(--accent); }
 .empty-state, .question-skeleton { padding: 64px 20px; color: var(--text-tertiary); text-align: center; font-size: 10px; }
@@ -353,6 +373,10 @@ button { color: inherit; }
 .topic-heatmap .intensity-2 { background: #28503a !important; }
 .topic-heatmap .intensity-3 { background: #326d48 !important; }
 .topic-heatmap .intensity-4 { background: #43895c !important; }
+[data-color-scheme="light"] .topic-heatmap .intensity-1 { border-color: #a8cfb6 !important; background: #e1f2e7 !important; }
+[data-color-scheme="light"] .topic-heatmap .intensity-2 { border-color: #7ebd95 !important; background: #c8e8d3 !important; }
+[data-color-scheme="light"] .topic-heatmap .intensity-3 { border-color: #54a875 !important; background: #9fd8b3 !important; }
+[data-color-scheme="light"] .topic-heatmap .intensity-4 { border-color: #2f8554 !important; background: #70bf8d !important; }
 .question-heatmap { display: grid; grid-template-columns: repeat(auto-fill, 17px); gap: 4px; }
 .question-heatmap button { width: 17px; height: 17px; }
 .topic-preview-card { margin-top: 10px; padding: 13px; border: 1px solid var(--border-default); border-radius: var(--radius-md); background: var(--bg-sidebar); display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 18px; }
@@ -390,6 +414,7 @@ button { color: inherit; }
 [data-color-scheme="light"] .activity-level-7 { background: #268c45; }
 [data-color-scheme="light"] .activity-level-8 { background: #1f733a; }
 .activity-grid i.future { background: #25262b; border-color: #292a30; }
+[data-color-scheme="light"] .activity-grid i.future { background: #f3f4f6; border-color: #e2e4e8; }
 .activity-calendar { margin-bottom: 9px; padding: 15px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface); }
 .activity-calendar > header { margin-bottom: 13px; display: flex; align-items: flex-end; justify-content: space-between; gap: 18px; }
 .activity-calendar > header span { color: var(--text-tertiary); font-size: 8px; }
