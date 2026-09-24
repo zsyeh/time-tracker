@@ -578,15 +578,10 @@ onBeforeRouteLeave(async () => {
             <div><button class="review" :class="{ selected: question.state === 'review' }" :disabled="saving" @click="record('review')">Needs review</button><button class="correct" :class="{ selected: question.state === 'mastered' }" :disabled="saving" @click="record('correct')">Mastered</button><button :disabled="saving || question.state === 'unattempted'" @click="record('reset')">Reset</button><button :disabled="saving || !question.can_undo" @click="undo">Undo</button></div>
           </div>
 
-          <section class="learning-markers">
-            <header><div><span>LEARNING SIGNALS</span><small>Independent from question state. Select any that apply.</small></div><div><button type="button" :disabled="markerSaving" @click="saveMarkers(markerOptions.map((item) => item.code))">All</button><button type="button" :disabled="markerSaving || !question.markers.length" @click="saveMarkers([])">Clear</button></div></header>
-            <div><button v-for="marker in markerOptions" :key="marker.code" type="button" :class="{ active: question.markers.includes(marker.code) }" :disabled="markerSaving" @click="toggleMarker(marker.code)">{{ marker.label }}</button></div>
-          </section>
-
           <div class="next-question-group">
             <button class="next-question sequential" :disabled="!question.sequential_next_question_uuid || nextLoading" @click="goToNext('sequential')"><span>{{ nextLoading ? 'Finding next question…' : 'Next in sequence' }}</span><small>Continue in source order across topics and books</small><b>→</b></button>
-            <button class="next-question overdue" :disabled="!question.next_overdue_review_uuid || nextLoading" @click="goToNext('overdue')"><span>Next red review</span><small>Waiting 5+ days</small><b>→</b></button>
-            <button class="next-question review" :disabled="!question.next_review_uuid || nextLoading" @click="goToNext('review')"><span>Next yellow review</span><small>Within 5 days</small><b>→</b></button>
+            <button class="next-question overdue" aria-label="Open the next overdue red review question" title="Next overdue review" :disabled="!question.next_overdue_review_uuid || nextLoading" @click="goToNext('overdue')"><span>Next red review</span><small>Waiting 5+ days</small><b>→</b></button>
+            <button class="next-question review" aria-label="Open the next yellow review question" title="Next recent review" :disabled="!question.next_review_uuid || nextLoading" @click="goToNext('review')"><span>Next yellow review</span><small>Within 5 days</small><b>→</b></button>
           </div>
 
           <details v-if="question.source_label && question.source_label !== question.display_label" class="raw-provenance"><summary>View original imported label</summary><code>{{ question.source_label }}</code></details>
@@ -602,6 +597,11 @@ onBeforeRouteLeave(async () => {
             <p v-else-if="similarLoading">LOADING SIMILAR QUESTIONS…</p>
             <button v-for="item in similar" :key="item.uuid" @click="router.push({ path: `/practice/${item.uuid}`, query: questionRouteQuery() })"><span>{{ item.display_label || `Question ${item.question_order}` }}</span><small>{{ item.document }} · {{ item.state }} · {{ item.attempt_count }} attempts</small><b>→</b></button>
             <p v-if="similarKind && !similarLoading && !similar.length">No questions of this source type were indexed for this topic.</p>
+          </section>
+
+          <section class="learning-markers">
+            <header><div><span>LEARNING SIGNALS</span><small>Independent from question state. Select any that apply.</small></div><div><button type="button" :disabled="markerSaving" @click="saveMarkers(markerOptions.map((item) => item.code))">All</button><button type="button" :disabled="markerSaving || !question.markers.length" @click="saveMarkers([])">Clear</button></div></header>
+            <div><button v-for="marker in markerOptions" :key="marker.code" type="button" :class="{ active: question.markers.includes(marker.code) }" :disabled="markerSaving" @click="toggleMarker(marker.code)">{{ marker.label }}</button></div>
           </section>
         </aside>
       </div>
