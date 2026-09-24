@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router'
 import { api, post, remove } from '../lib/api'
 import { cachedNoteDraft, cachedQuestion, clearNoteDraft, fetchQuestion, patchQuestionState, prefetchQuestion, storeNoteDraft } from '../lib/workspace'
 import type { QuestionDetail, QuestionMarkerCode, QuestionSummary } from '../types'
@@ -111,6 +111,11 @@ let noteSavedTimer = 0
 let noteDraftDirty = false
 let questionOpenedAt = performance.now()
 let questionTimerInterval = 0
+let timingServerNow = 0
+let timingStartsAt = 0
+let timingSyncedAt = 0
+let timingSyncPromise: Promise<void> | null = null
+let timingSyncSequence = 0
 const timingCountdown = ref(5)
 const timingElapsedSeconds = ref(0)
 const timingFinalized = ref(false)
@@ -127,20 +132,60 @@ const formattedQuestionTime = computed(() => {
 
 function updateQuestionTimer() {
   if (timingFinalized.value) return
-  const elapsedMilliseconds = performance.now() - questionOpenedAt
-  timingCountdown.value = Math.max(0, Math.ceil((5000 - elapsedMilliseconds) / 1000))
-  timingElapsedSeconds.value = elapsedMilliseconds > 5000
-    ? Math.ceil((elapsedMilliseconds - 5000) / 1000)
+  const now = timingServerNow
+    ? timingServerNow + performance.now() - timingSyncedAt
+    : performance.now()
+  const startsAt = timingStartsAt || questionOpenedAt + 5000
+  const elapsedMilliseconds = now - startsAt
+  timingCountdown.value = Math.max(0, Math.ceil(-elapsedMilliseconds / 1000))
+  timingElapsedSeconds.value = elapsedMilliseconds > 0
+    ? Math.ceil(elapsedMilliseconds / 1000)
     : 0
 }
 
 function resetQuestionTimer() {
   window.clearInterval(questionTimerInterval)
   questionOpenedAt = performance.now()
+  timingServerNow = 0
+  timingStartsAt = 0
+  timingSyncedAt = 0
   timingCountdown.value = 5
   timingElapsedSeconds.value = 0
   timingFinalized.value = false
   questionTimerInterval = window.setInterval(updateQuestionTimer, 500)
+}
+
+interface TimingResponse {
+  server_now: string
+  starts_at: string | null
+}
+
+function syncQuestionTimer(uuid: string) {
+  const sequence = ++timingSyncSequence
+  const request = post<TimingResponse>(`/api/drill/questions/${uuid}/timing/`, { action: 'begin' })
+    .then((response) => {
+      if (props.uuid !== uuid || !response.starts_at) return
+      timingServerNow = new Date(response.server_now).getTime()
+      timingStartsAt = new Date(response.starts_at).getTime()
+      timingSyncedAt = performance.now()
+      updateQuestionTimer()
+    })
+    .catch((reason) => { error.value = (reason as Error).message })
+    .finally(() => {
+      if (timingSyncSequence === sequence) timingSyncPromise = null
+    })
+  timingSyncPromise = request
+  return request
+}
+
+async function cancelQuestionTimer(uuid: string) {
+  if (timingFinalized.value) return
+  try {
+    if (timingSyncPromise) await timingSyncPromise
+    await post<TimingResponse>(`/api/drill/questions/${uuid}/timing/`, { action: 'cancel' })
+  } catch {
+    // A cleanup failure must not trap the user on the current route.
+  }
 }
 
 function recordedQuestionSeconds() {
@@ -424,10 +469,12 @@ watch(() => props.uuid, (_uuid, previousUuid) => {
   flushNoteDraft(previousUuid)
   noteSaveState.value = 'idle'
   resetQuestionTimer()
+  void syncQuestionTimer(_uuid)
   void load()
 })
 onMounted(() => {
   resetQuestionTimer()
+  void syncQuestionTimer(props.uuid)
   void load()
 })
 onUnmounted(() => {
@@ -435,6 +482,13 @@ onUnmounted(() => {
   window.clearTimeout(noteAutoSaveTimer)
   window.clearTimeout(noteSavedTimer)
   flushNoteDraft()
+})
+
+onBeforeRouteUpdate(async (to) => {
+  if (String(to.params.uuid || '') !== props.uuid) await cancelQuestionTimer(props.uuid)
+})
+onBeforeRouteLeave(async () => {
+  await cancelQuestionTimer(props.uuid)
 })
 </script>
 

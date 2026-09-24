@@ -71,6 +71,10 @@ class QuestionUserStateSerializer(serializers.Serializer):
         return attrs
 
 
+class QuestionTimingSerializer(serializers.Serializer):
+    action = serializers.ChoiceField(choices=('begin', 'cancel'), default='begin')
+
+
 class QuestionMarkerSelectionSerializer(serializers.Serializer):
     codes = serializers.ListField(
         child=serializers.ChoiceField(

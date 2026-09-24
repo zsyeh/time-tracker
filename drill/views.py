@@ -24,7 +24,8 @@ from .paper_pdf import render_paper_pdf
 from .serializers import (
     ExamPaperCreateSerializer, ExamPaperItemUpdateSerializer,
     ExamPaperStatusSerializer, PaperGenerateSerializer, QuestionAttemptCreateSerializer,
-    QuestionMarkerSelectionSerializer, QuestionSummarySerializer, QuestionUserStateSerializer,
+    QuestionMarkerSelectionSerializer, QuestionSummarySerializer, QuestionTimingSerializer,
+    QuestionUserStateSerializer,
 )
 
 
@@ -807,14 +808,26 @@ class DrillQuestionAttemptView(APIView):
         serializer = QuestionAttemptCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         question = get_object_or_404(workspace_questions(request), uuid=question_uuid)
-        attempt = QuestionAttempt.objects.create(
-            user=request.user,
-            question=question,
-            result=serializer.validated_data['result'],
-            confidence=serializer.validated_data.get('confidence'),
-            note=serializer.validated_data.get('note'),
-            time_spent_seconds=serializer.validated_data.get('time_spent_seconds'),
-        )
+        result = serializer.validated_data['result']
+        with transaction.atomic():
+            user_state = QuestionUserState.objects.select_for_update().filter(
+                user=request.user, question=question,
+            ).first()
+            time_spent_seconds = serializer.validated_data.get('time_spent_seconds')
+            if result in {'correct', 'review'} and user_state and user_state.active_timing_started_at:
+                server_elapsed = int((timezone.now() - user_state.active_timing_started_at).total_seconds())
+                time_spent_seconds = server_elapsed if 1 <= server_elapsed <= 43200 else None
+            if user_state and user_state.active_timing_started_at:
+                user_state.active_timing_started_at = None
+                user_state.save(update_fields=['active_timing_started_at', 'updated_at'])
+            attempt = QuestionAttempt.objects.create(
+                user=request.user,
+                question=question,
+                result=result,
+                confidence=serializer.validated_data.get('confidence'),
+                note=serializer.validated_data.get('note'),
+                time_spent_seconds=time_spent_seconds,
+            )
         if serializer.validated_data.get('note') is not None:
             QuestionUserState.objects.update_or_create(
                 user=request.user,
@@ -864,6 +877,30 @@ class DrillQuestionUserStateView(APIView):
             'is_favorite': state.is_favorite,
             'review_later': state.review_later,
             'updated_at': state.updated_at,
+        })
+
+
+class DrillQuestionTimingView(APIView):
+    def post(self, request, question_uuid):
+        serializer = QuestionTimingSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        question = get_object_or_404(workspace_questions(request), uuid=question_uuid)
+        now = timezone.now()
+        with transaction.atomic():
+            state, _created = QuestionUserState.objects.select_for_update().get_or_create(
+                user=request.user, question=question,
+            )
+            if serializer.validated_data['action'] == 'cancel':
+                state.active_timing_started_at = None
+            elif (
+                state.active_timing_started_at is None
+                or (now - state.active_timing_started_at).total_seconds() > 43200
+            ):
+                state.active_timing_started_at = now + datetime.timedelta(seconds=5)
+            state.save(update_fields=['active_timing_started_at', 'updated_at'])
+        return Response({
+            'server_now': now,
+            'starts_at': state.active_timing_started_at,
         })
 
 

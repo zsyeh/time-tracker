@@ -430,6 +430,7 @@ class QuestionUserState(models.Model):
     note = models.TextField(blank=True)
     is_favorite = models.BooleanField(default=False, db_index=True)
     review_later = models.BooleanField(default=False, db_index=True)
+    active_timing_started_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, db_index=True)
 

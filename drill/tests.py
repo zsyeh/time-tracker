@@ -1,3 +1,4 @@
+import datetime
 import hashlib
 import json
 import tempfile
@@ -393,6 +394,35 @@ class DrillApiTests(TestCase):
             content_type='application/json',
         )
         self.assertEqual(too_long.status_code, 400)
+
+    def test_cloud_question_timer_survives_refresh_and_is_server_authoritative(self):
+        timing_endpoint = f'/api/drill/questions/{self.question.uuid}/timing/'
+        attempt_endpoint = f'/api/drill/questions/{self.question.uuid}/attempts/'
+        self.client.force_login(self.alice)
+        first = self.client.post(timing_endpoint, {'action': 'begin'}, content_type='application/json')
+        refreshed = self.client.post(timing_endpoint, {'action': 'begin'}, content_type='application/json')
+        self.assertEqual(first.status_code, 200)
+        self.assertEqual(refreshed.status_code, 200)
+        self.assertEqual(first.json()['starts_at'], refreshed.json()['starts_at'])
+
+        state = QuestionUserState.objects.get(user=self.alice, question=self.question)
+        state.active_timing_started_at = timezone.now() - datetime.timedelta(seconds=90)
+        state.save(update_fields=['active_timing_started_at'])
+        completed = self.client.post(
+            attempt_endpoint,
+            {'result': 'review', 'time_spent_seconds': 3},
+            content_type='application/json',
+        )
+        self.assertEqual(completed.status_code, 201)
+        self.assertGreaterEqual(completed.json()['time_spent_seconds'], 89)
+        self.assertLessEqual(completed.json()['time_spent_seconds'], 90)
+        state.refresh_from_db()
+        self.assertIsNone(state.active_timing_started_at)
+
+        self.client.post(timing_endpoint, {'action': 'begin'}, content_type='application/json')
+        cancelled = self.client.post(timing_endpoint, {'action': 'cancel'}, content_type='application/json')
+        self.assertEqual(cancelled.status_code, 200)
+        self.assertIsNone(cancelled.json()['starts_at'])
 
     def test_note_favorite_and_review_later_are_private_and_do_not_create_attempts(self):
         endpoint = f'/api/drill/questions/{self.question.uuid}/state/'

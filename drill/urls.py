@@ -20,6 +20,7 @@ from .views import (
     DrillQuestionDetailView,
     DrillQuestionListView,
     DrillQuestionMarkerView,
+    DrillQuestionTimingView,
     DrillQuestionUserStateView,
     DrillSimilarQuestionView,
 )
@@ -58,6 +59,11 @@ urlpatterns = [
         'questions/<uuid:question_uuid>/similar/',
         DrillSimilarQuestionView.as_view(),
         name='drill_question_similar',
+    ),
+    path(
+        'questions/<uuid:question_uuid>/timing/',
+        DrillQuestionTimingView.as_view(),
+        name='drill_question_timing',
     ),
     path(
         'questions/<uuid:question_uuid>/attempts/',
