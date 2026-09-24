@@ -1248,6 +1248,21 @@ class DrillHeatmapView(APIView):
                 'time_spent_seconds', filter=Q(result='review'),
             ),
         )
+        timing_by_document = {
+            row['question__document_id']: row
+            for row in filtered_attempts.filter(
+                time_spent_seconds__isnull=False,
+            ).values('question__document_id').annotate(
+                timed_attempt_count=Count('id'),
+                average_time_seconds=Avg('time_spent_seconds'),
+                mastered_average_time_seconds=Avg(
+                    'time_spent_seconds', filter=Q(result__in=('done', 'correct')),
+                ),
+                review_average_time_seconds=Avg(
+                    'time_spent_seconds', filter=Q(result='review'),
+                ),
+            )
+        }
 
         def rounded(value):
             return round(value) if value is not None else None
@@ -1286,6 +1301,9 @@ class DrillHeatmapView(APIView):
                     'questions': [],
                     'topics': [],
                     '_topics_by_id': {},
+                    '_attempted_count': 0,
+                    '_mastered_count': 0,
+                    '_review_count': 0,
                 }
                 groups.append(current)
             question_progress_item = progress.get(question.pk, {
@@ -1305,6 +1323,12 @@ class DrillHeatmapView(APIView):
                 else 'mastered' if latest_result in {'done', 'correct'}
                 else 'unattempted'
             )
+            if state != 'unattempted':
+                current['_attempted_count'] += 1
+            if state == 'mastered':
+                current['_mastered_count'] += 1
+            elif state == 'review':
+                current['_review_count'] += 1
             if mode == 'questions':
                 current['questions'].append({
                     'uuid': str(question.uuid),
@@ -1353,6 +1377,23 @@ class DrillHeatmapView(APIView):
 
         for group in groups:
             group.pop('_topics_by_id', None)
+            group_timing = timing_by_document.get(group['document_id'], {})
+            group_attempted = group.pop('_attempted_count')
+            group_mastered = group.pop('_mastered_count')
+            group_review = group.pop('_review_count')
+            group['statistics'] = {
+                'attempted_question_count': group_attempted,
+                'mastered_question_count': group_mastered,
+                'review_question_count': group_review,
+                'coverage_percent': round(group_attempted * 100 / max(1, len(group['questions']) or sum(
+                    topic['question_count'] for topic in group['topics']
+                )), 1),
+                'master_rate_percent': round(group_mastered * 100 / group_attempted, 1) if group_attempted else None,
+                'timed_attempt_count': group_timing.get('timed_attempt_count', 0),
+                'average_time_seconds': rounded(group_timing.get('average_time_seconds')),
+                'mastered_average_time_seconds': rounded(group_timing.get('mastered_average_time_seconds')),
+                'review_average_time_seconds': rounded(group_timing.get('review_average_time_seconds')),
+            }
             for topic_cell in group['topics']:
                 total = topic_cell['question_count']
                 attempted = topic_cell['attempted_question_count']

@@ -273,6 +273,10 @@ class DrillApiTests(TestCase):
         self.assertEqual(statistics['average_time_seconds'], 90)
         self.assertEqual(statistics['mastered_average_time_seconds'], 60)
         self.assertEqual(statistics['review_average_time_seconds'], 120)
+        book_statistics = self.client.get('/api/drill/heatmap/?scope=all').json()['groups'][0]['statistics']
+        self.assertEqual(book_statistics['master_rate_percent'], 50.0)
+        self.assertEqual(book_statistics['coverage_percent'], 50.0)
+        self.assertEqual(book_statistics['average_time_seconds'], 90)
 
     def test_selected_heatmap_only_contains_curated_drill_questions(self):
         self.question.answer_source = 'daguan_answer_guide_pdf'
@@ -285,6 +289,7 @@ class DrillApiTests(TestCase):
             for item in group['questions']
         }
         self.assertEqual(uuids, {str(self.question.uuid)})
+        self.assertIn('statistics', payload['groups'][0])
         self.assertEqual(
             self.client.get(
                 '/api/drill/heatmap/?scope=all&collection=selected',

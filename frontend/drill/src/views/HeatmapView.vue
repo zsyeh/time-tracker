@@ -53,6 +53,17 @@ interface HeatmapPayload {
     document: string
     questions: HeatmapQuestion[]
     topics: HeatmapTopic[]
+    statistics: {
+      attempted_question_count: number
+      mastered_question_count: number
+      review_question_count: number
+      coverage_percent: number
+      master_rate_percent: number | null
+      timed_attempt_count: number
+      average_time_seconds: number | null
+      mastered_average_time_seconds: number | null
+      review_average_time_seconds: number | null
+    }
   }>
 }
 
@@ -205,7 +216,15 @@ onMounted(load)
         </dl>
       </section>
       <section v-for="group in data.groups" :key="group.document_id" class="heatmap-group">
-        <header><div><span>BOOK</span><h2>{{ group.document }}</h2></div><strong>{{ mode === 'topics' ? `${group.topics.length} topics` : `${group.questions.length} questions` }}</strong></header>
+        <header class="heatmap-book-header">
+          <div class="heatmap-book-title"><span>BOOK</span><h2>{{ group.document }}</h2><small>{{ mode === 'topics' ? `${group.topics.length} topics` : `${group.questions.length} questions` }}</small></div>
+          <dl class="heatmap-book-stats">
+            <div><dt>MASTER RATE</dt><dd>{{ group.statistics.master_rate_percent === null ? '—' : `${group.statistics.master_rate_percent}%` }}</dd><small>{{ group.statistics.mastered_question_count }} / {{ group.statistics.attempted_question_count }}</small></div>
+            <div><dt>COVERAGE</dt><dd>{{ group.statistics.coverage_percent }}%</dd><small>{{ group.statistics.attempted_question_count }} attempted</small></div>
+            <div><dt>AVG. TIME</dt><dd>{{ formatDuration(group.statistics.average_time_seconds) }}</dd><small>{{ group.statistics.timed_attempt_count }} timed</small></div>
+            <div><dt>MASTER AVG.</dt><dd>{{ formatDuration(group.statistics.mastered_average_time_seconds) }}</dd><small>{{ group.statistics.review_question_count }} review</small></div>
+          </dl>
+        </header>
         <div v-if="mode === 'topics'" class="topic-heatmap">
           <button
             v-for="item in group.topics"

@@ -334,10 +334,16 @@ button { color: inherit; }
 .heatmap-summary dd { margin: 4px 0 1px; color: var(--text-primary); font: 570 14px ui-monospace, monospace; font-variant-numeric: tabular-nums; }
 .heatmap-summary small { overflow: hidden; color: var(--text-tertiary); display: block; font-size: 7px; text-overflow: ellipsis; white-space: nowrap; }
 .heatmap-group { margin-top: 8px; padding: 15px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface); }
-.heatmap-group > header { margin-bottom: 12px; display: flex; align-items: flex-end; justify-content: space-between; }
+.heatmap-group > header { margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; gap: 18px; }
 .heatmap-group > header span { color: var(--text-tertiary); font-size: 8px; }
 .heatmap-group h2 { margin: 2px 0 0; font-size: 13px; font-weight: 600; }
-.heatmap-group > header > strong { color: var(--text-tertiary); font: 10px ui-monospace, monospace; }
+.heatmap-book-title { min-width: 160px; }
+.heatmap-book-title small { margin-top: 3px; color: var(--text-tertiary); display: block; font-size: 8px; }
+.heatmap-book-stats { margin: 0; display: grid; grid-template-columns: repeat(4, minmax(82px, auto)); }
+.heatmap-book-stats > div { min-width: 0; padding: 2px 12px; border-left: 1px solid var(--border-subtle); }
+.heatmap-book-stats dt { color: var(--text-tertiary); font-size: 7px; letter-spacing: .04em; }
+.heatmap-book-stats dd { margin: 3px 0 0; color: var(--text-primary); font: 560 12px ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+.heatmap-book-stats small { color: var(--text-tertiary); font-size: 7px; white-space: nowrap; }
 .topic-heatmap { display: grid; grid-template-columns: repeat(auto-fill, 21px); gap: 5px; }
 .topic-heatmap button, .question-heatmap button { position: relative; width: 21px; height: 21px; padding: 0; border: 1px solid var(--border-default); border-radius: 3px; background: #222329; cursor: pointer; }
 .topic-heatmap button span, .question-heatmap button span { display: none; }
@@ -537,6 +543,9 @@ button { color: inherit; }
   .topic-preview-actions { grid-column: 1/-1; justify-content: flex-end; }
   .heatmap-summary { grid-template-columns: 1fr; }
   .heatmap-summary-lead { border-right: 0; border-bottom: 1px solid var(--border-subtle); }
+  .heatmap-book-header { align-items: flex-start !important; flex-direction: column; }
+  .heatmap-book-stats { width: 100%; }
+  .heatmap-book-stats > div:first-child { border-left: 0; padding-left: 0; }
 }
 
 @media (max-width: 700px) {
@@ -561,6 +570,10 @@ button { color: inherit; }
   .heatmap-summary dl { grid-template-columns: 1fr 1fr; }
   .heatmap-summary dl > div:nth-child(3) { border-top: 1px solid var(--border-subtle); border-left: 0; }
   .heatmap-summary dl > div:nth-child(4) { border-top: 1px solid var(--border-subtle); }
+  .heatmap-book-stats { grid-template-columns: 1fr 1fr; }
+  .heatmap-book-stats > div { padding: 7px 9px; }
+  .heatmap-book-stats > div:nth-child(3) { border-top: 1px solid var(--border-subtle); border-left: 0; padding-left: 0; }
+  .heatmap-book-stats > div:nth-child(4) { border-top: 1px solid var(--border-subtle); }
   .topic-preview-card { grid-template-columns: 1fr; gap: 10px; }
   .topic-preview-card dl { justify-content: space-between; }
   .topic-preview-actions { grid-column: auto; }
