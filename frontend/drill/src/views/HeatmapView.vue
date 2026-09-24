@@ -57,7 +57,7 @@ const initialMode = ['topics', 'questions'].includes(String(route.query.mode))
   ? String(route.query.mode) as 'topics' | 'questions'
   : 'topics'
 const scope = ref<'past_exam' | 'mock_exam' | 'all'>(initialScope)
-const mode = ref<'topics' | 'questions'>(initialMode)
+const mode = ref<'topics' | 'questions'>(props.selectedOnly ? 'questions' : initialMode)
 let pendingQuestionUuid = String(route.query.question || '')
 const returnStateKey = 'drill.heatmap.return.v1'
 const selectedTopic = ref<{
@@ -168,7 +168,7 @@ onMounted(load)
     <header class="page-header">
       <div><span class="eyebrow">{{ props.selectedOnly ? t('selectedHeatmap') : t('knowledgeMap') }}</span><h1>{{ props.selectedOnly ? t('selectedHeatmap') : t('coverageByBook') }}</h1><p>{{ props.selectedOnly ? 'Curated Da Guan questions, grouped by source book and knowledge topic.' : 'Every topic and question cell opens a preview before navigation.' }}</p></div>
       <div class="heat-controls">
-        <div class="heat-mode"><button :class="{ active: mode === 'topics' }" @click="mode = 'topics'">Topics</button><button :class="{ active: mode === 'questions' }" @click="mode = 'questions'">Questions</button></div>
+        <div v-if="!props.selectedOnly" class="heat-mode"><button :class="{ active: mode === 'topics' }" @click="mode = 'topics'">Topics</button><button :class="{ active: mode === 'questions' }" @click="mode = 'questions'">Questions</button></div>
         <div class="heat-scope"><button :class="{ active: scope === 'all' }" @click="scope = 'all'">All</button><button :class="{ active: scope === 'past_exam' }" @click="scope = 'past_exam'">Past exams</button><button :class="{ active: scope === 'mock_exam' }" @click="scope = 'mock_exam'">Mock exams</button></div>
         <div class="heat-legend"><i class="status-unattempted" /><span>NOT STARTED</span><i class="status-progress" /><span>IN PROGRESS</span><i class="status-mastered" /><span>MASTERED</span><i class="status-review" /><span>REVIEW</span></div>
       </div>
