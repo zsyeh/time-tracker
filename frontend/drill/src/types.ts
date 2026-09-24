@@ -18,6 +18,7 @@ export interface QuestionSummary {
   is_favorite: boolean
   review_later: boolean
   saved_note: string
+  review_overdue: boolean
   confidence?: number | null
   note?: string | null
 }
@@ -31,6 +32,9 @@ export interface QuestionDetail extends QuestionSummary {
   document_attribution: string
   previous_question_uuid: string | null
   next_question_uuid: string | null
+  sequential_next_question_uuid: string | null
+  next_overdue_review_uuid: string | null
+  next_review_uuid: string | null
   confidence: number | null
   last_time_spent_seconds: number | null
   last_timed_at: string | null

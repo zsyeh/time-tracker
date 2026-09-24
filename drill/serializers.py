@@ -1,3 +1,6 @@
+import datetime
+
+from django.utils import timezone
 from rest_framework import serializers
 
 from .models import ExamBlueprint, Question, QuestionAttempt, QuestionMarker
@@ -14,6 +17,7 @@ class QuestionSummarySerializer(serializers.ModelSerializer):
     is_favorite = serializers.BooleanField(read_only=True, default=False)
     review_later = serializers.BooleanField(read_only=True, default=False)
     saved_note = serializers.CharField(read_only=True, allow_blank=True, allow_null=True, default='')
+    review_overdue = serializers.SerializerMethodField()
 
     def get_document(self, obj):
         return obj.document.display_title or obj.document.title
@@ -32,6 +36,14 @@ class QuestionSummarySerializer(serializers.ModelSerializer):
     def get_can_undo(self, obj):
         return bool(getattr(obj, 'state_change_count', 0))
 
+    def get_review_overdue(self, obj):
+        attempted_at = getattr(obj, 'latest_attempted_at', None)
+        return bool(
+            obj.latest_result == 'review'
+            and attempted_at
+            and attempted_at <= timezone.now() - datetime.timedelta(days=5)
+        )
+
     class Meta:
         model = Question
         fields = (
@@ -39,7 +51,7 @@ class QuestionSummarySerializer(serializers.ModelSerializer):
             'topic', 'is_past_exam', 'source_category', 'source_category_label',
             'record_kind', 'exam_year', 'exam_variant', 'attempt_count',
             'latest_result', 'state', 'can_undo',
-            'is_favorite', 'review_later', 'saved_note',
+            'is_favorite', 'review_later', 'saved_note', 'review_overdue',
         )
 
 

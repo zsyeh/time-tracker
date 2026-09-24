@@ -185,6 +185,7 @@ button { color: inherit; }
 .status-progress { border-color: #56766a !important; background: #28473d !important; }
 .status-mastered { border-color: #3f8b5c !important; background: #28633f !important; }
 .status-review { border-color: #a17e38 !important; background: #674e20 !important; }
+.status-overdue { border-color: #b94a52 !important; background: #762f36 !important; }
 .row-arrow { color: var(--text-tertiary); }
 .question-row:hover .row-arrow { color: var(--accent); }
 .empty-state, .question-skeleton { padding: 64px 20px; color: var(--text-tertiary); text-align: center; font-size: 10px; }
@@ -207,6 +208,7 @@ button { color: inherit; }
 .attempt-counter .last-solving-time { margin-top: 5px; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
 .text-mastered { color: var(--success) !important; }
 .text-review { color: var(--warning) !important; }
+.text-overdue { color: var(--danger) !important; }
 .text-unattempted { color: var(--text-tertiary) !important; }
 .question-nav { margin: 9px 0; display: flex; justify-content: space-between; gap: 10px; }
 .question-nav button { min-width: 116px; min-height: 38px; padding: 0 14px; border: 1px solid var(--border-default); border-radius: var(--radius-sm); color: var(--text-secondary); background: var(--bg-surface); font-size: 11px; font-weight: 550; cursor: pointer; }
@@ -292,6 +294,13 @@ button { color: inherit; }
 .next-question span { font-size: 11px; }
 .next-question b { font-size: 17px; }
 .next-question:disabled { opacity: .5; cursor: default; }
+.next-question-group { margin-top: 7px; display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+.next-question-group .next-question { min-width: 0; margin-top: 0; }
+.next-question-group .next-question.sequential { grid-column: 1/-1; min-height: 64px; }
+.next-question-group .next-question.overdue { border-color: color-mix(in srgb, var(--danger) 45%, var(--border-subtle)); }
+.next-question-group .next-question.overdue span, .next-question-group .next-question.overdue b { color: var(--danger); }
+.next-question-group .next-question.review { border-color: color-mix(in srgb, var(--warning) 45%, var(--border-subtle)); }
+.next-question-group .next-question.review span, .next-question-group .next-question.review b { color: var(--warning); }
 .raw-provenance { margin: 7px 0 0; padding: 8px 10px; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); color: var(--text-tertiary); font-size: 8px; }
 .raw-provenance code { margin-top: 5px; display: block; overflow-wrap: anywhere; }
 .similar-panel { margin-top: 6px; overflow: hidden; }

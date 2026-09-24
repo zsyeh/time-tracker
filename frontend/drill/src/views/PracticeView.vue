@@ -216,14 +216,14 @@ onUnmounted(() => {
       <div class="toggle-row"><button :class="{ active: unattempted }" @click="unattempted = !unattempted">Unattempted</button></div>
     </div>
 
-    <div class="result-meta"><span>{{ questions?.count ?? 0 }} PRACTICE RECORDS</span><span class="state-legend"><i class="status-unattempted" /> NOT STARTED <i class="status-mastered" /> MASTERED <i class="status-review" /> REVIEW</span><span v-if="loading">LOADING…</span></div>
+    <div class="result-meta"><span>{{ questions?.count ?? 0 }} PRACTICE RECORDS</span><span class="state-legend"><i class="status-unattempted" /> NOT STARTED <i class="status-mastered" /> MASTERED <i class="status-review" /> REVIEW <i class="status-overdue" /> OVERDUE</span><span v-if="loading">LOADING…</span></div>
     <p v-if="error" class="error-state">{{ error }}</p>
     <div v-else class="question-list" :class="{ loading }">
       <button v-for="question in questions?.results" :key="question.uuid" class="question-row" @pointerenter="prefetchQuestion(question.uuid, navigationQueryString())" @pointerdown="prefetchQuestion(question.uuid, navigationQueryString())" @click="openQuestion(question.uuid)">
         <span class="question-index">{{ String(question.question_order).padStart(4, '0') }}</span>
         <span class="question-copy"><strong>{{ question.display_label || `Question ${question.question_order}` }}</strong><small>{{ question.document }} · {{ question.topic || 'General' }}<em v-if="question.record_kind === 'grouped'"> · grouped extract</em></small></span>
         <span class="source-badge" :class="`category-${question.source_category}`">{{ question.source_category_label }}</span>
-        <span class="attempt-mark" :class="`status-${question.state}`" :title="`${question.state}; ${question.attempt_count} recorded attempts`">{{ question.attempt_count || '' }}</span>
+        <span class="attempt-mark" :class="question.review_overdue ? 'status-overdue' : `status-${question.state}`" :title="`${question.review_overdue ? 'overdue review' : question.state}; ${question.attempt_count} recorded attempts`">{{ question.attempt_count || '' }}</span>
         <b class="row-arrow">→</b>
       </button>
       <div v-if="!loading && !questions?.results.length" class="empty-state">No questions match these filters.</div>

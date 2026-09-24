@@ -209,6 +209,7 @@ function useQuestion(loadedQuestion: QuestionDetail) {
     markers: loadedQuestion.markers || [],
     last_time_spent_seconds: loadedQuestion.last_time_spent_seconds ?? null,
     last_timed_at: loadedQuestion.last_timed_at ?? null,
+    review_overdue: loadedQuestion.review_overdue ?? false,
   }
   const draft = cachedNoteDraft(props.uuid)
   note.value = draft === null ? loadedQuestion.note || '' : draft
@@ -292,6 +293,7 @@ interface StateResponse {
   note: string | null
   is_favorite: boolean
   review_later: boolean
+  review_overdue: boolean
   last_time_spent_seconds: number | null
   last_timed_at: string | null
 }
@@ -307,6 +309,7 @@ function applyState(response: StateResponse) {
   question.value.saved_note = response.note || ''
   question.value.is_favorite = response.is_favorite
   question.value.review_later = response.review_later
+  question.value.review_overdue = response.review_overdue
   question.value.last_time_spent_seconds = response.last_time_spent_seconds
   question.value.last_timed_at = response.last_timed_at
   note.value = response.note || ''
@@ -457,7 +460,7 @@ async function loadSimilar(kind: 'past_exam' | 'practice') {
   }
 }
 
-async function goToNext() {
+async function goToNext(kind: 'sequential' | 'overdue' | 'review' = 'sequential') {
   if (!question.value || nextLoading.value) return
   nextLoading.value = true
   error.value = ''
@@ -465,13 +468,27 @@ async function goToNext() {
     // Refresh navigation at click time so changes made in another tab/device
     // cannot send the user to a question that is now mastered.
     const refreshed = await fetchQuestion(props.uuid, navigationQueryString(), true)
-    question.value.next_question_uuid = refreshed.next_question_uuid
-    if (!refreshed.next_question_uuid) {
-      error.value = 'No unmastered questions remain in this source set.'
+    Object.assign(question.value, {
+      next_question_uuid: refreshed.next_question_uuid,
+      sequential_next_question_uuid: refreshed.sequential_next_question_uuid,
+      next_overdue_review_uuid: refreshed.next_overdue_review_uuid,
+      next_review_uuid: refreshed.next_review_uuid,
+    })
+    const target = kind === 'overdue'
+      ? refreshed.next_overdue_review_uuid
+      : kind === 'review'
+        ? refreshed.next_review_uuid
+        : refreshed.sequential_next_question_uuid
+    if (!target) {
+      error.value = kind === 'overdue'
+        ? 'No overdue review questions remain.'
+        : kind === 'review'
+          ? 'No recent review questions remain.'
+          : 'No next question remains in this source set.'
       return
     }
     await router.push({
-      path: `/practice/${refreshed.next_question_uuid}`,
+      path: `/practice/${target}`,
       query: questionRouteQuery(),
     })
   } catch (reason) {
@@ -518,10 +535,10 @@ onBeforeRouteLeave(async () => {
     <template v-else-if="question">
       <header class="question-header">
         <div><span class="eyebrow">{{ question.document }} · {{ String(question.question_order).padStart(4, '0') }}</span><h1>{{ question.display_label || `Question ${question.question_order}` }}</h1><p>{{ question.breadcrumbs.map((item) => item.title).join(' / ') }}</p><div class="question-badges"><span class="source-badge" :class="`category-${question.source_category}`">{{ question.source_category_label }}</span><span v-if="question.record_kind === 'grouped'" class="source-badge">Grouped source extract</span></div></div>
-        <div class="attempt-counter"><span>CURRENT STATE</span><strong class="state-name" :class="`text-${question.state}`">{{ question.state === 'mastered' ? 'MASTERED' : question.state === 'review' ? 'REVIEW' : 'NOT STARTED' }}</strong><small>{{ question.attempt_count }} recorded attempts</small><small v-if="question.last_time_spent_seconds !== null" class="last-solving-time">Last time · {{ formatRecordedDuration(question.last_time_spent_seconds) }}</small></div>
+        <div class="attempt-counter"><span>CURRENT STATE</span><strong class="state-name" :class="question.review_overdue ? 'text-overdue' : `text-${question.state}`">{{ question.review_overdue ? 'OVERDUE REVIEW' : question.state === 'mastered' ? 'MASTERED' : question.state === 'review' ? 'REVIEW' : 'NOT STARTED' }}</strong><small>{{ question.attempt_count }} recorded attempts</small><small v-if="question.last_time_spent_seconds !== null" class="last-solving-time">Last time · {{ formatRecordedDuration(question.last_time_spent_seconds) }}</small></div>
       </header>
 
-      <nav class="question-nav"><button :disabled="!question.previous_question_uuid" @click="question.previous_question_uuid && router.push({ path: `/practice/${question.previous_question_uuid}`, query: questionRouteQuery() })">← Previous</button><button :disabled="!question.next_question_uuid || nextLoading" @click="goToNext">{{ nextLoading ? 'Finding next…' : 'Next →' }}</button></nav>
+      <nav class="question-nav"><button :disabled="!question.previous_question_uuid" @click="question.previous_question_uuid && router.push({ path: `/practice/${question.previous_question_uuid}`, query: questionRouteQuery() })">← Previous</button><button :disabled="!question.sequential_next_question_uuid || nextLoading" @click="goToNext('sequential')">{{ nextLoading ? 'Finding next…' : 'Next →' }}</button></nav>
 
       <div class="question-save-actions">
         <button type="button" :class="{ active: question.is_favorite }" :disabled="stateSaving" @click="saveUserState({ is_favorite: !question.is_favorite })"><b>{{ question.is_favorite ? '★' : '☆' }}</b>{{ question.is_favorite ? 'Favorited' : 'Favorite' }}</button>
@@ -566,15 +583,11 @@ onBeforeRouteLeave(async () => {
             <div><button v-for="marker in markerOptions" :key="marker.code" type="button" :class="{ active: question.markers.includes(marker.code) }" :disabled="markerSaving" @click="toggleMarker(marker.code)">{{ marker.label }}</button></div>
           </section>
 
-          <button
-            class="next-question"
-            :disabled="!question.next_question_uuid || nextLoading"
-            @click="goToNext"
-          >
-            <span>{{ nextLoading ? 'Finding next question…' : question.next_question_uuid ? 'Next unmastered question' : 'Source set complete' }}</span>
-            <small>{{ question.next_question_uuid ? `Continue across topics and books with ${question.source_category_label.toLowerCase()} questions` : 'No unmastered questions remain in this source set' }}</small>
-            <b>{{ question.next_question_uuid ? '→' : '✓' }}</b>
-          </button>
+          <div class="next-question-group">
+            <button class="next-question sequential" :disabled="!question.sequential_next_question_uuid || nextLoading" @click="goToNext('sequential')"><span>{{ nextLoading ? 'Finding next question…' : 'Next in sequence' }}</span><small>Continue in source order across topics and books</small><b>→</b></button>
+            <button class="next-question overdue" :disabled="!question.next_overdue_review_uuid || nextLoading" @click="goToNext('overdue')"><span>Next red review</span><small>Waiting 5+ days</small><b>→</b></button>
+            <button class="next-question review" :disabled="!question.next_review_uuid || nextLoading" @click="goToNext('review')"><span>Next yellow review</span><small>Within 5 days</small><b>→</b></button>
+          </div>
 
           <details v-if="question.source_label && question.source_label !== question.display_label" class="raw-provenance"><summary>View original imported label</summary><code>{{ question.source_label }}</code></details>
 

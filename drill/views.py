@@ -51,6 +51,7 @@ def question_progress(queryset, user):
         ),
         state_change_count=Count('attempts', filter=Q(attempts__user=user)),
         latest_result=Subquery(latest.values('result')[:1]),
+        latest_attempted_at=Subquery(latest.values('created_at')[:1]),
         is_favorite=Exists(user_state.filter(is_favorite=True)),
         review_later=Exists(user_state.filter(review_later=True)),
         saved_note=Subquery(user_state.values('note')[:1]),
@@ -233,6 +234,7 @@ def navigation_with_latest_result(queryset, user):
     ).order_by('-created_at', '-pk')
     return queryset.annotate(
         next_latest_result=Subquery(latest.values('result')[:1]),
+        next_latest_at=Subquery(latest.values('created_at')[:1]),
     )
 
 
@@ -250,7 +252,7 @@ def next_unmastered_question(question, request, navigation):
         (index for index, item in enumerate(navigation) if item[0] == question.pk),
         -1,
     )
-    for pk, question_uuid, latest_result in navigation[position + 1:]:
+    for pk, question_uuid, latest_result, *_rest in navigation[position + 1:]:
         if latest_result not in {'done', 'correct'}:
             return question_uuid
 
@@ -278,6 +280,43 @@ def next_unmastered_question(question, request, navigation):
     if following:
         return following
     return fallback.values_list('uuid', flat=True).first()
+
+
+def next_sequential_question(question, request):
+    queryset = workspace_questions(request).filter(
+        is_practiceable=True, source_category=question.source_category,
+    ).exclude(pk=question.pk).order_by('document_id', 'question_order', 'pk')
+    current_key = (question.document_id, question.question_order, question.pk)
+    following = queryset.filter(
+        Q(document_id__gt=current_key[0])
+        | Q(document_id=current_key[0], question_order__gt=current_key[1])
+        | Q(document_id=current_key[0], question_order=current_key[1], pk__gt=current_key[2])
+    ).values_list('uuid', flat=True).first()
+    return following or queryset.values_list('uuid', flat=True).first()
+
+
+def next_review_question(question, request, *, overdue):
+    latest = QuestionAttempt.objects.filter(
+        user=request.user, question_id=OuterRef('pk'),
+    ).order_by('-created_at', '-pk')
+    cutoff = timezone.now() - datetime.timedelta(days=5)
+    queryset = workspace_questions(request).filter(
+        is_practiceable=True, source_category=question.source_category,
+    ).exclude(pk=question.pk).annotate(
+        review_result=Subquery(latest.values('result')[:1]),
+        review_created_at=Subquery(latest.values('created_at')[:1]),
+    ).filter(review_result='review')
+    queryset = queryset.filter(
+        review_created_at__lte=cutoff,
+    ) if overdue else queryset.filter(review_created_at__gt=cutoff)
+    queryset = queryset.order_by('document_id', 'question_order', 'pk')
+    current_key = (question.document_id, question.question_order, question.pk)
+    following = queryset.filter(
+        Q(document_id__gt=current_key[0])
+        | Q(document_id=current_key[0], question_order__gt=current_key[1])
+        | Q(document_id=current_key[0], question_order=current_key[1], pk__gt=current_key[2])
+    ).values_list('uuid', flat=True).first()
+    return following or queryset.values_list('uuid', flat=True).first()
 
 
 class DrillCatalogView(APIView):
@@ -662,7 +701,7 @@ class DrillQuestionDetailView(APIView):
         navigation = list(
             navigation_with_latest_result(
                 navigation_queryset(question, request), request.user,
-            ).values_list('pk', 'uuid', 'next_latest_result')
+            ).values_list('pk', 'uuid', 'next_latest_result', 'next_latest_at')
         )
         position = next((index for index, item in enumerate(navigation) if item[0] == question.pk), -1)
         previous_question_uuid = navigation[position - 1][1] if position > 0 else None
@@ -696,6 +735,19 @@ class DrillQuestionDetailView(APIView):
             'note': user_state.note if user_state else (latest.note if latest else ''),
             'markers': marker_codes,
             'next_question_uuid': str(next_question_uuid) if next_question_uuid else None,
+            'sequential_next_question_uuid': (
+                str(value) if (value := next_sequential_question(question, request)) else None
+            ),
+            'next_overdue_review_uuid': (
+                str(value) if (value := next_review_question(question, request, overdue=True)) else None
+            ),
+            'next_review_uuid': (
+                str(value) if (value := next_review_question(question, request, overdue=False)) else None
+            ),
+            'review_overdue': bool(
+                latest and latest.result == 'review'
+                and latest.created_at <= timezone.now() - datetime.timedelta(days=5)
+            ),
             'previous_question_uuid': str(previous_question_uuid) if previous_question_uuid else None,
             'breadcrumbs': topic_breadcrumbs(question.topic),
             'question_assets': [
@@ -816,6 +868,10 @@ class DrillQuestionAttemptView(APIView):
             'note': user_state.note if user_state else (latest.note if latest else ''),
             'is_favorite': user_state.is_favorite if user_state else False,
             'review_later': user_state.review_later if user_state else False,
+            'review_overdue': bool(
+                latest and latest.result == 'review'
+                and latest.created_at <= timezone.now() - datetime.timedelta(days=5)
+            ),
             'last_time_spent_seconds': last_timed.time_spent_seconds if last_timed else None,
             'last_timed_at': last_timed.created_at if last_timed else None,
         }
@@ -1167,10 +1223,11 @@ class DrillHeatmapView(APIView):
             attempt_filters, user=request.user,
         )
         for row in filtered_attempts.values(
-            'question_id', 'result',
+            'question_id', 'result', 'created_at',
         ).order_by('question_id', '-created_at', '-pk'):
             item = progress.setdefault(row['question_id'], {
                 'latest_result': row['result'],
+                'latest_created_at': row['created_at'],
                 'attempt_count': 0,
             })
             if row['result'] in {'done', 'correct', 'review'}:
@@ -1233,9 +1290,15 @@ class DrillHeatmapView(APIView):
                 groups.append(current)
             question_progress_item = progress.get(question.pk, {
                 'latest_result': None,
+                'latest_created_at': None,
                 'attempt_count': 0,
             })
             latest_result = question_progress_item['latest_result']
+            review_overdue = bool(
+                latest_result == 'review'
+                and question_progress_item['latest_created_at']
+                and question_progress_item['latest_created_at'] <= timezone.now() - datetime.timedelta(days=5)
+            )
             attempt_count = question_progress_item['attempt_count']
             state = (
                 'review' if latest_result == 'review'
@@ -1254,6 +1317,7 @@ class DrillHeatmapView(APIView):
                     'variant': question.exam_variant,
                     'attempt_count': attempt_count,
                     'latest_result': latest_result,
+                    'review_overdue': review_overdue,
                     'state': state,
                 })
             topic = question.similarity_topic
@@ -1271,6 +1335,7 @@ class DrillHeatmapView(APIView):
                     'attempted_question_count': 0,
                     'mastered_question_count': 0,
                     'review_question_count': 0,
+                    'overdue_review_question_count': 0,
                     'attempt_count': 0,
                 }
                 current['_topics_by_id'][topic_id] = topic_cell
@@ -1283,6 +1348,8 @@ class DrillHeatmapView(APIView):
                 topic_cell['mastered_question_count'] += 1
             elif state == 'review':
                 topic_cell['review_question_count'] += 1
+                if review_overdue:
+                    topic_cell['overdue_review_question_count'] += 1
 
         for group in groups:
             group.pop('_topics_by_id', None)
@@ -1294,7 +1361,8 @@ class DrillHeatmapView(APIView):
                     0 if attempted == 0 else min(4, max(1, (attempted * 4 + total - 1) // total))
                 )
                 topic_cell['state'] = (
-                    'review' if topic_cell['review_question_count']
+                    'overdue' if topic_cell['overdue_review_question_count']
+                    else 'review' if topic_cell['review_question_count']
                     else 'mastered' if attempted == total
                     else 'progress' if attempted
                     else 'unattempted'

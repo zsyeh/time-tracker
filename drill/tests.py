@@ -358,6 +358,49 @@ class DrillApiTests(TestCase):
         self.assertIsNone(payload['previous_question_uuid'])
         self.assertEqual(payload['next_question_uuid'], str(self.similar.uuid))
 
+    def test_overdue_review_state_and_review_navigation(self):
+        recent_review_question = Question.objects.create(
+            document=self.document,
+            topic=self.topic,
+            similarity_topic=self.topic,
+            question_order=5,
+            source_label='Recent review',
+            prompt_text='Recent review question',
+            content_mode='text',
+            fingerprint='f' * 64,
+            source_category='past_exam',
+        )
+        old_attempt = QuestionAttempt.objects.create(
+            user=self.alice,
+            question=self.similar,
+            result='review',
+            created_at=timezone.now() - datetime.timedelta(days=6),
+        )
+        QuestionAttempt.objects.create(
+            user=self.alice,
+            question=recent_review_question,
+            result='review',
+        )
+        self.client.force_login(self.alice)
+
+        detail = self.client.get(f'/api/drill/questions/{self.question.uuid}/').json()
+        self.assertEqual(detail['sequential_next_question_uuid'], str(self.similar.uuid))
+        self.assertEqual(detail['next_overdue_review_uuid'], str(self.similar.uuid))
+        self.assertEqual(detail['next_review_uuid'], str(recent_review_question.uuid))
+
+        overdue_detail = self.client.get(f'/api/drill/questions/{self.similar.uuid}/').json()
+        self.assertTrue(overdue_detail['review_overdue'])
+        rows = self.client.get('/api/drill/questions/?source_category=past_exam').json()['results']
+        row = next(item for item in rows if item['uuid'] == str(self.similar.uuid))
+        self.assertTrue(row['review_overdue'])
+        heatmap = self.client.get('/api/drill/heatmap/?scope=past_exam').json()
+        cell = next(
+            item for group in heatmap['groups'] for item in group['questions']
+            if item['uuid'] == str(self.similar.uuid)
+        )
+        self.assertTrue(cell['review_overdue'])
+        self.assertEqual(old_attempt.result, 'review')
+
     def test_detail_navigation_respects_search_and_unattempted_context(self):
         QuestionAttempt.objects.create(user=self.alice, question=self.similar, result='correct')
         self.client.force_login(self.alice)

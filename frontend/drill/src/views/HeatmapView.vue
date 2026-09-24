@@ -17,6 +17,7 @@ interface HeatmapQuestion {
   variant: string
   attempt_count: number
   latest_result: string | null
+  review_overdue: boolean
   state: 'unattempted' | 'mastered' | 'review'
 }
 
@@ -31,7 +32,7 @@ interface HeatmapTopic {
   attempt_count: number
   coverage_percent: number
   intensity: 0 | 1 | 2 | 3 | 4
-  state: 'unattempted' | 'progress' | 'mastered' | 'review'
+  state: 'unattempted' | 'progress' | 'mastered' | 'review' | 'overdue'
 }
 
 interface HeatmapPayload {
@@ -188,7 +189,7 @@ onMounted(load)
       <div class="heat-controls">
         <div v-if="!props.selectedOnly" class="heat-mode"><button :class="{ active: mode === 'topics' }" @click="mode = 'topics'">Topics</button><button :class="{ active: mode === 'questions' }" @click="mode = 'questions'">Questions</button></div>
         <div class="heat-scope"><button :class="{ active: scope === 'all' }" @click="scope = 'all'">All</button><button :class="{ active: scope === 'past_exam' }" @click="scope = 'past_exam'">Past exams</button><button :class="{ active: scope === 'mock_exam' }" @click="scope = 'mock_exam'">Mock exams</button></div>
-        <div class="heat-legend"><i class="status-unattempted" /><span>NOT STARTED</span><i class="status-progress" /><span>IN PROGRESS</span><i class="status-mastered" /><span>MASTERED</span><i class="status-review" /><span>REVIEW</span></div>
+        <div class="heat-legend"><i class="status-unattempted" /><span>NOT STARTED</span><i class="status-progress" /><span>IN PROGRESS</span><i class="status-mastered" /><span>MASTERED</span><i class="status-review" /><span>REVIEW</span><i class="status-overdue" /><span>OVERDUE</span></div>
       </div>
     </header>
     <p v-if="error" class="error-state">{{ error }}</p>
@@ -239,7 +240,7 @@ onMounted(load)
             v-for="item in group.questions"
             :key="item.uuid"
             :data-question-uuid="item.uuid"
-            :class="[`status-${item.state}`, { selected: selectedQuestion?.question.uuid === item.uuid }]"
+            :class="[item.review_overdue ? 'status-overdue' : `status-${item.state}`, { selected: selectedQuestion?.question.uuid === item.uuid }]"
             :aria-pressed="selectedQuestion?.question.uuid === item.uuid"
             :aria-label="`${item.label}; ${item.state}; ${item.attempt_count} attempts`"
             :title="`${item.label} · ${item.topic} · ${item.state} · ${item.attempt_count} attempts`"
@@ -254,7 +255,7 @@ onMounted(load)
               <p>{{ selectedQuestion.question.topic || 'General' }}<template v-if="selectedQuestion.question.year"> · {{ selectedQuestion.question.year }}{{ selectedQuestion.question.variant ? ` ${selectedQuestion.question.variant}` : '' }}</template></p>
             </div>
             <dl>
-              <div><dt>STATE</dt><dd>{{ selectedQuestion.question.state === 'mastered' ? 'MASTERED' : selectedQuestion.question.state === 'review' ? 'REVIEW' : 'NOT STARTED' }}</dd></div>
+              <div><dt>STATE</dt><dd>{{ selectedQuestion.question.review_overdue ? 'OVERDUE REVIEW' : selectedQuestion.question.state === 'mastered' ? 'MASTERED' : selectedQuestion.question.state === 'review' ? 'REVIEW' : 'NOT STARTED' }}</dd></div>
               <div><dt>ATTEMPTS</dt><dd>{{ selectedQuestion.question.attempt_count }}</dd></div>
               <div><dt>INDEX</dt><dd>{{ String(selectedQuestion.question.order).padStart(4, '0') }}</dd></div>
             </dl>
