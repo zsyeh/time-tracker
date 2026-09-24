@@ -100,6 +100,7 @@ const selectedQuestion = ref<{
   document: string
   question: HeatmapQuestion
 } | null>(null)
+let loadSequence = 0
 
 function previewTopic(documentId: number, document: string, topic: HeatmapTopic) {
   selectedQuestion.value = null
@@ -160,9 +161,11 @@ async function restoreQuestionSelection(payload: HeatmapPayload) {
 }
 
 async function load() {
+  const sequence = ++loadSequence
   const requestedScope = scope.value
   const requestedMode = mode.value
-  const collection = props.selectedOnly ? 'selected' : ''
+  const requestedSelectedOnly = props.selectedOnly
+  const collection = requestedSelectedOnly ? 'selected' : ''
   const cacheKey = `${collection || 'all'}:${requestedMode}:${requestedScope}`
   const cached = cachedHeatmap<HeatmapPayload>(cacheKey)
   if (cached) {
@@ -173,14 +176,14 @@ async function load() {
   error.value = ''
   try {
     const value = await api<HeatmapPayload>(`/api/drill/heatmap/?scope=${requestedScope}&mode=${requestedMode}${collection ? `&collection=${collection}` : ''}`)
-    if (scope.value !== requestedScope || mode.value !== requestedMode) return
+    if (sequence !== loadSequence || scope.value !== requestedScope || mode.value !== requestedMode || props.selectedOnly !== requestedSelectedOnly) return
     data.value = value
     storeHeatmap(cacheKey, value)
     void restoreQuestionSelection(value)
   } catch (reason) {
     error.value = (reason as Error).message
   } finally {
-    if (scope.value === requestedScope && mode.value === requestedMode) loading.value = false
+    if (sequence === loadSequence && scope.value === requestedScope && mode.value === requestedMode && props.selectedOnly === requestedSelectedOnly) loading.value = false
   }
 }
 
@@ -188,6 +191,20 @@ watch([scope, mode], () => {
   selectedTopic.value = null
   selectedQuestion.value = null
   pendingQuestionUuid = ''
+  void load()
+})
+watch(() => props.selectedOnly, (selectedOnly) => {
+  // Vue Router reuses this component between /heatmap and
+  // /selected-heatmap. Reset route-specific state before loading the other
+  // collection so stale requests and previews cannot bleed across pages.
+  data.value = null
+  selectedTopic.value = null
+  selectedQuestion.value = null
+  pendingQuestionUuid = String(route.query.question || '')
+  if (selectedOnly && mode.value !== 'questions') {
+    mode.value = 'questions'
+    return
+  }
   void load()
 })
 onMounted(load)

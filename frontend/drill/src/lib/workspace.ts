@@ -115,11 +115,14 @@ export async function prefetchQuestion(uuid: string | null, query = '') {
   if (!uuid) return
   try {
     const question = await fetchQuestion(uuid, query)
-    const firstAsset = question.question_assets?.[0] || question.assets?.[0]
-    if (firstAsset) {
+    // Warm every image needed to render the next question page. The browser
+    // HTTP cache retains the responses even after these Image objects expire.
+    const assets = question.question_assets?.length ? question.question_assets : question.assets || []
+    for (const asset of assets) {
       const image = new Image()
       image.decoding = 'async'
-      image.src = firstAsset.url
+      image.fetchPriority = 'low'
+      image.src = asset.url
     }
     return question
   } catch { /* background prefetch must never block practice */ }
