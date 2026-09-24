@@ -255,6 +255,25 @@ class DrillApiTests(TestCase):
         self.assertEqual(limits['state'], 'unattempted')
         self.assertNotIn('prompt_text', limits)
 
+        QuestionAttempt.objects.create(
+            user=self.alice, question=self.question, result='correct', time_spent_seconds=60,
+        )
+        QuestionAttempt.objects.create(
+            user=self.alice, question=self.similar, result='review', time_spent_seconds=120,
+        )
+        QuestionAttempt.objects.create(
+            user=self.bob, question=self.unrelated, result='correct', time_spent_seconds=999,
+        )
+        statistics = self.client.get('/api/drill/heatmap/?scope=all').json()['statistics']
+        self.assertEqual(statistics['attempted_question_count'], 2)
+        self.assertEqual(statistics['mastered_question_count'], 1)
+        self.assertEqual(statistics['review_question_count'], 1)
+        self.assertEqual(statistics['master_rate_percent'], 50.0)
+        self.assertEqual(statistics['timed_attempt_count'], 2)
+        self.assertEqual(statistics['average_time_seconds'], 90)
+        self.assertEqual(statistics['mastered_average_time_seconds'], 60)
+        self.assertEqual(statistics['review_average_time_seconds'], 120)
+
     def test_selected_heatmap_only_contains_curated_drill_questions(self):
         self.question.answer_source = 'daguan_answer_guide_pdf'
         self.question.save(update_fields=['answer_source'])

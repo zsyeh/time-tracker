@@ -314,9 +314,16 @@ button { color: inherit; }
 .heat-mode button, .heat-scope button { height: 27px; padding: 0 9px; border: 0; border-radius: 4px; color: var(--text-tertiary); background: transparent; font-size: 9px; cursor: pointer; }
 .heat-mode button.active, .heat-scope button.active { color: var(--text-primary); background: var(--bg-surface-active); }
 .heat-legend, .activity-legend { color: var(--text-tertiary); display: flex; align-items: center; gap: 4px; font-size: 7px; }
-.heatmap-summary { margin-bottom: 9px; padding: 13px 15px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface); }
-.heatmap-summary strong { color: var(--text-primary); font: 570 22px ui-monospace, monospace; }
-.heatmap-summary span { margin-left: 8px; color: var(--text-tertiary); font-size: 9px; }
+.heatmap-summary { margin-bottom: 9px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface); display: grid; grid-template-columns: minmax(130px, .7fr) 3fr; }
+.heatmap-summary-lead { padding: 14px 15px; border-right: 1px solid var(--border-subtle); display: flex; align-items: baseline; gap: 8px; }
+.heatmap-summary-lead strong { color: var(--text-primary); font: 570 22px ui-monospace, monospace; }
+.heatmap-summary-lead span { color: var(--text-tertiary); font-size: 9px; }
+.heatmap-summary dl { margin: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.heatmap-summary dl > div { min-width: 0; padding: 11px 13px; border-left: 1px solid var(--border-subtle); }
+.heatmap-summary dl > div:first-child { border-left: 0; }
+.heatmap-summary dt { color: var(--text-tertiary); font-size: 7px; letter-spacing: .05em; }
+.heatmap-summary dd { margin: 4px 0 1px; color: var(--text-primary); font: 570 14px ui-monospace, monospace; font-variant-numeric: tabular-nums; }
+.heatmap-summary small { overflow: hidden; color: var(--text-tertiary); display: block; font-size: 7px; text-overflow: ellipsis; white-space: nowrap; }
 .heatmap-group { margin-top: 8px; padding: 15px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface); }
 .heatmap-group > header { margin-bottom: 12px; display: flex; align-items: flex-end; justify-content: space-between; }
 .heatmap-group > header span { color: var(--text-tertiary); font-size: 8px; }
@@ -519,6 +526,8 @@ button { color: inherit; }
   .taxonomy-grid { grid-template-columns: repeat(3, 1fr); }
   .topic-preview-card { grid-template-columns: minmax(0, 1fr) auto; }
   .topic-preview-actions { grid-column: 1/-1; justify-content: flex-end; }
+  .heatmap-summary { grid-template-columns: 1fr; }
+  .heatmap-summary-lead { border-right: 0; border-bottom: 1px solid var(--border-subtle); }
 }
 
 @media (max-width: 700px) {
@@ -540,6 +549,9 @@ button { color: inherit; }
   .question-control-pane .answer-bar, .question-control-pane .similar-panel { grid-column: auto; }
   .heat-controls { width: 100%; justify-items: start; }
   .heat-legend { display: none; }
+  .heatmap-summary dl { grid-template-columns: 1fr 1fr; }
+  .heatmap-summary dl > div:nth-child(3) { border-top: 1px solid var(--border-subtle); border-left: 0; }
+  .heatmap-summary dl > div:nth-child(4) { border-top: 1px solid var(--border-subtle); }
   .topic-preview-card { grid-template-columns: 1fr; gap: 10px; }
   .topic-preview-card dl { justify-content: space-between; }
   .topic-preview-actions { grid-column: auto; }

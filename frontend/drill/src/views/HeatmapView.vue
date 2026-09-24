@@ -37,12 +37,30 @@ interface HeatmapTopic {
 interface HeatmapPayload {
   question_count: number
   topic_count: number
+  statistics: {
+    attempted_question_count: number
+    mastered_question_count: number
+    review_question_count: number
+    master_rate_percent: number | null
+    timed_attempt_count: number
+    average_time_seconds: number | null
+    mastered_average_time_seconds: number | null
+    review_average_time_seconds: number | null
+  }
   groups: Array<{
     document_id: number
     document: string
     questions: HeatmapQuestion[]
     topics: HeatmapTopic[]
   }>
+}
+
+function formatDuration(seconds: number | null) {
+  if (seconds === null) return '—'
+  const minutes = Math.floor(seconds / 60)
+  const remainder = seconds % 60
+  if (minutes >= 60) return `${Math.floor(minutes / 60)}h ${minutes % 60}m`
+  return minutes ? `${minutes}m ${remainder}s` : `${remainder}s`
 }
 
 const router = useRouter()
@@ -176,7 +194,15 @@ onMounted(load)
     <p v-if="error" class="error-state">{{ error }}</p>
     <div v-else-if="loading" class="question-skeleton">BUILDING HEATMAP…</div>
     <template v-else-if="data">
-      <div class="heatmap-summary"><strong>{{ mode === 'topics' ? data.topic_count : data.question_count }}</strong><span>{{ mode === 'topics' ? 'indexed knowledge topics across all visible books' : scope === 'past_exam' ? 'verified official past-exam records' : scope === 'mock_exam' ? 'mock-exam records' : 'all practiceable records' }}</span></div>
+      <section class="heatmap-summary">
+        <div class="heatmap-summary-lead"><strong>{{ mode === 'topics' ? data.topic_count : data.question_count }}</strong><span>{{ mode === 'topics' ? 'visible topics' : 'visible questions' }}</span></div>
+        <dl>
+          <div><dt>MASTER RATE</dt><dd>{{ data.statistics.master_rate_percent === null ? '—' : `${data.statistics.master_rate_percent}%` }}</dd><small>{{ data.statistics.mastered_question_count }} mastered / {{ data.statistics.attempted_question_count }} attempted</small></div>
+          <div><dt>AVG. TIME</dt><dd>{{ formatDuration(data.statistics.average_time_seconds) }}</dd><small>{{ data.statistics.timed_attempt_count }} timed attempts</small></div>
+          <div><dt>MASTER AVG.</dt><dd>{{ formatDuration(data.statistics.mastered_average_time_seconds) }}</dd><small>Mastered submissions</small></div>
+          <div><dt>REVIEW AVG.</dt><dd>{{ formatDuration(data.statistics.review_average_time_seconds) }}</dd><small>{{ data.statistics.review_question_count }} currently in review</small></div>
+        </dl>
+      </section>
       <section v-for="group in data.groups" :key="group.document_id" class="heatmap-group">
         <header><div><span>BOOK</span><h2>{{ group.document }}</h2></div><strong>{{ mode === 'topics' ? `${group.topics.length} topics` : `${group.questions.length} questions` }}</strong></header>
         <div v-if="mode === 'topics'" class="topic-heatmap">

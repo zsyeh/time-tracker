@@ -3,7 +3,7 @@ import datetime
 from django.conf import settings
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import transaction
-from django.db.models import Count, Exists, Max, OuterRef, Prefetch, Q, Subquery, Sum
+from django.db.models import Avg, Count, Exists, Max, OuterRef, Prefetch, Q, Subquery, Sum
 from django.db.models.functions import TruncDate
 from django.http import Http404, HttpResponse, HttpResponseNotModified
 from django.shortcuts import get_object_or_404
@@ -1163,9 +1163,10 @@ class DrillHeatmapView(APIView):
         if collection == 'selected':
             attempt_filters &= Q(question__answer_source='daguan_answer_guide_pdf')
         progress = {}
-        for row in QuestionAttempt.objects.filter(
+        filtered_attempts = QuestionAttempt.objects.filter(
             attempt_filters, user=request.user,
-        ).values(
+        )
+        for row in filtered_attempts.values(
             'question_id', 'result',
         ).order_by('question_id', '-created_at', '-pk'):
             item = progress.setdefault(row['question_id'], {
@@ -1174,6 +1175,25 @@ class DrillHeatmapView(APIView):
             })
             if row['result'] in {'done', 'correct', 'review'}:
                 item['attempt_count'] += 1
+
+        mastered_count = sum(
+            item['latest_result'] in {'done', 'correct'} for item in progress.values()
+        )
+        review_count = sum(item['latest_result'] == 'review' for item in progress.values())
+        attempted_count = mastered_count + review_count
+        timing = filtered_attempts.filter(time_spent_seconds__isnull=False).aggregate(
+            timed_attempt_count=Count('id'),
+            average_time_seconds=Avg('time_spent_seconds'),
+            mastered_average_time_seconds=Avg(
+                'time_spent_seconds', filter=Q(result__in=('done', 'correct')),
+            ),
+            review_average_time_seconds=Avg(
+                'time_spent_seconds', filter=Q(result='review'),
+            ),
+        )
+
+        def rounded(value):
+            return round(value) if value is not None else None
 
         topic_metadata = {}
         if mode == 'topics' and questions:
@@ -1283,6 +1303,16 @@ class DrillHeatmapView(APIView):
             'mode': mode,
             'question_count': len(questions),
             'topic_count': len(unique_topic_ids),
+            'statistics': {
+                'attempted_question_count': attempted_count,
+                'mastered_question_count': mastered_count,
+                'review_question_count': review_count,
+                'master_rate_percent': round(mastered_count * 100 / attempted_count, 1) if attempted_count else None,
+                'timed_attempt_count': timing['timed_attempt_count'],
+                'average_time_seconds': rounded(timing['average_time_seconds']),
+                'mastered_average_time_seconds': rounded(timing['mastered_average_time_seconds']),
+                'review_average_time_seconds': rounded(timing['review_average_time_seconds']),
+            },
             'groups': groups,
             'levels': [0, 1, 2, 3, 4],
         })
