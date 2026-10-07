@@ -83,6 +83,11 @@ const stateSaving = ref(false)
 const noteSaveState = ref<'idle' | 'dirty' | 'saving' | 'saved'>('idle')
 const markerSaving = ref(false)
 const nextLoading = ref(false)
+const erratumOpen = ref(false)
+const erratumKind = ref('crop')
+const erratumDescription = ref('')
+const erratumSaving = ref(false)
+const erratumMessage = ref('')
 
 function questionAssets(loadedQuestion: QuestionDetail) {
   return loadedQuestion.question_assets || loadedQuestion.assets || []
@@ -412,6 +417,22 @@ async function saveMarkers(codes: QuestionMarkerCode[]) {
   }
 }
 
+async function submitErratum() {
+  const description = erratumDescription.value.trim()
+  if (!description || erratumSaving.value) return
+  erratumSaving.value = true
+  erratumMessage.value = ''
+  try {
+    await post('/api/drill/errata/', { question_uuid: props.uuid, kind: erratumKind.value, description })
+    erratumDescription.value = ''
+    erratumMessage.value = 'Correction submitted. It is now visible in Errata.'
+  } catch (reason) {
+    erratumMessage.value = (reason as Error).message
+  } finally {
+    erratumSaving.value = false
+  }
+}
+
 function toggleMarker(code: QuestionMarkerCode) {
   if (!question.value) return
   const active = question.value.markers.includes(code)
@@ -541,9 +562,16 @@ onBeforeRouteLeave(async () => {
       <nav class="question-nav"><button :disabled="!question.previous_question_uuid" @click="question.previous_question_uuid && router.push({ path: `/practice/${question.previous_question_uuid}`, query: questionRouteQuery() })">← Previous</button><button :disabled="!question.sequential_next_question_uuid || nextLoading" @click="goToNext('sequential')">{{ nextLoading ? 'Finding next…' : 'Next →' }}</button></nav>
 
       <div class="question-save-actions">
+        <button type="button" :class="{ active: erratumOpen }" @click="erratumOpen = !erratumOpen"><b>!</b>Report correction</button>
         <button type="button" :class="{ active: question.is_favorite }" :disabled="stateSaving" @click="saveUserState({ is_favorite: !question.is_favorite })"><b>{{ question.is_favorite ? '★' : '☆' }}</b>{{ question.is_favorite ? 'Favorited' : 'Favorite' }}</button>
         <button type="button" :class="{ active: question.review_later }" :disabled="stateSaving" @click="saveUserState({ review_later: !question.review_later })"><b>↻</b>{{ question.review_later ? 'Added to next time' : 'Add to next time' }}</button>
       </div>
+
+      <section v-if="erratumOpen" class="erratum-compose">
+        <header><div><strong>REPORT A CORRECTION</strong><small>Public to every user in this workspace.</small></div><RouterLink to="/errata">View all errata →</RouterLink></header>
+        <div><select v-model="erratumKind" aria-label="Correction type"><option value="crop">Image / crop</option><option value="question">Question content</option><option value="answer">Answer / explanation</option><option value="formula">Formula rendering</option><option value="metadata">Label / topic</option><option value="other">Other</option></select><textarea v-model="erratumDescription" maxlength="4000" placeholder="Describe what is wrong and, if known, the correct content." /></div>
+        <footer><span :class="{ error: erratumMessage && !erratumMessage.startsWith('Correction submitted') }">{{ erratumMessage }}</span><button type="button" :disabled="erratumSaving || !erratumDescription.trim()" @click="submitErratum">{{ erratumSaving ? 'Submitting…' : 'Submit erratum' }}</button></footer>
+      </section>
 
       <div class="question-workbench">
         <div class="question-problem-pane">

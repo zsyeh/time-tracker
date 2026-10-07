@@ -99,6 +99,9 @@ onMounted(() => {
         <RouterLink to="/insight" :class="{ active: route.name === 'insight' }">
           <span>{{ t('insight') }}</span>
         </RouterLink>
+        <RouterLink to="/errata" :class="{ active: route.name === 'errata' }">
+          <span>Errata</span>
+        </RouterLink>
       </nav>
       <div v-if="progress" class="sidebar-progress">
         <span>{{ t('coverage') }}</span>

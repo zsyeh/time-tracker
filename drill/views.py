@@ -16,7 +16,7 @@ from rest_framework.views import APIView
 from .cleaning import SOURCE_LABELS
 from .models import (
     ExamBlueprint, ExamPaper, ExamPaperItem, Question, QuestionAsset,
-    QuestionAttempt, QuestionDocument, QuestionMarker, QuestionTopic,
+    QuestionAttempt, QuestionDocument, QuestionErratum, QuestionMarker, QuestionTopic,
     QuestionRevisionAsset, QuestionUserState,
 )
 from .paper_generator import PaperGenerationError, PaperGenerator
@@ -787,6 +787,54 @@ class DrillQuestionDetailView(APIView):
             ],
         })
         return Response(payload)
+
+
+class DrillErratumView(APIView):
+    def get(self, request):
+        queryset = QuestionErratum.objects.filter(
+            question__document__workspace=request_workspace(request),
+        ).select_related('question', 'question__document', 'reporter')
+        question_uuid = request.query_params.get('question', '').strip()
+        if question_uuid:
+            queryset = queryset.filter(question__uuid=question_uuid)
+        paginator = PageNumberPagination()
+        paginator.page_size = 30
+        page = paginator.paginate_queryset(queryset, request)
+        return paginator.get_paginated_response([self._payload(item) for item in page])
+
+    def post(self, request):
+        question_uuid = str(request.data.get('question_uuid', '')).strip()
+        description = str(request.data.get('description', '')).strip()
+        kind = str(request.data.get('kind', 'other')).strip()
+        valid_kinds = {value for value, _label in QuestionErratum.KIND_CHOICES}
+        if kind not in valid_kinds:
+            return Response({'kind': ['Invalid correction type.']}, status=status.HTTP_400_BAD_REQUEST)
+        if not description:
+            return Response({'description': ['Please describe the correction.']}, status=status.HTTP_400_BAD_REQUEST)
+        if len(description) > 4000:
+            return Response({'description': ['Keep the report under 4,000 characters.']}, status=status.HTTP_400_BAD_REQUEST)
+        question = get_object_or_404(workspace_questions(request), uuid=question_uuid)
+        item = QuestionErratum.objects.create(
+            question=question, reporter=request.user, kind=kind, description=description,
+        )
+        return Response(self._payload(item), status=status.HTTP_201_CREATED)
+
+    @staticmethod
+    def _payload(item):
+        return {
+            'id': item.pk,
+            'question_uuid': str(item.question.uuid),
+            'question_label': item.question.display_label or item.question.source_label or f'Question {item.question.question_order}',
+            'document': item.question.document.display_title or item.question.document.title,
+            'reporter': item.reporter.username if item.reporter else 'Deleted user',
+            'kind': item.kind,
+            'kind_label': item.get_kind_display(),
+            'description': item.description,
+            'status': item.status,
+            'resolution': item.resolution,
+            'created_at': item.created_at,
+            'updated_at': item.updated_at,
+        }
 
 
 class DrillSimilarQuestionView(APIView):

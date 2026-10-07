@@ -489,6 +489,47 @@ class QuestionMarker(models.Model):
         return f'{self.user_id} · {self.question_id} · {self.code}'
 
 
+class QuestionErratum(models.Model):
+    """Public, auditable correction report for a shared question."""
+
+    KIND_CHOICES = [
+        ('crop', 'Image / crop'),
+        ('question', 'Question content'),
+        ('answer', 'Answer / explanation'),
+        ('formula', 'Formula rendering'),
+        ('metadata', 'Label / topic'),
+        ('other', 'Other'),
+    ]
+    STATUS_CHOICES = [
+        ('open', 'Open'),
+        ('reviewing', 'Reviewing'),
+        ('resolved', 'Resolved'),
+        ('declined', 'Declined'),
+    ]
+
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='errata')
+    reporter = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name='question_errata',
+    )
+    kind = models.CharField(max_length=16, choices=KIND_CHOICES, default='other', db_index=True)
+    description = models.TextField()
+    status = models.CharField(max_length=16, choices=STATUS_CHOICES, default='open', db_index=True)
+    resolution = models.TextField(blank=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    resolved_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        ordering = ('-created_at', '-pk')
+        indexes = [
+            models.Index(fields=('status', 'created_at'), name='drill_erratum_status_idx'),
+            models.Index(fields=('question', 'created_at'), name='drill_erratum_question_idx'),
+        ]
+
+    def __str__(self):
+        return f'{self.question_id} · {self.kind} · {self.status}'
+
+
 class ExamBlueprint(models.Model):
     """Immutable-by-convention, versioned composition rules for one paper mode."""
 

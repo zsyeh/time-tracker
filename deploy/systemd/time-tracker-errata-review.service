@@ -1,0 +1,16 @@
+[Unit]
+Description=Review Time Tracker question errata with Codex
+Wants=network-online.target
+After=network-online.target postgresql.service
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+WorkingDirectory=/root/time-tracker
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/root/time-tracker/scripts/review-errata-with-codex.sh
+Nice=15
+IOSchedulingClass=idle
+TimeoutStartSec=2h
+

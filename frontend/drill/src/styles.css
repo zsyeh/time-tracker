@@ -239,6 +239,50 @@ button { color: inherit; }
 .question-save-actions button b { margin-right: 5px; font-size: 12px; }
 .question-save-actions button.active { color: var(--warning); border-color: color-mix(in srgb, var(--warning) 50%, var(--border-default)); background: color-mix(in srgb, var(--warning) 9%, var(--bg-sidebar)); }
 .question-save-actions button + button.active { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 50%, var(--border-default)); background: var(--accent-muted); }
+.erratum-compose { margin: 0 0 10px; padding: 12px; border: 1px solid var(--border-default); border-radius: var(--radius-md); background: var(--bg-surface); }
+.erratum-compose header, .erratum-compose footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.erratum-compose header strong, .erratum-compose header small { display: block; }
+.erratum-compose header strong { font-size: 9px; }
+.erratum-compose header small, .erratum-compose header a, .erratum-compose footer span { color: var(--text-tertiary); font-size: 8px; }
+.erratum-compose > div { margin-top: 10px; display: grid; grid-template-columns: 150px 1fr; gap: 7px; }
+.erratum-compose select, .erratum-compose textarea { padding: 8px; border: 1px solid var(--border-default); border-radius: var(--radius-sm); color: var(--text-primary); background: var(--bg-sidebar); font: inherit; }
+.erratum-compose textarea { min-height: 72px; resize: vertical; }
+.erratum-compose footer { margin-top: 7px; }
+.erratum-compose footer span.error { color: var(--danger); }
+.erratum-compose footer button { min-height: 32px; padding: 0 12px; border: 1px solid var(--accent); border-radius: var(--radius-sm); color: var(--text-primary); background: var(--accent-muted); cursor: pointer; }
+.errata-list { border-top: 1px solid var(--border-subtle); }
+.errata-list > article { padding: 15px 4px; border-bottom: 1px solid var(--border-subtle); }
+.errata-list article > header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.errata-list article > header a { color: var(--text-primary); font-size: 13px; font-weight: 600; }
+.errata-list article > small { color: var(--text-tertiary); font-size: 9px; }
+.errata-list article > p { margin-top: 9px; color: var(--text-secondary); white-space: pre-wrap; font-size: 11px; }
+.errata-list blockquote { margin-top: 10px; padding: 9px 11px; border-left: 2px solid var(--success); color: var(--text-secondary); background: color-mix(in srgb, var(--success) 6%, transparent); font-size: 10px; }
+.errata-list blockquote strong { margin-right: 8px; color: var(--success); }
+.erratum-status { padding: 3px 7px; border: 1px solid var(--border-default); border-radius: 999px; color: var(--text-tertiary); font-size: 8px; text-transform: uppercase; }
+.erratum-status.open { color: var(--warning); border-color: color-mix(in srgb, var(--warning) 50%, var(--border-default)); }
+.erratum-status.resolved { color: var(--success); border-color: color-mix(in srgb, var(--success) 50%, var(--border-default)); }
+.erratum-compose { margin: 0 0 10px; padding: 12px; border: 1px solid var(--border-default); border-radius: var(--radius-md); background: var(--bg-surface); }
+.erratum-compose header, .erratum-compose footer { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.erratum-compose header strong, .erratum-compose header small { display: block; }
+.erratum-compose header strong { font-size: 9px; }
+.erratum-compose header small, .erratum-compose header a, .erratum-compose footer span { color: var(--text-tertiary); font-size: 8px; }
+.erratum-compose > div { margin-top: 10px; display: grid; grid-template-columns: 150px 1fr; gap: 7px; }
+.erratum-compose select, .erratum-compose textarea { padding: 8px; border: 1px solid var(--border-default); border-radius: var(--radius-sm); color: var(--text-primary); background: var(--bg-sidebar); font: inherit; }
+.erratum-compose textarea { min-height: 72px; resize: vertical; }
+.erratum-compose footer { margin-top: 7px; }
+.erratum-compose footer span.error { color: var(--danger); }
+.erratum-compose footer button { min-height: 32px; padding: 0 12px; border: 1px solid var(--accent); border-radius: var(--radius-sm); color: var(--text-primary); background: var(--accent-muted); cursor: pointer; }
+.errata-list { border-top: 1px solid var(--border-subtle); }
+.errata-list > article { padding: 15px 4px; border-bottom: 1px solid var(--border-subtle); }
+.errata-list article > header { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+.errata-list article > header a { color: var(--text-primary); font-size: 13px; font-weight: 600; }
+.errata-list article > small { color: var(--text-tertiary); font-size: 9px; }
+.errata-list article > p { margin-top: 9px; color: var(--text-secondary); white-space: pre-wrap; font-size: 11px; }
+.errata-list blockquote { margin-top: 10px; padding: 9px 11px; border-left: 2px solid var(--success); color: var(--text-secondary); background: color-mix(in srgb, var(--success) 6%, transparent); font-size: 10px; }
+.errata-list blockquote strong { margin-right: 8px; color: var(--success); }
+.erratum-status { padding: 3px 7px; border: 1px solid var(--border-default); border-radius: 999px; color: var(--text-tertiary); font-size: 8px; text-transform: uppercase; }
+.erratum-status.open { color: var(--warning); border-color: color-mix(in srgb, var(--warning) 50%, var(--border-default)); }
+.erratum-status.resolved { color: var(--success); border-color: color-mix(in srgb, var(--success) 50%, var(--border-default)); }
 .question-workbench { display: grid; grid-template-columns: minmax(0, 1fr) minmax(290px, 320px); align-items: start; gap: 9px; }
 .question-problem-pane, .question-control-pane { min-width: 0; }
 .question-problem-pane { padding: 7px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface); }
@@ -593,6 +637,7 @@ button { color: inherit; }
   .attempt-counter { padding-left: 0; border-left: 0; text-align: left; }
   .question-save-actions { justify-content: stretch; }
   .question-save-actions button { flex: 1; }
+  .erratum-compose > div { grid-template-columns: 1fr; }
   .question-control-pane { grid-template-columns: 1fr; }
   .question-control-pane .answer-bar, .question-control-pane .similar-panel { grid-column: auto; }
   .heat-controls { width: 100%; justify-items: start; }

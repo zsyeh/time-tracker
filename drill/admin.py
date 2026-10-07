@@ -9,12 +9,21 @@ from .models import (
     QuestionAsset,
     QuestionAttempt,
     QuestionDocument,
+    QuestionErratum,
     QuestionMarker,
     QuestionRevision,
     QuestionRevisionAsset,
     QuestionTopic,
     QuestionUserState,
 )
+
+
+@admin.register(QuestionErratum)
+class QuestionErratumAdmin(admin.ModelAdmin):
+    list_display = ('question', 'reporter', 'kind', 'status', 'created_at', 'updated_at')
+    list_filter = ('status', 'kind', 'question__document__workspace', 'created_at')
+    search_fields = ('question__display_label', 'question__source_label', 'reporter__username', 'description', 'resolution')
+    readonly_fields = ('created_at', 'updated_at')
 
 
 class QuestionTypeConfidenceFilter(admin.SimpleListFilter):

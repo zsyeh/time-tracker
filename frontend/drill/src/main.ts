@@ -13,6 +13,7 @@ import PaperReviewView from './views/PaperReviewView.vue'
 import CollectionView from './views/CollectionView.vue'
 import FeelView from './views/FeelView.vue'
 import InsightView from './views/InsightView.vue'
+import ErrataView from './views/ErrataView.vue'
 import { initializeUiPreferences } from './lib/uiPreferences'
 import './styles.css'
 
@@ -35,6 +36,7 @@ const router = createRouter({
     { path: '/review-later', name: 'review-later', component: CollectionView, props: { kind: 'review_later' } },
     { path: '/feel', name: 'feel', component: FeelView },
     { path: '/insight', name: 'insight', component: InsightView },
+    { path: '/errata', name: 'errata', component: ErrataView },
   ],
   scrollBehavior(_to, _from, savedPosition) {
     return savedPosition || { top: 0 }

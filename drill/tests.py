@@ -147,6 +147,39 @@ class DrillApiTests(TestCase):
         self.assertNotIn('prompt_text', first)
         self.assertNotIn('assets', first)
 
+    def test_errata_are_public_to_authenticated_workspace_users(self):
+        self.client.force_login(self.alice)
+        created = self.client.post(
+            '/api/drill/errata/',
+            data=json.dumps({
+                'question_uuid': str(self.question.uuid),
+                'kind': 'crop',
+                'description': 'The lower edge of the formula is cropped.',
+            }),
+            content_type='application/json',
+        )
+        self.assertEqual(created.status_code, 201)
+        self.client.force_login(self.bob)
+        listing = self.client.get('/api/drill/errata/')
+        self.assertEqual(listing.status_code, 200)
+        self.assertEqual(listing.json()['results'][0]['reporter'], self.alice.username)
+        self.assertEqual(listing.json()['results'][0]['question_uuid'], str(self.question.uuid))
+
+    def test_erratum_cannot_target_other_workspace_question(self):
+        ei_document = QuestionDocument.objects.create(
+            source_id=892999001, workspace='ei', filename='ei.md', title='EI',
+            sha256='9' * 64, page_count=0,
+        )
+        ei_question = Question.objects.create(
+            document=ei_document, question_order=1, prompt_text='EI', content_mode='markdown',
+            fingerprint='9' * 64,
+        )
+        self.client.force_login(self.alice)
+        response = self.client.post('/api/drill/errata/', data=json.dumps({
+            'question_uuid': str(ei_question.uuid), 'kind': 'other', 'description': 'Wrong workspace',
+        }), content_type='application/json')
+        self.assertEqual(response.status_code, 404)
+
     @override_settings(
         ALLOWED_HOSTS=['testserver', 'ei.ehzsy.site'],
         EI_HOSTS={'ei.ehzsy.site'},
