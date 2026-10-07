@@ -152,5 +152,6 @@ urlpatterns = [
     path('review-later', drill_spa_view, name='drill_review_later_page'),
     path('feel', drill_spa_view, name='drill_feel_page'),
     path('insight', drill_spa_view, name='drill_insight_page'),
+    path('errata', drill_spa_view, name='drill_errata_page'),
     path('', root_spa_view, name='dashboard'),
 ]
