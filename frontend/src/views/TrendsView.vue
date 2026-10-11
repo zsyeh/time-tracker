@@ -3,6 +3,7 @@ import { computed, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import type { EChartsType } from '../lib/charts'
 import { buildSubjectTimeStats } from '../lib/subjectStats'
 import type { Overview } from '../types'
+import { historicalHeatmapWindow } from '../lib/heatmap'
 import PageHeader from '../components/layout/PageHeader.vue'
 import { useUiPreferences } from '../lib/uiPreferences'
 
@@ -24,7 +25,14 @@ async function draw() {
   if (!chartEl.value || !props.overview) return
   const echarts = await import('../lib/charts')
   if (!chart) chart = echarts.init(chartEl.value, undefined, { renderer: 'canvas' })
-  const recent = props.overview.heatmap.slice(-rangeDays.value)
+  // The dashboard heatmap intentionally extends through exam day so Today can
+  // render future cells. Trends must anchor its windows to today; slicing the
+  // raw array would otherwise select only future zero-value cells for 7D/30D.
+  const recent = historicalHeatmapWindow(
+    props.overview.heatmap,
+    props.overview.calendar.today,
+    rangeDays.value,
+  )
   const starts = recent.map((row) => row.first_start ? Number(row.first_start.slice(0, 2)) * 60 + Number(row.first_start.slice(3, 5)) : null)
   const styles = getComputedStyle(document.documentElement)
   const accent = styles.getPropertyValue('--accent').trim() || '#8b7cf6'

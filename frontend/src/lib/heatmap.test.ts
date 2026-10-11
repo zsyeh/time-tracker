@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest'
-import { heatmapLevelClass } from './heatmap'
+import { heatmapLevelClass, historicalHeatmapWindow } from './heatmap'
 
 describe('timer heatmap milestone colors', () => {
   it.each([
@@ -16,5 +16,22 @@ describe('timer heatmap milestone colors', () => {
 
   it('preserves the existing lower activity level', () => {
     expect(heatmapLevelClass({ minutes: 119, level: 1 })).toBe('level-1')
+  })
+})
+
+describe('timer trend windows', () => {
+  it('anchors short ranges to today instead of the future exam cells', () => {
+    const row = (date: string, isFuture = false) => ({
+      date, is_future: isFuture, minutes: isFuture ? 0 : 60, sessions: 1,
+      first_start: '08:00', level: 1 as const, five_hour_goal: false, is_exam_day: false,
+    })
+    const rows = [
+      row('2026-10-09'), row('2026-10-10'), row('2026-10-11'), row('2026-10-12'),
+      row('2026-10-13', true), row('2026-12-26', true),
+    ]
+
+    expect(historicalHeatmapWindow(rows, '2026-10-12', 3).map((item) => item.date)).toEqual([
+      '2026-10-10', '2026-10-11', '2026-10-12',
+    ])
   })
 })

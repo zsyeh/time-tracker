@@ -10,3 +10,7 @@ export function heatmapLevelClass(day: Pick<HeatmapDay, 'minutes' | 'level'>) {
   if (day.minutes > EIGHT_HOURS) return 'level-8-plus'
   return `level-${day.level}`
 }
+
+export function historicalHeatmapWindow(rows: HeatmapDay[], today: string, days: number) {
+  return rows.filter((row) => !row.is_future && row.date <= today).slice(-days)
+}
