@@ -9,8 +9,8 @@ User=root
 Group=root
 WorkingDirectory=/root/time-tracker
 Environment=PYTHONUNBUFFERED=1
+Environment=HOME=/root
 ExecStart=/root/time-tracker/scripts/review-errata-with-codex.sh
 Nice=15
 IOSchedulingClass=idle
 TimeoutStartSec=2h
-

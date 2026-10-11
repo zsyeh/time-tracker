@@ -9,6 +9,6 @@ if [ "$count" = "0" ]; then
 fi
 
 exec /usr/bin/flock -n /run/time-tracker-errata.lock \
-  /root/.local/bin/codex exec --ephemeral --sandbox workspace-write --approve-for-me \
+  /root/.local/bin/codex exec --ephemeral --approve-for-me \
   --cd /root/time-tracker -o reports/errata-review-last.txt \
   "$(cat docs/errata_agent_prompt.md)"
