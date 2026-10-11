@@ -19,7 +19,7 @@ const detailLoading = ref(false)
 const selectedIssue = ref<Issue | null>(null)
 const inputRef = ref<{ focus: () => void } | null>(null)
 const cache = new Map<string, GlobalSearchResult[]>()
-const subjects = { math: 'Mathematics', english: 'English', major: 'Major', training: 'Training' }
+const subjects = { math: 'Mathematics', english: 'English', major: 'Major', training: 'Politics' }
 let timer: ReturnType<typeof setTimeout> | undefined
 let requestVersion = 0
 

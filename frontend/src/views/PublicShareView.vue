@@ -8,7 +8,7 @@ const props = defineProps<{ token: string }>()
 const article = ref<PublicSharedSession | null>(null)
 const loading = ref(true)
 const unavailable = ref(false)
-const subjects = { math: 'Mathematics', english: 'English', major: 'Major', training: 'Training' }
+const subjects = { math: 'Mathematics', english: 'English', major: 'Major', training: 'Politics' }
 
 function duration(minutes: number) {
   return minutes >= 60 ? `${Math.floor(minutes / 60)}h ${minutes % 60}m` : `${minutes}m`

@@ -27,7 +27,7 @@ const labels: Record<string, string> = {
   concept_error: 'Concept error', calculation_error: 'Calculation error', recognition_error: 'Recognition error',
   memory_error: 'Memory error', speed_problem: 'Speed problem', careless_error: 'Careless error', strategy_problem: 'Strategy problem',
 }
-const subjects = { math: 'Mathematics', english: 'English', major: 'Major', training: 'Training' }
+const subjects = { math: 'Mathematics', english: 'English', major: 'Major', training: 'Politics' }
 const activeCount = computed(() => rows.value.filter((row) => !row.resolved).length)
 const resolvedCount = computed(() => rows.value.filter((row) => row.resolved).length)
 const filteredRows = computed(() => rows.value.filter((row) => {

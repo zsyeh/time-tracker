@@ -11,7 +11,7 @@ const SCHEME_COOKIE = 'learning_os_color_scheme'
 const english = {
   language: 'Language', appearance: 'Appearance', dark: 'Dark', light: 'Light',
   search: 'Search', today: 'Today', workspace: 'Workspace', trends: 'Trends', sessions: 'Sessions', issues: 'Issues', subjects: 'Subjects',
-  mathematics: 'Mathematics', english: 'English', major: 'Major / 892', training: 'Training', settings: 'Settings', account: 'Account', signOut: 'Sign out', hideSidebar: 'Hide sidebar',
+  mathematics: 'Mathematics', english: 'English', major: 'Major / 892', training: 'Politics', settings: 'Settings', account: 'Account', signOut: 'Sign out', hideSidebar: 'Hide sidebar',
   viewSession: 'View session', startSession: 'Start session', dailyProgress: 'Daily progress', completedOnly: 'Completed sessions only', mathDailyMinimum: 'Mathematics · daily minimum', firstStart: 'First start', currentStreak: 'Current streak', fiveHourStreak: '5H streak', session: 'Session', inProgress: 'In progress', chooseTask: 'Choose a subject or saved task', activity: 'Activity', consistency: 'Study consistency and daily drilldown', lastDays: 'Last {days} days',
   activeDays: 'Active days', fiveHourDays: '5H days', total: 'Total', targetComplete: 'Daily target complete', complete: 'Complete', remaining: '{value} left', toTarget: '{value} to the daily target', bestStreak: 'Best streak {days}d', examIn: 'Exam in {days} days', studyRoom: 'Study room', days: 'days',
   overview: 'Overview', averageFirstStart: 'Average first start', activeDaysOnly: 'Active days only', targetDays: '5H target days', totalCompleted: 'Total completed', recentWeeks: 'Recent weeks', recentMonths: 'Recent months', tags: 'Tags', tasks: 'Tasks', studyDistribution: 'Study distribution', daily: 'Daily', duration: 'Duration', weeks: 'weeks', months: 'months', ofTotal: 'of total', currentStreakLabel: '{days}-day current streak',
@@ -29,7 +29,7 @@ const translations: Record<UiLanguage, Messages> = {
   'zh-CN': {
     language: '语言', appearance: '外观', dark: '深色', light: '浅色',
     search: '搜索', today: '今日', workspace: '工作区', trends: '趋势', sessions: '学习记录', issues: '问题', subjects: '学科',
-    mathematics: '数学', english: '英语', major: '专业课 / 892', training: '训练', settings: '设置', account: '账户', signOut: '退出登录', hideSidebar: '隐藏侧栏',
+    mathematics: '数学', english: '英语', major: '专业课 / 892', training: '政治', settings: '设置', account: '账户', signOut: '退出登录', hideSidebar: '隐藏侧栏',
     viewSession: '查看任务', startSession: '开始学习', dailyProgress: '今日进度', completedOnly: '仅统计已完成任务', mathDailyMinimum: '数学 · 每日最低目标', firstStart: '首次开始', currentStreak: '连续天数', fiveHourStreak: '连续 5 小时日', session: '学习任务', inProgress: '进行中', chooseTask: '选择学科或预设任务', activity: '活动', consistency: '学习连续性与每日下钻', lastDays: '最近 {days} 天',
     activeDays: '活跃天数', fiveHourDays: '达标天数', total: '总计', targetComplete: '今日目标已完成', complete: '已完成', remaining: '还差 {value}', toTarget: '距离今日目标还差 {value}', bestStreak: '最佳连续 {days} 天', examIn: '距考试 {days} 天', studyRoom: '自习室', days: '天',
     overview: '概览', averageFirstStart: '平均开始时间', activeDaysOnly: '仅活跃日', targetDays: '5 小时达标日', totalCompleted: '累计完成', recentWeeks: '最近几周', recentMonths: '最近几月', tags: '标签', tasks: '任务', studyDistribution: '学习分布', daily: '每日', duration: '时长', weeks: '周', months: '月', ofTotal: '占总时长', currentStreakLabel: '当前连续 {days} 天',
@@ -41,7 +41,7 @@ const translations: Record<UiLanguage, Messages> = {
   ja: {
     language: '言語', appearance: '外観', dark: 'ダーク', light: 'ライト',
     search: '検索', today: '今日', workspace: 'ワークスペース', trends: 'トレンド', sessions: 'セッション', issues: '課題', subjects: '科目',
-    mathematics: '数学', english: '英語', major: '専門 / 892', training: 'トレーニング', settings: '設定', account: 'アカウント', signOut: 'ログアウト', hideSidebar: 'サイドバーを隠す',
+    mathematics: '数学', english: '英語', major: '専門 / 892', training: '政治', settings: '設定', account: 'アカウント', signOut: 'ログアウト', hideSidebar: 'サイドバーを隠す',
     viewSession: 'セッションを見る', startSession: '学習を開始', dailyProgress: '今日の進捗', completedOnly: '完了したセッションのみ', mathDailyMinimum: '数学 · 1日の最低目標', firstStart: '開始時刻', currentStreak: '連続日数', fiveHourStreak: '5時間連続', session: 'セッション', inProgress: '進行中', chooseTask: '科目または保存済みタスクを選択', activity: 'アクティビティ', consistency: '学習の継続性と日別詳細', lastDays: '過去 {days} 日',
     activeDays: '活動日', fiveHourDays: '5時間達成日', total: '合計', targetComplete: '今日の目標を達成', complete: '完了', remaining: '残り {value}', toTarget: '今日の目標まで {value}', bestStreak: '最長 {days} 日', examIn: '試験まで {days} 日', studyRoom: '自習室', days: '日',
     overview: '概要', averageFirstStart: '平均開始時刻', activeDaysOnly: '活動日のみ', targetDays: '5時間達成日', totalCompleted: '累計完了', recentWeeks: '最近の週', recentMonths: '最近の月', tags: 'タグ', tasks: 'タスク', studyDistribution: '学習分布', daily: '日別', duration: '時間', weeks: '週間', months: 'か月', ofTotal: '合計に占める割合', currentStreakLabel: '現在 {days} 日連続',

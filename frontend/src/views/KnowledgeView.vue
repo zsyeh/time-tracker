@@ -9,7 +9,7 @@ const open = ref(false)
 const loading = ref(false)
 const form = reactive({ subject: 'math', name: '', parent: null as number | null, importance: 3, mastery_score: 0, status: 'unknown' })
 const grouped = computed(() => Object.entries(rows.value.reduce((acc, row) => { (acc[row.subject] ||= []).push(row); return acc }, {} as Record<string, KnowledgePoint[]>)))
-const subjectLabels: Record<string, string> = { math: 'Mathematics', english: 'English', major: 'Major', training: 'Training' }
+const subjectLabels: Record<string, string> = { math: 'Mathematics', english: 'English', major: 'Major', training: 'Politics' }
 
 async function load() {
   loading.value = true

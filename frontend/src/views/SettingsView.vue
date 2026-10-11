@@ -43,7 +43,7 @@ const presetForm = reactive({
   name: '', subject: 'math' as Subject, parent: null as number | null,
   tag_ids: [] as number[], is_home_shortcut: false, is_active: true, sort_order: 0,
 })
-const subjects = { math: 'Mathematics', english: 'English', major: 'Major', training: 'Training' }
+const subjects = { math: 'Mathematics', english: 'English', major: 'Major', training: 'Politics' }
 const themes = [
   { id: 'violet', label: 'Linear Violet', color: '#8b7cf6' },
   { id: 'coolapk', label: 'Coolapk Green', color: '#10c469' },

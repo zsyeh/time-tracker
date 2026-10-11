@@ -17,7 +17,7 @@ SUBJECT_CHOICES = [
     ('math', 'Mathematics'),
     ('english', 'English'),
     ('major', 'Major'),
-    ('training', 'Training'),
+    ('training', 'Politics'),
 ]
 
 
