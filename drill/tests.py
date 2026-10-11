@@ -39,7 +39,9 @@ from .models import (
     QuestionMarker,
     QuestionTopic,
     QuestionUserState,
+    TopicMastery,
 )
+from .cockpit import apply_mastery_grade, schedule_for_grade
 from .pdf_import import parse_question_pdf
 from .question_type_classifier import classify_question_type, classify_question_type_evidence
 from .management.commands.import_ei_paired_pdfs import Anchor as PairedPdfAnchor
@@ -179,6 +181,45 @@ class DrillApiTests(TestCase):
             'question_uuid': str(ei_question.uuid), 'kind': 'other', 'description': 'Wrong workspace',
         }), content_type='application/json')
         self.assertEqual(response.status_code, 404)
+
+    @override_settings(ALLOWED_HOSTS=['testserver', 'ei.ehzsy.site'], EI_HOSTS={'ei.ehzsy.site'})
+    def test_ei_cockpit_persists_mastery_and_builds_recommendations(self):
+        document = QuestionDocument.objects.create(
+            source_id=892100001, workspace='ei', filename='circuit.md', title='892 · 电路原理',
+            display_title='892 · 电路原理', sha256='1' * 64, page_count=0,
+        )
+        chapter = QuestionTopic.objects.create(
+            source_id=892100002, document=document, title='CIR-01 电路模型', level=1, sort_order=1,
+        )
+        topic = QuestionTopic.objects.create(
+            source_id=892100003, document=document, parent=chapter, title='基尔霍夫电流定律', level=2, sort_order=2,
+        )
+        question = Question.objects.create(
+            document=document, topic=topic, similarity_topic=topic, question_order=1,
+            prompt_text='KCL', content_mode='markdown', fingerprint='2' * 64, syllabus_scope='in_scope',
+        )
+        self.client.force_login(self.alice)
+        initial = self.client.get('/api/drill/cockpit/', HTTP_HOST='ei.ehzsy.site').json()
+        self.assertEqual(initial['coverage_percent'], 0)
+        self.assertEqual(initial['recommendations'][0]['representative_question_uuid'], str(question.uuid))
+        updated = self.client.patch(
+            f'/api/drill/cockpit/topics/{topic.pk}/', data=json.dumps({'grade': 'B', 'reviewed': True}),
+            content_type='application/json', HTTP_HOST='ei.ehzsy.site',
+        )
+        self.assertEqual(updated.status_code, 200)
+        self.assertEqual(updated.json()['grade'], 'B')
+        self.assertTrue(TopicMastery.objects.filter(user=self.alice, topic=topic, grade='B').exists())
+        refreshed = self.client.get('/api/drill/cockpit/', HTTP_HOST='ei.ehzsy.site').json()
+        self.assertEqual(refreshed['coverage_percent'], 100)
+
+    def test_mastery_schedule_rewards_retention_and_resets_weakness(self):
+        now = timezone.now()
+        self.assertGreater(schedule_for_grade('A', now=now, streak=2), schedule_for_grade('B', now=now))
+        record = TopicMastery(user=self.alice, topic=self.topic, grade='A', correct_streak=3)
+        apply_mastery_grade(record, 'C', reviewed=True, now=now)
+        self.assertEqual(record.correct_streak, 0)
+        self.assertEqual(record.retention_score, 35)
+        self.assertEqual(record.next_review_at, now + datetime.timedelta(days=1))
 
     @override_settings(
         ALLOWED_HOSTS=['testserver', 'ei.ehzsy.site'],

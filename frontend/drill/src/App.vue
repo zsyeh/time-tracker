@@ -69,6 +69,9 @@ onMounted(() => {
         <img :src="workspaceIcon" alt="" aria-hidden="true" /><strong>{{ isEi ? '892 LAB' : 'DRILL' }}</strong><small>{{ isEi ? 'ELECTRONIC INFORMATION' : 'QUESTION PRACTICE' }}</small>
       </RouterLink>
       <nav>
+        <RouterLink v-if="isEi" to="/cockpit" :class="{ active: route.name === 'cockpit' }">
+          <span>892 Cockpit</span>
+        </RouterLink>
         <RouterLink to="/practice" :class="{ active: route.name === 'practice' || route.name === 'question' }">
           <span>{{ t('practice') }}</span>
         </RouterLink>

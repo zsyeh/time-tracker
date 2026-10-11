@@ -64,6 +64,17 @@ class QuestionTopic(models.Model):
     normalized_title = models.TextField(blank=True)
     level = models.PositiveSmallIntegerField()
     sort_order = models.PositiveIntegerField()
+    syllabus_requirement = models.CharField(
+        max_length=16,
+        choices=[
+            ('unspecified', 'Not classified'),
+            ('master', 'Master'),
+            ('understand', 'Understand'),
+            ('know', 'Know'),
+        ],
+        default='unspecified',
+        db_index=True,
+    )
 
     class Meta:
         ordering = ('document_id', 'sort_order')
@@ -193,6 +204,19 @@ class Question(models.Model):
     question_type_human_verified = models.BooleanField(default=False, db_index=True)
     difficulty = models.PositiveSmallIntegerField(null=True, blank=True)
     estimated_time_minutes = models.PositiveSmallIntegerField(null=True, blank=True)
+    syllabus_scope = models.CharField(
+        max_length=16,
+        choices=[
+            ('in_scope', 'In scope'),
+            ('out_of_scope', 'Out of scope'),
+            ('uncertain', 'Uncertain'),
+            ('unclassified', 'Unclassified'),
+        ],
+        default='unclassified',
+        db_index=True,
+    )
+    syllabus_scope_confidence = models.FloatField(null=True, blank=True)
+    syllabus_scope_reason = models.CharField(max_length=240, blank=True)
 
     class Meta:
         ordering = ('document_id', 'question_order')
@@ -528,6 +552,33 @@ class QuestionErratum(models.Model):
 
     def __str__(self):
         return f'{self.question_id} · {self.kind} · {self.status}'
+
+
+class TopicMastery(models.Model):
+    """Per-user 892 syllabus mastery and spaced-review state."""
+
+    GRADE_CHOICES = [('A', 'Stable'), ('B', 'Developing'), ('C', 'Weak'), ('D', 'Not learned')]
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='ei_topic_mastery')
+    topic = models.ForeignKey(QuestionTopic, on_delete=models.CASCADE, related_name='mastery_records')
+    grade = models.CharField(max_length=1, choices=GRADE_CHOICES, default='D', db_index=True)
+    last_reviewed_at = models.DateTimeField(null=True, blank=True)
+    next_review_at = models.DateTimeField(null=True, blank=True, db_index=True)
+    correct_streak = models.PositiveSmallIntegerField(default=0)
+    independent_last_time = models.BooleanField(null=True, blank=True)
+    retention_score = models.PositiveSmallIntegerField(default=0)
+    review_count = models.PositiveIntegerField(default=0)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=('user', 'topic'), name='drill_user_topic_mastery_unique')]
+        indexes = [
+            models.Index(fields=('user', 'grade'), name='drill_mastery_user_grade_idx'),
+            models.Index(fields=('user', 'next_review_at'), name='drill_mastery_user_due_idx'),
+        ]
+
+    def __str__(self):
+        return f'{self.user_id} · {self.topic_id} · {self.grade}'
 
 
 class ExamBlueprint(models.Model):

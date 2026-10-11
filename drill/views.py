@@ -17,8 +17,9 @@ from .cleaning import SOURCE_LABELS
 from .models import (
     ExamBlueprint, ExamPaper, ExamPaperItem, Question, QuestionAsset,
     QuestionAttempt, QuestionDocument, QuestionErratum, QuestionMarker, QuestionTopic,
-    QuestionRevisionAsset, QuestionUserState,
+    QuestionRevisionAsset, QuestionUserState, TopicMastery,
 )
+from .cockpit import COURSES, apply_mastery_grade, course_for_title, eligible_topic_questions, syllabus_documents, syllabus_topics
 from .paper_generator import PaperGenerationError, PaperGenerator
 from .paper_pdf import render_paper_pdf
 from .serializers import (
@@ -789,6 +790,151 @@ class DrillQuestionDetailView(APIView):
         return Response(payload)
 
 
+class EiCockpitView(APIView):
+    """High-density, evidence-based 892 syllabus dashboard."""
+
+    def get(self, request):
+        if request_workspace(request) != 'ei':
+            raise Http404
+        now = timezone.now()
+        topics = list(syllabus_topics())
+        topic_ids = [topic.pk for topic in topics]
+        mastery = {
+            item.topic_id: item for item in TopicMastery.objects.filter(user=request.user, topic_id__in=topic_ids)
+        }
+        latest = QuestionAttempt.objects.filter(
+            user=request.user, question_id=OuterRef('pk'), result__in=('done', 'correct', 'review'),
+        ).order_by('-created_at', '-pk')
+        questions = list(Question.objects.filter(
+            document__workspace='ei', similarity_topic_id__in=topic_ids, is_practiceable=True,
+        ).exclude(syllabus_scope='out_of_scope').annotate(
+            cockpit_latest_result=Subquery(latest.values('result')[:1]),
+            cockpit_latest_at=Subquery(latest.values('created_at')[:1]),
+        ).select_related('similarity_topic').order_by('document_id', 'question_order'))
+        questions_by_topic = {}
+        for question in questions:
+            questions_by_topic.setdefault(question.similarity_topic_id, []).append(question)
+
+        attempt_rows = QuestionAttempt.objects.filter(
+            user=request.user,
+            question__document__workspace='ei',
+            question__similarity_topic_id__in=topic_ids,
+            result__in=('done', 'correct', 'review'),
+        ).values('question__similarity_topic_id').annotate(
+            attempts=Count('id'),
+            correct=Count('id', filter=Q(result__in=('done', 'correct'))),
+            average_time=Avg('time_spent_seconds'),
+            last_attempt=Max('created_at'),
+        )
+        evidence = {row['question__similarity_topic_id']: row for row in attempt_rows}
+        course_rows = {code: {'code': code, 'label': label, 'topics': [], 'counts': {grade: 0 for grade in 'ABCD'}} for code, label, _ in COURSES}
+        recommendations = []
+        due_count = 0
+        for topic in topics:
+            title = topic.display_title or topic.title
+            code, _label = course_for_title(topic.document.display_title or topic.document.title)
+            if not code:
+                continue
+            record = mastery.get(topic.pk)
+            grade = record.grade if record else 'D'
+            row = evidence.get(topic.pk, {})
+            pool = questions_by_topic.get(topic.pk, [])
+            representative = next((q for q in pool if q.cockpit_latest_result not in ('done', 'correct')), pool[0] if pool else None)
+            attempts = row.get('attempts', 0)
+            correct = row.get('correct', 0)
+            accuracy = round(correct * 100 / attempts) if attempts else None
+            due = bool(record and record.next_review_at and record.next_review_at <= now)
+            due_count += int(due)
+            topic_payload = {
+                'id': topic.pk,
+                'chapter': topic.parent.display_title or topic.parent.title if topic.parent else '',
+                'title': title,
+                'requirement': topic.syllabus_requirement,
+                'grade': grade,
+                'attempts': attempts,
+                'accuracy': accuracy,
+                'average_time_seconds': round(row['average_time']) if row.get('average_time') is not None else None,
+                'last_reviewed_at': record.last_reviewed_at if record else row.get('last_attempt'),
+                'next_review_at': record.next_review_at if record else None,
+                'due': due,
+                'correct_streak': record.correct_streak if record else 0,
+                'retention_score': record.retention_score if record else 0,
+                'representative_question_uuid': str(representative.uuid) if representative else None,
+            }
+            course_rows[code]['topics'].append(topic_payload)
+            course_rows[code]['counts'][grade] += 1
+            priority = 0
+            reasons = []
+            if grade == 'D': priority += 100; reasons.append('Not learned yet')
+            elif grade == 'C': priority += 80; reasons.append('Learned but currently weak')
+            elif grade == 'B': priority += 45; reasons.append('Understanding is not yet stable')
+            if due: priority += 70; reasons.append('Spaced review is due')
+            if accuracy is not None and accuracy < 70: priority += 35; reasons.append(f'Recent accuracy is {accuracy}%')
+            if row.get('last_attempt') and row['last_attempt'] < now - datetime.timedelta(days=14): priority += 20; reasons.append('Not practised for 14+ days')
+            if representative and priority:
+                recommendations.append({**topic_payload, 'course': course_rows[code]['label'], 'priority': priority, 'reason': ' · '.join(reasons)})
+
+        courses = []
+        total_counts = {grade: 0 for grade in 'ABCD'}
+        for code, _label, _needles in COURSES:
+            course = course_rows[code]
+            total = len(course['topics'])
+            covered = total - course['counts']['D']
+            course['coverage_percent'] = round(covered * 100 / total) if total else 0
+            for grade in total_counts: total_counts[grade] += course['counts'][grade]
+            courses.append(course)
+        total = sum(total_counts.values())
+        coverage = round((total - total_counts['D']) * 100 / total) if total else 0
+        recommendations.sort(key=lambda item: (-item['priority'], item['course'], item['title']))
+
+        type_rows = QuestionAttempt.objects.filter(
+            user=request.user, question__document__workspace='ei',
+            question__syllabus_scope__in=('in_scope', 'unclassified'),
+            result__in=('done', 'correct', 'review'),
+        ).values('question__question_type').annotate(
+            count=Count('id'), correct=Count('id', filter=Q(result__in=('done', 'correct'))),
+            average_time=Avg('time_spent_seconds'),
+        ).order_by('question__question_type')
+        type_stats = [{
+            'type': row['question__question_type'], 'count': row['count'],
+            'accuracy': round(row['correct'] * 100 / row['count']) if row['count'] else None,
+            'average_time_seconds': round(row['average_time']) if row['average_time'] is not None else None,
+        } for row in type_rows]
+        weakest = recommendations[0] if recommendations else None
+        return Response({
+            'coverage_percent': coverage, 'counts': total_counts, 'due_count': due_count,
+            'courses': courses, 'recommendations': recommendations[:12], 'type_stats': type_stats,
+            'diagnosis': {
+                'largest_gap': f"{weakest['course']}: {weakest['title']}" if weakest else 'No evidence-backed gap yet.',
+                'allocation': 'Insufficient course-tagged timer data; diagnosis currently uses question attempts only.',
+                'next_focus': weakest['reason'] if weakest else 'Rate syllabus topics or complete representative questions first.',
+            },
+            'requirement_notice': 'Official requirement levels remain “Not classified” until verified against an authoritative syllabus source.',
+        })
+
+
+class EiCockpitTopicView(APIView):
+    def patch(self, request, topic_id):
+        if request_workspace(request) != 'ei':
+            raise Http404
+        topic = get_object_or_404(syllabus_topics(), pk=topic_id)
+        grade = str(request.data.get('grade', '')).upper()
+        if grade not in dict(TopicMastery.GRADE_CHOICES):
+            return Response({'grade': ['Choose A, B, C, or D.']}, status=status.HTTP_400_BAD_REQUEST)
+        record, _ = TopicMastery.objects.get_or_create(user=request.user, topic=topic)
+        apply_mastery_grade(
+            record, grade,
+            independent=request.data.get('independent') if isinstance(request.data.get('independent'), bool) else None,
+            reviewed=bool(request.data.get('reviewed', True)),
+        )
+        record.save()
+        return Response({
+            'topic_id': topic.pk, 'grade': record.grade, 'last_reviewed_at': record.last_reviewed_at,
+            'next_review_at': record.next_review_at, 'correct_streak': record.correct_streak,
+            'retention_score': record.retention_score,
+        })
+
+
 class DrillErratumView(APIView):
     def get(self, request):
         queryset = QuestionErratum.objects.filter(
@@ -948,6 +1094,27 @@ class DrillQuestionAttemptView(APIView):
                 note=serializer.validated_data.get('note'),
                 time_spent_seconds=time_spent_seconds,
             )
+            if request_workspace(request) == 'ei' and question.similarity_topic_id:
+                canonical_document_ids = {item.pk for item in syllabus_documents().values()}
+                topic = QuestionTopic.objects.select_related('document').filter(
+                    pk=question.similarity_topic_id, document_id__in=canonical_document_ids,
+                ).first()
+                if topic and result in {'correct', 'review'}:
+                    mastery, _ = TopicMastery.objects.select_for_update().get_or_create(
+                        user=request.user, topic=topic,
+                    )
+                    if result == 'review':
+                        grade = 'C'
+                    elif mastery.grade == 'D':
+                        grade = 'C'
+                    elif mastery.grade == 'C':
+                        grade = 'B'
+                    elif mastery.grade == 'B' and mastery.correct_streak >= 1:
+                        grade = 'A'
+                    else:
+                        grade = mastery.grade
+                    apply_mastery_grade(mastery, grade, independent=result == 'correct', reviewed=True)
+                    mastery.save()
         if serializer.validated_data.get('note') is not None:
             QuestionUserState.objects.update_or_create(
                 user=request.user,

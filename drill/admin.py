@@ -15,6 +15,7 @@ from .models import (
     QuestionRevisionAsset,
     QuestionTopic,
     QuestionUserState,
+    TopicMastery,
 )
 
 
@@ -24,6 +25,13 @@ class QuestionErratumAdmin(admin.ModelAdmin):
     list_filter = ('status', 'kind', 'question__document__workspace', 'created_at')
     search_fields = ('question__display_label', 'question__source_label', 'reporter__username', 'description', 'resolution')
     readonly_fields = ('created_at', 'updated_at')
+
+
+@admin.register(TopicMastery)
+class TopicMasteryAdmin(admin.ModelAdmin):
+    list_display = ('user', 'topic', 'grade', 'retention_score', 'next_review_at', 'updated_at')
+    list_filter = ('grade', 'topic__document', 'next_review_at')
+    search_fields = ('user__username', 'topic__title', 'topic__display_title')
 
 
 class QuestionTypeConfidenceFilter(admin.SimpleListFilter):

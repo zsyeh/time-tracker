@@ -39,6 +39,8 @@ function questionRouteQuery() {
     query.collection = String(route.query.collection || 'favorite')
   } else if (route.query.from === 'insight') {
     query.from = 'insight'
+  } else if (route.query.from === 'cockpit') {
+    query.from = 'cockpit'
   }
   return query
 }
@@ -63,6 +65,10 @@ function backToEntryPoint() {
   }
   if (route.query.from === 'insight') {
     void router.push('/insight')
+    return
+  }
+  if (route.query.from === 'cockpit') {
+    void router.push('/cockpit')
     return
   }
   void router.push({ path: '/practice', query: navigationQuery() })
@@ -550,7 +556,7 @@ onBeforeRouteLeave(async () => {
 
 <template>
   <section class="page question-page">
-    <button class="back-link" @click="backToEntryPoint">← {{ route.query.from === 'selected-heatmap' ? 'Back to selected heatmap' : route.query.from === 'heatmap' ? 'Back to heatmap' : route.query.from === 'collection' ? 'Back to saved questions' : route.query.from === 'insight' ? 'Back to insight' : 'Question bank' }}</button>
+    <button class="back-link" @click="backToEntryPoint">← {{ route.query.from === 'selected-heatmap' ? 'Back to selected heatmap' : route.query.from === 'heatmap' ? 'Back to heatmap' : route.query.from === 'collection' ? 'Back to saved questions' : route.query.from === 'insight' ? 'Back to insight' : route.query.from === 'cockpit' ? 'Back to 892 cockpit' : 'Question bank' }}</button>
     <p v-if="error" class="error-state">{{ error }}</p>
     <div v-if="loading" class="question-skeleton">LOADING QUESTION…</div>
     <template v-else-if="question">
