@@ -20,6 +20,7 @@ from .models import (
     QuestionRevisionAsset, QuestionUserState, TopicMastery,
 )
 from .cockpit import COURSES, apply_mastery_grade, course_for_title, eligible_topic_questions, syllabus_documents, syllabus_topics
+from .ei_syllabus import EXAM_OVERVIEW, course_syllabus_payload, match_official_requirement
 from .paper_generator import PaperGenerationError, PaperGenerator
 from .paper_pdf import render_paper_pdf
 from .serializers import (
@@ -843,13 +844,17 @@ class EiCockpitView(APIView):
             attempts = row.get('attempts', 0)
             correct = row.get('correct', 0)
             accuracy = round(correct * 100 / attempts) if attempts else None
+            chapter_title = topic.parent.display_title or topic.parent.title if topic.parent else ''
+            matched_requirement, requirement_excerpt = match_official_requirement(code, chapter_title, title)
+            official_requirement = topic.syllabus_requirement if topic.syllabus_requirement != 'unspecified' else matched_requirement
             due = bool(record and record.next_review_at and record.next_review_at <= now)
             due_count += int(due)
             topic_payload = {
                 'id': topic.pk,
-                'chapter': topic.parent.display_title or topic.parent.title if topic.parent else '',
+                'chapter': chapter_title,
                 'title': title,
-                'requirement': topic.syllabus_requirement,
+                'requirement': official_requirement,
+                'requirement_excerpt': requirement_excerpt,
                 'grade': grade,
                 'attempts': attempts,
                 'accuracy': accuracy,
@@ -881,6 +886,7 @@ class EiCockpitView(APIView):
             total = len(course['topics'])
             covered = total - course['counts']['D']
             course['coverage_percent'] = round(covered * 100 / total) if total else 0
+            course['official_syllabus'] = course_syllabus_payload(code)
             for grade in total_counts: total_counts[grade] += course['counts'][grade]
             courses.append(course)
         total = sum(total_counts.values())
@@ -902,6 +908,7 @@ class EiCockpitView(APIView):
         } for row in type_rows]
         weakest = recommendations[0] if recommendations else None
         return Response({
+            'exam_overview': EXAM_OVERVIEW,
             'coverage_percent': coverage, 'counts': total_counts, 'due_count': due_count,
             'courses': courses, 'recommendations': recommendations[:12], 'type_stats': type_stats,
             'diagnosis': {
@@ -909,7 +916,7 @@ class EiCockpitView(APIView):
                 'allocation': 'Insufficient course-tagged timer data; diagnosis currently uses question attempts only.',
                 'next_focus': weakest['reason'] if weakest else 'Rate syllabus topics or complete representative questions first.',
             },
-            'requirement_notice': 'Official requirement levels remain “Not classified” until verified against an authoritative syllabus source.',
+            'requirement_notice': 'Requirement levels and excerpts are mapped from the official UCAS 892 syllabus compiled on 2025-06-30.',
         })
 
 

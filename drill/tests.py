@@ -42,6 +42,7 @@ from .models import (
     TopicMastery,
 )
 from .cockpit import apply_mastery_grade, schedule_for_grade
+from .ei_syllabus import match_official_requirement
 from .pdf_import import parse_question_pdf
 from .question_type_classifier import classify_question_type, classify_question_type_evidence
 from .management.commands.import_ei_paired_pdfs import Anchor as PairedPdfAnchor
@@ -220,6 +221,18 @@ class DrillApiTests(TestCase):
         self.assertEqual(record.correct_streak, 0)
         self.assertEqual(record.retention_score, 35)
         self.assertEqual(record.next_review_at, now + datetime.timedelta(days=1))
+
+    def test_official_892_requirements_map_to_existing_topics(self):
+        level, excerpt = match_official_requirement(
+            'digital', 'DIG-02 CMOS 门电路', 'CMOS 反相器结构与工作原理',
+        )
+        self.assertEqual(level, 'master')
+        self.assertIn('CMOS', excerpt)
+        level, excerpt = match_official_requirement(
+            'communication', '数字信号的最佳接收', '最佳基带传输系统',
+        )
+        self.assertEqual(level, 'know')
+        self.assertIn('最佳基带传输系统', excerpt)
 
     @override_settings(
         ALLOWED_HOSTS=['testserver', 'ei.ehzsy.site'],

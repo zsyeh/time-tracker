@@ -264,6 +264,17 @@ button { color: inherit; }
 
 /* 892 preparation cockpit */
 .header-action { align-self: center; min-height: 32px; padding: 0 11px; border: 1px solid var(--border-default); border-radius: var(--radius-sm); color: var(--text-primary); display: inline-flex; align-items: center; font-size: 10px; }
+.official-exam-strip { margin-bottom: 12px; border: 1px solid color-mix(in srgb, var(--accent) 42%, var(--border-default)); border-radius: var(--radius-md); background: color-mix(in srgb, var(--accent) 7%, var(--bg-surface)); }
+.official-exam-strip > header { padding: 12px 14px; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+.official-exam-strip > header span, .official-exam-strip > header strong { display: block; }
+.official-exam-strip > header span { color: var(--accent); font-size: 8px; letter-spacing: .05em; }
+.official-exam-strip > header strong { margin-top: 3px; font-size: 11px; }
+.official-exam-strip > header > b { color: var(--text-secondary); font-size: 9px; font-weight: 500; }
+.official-exam-strip > div { display: grid; grid-template-columns: repeat(4, 1fr); }
+.official-exam-strip > div span { padding: 9px 14px; display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+.official-exam-strip > div span + span { border-left: 1px solid var(--border-subtle); }
+.official-exam-strip > div strong { color: var(--text-secondary); font-size: 9px; }
+.official-exam-strip > div b { font: 600 12px ui-monospace, SFMono-Regular, Menlo, monospace; }
 .cockpit-diagnosis { border-block: 1px solid var(--border-subtle); display: grid; grid-template-columns: repeat(3, 1fr); }
 .cockpit-diagnosis > div { min-width: 0; padding: 13px 16px; }
 .cockpit-diagnosis > div + div { border-left: 1px solid var(--border-subtle); }
@@ -283,6 +294,14 @@ button { color: inherit; }
 .section-heading h2, .cockpit-recommend h2, .cockpit-types h2 { margin-top: 2px; font-size: 15px; }
 .section-heading > small { color: var(--text-tertiary); font-size: 8px; }
 .cockpit-course { border-top: 1px solid var(--border-subtle); }
+.official-chapters { padding: 8px; border-top: 1px solid var(--border-subtle); background: color-mix(in srgb, var(--accent) 3%, var(--bg-sidebar)); display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.official-chapters article { padding: 10px; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); background: var(--bg-surface); }
+.official-chapters article > strong { font-size: 9px; }
+.official-chapters article p { margin-top: 6px; color: var(--text-tertiary); font-size: 8px; line-height: 1.45; }
+.official-chapters article p b { min-width: 28px; margin-right: 5px; display: inline-block; font-size: 7px; font-weight: 650; }
+.requirement-master { color: var(--danger) !important; }
+.requirement-understand { color: var(--warning) !important; }
+.requirement-know { color: var(--accent) !important; }
 .course-toggle { width: 100%; min-height: 43px; padding: 0 8px; border: 0; color: var(--text-primary); background: transparent; display: grid; grid-template-columns: 1fr auto 18px; gap: 10px; align-items: center; text-align: left; cursor: pointer; }
 .course-toggle:hover { background: var(--bg-surface-hover); }
 .course-toggle span { font-size: 11px; font-weight: 600; }
@@ -292,6 +311,7 @@ button { color: inherit; }
 .topic-row:hover { background: var(--bg-surface-hover); }
 .topic-row.due { box-shadow: inset 2px 0 var(--warning); }
 .topic-row > div:first-child small, .topic-row > div:first-child strong, .topic-row .evidence small { display: block; }
+.topic-row > div:first-child p { margin-top: 3px; color: var(--text-tertiary); font-size: 7px; line-height: 1.35; }
 .topic-row > div:first-child small, .topic-row .evidence, .topic-row .evidence small { color: var(--text-tertiary); font-size: 7px; }
 .topic-row > div:first-child strong { margin-top: 2px; font-size: 9px; }
 .topic-row .requirement { color: var(--text-secondary); font-size: 8px; }
@@ -696,6 +716,11 @@ button { color: inherit; }
   .question-save-actions button { flex: 1; }
   .erratum-compose > div { grid-template-columns: 1fr; }
   .cockpit-diagnosis { grid-template-columns: 1fr; }
+  .official-exam-strip > header { align-items: flex-start; flex-direction: column; }
+  .official-exam-strip > div { grid-template-columns: repeat(2, 1fr); }
+  .official-exam-strip > div span:nth-child(3) { border-left: 0; border-top: 1px solid var(--border-subtle); }
+  .official-exam-strip > div span:nth-child(4) { border-top: 1px solid var(--border-subtle); }
+  .official-chapters { grid-template-columns: 1fr; }
   .cockpit-diagnosis > div + div { border-left: 0; border-top: 1px solid var(--border-subtle); }
   .cockpit-overview { grid-template-columns: repeat(2, 1fr); }
   .cockpit-overview > div + div { border-left: 0; }
