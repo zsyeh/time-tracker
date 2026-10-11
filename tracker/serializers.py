@@ -225,6 +225,21 @@ class StudySessionSummarySerializer(serializers.ModelSerializer):
         )
 
 
+class StudySessionArticleSummarySerializer(StudySessionSummarySerializer):
+    """Lightweight archive row with a bounded Markdown excerpt."""
+
+    details_preview = serializers.SerializerMethodField()
+
+    class Meta(StudySessionSummarySerializer.Meta):
+        fields = StudySessionSummarySerializer.Meta.fields + ('details_preview',)
+
+    def get_details_preview(self, obj):
+        # Preserve enough prose/formula context to identify an article without
+        # sending every complete Markdown document in the archive response.
+        value = ' '.join((obj.details or '').split())
+        return value[:240]
+
+
 class SessionShareCreateSerializer(serializers.Serializer):
     expires_at = serializers.DateTimeField(required=False, allow_null=True)
 

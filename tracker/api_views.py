@@ -8,9 +8,9 @@ from io import StringIO
 from django.contrib.auth import logout
 from django.core.cache import cache
 from django.db import IntegrityError, transaction
-from django.db.models import Count, Q
+from django.db.models import Count, Q, TextField, Value
 from django.db.models.deletion import ProtectedError
-from django.db.models.functions import TruncDate
+from django.db.models.functions import Replace, Trim, TruncDate
 from django.http import Http404, HttpResponse
 from django.middleware.csrf import get_token
 from django.shortcuts import get_object_or_404
@@ -51,6 +51,7 @@ from .serializers import (
     SessionShareCreateSerializer,
     StartSessionSerializer,
     StudySessionSerializer,
+    StudySessionArticleSummarySerializer,
     StudySessionSummarySerializer,
     StudyTagSerializer,
     TaskPresetReadSerializer,
@@ -120,6 +121,28 @@ def _filtered_sessions(request):
                 | Q(task_path__icontains=search)
                 | Q(tags__name__icontains=search)
             ).distinct()
+    if request.query_params.get('has_details') == '1':
+        if user_encryption_enabled(request.user.pk):
+            # Encrypted rows cannot be filtered by plaintext at the database
+            # layer. This slower path is limited to users who opt into at-rest
+            # encryption; the normal archive query remains database-native.
+            article_ids = [
+                session.pk
+                for session in queryset.iterator(chunk_size=200)
+                if str(session.details or '').strip()
+            ]
+            queryset = queryset.filter(pk__in=article_ids)
+        else:
+            details_without_layout_whitespace = Replace(
+                Replace(
+                    Replace('details', Value('\n'), Value(''), output_field=TextField()),
+                    Value('\r'), Value(''), output_field=TextField(),
+                ),
+                Value('\t'), Value(''), output_field=TextField(),
+            )
+            queryset = queryset.annotate(
+                _details_trim=Trim(details_without_layout_whitespace),
+            ).exclude(_details_trim='')
     return queryset.order_by('-start_time')
 
 
@@ -151,11 +174,12 @@ class SessionListCreateView(APIView):
         # Long Markdown belongs to the resource detail response. `full=1`
         # remains available for compatibility with clients that explicitly need
         # the historical list payload.
-        serializer_class = (
-            StudySessionSerializer
-            if request.query_params.get('full') == '1'
-            else StudySessionSummarySerializer
-        )
+        if request.query_params.get('full') == '1':
+            serializer_class = StudySessionSerializer
+        elif request.query_params.get('articles') == '1':
+            serializer_class = StudySessionArticleSummarySerializer
+        else:
+            serializer_class = StudySessionSummarySerializer
         if serializer_class is StudySessionSummarySerializer:
             queryset = queryset.defer(
                 'encrypted_content', 'details', 'breakthrough', 'problems',

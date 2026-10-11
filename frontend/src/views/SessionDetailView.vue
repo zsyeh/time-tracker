@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Back, CopyDocument, EditPen, Link, View } from '@element-plus/icons-vue'
 import { api, patch, post, remove } from '../lib/api'
@@ -11,6 +11,7 @@ import PageHeader from '../components/layout/PageHeader.vue'
 
 const props = defineProps<{ uuid: string }>()
 const router = useRouter()
+const route = useRoute()
 const session = ref<StudySession | null>(null)
 const reviewTrend = ref<ReviewTrendType | null>(null)
 const share = ref<SessionShareStatus | null>(null)
@@ -21,6 +22,13 @@ const sharing = ref(false)
 const editing = ref(false)
 const notFound = ref(false)
 const edit = reactive({ title: '', details: '' })
+
+function backToSessions() {
+  const requested = typeof route.query.returnTo === 'string' ? route.query.returnTo : '/sessions'
+  const resolved = router.resolve(requested)
+  const destination = resolved.path === '/sessions' ? resolved.fullPath : '/sessions'
+  void router.push(destination)
+}
 
 function duration(minutes: number) {
   return minutes >= 60 ? `${Math.floor(minutes / 60)}h ${minutes % 60}m` : `${minutes}m`
@@ -98,12 +106,12 @@ onMounted(load)
 <template>
   <div class="workspace-view session-article-view" v-loading="loading">
     <section v-if="notFound" class="resource-not-found">
-      <PageHeader title="Session unavailable" metadata="This resource is missing or private"><template #actions><button type="button" class="header-action" @click="router.push('/sessions')"><el-icon><Back /></el-icon> Sessions</button></template></PageHeader>
+      <PageHeader title="Session unavailable" metadata="This resource is missing or private"><template #actions><button type="button" class="header-action" @click="backToSessions"><el-icon><Back /></el-icon> Sessions</button></template></PageHeader>
       <div class="empty-workspace"><span>404</span><h2>Session unavailable</h2><p>This resource does not exist or is not available to your account.</p></div>
     </section>
 
     <template v-else-if="session">
-      <PageHeader context="Sessions" :title="session.title || 'Untitled session'" :metadata="`${session.subject_label}${session.task_path ? ` · ${session.task_path}` : ''}`"><template #actions><button type="button" class="header-action" @click="router.push('/sessions')"><el-icon><Back /></el-icon> Sessions</button><el-button v-if="!editing" :icon="EditPen" @click="editing = true">Edit</el-button></template></PageHeader>
+      <PageHeader context="Sessions" :title="session.title || 'Untitled session'" :metadata="`${session.subject_label}${session.task_path ? ` · ${session.task_path}` : ''}`"><template #actions><button type="button" class="header-action" @click="backToSessions"><el-icon><Back /></el-icon> Sessions</button><el-button v-if="!editing" :icon="EditPen" @click="editing = true">Edit</el-button></template></PageHeader>
       <div class="session-detail-workspace">
         <main class="session-document">
           <div class="document-identity"><span>Session article</span><small>{{ session.uuid }}</small></div>

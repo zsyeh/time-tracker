@@ -60,6 +60,7 @@ export interface StudySessionSummary {
   tags: StudyTag[]
   review_count: number
   last_reviewed_at: string | null
+  details_preview?: string
 }
 
 export interface StudySession extends StudySessionSummary {

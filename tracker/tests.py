@@ -1336,6 +1336,28 @@ class AnalyticsAndExportTests(TestCase):
         self.assertEqual(detail['details'], 'DEFERRED-DETAILS')
         self.assertEqual(self.client.get(f'/api/sessions/{session.pk}/').status_code, 200)
 
+    def test_session_article_archive_excludes_blank_bodies_and_returns_preview(self):
+        completed_session(self.user, title='Empty body', details='')
+        completed_session(self.user, title='Whitespace body', details='  \n\t ')
+        article = completed_session(
+            self.user,
+            title='Useful review',
+            details='# Derivatives\n\nRemember the chain rule and implicit differentiation.',
+        )
+        completed_session(self.other, title='Other user article', details='private body')
+
+        response = self.client.get('/api/sessions/?articles=1&has_details=1')
+
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response.json()['count'], 1)
+        result = response.json()['results'][0]
+        self.assertEqual(result['uuid'], str(article.uuid))
+        self.assertEqual(
+            result['details_preview'],
+            '# Derivatives Remember the chain rule and implicit differentiation.',
+        )
+        self.assertNotIn('details', result)
+
     def test_global_search_spans_sessions_and_issues_without_full_bodies(self):
         session = completed_session(
             self.user,
