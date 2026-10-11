@@ -34,15 +34,16 @@ async function draw() {
   const surface = styles.getPropertyValue('--bg-elevated').trim() || '#17171a'
   const primaryText = styles.getPropertyValue('--text-primary').trim() || '#e6e6e8'
   const showDuration = chartMetric.value === 'duration'
+  const xAxisInterval = recent.length <= 7 ? 0 : Math.max(0, Math.ceil(recent.length / 7) - 1)
   chart.setOption({
     backgroundColor: 'transparent',
     animationDuration: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 180,
     tooltip: { trigger: 'axis', backgroundColor: surface, borderColor: border, padding: 10, textStyle: { color: primaryText, fontSize: 12 }, formatter(params: Array<{ axisValue: string; seriesName: string; value: number | null; marker: string }>) { return `${params[0]?.axisValue}<br/>${params.map((p) => `${p.marker}${p.seriesName}: ${!showDuration && p.value != null ? minuteToTime(p.value) : `${p.value || 0} min`}`).join('<br/>')}` } },
-    grid: { left: 48, right: showDuration ? 18 : 48, top: 20, bottom: 30 },
-    xAxis: { type: 'category', data: recent.map((r) => r.date.slice(5)), axisLabel: { color: tertiary, interval: 6 }, axisTick: { show: false }, axisLine: { lineStyle: { color: border } } },
+    grid: { left: 52, right: showDuration ? 22 : 58, top: 24, bottom: 38, containLabel: false },
+    xAxis: { type: 'category', boundaryGap: showDuration, data: recent.map((r) => r.date.slice(5)), axisLabel: { color: tertiary, interval: xAxisInterval, hideOverlap: true, margin: 13, fontSize: 10 }, axisTick: { show: false }, axisLine: { lineStyle: { color: border } } },
     yAxis: [
-      { show: showDuration, type: 'value', axisLabel: { color: tertiary }, axisTick: { show: false }, axisLine: { show: false }, splitLine: { lineStyle: { color: border } } },
-      { show: !showDuration, type: 'value', min: 300, max: 900, inverse: true, interval: 120, axisLabel: { color: tertiary, formatter: (v: number) => minuteToTime(v) }, axisTick: { show: false }, axisLine: { show: false }, splitLine: { lineStyle: { color: border } } },
+      { show: showDuration, type: 'value', splitNumber: 5, axisLabel: { color: tertiary, fontSize: 10, formatter: (v: number) => v >= 60 ? `${Math.round(v / 60)}h` : `${v}m` }, axisTick: { show: false }, axisLine: { show: false }, splitLine: { lineStyle: { color: border, opacity: 0.7 } } },
+      { show: !showDuration, type: 'value', min: 300, max: 900, inverse: true, interval: 120, axisLabel: { color: tertiary, fontSize: 10, formatter: (v: number) => minuteToTime(v) }, axisTick: { show: false }, axisLine: { show: false }, splitLine: { lineStyle: { color: border, opacity: 0.7 } } },
     ],
     series: showDuration
       ? [{ name: t('duration'), type: 'bar', data: recent.map((r) => r.minutes), barMaxWidth: 10, itemStyle: { color: (p: { data: number }) => p.data >= 300 ? accent : secondary, borderRadius: [2, 2, 0, 0] }, markLine: { silent: true, symbol: 'none', label: { color: tertiary, formatter: '5h' }, lineStyle: { color: accent, type: 'dashed', opacity: 0.35 }, data: [{ yAxis: 300 }] } }]
