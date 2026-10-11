@@ -8,7 +8,12 @@ if [ "$count" = "0" ]; then
   exit 0
 fi
 
-exec /usr/bin/flock -n /run/time-tracker-errata.lock \
+/usr/bin/flock -n /run/time-tracker-errata.lock \
   /root/.local/bin/codex exec --ephemeral --approve-for-me \
   --cd /root/time-tracker -o reports/errata-review-last.txt \
   "$(cat docs/errata_agent_prompt.md)"
+
+# Refresh the exported queue after every successful reviewer invocation so the
+# report on disk describes remaining work rather than the pre-run snapshot.
+/root/time-tracker/.venv/bin/python manage.py export_pending_errata \
+  --output reports/pending-errata.json >/dev/null
