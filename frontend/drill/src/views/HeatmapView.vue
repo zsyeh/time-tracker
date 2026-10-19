@@ -9,6 +9,7 @@ const props = withDefaults(defineProps<{ selectedOnly?: boolean }>(), { selected
 const { t } = useUiPreferences()
 
 interface HeatmapQuestion {
+  source_indexed?: boolean
   uuid: string
   order: number
   label: string
@@ -85,7 +86,7 @@ const initialScope = ['past_exam', 'mock_exam', 'all'].includes(String(route.que
   : 'all'
 const initialMode = ['topics', 'questions'].includes(String(route.query.mode))
   ? String(route.query.mode) as 'topics' | 'questions'
-  : 'topics'
+  : 'questions'
 const scope = ref<'past_exam' | 'mock_exam' | 'all'>(initialScope)
 const mode = ref<'topics' | 'questions'>(props.selectedOnly ? 'questions' : initialMode)
 let pendingQuestionUuid = String(route.query.question || '')
@@ -108,6 +109,10 @@ function previewTopic(documentId: number, document: string, topic: HeatmapTopic)
 }
 
 function previewQuestion(documentId: number, document: string, question: HeatmapQuestion) {
+  if (question.source_indexed) {
+    openQuestion(documentId, question)
+    return
+  }
   selectedTopic.value = null
   selectedQuestion.value = { documentId, document, question }
 }

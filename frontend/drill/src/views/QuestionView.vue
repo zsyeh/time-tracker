@@ -5,6 +5,7 @@ import { api, post, remove } from '../lib/api'
 import { cachedNoteDraft, cachedQuestion, clearNoteDraft, fetchQuestion, patchQuestionState, prefetchQuestion, storeNoteDraft } from '../lib/workspace'
 import type { QuestionDetail, QuestionMarkerCode, QuestionSummary } from '../types'
 import MarkdownAnswer from '../components/MarkdownAnswer.vue'
+import SourcePaperViewer from '../components/SourcePaperViewer.vue'
 
 const props = defineProps<{ uuid: string }>()
 const router = useRouter()
@@ -75,6 +76,11 @@ function backToEntryPoint() {
 }
 
 const question = ref<QuestionDetail | null>(null)
+const sourceViewer = ref<InstanceType<typeof SourcePaperViewer> | null>(null)
+
+function selectSourceQuestion(uuid: string) {
+  void router.push({ path: `/practice/${uuid}`, query: questionRouteQuery() })
+}
 const similar = ref<QuestionSummary[]>([])
 const similarTopic = ref('')
 const similarKind = ref<'' | 'past_exam' | 'practice'>('')
@@ -314,6 +320,8 @@ function applyState(response: StateResponse) {
   question.value.attempt_count = response.attempt_count
   question.value.latest_result = response.latest_result
   question.value.state = response.state
+  const sourcePin = question.value.source_context?.anchors.find((item) => item.uuid === question.value?.uuid)
+  if (sourcePin) sourcePin.state = response.state
   question.value.can_undo = response.can_undo
   question.value.confidence = response.confidence
   question.value.note = response.note
@@ -581,17 +589,24 @@ onBeforeRouteLeave(async () => {
 
       <div class="question-workbench">
         <div class="question-problem-pane">
+          <nav v-if="question.source_context" class="source-tracking-toolbar" aria-label="当前小题掌握情况">
+            <strong>{{ question.display_label }}</strong>
+            <button :disabled="saving" @click="record('review')">待复习</button>
+            <button :disabled="saving" @click="record('correct')">掌握并下一题</button>
+            <button @click="sourceViewer?.scrollToCurrent()">定位本题</button>
+          </nav>
           <div v-if="questionAssets(question).length" class="asset-toolbar question-asset-toolbar">
             <button type="button" @click="downloadAssets('question', questionAssets(question))">Save question image</button>
           </div>
-          <article class="question-canvas">
-            <img v-for="asset in questionAssets(question)" :key="asset.id" :src="asset.url" :width="asset.width" :height="asset.height" alt="Question content" loading="eager" decoding="async" />
+          <article class="question-canvas" :class="{ 'source-canvas': question.source_context }">
+            <SourcePaperViewer v-if="question.source_context" ref="sourceViewer" :question="question" @select="selectSourceQuestion" />
+            <template v-else><img v-for="asset in questionAssets(question)" :key="asset.id" :src="asset.url" :width="asset.width" :height="asset.height" alt="Question content" loading="eager" decoding="async" /></template>
             <MarkdownAnswer v-if="!questionAssets(question).length" class="question-markdown" :source="question.prompt_text" />
           </article>
 
           <section v-if="question.has_answer || question.answer_markdown" class="official-answer">
             <button class="answer-toggle" :aria-expanded="answerOpen" @click="answerOpen = !answerOpen">
-              <span>{{ answerOpen ? 'Hide answer' : (question.has_answer ? 'Show answer' : 'Show Agent solution') }}</span><b>{{ answerOpen ? '↑' : '↓' }}</b>
+              <span>{{ answerOpen ? 'Hide answer' : question.source_context ? '整卷参考解析（按题号查阅）' : (question.has_answer ? 'Show answer' : 'Show Agent solution') }}</span><b>{{ answerOpen ? '↑' : '↓' }}</b>
             </button>
             <div v-if="answerOpen" class="answer-canvas">
               <div v-if="question.answer_assets.length" class="asset-toolbar answer-asset-toolbar">
@@ -607,6 +622,11 @@ onBeforeRouteLeave(async () => {
         </div>
 
         <aside class="question-control-pane">
+          <section v-if="question.source_context" class="source-current-question">
+            <strong>当前记录：{{ question.display_label }}</strong>
+            <small>下方掌握 / 待复习 / 笔记仅保存到这一题。</small>
+            <button type="button" @click="sourceViewer?.scrollToCurrent()">返回本题图中位置 ↗</button>
+          </section>
           <div class="answer-bar">
             <div><div class="question-timer" :class="{ active: !timingCountdown && !timingFinalized, saved: timingFinalized }"><span>{{ timingFinalized ? 'TIME SAVED' : timingCountdown ? 'TIMER READY' : 'SOLVING TIME' }}</span><strong>{{ timingFinalized || !timingCountdown ? formattedQuestionTime : `Starts in ${timingCountdown}s` }}</strong></div><span>QUESTION STATE</span><small>Grey = not started, green = mastered, yellow = needs review. You can change, reset, or undo at any time.</small><label class="note-field">Note <textarea v-model="note" maxlength="2000" placeholder="Optional note" @input="cacheNoteDraft" /><span class="note-controls"><small class="note-draft-hint">{{ noteSaveState === 'saving' ? 'Saving to server…' : noteSaveState === 'saved' ? 'Saved to server.' : 'Autosaves after 5 seconds without changes.' }}</small><button type="button" class="save-note" :disabled="noteSaveState === 'saving'" @click="saveNote">{{ noteSaveState === 'saving' ? 'Saving…' : noteSaveState === 'saved' ? 'Saved ✓' : 'Save note' }}</button></span></label></div>
             <div><button class="review" :class="{ selected: question.state === 'review' }" :disabled="saving" @click="record('review')">Needs review</button><button class="correct" :class="{ selected: question.state === 'mastered' }" :disabled="saving" @click="record('correct')">Mastered</button><button :disabled="saving || question.state === 'unattempted'" @click="record('reset')">Reset</button><button :disabled="saving || !question.can_undo" @click="undo">Undo</button></div>
@@ -642,3 +662,14 @@ onBeforeRouteLeave(async () => {
     </template>
   </section>
 </template>
+
+<style scoped>
+.source-current-question { display: grid; gap: 7px; margin-bottom: 10px; padding: 12px; border: 1px solid #3975cb; border-radius: 8px; background: var(--bg-surface); }
+.source-current-question strong { font-size: 13px; }
+.source-current-question small { font-size: 11px; color: var(--text-secondary); }
+.source-current-question button { padding: 7px; border: 1px solid var(--border-default); border-radius: 5px; cursor: pointer; color: var(--text-primary); background: var(--bg-sidebar); }
+.source-tracking-toolbar { position: sticky; top: 8px; z-index: 8; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; padding: 8px; border: 1px solid var(--border-default); background: var(--bg-surface); border-radius: 8px; }
+.source-tracking-toolbar strong { flex: 1 1 160px; font-size: 12px; color: var(--text-primary); }
+.source-tracking-toolbar button { padding: 6px; cursor: pointer; background: var(--bg-sidebar); color: var(--text-primary); border: 1px solid var(--border-default); border-radius: 5px; }
+.question-canvas.source-canvas { overflow: visible; }
+</style>

@@ -79,6 +79,7 @@ INSTALLED_APPS = [
     'allauth.account',
     'allauth.mfa',
     'drill.apps.DrillConfig',
+    'drill_sources.apps.DrillSourcesConfig',
     'tracker.apps.TrackerConfig',
 ]
 

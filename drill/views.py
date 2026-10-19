@@ -788,6 +788,8 @@ class DrillQuestionDetailView(APIView):
                 for asset in question.assets.all() if asset.asset_type == 'question_crop'
             ],
         })
+        from drill_sources.presentation import attach_source_context
+        attach_source_context(payload, question, request)
         return Response(payload)
 
 
@@ -1490,6 +1492,10 @@ class DrillHeatmapView(APIView):
             return round(value) if value is not None else None
 
         topic_metadata = {}
+        from drill_sources.models import SourceQuestionAnchor
+        source_indexed_ids = set(SourceQuestionAnchor.objects.filter(
+            question__document__workspace=request_workspace(request),
+        ).values_list('question_id', flat=True))
         if mode == 'topics' and questions:
             document_ids = {question.document_id for question in questions}
             topic_metadata = {
@@ -1554,6 +1560,7 @@ class DrillHeatmapView(APIView):
             if mode == 'questions':
                 current['questions'].append({
                     'uuid': str(question.uuid),
+                    'source_indexed': question.pk in source_indexed_ids,
                     'order': question.question_order,
                     'label': question.display_label or question.source_label,
                     'topic': (

@@ -24,6 +24,14 @@ export interface QuestionSummary {
 }
 
 export interface QuestionDetail extends QuestionSummary {
+  source_context?: {
+    source_uuid: string
+    source_label: string
+    answer_scope: 'source_paper'
+    index_complete?: boolean
+    anchor: { asset_id: number; y: number } | null
+    anchors: Array<{ uuid: string; label: string; asset_id: number; y: number; position: number; state: 'unattempted' | 'mastered' | 'review' }>
+  }
   prompt_text: string
   latex_text: string
   content_mode: string
