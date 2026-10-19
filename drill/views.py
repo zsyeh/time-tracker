@@ -32,8 +32,8 @@ from .serializers import (
 
 
 def request_workspace(request):
-    hostname = request.get_host().partition(':')[0].lower()
-    return 'ei' if hostname in settings.EI_HOSTS else 'drill'
+    from .web_views import practice_site
+    return practice_site(request) or 'drill'
 
 
 def workspace_questions(request):
@@ -1425,7 +1425,10 @@ class DrillHeatmapView(APIView):
                 scope_filters[scope], is_practiceable=True,
             )
         if collection == 'selected':
-            question_queryset = question_queryset.filter(answer_source='daguan_answer_guide_pdf')
+            question_queryset = question_queryset.filter(
+                Q(answer_source='daguan_answer_guide_pdf') |
+                Q(document__relation_type='selected_question_book')
+            )
         questions = list(
             question_queryset.select_related('document', 'similarity_topic').only(
                 'id', 'uuid', 'document_id', 'document__title', 'document__display_title',
@@ -1441,7 +1444,10 @@ class DrillHeatmapView(APIView):
         if scope != 'all':
             attempt_filters &= Q(question__source_category=scope)
         if collection == 'selected':
-            attempt_filters &= Q(question__answer_source='daguan_answer_guide_pdf')
+            attempt_filters &= (
+                Q(question__answer_source='daguan_answer_guide_pdf') |
+                Q(question__document__relation_type='selected_question_book')
+            )
         progress = {}
         filtered_attempts = QuestionAttempt.objects.filter(
             attempt_filters, user=request.user,

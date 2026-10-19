@@ -1,4 +1,5 @@
 from functools import lru_cache
+import ipaddress
 import re
 from urllib.parse import urlencode, urlsplit
 
@@ -34,13 +35,30 @@ def _drill_html():
     )
 
 
+def dedicated_private_workspace(request):
+    """Dedicated local containers follow the requested LAN IP, not a saved IP."""
+    hostname = urlsplit('//' + request.get_host()).hostname or ''
+    try:
+        private = ipaddress.ip_address(hostname).is_private
+    except ValueError:
+        private = hostname == 'localhost'
+    if not private:
+        return None
+    disabled = {'disabled.invalid'}
+    if settings.EI_HOSTS == disabled and settings.DRILL_HOSTS != disabled:
+        return 'drill'
+    if settings.DRILL_HOSTS == disabled and settings.EI_HOSTS != disabled:
+        return 'ei'
+    return None
+
+
 def practice_site(request):
-    hostname = request.get_host().partition(':')[0].lower()
+    hostname = (urlsplit('//' + request.get_host()).hostname or '').lower()
     if hostname in settings.EI_HOSTS:
         return 'ei'
     if hostname in settings.DRILL_HOSTS:
         return 'drill'
-    return None
+    return dedicated_private_workspace(request)
 
 
 def handoff_site(request):
@@ -104,7 +122,7 @@ def drill_spa_view(request, **_route):
     site = site or 'drill'
     if not request.user.is_authenticated:
         target_path = _safe_drill_target(request.get_full_path())
-        if settings.DEBUG:
+        if settings.DEBUG or dedicated_private_workspace(request):
             return redirect(f'{settings.LOGIN_URL}?{urlencode({"next": target_path})}')
         return redirect(_timer_handoff_url(target_path, site))
     html = _drill_html()

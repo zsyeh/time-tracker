@@ -333,6 +333,17 @@ class QuestionRevision(models.Model):
             # PostgreSQL rejects row locks on the nullable side of an outer join.
             locked = Question.objects.select_for_update().get(pk=question.pk)
             assets = list(locked.assets.order_by('asset_type', 'position', 'pk'))
+            if not assets:
+                # Independently tracked questions can share an authoritative
+                # full page. Pin the same binaries in papers, without copies.
+                from drill_sources.models import SourceQuestionAnchor
+                source_id = SourceQuestionAnchor.objects.filter(question=locked).values_list(
+                    'source_question_id', flat=True,
+                ).first()
+                if source_id is not None:
+                    assets = list(QuestionAsset.objects.filter(question_id=source_id).order_by(
+                        'asset_type', 'position', 'pk',
+                    ))
             topic = locked.similarity_topic or locked.topic
             values = {
                 'document_title': locked.document.display_title or locked.document.title,
