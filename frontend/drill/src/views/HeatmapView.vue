@@ -4,6 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { api } from '../lib/api'
 import { cachedHeatmap, storeHeatmap } from '../lib/workspace'
 import { useUiPreferences } from '../lib/uiPreferences'
+import HeatmapProgress from '../components/HeatmapProgress.vue'
 
 const props = withDefaults(defineProps<{ selectedOnly?: boolean }>(), { selectedOnly: false })
 const { t } = useUiPreferences()
@@ -228,10 +229,10 @@ onMounted(load)
     <p v-if="error" class="error-state">{{ error }}</p>
     <div v-else-if="loading" class="question-skeleton">BUILDING HEATMAP…</div>
     <template v-else-if="data">
+      <HeatmapProgress :total="data.question_count" :attempted="data.statistics.attempted_question_count" :mastered="data.statistics.mastered_question_count" />
       <section class="heatmap-summary">
         <div class="heatmap-summary-lead"><strong>{{ mode === 'topics' ? data.topic_count : data.question_count }}</strong><span>{{ mode === 'topics' ? 'visible topics' : 'visible questions' }}</span></div>
         <dl>
-          <div><dt>MASTER RATE</dt><dd>{{ data.statistics.master_rate_percent === null ? '—' : `${data.statistics.master_rate_percent}%` }}</dd><small>{{ data.statistics.mastered_question_count }} mastered / {{ data.statistics.attempted_question_count }} attempted</small></div>
           <div><dt>AVG. TIME</dt><dd>{{ formatDuration(data.statistics.average_time_seconds) }}</dd><small>{{ data.statistics.timed_attempt_count }} timed attempts</small></div>
           <div><dt>MASTER AVG.</dt><dd>{{ formatDuration(data.statistics.mastered_average_time_seconds) }}</dd><small>Mastered submissions</small></div>
           <div><dt>REVIEW AVG.</dt><dd>{{ formatDuration(data.statistics.review_average_time_seconds) }}</dd><small>{{ data.statistics.review_question_count }} currently in review</small></div>
@@ -241,11 +242,11 @@ onMounted(load)
         <header class="heatmap-book-header">
           <div class="heatmap-book-title"><span>BOOK</span><h2>{{ group.document }}</h2><small>{{ mode === 'topics' ? `${group.topics.length} topics` : `${group.questions.length} questions` }}</small></div>
           <dl class="heatmap-book-stats">
-            <div><dt>MASTER RATE</dt><dd>{{ group.statistics.master_rate_percent === null ? '—' : `${group.statistics.master_rate_percent}%` }}</dd><small>{{ group.statistics.mastered_question_count }} / {{ group.statistics.attempted_question_count }}</small></div>
             <div><dt>COVERAGE</dt><dd>{{ group.statistics.coverage_percent }}%</dd><small>{{ group.statistics.attempted_question_count }} attempted</small></div>
             <div><dt>AVG. TIME</dt><dd>{{ formatDuration(group.statistics.average_time_seconds) }}</dd><small>{{ group.statistics.timed_attempt_count }} timed</small></div>
             <div><dt>MASTER AVG.</dt><dd>{{ formatDuration(group.statistics.mastered_average_time_seconds) }}</dd><small>{{ group.statistics.review_question_count }} review</small></div>
           </dl>
+          <HeatmapProgress :total="mode === 'questions' ? group.questions.length : group.topics.reduce((total, topic) => total + topic.question_count, 0)" :attempted="group.statistics.attempted_question_count" :mastered="group.statistics.mastered_question_count" />
         </header>
         <div v-if="mode === 'topics'" class="topic-heatmap">
           <button

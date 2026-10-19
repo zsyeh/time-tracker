@@ -473,7 +473,7 @@ button { color: inherit; }
 .heatmap-summary-lead { padding: 14px 15px; border-right: 1px solid var(--border-subtle); display: flex; align-items: baseline; gap: 8px; }
 .heatmap-summary-lead strong { color: var(--text-primary); font: 570 22px ui-monospace, monospace; }
 .heatmap-summary-lead span { color: var(--text-tertiary); font-size: 9px; }
-.heatmap-summary dl { margin: 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.heatmap-summary dl { margin: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
 .heatmap-summary dl > div { min-width: 0; padding: 11px 13px; border-left: 1px solid var(--border-subtle); }
 .heatmap-summary dl > div:first-child { border-left: 0; }
 .heatmap-summary dt { color: var(--text-tertiary); font-size: 7px; letter-spacing: .05em; }
@@ -481,11 +481,13 @@ button { color: inherit; }
 .heatmap-summary small { overflow: hidden; color: var(--text-tertiary); display: block; font-size: 7px; text-overflow: ellipsis; white-space: nowrap; }
 .heatmap-group { margin-top: 8px; padding: 15px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface); }
 .heatmap-group > header { margin-bottom: 12px; display: flex; align-items: center; justify-content: space-between; gap: 18px; }
+.heatmap-book-header { flex-wrap: wrap; }
+.heatmap-book-header > .heatmap-progress { flex: 0 0 100%; width: 100%; margin-bottom: 0; }
 .heatmap-group > header span { color: var(--text-tertiary); font-size: 8px; }
 .heatmap-group h2 { margin: 2px 0 0; font-size: 13px; font-weight: 600; }
 .heatmap-book-title { min-width: 160px; }
 .heatmap-book-title small { margin-top: 3px; color: var(--text-tertiary); display: block; font-size: 8px; }
-.heatmap-book-stats { margin: 0; display: grid; grid-template-columns: repeat(4, minmax(82px, auto)); }
+.heatmap-book-stats { margin: 0; display: grid; grid-template-columns: repeat(3, minmax(82px, auto)); }
 .heatmap-book-stats > div { min-width: 0; padding: 2px 12px; border-left: 1px solid var(--border-subtle); }
 .heatmap-book-stats dt { color: var(--text-tertiary); font-size: 7px; letter-spacing: .04em; }
 .heatmap-book-stats dd { margin: 3px 0 0; color: var(--text-primary); font: 560 12px ui-monospace, monospace; font-variant-numeric: tabular-nums; }
