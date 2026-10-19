@@ -6,6 +6,11 @@ from .models import SourceQuestionAnchor
 
 
 def attach_source_context(payload, question, request):
+    # A reviewed individual crop supersedes shared-page presentation. Keep
+    # anchors as provenance, without forcing neighbouring questions on screen.
+    if (question.assets.filter(asset_type='question_crop').exists()
+            and SourceQuestionAnchor.objects.filter(question=question).exists()):
+        return
     anchor = SourceQuestionAnchor.objects.select_related('source_question', 'asset').filter(question=question).first()
     source = anchor.source_question if anchor else question
     latest = QuestionAttempt.objects.filter(user=request.user, question_id=OuterRef('question_id')).order_by('-created_at', '-pk')

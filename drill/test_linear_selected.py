@@ -166,3 +166,46 @@ class LinearSelectedTests(TestCase):
         self.assertEqual(Question.objects.count(), 1)
         self.assertEqual(QuestionAsset.objects.count(), 0)
         self.assertEqual(SourceQuestionAnchor.objects.count(), 0)
+
+    def paired_manifest(self):
+        book = parse_selected_book(self.path)
+        return {'question_sha256': book.sha256, 'answer_sha256': book.sha256,
+            'counts': {'questions': 3, 'matched_answers': 3},
+            'questions': [{'number': q.number,
+                'question_regions': [{'page': q.page_index, 'bbox': [0, q.anchor_bbox[1]-14, 595, q.anchor_bbox[1]+200]}],
+                'answer_regions': [{'page': q.page_index, 'bbox': [0, 70, 595, 300]}]}
+                for q in book.questions]}
+
+    def run_paired(self, **options):
+        with patch('drill.management.commands.import_linear_selected_answers.build_manifest', return_value=self.paired_manifest()):
+            call_command('import_linear_selected_answers', str(self.path), str(self.path), stdout=io.StringIO(), **options)
+
+    def test_individual_answers_are_separate_idempotent_and_keep_progress(self):
+        self.run_import()
+        first = Question.objects.get(is_practiceable=True, question_order=1)
+        attempt = QuestionAttempt.objects.create(user=self.user, question=first, result='correct', note='retain me')
+        self.run_paired()
+        self.run_paired()
+        self.assertEqual(QuestionAsset.objects.count(), 8)  # 2 originals + 3 questions + 3 answers
+        detail = self.get(DrillQuestionDetailView, first).data
+        self.assertNotIn('source_context', detail)
+        self.assertTrue(detail['has_answer'])
+        self.assertEqual(len(detail['question_assets']), 1)
+        self.assertEqual(len(detail['answer_assets']), 1)
+        self.assertEqual(QuestionRevision.capture(first).assets.count(), 2)
+        attempt.refresh_from_db(); self.assertEqual(attempt.note, 'retain me')
+
+    def test_individual_dry_run_does_not_write_and_conflict_rolls_back(self):
+        self.run_import()
+        self.run_paired(dry_run=True)
+        self.assertEqual(QuestionAsset.objects.count(), 2)
+        third = Question.objects.get(is_practiceable=True, question_order=3)
+        third.answer_source = 'provided-reference'; third.save()
+        with self.assertRaises(CommandError):
+            self.run_paired()
+        self.assertEqual(QuestionAsset.objects.count(), 2)
+
+    def test_answer_source_normalization_is_explicit_not_fuzzy(self):
+        from drill.linear_selected_answers import normalize, heading_title
+        self.assertEqual(normalize('25张宇八套卷数二第一套套'), heading_title('(3) 25🐙八套数二第一套 >>'))
+        self.assertNotEqual(normalize('2025数一'), normalize('2025数二'))
