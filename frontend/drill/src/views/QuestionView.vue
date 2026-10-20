@@ -6,6 +6,7 @@ import { cachedNoteDraft, cachedQuestion, clearNoteDraft, fetchQuestion, patchQu
 import type { QuestionDetail, QuestionMarkerCode, QuestionSummary } from '../types'
 import MarkdownAnswer from '../components/MarkdownAnswer.vue'
 import SourcePaperViewer from '../components/SourcePaperViewer.vue'
+import OriginalAnswer from '../components/OriginalAnswer.vue'
 import { sourcePracticeTarget } from '../lib/sourcePractice'
 
 const props = defineProps<{ uuid: string }>()
@@ -613,7 +614,7 @@ onBeforeRouteLeave(async () => {
 
           <section v-if="question.has_answer || question.answer_markdown" class="official-answer">
             <button class="answer-toggle" :aria-expanded="answerOpen" @click="answerOpen = !answerOpen">
-              <span>{{ answerOpen ? 'Hide answer' : question.answer_scope === 'source_paper' ? '原卷参考答案（尚未逐题切分）' : question.source_context ? '整卷参考解析（按题号查阅）' : (question.has_answer ? 'Show answer' : 'Show Agent solution') }}</span><b>{{ answerOpen ? '↑' : '↓' }}</b>
+              <span>{{ answerOpen ? 'Hide answer' : question.answer_scope === 'individual' ? '查看本题答案与解析' : question.answer_scope === 'source_paper' ? '原卷参考答案（尚未逐题切分）' : question.source_context ? '整卷参考解析（按题号查阅）' : (question.has_answer ? 'Show answer' : 'Show Agent solution') }}</span><b>{{ answerOpen ? '↑' : '↓' }}</b>
             </button>
             <div v-if="answerOpen" class="answer-canvas">
               <div v-if="question.answer_assets.length" class="asset-toolbar answer-asset-toolbar">
@@ -626,6 +627,7 @@ onBeforeRouteLeave(async () => {
               </div>
             </div>
           </section>
+          <OriginalAnswer v-if="question.original_source?.has_answer" :key="question.original_source.uuid + question.uuid" :uuid="question.original_source.uuid" />
         </div>
 
         <aside class="question-control-pane">

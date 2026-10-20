@@ -164,6 +164,59 @@ class SourceQuestionTrackingTests(TestCase):
         self.assertTrue(all(a['individual_available'] for a in context['anchors']))
         self.assertTrue(QuestionAttempt.objects.filter(question=self.source, result='correct').exists())
 
+    def test_individual_answers_are_idempotent_and_keep_full_original_available(self):
+        first, manifest, path = self.region_manifest()
+        self.render(path)
+        original_question_image = first.assets.get(asset_type='question_crop')
+        attempt = QuestionAttempt.objects.create(user=self.user, question=first, result='correct', note='Keep progress')
+        regions = manifest['questions'][0].pop('question_regions')
+        # One answer can continue across multiple regions without losing order.
+        manifest['questions'][0]['solution_regions'] = [
+            {**regions[0], 'bbox': [0, 200, 600, 470]},
+            {**regions[0], 'bbox': [0, 470, 600, 800]},
+        ]
+        path.write_text(json.dumps(manifest))
+        before = QuestionAsset.objects.count()
+        self.render(path, asset_type='answer_crop', dry_run=True)
+        self.assertEqual(QuestionAsset.objects.count(), before)
+        self.render(path, asset_type='answer_crop')
+        self.assertIn('"new_images": 0', self.render(path, asset_type='answer_crop'))
+        detail = self.request(DrillQuestionDetailView, first).data
+        self.assertEqual(detail['answer_scope'], 'individual')
+        self.assertTrue(detail['original_source']['has_answer'])
+        self.assertEqual(len(detail['answer_assets']), 2)
+        self.assertEqual([a['position'] for a in detail['answer_assets']], [0, 1])
+        self.assertNotIn(self.answer.pk, [a['id'] for a in detail['answer_assets']])
+        original = self.request(DrillQuestionDetailView, self.source).data
+        self.assertEqual([a['id'] for a in original['answer_assets']], [self.answer.pk])
+        self.assertEqual(detail['question_assets'][0]['id'], original_question_image.pk)
+        self.assertEqual(detail['state'], 'mastered')
+        attempt.refresh_from_db(); self.assertEqual(attempt.note, 'Keep progress')
+        self.answer.refresh_from_db(); self.assertEqual(bytes(self.answer.image_data), b'original-answer-page')
+        self.assertEqual(Question.objects.count(), 3)
+
+    def test_invalid_answer_region_does_not_import_any_partial_answers(self):
+        first, manifest, path = self.region_manifest()
+        item = manifest['questions'][0]
+        item['solution_regions'] = item.pop('question_regions')
+        second = SourceQuestionAnchor.objects.order_by('position').last().question
+        manifest['questions'].append({**item, 'fingerprint': second.fingerprint, 'key': second.source_anchor.key,
+            'solution_regions': [{**item['solution_regions'][0], 'page_index': -1}]})
+        path.write_text(json.dumps(manifest))
+        with self.assertRaises(Exception): self.render(path, asset_type='answer_crop')
+        self.assertEqual(QuestionAsset.objects.count(), 2)
+
+    def test_conflicting_answer_crop_refuses_overwrite(self):
+        first, manifest, path = self.region_manifest()
+        item = manifest['questions'][0]
+        item['solution_regions'] = item.pop('question_regions')
+        path.write_text(json.dumps(manifest))
+        self.render(path, asset_type='answer_crop')
+        before = first.assets.get(asset_type='answer_crop')
+        with self.assertRaises(Exception): self.render(path, asset_type='answer_crop', dpi=200)
+        before.refresh_from_db()
+        self.assertEqual(first.assets.filter(asset_type='answer_crop').count(), 1)
+
 
 class ConservativeSegmentationTests(TestCase):
     def page(self):

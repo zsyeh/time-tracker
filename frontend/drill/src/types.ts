@@ -24,8 +24,8 @@ export interface QuestionSummary {
 }
 
 export interface QuestionDetail extends QuestionSummary {
-  original_source?: { uuid: string; label: string }
-  answer_scope?: 'source_paper'
+  original_source?: { uuid: string; label: string; has_answer?: boolean }
+  answer_scope?: 'source_paper' | 'individual'
   source_context?: {
     source_uuid: string
     source_label: string

@@ -13,23 +13,26 @@ from drill.pdf_import import stable_source_id
 
 
 class Command(BaseCommand):
-    help = 'Render full-width EI question regions; retain original paper assets and stable question IDs.'
+    help = 'Render reviewed full-width EI question/answer regions; retain original assets and question IDs.'
 
     def add_arguments(self, parser):
         parser.add_argument('manifest', type=Path)
         parser.add_argument('--source-dir', action='append', type=Path, required=True)
         parser.add_argument('--dry-run', action='store_true')
         parser.add_argument('--dpi', type=int, default=180)
+        parser.add_argument('--asset-type', choices=['question_crop', 'answer_crop'], default='question_crop')
 
     def handle(self, *args, **options):
         try:
+            asset_type = options['asset_type']
+            region_key = 'solution_regions' if asset_type == 'answer_crop' else 'question_regions'
             manifest = json.loads(options['manifest'].read_text())
             if manifest.get('schema_version') != 1 or manifest.get('profile') != 'ei-full-width-whitespace-v1':
                 raise ValueError('Unsupported region manifest')
             if not 150 <= options['dpi'] <= 240:
                 raise ValueError('DPI must be 150..240')
             sources = {}
-            for sha in {r['source'] for q in manifest['questions'] for r in q['question_regions']}:
+            for sha in {r['source'] for q in manifest['questions'] for r in q[region_key]}:
                 if not re.fullmatch('[a-f0-9]{64}', sha):
                     raise ValueError('Invalid source identity')
                 path = next((root / f'{sha}.pdf' for root in options['source_dir']
@@ -39,7 +42,7 @@ class Command(BaseCommand):
                 sources[sha] = path
             prepared = []; seen = set()
             for item in manifest['questions']:
-                if item['fingerprint'] in seen or not item['question_regions'] or item['confidence'] < .9:
+                if item['fingerprint'] in seen or not item[region_key] or item['confidence'] < .9:
                     raise ValueError('Duplicate, empty or low confidence question')
                 seen.add(item['fingerprint'])
                 question = Question.objects.select_related('document', 'source_anchor__source_question').get(fingerprint=item['fingerprint'])
@@ -48,15 +51,18 @@ class Command(BaseCommand):
                         or anchor.source_question.fingerprint != item['source_fingerprint'] or anchor.key != item['key']):
                     raise ValueError('Existing question/source mapping mismatch')
                 expected = []
-                for position, region in enumerate(item['question_regions']):
+                for position, region in enumerate(item[region_key]):
                     with pymupdf.open(sources[region['source']]) as pdf:
+                        if not 0 <= region['page_index'] < len(pdf):
+                            raise ValueError('Invalid source page index')
                         page = pdf[region['page_index']]; rect = pymupdf.Rect(region['bbox'])
                         if (rect.is_empty or rect.height < 3 or not page.rect.contains(rect)
                                 or rect.x0 != 0 or abs(rect.x1 - page.rect.width) > .01):
                             raise ValueError(f'Invalid region for {item["fingerprint"]}: {region}; page={list(page.rect)}; individual crops must preserve full page width')
-                    expected.append(stable_source_id('ei-individual-region-v1', question.fingerprint,
+                    namespace = 'ei-individual-answer-region-v1' if asset_type == 'answer_crop' else 'ei-individual-region-v1'
+                    expected.append(stable_source_id(namespace, question.fingerprint,
                         json.dumps(region, sort_keys=True), position, options['dpi']))
-                if question.assets.filter(asset_type='question_crop').exclude(source_id__in=expected).exists():
+                if question.assets.filter(asset_type=asset_type).exclude(source_id__in=expected).exists():
                     raise ValueError('Existing individual images conflict; refusing overwrite')
                 prepared.append((question, item, expected))
             if options['dry_run']:
@@ -71,17 +77,17 @@ class Command(BaseCommand):
                 # but lets attempts/states take FK KEY SHARE locks normally.
                 list(Question.objects.select_for_update(no_key=True).filter(pk__in=[q.pk for q, _, _ in prepared]).values_list('pk', flat=True))
                 for question, item, expected in prepared:
-                    for position, (region, source_id) in enumerate(zip(item['question_regions'], expected)):
+                    for position, (region, source_id) in enumerate(zip(item[region_key], expected)):
                         if QuestionAsset.objects.filter(source_id=source_id, question=question).exists():
                             continue
                         # Recheck under the row lock, too, against concurrent imports.
-                        if question.assets.filter(asset_type='question_crop').exclude(source_id__in=expected).exists():
+                        if question.assets.filter(asset_type=asset_type).exclude(source_id__in=expected).exists():
                             raise ValueError('Concurrent individual image conflict')
                         with pymupdf.open(sources[region['source']]) as pdf:
                             pix = pdf[region['page_index']].get_pixmap(clip=pymupdf.Rect(region['bbox']), dpi=options['dpi'], alpha=False)
                             binary = pix.tobytes('png')
                         x0, y0, x1, y1 = region['bbox']
-                        QuestionAsset.objects.create(source_id=source_id, question=question, asset_type='question_crop',
+                        QuestionAsset.objects.create(source_id=source_id, question=question, asset_type=asset_type,
                             position=position, image_data=binary, sha256=hashlib.sha256(binary).hexdigest(),
                             width=pix.width, height=pix.height, source_page_index=region['page_index'],
                             source_x0=x0, source_y0=y0, source_x1=x1, source_y1=y1, render_dpi=options['dpi'])

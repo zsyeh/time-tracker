@@ -15,7 +15,10 @@ def attach_source_context(payload, question, request):
     # anchors as provenance, without forcing neighbouring questions on screen.
     if anchor and question.assets.filter(asset_type='question_crop').exists():
         source = anchor.source_question
-        payload['original_source'] = {'uuid': str(source.uuid), 'label': source.display_label}
+        payload['original_source'] = {'uuid': str(source.uuid), 'label': source.display_label,
+                                     'has_answer': source.assets.filter(asset_type='answer_crop').exists()}
+        if payload.get('answer_assets'):
+            payload['answer_scope'] = 'individual'
         if not payload.get('answer_assets') and not question.answer_markdown:
             payload['answer_assets'] = [asset_payload(a) for a in source.assets.filter(asset_type='answer_crop').only(
                 'id', 'position', 'width', 'height', 'sha256')]

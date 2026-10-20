@@ -1,0 +1,906 @@
+{
+  "schema_version": 1,
+  "profile": "ei-full-width-whitespace-v1",
+  "sources": [
+    "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb"
+  ],
+  "review_method": "Printed section and item numbers matched to all 30 question identities; full-width ink-free boundaries; all 12 answer pages and resulting crops reviewed. Original answer pages retained.",
+  "ocr_pages": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11
+  ],
+  "page_index_base": 0,
+  "questions": [
+    {
+      "fingerprint": "526dfb200a44ea41b175b3aecd79480adaf907ee653856840609fd769ea0c88d",
+      "source_fingerprint": "ce81a8bcc786001e1e076bb901f0e1de9447a7bf8926587297319d1e58e71140",
+      "key": "section-1-item-1",
+      "label": "1·选择1",
+      "book": "signals_859",
+      "year": 2018,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 0,
+          "bbox": [
+            0,
+            274.2,
+            595.0,
+            364.5
+          ]
+        }
+      ],
+      "answer_anchor": {
+        "page_index": 0,
+        "y": 284
+      }
+    },
+    {
+      "fingerprint": "572c2183712d7dec9c7876dc8abd70052226bdb1d7b68f185d7079e11b07a8ed",
+      "source_fingerprint": "ce81a8bcc786001e1e076bb901f0e1de9447a7bf8926587297319d1e58e71140",
+      "key": "section-1-item-2",
+      "label": "1·选择2",
+      "book": "signals_859",
+      "year": 2018,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 0,
+          "bbox": [
+            0,
+            364.5,
+            595.0,
+            462.9
+          ]
+        }
+      ],
+      "answer_anchor": {
+        "page_index": 0,
+        "y": 373.2
+      }
+    },
+    {
+      "fingerprint": "bee79b673c1334d96df696df9eed7a9895d263fc07b9bace68a1653181edbba7",
+      "source_fingerprint": "ce81a8bcc786001e1e076bb901f0e1de9447a7bf8926587297319d1e58e71140",
+      "key": "section-1-item-3",
+      "label": "1·选择3",
+      "book": "signals_859",
+      "year": 2018,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 0,
+          "bbox": [
+            0,
+            462.9,
+            595.0,
+            591.0
+          ]
+        }
+      ],
+      "answer_anchor": {
+        "page_index": 0,
+        "y": 476.4
+      }
+    },
+    {
+      "fingerprint": "e3202568b7ce5210ae3b2b9215cd9f205a32ce58662719743c75947a84ffe9d4",
+      "source_fingerprint": "ce81a8bcc786001e1e076bb901f0e1de9447a7bf8926587297319d1e58e71140",
+      "key": "section-1-item-4",
+      "label": "1·选择4",
+      "book": "signals_859",
+      "year": 2018,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 0,
+          "bbox": [
+            0,
+            591.0,
+            595.0,
+            841.0
+          ]
+        },
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 1,
+          "bbox": [
+            0,
+            0,
+            595.0,
+            267.6
+          ]
+        }
+      ],
+      "answer_anchor": {
+        "page_index": 0,
+        "y": 607.2
+      }
+    },
+    {
+      "fingerprint": "ef49acba11f9511bd91fc57b785b7a5396278287f92fb319ff8f4c830fcdeadd",
+      "source_fingerprint": "ce81a8bcc786001e1e076bb901f0e1de9447a7bf8926587297319d1e58e71140",
+      "key": "section-1-item-5",
+      "label": "1·选择5",
+      "book": "signals_859",
+      "year": 2018,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 1,
+          "bbox": [
+            0,
+            267.6,
+            595.0,
+            363.0
+          ]
+        }
+      ],
+      "answer_anchor": {
+        "page_index": 1,
+        "y": 282
+      }
+    },
+    {
+      "fingerprint": "866c45c49d2e7c583712217ab3260db3759cedc91ad886ad2d07e395410a9f02",
+      "source_fingerprint": "ce81a8bcc786001e1e076bb901f0e1de9447a7bf8926587297319d1e58e71140",
+      "key": "section-1-item-6",
+      "label": "1·选择6",
+      "book": "signals_859",
+      "year": 2018,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 1,
+          "bbox": [
+            0,
+            363.0,
+            595.0,
+            456.3
+          ]
+        }
+      ],
+      "answer_anchor": {
+        "page_index": 1,
+        "y": 374.4
+      }
+    },
+    {
+      "fingerprint": "68725109d176e00abd427ed4bbf5a3136f509c49230afa59b5d4c4fa9f89dd48",
+      "source_fingerprint": "ce81a8bcc786001e1e076bb901f0e1de9447a7bf8926587297319d1e58e71140",
+      "key": "section-1-item-7",
+      "label": "1·选择7",
+      "book": "signals_859",
+      "year": 2018,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 1,
+          "bbox": [
+            0,
+            456.3,
+            595.0,
+            549.9
+          ]
+        }
+      ],
+      "answer_anchor": {
+        "page_index": 1,
+        "y": 467.6
+      }
+    },
+    {
+      "fingerprint": "95f824e75410118bdf18d8bd045b1a2863f84249c6d1a87b5b18e25c9be258ce",
+      "source_fingerprint": "ce81a8bcc786001e1e076bb901f0e1de9447a7bf8926587297319d1e58e71140",
+      "key": "section-1-item-8",
+      "label": "1·选择8",
+      "book": "signals_859",
+      "year": 2018,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 1,
+          "bbox": [
+            0,
+            549.9,
+            595.0,
+            679.5
+          ]
+        }
+      ],
+      "answer_anchor": {
+        "page_index": 1,
+        "y": 561.2
+      }
+    },
+    {
+      "fingerprint": "47284813d0df203adbc176b18f00e691442c7ac720ad0b1e61c47821b23bb8e8",
+      "source_fingerprint": "ce81a8bcc786001e1e076bb901f0e1de9447a7bf8926587297319d1e58e71140",
+      "key": "section-1-item-9",
+      "label": "1·选择9",
+      "book": "signals_859",
+      "year": 2018,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 1,
+          "bbox": [
+            0,
+            679.5,
+            595.0,
+            841.0
+          ]
+        },
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 2,
+          "bbox": [
+            0,
+            0,
+            595.0,
+            128.4
+          ]
+        }
+      ],
+      "answer_anchor": {
+        "page_index": 1,
+        "y": 695.6
+      }
+    },
+    {
+      "fingerprint": "e387a61e97c8c34a8de357c58c26296659708fb438ee15ba7f3c81d8b00f550c",
+      "source_fingerprint": "ce81a8bcc786001e1e076bb901f0e1de9447a7bf8926587297319d1e58e71140",
+      "key": "section-1-item-10",
+      "label": "1·选择10",
+      "book": "signals_859",
+      "year": 2018,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 2,
+          "bbox": [
+            0,
+            128.4,
+            595.0,
+            222.6
+          ]
+        }
+      ],
+      "answer_anchor": {
+        "page_index": 2,
+        "y": 138.4
+      }
+    },
+    {
+      "fingerprint": "50b589b2dd18c96e9dd4e31429743a6d9d6eba50bd83a790482e91a8904a264c",
+      "source_fingerprint": "ce81a8bcc786001e1e076bb901f0e1de9447a7bf8926587297319d1e58e71140",
+      "key": "section-2-item-1",
+      "label": "2·判断1",
+      "book": "signals_859",
+      "year": 2018,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 2,
+          "bbox": [
+            0,
+            222.6,
+            595.0,
+            302.7
+          ]
+        }
+      ],
+      "answer_anchor": {
+        "page_index": 2,
+        "y": 233.6
+      }
+    },
+    {
+      "fingerprint": "0ea5e07b6d2046293ba8fb6a11149791d95389b171ba8bdc6c2388480f5fb615",
+      "source_fingerprint": "ce81a8bcc786001e1e076bb901f0e1de9447a7bf8926587297319d1e58e71140",
+      "key": "section-2-item-2",
+      "label": "2·判断2",
+      "book": "signals_859",
+      "year": 2018,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 2,
+          "bbox": [
+            0,
+            302.7,
+            595.0,
+            427.5
+          ]
+        }
+      ],
+      "answer_anchor": {
+        "page_index": 2,
+        "y": 315.6
+      }
+    },
+    {
+      "fingerprint": "d9cbd313e346557704a580fc9f9e883b6c838b15ac6aedf3e985a9fa2b39822f",
+      "source_fingerprint": "ce81a8bcc786001e1e076bb901f0e1de9447a7bf8926587297319d1e58e71140",
+      "key": "section-2-item-3",
+      "label": "2·判断3",
+      "book": "signals_859",
+      "year": 2018,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 2,
+          "bbox": [
+            0,
+            427.5,
+            595.0,
+            490.2
+          ]
+        }
+      ],
+      "answer_anchor": {
+        "page_index": 2,
+        "y": 440
+      }
+    },
+    {
+      "fingerprint": "f4154c808518dd9d8f00191d562c13918d239c0e2cfdd6f1d4e1c65cc019da78",
+      "source_fingerprint": "ce81a8bcc786001e1e076bb901f0e1de9447a7bf8926587297319d1e58e71140",
+      "key": "section-2-item-4",
+      "label": "2·判断4",
+      "book": "signals_859",
+      "year": 2018,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 2,
+          "bbox": [
+            0,
+            490.2,
+            595.0,
+            599.1
+          ]
+        }
+      ],
+      "answer_anchor": {
+        "page_index": 2,
+        "y": 510
+      }
+    },
+    {
+      "fingerprint": "9e9e78014dc1688d70a02bb347af53e6647fb95dcf0fac8226c89cfb473a29f1",
+      "source_fingerprint": "ce81a8bcc786001e1e076bb901f0e1de9447a7bf8926587297319d1e58e71140",
+      "key": "section-2-item-5",
+      "label": "2·判断5",
+      "book": "signals_859",
+      "year": 2018,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 2,
+          "bbox": [
+            0,
+            599.1,
+            595.0,
+            660.6
+          ]
+        }
+      ],
+      "answer_anchor": {
+        "page_index": 2,
+        "y": 611.2
+      }
+    },
+    {
+      "fingerprint": "3a53515524cebb338218bb25f74b87e21a9cae763d0b2e0a595130db11c5aec2",
+      "source_fingerprint": "ce81a8bcc786001e1e076bb901f0e1de9447a7bf8926587297319d1e58e71140",
+      "key": "section-2-item-6",
+      "label": "2·判断6",
+      "book": "signals_859",
+      "year": 2018,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 2,
+          "bbox": [
+            0,
+            660.6,
+            595.0,
+            841.0
+          ]
+        }
+      ],
+      "answer_anchor": {
+        "page_index": 2,
+        "y": 673.2
+      }
+    },
+    {
+      "fingerprint": "f58f0dd721ba1ef28c3b245c39594f096582e1971cab4ed7e79bbc75c9c1d7d2",
+      "source_fingerprint": "ce81a8bcc786001e1e076bb901f0e1de9447a7bf8926587297319d1e58e71140",
+      "key": "section-2-item-7",
+      "label": "2·判断7",
+      "book": "signals_859",
+      "year": 2018,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 3,
+          "bbox": [
+            0,
+            33.3,
+            595.0,
+            99.3
+          ]
+        }
+      ],
+      "answer_anchor": {
+        "page_index": 3,
+        "y": 40.4
+      }
+    },
+    {
+      "fingerprint": "3410023ab04bee17947518c6de8bdad4c21ee6392db955c75c7d106ed65f1581",
+      "source_fingerprint": "ce81a8bcc786001e1e076bb901f0e1de9447a7bf8926587297319d1e58e71140",
+      "key": "section-2-item-8",
+      "label": "2·判断8",
+      "book": "signals_859",
+      "year": 2018,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 3,
+          "bbox": [
+            0,
+            99.3,
+            595.0,
+            173.1
+          ]
+        }
+      ],
+      "answer_anchor": {
+        "page_index": 3,
+        "y": 110.4
+      }
+    },
+    {
+      "fingerprint": "2fef10c9caed5256ae431b38e2e4a9200cb3c69a689d1ffba79796ac3fb0b51d",
+      "source_fingerprint": "ce81a8bcc786001e1e076bb901f0e1de9447a7bf8926587297319d1e58e71140",
+      "key": "section-2-item-9",
+      "label": "2·判断9",
+      "book": "signals_859",
+      "year": 2018,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 3,
+          "bbox": [
+            0,
+            173.1,
+            595.0,
+            238.8
+          ]
+        }
+      ],
+      "answer_anchor": {
+        "page_index": 3,
+        "y": 181.2
+      }
+    },
+    {
+      "fingerprint": "0dd8df98ba381272eeff0aa4486e696e1d9769078f89735f78abb10dda562319",
+      "source_fingerprint": "ce81a8bcc786001e1e076bb901f0e1de9447a7bf8926587297319d1e58e71140",
+      "key": "section-2-item-10",
+      "label": "2·判断10",
+      "book": "signals_859",
+      "year": 2018,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 3,
+          "bbox": [
+            0,
+            238.8,
+            595.0,
+            301.5
+          ]
+        }
+      ],
+      "answer_anchor": {
+        "page_index": 3,
+        "y": 250
+      }
+    },
+    {
+      "fingerprint": "9dd04f78ea2386501c1144991ede400813d72176179983a1937445366bc14663",
+      "source_fingerprint": "ce81a8bcc786001e1e076bb901f0e1de9447a7bf8926587297319d1e58e71140",
+      "key": "section-3-item-1",
+      "label": "3·填空1",
+      "book": "signals_859",
+      "year": 2018,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 3,
+          "bbox": [
+            0,
+            301.5,
+            595.0,
+            841.0
+          ]
+        }
+      ],
+      "answer_anchor": {
+        "page_index": 3,
+        "y": 312.8
+      }
+    },
+    {
+      "fingerprint": "cba0d33b185dabe717ceb1b3c3a980dcb91787740f58980a8d880982e82062f6",
+      "source_fingerprint": "ce81a8bcc786001e1e076bb901f0e1de9447a7bf8926587297319d1e58e71140",
+      "key": "section-3-item-2",
+      "label": "3·填空2",
+      "book": "signals_859",
+      "year": 2018,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 4,
+          "bbox": [
+            0,
+            16.8,
+            595.0,
+            412.8
+          ]
+        }
+      ],
+      "answer_anchor": {
+        "page_index": 4,
+        "y": 37.6
+      }
+    },
+    {
+      "fingerprint": "ac27e29d2ca185a6f6b6c35e40314fd4e229d3903bd26fc3cbe99bb8436d8d85",
+      "source_fingerprint": "ce81a8bcc786001e1e076bb901f0e1de9447a7bf8926587297319d1e58e71140",
+      "key": "section-3-item-3",
+      "label": "3·填空3",
+      "book": "signals_859",
+      "year": 2018,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 4,
+          "bbox": [
+            0,
+            412.8,
+            595.0,
+            563.4
+          ]
+        }
+      ],
+      "answer_anchor": {
+        "page_index": 4,
+        "y": 433.6
+      }
+    },
+    {
+      "fingerprint": "83845eed5c3798ef064d8fc88ac3c64d20dc6f966772f3029f1fa34fbf042674",
+      "source_fingerprint": "ce81a8bcc786001e1e076bb901f0e1de9447a7bf8926587297319d1e58e71140",
+      "key": "section-3-item-4",
+      "label": "3·填空4",
+      "book": "signals_859",
+      "year": 2018,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 4,
+          "bbox": [
+            0,
+            563.4,
+            595.0,
+            841.0
+          ]
+        },
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 5,
+          "bbox": [
+            0,
+            0,
+            595.0,
+            146.4
+          ]
+        }
+      ],
+      "answer_anchor": {
+        "page_index": 4,
+        "y": 574.8
+      }
+    },
+    {
+      "fingerprint": "54c97997df464d02c8b3d7772cb324e167cefbf97d83d14381295bf585183fdb",
+      "source_fingerprint": "ce81a8bcc786001e1e076bb901f0e1de9447a7bf8926587297319d1e58e71140",
+      "key": "section-3-item-5",
+      "label": "3·填空5",
+      "book": "signals_859",
+      "year": 2018,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 5,
+          "bbox": [
+            0,
+            146.4,
+            595.0,
+            346.5
+          ]
+        }
+      ],
+      "answer_anchor": {
+        "page_index": 5,
+        "y": 165
+      }
+    },
+    {
+      "fingerprint": "c819a9803d31592fcf718e66f689b2f999ddeb4578be434f0c5ca07c8c36c7da",
+      "source_fingerprint": "ce81a8bcc786001e1e076bb901f0e1de9447a7bf8926587297319d1e58e71140",
+      "key": "section-3-item-6",
+      "label": "3·填空6",
+      "book": "signals_859",
+      "year": 2018,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 5,
+          "bbox": [
+            0,
+            346.5,
+            595.0,
+            690.6
+          ]
+        }
+      ],
+      "answer_anchor": {
+        "page_index": 5,
+        "y": 357.6
+      }
+    },
+    {
+      "fingerprint": "fd030f866620bb1e960e1133d9317aa75de0f6d2cc87dcaa39e1bafc86587626",
+      "source_fingerprint": "ce81a8bcc786001e1e076bb901f0e1de9447a7bf8926587297319d1e58e71140",
+      "key": "main-4",
+      "label": "第4题",
+      "book": "signals_859",
+      "year": 2018,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 5,
+          "bbox": [
+            0,
+            690.6,
+            595.0,
+            841.0
+          ]
+        },
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 6,
+          "bbox": [
+            0,
+            0,
+            595.0,
+            474.6
+          ]
+        }
+      ],
+      "answer_anchor": {
+        "page_index": 5,
+        "y": 701.2
+      }
+    },
+    {
+      "fingerprint": "afcc2df3383cfa48a99d14b4c87f1a50132336d2943699aa626c4185d02ee564",
+      "source_fingerprint": "ce81a8bcc786001e1e076bb901f0e1de9447a7bf8926587297319d1e58e71140",
+      "key": "main-5",
+      "label": "第5题",
+      "book": "signals_859",
+      "year": 2018,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 6,
+          "bbox": [
+            0,
+            474.6,
+            595.0,
+            841.0
+          ]
+        },
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 7,
+          "bbox": [
+            0,
+            0,
+            595.0,
+            841.0
+          ]
+        },
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 8,
+          "bbox": [
+            0,
+            0,
+            595.0,
+            841.0
+          ]
+        },
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 9,
+          "bbox": [
+            0,
+            0,
+            595.0,
+            330.3
+          ]
+        }
+      ],
+      "answer_anchor": {
+        "page_index": 6,
+        "y": 487.2
+      }
+    },
+    {
+      "fingerprint": "64fa978560e2d1f0df3ff57d0bc1e6f877121563f479e0d777d1a07443d6eea4",
+      "source_fingerprint": "ce81a8bcc786001e1e076bb901f0e1de9447a7bf8926587297319d1e58e71140",
+      "key": "main-6",
+      "label": "第6题",
+      "book": "signals_859",
+      "year": 2018,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 9,
+          "bbox": [
+            0,
+            330.3,
+            595.0,
+            841.0
+          ]
+        },
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 10,
+          "bbox": [
+            0,
+            0,
+            595.0,
+            189.6
+          ]
+        }
+      ],
+      "answer_anchor": {
+        "page_index": 9,
+        "y": 343.6
+      }
+    },
+    {
+      "fingerprint": "7e5bd5fd902d0370e85147841b600a4b0ad6de1025b7eb856350910f82520de0",
+      "source_fingerprint": "ce81a8bcc786001e1e076bb901f0e1de9447a7bf8926587297319d1e58e71140",
+      "key": "main-7",
+      "label": "第7题",
+      "book": "signals_859",
+      "year": 2018,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 10,
+          "bbox": [
+            0,
+            189.6,
+            595.0,
+            841.0
+          ]
+        },
+        {
+          "source": "187eae2aad3e1f0012ac67111db14617f70cade1acd75154dacf0524c7332ceb",
+          "page_index": 11,
+          "bbox": [
+            0,
+            0,
+            595.0,
+            841.0
+          ]
+        }
+      ],
+      "answer_anchor": {
+        "page_index": 10,
+        "y": 200.8
+      }
+    }
+  ],
+  "review": [],
+  "omitted_header_only_continuations": [
+    {
+      "key": "section-2-item-6",
+      "page_index": 3
+    },
+    {
+      "key": "section-3-item-1",
+      "page_index": 4
+    }
+  ]
+}
