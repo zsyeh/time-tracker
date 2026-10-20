@@ -1,0 +1,417 @@
+{
+  "schema_version": 1,
+  "profile": "ei-full-width-whitespace-v1",
+  "sources": [
+    "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879"
+  ],
+  "review_method": "All four question pages checked; all 16 questions and answers matched; shared figures 2/3/4 repeated for their referring questions; full page width retained. Two defective old crops explicitly superseded, bytes and revision links retained.",
+  "questions": [
+    {
+      "fingerprint": "c5a675b7c6566319516722aa3bf9deba175d8c859883c494da2ca8bb122354a5",
+      "source_fingerprint": "8ff436ec5764e4f4b245c6341ba8c3f9142e2ccb43484969274c8d8e0878a5f2",
+      "key": "section-0-item-1",
+      "label": "第1题（1）",
+      "book": "electronics",
+      "year": 2003,
+      "variant": "版本2",
+      "confidence": 1.0,
+      "question_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 129,
+          "bbox": [
+            0,
+            223.8,
+            595.2000122070312,
+            469.2
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "d13e10532ccc7ad3b019c6dedc32150e3388b2daa41905253b20fd72546463c5",
+      "source_fingerprint": "8ff436ec5764e4f4b245c6341ba8c3f9142e2ccb43484969274c8d8e0878a5f2",
+      "key": "section-0-item-2",
+      "label": "第1题（2）",
+      "book": "electronics",
+      "year": 2003,
+      "variant": "版本2",
+      "confidence": 1.0,
+      "question_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 129,
+          "bbox": [
+            0,
+            469.2,
+            595.2000122070312,
+            525
+          ]
+        }
+      ],
+      "supersedes_assets": [
+        {
+          "source_id": 7932243599778948464,
+          "sha256": "204796af68970b86c8438f2f5509bcb08c8d9b3c7119fdf0a4aa805593d2c093"
+        }
+      ],
+      "supersede_reason": "Old crop cut off the answer blank or contained only a 3.3-point sliver, omitting the actual question."
+    },
+    {
+      "fingerprint": "1b5c17d1132ba2acab47b6c53239b3f02fdca22a27d5844a18554d1fa0fd9eb6",
+      "source_fingerprint": "8ff436ec5764e4f4b245c6341ba8c3f9142e2ccb43484969274c8d8e0878a5f2",
+      "key": "section-0-item-3",
+      "label": "第1题（3）",
+      "book": "electronics",
+      "year": 2003,
+      "variant": "版本2",
+      "confidence": 1.0,
+      "question_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 129,
+          "bbox": [
+            0,
+            525,
+            595.2000122070312,
+            546
+          ]
+        }
+      ],
+      "supersedes_assets": [
+        {
+          "source_id": 4812980571462585901,
+          "sha256": "22eb758027c4ac464daeea416755c9cf65ae3f8a1c0d76e9dacf1a10754992be"
+        }
+      ],
+      "supersede_reason": "Old crop cut off the answer blank or contained only a 3.3-point sliver, omitting the actual question."
+    },
+    {
+      "fingerprint": "ab11fda429dc012d255eae1df9f8c9d24ce2a4c15a021b4177ce148e4fd484b1",
+      "source_fingerprint": "8ff436ec5764e4f4b245c6341ba8c3f9142e2ccb43484969274c8d8e0878a5f2",
+      "key": "section-0-item-4",
+      "label": "第1题（4）",
+      "book": "electronics",
+      "year": 2003,
+      "variant": "版本2",
+      "confidence": 1.0,
+      "question_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 129,
+          "bbox": [
+            0,
+            546,
+            595.2000122070312,
+            601
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "4b2074601ecccd27eae9423c0f9a75910685c8ca8ac72db2f6ebc9d29e2d5a1c",
+      "source_fingerprint": "8ff436ec5764e4f4b245c6341ba8c3f9142e2ccb43484969274c8d8e0878a5f2",
+      "key": "section-0-item-5",
+      "label": "第1题（5）",
+      "book": "electronics",
+      "year": 2003,
+      "variant": "版本2",
+      "confidence": 1.0,
+      "question_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 129,
+          "bbox": [
+            0,
+            601,
+            595.2000122070312,
+            744
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "568f730ebc810e4dac005bbfcecb7df8e774f501b98fd0341b948671bf6622cd",
+      "source_fingerprint": "8ff436ec5764e4f4b245c6341ba8c3f9142e2ccb43484969274c8d8e0878a5f2",
+      "key": "section-0-item-6",
+      "label": "第1题（6）",
+      "book": "electronics",
+      "year": 2003,
+      "variant": "版本2",
+      "confidence": 1.0,
+      "question_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 129,
+          "bbox": [
+            0,
+            744,
+            595.2000122070312,
+            780
+          ]
+        },
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 130,
+          "bbox": [
+            0,
+            68,
+            595.2000122070312,
+            110
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "2c82fa0cccb37fda72a21e96161b70488a343b3658393aa8de38772e1b0d8974",
+      "source_fingerprint": "8ff436ec5764e4f4b245c6341ba8c3f9142e2ccb43484969274c8d8e0878a5f2",
+      "key": "section-0-item-7",
+      "label": "第1题（7）",
+      "book": "electronics",
+      "year": 2003,
+      "variant": "版本2",
+      "confidence": 1.0,
+      "question_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 130,
+          "bbox": [
+            0,
+            110,
+            595.2000122070312,
+            358
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "833c488f82c4b0b37c5e6db085f85dd9b94f827e6d452b386b5f9c928dac8b23",
+      "source_fingerprint": "8ff436ec5764e4f4b245c6341ba8c3f9142e2ccb43484969274c8d8e0878a5f2",
+      "key": "main-2",
+      "label": "第2题",
+      "book": "electronics",
+      "year": 2003,
+      "variant": "版本2",
+      "confidence": 1.0,
+      "question_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 130,
+          "bbox": [
+            0,
+            358,
+            595.2000122070312,
+            415
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "5d63367ceedbb093d0fb788e0f328291160fef4f5691992582d302014292a1fc",
+      "source_fingerprint": "8ff436ec5764e4f4b245c6341ba8c3f9142e2ccb43484969274c8d8e0878a5f2",
+      "key": "main-3",
+      "label": "第3题",
+      "book": "electronics",
+      "year": 2003,
+      "variant": "版本2",
+      "confidence": 1.0,
+      "question_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 130,
+          "bbox": [
+            0,
+            415,
+            595.2000122070312,
+            662
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "12792846b737ca1cc3617a35c51e968712cc877d047eb88e23b2ddc0f33fa9f6",
+      "source_fingerprint": "8ff436ec5764e4f4b245c6341ba8c3f9142e2ccb43484969274c8d8e0878a5f2",
+      "key": "main-4",
+      "label": "第4题",
+      "book": "electronics",
+      "year": 2003,
+      "variant": "版本2",
+      "confidence": 1.0,
+      "question_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 130,
+          "bbox": [
+            0,
+            662,
+            595.2000122070312,
+            718
+          ]
+        },
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 130,
+          "bbox": [
+            0,
+            510,
+            595.2000122070312,
+            662
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "147483f4968ae59636cf645e0a8667545ad826ba980dcbd5325619228db4cbb6",
+      "source_fingerprint": "8ff436ec5764e4f4b245c6341ba8c3f9142e2ccb43484969274c8d8e0878a5f2",
+      "key": "main-5",
+      "label": "第5题",
+      "book": "electronics",
+      "year": 2003,
+      "variant": "版本2",
+      "confidence": 1.0,
+      "question_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 130,
+          "bbox": [
+            0,
+            718,
+            595.2000122070312,
+            780
+          ]
+        },
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 130,
+          "bbox": [
+            0,
+            510,
+            595.2000122070312,
+            662
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "cb5779eecbeff4797946cecda25564e5d0ad4474646a85c12b1e4f913a2eea13",
+      "source_fingerprint": "8ff436ec5764e4f4b245c6341ba8c3f9142e2ccb43484969274c8d8e0878a5f2",
+      "key": "main-6",
+      "label": "第6题",
+      "book": "electronics",
+      "year": 2003,
+      "variant": "版本2",
+      "confidence": 1.0,
+      "question_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 131,
+          "bbox": [
+            0,
+            92,
+            595.2000122070312,
+            132
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "89b333b429db93326734dbc55627788ae9387aeaefce15cd6f509303c2cd84e1",
+      "source_fingerprint": "8ff436ec5764e4f4b245c6341ba8c3f9142e2ccb43484969274c8d8e0878a5f2",
+      "key": "main-7",
+      "label": "第7题",
+      "book": "electronics",
+      "year": 2003,
+      "variant": "版本2",
+      "confidence": 1.0,
+      "question_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 131,
+          "bbox": [
+            0,
+            132,
+            595.2000122070312,
+            373.8
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "0de8a131cc3a921b4335c4f1a1fd5217fad0063474d1b08a45d081256105c01d",
+      "source_fingerprint": "8ff436ec5764e4f4b245c6341ba8c3f9142e2ccb43484969274c8d8e0878a5f2",
+      "key": "section-0-item-8",
+      "label": "第8题",
+      "book": "electronics",
+      "year": 2003,
+      "variant": "版本2",
+      "confidence": 1.0,
+      "question_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 131,
+          "bbox": [
+            0,
+            373.8,
+            595.2000122070312,
+            841.9199829101562
+          ]
+        },
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 132,
+          "bbox": [
+            0,
+            0,
+            595.2000122070312,
+            65.4
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "752626ff88fbb442ebc8ac07893ae2d9cf32bf75de61f5066f62705e6da97747",
+      "source_fingerprint": "8ff436ec5764e4f4b245c6341ba8c3f9142e2ccb43484969274c8d8e0878a5f2",
+      "key": "section-0-item-9",
+      "label": "第9题",
+      "book": "electronics",
+      "year": 2003,
+      "variant": "版本2",
+      "confidence": 1.0,
+      "question_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 132,
+          "bbox": [
+            0,
+            65.4,
+            595.2000122070312,
+            319
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "5559a9fe9a90487051358fd2223f2f7b552f039d07b5ba106d04bc961fde6d1c",
+      "source_fingerprint": "8ff436ec5764e4f4b245c6341ba8c3f9142e2ccb43484969274c8d8e0878a5f2",
+      "key": "section-0-item-10",
+      "label": "第10题",
+      "book": "electronics",
+      "year": 2003,
+      "variant": "版本2",
+      "confidence": 1.0,
+      "question_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 132,
+          "bbox": [
+            0,
+            319,
+            595.2000122070312,
+            780
+          ]
+        }
+      ]
+    }
+  ],
+  "review": []
+}

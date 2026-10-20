@@ -21,6 +21,8 @@ class Command(BaseCommand):
         parser.add_argument('--dry-run', action='store_true')
         parser.add_argument('--dpi', type=int, default=180)
         parser.add_argument('--asset-type', choices=['question_crop', 'answer_crop'], default='question_crop')
+        parser.add_argument('--supersede-reviewed', action='store_true',
+                            help='Retain explicitly allowlisted old crops as superseded assets; never delete their bytes or revision links.')
 
     def handle(self, *args, **options):
         try:
@@ -41,6 +43,15 @@ class Command(BaseCommand):
                     raise ValueError(f'Missing/corrupt PDF: {sha}')
                 sources[sha] = path
             prepared = []; seen = set()
+            def conflicting_assets(question, expected, item):
+                conflicts = list(question.assets.filter(asset_type=asset_type).exclude(source_id__in=expected).only('pk', 'source_id', 'sha256'))
+                if not conflicts:
+                    return []
+                approved = {entry['source_id']: entry['sha256'] for entry in item.get('supersedes_assets', [])}
+                if (not options['supersede_reviewed'] or not item.get('supersede_reason')
+                        or any(approved.get(asset.source_id) != asset.sha256 for asset in conflicts)):
+                    raise ValueError('Existing individual images conflict; refusing overwrite without exact reviewed source IDs and hashes')
+                return conflicts
             for item in manifest['questions']:
                 if item['fingerprint'] in seen or not item[region_key] or item['confidence'] < .9:
                     raise ValueError('Duplicate, empty or low confidence question')
@@ -62,8 +73,7 @@ class Command(BaseCommand):
                     namespace = 'ei-individual-answer-region-v1' if asset_type == 'answer_crop' else 'ei-individual-region-v1'
                     expected.append(stable_source_id(namespace, question.fingerprint,
                         json.dumps(region, sort_keys=True), position, options['dpi']))
-                if question.assets.filter(asset_type=asset_type).exclude(source_id__in=expected).exists():
-                    raise ValueError('Existing individual images conflict; refusing overwrite')
+                conflicting_assets(question, expected, item)
                 prepared.append((question, item, expected))
             if options['dry_run']:
                 self.stdout.write(json.dumps({'questions': len(prepared), 'dry_run': True,
@@ -77,6 +87,11 @@ class Command(BaseCommand):
                 # but lets attempts/states take FK KEY SHARE locks normally.
                 list(Question.objects.select_for_update(no_key=True).filter(pk__in=[q.pk for q, _, _ in prepared]).values_list('pk', flat=True))
                 for question, item, expected in prepared:
+                    # Recheck the reviewed allowlist under the question lock.
+                    # Keep immutable image bytes, PKs and historical revision links.
+                    conflicts = conflicting_assets(question, expected, item)
+                    if conflicts:
+                        QuestionAsset.objects.filter(pk__in=[a.pk for a in conflicts]).update(asset_type=f'{asset_type}_superseded')
                     for position, (region, source_id) in enumerate(zip(item[region_key], expected)):
                         if QuestionAsset.objects.filter(source_id=source_id, question=question).exists():
                             continue

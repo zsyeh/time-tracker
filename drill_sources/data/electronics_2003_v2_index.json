@@ -1,0 +1,201 @@
+{
+  "schema_version": 1,
+  "papers": [
+    {
+      "source_fingerprint": "8ff436ec5764e4f4b245c6341ba8c3f9142e2ccb43484969274c8d8e0878a5f2",
+      "book": "electronics",
+      "year": 2003,
+      "variant": "版本2",
+      "part": "paper",
+      "complete": true,
+      "items": [
+        {
+          "key": "section-0-item-1",
+          "label": "第1题（1）",
+          "position": 1,
+          "question_order": 200310001,
+          "asset_source_id": 5417785429531477699,
+          "y": 0.27176,
+          "confidence": 1.0,
+          "page_index": 129,
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "question_type": "solution"
+        },
+        {
+          "key": "section-0-item-2",
+          "label": "第1题（2）",
+          "position": 2,
+          "question_order": 200310002,
+          "asset_source_id": 5417785429531477699,
+          "y": 0.563236,
+          "confidence": 1.0,
+          "page_index": 129,
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "question_type": "solution"
+        },
+        {
+          "key": "section-0-item-3",
+          "label": "第1题（3）",
+          "position": 3,
+          "question_order": 200310003,
+          "asset_source_id": 5417785429531477699,
+          "y": 0.629514,
+          "confidence": 1.0,
+          "page_index": 129,
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "question_type": "solution"
+        },
+        {
+          "key": "section-0-item-4",
+          "label": "第1题（4）",
+          "position": 4,
+          "question_order": 200310004,
+          "asset_source_id": 5417785429531477699,
+          "y": 0.654456,
+          "confidence": 1.0,
+          "page_index": 129,
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "question_type": "solution"
+        },
+        {
+          "key": "section-0-item-5",
+          "label": "第1题（5）",
+          "position": 5,
+          "question_order": 200310005,
+          "asset_source_id": 5417785429531477699,
+          "y": 0.719783,
+          "confidence": 1.0,
+          "page_index": 129,
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "question_type": "solution"
+        },
+        {
+          "key": "section-0-item-6",
+          "label": "第1题（6）",
+          "position": 6,
+          "question_order": 200310006,
+          "asset_source_id": 5417785429531477699,
+          "y": 0.889633,
+          "confidence": 1.0,
+          "page_index": 129,
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "question_type": "solution"
+        },
+        {
+          "key": "section-0-item-7",
+          "label": "第1题（7）",
+          "position": 7,
+          "question_order": 200310007,
+          "asset_source_id": 6678826893404272262,
+          "y": 0.136593,
+          "confidence": 1.0,
+          "page_index": 130,
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "question_type": "solution"
+        },
+        {
+          "key": "main-2",
+          "label": "第2题",
+          "position": 8,
+          "question_order": 200310008,
+          "confidence": 1.0,
+          "page_index": 130,
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "asset_source_id": 6678826893404272262,
+          "y": 0.431157
+        },
+        {
+          "key": "main-3",
+          "label": "第3题",
+          "position": 9,
+          "question_order": 200310009,
+          "confidence": 1.0,
+          "page_index": 130,
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "asset_source_id": 6678826893404272262,
+          "y": 0.49886
+        },
+        {
+          "key": "main-4",
+          "label": "第4题",
+          "position": 10,
+          "question_order": 200310010,
+          "confidence": 1.0,
+          "page_index": 130,
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "asset_source_id": 6678826893404272262,
+          "y": 0.792237
+        },
+        {
+          "key": "main-5",
+          "label": "第5题",
+          "position": 11,
+          "question_order": 200310011,
+          "confidence": 1.0,
+          "page_index": 130,
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "asset_source_id": 6678826893404272262,
+          "y": 0.858751
+        },
+        {
+          "key": "main-6",
+          "label": "第6题",
+          "position": 12,
+          "question_order": 200310012,
+          "confidence": 1.0,
+          "page_index": 131,
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "asset_source_id": 7015635860424130190,
+          "y": 0.115213
+        },
+        {
+          "key": "main-7",
+          "label": "第7题",
+          "position": 13,
+          "question_order": 200310013,
+          "confidence": 1.0,
+          "page_index": 131,
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "asset_source_id": 7015635860424130190,
+          "y": 0.162723
+        },
+        {
+          "key": "section-0-item-8",
+          "label": "第8题",
+          "position": 14,
+          "question_order": 200310014,
+          "asset_source_id": 7015635860424130190,
+          "y": 0.449924,
+          "confidence": 1.0,
+          "page_index": 131,
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "question_type": "solution"
+        },
+        {
+          "key": "section-0-item-9",
+          "label": "第9题",
+          "position": 15,
+          "question_order": 200310015,
+          "asset_source_id": 290102166754656583,
+          "y": 0.083618,
+          "confidence": 1.0,
+          "page_index": 132,
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "question_type": "solution"
+        },
+        {
+          "key": "section-0-item-10",
+          "label": "第10题",
+          "position": 16,
+          "question_order": 200310016,
+          "asset_source_id": 290102166754656583,
+          "y": 0.384835,
+          "confidence": 1.0,
+          "page_index": 132,
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "question_type": "solution"
+        }
+      ]
+    }
+  ]
+}

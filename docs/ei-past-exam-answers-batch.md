@@ -1,5 +1,8 @@
 # EI past-paper answer rollout, 2026-10-21
 
+Counts below describe the initial batch at commit `4861ce9`; subsequent reviewed
+paper repairs supersede those snapshots, including [2003 version 2](ei-electronics-2003-v2-repair.md).
+
 Scope: existing UCAS circuit, electronics and 859 books (documents 24–26),
 82 original paper records, 1,342 indexed questions. This is not a claim that
 all source indices or all answer boundaries have been verified.

@@ -332,7 +332,7 @@ class QuestionRevision(models.Model):
             # Keep nullable topic joins out of the FOR UPDATE statement:
             # PostgreSQL rejects row locks on the nullable side of an outer join.
             locked = Question.objects.select_for_update().get(pk=question.pk)
-            assets = list(locked.assets.order_by('asset_type', 'position', 'pk'))
+            assets = list(locked.assets.exclude(asset_type__endswith='_superseded').order_by('asset_type', 'position', 'pk'))
             missing_types = {'question_crop', 'answer_crop'} - {asset.asset_type for asset in assets}
             if missing_types:
                 # Independently tracked questions can share an authoritative

@@ -252,6 +252,44 @@ class SourceQuestionTrackingTests(TestCase):
         self.assertEqual(detail['state'], 'unattempted')
         self.assertTrue(QuestionAttempt.objects.filter(question=self.source, result='correct').exists())
 
+    def test_reviewed_crop_supersession_retains_bytes_history_and_progress(self):
+        first, manifest, path = self.region_manifest()
+        self.render(path)
+        old = first.assets.get(asset_type='question_crop')
+        old_bytes = bytes(old.image_data)
+        revision = QuestionRevision.capture(first)
+        attempt = QuestionAttempt.objects.create(user=self.user, question=first, result='review', note='Preserve this')
+        item = manifest['questions'][0]
+        item['question_regions'][0]['bbox'] = [0, 180, 600, 470]
+        item['supersedes_assets'] = [{'source_id': old.source_id, 'sha256': old.sha256}]
+        item['supersede_reason'] = 'Manually checked, complete diagram and stem restored'
+        path.write_text(json.dumps(manifest))
+        with self.assertRaises(Exception): self.render(path)
+        self.render(path, supersede_reviewed=True, dry_run=True)
+        old.refresh_from_db(); self.assertEqual(old.asset_type, 'question_crop')
+        self.render(path, supersede_reviewed=True)
+        self.assertIn('"new_images": 0', self.render(path, supersede_reviewed=True))
+        old.refresh_from_db()
+        self.assertEqual(old.asset_type, 'question_crop_superseded')
+        self.assertEqual(bytes(old.image_data), old_bytes)
+        self.assertEqual(revision.revision_assets.get(asset=old).asset_type, 'question_crop')
+        self.assertNotEqual(first.assets.get(asset_type='question_crop').pk, old.pk)
+        self.assertFalse(QuestionRevision.capture(first).assets.filter(pk=old.pk).exists())
+        self.assertEqual(self.request(DrillQuestionDetailView, first).data['state'], 'review')
+        attempt.refresh_from_db(); self.assertEqual(attempt.note, 'Preserve this')
+
+    def test_reviewed_supersession_requires_the_exact_old_hash(self):
+        first, manifest, path = self.region_manifest(); self.render(path)
+        old = first.assets.get(asset_type='question_crop')
+        item = manifest['questions'][0]
+        item['question_regions'][0]['bbox'] = [0, 180, 600, 470]
+        item['supersedes_assets'] = [{'source_id': old.source_id, 'sha256': 'f'*64}]
+        item['supersede_reason'] = 'Review cannot authorize an unexpected existing image'
+        path.write_text(json.dumps(manifest))
+        with self.assertRaises(Exception): self.render(path, supersede_reviewed=True)
+        old.refresh_from_db(); self.assertEqual(old.asset_type, 'question_crop')
+        self.assertEqual(first.assets.filter(asset_type='question_crop').count(), 1)
+
 
 class ConservativeSegmentationTests(TestCase):
     def page(self):
