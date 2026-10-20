@@ -67,7 +67,9 @@ class Command(BaseCommand):
             with transaction.atomic():
                 # Lock only existing question rows. Do not change them or any
                 # original images, anchors, revisions, attempts or user states.
-                list(Question.objects.select_for_update().filter(pk__in=[q.pk for q, _, _ in prepared]).values_list('pk', flat=True))
+                # PostgreSQL NO KEY UPDATE still serializes crop importers,
+                # but lets attempts/states take FK KEY SHARE locks normally.
+                list(Question.objects.select_for_update(no_key=True).filter(pk__in=[q.pk for q, _, _ in prepared]).values_list('pk', flat=True))
                 for question, item, expected in prepared:
                     for position, (region, source_id) in enumerate(zip(item['question_regions'], expected)):
                         if QuestionAsset.objects.filter(source_id=source_id, question=question).exists():
