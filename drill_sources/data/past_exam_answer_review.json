@@ -1,0 +1,22 @@
+{
+  "schema_version": 1,
+  "excluded_papers": [
+    {
+      "source_fingerprint": "296621b185591d8b22a4c17e54a480e1bb418ed38caffa263596a8ae93b29b71",
+      "reason": "invalid_question_index",
+      "book": "electronics",
+      "year": 2002,
+      "evidence": "Index item 1 points to exam instructions; items 8 through 10 point to subitems inside question 7 rather than the main questions. Requires reviewed reindexing, not automatic answer matching."
+    }
+  ],
+  "excluded_questions": [
+    {
+      "fingerprint": "2e93b11819c2cd6805f7e7e34981e21b04f3ded86f66f5952077906beb02b099",
+      "reason": "original_reference_subquestions_differ",
+      "book": "signals_859",
+      "year": 2010,
+      "key": "main-3",
+      "evidence": "Original question asks for excitation from a supplied output in part 2; the numbered reference repeats the same system equation but instead asks for frequency response, poles and a block diagram. Do not present it as an exact matched solution."
+    }
+  ]
+}

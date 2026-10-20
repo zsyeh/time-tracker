@@ -217,6 +217,41 @@ class SourceQuestionTrackingTests(TestCase):
         before.refresh_from_db()
         self.assertEqual(first.assets.filter(asset_type='answer_crop').count(), 1)
 
+    def test_individual_answer_is_used_even_when_question_still_needs_full_page(self):
+        first, manifest, path = self.region_manifest()
+        item = manifest['questions'][0]
+        item['solution_regions'] = item.pop('question_regions')
+        path.write_text(json.dumps(manifest))
+        self.render(path, asset_type='answer_crop')
+        detail = self.request(DrillQuestionDetailView, first).data
+        self.assertIn('source_context', detail)
+        self.assertEqual(detail['answer_scope'], 'individual')
+        self.assertEqual(detail['source_context']['answer_scope'], 'individual')
+        self.assertEqual(detail['question_assets'][0]['id'], self.asset.pk)
+        self.assertNotEqual(detail['answer_assets'][0]['id'], self.answer.pk)
+        self.assertTrue(detail['original_source']['has_answer'])
+        original = self.request(DrillQuestionDetailView, self.source).data
+        self.assertEqual(original['answer_assets'][0]['id'], self.answer.pk)
+
+    def test_unsplit_child_still_has_explicit_original_answer_entry(self):
+        self.run_index()
+        first = SourceQuestionAnchor.objects.first().question
+        detail = self.request(DrillQuestionDetailView, first).data
+        self.assertEqual(detail['answer_scope'], 'source_paper')
+        self.assertTrue(detail['original_source']['has_answer'])
+        self.assertEqual(detail['answer_assets'][0]['id'], self.answer.pk)
+
+    def test_known_bad_source_index_shows_warning_without_modifying_progress(self):
+        self.run_index()
+        first = SourceQuestionAnchor.objects.first().question
+        self.source.fingerprint = '296621b185591d8b22a4c17e54a480e1bb418ed38caffa263596a8ae93b29b71'
+        self.source.save(update_fields=['fingerprint'])
+        detail = self.request(DrillQuestionDetailView, first).data
+        self.assertIn('旧题号索引存在错误', detail['source_review_warning'])
+        self.assertTrue(detail['original_source']['has_answer'])
+        self.assertEqual(detail['state'], 'unattempted')
+        self.assertTrue(QuestionAttempt.objects.filter(question=self.source, result='correct').exists())
+
 
 class ConservativeSegmentationTests(TestCase):
     def page(self):

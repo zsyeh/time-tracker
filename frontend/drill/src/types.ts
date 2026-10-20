@@ -26,10 +26,11 @@ export interface QuestionSummary {
 export interface QuestionDetail extends QuestionSummary {
   original_source?: { uuid: string; label: string; has_answer?: boolean }
   answer_scope?: 'source_paper' | 'individual'
+  source_review_warning?: string
   source_context?: {
     source_uuid: string
     source_label: string
-    answer_scope: 'source_paper'
+    answer_scope: 'source_paper' | 'individual'
     index_complete?: boolean
     individual_question_count?: number
     prefer_individual_practice?: boolean

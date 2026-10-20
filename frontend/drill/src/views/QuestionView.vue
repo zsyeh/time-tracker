@@ -596,6 +596,7 @@ onBeforeRouteLeave(async () => {
 
       <div class="question-workbench">
         <div class="question-problem-pane">
+          <p v-if="question.source_review_warning" role="note" class="source-review-warning">{{ question.source_review_warning }}</p>
           <p v-if="question.original_source" class="source-original-link"><RouterLink :to="{ path: `/practice/${question.original_source.uuid}`, query: { ...questionRouteQuery(), view: 'original' } }">查看完整原卷／原页（原始题图已保留） ↗</RouterLink></p>
           <nav v-if="question.source_context" class="source-tracking-toolbar" aria-label="当前小题掌握情况">
             <strong>{{ question.display_label }}</strong>
@@ -612,7 +613,7 @@ onBeforeRouteLeave(async () => {
             <MarkdownAnswer v-if="!questionAssets(question).length" class="question-markdown" :source="question.prompt_text" />
           </article>
 
-          <section v-if="question.has_answer || question.answer_markdown" class="official-answer">
+          <section v-if="(question.has_answer || question.answer_markdown) && !(question.original_source?.has_answer && question.answer_scope === 'source_paper')" class="official-answer">
             <button class="answer-toggle" :aria-expanded="answerOpen" @click="answerOpen = !answerOpen">
               <span>{{ answerOpen ? 'Hide answer' : question.answer_scope === 'individual' ? '查看本题答案与解析' : question.answer_scope === 'source_paper' ? '原卷参考答案（尚未逐题切分）' : question.source_context ? '整卷参考解析（按题号查阅）' : (question.has_answer ? 'Show answer' : 'Show Agent solution') }}</span><b>{{ answerOpen ? '↑' : '↓' }}</b>
             </button>
@@ -627,7 +628,9 @@ onBeforeRouteLeave(async () => {
               </div>
             </div>
           </section>
+          <p v-if="question.original_source?.has_answer && question.answer_scope === 'source_paper'" class="source-paper-help">本题答案尚待逐题核对，请先查看完整版答案；不会将未确认的解析错配到本题。</p>
           <OriginalAnswer v-if="question.original_source?.has_answer" :key="question.original_source.uuid + question.uuid" :uuid="question.original_source.uuid" />
+          <p v-else-if="question.original_source && !question.has_answer && !question.answer_markdown" class="source-paper-help">原始资料未提供参考答案，暂不生成或猜测答案。</p>
         </div>
 
         <aside class="question-control-pane">
@@ -681,4 +684,5 @@ onBeforeRouteLeave(async () => {
 .source-tracking-toolbar strong { flex: 1 1 160px; font-size: 12px; color: var(--text-primary); }
 .source-tracking-toolbar button { padding: 6px; cursor: pointer; background: var(--bg-sidebar); color: var(--text-primary); border: 1px solid var(--border-default); border-radius: 5px; }
 .question-canvas.source-canvas { overflow: visible; }
+.source-review-warning { padding: 12px; border: 1px solid #b6872a; border-radius: 8px; color: #b6872a; font-size: 13px; }
 </style>

@@ -1,8 +1,16 @@
 """Read-only full-paper presentation for independently tracked source questions."""
 from django.db.models import Exists, OuterRef, Subquery
+from functools import lru_cache
+import json
+from pathlib import Path
 
 from drill.models import QuestionAsset, QuestionAttempt
 from .models import SourceQuestionAnchor
+
+
+@lru_cache(maxsize=1)
+def reviewed_exceptions():
+    return json.loads((Path(__file__).parent/'data'/'past_exam_answer_review.json').read_text())
 
 
 def attach_source_context(payload, question, request):
@@ -11,14 +19,22 @@ def attach_source_context(payload, question, request):
                 'width': asset.width, 'height': asset.height, 'position': asset.position}
 
     anchor = SourceQuestionAnchor.objects.select_related('source_question', 'asset').filter(question=question).first()
-    # A reviewed individual crop supersedes shared-page presentation. Keep
-    # anchors as provenance, without forcing neighbouring questions on screen.
-    if anchor and question.assets.filter(asset_type='question_crop').exists():
+    source_fp = anchor.source_question.fingerprint if anchor else question.fingerprint
+    review = reviewed_exceptions()
+    if any(r['source_fingerprint'] == source_fp for r in review['excluded_papers']):
+        payload['source_review_warning'] = '本卷旧题号索引存在错误，正在核对；请以完整原卷和完整版答案为准。已有记录保留。'
+    elif any(r['fingerprint'] == question.fingerprint for r in review['excluded_questions']):
+        payload['source_review_warning'] = '原资料参考答案的小问与本题不完全一致，尚未作为本题的匹配答案导入。'
+    if anchor:
         source = anchor.source_question
         payload['original_source'] = {'uuid': str(source.uuid), 'label': source.display_label,
                                      'has_answer': source.assets.filter(asset_type='answer_crop').exists()}
         if payload.get('answer_assets'):
             payload['answer_scope'] = 'individual'
+    # A reviewed individual crop supersedes shared-page presentation. Keep
+    # anchors as provenance, without forcing neighbouring questions on screen.
+    if anchor and question.assets.filter(asset_type='question_crop').exists():
+        source = anchor.source_question
         if not payload.get('answer_assets') and not question.answer_markdown:
             payload['answer_assets'] = [asset_payload(a) for a in source.assets.filter(asset_type='answer_crop').only(
                 'id', 'position', 'width', 'height', 'sha256')]
@@ -41,15 +57,19 @@ def attach_source_context(payload, question, request):
 
     payload['question_assets'] = [asset_payload(a) for a in assets if a.asset_type == 'question_crop']
     payload['assets'] = payload['question_assets']
-    payload['answer_assets'] = [asset_payload(a) for a in assets if a.asset_type == 'answer_crop']
-    payload['has_answer'] = bool(payload['answer_assets'])
-    if anchor and not question.answer_markdown:
+    individual_answer = bool(anchor and (payload.get('answer_assets') or question.answer_markdown))
+    if not individual_answer:
+        payload['answer_assets'] = [asset_payload(a) for a in assets if a.asset_type == 'answer_crop']
+        payload['has_answer'] = bool(payload['answer_assets'])
+        if anchor:
+            payload['answer_scope'] = 'source_paper'
+    if anchor and not individual_answer:
         payload['answer_markdown'] = source.answer_markdown
         payload['answer_source'] = source.answer_source
         payload['answer_confidence'] = source.answer_confidence
     payload['source_context'] = {
         'source_uuid': str(source.uuid), 'source_label': source.display_label,
-        'answer_scope': 'source_paper',
+        'answer_scope': 'individual' if individual_answer else 'source_paper',
         'index_complete': not source.is_practiceable,
         'individual_question_count': sum(item.individual_available for item in siblings),
         'prefer_individual_practice': (source.document.workspace == 'ei' and not source.is_practiceable
