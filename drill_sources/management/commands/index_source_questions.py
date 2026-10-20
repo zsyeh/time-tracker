@@ -1,5 +1,4 @@
 """Index question locations without copying any full-page image binaries."""
-import hashlib
 import json
 from pathlib import Path
 
@@ -10,10 +9,7 @@ from drill.management.commands.import_ei_past_exam_manifest import bind_existing
 from drill.models import Question, QuestionAsset
 from drill.pdf_import import stable_question_uuid
 from drill_sources.models import SourceQuestionAnchor
-
-
-def child_fingerprint(source_fingerprint, key):
-    return hashlib.sha256(f'ucas-source-index:v1:{source_fingerprint}:{key}'.encode()).hexdigest()
+from drill_sources.identity import child_fingerprint
 
 
 class Command(BaseCommand):

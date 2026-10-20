@@ -589,6 +589,7 @@ onBeforeRouteLeave(async () => {
 
       <div class="question-workbench">
         <div class="question-problem-pane">
+          <p v-if="question.original_source" class="source-original-link"><RouterLink :to="{ path: `/practice/${question.original_source.uuid}`, query: questionRouteQuery() }">查看完整原卷／原页（原始题图已保留） ↗</RouterLink></p>
           <nav v-if="question.source_context" class="source-tracking-toolbar" aria-label="当前小题掌握情况">
             <strong>{{ question.display_label }}</strong>
             <button :disabled="saving" @click="record('review')">待复习</button>
@@ -598,7 +599,7 @@ onBeforeRouteLeave(async () => {
           <div v-if="questionAssets(question).length" class="asset-toolbar question-asset-toolbar">
             <button type="button" @click="downloadAssets('question', questionAssets(question))">Save question image</button>
           </div>
-          <article class="question-canvas" :class="{ 'source-canvas': question.source_context }">
+          <article class="question-canvas" :class="{ 'source-canvas': question.source_context, 'individual-source-canvas': question.original_source }">
             <SourcePaperViewer v-if="question.source_context" ref="sourceViewer" :question="question" @select="selectSourceQuestion" />
             <template v-else><img v-for="asset in questionAssets(question)" :key="asset.id" :src="asset.url" :width="asset.width" :height="asset.height" alt="Question content" loading="eager" decoding="async" /></template>
             <MarkdownAnswer v-if="!questionAssets(question).length" class="question-markdown" :source="question.prompt_text" />
@@ -606,7 +607,7 @@ onBeforeRouteLeave(async () => {
 
           <section v-if="question.has_answer || question.answer_markdown" class="official-answer">
             <button class="answer-toggle" :aria-expanded="answerOpen" @click="answerOpen = !answerOpen">
-              <span>{{ answerOpen ? 'Hide answer' : question.source_context ? '整卷参考解析（按题号查阅）' : (question.has_answer ? 'Show answer' : 'Show Agent solution') }}</span><b>{{ answerOpen ? '↑' : '↓' }}</b>
+              <span>{{ answerOpen ? 'Hide answer' : question.answer_scope === 'source_paper' ? '原卷参考答案（尚未逐题切分）' : question.source_context ? '整卷参考解析（按题号查阅）' : (question.has_answer ? 'Show answer' : 'Show Agent solution') }}</span><b>{{ answerOpen ? '↑' : '↓' }}</b>
             </button>
             <div v-if="answerOpen" class="answer-canvas">
               <div v-if="question.answer_assets.length" class="asset-toolbar answer-asset-toolbar">

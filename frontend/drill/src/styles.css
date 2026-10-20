@@ -369,6 +369,10 @@ button { color: inherit; }
 .asset-toolbar button:hover { color: var(--text-secondary); border-color: var(--border-strong); }
 .question-canvas { min-height: 320px; margin: 0; padding: clamp(12px, 2vw, 28px); overflow: auto; border: 1px solid #d5d6d8; border-radius: var(--radius-sm); color: #202124; background: #f5f5f2; }
 .question-canvas img { width: auto; max-width: 100%; height: auto; margin: 0 auto; display: block; }
+.question-canvas.individual-source-canvas { min-height: 0; }
+.source-original-link { margin: 0 0 10px; font-size: 12px; }
+.source-original-link a { display: inline-flex; padding: 8px; color: var(--text-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); text-decoration: none; }
+.source-original-link a:hover { color: var(--text-primary); }
 .question-canvas pre { color: #202124; white-space: pre-wrap; font: 14px/1.8 Georgia, serif; }
 .question-markdown, .question-markdown .markdown-body { color: #202124; font: 15px/1.8 Inter, sans-serif; }
 .question-canvas .question-markdown.markdown-preview-shell,

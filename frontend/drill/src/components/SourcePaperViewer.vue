@@ -26,6 +26,7 @@ defineExpose({ scrollToCurrent })
 <template>
   <div ref="root" class="source-paper-viewer">
     <p class="source-paper-help">原图完整显示 · 点击左侧题号切换当前小题，掌握情况逐题保存。</p>
+    <p v-if="question.source_context?.anchor" class="source-paper-help">本题切分边界尚待核对，暂保留完整原卷，避免遗漏题图。</p>
     <p v-if="question.source_context?.index_complete === false" class="source-paper-help">本卷部分扫描题号尚待补全，原卷所有页面仍完整保留。</p>
     <figure v-for="asset in assets" :key="asset.id" class="source-paper-page" :style="{ aspectRatio: `${asset.width} / ${asset.height}` }" :data-source-asset="asset.id">
       <img :src="asset.url" :width="asset.width" :height="asset.height" alt="完整原卷页面" loading="eager" decoding="async" />
