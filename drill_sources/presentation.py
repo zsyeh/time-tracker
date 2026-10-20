@@ -1,7 +1,7 @@
 """Read-only full-paper presentation for independently tracked source questions."""
-from django.db.models import OuterRef, Subquery
+from django.db.models import Exists, OuterRef, Subquery
 
-from drill.models import QuestionAttempt
+from drill.models import QuestionAsset, QuestionAttempt
 from .models import SourceQuestionAnchor
 
 
@@ -30,6 +30,7 @@ def attach_source_context(payload, question, request):
     latest = QuestionAttempt.objects.filter(user=request.user, question_id=OuterRef('question_id')).order_by('-created_at', '-pk')
     siblings = list(SourceQuestionAnchor.objects.filter(source_question=source).select_related('question').annotate(
         latest_result=Subquery(latest.values('result')[:1]),
+        individual_available=Exists(QuestionAsset.objects.filter(question_id=OuterRef('question_id'), asset_type='question_crop')),
     ).order_by('position'))
     if not siblings:
         return
@@ -47,9 +48,13 @@ def attach_source_context(payload, question, request):
         'source_uuid': str(source.uuid), 'source_label': source.display_label,
         'answer_scope': 'source_paper',
         'index_complete': not source.is_practiceable,
+        'individual_question_count': sum(item.individual_available for item in siblings),
+        'prefer_individual_practice': (source.document.workspace == 'ei' and not source.is_practiceable
+                                       and all(item.individual_available for item in siblings)),
         'anchor': {'asset_id': anchor.asset_id, 'y': anchor.y} if anchor else None,
         'anchors': [
             {'uuid': str(item.question.uuid), 'label': item.label, 'asset_id': item.asset_id,
+             'individual_available': item.individual_available,
              'y': item.y, 'position': item.position,
              'state': 'mastered' if item.latest_result in ('done', 'correct') else 'review' if item.latest_result == 'review' else 'unattempted'}
             for item in siblings

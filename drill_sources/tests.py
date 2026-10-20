@@ -148,6 +148,22 @@ class SourceQuestionTrackingTests(TestCase):
         with self.assertRaises(Exception): self.render(path, dpi=200)
         self.assertEqual(QuestionAsset.objects.count(), 3)
 
+    def test_original_paper_only_prefers_individual_practice_after_every_item_is_cropped(self):
+        first, manifest, path = self.region_manifest()
+        self.render(path)
+        context = self.request(DrillQuestionDetailView, self.source).data['source_context']
+        self.assertEqual(context['individual_question_count'], 1)
+        self.assertFalse(context['prefer_individual_practice'])
+        second = SourceQuestionAnchor.objects.order_by('position').last().question
+        QuestionAsset.objects.create(source_id=98799, question=second, asset_type='question_crop',
+            image_data=b'reviewed second crop', sha256='e'*64, width=600, height=300)
+        context = self.request(DrillQuestionDetailView, self.source).data['source_context']
+        self.assertEqual(context['individual_question_count'], 2)
+        self.assertTrue(context['prefer_individual_practice'])
+        self.assertIsNone(context['anchor'])
+        self.assertTrue(all(a['individual_available'] for a in context['anchors']))
+        self.assertTrue(QuestionAttempt.objects.filter(question=self.source, result='correct').exists())
+
 
 class ConservativeSegmentationTests(TestCase):
     def page(self):

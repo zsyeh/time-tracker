@@ -6,6 +6,7 @@ import { cachedNoteDraft, cachedQuestion, clearNoteDraft, fetchQuestion, patchQu
 import type { QuestionDetail, QuestionMarkerCode, QuestionSummary } from '../types'
 import MarkdownAnswer from '../components/MarkdownAnswer.vue'
 import SourcePaperViewer from '../components/SourcePaperViewer.vue'
+import { sourcePracticeTarget } from '../lib/sourcePractice'
 
 const props = defineProps<{ uuid: string }>()
 const router = useRouter()
@@ -292,6 +293,11 @@ async function load() {
   try {
     const loadedQuestion = await fetchQuestion(props.uuid, query, Boolean(cached))
     if (sequence !== loadSequence) return
+    const individualUuid = sourcePracticeTarget(loadedQuestion, route.query.view)
+    if (individualUuid) {
+      await router.replace({ path: `/practice/${individualUuid}`, query: questionRouteQuery() })
+      return
+    }
     useQuestion(loadedQuestion)
     schedulePrefetch(loadedQuestion)
   } catch (reason) {
@@ -589,7 +595,7 @@ onBeforeRouteLeave(async () => {
 
       <div class="question-workbench">
         <div class="question-problem-pane">
-          <p v-if="question.original_source" class="source-original-link"><RouterLink :to="{ path: `/practice/${question.original_source.uuid}`, query: questionRouteQuery() }">查看完整原卷／原页（原始题图已保留） ↗</RouterLink></p>
+          <p v-if="question.original_source" class="source-original-link"><RouterLink :to="{ path: `/practice/${question.original_source.uuid}`, query: { ...questionRouteQuery(), view: 'original' } }">查看完整原卷／原页（原始题图已保留） ↗</RouterLink></p>
           <nav v-if="question.source_context" class="source-tracking-toolbar" aria-label="当前小题掌握情况">
             <strong>{{ question.display_label }}</strong>
             <button :disabled="saving" @click="record('review')">待复习</button>

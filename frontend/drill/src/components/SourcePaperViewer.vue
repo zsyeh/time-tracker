@@ -25,6 +25,10 @@ defineExpose({ scrollToCurrent })
 
 <template>
   <div ref="root" class="source-paper-viewer">
+    <nav v-if="!question.source_context?.anchor" class="source-question-index" aria-label="原卷逐题练习入口">
+      <strong>逐题练习 · {{ question.source_context?.individual_question_count || 0 }} / {{ anchors.length }} 题已切分</strong>
+      <div><button v-for="anchor in anchors" :key="anchor.uuid" type="button" :data-individual-question="anchor.uuid" @click="emit('select', anchor.uuid)">{{ anchor.label }} · {{ anchor.individual_available ? '单题' : '原页' }}</button></div>
+    </nav>
     <p class="source-paper-help">原图完整显示 · 点击左侧题号切换当前小题，掌握情况逐题保存。</p>
     <p v-if="question.source_context?.anchor" class="source-paper-help">本题切分边界尚待核对，暂保留完整原卷，避免遗漏题图。</p>
     <p v-if="question.source_context?.index_complete === false" class="source-paper-help">本卷部分扫描题号尚待补全，原卷所有页面仍完整保留。</p>
@@ -42,6 +46,9 @@ defineExpose({ scrollToCurrent })
 
 <style scoped>
 .source-paper-help { margin: 0 0 12px; color: #505763; font-size: 12px; }
+.source-question-index { margin: 0 0 16px; color: #343b45; font-size: 12px; }
+.source-question-index > div { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.source-question-index button { padding: 6px 8px; border: 1px solid #87919f; border-radius: 5px; background: #f5f6f8; color: #343b45; cursor: pointer; }
 .source-paper-viewer { box-sizing: border-box; min-width: 0; padding-left: 76px; }
 .source-paper-page { position: relative; width: 100%; margin: 0 auto 12px; background: white; }
 .source-paper-page img { display: block; width: 100%; max-width: 100%; height: auto; margin: 0; }

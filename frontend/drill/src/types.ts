@@ -31,8 +31,10 @@ export interface QuestionDetail extends QuestionSummary {
     source_label: string
     answer_scope: 'source_paper'
     index_complete?: boolean
+    individual_question_count?: number
+    prefer_individual_practice?: boolean
     anchor: { asset_id: number; y: number } | null
-    anchors: Array<{ uuid: string; label: string; asset_id: number; y: number; position: number; state: 'unattempted' | 'mastered' | 'review' }>
+    anchors: Array<{ uuid: string; label: string; asset_id: number; y: number; position: number; state: 'unattempted' | 'mastered' | 'review'; individual_available?: boolean }>
   }
   prompt_text: string
   latex_text: string
