@@ -1,0 +1,995 @@
+{
+  "schema_version": 1,
+  "profile": "ei-reviewed-answer-table-v1",
+  "questions": [
+    {
+      "fingerprint": "b75130188e0c06666018183e637bd369cfa7eb082d2bf0c18d23ab7242b2ff9a",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "section-1-item-1",
+      "label": "第1题 · 填空1",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 238,
+          "bbox": [
+            0,
+            286,
+            595.2000122070312,
+            302
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "65083f1a3ab9d5f9f4a1b863982471bdd7f93acad3fb7d75f073a248975efcbc",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "section-1-item-2",
+      "label": "第1题 · 填空2",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 238,
+          "bbox": [
+            0,
+            302,
+            595.2000122070312,
+            348
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "754c463938410dc756f56f863edda3e2af40e6fcfc42ef7d09fedf63eec66f81",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "section-1-item-3",
+      "label": "第1题 · 填空3",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 238,
+          "bbox": [
+            0,
+            348,
+            595.2000122070312,
+            537
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "03670d04720c1978116e3dcd761fa014699c083f4c5a877cc7ebdcbfbe94aef1",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "section-1-item-4",
+      "label": "第1题 · 填空4",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 238,
+          "bbox": [
+            0,
+            537,
+            595.2000122070312,
+            566
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "de7bae4c25061289d70262942a8b6d914af8ec6157417f2db15836997707501a",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "section-1-item-5",
+      "label": "第1题 · 填空5",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 238,
+          "bbox": [
+            0,
+            566,
+            595.2000122070312,
+            598
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "d62df4c47b9765c4a8c0df48b97ad7b25db3cb732645daf2cacb2207f39b1c9c",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "section-1-item-6",
+      "label": "第1题 · 填空6",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 238,
+          "bbox": [
+            0,
+            598,
+            595.2000122070312,
+            618
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "e2062f82eafc7ddec0a31dcf40b8115c272c5598f7404fd6b1c3e298e2a5ecc5",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "section-1-item-7",
+      "label": "第1题 · 填空7",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 238,
+          "bbox": [
+            0,
+            618,
+            595.2000122070312,
+            640
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "4f6ef4dd2f24196ee67775e1dfa5b1e85b989ae9dc253f8ca320c8ab1109e9de",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "section-1-item-8",
+      "label": "第1题 · 填空8",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 238,
+          "bbox": [
+            0,
+            640,
+            595.2000122070312,
+            661
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "5c6479dca7f1d0ec528444a25124a7da23733ed4f84150ce0ec434726ae5d25c",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "section-1-item-9",
+      "label": "第1题 · 填空9",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 238,
+          "bbox": [
+            0,
+            661,
+            595.2000122070312,
+            681
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "8616fac552a59dffca53e9f0fdb02cec0a8e34acd4085b50499d53a2b5cfbdd9",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "section-1-item-10",
+      "label": "第1题 · 填空10",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 238,
+          "bbox": [
+            0,
+            681,
+            595.2000122070312,
+            701
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "530b5cea8e15e61f1f234250fccb5fff378743502825ee40e6d0b41e2486d71d",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "section-1-item-11",
+      "label": "第1题 · 填空11",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 238,
+          "bbox": [
+            0,
+            701,
+            595.2000122070312,
+            718
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "5aa337b31f9050ce28eed1cbca968bb98f77cc60be47ddd33fc51aac200adb59",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "section-1-item-12",
+      "label": "第1题 · 填空12",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 238,
+          "bbox": [
+            0,
+            718,
+            595.2000122070312,
+            764
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "6096d675f65bffc49d8e84911fe32f195b7b351280c30b26580bca72520f56e6",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "section-1-item-13",
+      "label": "第1题 · 填空13",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 238,
+          "bbox": [
+            0,
+            764,
+            595.2000122070312,
+            784
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "2c76787aca3fe0fdcaf12adaa3800b2f0b0a5cf5d9e6354de7a041f7fd7b7212",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "section-2-item-1",
+      "label": "第2题 · 选择1",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 239,
+          "bbox": [
+            94.0,
+            104,
+            138.1,
+            148
+          ],
+          "table_cell": {
+            "number": 1,
+            "answer": "A"
+          }
+        },
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 239,
+          "bbox": [
+            0,
+            213,
+            595.2000122070312,
+            253
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "753ab033b9b4a4ce49ff414b8321829f23ae51e942061d81675030d27693eddc",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "section-2-item-2",
+      "label": "第2题 · 选择2",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 239,
+          "bbox": [
+            138.1,
+            104,
+            182.2,
+            148
+          ],
+          "table_cell": {
+            "number": 2,
+            "answer": "A"
+          }
+        },
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 239,
+          "bbox": [
+            0,
+            253,
+            595.2000122070312,
+            314
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "3d9d4674d5a3ea795622194bbb97c682b8e1f5f24e2d0f30f9a1bbf38e6cc612",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "section-2-item-3",
+      "label": "第2题 · 选择3",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 239,
+          "bbox": [
+            182.2,
+            104,
+            226.3,
+            148
+          ],
+          "table_cell": {
+            "number": 3,
+            "answer": "C"
+          }
+        },
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 239,
+          "bbox": [
+            0,
+            314,
+            595.2000122070312,
+            389
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "b6ac17550a76d6e2e7172aa78b1c8a604c6112f8d2c07190145da73f23cc2c5a",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "section-2-item-4",
+      "label": "第2题 · 选择4",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 239,
+          "bbox": [
+            226.3,
+            104,
+            270.4,
+            148
+          ],
+          "table_cell": {
+            "number": 4,
+            "answer": "B"
+          }
+        },
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 239,
+          "bbox": [
+            0,
+            389,
+            595.2000122070312,
+            442
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "47c19005fb2edfc22bc6cb107d7fa83b07e1d637d1798b55018e90d0945312c4",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "section-2-item-5",
+      "label": "第2题 · 选择5",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 239,
+          "bbox": [
+            270.4,
+            104,
+            314.5,
+            148
+          ],
+          "table_cell": {
+            "number": 5,
+            "answer": "B"
+          }
+        },
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 239,
+          "bbox": [
+            0,
+            442,
+            595.2000122070312,
+            486
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "d00e1fbd5374ceda4d0333984b6665e2e7236ef52576a7e710a539db6a3be856",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "section-2-item-6",
+      "label": "第2题 · 选择6",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 239,
+          "bbox": [
+            314.5,
+            104,
+            358.6,
+            148
+          ],
+          "table_cell": {
+            "number": 6,
+            "answer": "A"
+          }
+        }
+      ]
+    },
+    {
+      "fingerprint": "b7fc9e4e20860e6942c91ad42774e49f38d70e50c04c782aadb31eac4fbc3092",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "section-2-item-7",
+      "label": "第2题 · 选择7",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 239,
+          "bbox": [
+            358.6,
+            104,
+            402.7,
+            148
+          ],
+          "table_cell": {
+            "number": 7,
+            "answer": "B"
+          }
+        },
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 239,
+          "bbox": [
+            0,
+            193,
+            595.2000122070312,
+            213
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "9857b6f64c601dfd09881a6e46338001468f9c3e563fb90914794b039d3f6fc7",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "section-2-item-8",
+      "label": "第2题 · 选择8",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 239,
+          "bbox": [
+            402.7,
+            104,
+            446.8,
+            148
+          ],
+          "table_cell": {
+            "number": 8,
+            "answer": "C"
+          }
+        }
+      ]
+    },
+    {
+      "fingerprint": "a78412780d9fb5dd96d2ca3c7dad68663d11bd13813c049ee2449417441e3f15",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "section-2-item-9",
+      "label": "第2题 · 选择9",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 239,
+          "bbox": [
+            94.0,
+            148,
+            138.1,
+            192
+          ],
+          "table_cell": {
+            "number": 9,
+            "answer": "D"
+          }
+        },
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 239,
+          "bbox": [
+            0,
+            486,
+            595.2000122070312,
+            548
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "f11229b2426c1198dac027a9e2220737d363e68c08c1e8662a01cd42acae3ccf",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "section-2-item-10",
+      "label": "第2题 · 选择10",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 239,
+          "bbox": [
+            138.1,
+            148,
+            182.2,
+            192
+          ],
+          "table_cell": {
+            "number": 10,
+            "answer": "A"
+          }
+        }
+      ]
+    },
+    {
+      "fingerprint": "b11c34cd5066f0f1d8915816522368cdda183f6d8700b3254bcb737cd47333fb",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "section-2-item-11",
+      "label": "第2题 · 选择11",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 239,
+          "bbox": [
+            182.2,
+            148,
+            226.3,
+            192
+          ],
+          "table_cell": {
+            "number": 11,
+            "answer": "B"
+          }
+        }
+      ]
+    },
+    {
+      "fingerprint": "91090ace050b19eb6e0ec7591e5befcf6584e36bb6a073dac8136a3dda8c3cf4",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "section-2-item-12",
+      "label": "第2题 · 选择12",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 239,
+          "bbox": [
+            226.3,
+            148,
+            270.4,
+            192
+          ],
+          "table_cell": {
+            "number": 12,
+            "answer": "B"
+          }
+        }
+      ]
+    },
+    {
+      "fingerprint": "197b7ea1bb41266de5b77b301eaa3518998b1b8b008bf84d2a640d099ac14fba",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "section-2-item-13",
+      "label": "第2题 · 选择13",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 239,
+          "bbox": [
+            270.4,
+            148,
+            314.5,
+            192
+          ],
+          "table_cell": {
+            "number": 13,
+            "answer": "C"
+          }
+        }
+      ]
+    },
+    {
+      "fingerprint": "504cb19d7d30dee9a21a2289ff323fd2ed3ecd7f57795b8cba7bd3e5bcfb02b0",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "section-2-item-14",
+      "label": "第2题 · 选择14",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 239,
+          "bbox": [
+            314.5,
+            148,
+            358.6,
+            192
+          ],
+          "table_cell": {
+            "number": 14,
+            "answer": "D"
+          }
+        }
+      ]
+    },
+    {
+      "fingerprint": "68975099957ffdfbef625ffaeaed622b15ed61a5583c3b4fc822f8def147205f",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "section-2-item-15",
+      "label": "第2题 · 选择15",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 239,
+          "bbox": [
+            358.6,
+            148,
+            402.7,
+            192
+          ],
+          "table_cell": {
+            "number": 15,
+            "answer": "C"
+          }
+        }
+      ]
+    },
+    {
+      "fingerprint": "f9315f21342ad6ed6e03e2db70492c4f1a28b8d199b7bf7818d7b6998fbb6f20",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "section-2-item-16",
+      "label": "第2题 · 选择16",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 239,
+          "bbox": [
+            402.7,
+            148,
+            446.8,
+            192
+          ],
+          "table_cell": {
+            "number": 16,
+            "answer": "D"
+          }
+        }
+      ]
+    },
+    {
+      "fingerprint": "b07d7e45387dd67bb33d18c8083434aa7cb8f0c28bfda8ee2ea5d66a3b602e12",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "main-3",
+      "label": "第3题",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 239,
+          "bbox": [
+            0,
+            548,
+            595.2000122070312,
+            790
+          ]
+        },
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 240,
+          "bbox": [
+            0,
+            78,
+            595.2000122070312,
+            321
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "4e2566c9e38809a7a4ece2c77dc4e28933421a09b2a49924503b59110261bf2f",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "main-4",
+      "label": "第4题",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 240,
+          "bbox": [
+            0,
+            321,
+            595.2000122070312,
+            613.5
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "086a3bc96cbac70c2d06b7baf55228eb8759a7533a3fd78292ac1ede3bbaac45",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "main-5",
+      "label": "第5题",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 240,
+          "bbox": [
+            0,
+            613.5,
+            595.2000122070312,
+            841.9199829101562
+          ]
+        },
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 241,
+          "bbox": [
+            0,
+            0,
+            595.2000122070312,
+            191.1
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "5f82b3610435bac57c6fc8b7b9b8a27f19ea049a5ec16aeeb42156d93ec2b9d9",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "main-6",
+      "label": "第6题",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 241,
+          "bbox": [
+            0,
+            191.1,
+            595.2000122070312,
+            442.8
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "852d3a63c795d2185054143557d281e8fa9350ab97f9b93fd20d3fb077657238",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "main-7",
+      "label": "第7题",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 241,
+          "bbox": [
+            0,
+            442.8,
+            595.2000122070312,
+            841.9199829101562
+          ]
+        },
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 242,
+          "bbox": [
+            0,
+            0,
+            595.2000122070312,
+            70.8
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "72c176a2156e6262303cbfdd7a9b8472ba1714ff55f6382854edfde47526e3ad",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "main-8",
+      "label": "第8题",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 242,
+          "bbox": [
+            0,
+            78,
+            595.2000122070312,
+            450
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "e4d906a2e8e9d84b09e8abddccde81cbdc489e4fe0569d19888f37dfb4932776",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "main-9",
+      "label": "第9题",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 242,
+          "bbox": [
+            0,
+            450,
+            595.2000122070312,
+            784
+          ]
+        },
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 243,
+          "bbox": [
+            0,
+            90,
+            595.2000122070312,
+            536
+          ]
+        }
+      ]
+    },
+    {
+      "fingerprint": "9fd84b10d85a234dd4e9e37329ea049dc81212dfdf0f7b9a1ceba189afec59a7",
+      "source_fingerprint": "e9f587df514c01161ac15902c3fc1355dd5cd1c6e418c4654638dacfe3ff10c1",
+      "key": "main-10",
+      "label": "第10题",
+      "book": "electronics",
+      "year": 2008,
+      "variant": "",
+      "confidence": 1.0,
+      "solution_regions": [
+        {
+          "source": "f81b0792cea211b579a8300e87bbbd2064eaaee520721078ed55d405abab3879",
+          "page_index": 243,
+          "bbox": [
+            0,
+            536,
+            595.2000122070312,
+            770
+          ]
+        }
+      ]
+    }
+  ],
+  "review": []
+}

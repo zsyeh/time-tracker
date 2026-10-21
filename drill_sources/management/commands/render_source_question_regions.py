@@ -29,7 +29,11 @@ class Command(BaseCommand):
             asset_type = options['asset_type']
             region_key = 'solution_regions' if asset_type == 'answer_crop' else 'question_regions'
             manifest = json.loads(options['manifest'].read_text())
-            if manifest.get('schema_version') != 1 or manifest.get('profile') != 'ei-full-width-whitespace-v1':
+            profile = manifest.get('profile')
+            if (manifest.get('schema_version') != 1
+                    or profile not in ('ei-full-width-whitespace-v1', 'ei-reviewed-answer-table-v1', 'ei-reviewed-column-figure-v1')
+                    or (profile == 'ei-reviewed-answer-table-v1' and asset_type != 'answer_crop')
+                    or (profile == 'ei-reviewed-column-figure-v1' and asset_type != 'question_crop')):
                 raise ValueError('Unsupported region manifest')
             if not 150 <= options['dpi'] <= 240:
                 raise ValueError('DPI must be 150..240')
@@ -67,8 +71,35 @@ class Command(BaseCommand):
                         if not 0 <= region['page_index'] < len(pdf):
                             raise ValueError('Invalid source page index')
                         page = pdf[region['page_index']]; rect = pymupdf.Rect(region['bbox'])
+                        table_cell = region.get('table_cell')
+                        if table_cell is not None:
+                            number = re.fullmatch(r'section-\d+-item-(\d+)', anchor.key)
+                            if (profile != 'ei-reviewed-answer-table-v1' or not number
+                                    or table_cell.get('number') != int(number[1])
+                                    or table_cell.get('answer') not in ('A', 'B', 'C', 'D')
+                                    or rect.width > page.rect.width / 4
+                                    or rect.height > page.rect.height / 4):
+                                raise ValueError('Invalid reviewed answer-table cell')
+                        layout = item.get('reviewed_columns', {})
+                        column_reviewed = False
+                        if region.get('column_role') is not None:
+                            # A tall side figure can overlap neighbouring stems:
+                            # there is no safe full-width horizontal boundary.
+                            # Require an explicit, exact two-column review, not
+                            # an automatic relaxation of the ordinary crop gate.
+                            pair = item[region_key]
+                            if (profile != 'ei-reviewed-column-figure-v1' or not layout.get('reason')
+                                    or not layout.get('figure_label') or len(pair) != 2
+                                    or [r.get('column_role') for r in pair] != ['stem', 'figure']
+                                    or pair[0]['source'] != pair[1]['source']
+                                    or pair[0]['page_index'] != pair[1]['page_index']
+                                    or [r['bbox'] for r in pair] != layout.get('bboxes')
+                                    or pair[0]['bbox'][2] > pair[1]['bbox'][0]):
+                                raise ValueError('Invalid reviewed stem/figure column pair')
+                            column_reviewed = True
+                        full_width = rect.x0 == 0 and abs(rect.x1 - page.rect.width) <= .01
                         if (rect.is_empty or rect.height < 3 or not page.rect.contains(rect)
-                                or rect.x0 != 0 or abs(rect.x1 - page.rect.width) > .01):
+                                or (not full_width and table_cell is None and not column_reviewed)):
                             raise ValueError(f'Invalid region for {item["fingerprint"]}: {region}; page={list(page.rect)}; individual crops must preserve full page width')
                     namespace = 'ei-individual-answer-region-v1' if asset_type == 'answer_crop' else 'ei-individual-region-v1'
                     expected.append(stable_source_id(namespace, question.fingerprint,

@@ -148,6 +148,77 @@ class SourceQuestionTrackingTests(TestCase):
         with self.assertRaises(Exception): self.render(path, dpi=200)
         self.assertEqual(QuestionAsset.objects.count(), 3)
 
+    def table_cell_manifest(self):
+        first, manifest, path = self.region_manifest()
+        manifest['profile'] = 'ei-reviewed-answer-table-v1'
+        item = manifest['questions'][0]
+        region = item.pop('question_regions')[0]
+        item['solution_regions'] = [{**region, 'bbox': [100, 200, 150, 250],
+                                    'table_cell': {'number': 1, 'answer': 'A'}}]
+        path.write_text(json.dumps(manifest))
+        return first, manifest, path
+
+    def test_reviewed_columns_keep_tall_figure_without_neighbouring_stem(self):
+        first, manifest, path = self.region_manifest()
+        manifest['profile'] = 'ei-reviewed-column-figure-v1'
+        item = manifest['questions'][0];region = item['question_regions'][0]
+        boxes = [[0, 220, 290, 300], [290, 180, 600, 470]]
+        item['question_regions'] = [{**region, 'bbox': box, 'column_role': role}
+                                    for box, role in zip(boxes, ['stem', 'figure'])]
+        item['reviewed_columns'] = {'reason': 'Circuit taller than text; caption overlaps next stem',
+                                    'figure_label': 'Fig 1', 'bboxes': boxes}
+        path.write_text(json.dumps(manifest))
+        self.render(path, dry_run=True); self.assertEqual(QuestionAsset.objects.count(), 2)
+        self.render(path); self.assertIn('"new_images": 0', self.render(path))
+        self.assertEqual(first.assets.filter(asset_type='question_crop').count(), 2)
+        item['reviewed_columns']['bboxes'] = [[0, 220, 290, 301], boxes[1]]
+        path.write_text(json.dumps(manifest))
+        with self.assertRaises(Exception): self.render(path)
+        item['reviewed_columns']['bboxes'] = boxes
+        manifest['profile'] = 'ei-full-width-whitespace-v1';path.write_text(json.dumps(manifest))
+        with self.assertRaises(Exception): self.render(path)
+        self.assertEqual(QuestionAsset.objects.count(), 4)
+
+    def test_reviewed_answer_table_cell_preserves_original_and_is_idempotent(self):
+        first, manifest, path = self.table_cell_manifest()
+        self.render(path, asset_type='answer_crop', dry_run=True)
+        self.assertEqual(QuestionAsset.objects.count(), 2)
+        self.render(path, asset_type='answer_crop')
+        self.assertIn('"new_images": 0', self.render(path, asset_type='answer_crop'))
+        cell = first.assets.get(asset_type='answer_crop')
+        self.assertEqual([cell.source_x0, cell.source_y0, cell.source_x1, cell.source_y1], [100, 200, 150, 250])
+        self.assertEqual(self.request(DrillQuestionDetailView, first).data['answer_scope'], 'individual')
+        self.answer.refresh_from_db()
+        self.assertEqual(bytes(self.answer.image_data), b'original-answer-page')
+
+    def test_table_cell_cannot_relax_question_full_width_requirement(self):
+        first, manifest, path = self.table_cell_manifest()
+        item = manifest['questions'][0]
+        item['question_regions'] = item.pop('solution_regions')
+        for profile in ('ei-reviewed-answer-table-v1', 'ei-full-width-whitespace-v1'):
+            manifest['profile'] = profile; path.write_text(json.dumps(manifest))
+            with self.assertRaises(Exception): self.render(path)
+        self.assertEqual(QuestionAsset.objects.count(), 2)
+
+    def test_answer_table_rejects_unreviewed_mismatched_and_abnormal_cells(self):
+        first, manifest, path = self.table_cell_manifest()
+        region = manifest['questions'][0]['solution_regions'][0]
+        invalid = [
+            {**region, 'table_cell': {'number': 2, 'answer': 'A'}},
+            {**region, 'table_cell': {'number': 1, 'answer': 'E'}},
+            {**region, 'bbox': [100, 200, 400, 250]},
+            {**region, 'bbox': [-10, 200, 20, 250]},
+            {k: v for k, v in region.items() if k != 'table_cell'},
+        ]
+        for bad in invalid:
+            manifest['questions'][0]['solution_regions'] = [bad]
+            path.write_text(json.dumps(manifest))
+            with self.assertRaises(Exception): self.render(path, asset_type='answer_crop')
+        manifest['questions'][0]['solution_regions'] = [region]
+        manifest['profile'] = 'ei-full-width-whitespace-v1'; path.write_text(json.dumps(manifest))
+        with self.assertRaises(Exception): self.render(path, asset_type='answer_crop')
+        self.assertEqual(QuestionAsset.objects.count(), 2)
+
     def test_original_paper_only_prefers_individual_practice_after_every_item_is_cropped(self):
         first, manifest, path = self.region_manifest()
         self.render(path)
