@@ -77,6 +77,7 @@ onMounted(() => {
         <RouterLink v-if="isEi" to="/analog-selected" :class="{ active: route.name === 'analog-selected' || (route.name === 'question' && route.query.collection === 'analog_selected') }"><span>模电严选</span></RouterLink>
         <RouterLink v-if="isEi" to="/digital-selected" :class="{ active: route.name === 'digital-selected' || (route.name === 'question' && route.query.collection === 'digital_selected') }"><span>数电严选</span></RouterLink>
         <RouterLink v-if="isEi" to="/communication-selected" :class="{ active: route.name === 'communication-selected' || (route.name === 'question' && route.query.collection === 'communication_selected') }"><span>通信严选</span></RouterLink>
+        <RouterLink v-if="isEi" to="/core-heatmap" :class="{ active: route.name === 'core-heatmap' || (route.name === 'question' && route.query.collection === 'core_selected') }"><span>五科核心热力图</span></RouterLink>
         <RouterLink to="/practice" :class="{ active: route.name === 'practice' || route.name === 'question' }">
           <span>{{ t('practice') }}</span>
         </RouterLink>

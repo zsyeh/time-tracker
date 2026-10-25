@@ -1416,9 +1416,11 @@ class DrillHeatmapView(APIView):
             return Response({'detail': 'scope must be past_exam, mock_exam, or all.'}, status=400)
         if mode not in {'topics', 'questions'}:
             return Response({'detail': 'mode must be topics or questions.'}, status=400)
-        if collection not in {'', 'selected'}:
+        if collection not in {'', 'selected', 'core_selected'}:
             return Response({'detail': 'collection must be selected or omitted.'}, status=400)
         if collection == 'selected' and request_workspace(request) != 'drill':
+            raise Http404
+        if collection == 'core_selected' and request_workspace(request) != 'ei':
             raise Http404
 
         question_queryset = workspace_questions(request).filter(
@@ -1429,6 +1431,8 @@ class DrillHeatmapView(APIView):
                 Q(answer_source='daguan_answer_guide_pdf') |
                 Q(document__relation_type='selected_question_book')
             )
+        if collection == 'core_selected':
+            question_queryset = filter_collection(question_queryset, request)
         questions = list(
             question_queryset.select_related('document', 'similarity_topic').only(
                 'id', 'uuid', 'document_id', 'document__title', 'document__display_title',
@@ -1449,6 +1453,8 @@ class DrillHeatmapView(APIView):
                 Q(question__document__relation_type='selected_question_book')
             )
         progress = {}
+        if collection == 'core_selected':
+            attempt_filters &= Q(question_id__in=[q.pk for q in questions])
         filtered_attempts = QuestionAttempt.objects.filter(
             attempt_filters, user=request.user,
         )
@@ -1643,7 +1649,24 @@ class DrillHeatmapView(APIView):
                     else 'progress' if attempted
                     else 'unattempted'
                 )
+        extra = {}
+        if collection == 'core_selected':
+            from .core_selected import manifest as core_manifest, COURSES
+            core_data = core_manifest()
+            records = {q['uuid']: q for q in core_data['questions']}
+            titles = {b['key']: b['title'] for b in core_data['buckets']}
+            for group in groups:
+                for item in group['questions']:
+                    row = records[item['uuid']]
+                    item.update(course=row['course'], core_topic=titles[row['bucket']])
+            visible = [item for group in groups for item in group['questions']]
+            extra = {'curation_total':len(records),
+                     'quality_notice':'题答已具备不等于逐题复核通过；重要性、题干/图与答案完整性正在单独复核。',
+                     'courses':[{'key':key,'title':title,
+                         'total':sum(r['course']==key for r in records.values()),
+                         'visible':sum(q['course']==key for q in visible)} for key,title,_module in COURSES]}
         return Response({
+            **extra,
             'mode': mode,
             'question_count': len(questions),
             'topic_count': len(unique_topic_ids),

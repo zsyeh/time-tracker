@@ -49,6 +49,7 @@ const router = createRouter({
     { path: '/analog-selected', name: 'analog-selected', component: AnalogSelectedView },
     { path: '/digital-selected', name: 'digital-selected', component: DigitalSelectedView },
     { path: '/communication-selected', name: 'communication-selected', component: CommunicationSelectedView },
+    { path: '/core-heatmap', name: 'core-heatmap', component: HeatmapView, props: { selectedOnly: true, coreOnly: true } },
   ],
   scrollBehavior(_to, _from, savedPosition) {
     return savedPosition || { top: 0 }

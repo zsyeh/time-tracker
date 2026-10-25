@@ -6,10 +6,12 @@ import { cachedHeatmap, storeHeatmap } from '../lib/workspace'
 import { useUiPreferences } from '../lib/uiPreferences'
 import HeatmapProgress from '../components/HeatmapProgress.vue'
 
-const props = withDefaults(defineProps<{ selectedOnly?: boolean }>(), { selectedOnly: false })
+const props = withDefaults(defineProps<{ selectedOnly?: boolean; coreOnly?: boolean }>(), { selectedOnly: false, coreOnly: false })
 const { t } = useUiPreferences()
 
 interface HeatmapQuestion {
+  course?: string
+  core_topic?: string
   source_indexed?: boolean
   uuid: string
   order: number
@@ -38,6 +40,9 @@ interface HeatmapTopic {
 }
 
 interface HeatmapPayload {
+  curation_total?: number
+  quality_notice?: string
+  courses?: { key: string; title: string; total: number; visible: number }[]
   question_count: number
   topic_count: number
   statistics: {
@@ -79,6 +84,8 @@ function formatDuration(seconds: number | null) {
 
 const router = useRouter()
 const route = useRoute()
+const course = ref(String(route.query.course || ''))
+const material = ref(String(route.query.material || 'ready'))
 const data = ref<HeatmapPayload | null>(null)
 const loading = ref(true)
 const error = ref('')
@@ -126,6 +133,13 @@ function openTopic(documentId: number, topicId: number) {
 }
 
 function openQuestion(documentId: number, question: HeatmapQuestion) {
+  if (props.coreOnly) {
+    void router.push({ path: `/practice/${question.uuid}`, query: {
+      collection: 'core_selected', from: 'core-heatmap', scope: scope.value,
+      course: course.value, material: material.value,
+    } })
+    return
+  }
   sessionStorage.setItem(returnStateKey, JSON.stringify({
     scope: scope.value,
     questionUuid: question.uuid,
@@ -171,8 +185,10 @@ async function load() {
   const requestedScope = scope.value
   const requestedMode = mode.value
   const requestedSelectedOnly = props.selectedOnly
-  const collection = requestedSelectedOnly ? 'selected' : ''
-  const cacheKey = `${collection || 'all'}:${requestedMode}:${requestedScope}`
+  const requestedCoreOnly = props.coreOnly
+  const collection = props.coreOnly ? 'core_selected' : requestedSelectedOnly ? 'selected' : ''
+  const extra = props.coreOnly ? `&course=${encodeURIComponent(course.value)}&material=${encodeURIComponent(material.value)}` : ''
+  const cacheKey = `${collection || 'all'}:${requestedMode}:${requestedScope}:${extra}`
   const cached = cachedHeatmap<HeatmapPayload>(cacheKey)
   if (cached) {
     data.value = cached
@@ -181,8 +197,8 @@ async function load() {
   loading.value = !cached
   error.value = ''
   try {
-    const value = await api<HeatmapPayload>(`/api/drill/heatmap/?scope=${requestedScope}&mode=${requestedMode}${collection ? `&collection=${collection}` : ''}`)
-    if (sequence !== loadSequence || scope.value !== requestedScope || mode.value !== requestedMode || props.selectedOnly !== requestedSelectedOnly) return
+    const value = await api<HeatmapPayload>(`/api/drill/heatmap/?scope=${requestedScope}&mode=${requestedMode}${collection ? `&collection=${collection}` : ''}${extra}`)
+    if (sequence !== loadSequence || scope.value !== requestedScope || mode.value !== requestedMode || props.selectedOnly !== requestedSelectedOnly || props.coreOnly !== requestedCoreOnly) return
     data.value = value
     storeHeatmap(cacheKey, value)
     void restoreQuestionSelection(value)
@@ -193,13 +209,17 @@ async function load() {
   }
 }
 
-watch([scope, mode], () => {
+watch([scope, mode, course, material], () => {
   selectedTopic.value = null
   selectedQuestion.value = null
   pendingQuestionUuid = ''
   void load()
 })
-watch(() => props.selectedOnly, (selectedOnly) => {
+watch(() => [props.selectedOnly, props.coreOnly], () => {
+  const selectedOnly = props.selectedOnly
+  scope.value = ['past_exam','mock_exam','all'].includes(String(route.query.scope)) ? String(route.query.scope) as 'all' | 'past_exam' | 'mock_exam' : 'all'
+  course.value = String(route.query.course || '')
+  material.value = String(route.query.material || 'ready')
   // Vue Router reuses this component between /heatmap and
   // /selected-heatmap. Reset route-specific state before loading the other
   // collection so stale requests and previews cannot bleed across pages.
@@ -219,13 +239,18 @@ onMounted(load)
 <template>
   <section class="page heatmap-page">
     <header class="page-header">
-      <div><span class="eyebrow">{{ props.selectedOnly ? t('selectedHeatmap') : t('knowledgeMap') }}</span><h1>{{ props.selectedOnly ? t('selectedHeatmap') : t('coverageByBook') }}</h1><p>{{ props.selectedOnly ? 'Curated Da Guan questions, grouped by source book and knowledge topic.' : 'Every topic and question cell opens a preview before navigation.' }}</p></div>
+      <div><span class="eyebrow">{{ props.coreOnly ? '892 · CORE HEATMAP' : props.selectedOnly ? t('selectedHeatmap') : t('knowledgeMap') }}</span><h1>{{ props.coreOnly ? '五科核心题热力图' : props.selectedOnly ? t('selectedHeatmap') : t('coverageByBook') }}</h1><p>{{ props.coreOnly ? '五科核心题汇总，按来源书籍与考点练习；原题、原答案、原做题记录。' : props.selectedOnly ? 'Curated Da Guan questions, grouped by source book and knowledge topic.' : 'Every topic and question cell opens a preview before navigation.' }}</p></div>
       <div class="heat-controls">
         <div v-if="!props.selectedOnly" class="heat-mode"><button :class="{ active: mode === 'topics' }" @click="mode = 'topics'">Topics</button><button :class="{ active: mode === 'questions' }" @click="mode = 'questions'">Questions</button></div>
         <div class="heat-scope"><button :class="{ active: scope === 'all' }" @click="scope = 'all'">All</button><button :class="{ active: scope === 'past_exam' }" @click="scope = 'past_exam'">Past exams</button><button :class="{ active: scope === 'mock_exam' }" @click="scope = 'mock_exam'">Mock exams</button></div>
         <div class="heat-legend"><i class="status-unattempted" /><span>NOT STARTED</span><i class="status-progress" /><span>IN PROGRESS</span><i class="status-mastered" /><span>MASTERED</span><i class="status-review" /><span>REVIEW</span><i class="status-overdue" /><span>OVERDUE</span></div>
       </div>
     </header>
+    <div v-if="props.coreOnly" class="core-controls">
+      <label>学科<select v-model="course"><option value="">全部五科</option><option v-for="item in data?.courses || []" :key="item.key" :value="item.key">{{ item.title }} · 核心 {{ item.total }} 题</option></select></label>
+      <label>资料<select v-model="material"><option value="ready">题答已具备，且无未处理勘误</option><option value="all">全部核心（含待补资料）</option></select></label>
+      <p>{{ data?.quality_notice }} <template v-if="data?.curation_total">核心清单共 {{ data.curation_total }} 题，当前显示 {{ data.question_count }} 题。</template></p>
+    </div>
     <p v-if="error" class="error-state">{{ error }}</p>
     <div v-else-if="loading" class="question-skeleton">BUILDING HEATMAP…</div>
     <template v-else-if="data">
@@ -279,22 +304,22 @@ onMounted(load)
         </Transition>
         <div v-if="mode === 'questions'" class="question-heatmap">
           <button
-            v-for="item in group.questions"
+            v-for="(item, index) in group.questions"
             :key="item.uuid"
             :data-question-uuid="item.uuid"
             :class="[item.review_overdue ? 'status-overdue' : `status-${item.state}`, { selected: selectedQuestion?.question.uuid === item.uuid }]"
             :aria-pressed="selectedQuestion?.question.uuid === item.uuid"
             :aria-label="`${item.label}; ${item.state}; ${item.attempt_count} attempts`"
-            :title="`${item.label} · ${item.topic} · ${item.state} · ${item.attempt_count} attempts`"
+            :title="`${item.label} · ${item.core_topic || item.topic} · ${item.state} · ${item.attempt_count} attempts`"
             @click="previewQuestion(group.document_id, group.document, item)"
-          ><span>{{ item.year }}</span></button>
+          ><span>{{ props.coreOnly ? index + 1 : item.year }}</span></button>
         </div>
         <Transition name="topic-preview">
           <aside v-if="mode === 'questions' && selectedQuestion?.documentId === group.document_id" class="topic-preview-card question-preview-card">
             <div class="topic-preview-copy">
               <span>QUESTION PREVIEW · {{ selectedQuestion.document }}</span>
               <h3>{{ selectedQuestion.question.label || `Question ${selectedQuestion.question.order}` }}</h3>
-              <p>{{ selectedQuestion.question.topic || 'General' }}<template v-if="selectedQuestion.question.year"> · {{ selectedQuestion.question.year }}{{ selectedQuestion.question.variant ? ` ${selectedQuestion.question.variant}` : '' }}</template></p>
+              <p>{{ selectedQuestion.question.core_topic || selectedQuestion.question.topic || 'General' }}<template v-if="selectedQuestion.question.year"> · {{ selectedQuestion.question.year }}{{ selectedQuestion.question.variant ? ` ${selectedQuestion.question.variant}` : '' }}</template></p>
             </div>
             <dl>
               <div><dt>STATE</dt><dd>{{ selectedQuestion.question.review_overdue ? 'OVERDUE REVIEW' : selectedQuestion.question.state === 'mastered' ? 'MASTERED' : selectedQuestion.question.state === 'review' ? 'REVIEW' : 'NOT STARTED' }}</dd></div>
@@ -311,3 +336,10 @@ onMounted(load)
     </template>
   </section>
 </template>
+
+<style scoped>
+.core-controls { display:flex; flex-wrap:wrap; gap:12px; margin:16px 0; }
+.core-controls label { display:grid; gap:6px; min-width:0; max-width:100%; font-size:12px; }
+.core-controls select { min-width:0; max-width:100%; padding:10px; color:var(--text-primary); background:var(--bg-surface); border:1px solid var(--border-default); border-radius:var(--radius-sm); }
+.core-controls p { flex-basis:100%; color:var(--text-secondary); line-height:1.7; }
+</style>
