@@ -1,9 +1,10 @@
 """Navigation dispatch only; normal question-bank paths remain unchanged."""
-from . import circuit_selected, signal_selected
+from . import circuit_selected, signal_selected, analog_selected
 
-CODES = {circuit_selected.CODE, signal_selected.CODE}
+CODES = {circuit_selected.CODE, signal_selected.CODE, analog_selected.CODE}
 
 
 def filter_collection(queryset, request):
-    module = signal_selected if request.query_params.get('collection') == signal_selected.CODE else circuit_selected
+    code = request.query_params.get('collection')
+    module = {signal_selected.CODE: signal_selected, analog_selected.CODE: analog_selected}.get(code, circuit_selected)
     return module.filter_collection(queryset, request)

@@ -1,0 +1,5266 @@
+{
+  "schema_version": 1,
+  "code": "analog_selected",
+  "title": "模电严选",
+  "basis": "按用户给定的892模电备考优先级，不是命题概率。原题原答案原记录；数电及不可靠混合题不进入默认必练。",
+  "syllabus_reference": "drill.ei_syllabus.SYLLABUS[analog]",
+  "combination_key": "combined_static_dynamic",
+  "inventory_count": 1030,
+  "buckets": [
+    {
+      "key": "transistor",
+      "title": "共射／共源 · 静态与小信号",
+      "rank": 1,
+      "tier": "core",
+      "focus": "静态工作点、工作区、交流等效；增益及输入输出电阻。"
+    },
+    {
+      "key": "feedback",
+      "title": "深度负反馈 · 组态与闭环增益",
+      "rank": 2,
+      "tier": "core",
+      "focus": "反馈极性、四种组态、反馈系数与深度负反馈近似。"
+    },
+    {
+      "key": "opamp",
+      "title": "集成运放 · 比例、加减与积分",
+      "rank": 3,
+      "tier": "core",
+      "focus": "理想运放虚短虚断、串级运算与输入输出关系。"
+    },
+    {
+      "key": "differential",
+      "title": "差分放大／电流源负载",
+      "rank": 4,
+      "tier": "advanced",
+      "focus": "静态电流、差模共模增益、共模抑制比及有源负载。"
+    },
+    {
+      "key": "high_frequency",
+      "title": "高频小信号／米勒／上限频率",
+      "rank": 5,
+      "tier": "advanced",
+      "focus": "结电容、米勒等效、极点和上限截止频率；与中频分析衔接。"
+    },
+    {
+      "key": "multistage",
+      "title": "多级放大 · 增益与输入输出电阻",
+      "rank": 6,
+      "tier": "advanced",
+      "focus": "级间负载效应、总增益和输入输出电阻。"
+    },
+    {
+      "key": "hysteresis",
+      "title": "滞回比较器 · 阈值与传输特性",
+      "rank": 7,
+      "tier": "advanced",
+      "focus": "上下翻转阈值、回差和电压传输曲线。"
+    },
+    {
+      "key": "power",
+      "title": "OCL／互补推挽 · 功率与效率",
+      "rank": 8,
+      "tier": "foundation",
+      "focus": "输出功率、效率、交越失真和晶体管耗散。"
+    },
+    {
+      "key": "diode",
+      "title": "二极管 · 分段线性模型",
+      "rank": 9,
+      "tier": "foundation",
+      "focus": "导通截止判断、恒压降和小信号模型，不主攻器件物理。"
+    }
+  ],
+  "questions": [
+    {
+      "uuid": "ddb35b09-90fd-5a4b-aa1f-40cf7d1c0158",
+      "fingerprint": "cb7058a597ce65c56e6d657d3433886905335f9051febc7886e6d1914113c13e",
+      "document_id": 12,
+      "label": "半导体二极管工作原理与伏安特性",
+      "evidence_method": "structured_text",
+      "evidence": "硅二极管正向导通时，若采用恒压降近似模型并取导通压降为 $0.7\\,\\text{V}$，一个 $5\\,\\text{V}$ 电源通过 $1\\,\\text{k}\\Omega$ 电阻和二极管串联接地。求二极管导通时的电流。",
+      "status": "included",
+      "bucket": "diode",
+      "tags": [
+        "diode"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：diode"
+      ]
+    },
+    {
+      "uuid": "9a033df8-e143-5870-8e63-097d74fdbc0b",
+      "fingerprint": "bf477eb15f11f7ffa1756f62d20889cd1cb0205748d5ac942dc7fc1543ecd001",
+      "document_id": 12,
+      "label": "二极管常用电路模型",
+      "evidence_method": "structured_text",
+      "evidence": "理想二极管、恒压降模型和小信号模型分别主要适用于什么场景？",
+      "status": "included",
+      "bucket": "diode",
+      "tags": [
+        "diode"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：diode"
+      ]
+    },
+    {
+      "uuid": "5c3a7619-3cbe-524b-8753-18a58fd9e935",
+      "fingerprint": "55931e7c3b730bbae8f8f2106f98afbe61240bbe98f6a3a2c30e978bd0e855a0",
+      "document_id": 12,
+      "label": "BJT 外部特性与小信号模型",
+      "evidence_method": "structured_text",
+      "evidence": "某 BJT 静态集电极电流为 $I_C=1\\,\\text{mA}$，取热电压 $V_T=25\\,\\text{mV}$。求跨导 $g_m$。",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "596592cb-98e8-5ea8-bded-9ac7dfe656dd",
+      "fingerprint": "76f635b8f2b7e5360b76fd4eecd8de826c9a964fba979f35bc45e6da2358da5a",
+      "document_id": 12,
+      "label": "JFET 基本原理、特性及场效应管小信号模型",
+      "evidence_method": "structured_text",
+      "evidence": "场效应管小信号模型中，若忽略输出电阻，栅极输入电流近似为多少？其受控电流源通常如何表示？",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "5959f259-c046-5198-8636-2a4ba94c0092",
+      "fingerprint": "186721c0a300dc40ea01bec93ab5e622bac36cab2e052da1979cf46f0d00c1f6",
+      "document_id": 12,
+      "label": "共射放大电路工作原理与分析",
+      "evidence_method": "structured_text",
+      "evidence": "一个共射放大器采用发射极交流接地近似，集电电阻 $R_C=2\\,\\text{k}\\Omega$，晶体管跨导 $g_m=20\\,\\text{mS}$，忽略 $r_o$。求电压增益近似值。",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "34eb5a97-b4d6-5576-8cb5-390abce4e65f",
+      "fingerprint": "b582d760222b4e09508e6850833c21d0277ad9dd2bb17eccda0a66c5bfbc6f14",
+      "document_id": 12,
+      "label": "共集放大电路工作原理与分析",
+      "evidence_method": "structured_text",
+      "evidence": "共集电极放大器又称射极跟随器。若其小信号电压增益近似为 $0.98$，输入端变化 $100\\,\\text{mV}$，输出端约变化多少？其主要特点是什么？",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "a1225b45-6194-56aa-b904-756c32e2f8a3",
+      "fingerprint": "401b8b4540e0cb867d0bb01ec1d366c67991634d1fa0d5da98946d769c70f179",
+      "document_id": 12,
+      "label": "共基放大电路工作原理与分析",
+      "evidence_method": "structured_text",
+      "evidence": "共基放大电路中，输入从发射极加入，输出从集电极取出。其电流增益大约是多少量级？输入电阻通常高还是低？",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "206105c4-4361-5b31-9e8b-ab43ce196078",
+      "fingerprint": "a48b6d91cfe3ae82d1e98405396ba3cf8e0b398231ecac0b867754699d74980e",
+      "document_id": 12,
+      "label": "共源、共漏、共栅放大电路",
+      "evidence_method": "structured_text",
+      "evidence": "在三种 MOSFET 基本放大组态中，哪一种对应“源极跟随器”？其电压增益绝对值通常大于、等于还是略小于 $1$？",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "eef63f2d-9646-5644-90de-14e0fede911e",
+      "fingerprint": "ed71098e9f008357a030115928a18ffe70d37ae7168c3802ca9d38dbe9d16cad",
+      "document_id": 12,
+      "label": "电流源与差分放大电路",
+      "evidence_method": "structured_text",
+      "evidence": "一个理想差分放大器两输入分别为 $v_1=10\\,\\text{mV}$、$v_2=6\\,\\text{mV}$，差模增益 $A_d=100$，共模增益忽略。求输出电压。",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "differential"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：differential"
+      ]
+    },
+    {
+      "uuid": "1984b135-408b-5a49-ba0e-135105b208bd",
+      "fingerprint": "5d1fd66dde514c8866e8853f79a203ef04c1d01c87ba57ac7d44dae596a4cec2",
+      "document_id": 12,
+      "label": "功率放大电路与多级放大电路",
+      "evidence_method": "structured_text",
+      "evidence": "两级放大器各级电压增益分别为 $A_{v1}=20$、$A_{v2}=-5$。忽略级间负载效应，求总电压增益。",
+      "status": "included",
+      "bucket": "multistage",
+      "tags": [
+        "multistage"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：multistage"
+      ]
+    },
+    {
+      "uuid": "753db9fa-ae33-5ff6-a160-5c9911a4d17d",
+      "fingerprint": "f8dd92698ae0e77f61b5817ecde540c28f4b8cf8da8964f64f98ef8abdd39765",
+      "document_id": 12,
+      "label": "下限频率、上限频率与通频带",
+      "evidence_method": "structured_text",
+      "evidence": "某放大器下限截止频率为 $f_L=100\\,\\text{Hz}$，上限截止频率为 $f_H=1\\,\\text{MHz}$。写出其通频带范围，并给出带宽近似值。",
+      "status": "included",
+      "bucket": "high_frequency",
+      "tags": [
+        "high_frequency"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：high_frequency"
+      ]
+    },
+    {
+      "uuid": "f82aa04b-3591-58b0-b3b7-46f2c5b3d007",
+      "fingerprint": "1301bceea39341931fda7e32fe1c1df0fb60071fc92a25726a53d58858559f6d",
+      "document_id": 12,
+      "label": "放大电路高频等效分析思路",
+      "evidence_method": "structured_text",
+      "evidence": "进行 BJT 共射放大器高频小信号分析时，为什么不能再忽略晶体管结电容？",
+      "status": "included",
+      "bucket": "high_frequency",
+      "tags": [
+        "transistor",
+        "high_frequency"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor、high_frequency"
+      ]
+    },
+    {
+      "uuid": "f6e9c756-3726-561f-bf3f-24307ae15612",
+      "fingerprint": "e76ae4d9e7502eb70a63c7d60abbbff08bcba363a8037b8fc404cdff465af738",
+      "document_id": 12,
+      "label": "反馈的基本概念",
+      "evidence_method": "structured_text",
+      "evidence": "放大器开环增益为 $A$，反馈系数为 $F$。若反馈信号与输入相减，写出闭环增益表达式。",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "927d5d1c-e637-517f-8648-5e493551fcdf",
+      "fingerprint": "812443b29adef6462c987463925a898f85dd7f80537518f7d59ac93abc78d235",
+      "document_id": 12,
+      "label": "正反馈与负反馈的极性判断",
+      "evidence_method": "structured_text",
+      "evidence": "某反馈放大器输出增大后，经反馈网络返回输入端的信号使净输入量减小。判断该反馈属于正反馈还是负反馈。",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "168d41d6-24b8-5796-9069-ab6795184312",
+      "fingerprint": "caf6fa208c2aec68dd8b2348cbc0ada3ecf6772075e7bc63e546598450294b96",
+      "document_id": 12,
+      "label": "深度负反馈条件下的近似分析",
+      "evidence_method": "structured_text",
+      "evidence": "某负反馈放大器满足 $AF=100\\gg1$，反馈系数 $F=0.02$。估算闭环增益。",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "c66a741a-2b6e-5ced-91b1-b9d5b7a935b4",
+      "fingerprint": "957ac6ccbd55aba64f15be25de227243b446cae7622fb867637e14b52e45e23b",
+      "document_id": 12,
+      "label": "负反馈放大电路稳定性的基本概念",
+      "evidence_method": "structured_text",
+      "evidence": "负反馈放大器在某高频处满足环路增益幅值接近 $1$，同时总相移接近 $180^\\circ$。这意味着电路存在什么风险？",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "77476282-1fa2-5f36-9aa6-4973db371df3",
+      "fingerprint": "5f1a1903582529bd3e92b2afe2f90530331994c405c2723bd1287d961836c967",
+      "document_id": 12,
+      "label": "集成运算放大器基本组成",
+      "evidence_method": "structured_text",
+      "evidence": "一个典型集成运算放大器内部通常可以抽象为哪几个基本级？",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "f27c05b4-5cf7-58b2-82c4-9dbced77c531",
+      "fingerprint": "78266a5fc6e44c752639a95d905e9ec8ffc2239bb9eab8063134f88e81d82d45",
+      "document_id": 12,
+      "label": "运算放大器电压传输特性",
+      "evidence_method": "structured_text",
+      "evidence": "理想运放开环工作且供电为 $\\pm 15\\,\\text{V}$。若输入差模电压 $v_+-v_-=1\\,\\text{mV}>0$，开环增益极大，输出大致趋向哪个方向？",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "opamp",
+        "differential"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp、differential"
+      ]
+    },
+    {
+      "uuid": "9337892c-39ed-587e-8e98-e497ea84046f",
+      "fingerprint": "516b64b1c04bf715fcd9a27c651aa61f15540449bad83595017eeb95c908a369",
+      "document_id": 12,
+      "label": "理想运放基本分析条件",
+      "evidence_method": "structured_text",
+      "evidence": "理想运放构成负反馈线性电路时，常用的“虚短”和“虚断”分别表示什么？",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback",
+        "opamp"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback、opamp"
+      ]
+    },
+    {
+      "uuid": "6dda4dc0-4271-58ba-9737-914236483954",
+      "fingerprint": "1af3cd02496cf7a78be7a2625041957ca4cb2ceba4f2c92bcd80a1e40d85b4c0",
+      "document_id": 12,
+      "label": "电压比较器与滞回比较器",
+      "evidence_method": "structured_text",
+      "evidence": "一个同相滞回比较器具有上、下两个翻转阈值 $+2\\,\\text{V}$ 和 $-2\\,\\text{V}$。若输入电压从 $-5\\,\\text{V}$ 缓慢上升，输出何时发生一次翻转？",
+      "status": "included",
+      "bucket": "hysteresis",
+      "tags": [
+        "hysteresis"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：hysteresis"
+      ]
+    },
+    {
+      "uuid": "304bcbfb-6948-5520-9f5d-324304c2e888",
+      "fingerprint": "fc492f1c21f85082762181991943b3997fbf014f76686a0054cb93681b1a131d",
+      "document_id": 12,
+      "label": "ANA-SA-01｜说明二极管的单向导电特性，并比较理想模型、恒压降模型和小信号模型的用途。",
+      "evidence_method": "structured_text",
+      "evidence": "说明二极管的单向导电特性，并比较理想模型、恒压降模型和小信号模型的用途。",
+      "status": "included",
+      "bucket": "diode",
+      "tags": [
+        "diode"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：diode"
+      ]
+    },
+    {
+      "uuid": "a1633240-d87d-51b9-acb8-3e625e4e74b1",
+      "fingerprint": "68ab4bed234c778247fe9a78334a7defa17fd40a347bafc3f96ceec4b1eba6fd",
+      "document_id": 12,
+      "label": "ANA-SA-02｜说明 BJT 的截止区、放大区和饱和区，并指出线性放大电路为什么通常要求晶体管工作在放大区。",
+      "evidence_method": "structured_text",
+      "evidence": "说明 BJT 的截止区、放大区和饱和区，并指出线性放大电路为什么通常要求晶体管工作在放大区。",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "f9368b2b-4fce-5034-864c-3023c44694bb",
+      "fingerprint": "355d88f84214884e2f562579343549189911b9e5fd5c71bc2ddcbb9ddb8c7717",
+      "document_id": 12,
+      "label": "ANA-SA-03｜比较 MOSFET 与 JFET 的控制方式和输入特性，并说明为什么场效应管通常具有较高输入电阻。",
+      "evidence_method": "structured_text",
+      "evidence": "比较 MOSFET 与 JFET 的控制方式和输入特性，并说明为什么场效应管通常具有较高输入电阻。",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "8e06eee3-c013-551e-9874-d051ec31a025",
+      "fingerprint": "8ec9429ee5627f2729cd89258c7fcc9fa0461542ddaffd53c14d0538de55cc8f",
+      "document_id": 12,
+      "label": "ANA-SA-04｜比较共射、共集和共基三种 BJT 基本放大电路在电压增益、输入电阻、输出电阻和相位关系方面的典型特点。",
+      "evidence_method": "structured_text",
+      "evidence": "比较共射、共集和共基三种 BJT 基本放大电路在电压增益、输入电阻、输出电阻和相位关系方面的典型特点。",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "22b6e834-7f9e-5539-a8ee-ae110c4ad1e4",
+      "fingerprint": "da6f0b5caadbb9304d10affd2cc9a92e45e76270783bc5edeffb52ddce5540e7",
+      "document_id": 12,
+      "label": "ANA-SA-05｜比较共源、共漏和共栅三种 FET 基本放大电路的典型特性。",
+      "evidence_method": "structured_text",
+      "evidence": "比较共源、共漏和共栅三种 FET 基本放大电路的典型特性。",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "5a4474ec-936f-51cb-b911-092959ddbd58",
+      "fingerprint": "01be1fb1fe0adbbaac42b88dc1b36e12ad17f796ed64387e8d3b6252ebc6f849",
+      "document_id": 12,
+      "label": "ANA-SA-06｜什么是差模信号和共模信号？差分放大电路为什么要提高共模抑制能力？",
+      "evidence_method": "structured_text",
+      "evidence": "什么是差模信号和共模信号？差分放大电路为什么要提高共模抑制能力？",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "differential"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：differential"
+      ]
+    },
+    {
+      "uuid": "9f73e07e-2064-5148-b569-be88869e7d35",
+      "fingerprint": "436c5b1a1b5855f62f35d5103973c92eb8075262a2deac419166e2ff3dcd1cd5",
+      "document_id": 12,
+      "label": "ANA-SA-07｜什么是放大电路的频率响应？说明幅频特性、相频特性、通频带和波特图之间的关系。",
+      "evidence_method": "structured_text",
+      "evidence": "什么是放大电路的频率响应？说明幅频特性、相频特性、通频带和波特图之间的关系。",
+      "status": "included",
+      "bucket": "high_frequency",
+      "tags": [
+        "high_frequency"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：high_frequency"
+      ]
+    },
+    {
+      "uuid": "10e83f7c-ad76-5148-91f1-cb365ea723e1",
+      "fingerprint": "07296cf6963f89f948ab51d3876f895da5c50d83afbc7d9943b40abb3bdb3d32",
+      "document_id": 12,
+      "label": "ANA-SA-08｜基本放大电路的高频增益为什么会下降？说明内部结电容和米勒效应的基本影响。",
+      "evidence_method": "structured_text",
+      "evidence": "基本放大电路的高频增益为什么会下降？说明内部结电容和米勒效应的基本影响。",
+      "status": "included",
+      "bucket": "high_frequency",
+      "tags": [
+        "high_frequency"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：high_frequency"
+      ]
+    },
+    {
+      "uuid": "ccd2136d-929f-51f9-a063-92438fdc2017",
+      "fingerprint": "c2122e645f9903a34222a877b5b05fadc7fdad8d6ad569e0d50365b2822e472a",
+      "document_id": 12,
+      "label": "ANA-SA-09｜什么是反馈？如何判断正反馈/负反馈，以及电压/电流、串联/并联四种反馈组态？",
+      "evidence_method": "structured_text",
+      "evidence": "什么是反馈？如何判断正反馈/负反馈，以及电压/电流、串联/并联四种反馈组态？",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "ad1cbe96-6cc9-514b-8a7f-05f8ca5f8ea9",
+      "fingerprint": "0fd4e47c2334cd3dac21396deb11e23a80a082e8d2cb960575efa280b19b1212",
+      "document_id": 12,
+      "label": "ANA-SA-10｜深度负反馈条件是什么？负反馈通常会怎样影响增益、稳定性、失真和输入输出电阻？",
+      "evidence_method": "structured_text",
+      "evidence": "深度负反馈条件是什么？负反馈通常会怎样影响增益、稳定性、失真和输入输出电阻？",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "06086b37-546a-5971-b033-a05dbb7ed30b",
+      "fingerprint": "4213faef2a116743b4d005562c4ae51d8edc71c54c3df3cbd50199ef8636ea4f",
+      "document_id": 12,
+      "label": "ANA-SA-11｜说明理想运算放大器在线性负反馈工作时的“虚短”和“虚断”，并指出它们的成立条件。",
+      "evidence_method": "structured_text",
+      "evidence": "说明理想运算放大器在线性负反馈工作时的“虚短”和“虚断”，并指出它们的成立条件。",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback",
+        "opamp"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback、opamp"
+      ]
+    },
+    {
+      "uuid": "71a6f739-8ed8-50d8-a44d-0b0926aa78e9",
+      "fingerprint": "48f035a500783bdc1f865291b5f79d580c28f7b64a1ce4df7b8dc79ebd9694ef",
+      "document_id": 12,
+      "label": "ANA-SA-12｜比较普通电压比较器与滞回比较器，并说明滞回特性为什么可以提高抗干扰能力。",
+      "evidence_method": "structured_text",
+      "evidence": "比较普通电压比较器与滞回比较器，并说明滞回特性为什么可以提高抗干扰能力。",
+      "status": "included",
+      "bucket": "hysteresis",
+      "tags": [
+        "hysteresis"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：hysteresis"
+      ]
+    },
+    {
+      "uuid": "921ed5d2-65bb-55fe-b530-efe22614a815",
+      "fingerprint": "e6fc4d23da76f478f9dc4f43a5ebf774953188fd0c1e03c4b3aeedc0e94eb21d",
+      "document_id": 12,
+      "label": "背诵简答 3 · 请问为什么实用中多采用硅二极管而不用锗二极管？温度升高 时二极管的伏安特性曲线怎么改变？",
+      "evidence_method": "structured_text",
+      "evidence": "请问为什么实用中多采用硅二极管而不用锗二极管？温度升高\n\n时二极管的伏安特性曲线怎么改变？",
+      "status": "included",
+      "bucket": "diode",
+      "tags": [
+        "diode"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：diode"
+      ]
+    },
+    {
+      "uuid": "8ee1100e-00bb-5e99-9bad-1f69bffcf7c5",
+      "fingerprint": "be44ac7fddd93216070939759bb03d351373bf6b5c59e4822feb4dbd7587ead0",
+      "document_id": 12,
+      "label": "背诵简答 7 · 怎样确定合适的静态工作点？Q 点有什么用？",
+      "evidence_method": "structured_text",
+      "evidence": "怎样确定合适的静态工作点？Q 点有什么用？",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "a3dd7e98-a17a-554b-8d85-27b87c4347d9",
+      "fingerprint": "a3e2b81b4e057ecee7d1b5a32f9e08aa77115054f338dc2b23728236bdde805f",
+      "document_id": 12,
+      "label": "背诵简答 12 · 请问共射、共集和共基放大电路各有什么特点？一般用于多级 放大电路的哪一级？",
+      "evidence_method": "structured_text",
+      "evidence": "请问共射、共集和共基放大电路各有什么特点？一般用于多级\n\n放大电路的哪一级？",
+      "status": "included",
+      "bucket": "multistage",
+      "tags": [
+        "transistor",
+        "multistage"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor、multistage"
+      ]
+    },
+    {
+      "uuid": "bb648c7f-7919-53b1-8f1e-3ef192c3b8a3",
+      "fingerprint": "5a70746317e828be2a31ad6133d9cad81f0c9614a37bca6ba84e1436780c79b1",
+      "document_id": 12,
+      "label": "背诵简答 13 · 请问什么是差分放大电路？简述一下怎么构成的？",
+      "evidence_method": "structured_text",
+      "evidence": "请问什么是差分放大电路？简述一下怎么构成的？",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "differential"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：differential"
+      ]
+    },
+    {
+      "uuid": "2d0bbef3-cbc0-5f8d-b75f-74a33a92c304",
+      "fingerprint": "4ebdd766812e795a3d93d9207fc873b4d3a1818c553127aefd3e39a445607bfc",
+      "document_id": 12,
+      "label": "背诵简答 14 · 请问什么是温度漂移？差分放大电路怎么解决温漂？",
+      "evidence_method": "structured_text",
+      "evidence": "请问什么是温度漂移？差分放大电路怎么解决温漂？",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "differential"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：differential"
+      ]
+    },
+    {
+      "uuid": "6285c0ad-d8d5-5fac-8036-f6708ac4d442",
+      "fingerprint": "1977ed7ff5670a96c09e8692fd064c678f958b18dd9c8b10aa340336aa1d9456",
+      "document_id": 12,
+      "label": "背诵简答 15 · 请问什么是共模信号？差模信号？差分放大电路对差模和共模 信号有什么作用？什么是共模抑制比？",
+      "evidence_method": "structured_text",
+      "evidence": "请问什么是共模信号？差模信号？差分放大电路对差模和共模\n\n信号有什么作用？什么是共模抑制比？",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "differential"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：differential"
+      ]
+    },
+    {
+      "uuid": "aad6b7aa-d791-55eb-9c43-3c69bde2ade8",
+      "fingerprint": "adae7b0acb26cf5b22eb4068ec3c8fb51af4191fc9d3a91576f1ae0eaa6d5032",
+      "document_id": 12,
+      "label": "背诵简答 16 · 请问差分放大电路有哪些应用？",
+      "evidence_method": "structured_text",
+      "evidence": "请问差分放大电路有哪些应用？",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "differential"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：differential"
+      ]
+    },
+    {
+      "uuid": "4a4c4a4a-1541-50f2-a8b4-7f0f22f4899c",
+      "fingerprint": "817609257addca5eeaf1154a5f4f000fcfb5668c153c89e30cf6411d88f25598",
+      "document_id": 12,
+      "label": "背诵简答 17 · 请问功率放大电路用来做什么的？分为哪几类？",
+      "evidence_method": "structured_text",
+      "evidence": "请问功率放大电路用来做什么的？分为哪几类？",
+      "status": "included",
+      "bucket": "power",
+      "tags": [
+        "power"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：power"
+      ]
+    },
+    {
+      "uuid": "3bf0d876-6c85-5199-852a-7a59472d8189",
+      "fingerprint": "d2dd19d710c197e884bd9ac77908210475677ac92aaea01232b7669ce24dde60",
+      "document_id": 12,
+      "label": "背诵简答 18 · 甲类、乙类和甲乙类各有什么特点？怎么解决乙类和甲乙类波 形失真严重的问题？",
+      "evidence_method": "structured_text",
+      "evidence": "甲类、乙类和甲乙类各有什么特点？怎么解决乙类和甲乙类波\n\n形失真严重的问题？",
+      "status": "included",
+      "bucket": "power",
+      "tags": [
+        "power"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：power"
+      ]
+    },
+    {
+      "uuid": "66254ab6-f0e6-5dc9-8347-02ca14348a9f",
+      "fingerprint": "43691ce981f4cd1ef6b8d79fb59ad3b8e773ffa2e9f5d2c6b358e5f577265e1e",
+      "document_id": 12,
+      "label": "背诵简答 19 · 请问什么是交越失真？如何改善交越失真？",
+      "evidence_method": "structured_text",
+      "evidence": "请问什么是交越失真？如何改善交越失真？",
+      "status": "included",
+      "bucket": "power",
+      "tags": [
+        "power"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：power"
+      ]
+    },
+    {
+      "uuid": "0ca83980-2105-59bc-9c45-29530da11b33",
+      "fingerprint": "1a1502a55fcead7641d6a72ec99187175033d052ccb94e95efb9f817d52ad7b6",
+      "document_id": 12,
+      "label": "背诵简答 20 · 请问多级放大电路的耦合方式有哪两个？各有什么特点？",
+      "evidence_method": "structured_text",
+      "evidence": "请问多级放大电路的耦合方式有哪两个？各有什么特点？",
+      "status": "included",
+      "bucket": "multistage",
+      "tags": [
+        "multistage"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：multistage"
+      ]
+    },
+    {
+      "uuid": "4e4e2b70-f177-5bf0-a842-004f41cfbee6",
+      "fingerprint": "93f22b0373136335f75408f024987be974d88fe4d440c3e9ebc5fc751bf09eda",
+      "document_id": 12,
+      "label": "背诵简答 21 · 多级放大电路增益与各级增益有何关系？在计算各级增益时应 该注意什么问题？",
+      "evidence_method": "structured_text",
+      "evidence": "多级放大电路增益与各级增益有何关系？在计算各级增益时应\n\n该注意什么问题？",
+      "status": "included",
+      "bucket": "multistage",
+      "tags": [
+        "multistage"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：multistage"
+      ]
+    },
+    {
+      "uuid": "c1c54783-8d4c-5984-93a0-dfe6819ce8a1",
+      "fingerprint": "a51caea87f2acf03e6bdb523cfd504c0e9701fdfbddb14ba1951cb3484b50680",
+      "document_id": 12,
+      "label": "背诵简答 23 · 请问什么是虚短和虚断？虚短的使用的条件是什么？",
+      "evidence_method": "structured_text",
+      "evidence": "请问什么是虚短和虚断？虚短的使用的条件是什么？",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "c51dd4b1-c888-5e3d-81e7-b7b735d9415f",
+      "fingerprint": "5ac3f49d118285768d489e94a6bdd9f7d02ab7e4b78b9cb3fcadda821d19eb75",
+      "document_id": 12,
+      "label": "背诵简答 24 · 请问什么是正反馈？负反馈？直流反馈？交流反馈？如何判 断？有何作用？",
+      "evidence_method": "structured_text",
+      "evidence": "请问什么是正反馈？负反馈？直流反馈？交流反馈？如何判\n\n断？有何作用？",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "4685a61f-cd13-5e02-b35d-d610db0740ae",
+      "fingerprint": "6c30ca91832ff1fb3e31ca852ed2068116821e443fb37b46fe148d5dc0d5e32d",
+      "document_id": 12,
+      "label": "背诵简答 26 · 请问什么是自激振荡？负反馈放大电路产生自激振荡的原因是 什么？怎么判断负反馈放大电路是否稳定工作？",
+      "evidence_method": "structured_text",
+      "evidence": "请问什么是自激振荡？负反馈放大电路产生自激振荡的原因是\n\n什么？怎么判断负反馈放大电路是否稳定工作？",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "3e02a53d-e444-548a-8f59-1ad00819d4c3",
+      "fingerprint": "ae84aa9d56722b8efc4aff314887d5a2824e657da2aaa711ef35ff7c8f406319",
+      "document_id": 12,
+      "label": "背诵简答 27 · 请问反相比例运算电路有哪些特点？",
+      "evidence_method": "structured_text",
+      "evidence": "请问反相比例运算电路有哪些特点？",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "86a7ec46-841a-58e2-9583-fdadf5a494df",
+      "fingerprint": "2b6abb93952ad6cef693ec0abdb51c9fedf1e98b74d2cb6d6747e86727e4ed35",
+      "document_id": 12,
+      "label": "背诵简答 28 · 请问同相比例运算电路有哪些特点？",
+      "evidence_method": "structured_text",
+      "evidence": "请问同相比例运算电路有哪些特点？",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "ba98f3e4-f1f4-5618-a8b2-1b209bce1180",
+      "fingerprint": "a74486b8640c2840a2466af5211c1d9db23b9f51834f7cba302a1d77d47416f2",
+      "document_id": 17,
+      "label": "例1.3.1",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "半导体基础知识\n【例 1.3.1】 判断下列说法是否正确,用*V”和\"*x\"来表示判断结果填人空内。\n(1) 在 N 型半导体中如果摊人足够量的三价元素,可将其改型为P 型半导体。     (    )\n(2) 因为 N 型半导体的多子是自由电子,所以它带负电。                    (    )\n(3) PN 结在无光照.无外加电压时 ,结电流为零。                          (    )\n(4) 晶体管在放大区时的集电极电流是多子漂移运动形成的。             ",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "c3821781-fb5e-5829-bad4-a3885a8947a2",
+      "fingerprint": "8ef099151e146358079c328c321adc246d7a8ae286e2d15e04b49146d8762c86",
+      "document_id": 17,
+      "label": "例1.3.2",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "半导体基础知识\n【例 1.3.2】 选择正确答案填人空内。\n\n(1) 二极管的电流方程是       °\n\nAL Ie”           B. [ge\"             C. I,(e#-1)\n\n(2) 稳压管的稳压区是其工作在       °\n\nA. 正向导通     B. 反向截止        C. 反向击穿\n\n(3) 当晶体管工作在放大区时 ,发射结电压和集电结电压应为      °\nA. 前者反偏.后者也反偏           B. 前者正偏后者反偏\n\nC. 前者正偏.后者也正偏\n\n(4) ",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor",
+        "diode"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor、diode"
+      ]
+    },
+    {
+      "uuid": "cc8d06da-abac-5a34-9761-f0bd57a1aca1",
+      "fingerprint": "36a8bf3eedee4c71028b1daeaed55cabd2ad9f241e90774a5be30f95c40167ab",
+      "document_id": 17,
+      "label": "例1.3.3",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "二极管工作状态\n【例 1.3.3】 两电路如图 1.3.1 所示 ,二极管导通时 Un =0.7 V。试分别求解各电路的输出\n电压。\n+        R          +\n呆    R|              o¥  of\n5V               Tes\navr av tn      ”av二av\nL—f—s            Tt =\n(a)               (b)\n1.3.1 $y 1.3.3 电路图\n",
+      "status": "included",
+      "bucket": "diode",
+      "tags": [
+        "diode"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：diode"
+      ]
+    },
+    {
+      "uuid": "61701c66-6972-582d-b562-aeb723d7509e",
+      "fingerprint": "a69878a49cea415f891388bc8ee5bf563846ec1f9bf72dc0f5970aeafa484bc3",
+      "document_id": 17,
+      "label": "例1.3.4",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "二极管工作状态\n【例 1.3.4】 电路如图 1.3.3 所示 ,已知 ww=Ssinwt(V) ,二极管导通电压 U, =0.7 V。试画出\nu Su, 的波形 ,并标出幅值。\n",
+      "status": "included",
+      "bucket": "diode",
+      "tags": [
+        "diode"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：diode"
+      ]
+    },
+    {
+      "uuid": "6281eff7-cc8a-5a29-a227-ed04c4d991ea",
+      "fingerprint": "571fb7aff10d64732828e78e13471d5004e2d92729df1f0de3dc2c3f27d5a873",
+      "document_id": 17,
+      "label": "例1.3.5",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "二极管动态电阻\n【例 1.3.5】 电路如图 1.3.5(a)所示 ,二极管的伏安特性如图(b) 所示 ,常温下 Ur=~26mV，\n电容 C 对交流信号可视为短路;ui 为正弦波,有效值为 10 mV。试问:\nC                 imA\nR       eon\n500Q\n4           yD      2\n2v             1\n5      HV\n(a)                     (b)\n图1.3.5 fi 1.3.5 图\n(1) 二极管在 u, 为零时的电流和电",
+      "status": "included",
+      "bucket": "diode",
+      "tags": [
+        "diode"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：diode"
+      ]
+    },
+    {
+      "uuid": "13585cfd-a8e0-5bcf-83b0-4c323ebc1439",
+      "fingerprint": "092c841c3d9f28a22725763b91d62e058197a7aff768d3cc7b4ee745d2397daa",
+      "document_id": 17,
+      "label": "例2.3.4",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "BJT基本放大电路分析\n【例 2.3.4】 电路如图 2.3.6 所示 ,已知晶体管 B= 100,7,, 29 100 Q ,静态时 Use = 0.7 V,饱\n和管压降 Uces=0.5 V。\n(1) 静态时集电极电位 Uc =?\n(2) 若输入的交流电压有效值为10 mV,则输出电压       at of\n的有效值 U,~?                                     gona              9 +\n(3) 当增大输入电压时,电路首先出现人和失真还是 。\n截止失真? ",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": true,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "55fe4761-5b5e-53c1-b967-e937d8fafa8b",
+      "fingerprint": "3a518627bf4150a4f96952788b76c27700fe7bc4d0d452bce6bfa3cda3e5f799",
+      "document_id": 17,
+      "label": "例2.3.6",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "BJT基本放大电路分析\nBo MADR Aig hE ARIA VIA UV, = U./07 Vo                           aay\n【例2.3.6】 电路如图 2.3.8 所示,晶体管的B=             ag oll a\n100,m =1.5 KOs HAS Upeg = 0.7 Vi所有电容对于          stoxall              。\n交流信号均可视为短路。                             it         1\n(1) ",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "1a875673-5f7f-5399-a9f6-cb3779d37c4d",
+      "fingerprint": "7c8250d6d394689017c56f4ac973aeffaeeac878887e7a92521f7f43dbd31c01",
+      "document_id": 17,
+      "label": "例2.3.7",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "BJT基本放大电路分析\n【例 2.3.7】 在图 2.3.10 所示电路中 ,晶体管的B=120,re=3 koO;静态时 Upp =0.7 V;所有\n电容对于交流信号均可视为短路;其余参数如图中所标注。试求解:\n(1) 直流通路和交流通路;\n(2) Qs\n(3) 4。R AUR,\nCI      +           &\n—   5kQ\n2 |          15KQ       RL] wo\n2.3kQ    RI] :  Gq =,  al\n_       5kQ          (12v)   7\n",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": true,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "cbe6e86e-92d7-58c8-b826-d9a0a2b5140b",
+      "fingerprint": "637a7e970b975c99a3cb5221c1cee10f2a7f4a952d2adc36a3b23d5d2520c4b9",
+      "document_id": 17,
+      "label": "例2.3.8",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "BJT基本放大电路分析\n【例 2.3.8】 电路如图 2.3.12 所示 ,晶体管的B= 120,r,,=1.6 kO ,静态时 Uaroe=0.7 Vi AS\n电容对交流信号可视为短路。试求出:\n+ Veg\n(+12V)\nRy\n300kQ\nC,\n'\nRn 十                    Cc,\n2kal                        +        #\n+    uy\nalt               ai        RL] Mo\n图 2.3.12 例 2.3.8 电路图\n(1)",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": true,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "cf1c3e60-8b9b-583f-9a17-7a1a9b4c7156",
+      "fingerprint": "f56389cde7a0038e798f62e3ee73e1b5f58ce2f51f0fc61e45200207578536aa",
+      "document_id": 17,
+      "label": "例2.3.11",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "基本放大电路接法与性能\n【例 2.3.11】 电路如图 2.3.19 所示。\n9?+rec          9-Veo\nLR c,     下\n=\nfon                T\n十   a      9\nwe: LE\n(a)          (b)\ncl     1       &           rn es\n—      (a)    T\n“AR   本     vo oo      Uy\n| 二< Sve  4 R,  R\n(©)          @\n0+V pp        o+Fee",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "7ff98a69-97bb-5b41-ad21-a0c2a5e6a312",
+      "fingerprint": "ead4932f1ee00ed2133d9c1e7940e5f54adbcf356f89d019b59277f8c5275239",
+      "document_id": 17,
+      "label": "例3.3.1",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "多级放大电路定性分析\n【例 3.3.1】 三个两级放大电路如图 3.3.1 所示 ,已知图中所有晶体管的 B 均为 100,ru均为\n1 kQ9,所有电容均为 10 nF,Ycc均相同。\n\n(1) 填人共射放大电路 `共基放大电路等电路名称。\n\n图(a) 的第一级为       ,第二级为\n\n图(b) 的第一级为       ,第二级为       上\n\n图(e) 的第一级为       ,第二级为       °\n\n(2) 三个电路中输入电阻最大的电路是       ,最小的电路是       ;输出电阻最大的\n",
+      "status": "included",
+      "bucket": "multistage",
+      "tags": [
+        "transistor",
+        "multistage"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor、multistage"
+      ]
+    },
+    {
+      "uuid": "73eba636-47d7-50ff-be52-d60feaed830f",
+      "fingerprint": "edfa8e3c7c42ef44821fece89e951a1d4e8bf02669adb1742e8ba842e339d67f",
+      "document_id": 17,
+      "label": "例3.3.2",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "多级放大电路组成\n【例 3.3.2】 现有基本放大电路:\n\nAL 共射电路        B. 共集电路        C. 共基电路\n\nD. 共源电路        E. 共漏电路\n\n输入电阻为 R, ,电压放大倍数的数值为| 4. | ,输出电阻为 R。。根据要求选择合适的电路组\n成两级放大电路。\n\n(1) 要求R 为1~3 kQ,|4.|>10*+,第一级应采用       ,第二级应采用\n\n(2) BRR, 大于 10 MO, |4.|为 500 左右,第一级应采用     ,第二级应采用\n\n(3) BOR",
+      "status": "included",
+      "bucket": "multistage",
+      "tags": [
+        "transistor",
+        "multistage"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor、multistage"
+      ]
+    },
+    {
+      "uuid": "899748bb-0c3a-51d6-9418-3ef2527c3850",
+      "fingerprint": "6ab3819a73c237711869af357fb60c26668e03144fea8f1fc11b163900c175fb",
+      "document_id": 17,
+      "label": "例3.3.3",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "差分放大电路\n【例 3.3.3】 图 3.3.2 所示电路参数理想对称 ,晶体管的B 均为 80,ru'=100 Q ,Useo=0.7 V5\n及. 滑动端在中点。试估算:\n\n(1) Ty BEAD TD, 管的发射极静态电流 fio;\n\n(2) 差模放大倍数 A, .共模放大倍数 4.、输入电阻 R_ 和输出电阻 R, 。\n",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "differential"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：differential"
+      ]
+    },
+    {
+      "uuid": "ebd998ef-c489-521f-a953-f2bde18f33b1",
+      "fingerprint": "fb60ef0f1855851dda5c9051b5d1b0d5821496555b86b2ed6f33d3cb485127fe",
+      "document_id": 17,
+      "label": "例3.3.4",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "差分放大电路\n【例 3.3.4】 图 3.3.4 所示电路参数理想对称,晶体管的B 均为80,r=7 kO, Ugeg ~0.7 Vi;\nT, FAT, 管的发射极静态电流 Tp = 0.3 mA。试估算 :                             0+ ee\n\n(1) Ras                                             Dual    (412V)\n\n(2) 集电极静态电位 U co, 和 Uco，\n\n(3) 4 4。R 和有R。;           ",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "differential"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：differential"
+      ]
+    },
+    {
+      "uuid": "a58151c6-4b25-57ed-b4e7-43568b156177",
+      "fingerprint": "9e8f0ed61e1ef18e15e2d47b19be20afe9099bf0902ef2876f3a10b84e7d8771",
+      "document_id": 17,
+      "label": "例3.3.5",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "多级放大电路计算\n【例 3.3.5】 电路如图 3.3.5 所示。晶体管 T ~T, 的电流放大系数为B, ~B,,b-e 间的动态\n电阻为 mi~mea。 各级静态工作点均合适。试求解:\n\n(1) 电压放大倍数 4。输入电阻 R, 和输出电阻 R。 的表达式。\n\n(2) SEH BA OR. 短路 则输出电压将为多少?\n",
+      "status": "included",
+      "bucket": "multistage",
+      "tags": [
+        "transistor",
+        "multistage"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_static_dynamic": true,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor、multistage"
+      ]
+    },
+    {
+      "uuid": "dac44f5f-9f92-50a7-bc68-036ca209d03b",
+      "fingerprint": "38464fa3cc469e6027af6e7cbe842628748dd61da2066fa13ca9bb9b861fefed",
+      "document_id": 17,
+      "label": "例3.3.6",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "多级放大电路计算\n【例 3.3.6】 电路如图 3.3.7 所示 ,已知晶体管 T ~ T, 的电流放大系数为 B, ~B,,且 B,=B,,\nBs =Bo. Bs=B15T,~T, 的b-e间动态电阻为 ns ~ P07 + FL me = her rus=ru6vrus=ruy;静态时设T, ~\nT, 的 Uase和二极管的导通电压 Us 均为 0.7 V,输出电压为 0。\n\n试问:\n\n(1) 图示电路是几级放大电路? 各级分别是哪种基本放大电路? RD, .D, 的作用是什么?\n\n(2) 静态时 wo cos",
+      "status": "included",
+      "bucket": "multistage",
+      "tags": [
+        "transistor",
+        "multistage",
+        "diode"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_static_dynamic": true,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor、multistage、diode"
+      ]
+    },
+    {
+      "uuid": "f33c5bf9-a080-5d0f-82ca-a1c8eb0c4078",
+      "fingerprint": "f7dd85b1dba3ae5df5dfc9ac0d1e1a2f3f2fa68f9b65dee0addc9fd1e9cb3151",
+      "document_id": 17,
+      "label": "例3.3.7",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "集成运放组成\n【例 3.3.7】 选择正确答案填人空内。\n\n(1) 集成运放电路采用直接耦合方式是因为       。\n\nA. 可获得很大的放大倍数         B. 可使温漂小\n\nC. 集成工艺难于制造大容量电容\n\n(2) 通用型集成运放适用于放大       °\n\nA. 高频信号                   B. 低频信号\n\nC. 任何频率信号\n\n(3) 集成运放制造工艺使得同类半导体管的       °\n\nA. 指标参数准确                B. 参数不受温度影响\n\nC. 参数一致性",
+      "status": "included",
+      "bucket": "power",
+      "tags": [
+        "transistor",
+        "opamp",
+        "differential",
+        "power"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": true,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor、opamp、differential、power"
+      ]
+    },
+    {
+      "uuid": "842723cf-3060-59e3-9619-8fa06964687a",
+      "fingerprint": "5cc22f0a50ee330aa15d567dabbdf7e9cfdd55adfb9ad695a62f724b3536ced2",
+      "document_id": 17,
+      "label": "例3.3.8",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "集成运放参数与选用\n【例 3.3.8】 判断下列说法是否正确,用*W\"或\"x\"表示判断结果填人括号内。\n\n(1) 开环差模增益描述在无反馈情况下集成运放对两个输入端电位差放大的能力。\n( )\n\n(2) 集成运放的差模输入电阻是从它的两个输入端看进去的等效电胆。( 。 )\n\n(3) 集成运放的输入失调电压 Un是两输入端电位之差 (\n\n(4) 输入失调电流 1是集成运放两输入端静态电流之差 ( 。 )\n\nA\n\n(5) 集成运放的共模抑制比 Kom= [5%]. (  )\n\n(6) 集成运放的最大共模输入电压 Di是使",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "opamp",
+        "differential"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp、differential"
+      ]
+    },
+    {
+      "uuid": "ae2f3e70-ea2c-5e78-90d2-b4767a6e46af",
+      "fingerprint": "9d47a10281e88f984d0d1a981fef09533e3388469d182fd8f5eec9a0250ca6fb",
+      "document_id": 17,
+      "label": "例3.3.9",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "集成运放参数与选用\neee Ores ee ee Se FY Pee ee Flee\n【例 3.3.9】 根据下列要求 ,将应优先考虑使用的集成运放填人空内。已知现有集成运放的\nAAO 通用型.@ 高阻型.@ 高速型.@ 低功耗型.@ 高精度型.@ 高压型.@O 大功率型。\nC1) 放大变化缓慢的直流信号 ,应选用       °\n(2) 放大 10~ 100 MHz 的交流信号 ,应选用       °\n(3) 测量微弱信号幅值时的前置放大器,应选用       °\n(4) 放大内阻很大的传感器的输出信号 ,应选",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "2876bdaf-c555-5fb5-9746-a9629b73ebe4",
+      "fingerprint": "045e976ce637ed01072c602ef3c4e32251623e2f2be87bf2d44a5ffd707c02eb",
+      "document_id": 17,
+      "label": "例3.3.10",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "电流源电路\n【例 3.3.10】 多路电流源电路如图 3.3.9所 oy\n\n示,已知所有晶体管的特性均相同, Usr均为0.7 V。     (+l2V)\n\nrT:                                      RI] 113k\n(1) Ter leo ABD?                                 |    中\n(2) T,的作用是什么?简述理由。                   第\n\n to\n2\nVeg\n(-12V)\nPA 3.3.9 fil 3.3.1",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "differential"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：differential"
+      ]
+    },
+    {
+      "uuid": "c53d3a9f-22e8-5ddd-a433-ff1bfb032ee5",
+      "fingerprint": "8ac818a0144b451ccbb8cada883f4568e2b929cf828e780350d061b37b1985bc",
+      "document_id": 17,
+      "label": "例3.3.11",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "电流源电路\n【例 3.3.11】 在图 3.3.11 所示电路中,已知 T,~T; 管的特性完全相同,B >> 2;反相输入端\n的输入电流为 ii ,同相输入端的输入电流为p。\n9+kec\nSn                                            ef]\nRI] 116.5ka      le     ex            in          igs      Mei\n|      |              ot         ae\n~       -\nTo    ",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "differential"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：differential"
+      ]
+    },
+    {
+      "uuid": "9b07ce7f-1fb5-5355-bb45-847997fd306e",
+      "fingerprint": "dd7bb40e6c26623a19180d62fd58c65dd6f959341bcbab4c8a85d1b6a096c778",
+      "document_id": 17,
+      "label": "例3.3.12",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "电流源电路\n【例3.3.12】 在图 3.3.12 所示电路中,已知 ree= 12 V,Vis=6 V;晶体管具有理想特性,发射\n结电压 Uy S948 0.7 V,rw均约为 1 kQ ,8 均为 100,T, AT,.T, A T,.T, 和Ts 的特性完全相\n同;静态时 1 =0.2 mA,1o=1.5 mAiuu=0V时,uo=0V。\n\nO+Vec\nor\ni                        用\n—                            SS +\n0 -Fe\nFA 3.3.12",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "differential"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：differential"
+      ]
+    },
+    {
+      "uuid": "ef73b9ba-cc46-52ff-9bba-7763f0e7247d",
+      "fingerprint": "f60a1145d8e2c4da5e7d4d9984f6575011778f2740009b27e64841f310b5bb6a",
+      "document_id": 17,
+      "label": "例3.3.13",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "集成运放电路分析\n【例 3.3.13】 集成运放原理电路如图 3.3.13 所示 ,Ti 与Ti 、T, 5 T,.T, 与Tu T) 与Ts.T, 与\nTa均为特性完全相同的对管,Tu与 Ts\\Tie与 Ti各组成的复合管特性也完全相同。分析以下\n问题:\n\nO+ Vee\nDa    Pas\nR |]\nDH ig.\nT\nCf)\nO-Vec\nA 3.3.13 fi 3.3.13 电路图\n(1) 分离出偏置电路 ,写成其基准电流表达式 ,并说明各路电流的作用;\n(2) 简化偏置电路部分,得出放大电路部分,说明其各级电路",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "ba00e188-3dc7-5759-afec-f5ca8bbee45d",
+      "fingerprint": "4ef6902bca597138d7457943f46463bcc05f750d20d89d73468e74da50c98e18",
+      "document_id": 17,
+      "label": "例3.3.14",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "集成运放电路分析\n【例 3.3.14】 图 3.3.15 所示为简化的集成运放电路 ,输入级具有理想对称性。选择正确答\n案填人空内。\n\nT                                      Tyo\nDT\n{i                                     ，\n1\nT;     iF    Ts\n人 f『\noO-Fcc\n@\n|                               O+Fcc\n1          Cc)\nor   re\n|           ",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "transistor",
+        "opamp",
+        "differential",
+        "power"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor、opamp、differential、power"
+      ]
+    },
+    {
+      "uuid": "c67e24f1-a847-5b38-b0fe-949210be92ad",
+      "fingerprint": "b0411f59072f26a88484eca0adaa3c8bf287dd0d7f404d81168832c00f74236c",
+      "document_id": 17,
+      "label": "例4.3.1",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "频率响应概念\n【例 4.3.1】 选择正确答案填和人空内。\n(1) 在图 4.3.1 BRA ALR (GR ,高通电路是  ;\nC                       R\no—S     ~~ T?\n总           al] oo,          T   U,\n(a)                      (b)\n图4.3.1 例4.3.1电路图\n\n电路(a) 在        mtU,/U, BF 1,te AU /U, Rb) 在 时\nU/U, BF 1,在          AtU,/",
+      "status": "included",
+      "bucket": "high_frequency",
+      "tags": [
+        "transistor",
+        "high_frequency"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": true,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor、high_frequency"
+      ]
+    },
+    {
+      "uuid": "99f133fe-4c88-57bb-b461-d9244cef312f",
+      "fingerprint": "8d40e3331976e7a5d0f400e1108e3c00e249c9555f845bd3f341dae12f35f834",
+      "document_id": 17,
+      "label": "例4.3.2",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "频率响应定性分析\n【例 4.3.2】 电路如图 4.3.2 Bras, CAD: ARE AY Biri Cy, Sy 均相等,所有电容的容量\n均相等;静态时所有电路中晶体管的发射极电流 fie均相等。定性分析各电路,将结论坛人\n空内。\n\n(1) 低频特性最差即下限频率最高的电路是       ;\n\n(2) 低频特性最好即下限频率最低的电路是       ;\n\n01 Voc                                 0+ Vee\nao   1                ag   1\n100",
+      "status": "included",
+      "bucket": "high_frequency",
+      "tags": [
+        "high_frequency"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：high_frequency"
+      ]
+    },
+    {
+      "uuid": "350f43f5-8194-5398-96c6-39d547e47b78",
+      "fingerprint": "f23a2e7df6e898219ac8213bd4a37c77cd0a810e75b02c3cabf6c3269cba2862",
+      "document_id": 17,
+      "label": "例4.3.3",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "频率响应定性分析\n【例 4.3.3】 电路如图 4.3.3 所示 ,试定性分析下列问题 ,并简述理由。\nO+Voe\n(+12 V)\n. 区     aie\nooo Kal]                     o\nfed                        -\nR   F                 -\nscl]   oad           [|           0\n<“D)                   1    Sop\n图4.3.3 例 4.3.3 电路图\n(1) 若要改善电路的",
+      "status": "included",
+      "bucket": "high_frequency",
+      "tags": [
+        "high_frequency"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：high_frequency"
+      ]
+    },
+    {
+      "uuid": "884b6322-0d8a-5e08-9be6-6c61fbda18b5",
+      "fingerprint": "92f84b686c2bcf49417b00824f07c0500ed6ed97771548009f156f6b9a23f6a7",
+      "document_id": 17,
+      "label": "例4.3.4",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "频率响应计算\n【例 4.3.4】 电路如图 4.3.4 所示,已知晶体管BE= 100,rw = 100 O,C,=5 pF,共射截止频率\n万=400 kHz;静态时集电极电流 fco= 1 mA。试求解:\n\n(1) 中频电压放大倍数4\n\n(2) 大和用                                              af    uc\n\n(3) A;                               及|] 5x9\n\n(4) 画出近似波特图。                   ",
+      "status": "included",
+      "bucket": "high_frequency",
+      "tags": [
+        "transistor",
+        "high_frequency"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_static_dynamic": true,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor、high_frequency"
+      ]
+    },
+    {
+      "uuid": "4d07bbaa-0ed6-51fe-b2e4-2afcb1164090",
+      "fingerprint": "76238af586927b9cdefc11441fe8c37bd45359297c21ea5dfeb9bcd7a44c2981",
+      "document_id": 17,
+      "label": "例4.3.5",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "频率响应计算\n【例 4.3.5】 某放大电路的波特图如图 4.3.7 所示 ,填空:\n201lgl4ulydB\n“l——-             -20dB/十售频\n40      |        |    -40 dB/十倍频\n天      aa信和 |   |\n1        1   1\n010° 10° 10° 10° 10° 10° 10° Hz\n图 4.3.7 4.3.5 8\n(1) 中频电压增益 201g|4.。 | =         4B, A,,=         ;\n(2) 电压放大倍数4",
+      "status": "included",
+      "bucket": "high_frequency",
+      "tags": [
+        "high_frequency"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：high_frequency"
+      ]
+    },
+    {
+      "uuid": "2e3559b4-1cfb-50cd-99cf-f72c7fb5de4f",
+      "fingerprint": "a311de4a92d5a89c5a4fbad0b1bcd6253bef4b7b7180c253c1152d25301e2f4a",
+      "document_id": 17,
+      "label": "例5.3.1",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "反馈概念\n【例 5.3.1】 ZEEE SABLA SV ex” ,表明下列说法是否正确。\n\n(1) 若从放大电路的输出回路有通路引回到其输入回路,则说明电路引入了反馈。(    )\n\n(2) 若放大电路的放大倍数为\"+”,则引入的反馈一定是正反馈,若放大电路的放大倍数为\n“-”,则引入的反馈一定是负反馈。(   )\n\n(3) 直接耦合放大电路引入的反馈为直流反馈,阻容耦合放大电路引入的反馈为交流反馈。\n(    )\n\n(4) 既然电压负反馈可以稳定输出电压,即负载上的电压,那么它也就稳定了负载电流。\n(    )",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "10480df2-eb23-5361-aa68-14c7e09880e7",
+      "fingerprint": "b8506649dc9e4fcc508061541d03b064696d56468a1d68f7d9527720f671f501",
+      "document_id": 17,
+      "label": "例5.3.2",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "反馈判断\n【例 5.3.2】 判断图 5.3.2 所示各电路中是否引入了反馈;若引入了反馈,则判断是正反馈还\n是负反馈,是直流反馈还是交流反馈;若引入了交流负反馈,则判断是哪种组态的负反馈。设图\n中所有电容对交流信号均可视为短路。\n\n[az     |  p>\n总       —\nLU    Rf]\nI\n(a)            (b)\n人\nR,  fo\n(c)     Ber,\nre\n=\na |\nuy              Ry\n|\na,\nO- Vee\n(d)\n图 5.3.2 fa) 5.3.2 电路图\n",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "ea9e0f02-68bc-5f53-b796-63880ac3c7a2",
+      "fingerprint": "a51a1c3e879ee4ca637a5ec91e376c2f02995582126e83d085778054b44af4e8",
+      "document_id": 17,
+      "label": "例5.3.3",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "反馈判断\n【例 5.3.3】 HA 5.3.4 所示各电路中是否引入了反馈。若引入了反馈;则判断是正\n           9?+Fec\n+ Voc\nR,          Ry  al]\na a  G,  —\nRo            y   Tic,\n4  $    T Rf]uo ®        bo +\nud  4      1  oi    RI] Pg\nee      Veg  一\n(a)          (b)\nO+ Ve\nTy\nwe oe.\n4\n,       1    No\n2 dds\no-",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "4216dc93-5865-5b94-af36-61c315504428",
+      "fingerprint": "14fef06e3ed36504955146087120be86454d1ef2445dfd4f553c0926d34eb9eb",
+      "document_id": 17,
+      "label": "例5.3.4",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "反馈判断\n【例 5.3.4】 图 5.3.6 所示电路为自举电路,试分析所引入的正反馈和负反馈。设所有电容\n对交流信号均可视为短路。               下\n\nJLo\nsy\n]      af)\"\n\ni     3\nuy  | 区 i    ;\n4  Rf]   Rs\n",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "00545fd2-1815-56bb-b29d-10ec0b646bbe",
+      "fingerprint": "939701ce624aa556b8d9bd10527f33da058d5c94b4ea135000268da174a86244",
+      "document_id": 17,
+      "label": "例5.3.5",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "负反馈引入\n【例 5.3.5】 ”选择合适的答案填人空内。\n\n(1) 为了实现下列目的,应引入\n\nA. 直流负反馈              B. 交流负反馈\n\nDO 为了稳定静态工作点,应引入      ;\n\n@ 为了稳定放大倍数,应引入      ;\n\nQ 为了改变输入电阻和输出电阻,应引入       ;\n\n图 为了抑制温漂,应引入\n\n回 为了展宽频带,应引入       。\n\n(2) 交流负反馈有以下几种情况:\n\nA. 电压        B. 电流       C. 串联        D. 并联\n\n@ ",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "transistor",
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": true,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor、feedback"
+      ]
+    },
+    {
+      "uuid": "feeb7a4d-bfee-508a-983e-34cb2f05eec5",
+      "fingerprint": "8daf1f3940cb306f8d235afd1aa2345ffec90d09baa568faa622cb1b18736799",
+      "document_id": 17,
+      "label": "例5.3.6",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "负反馈引入\n【例 5.3.6】 用集成运放和若干电阻分别完成以下功能,要求画出电路来 ,并求出它们的反\nRAK.\n\n(1) 具有稳定的电压放大倍数的放大电路\n\n(2) 具有稳定的电流放大倍数的放大电路\n\n(3) 实现电压-电流转换，\n\n(4) 实现电流-电压转换。\n",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback",
+        "opamp"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback、opamp"
+      ]
+    },
+    {
+      "uuid": "afc8595f-9073-54dc-bace-9f41699bc04f",
+      "fingerprint": "3f59f9c9f296b6eb584b3704a353ec3f02a95e80474ca13e2cfdff2d8e8ee864",
+      "document_id": 17,
+      "label": "例5.3.7",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "负反馈引入\n【例 5.3.7】 电路如图 5.3.9 所示 ,试合理连线,引入合适组态的反馈,分别满足下列要求。\n(1) 减小放大电路从信号源索取的电流 ,并增强带负载能力;\n(2) 减小放大电路从信号源索取的电流 ,稳定输出电流。\noO+kec\nRu   mo\nOo   TT    ®,\n”  if   Rl]       Mo\n<7     C       Rol] ge\nO-Vec\no—_s__ se\n图5.3.9 例 5.3.7 电路图\n",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "eb5e543a-c51d-5146-a582-fffb78c9c615",
+      "fingerprint": "d543a9892026768914c55d2db923c2a107477c49b89dc9de0b5ef0ed02da507b",
+      "document_id": 17,
+      "label": "例5.3.8",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "负反馈引入\n【例 5.3.8】 电路如图 5.3.10 所示 ,为了稳定电流表中的电流 ,请引入交流负反馈。\n\n与输入回路如何连接,即反馈\n于多级放大电路,在不改变其\n例如,若电路能引入电压串联\n定电流表的电流则必须引入电\n流串联负反馈还是电流并联负\n",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback",
+        "multistage"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback、multistage"
+      ]
+    },
+    {
+      "uuid": "0129cc16-e317-5dca-a86a-a0e71060123c",
+      "fingerprint": "630526c6903b7cb2196a407be634e5678674c6a90276ab9afa45c2508c072139",
+      "document_id": 17,
+      "label": "例5.3.9",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "深度负反馈分析\n【例 5.3.9】 已知电路如图 5.3.12 所示 ,集成运放为理想运放。试求解各电路的电压放大\n倍数。\nite           Re\nef)”          [lx\n(a)        (b)\npeat Sf te\n   6  5\nRI]   Rf]  全 Rf]\n(c)        (d)\n5.3.12 fi) 5.3.9 电路图\n",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback",
+        "opamp"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback、opamp"
+      ]
+    },
+    {
+      "uuid": "9c56a5af-0c5f-59f1-8398-2788bd6d29c2",
+      "fingerprint": "f06f93512b5761ac75e07303147cff26fdf11d3ab7355d91760b684ce4fcf1e6",
+      "document_id": 17,
+      "label": "例5.3.10",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "深度负反馈分析\n【例 5.3.10】 试求解图 5.3.4 所示各电路在深度负反馈条件下的电压放大倍数。设电路中\n所有的电容对交流信号均可视为短路。\n\n9+Fec\n+Vee     R, RI]\nRA c,     .  —\nCc,            .\nR,       R,\nus  uy      us\n-     a    一FEso\n(b)\n*      0+ Voc\nRf]\n1 |   四\nuy     1  ll Z\n=   Cc)    aa\n(c)\n+\nRI]  V  I\n;      -\n+ ",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "733d197c-db70-56e3-818c-5765a7409a53",
+      "fingerprint": "02f87cb699aeb1a8f72587c61ccb355982739b7258610bb96677e2d118d7d103",
+      "document_id": 17,
+      "label": "例5.3.11",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "深度负反馈分析\n【例 5.3.11】 ”电路如图 5.3.13 所示 ,已知集成运放为理想运放,其输出电压的最大幅值为\n+12 V,输入电压为 0.1 V。填空\n\n(1) A, 引入的交流负反馈的组态为        ，A，\n引入的交流负反馈的组态为  HH  % = +.\n\nAu     Au, re R{[]50ka\n\nnT ar re a   (BOR ST  TOkA =—-100kQ   RI] %\n写表达式和得数) 5 ELBA A HBL R, =   ,输出    [aoa\n电阻 R,=   ;车仅",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback",
+        "opamp"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback、opamp"
+      ]
+    },
+    {
+      "uuid": "dd26a39e-ebf2-5fdb-8ea8-a56bbd771f2d",
+      "fingerprint": "3b1b9c85c3ee09553923ced10e50e876524bf61efbe35ea724726a27d5eacbb2",
+      "document_id": 17,
+      "label": "例5.3.12",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "负反馈稳定性\n[i 5.3.12】 图 5.3.14(a)所示放大电路环路增益的对数幅频特性如图 5.3.14(b) 所示。\n\n(1) 判断该电路是否会产生自激振划 ,简述理由。\n\n(2) 若电路产生了自激振荡 ,则应采取什么措施消振? 要求在图 5.3.14(a) 中画出来。\n\n(3) 若仅有一个 50 pF 电容,分别接在三个三极管的基极和地之间均未能消振,则将其接在\n何处有可能消振? 为什么?\n\n0+ Vee\nV\n(|     V   1\nR\n*\n(a)\n201g|4FI/dB\n100\n<20 dB/十倍频\n",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "87b35ab6-a8c6-5d57-bc0e-e660ce89d2ca",
+      "fingerprint": "8601ae66118b03eae5b929ad139f40c0b72344903617ff76bce40afc5bbf0754",
+      "document_id": 17,
+      "label": "例5.3.13",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "负反馈稳定性\n【例 5.3.13】 。 某负反馈放大电路的基本放大电路 20    1 | 60dB/十信频\n的对数幅频特性如图 5.3.15 所示 ,其反馈网络由纯电阻 |    1\n组成。试问:若要求电路不产生自激振功,则反馈系数   10 10 10 10 10 Hz\n的上限值为多少分贝? 简述理由。                 图 5.3.15 例 5.3.13 图\n",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "d52c8fba-b8fd-5216-8868-b2d06f30a0a8",
+      "fingerprint": "0e8871625ab611f060a9dd8384a828f2eaf3ea9bd60b6fa069afc32df53517be",
+      "document_id": 17,
+      "label": "例6.3.1",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "集成运放运算电路分析\n【例 6.3.1】 电路如图 6.3.1 所示。设集成运放均为理想运放。\nRy     R,     Rs\nRy   >      >  2\ntc       RsRi=RiRs\n(a)\nat\nA\n[Re    >  2\nB\nphe\na           (b)\n图 6.3.1 fi 6.3.1 电路图\n\n(1) 说明各电路中以各集成运放为核心器件组成的基本运算电路的名称,如反相比例运算\n电路、同相比例运算电路等 ,并求解各电路的运算表达式。\n\n(2) 从运算的角度看,这两个电路的共同点是什",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "opamp",
+        "differential"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp、differential"
+      ]
+    },
+    {
+      "uuid": "1462d4b7-5b4b-554a-b451-f52241e8d422",
+      "fingerprint": "a4406b213cdcf2823d68abb3aa8b5b44d3b857baa868bf60accef56e453ac457",
+      "document_id": 17,
+      "label": "例6.3.2",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "集成运放运算电路分析\n【例 6.3.2】 电路如图 6.3.2(a) (b)所示。设运放均为理想运放。\n(1) 求解输出电压和输入电压的运算关系;\n(2) 设电容电压在=0时为0V,输入电压波形如图 6.3.2(e)所示 ,画出输出电压的波形。\n要                  PR 6\nR       0.1 uF            a | Nee SHE\n& 100kQ  >    >! 20KQ   >    a\nYor                   Moz\n[]x               ",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "672c600a-3a44-5c4f-a7b3-36d5ec537ec8",
+      "fingerprint": "fc4a23af5fc5f9dcaee2cc936c8969a0336fe5a0bc65f5ec4ce550ffc5f6b4a7",
+      "document_id": 17,
+      "label": "例6.3.3",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "集成运放运算电路分析\n【例 6.3.3】 电路如图 6.3.4 所示。设运放均为    of        bor,\n理想运放。\n\n(1) 为使电路完成微分运算,分别标出集成运放 4\nAy Aa 的同相输入端和反相输入端;                    may            ©\n\n(2) 求解输出电压和输入电压的运算关系。        诗\n\n5\n25-—-F-—---—\nors      25   3 ins\n-25----—-|\n-5\n2 os Sere\n",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "eeb8e581-7ba5-5bbd-b745-3dbb60080850",
+      "fingerprint": "3b6aec8078024524a1de3926a095465cccaf8a7f531564388aa997b35b0ec5ff",
+      "document_id": 17,
+      "label": "例6.3.4",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "集成运放运算电路分析\n【例 6.3.4】 电路如图 6.3.6 所示,已知三只晶体管具有完全相同的特性和参数。\n(1) 说明 A, ~ A 各组成哪种基本运算电路 ,整个电路实现哪种运算。\n\n(2) 试问本电路对输入电压的极性有限制吗?\n\n(3) IE yy AD we的除法运算,则应如何修改电路? 画出图来。\n\nT,\nRa\ngz\non                      R\n:                   a\nUo\nees     [x\nR\n——                           ",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "27f6e53e-9e42-59f9-89cd-7efdcb53f0b4",
+      "fingerprint": "37a642a30796dab1880d5f71ba5fdb569c50e5a878a5a2bb0d15434881a1c127",
+      "document_id": 17,
+      "label": "例6.3.7",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "运算电路设计\n【例 6.3.7】 现有电路:\n\nA. 反相比例运算电路                B. 同相比例运算电路\n\nC. 差分比例运算电路                D. 积分运算电路\n\nE. 微分运算电路                   F. 反相输入求和运算电路\nG. 同相输入求和运算电路            H. 乘方运算电路\n\n1. 加减运算电路                    J. 电压跟随器\n\n选择一个合适的答案填人空内。\n\n(1) 欲将正弦波电压移相+90\" ,应选用   ",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "opamp",
+        "differential"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp、differential"
+      ]
+    },
+    {
+      "uuid": "887e0dd0-4f67-5cd9-b5d5-2bcc2f6cbef7",
+      "fingerprint": "23fcc1128f1d70885a36cf228123d1f6a59925c414943721dfffe5754027c235",
+      "document_id": 17,
+      "label": "例7.3.5",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "已视觉复核：包含滞回比较器阈值/传输特性。\n电压比较器\n【例7.3.5】 电路如图 7.3.7 所示。已知集成运放均为理想运放,输出电压的最大幅\n值Uow为+14 V;稳压管的限流电阻取值合适。求解下列各电路的电压传输特性。\nD, +Uz=+5V                  —\nmo rea   otra  > —y  7\ncue   [之     Be      Rf]       +U;,=46V ¥ D,\n(a)                     (b)\n“0    > Ra\n 中\n+Upsr0 ",
+      "status": "included",
+      "bucket": "hysteresis",
+      "tags": [
+        "opamp",
+        "hysteresis"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp、hysteresis"
+      ]
+    },
+    {
+      "uuid": "9e451957-f66d-597e-be81-2dcb2c87290d",
+      "fingerprint": "ba613c6c26efcd4f10d47835fd791dc93b4d7df18e3599a6e05f2bd9266cd6f8",
+      "document_id": 17,
+      "label": "例7.3.6",
+      "evidence_method": "local_crop_ocr_with_reviewed_topic",
+      "evidence": "已视觉复核：包含滞回比较器阈值/传输特性。\n电压比较器\n【例 7.3.6】 已知由理想运放组成的三个电路的电压传输特性及它们的输入电压 w 的波形\n如图 7.3.9 所示。\naox/V|\nUo,/V|                           6 -=\ncs\n|\n0     2    4    ulV\ni     ca\n=F             uv            加\n(a)                            (b)\nMoy!                      lV",
+      "status": "included",
+      "bucket": "hysteresis",
+      "tags": [
+        "opamp",
+        "hysteresis"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp、hysteresis"
+      ]
+    },
+    {
+      "uuid": "74fdfb04-84d7-5d23-9875-8b6cd8efaf07",
+      "fingerprint": "db233747ba9e32cab652e28a52d78c87ac985f8e6510dcf72ee1215a8e8541ca",
+      "document_id": 25,
+      "label": "1998年 · 第1题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "一 . (7 分 ) 已 知 晶 体 管 的 B =100, 导 通 时 的 Vsg =0. 7 伏 , 他 和 时 的 Vcgs =0. 3\n伏 . 求\n(1) Vg 64K, W cq =?IB =? (2) 为 使 晶体 管 工作 在 放大 区 , Vs 的 范\n围 ?\nRe\n[Jar\nVp\n3.3k\n(第 一 题 图 ) (第 二 题 图 )",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "4e8898a1-6288-59a9-accd-2fc39962cfb5",
+      "fingerprint": "14636034f0e1ee705b5a4d529dcbaa0dfa0addb2b104abaa46b765f760b86714",
+      "document_id": 25,
+      "label": "1998年 · 第2题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "=. (10 分 ) 已 知 Ra =18K, RE =100 欧 , Rs =50 欧 . 1, 为 恒 流 源 . 晶体 管 的 B\n=100, rt =0 . 求 该 放大 器 的 输入 阻抗 和 输出 阻抗.",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "transistor",
+        "differential"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor、differential"
+      ]
+    },
+    {
+      "uuid": "af0e4fc7-e7af-5f54-a2fd-a5161dfca5c4",
+      "fingerprint": "70a3f31840f2ab6441c67eb73756d579664df5d05ec22836ab5e83cbf0fc5eb1",
+      "document_id": 25,
+      "label": "1998年 · 第5题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "(第 四 题 图 )\n五 . (10 分 ) 图 为 理想 运 放电 路 ; 其 中 0 为 理想 二 极 管 .两 个 1009 电 阻 上 的\n压 降 可 忽略 不 计 : 当 Vi 从 -10 伏 至 +10 伏 变化 时 , 电路 的 输出 电压 Y。 如\n何 变化 ? 画 出 V。 一 Vi 曲线 .\nlor tok\nSv oO tok tok\ntv ]\nfoo 10K i\nin i nv\nVi 十 atty a\nD <I\n“sv\ntoon 10k ato 1]\nTT “isu\n-dv\ntiv co. 一",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp",
+        "diode"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp、diode"
+      ]
+    },
+    {
+      "uuid": "a6a98c26-8314-5f59-8e86-76e250679e02",
+      "fingerprint": "9070fde18fd4a43def902c29e404b973e809833f50f31290981434ee95113f63",
+      "document_id": 25,
+      "label": "1998年 · 第6题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "《第 五 题 图 )\n六 . (10 分 ) 已 知 运 放 的 开 环 增 益 特 性 如 图 (a) 所 未 , 用 该 运 放松 一\nFl (b) BFA. A (a) Bias, 用 该 运 放 构成 同 相 放\n人 电路 ,如 余 (b) FAR. 问 : 当 Rr 分 别 为 999K 90K Ok 时 同 相 放 大 电\n路 是 从 稳定 ? 若 稳定 , 其 增 旅 裕 猴 为 多 少 ?\n(电子 线路 ， 共 4 页 ， 第 2 页 )\n资料 、 视 频 更 新 : www. e-studysky",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "aa96a9d5-5b1b-5a81-b6c4-ea64036fd847",
+      "fingerprint": "25352566ae01504964a968a59bcbc2abf03e91a9b5198cef29f53dd156a52478",
+      "document_id": 25,
+      "label": "1998年 · 第7题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "(第 六 题 图 )\n七 . (8 分 ) 图 示 电 路 中 的 运 放 为 理想 运 放 . (1) 说 明 该 电路 的 反馈 类 型 . (2)\n若 反 馈 为 深度 负 反 馈 , 该 电路 的 电压 放大 倍数 Y。 / Vi =?\nVee\nVi\nRe Rs De,\n中 Tes pe UR\n3 Vee 7.",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback",
+        "opamp"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback、opamp"
+      ]
+    },
+    {
+      "uuid": "bee778a2-5b12-5b0d-b088-c31df051dcaa",
+      "fingerprint": "8bf600810a034204e298f6c6a63c38aa0767b96e2a92cf8425a83eb4ce96888a",
+      "document_id": 25,
+      "label": "1999年 · 2·题3",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "3 . 判断 图 示 理 想 运 放\n电路 的 反馈 类 型 ， 画 出 其\n入 阻抗 。",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "9bad49fd-dee2-503e-9aee-1f91c9401155",
+      "fingerprint": "275740c0f102f1b3faa3295f4d36f575caeaf6e34f4ecdd214a7a6fb80dc9889",
+      "document_id": 25,
+      "label": "2000年 · 1·题1",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "1、 图 示 电 路 中 Di-~D2 为 理想 二\n极 管 ， 变 压 器 次 级 电压 的 有 效 值\n如 图 所 示 ， 试 来 Ru 和 Ru 两 端的 =\nHGR Vs 和 Ver",
+      "status": "included",
+      "bucket": "diode",
+      "tags": [
+        "diode"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：diode"
+      ]
+    },
+    {
+      "uuid": "a49bc538-2822-5542-bdff-1a9cf843d3c3",
+      "fingerprint": "041f840e3b5d10978e875fbf90bab78ea3a968b82cddcb9b76913f891333eee0",
+      "document_id": 25,
+      "label": "2000年 · 1·题2",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "2, 某 放 大 器 为 二 极点 系统 , 极点 对 应 的 频率 分 别 为 f=5KHz, £=18KHz,\niad 80 倍 ， 试 写 出 其 电压 传递 函数 表达 起 Ay (S), HEH IAB\n带宽 。",
+      "status": "included",
+      "bucket": "high_frequency",
+      "tags": [
+        "high_frequency"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：high_frequency"
+      ]
+    },
+    {
+      "uuid": "4a7f67c6-36e6-5336-bb20-d8d71f42b1c1",
+      "fingerprint": "14b9eb05cf023c9153396051acb9bb07bbee969febd7c29b117af6565ad15c6a",
+      "document_id": 25,
+      "label": "2000年 · 1·题4",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "4, 图 示 为 互补 对 称 功放 电路 ， 设 两 管 的 饮\nFURIE Vaes=0， 并 忽略 两 管 临界 导 通 时 的\n基 射 间 电 压 ， 试 求 该 电路 的 最 大 输出 功率 。",
+      "status": "included",
+      "bucket": "power",
+      "tags": [
+        "power"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：power"
+      ]
+    },
+    {
+      "uuid": "83def588-e14d-572f-84b2-3084208ec3fb",
+      "fingerprint": "3e5202ddc699d684a0ccb05675c6787da407b61feb592d9bb5317a9767c4fd6d",
+      "document_id": 25,
+      "label": "2000年 · 2·题1",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "1、 图 示 为 结 型 场 效 应 管 放大 器 ， 已 知 管子\n的 fssr=2ma，Vpo=1.5 伏 ，ra=20K。 试 求 ;\n(1) 静态 Lo ARAL AM 2... +",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "e43730e8-edd5-5142-af14-13de8de661bd",
+      "fingerprint": "1067e7be2b9a6b437e2d20586d866310c1ef5e5079222ceb76b497129e2a311c",
+      "document_id": 25,
+      "label": "2000年 · 2·题2",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "(2) 放大 器 的 电压 增益 和 输入 阻抗 。 二\n2、 理想 运 放 构成 的 电路 如 图 所 示 ，D1 和 D2 为 理想 二 极 管 ，R=10K 2 ，\n两 个 100Q 上 的 电压 降 可 以 忽略 ， 当 输入 Vi 从 -10V 变化 到 +10VY 时 ， 其\n输出 Vo 如 何 变化 ， 画 出 Vo~ Vi 曲线 。\n理 图",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp",
+        "diode"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp、diode"
+      ]
+    },
+    {
+      "uuid": "98c12b62-d60c-5df0-9ee2-66d44bd29d6e",
+      "fingerprint": "8c5085e1edd4f41db282aeff320d6fe724244a1d920fe3c92ec6083bfe1d83c7",
+      "document_id": 25,
+      "label": "2001年 · 题2",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "(2 ) 理 想 运 放电 路 如 图 所 示 ， (a) 当 Vi=1 伏 时 ， 求 Vo=? (b)\n求 电 路 的 输入 阻抗 。",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "c3db9e51-a05f-505c-9172-e7d49e6cdad1",
+      "fingerprint": "c0f12df29dec942ca698d338e71a54b4e00878cdbb32c1fe1875f5ff32cb754d",
+      "document_id": 25,
+      "label": "2001年 · 题3",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "(3) 图 示 运 放电 路 中 ， 当 Vi 从 -5 伏 变 化 到 5 伏 时 , 输出 Vo=?\n分 析 并 画 出 Vi ~ Vo 曲 线 。\n第 142319 页\n资料 、 视 频 更 新 : www. e-studysky. com; QQ: 2696670126; Tel: 18801294486\neT A He FS RS UE\nav + > 7 网 学 天 地 独家 录制\n人才 ev 人 ” 回 1 www.e-studysky.com\nig\nme 上 ，\n‘ 了 二 -\n~ J, SR, Tr",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "278c917c-8070-52c9-b2c0-ea8d2df5cbbd",
+      "fingerprint": "6bf77453e81495d2e538f7507736d32d595d22d104a1405f039c6fbe6f300e82",
+      "document_id": 25,
+      "label": "2002年 · 题7",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "7、 判断 正 误 〈 每 题 1 分 ， 共 10 分 )\nCL) 将 两 个 晶体 二 极 管 背靠背 连接 可 构成 一 只 晶体 三 极 管 。 ( )\n〈2) 晶体 管 进入 饱和 区 后 ， 集 电极 加 上 正 向 电压 。 集 电极 电流 减 小 的 原因 是 因\n为 集 电极 势 双 降低 后 ， 集 电极 的 多 数 载 流 子 大量 地 越过 集 电 极 势 又 层 进入\n基 区 所 致 。 ( )\n(3) FAD AAR A at dak = WWE CE 间 电 阻 〈(B 开路 )， 等",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "transistor",
+        "feedback",
+        "multistage",
+        "diode"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": true,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor、feedback、multistage、diode"
+      ]
+    },
+    {
+      "uuid": "1eb7d932-623d-58e2-99a4-edcb53545f20",
+      "fingerprint": "652b7ddf41e6347812f468c7053f3af9a321a9338543f00c9d01116386a666df",
+      "document_id": 25,
+      "label": "2002年 · 题10",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "(10) 由 若干 单 极 放大 极 组 成 多 级 放大 极 时 ， 后 级 的 输入 阻抗 成 为 前 级 的 负\n载 ， 通 常 使 前 级 的 放大 倍数 增 大 。 a)",
+      "status": "included",
+      "bucket": "multistage",
+      "tags": [
+        "multistage"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：multistage"
+      ]
+    },
+    {
+      "uuid": "07c1e3a5-df30-5a1e-a33c-d92136f4d6fe",
+      "fingerprint": "f4d0dde01d009433a43c7fa0a5065f64f0affe6319aaae0033ad4f9118caf63b",
+      "document_id": 25,
+      "label": "2002年 · 题11",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "11、 图 6 中 , 若 Ri =Rr:， 2R=Rri=Rr， 输 入 电压 咏 为 幅度 为 15V 的\nTER, R,=R, =10K2 ， 扩 =10 ， 图 中 二 极 管 均 看 作 理想 开关 ， 画 出 输\n第 141319 页",
+      "status": "included",
+      "bucket": "diode",
+      "tags": [
+        "diode"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：diode"
+      ]
+    },
+    {
+      "uuid": "abc277df-6dce-5601-979d-42e3e9f0d60d",
+      "fingerprint": "c5a675b7c6566319516722aa3bf9deba175d8c859883c494da2ca8bb122354a5",
+      "document_id": 25,
+      "label": "2003年 · 版本2 · 第1题（1）",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "1， 下 面 7 小 题 每 题 4 分 。( 共 28 分 )\nCl) 4B 1.1 所 示 电 路 中 ，D1、D2 为 硅 二 极 管 ， 导 通 压 降 为 0.7V， 若 在 A、B\n端 加 如 图 1.2 PARE, MV, 端 对 应 的 波 彤 ， 并 标明 相应 的 电 平 值 。\n+E(+10V)\n图 1.2",
+      "status": "included",
+      "bucket": "diode",
+      "tags": [
+        "diode"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：diode"
+      ]
+    },
+    {
+      "uuid": "65d0b8ad-8960-5253-82a2-37b1c3f084ea",
+      "fingerprint": "ab11fda429dc012d255eae1df9f8c9d24ce2a4c15a021b4177ce148e4fd484b1",
+      "document_id": 25,
+      "label": "2003年 · 版本2 · 第1题（4）",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "《4) 三极管 组 成 的 放大 电路 在 正堂 放大 工作 状态 时 , 测 得 该 管 的 二 个 管 脚 对 地 的\nBV, =2V. Vz =3.8V， 久 =4V。 试 问 此 三 棚 管 的 类 型 为\n型 ， 管 脚 1 为 “。 极 ， 管 脚 2 为 “人 疏 ， 管 脚 3 为 om.",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "ce0b0d91-09d5-561a-b29a-965e1b169bd9",
+      "fingerprint": "568f730ebc810e4dac005bbfcecb7df8e774f501b98fd0341b948671bf6622cd",
+      "document_id": 25,
+      "label": "2003年 · 版本2 · 第1题（6）",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "(6) 在 单 管 共 射 放 大 电路 中 ， 输 出 电压 与 输入 电压 的 根性 ___: 企 单 管 共 集 放\n大 电路 中 , 输出 电压 与 输入 电压 的 极 性 在 单 管 共 基 放 大 电路 中 , 答\n出 电压 与 输入 电压 的 极 性",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "7347a2a4-e736-5c3e-8192-00bbe263732d",
+      "fingerprint": "5559a9fe9a90487051358fd2223f2f7b552f039d07b5ba106d04bc961fde6d1c",
+      "document_id": 25,
+      "label": "2003年 · 版本2 · 第10题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "10. (15 33) 设 图 8 中 三 ME T 9 B =100， , “002, Foso=0.7F : Cy. Co.\nCy RHA STM MH. R, = 6000, R, =20kQ, R, =80kQ.,\nRy =2kQ. R, =3kQ. VV, =+10V.\n1) 计算 静态 工作 点 Q Vero» Ig):\n\\2) 画 出 交流 授 路 及 交流 小 信号 低 希 等 效 电 路 ;\n(3) RHA HUBER, 和 和 输出 电阻 Ra\n(4) RUA A, = V/V, AA, =Vo",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": true,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "d97fc9fe-dd9f-5105-b98e-f882c356bdfd",
+      "fingerprint": "b54f0f81730120014db31d72303ae0e5973e4640a100cfb8b5318bcba941efdf",
+      "document_id": 25,
+      "label": "2004年 · 版本1 · 第4题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "四 、(10 分 ) 已 知 共 射 放大 电路 如 图 3， 试 写 出 下 述 参数 的 表达 式 。( 电 阻 并 联 以 符号 “/” 连 接 表 示\n即 可 ， 无 需 写 其 具体 运算 式 )\n(1) ”静态 工作 点 Q_ (Is Ice、Iceo)\n(2) 输入、 输出 电阻 RN、R。\n(3) ”电压 放大 倍数 Au、Au。\n第 四 大 题 图 图 3",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": true,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "dca3afa7-79a8-5308-9ef9-aaf0a9778b83",
+      "fingerprint": "b09783b237af4d1b320963d753da47c1f2f6288b18341efd1e384a70ec33a212",
+      "document_id": 25,
+      "label": "2004年 · 版本1 · 第5题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "五 、(10 分 ) 判断 图 4 电路 存在 几 个 反馈 ? 各 反馈 的 极 性 ， 各 反馈 在 输出 端的 连接 形式 是 电压 反馈\n还 是 电流 反馈 ? 是 串联 反馈 还 是 并 联 反馈 ?",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "d9615169-2089-531c-b0ba-8703c99b85a3",
+      "fingerprint": "c956b72d0ec673a07bc0f2f1641feb2b64db33c5f27982e31a1b25b1cddf532d",
+      "document_id": 25,
+      "label": "2004年 · 版本1 · 第6题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "Ke COS) 理想 运 放 组 成 如 图 5(j、5(b) 所 示 电路 ， 导 出 Us=&Ui-Ua) 的 函数 表达 式 。\nte\n°\nSAGE Sta):\n{Je | .\nu, -\nRa\nRs\nwot 、 工\nuo R, 由\nie\n第 六 大 题 图 150)",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "87237898-5088-5f93-9bde-6b1864c5f8f8",
+      "fingerprint": "7fde931657a14bce0633a48a0539b9b2b3464fb43bf859a46f11d485fa649527",
+      "document_id": 25,
+      "label": "2004年 · 版本1 · 第7题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "七 、(10 分 》 如 图 6 所 示 为 理想 运 放 组 成 的 电路 ， 输 入 信号 的 波形 如 图 7 所 示 ， 分 别 画 出 Uo 和 Ucn\n的 波形 。 “ ee\n1KQ\nKeo\n第 七 大 题 图 图 6\nCA\n3 rt\n0| {10 50 70\n>\nt/ms\n-3 =\n第 七 大 题 图 “图 7",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "dded4e00-3ab2-5954-a625-8a62bc7a36d5",
+      "fingerprint": "a10625da4739664d883b11176cf56f7679126d14245917b8b5295e420546b147",
+      "document_id": 25,
+      "label": "2004年 · 版本2 · 第2题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "二 、(16 分)\n已 知 稳 压 二 极 管 的 稳定 电压 Vz=6 伏 ， 其 稳 压 工作 的 电流 范围 : R\n15~30mA, R=4002, Ri=IKQ, ia]: (a) 若 Vi 从 15 伏 变 化 士 20% 时 ， + e\n该 电路 的 输出 Vo 能 否 稳定 在 6 伏 ? 为 什么 ? (b) 若 Vi=15 伏 ， 该 电 下 pz t We\n路 能 稳定 在 6 伏 的 RL 范围 为 多 少 ? 习 一",
+      "status": "included",
+      "bucket": "diode",
+      "tags": [
+        "diode"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：diode"
+      ]
+    },
+    {
+      "uuid": "81c83808-8471-58de-8451-27392b74ebc3",
+      "fingerprint": "bcbd41a4951244be2f855215f6eb317668e8748fb21c05750e71c59774bea1b8",
+      "document_id": 25,
+      "label": "2004年 · 版本2 · 第3题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "三 、 理 想 运 放 电路 如 下 〈18 分 》\n(0 Vo=?\n试题 名 称 : ”电子 线路 共 4 页 第 1 页\n第 119319 页\n资料 、 视 频 更 新 : www. e-studysky. com; QQ: 2696670126; Tel: 18801294486\ni 回 扫 码 看 答案 与 讲解\n(2) #V1=5mV, V2=10mV, 3 Vo=?\n\" 十 ioe 30k +] www.e-studysky.com\n50k Vo\nvi\n一 20k 30k\nmm。 小 wr\n(3) 设 ",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp",
+        "diode"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp、diode"
+      ]
+    },
+    {
+      "uuid": "63d4b84a-5120-5a93-821f-ec2df024b147",
+      "fingerprint": "18dac90abffc6d930b614e141eb3a94c38298d588b2922d8dc4a29a04849a656",
+      "document_id": 25,
+      "label": "2004年 · 版本2 · 第5题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "+ (18 分 )\n图 示 为 复合 管 差 动 放 大 电路 , 每 个 晶体 管 的 参数 相同 : B=100, rw\" =0, 4 Vi=10mV BY, 求 Vo=?\n十 12Y",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "differential"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：differential"
+      ]
+    },
+    {
+      "uuid": "aa017638-7bfc-5753-ac72-14e2986f7550",
+      "fingerprint": "49f0d0862d318d074dcaccd94d0fe1e1a8157137a513a8f3e2df1c509f394138",
+      "document_id": 25,
+      "label": "2004年 · 电子学基础 · 第4题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "5 koi 1000|\n四 、(20 分 》 某 股份 制 企业 三 股东 分 别 占有 股权 Tg, RA)\n为 16、2/6 和 3/6， 决 策 时 以 按键 表决 ， on 5Mal ah +L,\n只 有 当 支 持 的 权重 之 和 过 半 方 可 通过 。 4 - 人 7 U7 ue\n试 设计 一 表决 远 辑 系统 电路 《分 别 以 发\n光 二 极 管 亮 表示 通过 和 否决 ， 以 低 电 平\n驱动 发 光 二 极 管 )。\n图 二\nUses Leo",
+      "status": "included",
+      "bucket": "diode",
+      "tags": [
+        "diode"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：diode"
+      ]
+    },
+    {
+      "uuid": "430d67e0-11ac-53fa-a976-603c46e59824",
+      "fingerprint": "09371be330a12551c9c85bf16ffa70d408279228ee0966460ef7f751b2d24d13",
+      "document_id": 25,
+      "label": "2005年 · 版本1 · 1·填空3",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "3. 共 射 放 关 器 中 ， 将 其 集 电 极 电 阻 变 大 ， 放 大 器 的 电压 放大 倍数 将 变 + 集 电 极\n电阻 过 大 时 放大 器 瓶 虚 入 kK.",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "89ee9e37-9df3-5e98-8894-6ba47c11da84",
+      "fingerprint": "246927341333ca002eb0e323f7fb359bdfc9ea13af37202a9a9d09b0bdd5e373",
+      "document_id": 25,
+      "label": "2005年 · 版本1 · 1·填空4",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "4. 通过 反馈 改善 放大 器 性 能 时 ， 若 要 稳定 输出 电压 应 引入 ， Ra: FG\n输入 阻抗 应 引入 反馈; 在 放大 器 中 引入 负 反 馈 后 其 频带 将 。",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "564b28f4-e724-53db-a0f8-665ee35789b6",
+      "fingerprint": "6504d1470cd54ac27f38e13a7bc86cd5bec22a1c47efb145e9899b92f35444cc",
+      "document_id": 25,
+      "label": "2005年 · 版本1 · 1·填空5",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "5. 集成 运 放电 路 的 频率 补偿 方法 可 分 为 利 KA.",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "7b1437d3-8307-5a84-ab53-635e5488f04a",
+      "fingerprint": "6cf7893edf01d79783424aff06950e9783d07019635b98b5f8237517a4e7fef3",
+      "document_id": 25,
+      "label": "2005年 · 版本1 · 2·题1",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "二 .以 下 六 小 题 ， 每 题 5 分 〈( 共 30 分 )\n1. 由 两 只 二 极 管 组 成 如 图 2.1 的 电路 。 二 极 管 导 通 压 降 Up 均 为 0.7V， 答 入 正弦 信号 甸 的 幅\n值 为 wa=10V，Ui=3V，U2=6V。 试 定性 画 出 we 的 波形 ， 并 画 出 电压 传输 特性 [/。= f(U,) th\n线 。\nia\nR",
+      "status": "included",
+      "bucket": "diode",
+      "tags": [
+        "diode"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：diode"
+      ]
+    },
+    {
+      "uuid": "bcc4c2d5-0bc9-5fea-a998-049906711418",
+      "fingerprint": "b330ef53210a345d6531ec1df2268a2a9ac9594e69215ddc8f8f453c281dec91",
+      "document_id": 25,
+      "label": "2005年 · 版本1 · 第3题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "由 N 沟 道 耗 尽 型 场 效应 管 构成 如 图 3 RD 420Y\n所 示 的 放大 电路 中 ， 已 知 Ucso= -0.2V. WOK Gy\n1.2mS， 上 且 电容 容量 足够 大 。 要 求 Ra +—|}-o\noes Cl IT +\n41) 电路 的 静态 工作 点 Ig 和 Unsa; ot\nHH\n(2) 计算 电压 放大 倍数 Aus [Re Uo\n+\nui sim .\n(3) 输入 电阻 mn 及 输出 电阻 r。 Re» IRS 二\nFike s00K tJ10K>-C3\n十\n图 3\n",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": true,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "10674c9b-266b-532c-9aeb-194d1bf914ae",
+      "fingerprint": "044a68ab7a73ab70bc7853aacb3b5bc4eff13d280fae4dca7623d5ca181994f8",
+      "document_id": 25,
+      "label": "2005年 · 版本2 · 第2题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "二 、 (124)\nN 沟 道 JFET 放大 器 如 图 所 示 ，\n已 知 JFET 的 参数 : FETAL ER V9 = 26K. Ings = 2zd、 六 =100KQ\noR: ORS Mp9 Voso i\nOAREKELEARREENGAE, MBIRRIRY,, 应 取 何 值 ?\n@ 求 放大 器 的 电压 增益 、 输 入 阻抗 和 输出 阻抗 。\nYDD\n6K\n5uf\n4",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "4a8fb7d9-2eb0-59a5-99c5-8134f77b4063",
+      "fingerprint": "3162ff679058bdf091f1a225c322fcae21f3c2eebd654ec9834e3d60c6c761fb",
+      "document_id": 25,
+      "label": "2005年 · 版本2 · 第3题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "三 、 (204)\n上 已 知 某 低频 电压 放大 器 为 三 极点 系统 ， 刀 =10'Hz、 思 =105Hz、 太 =105Hz ， 低\n频 电 压 增 益 为 1 ， 若 对 该 放大 器 外 加 纯 电 阻 网 络 的 负 反馈 ， 则 该 反馈 放大 器 能\n稳定 工作 的 电压 增益 的 最 小 值 是 多 少 ?\n2. 判 断 图 示 负 反馈 放大 器 的 反馈 类 型 ， 并 估算 深度 负 反馈 条 件 下 的 放大 器 电压\nAy = itt\nVo\n试题 名 称 : ”电子 线路\n二 4",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "7864f76b-4d3f-59c7-85a8-292015b247d2",
+      "fingerprint": "767da3675fc04565174c54df7bc14c2fcc44c1d810e44f8aceda2c4b45587504",
+      "document_id": 25,
+      "label": "2005年 · 版本2 · 第4题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "Pl, ”理想 运 放 电路 如 下 : (20 分 )\n1. 设 电容 端 电压 的 起 始 值 为 零 , @ 给 出 w( 娘 的 表达 式 ; @ 当 输入 v 妨 如 图 示 波 形 时 ，\n画 相 应 的 w( 访 波形 。\nluf\n|\nif 10K\n10K\neat > 10K\nVit) , ~\n+\n了 aay 2k 加 Yo\nVilty 了\n1vf--\n9+ Fay 50 350 >t Gs)\n-17\n__ _5K\nViot } -\n50K Lo Yo\n+",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "6c9ddd50-d09e-5e8c-a68c-5a2feb756887",
+      "fingerprint": "3e7984bbfe09d9085aa788fbf82b6e88f691e2c5e8da270cfdda942d2e6ff85e",
+      "document_id": 25,
+      "label": "2005年 · 电子学基础 · 题2",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "2 解释 低 通 RC 网 络 频率 响应 的 特点 ? (10 分 )",
+      "status": "included",
+      "bucket": "high_frequency",
+      "tags": [
+        "high_frequency"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：high_frequency"
+      ]
+    },
+    {
+      "uuid": "b1aba79c-6456-53aa-8251-c4c1a37d1a43",
+      "fingerprint": "f4155ae19c6aaea0dcbae928f20a45d3297fdcfb0d64db6ae41dfdc17c8a6876",
+      "document_id": 25,
+      "label": "2005年 · 电子学基础 · 题4",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "4， 下 图 电路 中 : 〈20 分 )\na) 试 判断 该 电路 的 反馈 类 型\nb) 估算 满足 深度 负 反 馈 条 件 的 源 电压 增益 Avd=Vo/Vs、 输 入 阻抗 Rif 和 输出 阻抗\nRof\nVee\n一\nVo\nLe+\n2\nVee",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "c7519024-c47c-5b31-8e74-6bd08e8fd809",
+      "fingerprint": "318c7eedeafe2961c42f3925278b11965272ae6128f9140cb4fe0c89bf122701",
+      "document_id": 25,
+      "label": "2007年 · 1·填空1",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "1) “稳定 电路 输出 电压 应 该 采用 的 反馈 组 态 是 “， 稳 定 输出 电流 采用 的 反馈 组 态\n是 。",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "33603493-a79a-59de-837e-91acbc92545c",
+      "fingerprint": "08dc9f00a3f3cc2e68bc31d903469e9ddab5d439f567912f7f36c1a29c91c50a",
+      "document_id": 25,
+      "label": "2007年 · 1·填空2",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "2) 反馈 会 影响 电路 的 输出 电阻 , 其 中 电压 负 反馈 会\n输出 电阻 , 而 电流 负 反馈\n会 输出 电阻 。",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "064fe067-ae1c-580a-8931-66f4abe50eee",
+      "fingerprint": "ecedd3ac0edf143a3f8540dfa774d249f288bb19ea834dbb0335eda99ca2e1e0",
+      "document_id": 25,
+      "label": "2007年 · 1·填空4",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "4)“ 双 极 性 集成 运 放 的 输入 级 多 为 电路 ， 中 问 级 多 为 电路， 输出 级 多\n用 输出 ， 偏 慎 电 路 是 电路 。",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "049b8558-f225-5cb7-88ef-d9c2c1e6090f",
+      "fingerprint": "6c7b205fde72f9de54be6e1b476c546559a1bf8d9fe250295b97b93a3a56ea83",
+      "document_id": 25,
+      "label": "2007年 · 1·填空5",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "5) 差分 放大 电路 有 四 种 接 法 ， 分 别 是 、 os __s 表 1\na) __” 接 法 的 共 模 抑制 比 KCMR 不 为 零 。",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "differential"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：differential"
+      ]
+    },
+    {
+      "uuid": "9e69b564-b315-5317-934c-591893cdf018",
+      "fingerprint": "0e16fd2fead995d23d2c45f4e8a6af5ddb037e1ee08ae75b85fd2b83f3ff0563",
+      "document_id": 25,
+      "label": "2007年 · 1·填空6",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "g@) ”基本 共 射 放大 电路 在 放大 区 工作 的 条 件 是 : 发 射\n结 _” ， 其 发 射 极 电流 le 是 由 运动 形成 的 ;\n集 心 极 ，__ ,其 集 心 极 由 流 I 是 由 ”运动 形成 的 。",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "311f067f-1bea-584a-81f2-161021295461",
+      "fingerprint": "ca56588b06bc65e2b13bea8b37479e23b4df3a11d326a47f373f6d1e661968a2",
+      "document_id": 25,
+      "label": "2007年 · 第3题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "、 三 极 答 的 正 反 向 伏 安 特性 曲\nJo/mA\n线 如 图 9 所 示 。(8 分 )\nLI=lA 8\n试 确定 二 极 管 的 静态 方\n1)\n80 40 20 |0\n流 电 阻 和 动态 电阻 大 小 ;\n30\n二 极 管 承受 的 反 向 由 压\n2)\n(0.67V,20mA)\n20\nUr ABD?\n若 温度 升 高 了 20\"C， 则\n3)\n10\n二 极 管 的 反 向 电流 Is WZ\n为 多 大 ?\n°\n当 温度 升 高 20\"C 时 ， 定\n4)\na\nUV\n01026\n性 画 出 变化 ",
+      "status": "included",
+      "bucket": "diode",
+      "tags": [
+        "diode"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：diode"
+      ]
+    },
+    {
+      "uuid": "da65eb26-c5dc-5577-b1f5-c9d7b44670ce",
+      "fingerprint": "c11ad0b11291bd123991fc24d24a84456d9d92751a2d6017b6b0cf23aba27cfa",
+      "document_id": 25,
+      "label": "2007年 · 第4题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "四 、 图 10 所 示 为 基本 共 射 放大 电路 巾 于 电路 参数 的 改变 使 静态 工作 点 产生 的 变化 。(10 分 )\n10 Drv\n0 2 4 6 8\n图 11 第 五 大 题 图\n图 10 第 四 大 题 图\n1D SERS THES QUE Q2， 从 Q2 移 到 Q3， 从 Q3 BF Q4， 是 电路 的 哪些 参数\n变化 造成 的 ? 是 如 何 变化 的 ?\n2) “电路 的 静态 工作 点 分 别 为 Q1，Q2，Q3，Q4， 哪 种 情况 最 易 产 生 截 止 失真 ? O",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": true,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "bee4ff7c-7141-5aed-aaf2-f91feb65cd4a",
+      "fingerprint": "f89d26687d80263f75d091e64e62ea0f1c401a4036bacdab804bb2e015644279",
+      "document_id": 25,
+      "label": "2007年 · 第6题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "六 、 图 12 所 示 为 一 单 入 单 出 差 动\n放大 电路 。 已 知 三 极 管\nB1=B2=50, B3=80, ruo=100Q，\nUper=Upex=0.7V> Upes=-0.2V,\n-VEs=-12V。 当 输入 信号 U=0\n-Vee(-12V)\n时 ， 测 得 输出 Uo=0V. (15\n图 12 第 六 大 题 图\nay)\nR2=10k\n1) 简 述 Re 的 作用 ;\n2) 估算 TuT 管 的 工作 电流\nRI-6k Le\nC\nII 和 电阻 Re 的 大 小 ;\n_VI-12V o",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "differential"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：differential"
+      ]
+    },
+    {
+      "uuid": "4b50417f-c9f2-5e95-b71b-ae927cef01db",
+      "fingerprint": "45334a7316fd356c79d533478087b3f6b0a48f9b5a3f526392a5d681bfc41e04",
+      "document_id": 25,
+      "label": "2007年 · 第7题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "电压 表 200mV\nUse\n\"  va6V] 4. 二\n、 如 图 13 所 示 ， 巾 运 放 纽 成 的\nR3-10k\nBIT 电流 放大 倍数 B 的 测试\n电路 , 设 BIT 的 Vee=0.7V。(6\n分 )\n1) 求 出 BIT 的 c，b，e 各 极 的 电位 值 ;",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "331d7061-3ccc-5a6d-a58e-660d2cf25d54",
+      "fingerprint": "199ae930506e54f94b042eb4144de3e9250a17d15b26aef8a39263653d740315",
+      "document_id": 25,
+      "label": "2007年 · 第8题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "2) “如 电压 表 读 数 为 200mV， 试 求 BIT 的 8B 值 。\n八 、 如 图 14 所 示 电 路 ，A1、A2 为 理想 运 放 。(8 分 )\n1) WP Al (s) =Vol (s) /Vi (s), A (s) =Vo (s) /Vi (s);\n2) 判断 Al (s), A (s) 属于 何 种 类 型 滤波 器 。\nRe R2\nvil © NS = Vo\nR2 anes\nRi at A2\nRpl Rp2 |\n十 Vol\n图 14 BAKE",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "f0689b36-31a9-5400-9329-fa47e116819d",
+      "fingerprint": "754c463938410dc756f56f863edda3e2af40e6fcfc42ef7d09fedf63eec66f81",
+      "document_id": 25,
+      "label": "2008年 · 第1题 · 填空3",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "3) Se joan 的 放大 器 , 它 有 两 个 极点 频率 : ©y=10'rad/s, © w=10'rad/se\n则 交大 器 开 环 时 的 增益 带宽 积 为 .",
+      "status": "included",
+      "bucket": "high_frequency",
+      "tags": [
+        "high_frequency"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：high_frequency"
+      ]
+    },
+    {
+      "uuid": "7a16cc54-f6b9-5c08-8920-19f132072728",
+      "fingerprint": "03670d04720c1978116e3dcd761fa014699c083f4c5a877cc7ebdcbfbe94aef1",
+      "document_id": 25,
+      "label": "2008年 · 第1题 · 填空4",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "4) 由 理想 运 放 构成 同 相 跟随 器 ， 其 输入 和 输出 电阻 及 放大 倍数 分 别 为 、、_、_。",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "d6ffd4b0-a4da-5d82-94b9-2b7317ad15f3",
+      "fingerprint": "de7bae4c25061289d70262942a8b6d914af8ec6157417f2db15836997707501a",
+      "document_id": 25,
+      "label": "2008年 · 第1题 · 填空5",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "5) 人 恒 流 源 电路 如 图 1 所 示 。 设 T1，T2，T3 管 匹 配 ， 且 8 = ，R1=R2，JIu=Iu=I， 输\n出 电流 To 的 表达 式 为 _\nVeo\nw>",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "differential"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：differential"
+      ]
+    },
+    {
+      "uuid": "8db57b24-1b8d-50b1-9666-8b9e71a5a79e",
+      "fingerprint": "2c76787aca3fe0fdcaf12adaa3800b2f0b0a5cf5d9e6354de7a041f7fd7b7212",
+      "document_id": 25,
+      "label": "2008年 · 第2题 · 选择1",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "1) Ho 中 二 极 管 Di、D2 的 作用 是 ( 。 )\n(A) 电源 端 保护 〈B) 温度 变化 抑制 〈C) 输出 限 幅 CD) 隔 直\nAW_[&\nvont | &\nRe\ncH\n2K",
+      "status": "included",
+      "bucket": "diode",
+      "tags": [
+        "diode"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：diode"
+      ]
+    },
+    {
+      "uuid": "c441dfea-71b4-5b53-9593-99e560f6608f",
+      "fingerprint": "753ab033b9b4a4ce49ff414b8321829f23ae51e942061d81675030d27693eddc",
+      "document_id": 25,
+      "label": "2008年 · 第2题 · 选择2",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "2) 图 7 中 二 极 管 D1 的 作用 是 (  )\n(A) 输入 保护 〈B) 温度 变化 抑制 CC) 相位 补偿 〈D) BB\nAW_[&\nvont | &\nRe\ncH\n2K",
+      "status": "included",
+      "bucket": "diode",
+      "tags": [
+        "diode"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：diode"
+      ]
+    },
+    {
+      "uuid": "01b0a824-d224-5492-9ebf-8cd749d4b4b4",
+      "fingerprint": "b6ac17550a76d6e2e7172aa78b1c8a604c6112f8d2c07190145da73f23cc2c5a",
+      "document_id": 25,
+      "label": "2008年 · 第2题 · 选择4",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "4) “输入 失调 电压 越 大 表明 运 放 ( +).\nCA) 放大 倍数 越 大 (B) 输入 差分 级 失 配 越 严 重\n(C) 场 效 应 管 温 漂 越 大 CD) 功 耗 越 大",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "d238b357-f08d-572e-8434-d970a3aefa37",
+      "fingerprint": "d00e1fbd5374ceda4d0333984b6665e2e7236ef52576a7e710a539db6a3be856",
+      "document_id": 25,
+      "label": "2008年 · 第2题 · 选择6",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "6) ”多 级 放大 电路 与 单 管 放 大 电路 相 比 ， 频 带 及 附加 相 移 分 别 COD,\n(A) RE: BK (B) WE, ED 〈C) BR. Bh CD) 变 宽 ， 变 大",
+      "status": "included",
+      "bucket": "multistage",
+      "tags": [
+        "multistage"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：multistage"
+      ]
+    },
+    {
+      "uuid": "3350a673-0047-5bec-842e-ad7344644c65",
+      "fingerprint": "b7fc9e4e20860e6942c91ad42774e49f38d70e50c04c782aadb31eac4fbc3092",
+      "document_id": 25,
+      "label": "2008年 · 第2题 · 选择7",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "7) 阻 容 耦 合 多 级 放大 电路 具有 如 下 持 点 (，) } f\n(A) 各 级 Q 点 互相 独立 ; BRD: BERKE MES\n(B) 各 级 Q 点 互相 独立 ,各 级 Au BABA, -不 能 放大 直流 信息、\nHSA BRM! DAKAR UE\n不 易 集 成 \\ 不 能 放大 直流 信和 号:",
+      "status": "included",
+      "bucket": "multistage",
+      "tags": [
+        "multistage"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：multistage"
+      ]
+    },
+    {
+      "uuid": "83e0cdf4-b271-597b-a869-b9ddc2048d76",
+      "fingerprint": "a78412780d9fb5dd96d2ca3c7dad68663d11bd13813c049ee2449417441e3f15",
+      "document_id": 25,
+      "label": "2008年 · 第2题 · 选择9",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "9) f 路 的 影响 ， 以 下 说 法 合理 的 是 ( ) ERR HMASA SiR\n(A) 提高 输入 电 阳 ， 降低 输出 电阻 ，\n网 学 天 地 独家 录制\n(B) 施加 不 同类 型 的 负 反 馈 ， 增 大 相应 的 增 荔 灵敏 度 ，\n(C) 扩展 放大 器 的 频带 宽度 ， 但 不 会 出 现 自 激 。 回\n(D) 可 以 改善 非 线性 失真 ， 但 不 能 改善 由 于 工作 点 不 当 产生 的 饱和 失真",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback",
+        "high_frequency"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback、high_frequency"
+      ]
+    },
+    {
+      "uuid": "7e1daee2-de8e-523e-97f2-8830e230f18f",
+      "fingerprint": "f11229b2426c1198dac027a9e2220737d363e68c08c1e8662a01cd42acae3ccf",
+      "document_id": 25,
+      "label": "2008年 · 第2题 · 选择10",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "10) 某 传感器 产生 的 是 电压 信号 《几乎 不 能 提供 电流 )， 经 放大 后 希望 输出 电压 与 信号\n成 正比 ， 这 种 放大 电路 应 选 以 下 何 种 负 反 馈 (CD.\nCA) 电压 溃 联 (BD 电压 并 联 “《C) 电流 审 联 (D) 电流 并 联",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "9cc1139b-248d-5bce-a04e-85011eef034a",
+      "fingerprint": "91090ace050b19eb6e0ec7591e5befcf6584e36bb6a073dac8136a3dda8c3cf4",
+      "document_id": 25,
+      "label": "2008年 · 第2题 · 选择12",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "12) 74 系 列 TIL 门 电路 低 电 平 输 } WKS\n出 电流 Lo. 最 大 值 为 16mA， Nee eg Yeah\n高 电 平 输出 电流 Ion 最 大 什 \\y a D\n为 .04mA。 图 gee D: ;\nwee R R\nof (B) (©) (D)\n图 8\n二 极 管 导 通 并 发 光 的 电路 是 ( c",
+      "status": "included",
+      "bucket": "diode",
+      "tags": [
+        "diode"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：diode"
+      ]
+    },
+    {
+      "uuid": "c87d605b-7323-5872-829f-bf257749e761",
+      "fingerprint": "197b7ea1bb41266de5b77b301eaa3518998b1b8b008bf84d2a640d099ac14fba",
+      "document_id": 25,
+      "label": "2008年 · 第2题 · 选择13",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "13) 图 WAS BARRE Pe, WR, t\n可 以 采取 的 措施 是 ( ) to Hy\n(A) 加 大 电容 C 的 电容 量 ，(B) 加 大 电阻 R 的 阻 值 : LG -CC\n(C) 减 小 电阻 R 的 阻 值 ， CD) 提高 电源 电压 ; © ms R\n二 极 管 导 通 并 发 光 的 电路 是 ( c\n13) 图 WAS BARRE Pe, WR, t\n可 以 采取 的 措施 是 ( ) to Hy\n(A) 加 大 电容 C 的 电容 量 ，(B) 加 大 电阻 R 的 阻 值 :",
+      "status": "included",
+      "bucket": "diode",
+      "tags": [
+        "diode"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：diode"
+      ]
+    },
+    {
+      "uuid": "c8d4efeb-7276-528b-a078-b3ebf8e54e4f",
+      "fingerprint": "b07d7e45387dd67bb33d18c8083434aa7cb8f0c28bfda8ee2ea5d66a3b602e12",
+      "document_id": 25,
+      "label": "2008年 · 第3题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "=. (18 分 ) 场 效应 管 和 BJT 晶体\n管 构成 的 两 级 放大 电路 如 图 10\nSFR. BAT 的 ga=0.6mA/V,，-\n2; 计算 电路 的 输入 电 了 R45\n‘Port LBA Ros =\n3 计算 电压 放大 倍数 4s、4us。 图 10",
+      "status": "included",
+      "bucket": "multistage",
+      "tags": [
+        "transistor",
+        "multistage"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor、multistage"
+      ]
+    },
+    {
+      "uuid": "d1bc9429-93d8-5412-bb33-5d6463071e8f",
+      "fingerprint": "4e2566c9e38809a7a4ece2c77dc4e28933421a09b2a49924503b59110261bf2f",
+      "document_id": 25,
+      "label": "2008年 · 第4题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "四 、 (5 分 》 运 放 组 成 电路 及 输入 波形 如 图 d1 所 示 时 ， 画 出 u 端的 波形 。\nuy",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "e840dbd5-b734-5dd7-8c13-c6feb7fe9420",
+      "fingerprint": "086a3bc96cbac70c2d06b7baf55228eb8759a7533a3fd78292ac1ede3bbaac45",
+      "document_id": 25,
+      "label": "2008年 · 第5题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "BH. (2) 放大 电路 如 图 PFs\nC1) 为 稳定 电路 输出\nMRM? RBS\n表达 式 。\n(2) 为 稳定 电路 的 输\n出 电流 ， 应 怎样 引 级\n间 反 馈 ? 标明 反馈 路\n径 ， 写 出 深 反馈 条 件\n下 的 闭环 增益 Awr 的 = Mex\n表达 式 。 图 12 #1\n资料 、 视 频 更 新 : www. e-studysky. com; QQ: 2696670126; Tel: 18801294486",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "a067cc69-ad95-5fd8-92ff-e34a6956788f",
+      "fingerprint": "f92ded84f2e497b76dd8d77b0f6f975bd8b42cdf20f38f022690373e4706389c",
+      "document_id": 25,
+      "label": "2009年 · 第2题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "二 、(15 4) 放大 电路 姐 图 6 所 示 。 BH\nYcc=+l2V，Ru=30kQ ，Ru=l0kQ ，Rs=2ko ，\nRc=3KQ ，Re=2.3kQ ，R=3k@ ， 三 极 管 T 的\n8 =50, 特征 频率 为 150MHz, C=5pF, rw =1002,\nrow=1.4kQ，re=100k9 。\nRCL) 电压 放大 倍数 k; (5 分 )\n(2) 电路 的 上 限 截 止 频率 f。(10 分 )",
+      "status": "included",
+      "bucket": "high_frequency",
+      "tags": [
+        "high_frequency"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：high_frequency"
+      ]
+    },
+    {
+      "uuid": "2c316245-c17a-58bc-a852-203623ec0a85",
+      "fingerprint": "70ec508b8965dfa7f45533aee88c1c6d1d222302c18fddd2c2f14905d4aefc13",
+      "document_id": 25,
+      "label": "2009年 · 第5题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "五 、(15 分 ) 理想 运 放 组 成 的 电路 如 图 8 Ca) 所 示 。 已 知 运 放 输 出 土 uue= 土 12Y，\n(RR Mik Ay + OV.\nC1) SPHTA AE ES SEIRIEH ue Cun) 的 曲线 (6 分 );\n(2) 给 出 实现 图 (b) 所 示 传 输 特 性 的 新 电路 (94h).\n图 8 此",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "c188932e-09dd-58de-8193-89567ee9a52b",
+      "fingerprint": "80916ce85c83e359e211a43b21d87dfce7dec23968559c6733c0747f27e7a438",
+      "document_id": 25,
+      "label": "2010年 · 1·选择2",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "2、 测 试 放 大 电路 输出 电压 幅 值 与 相位 的 变化 , 可 以 得 到 频率 响应 ,条 件 是 。\nA. 输入 电压 频率 不 变 ， 改 变 幅 值 ” B. 输入 电压 幅 值 不 变 ， 改 变频 率\nC. 幅 值 与 频率 同时 变化 D. 幅 值 不 变 ， 改 变相 位",
+      "status": "included",
+      "bucket": "high_frequency",
+      "tags": [
+        "high_frequency"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：high_frequency"
+      ]
+    },
+    {
+      "uuid": "0268d2d2-4700-5b4d-b382-b33255d08078",
+      "fingerprint": "ee45b308111e2f708ec1bf2da3272bb488bc8be6757d8f4aa6c25fcc5509ca7d",
+      "document_id": 25,
+      "label": "2010年 · 1·选择3",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "3、 为 了 抑制 温 漂 和 展 宽频 带 , -各 引入 条 种 反馈\nA. 串联 和 并 联 负 反馈 B. 直流 和 交流 负 反 馈\nC. ERR D. 电压 和 电流 负 反 馈",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "e4204cd2-fd93-5433-92e6-a6330f696828",
+      "fingerprint": "b3cc961198c8792051d5f45cb8145abc87e924273ec0299d4459e696373c02d8",
+      "document_id": 25,
+      "label": "2010年 · 1·选择4",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "4、 以 下 关于 共 集 放大 电路 说 法 错误 的 是\nA. 只 放大 电流 不 放大 电压 B. 不 能 做 输出 级\nC. 常 做 多 级 放大 电路 的 输入 级 D. 可 用 于 信号 跟随",
+      "status": "included",
+      "bucket": "multistage",
+      "tags": [
+        "transistor",
+        "multistage"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor、multistage"
+      ]
+    },
+    {
+      "uuid": "93fb8457-3662-5126-bf5a-d82e2792b495",
+      "fingerprint": "2a03124726cbf11f18f4b89acd51363b72989a65da7cc4f9f7ca0ba5282b5bf3",
+      "document_id": 25,
+      "label": "2010年 · 第4题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "(15 een 2 所 示 电 路 ,Ri = 15k,\nRy = Ra = 5kN, Ry = 2.3k2,\nRs = 100k2, Re = R, = 5K0，\nVoc = 127。 唱 体 管 的 B 均 为 50，\nTher = 1.2K2, Treg = 1kN,\nUpeos = Unsg2 = 0.7V.\n(1) 求解 电路 的 静态 工作 点 ;\n(2) 给 出 交流 等 效 电路 ;\n(3) 整个 电路 的 放大 倍数 4u;\n(4) 输入 输出 阻抗 RE 、Ro。",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": true,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "2357e2c6-db9d-5c53-b376-1950af058c9e",
+      "fingerprint": "5a739b3749d803f1af8d6e6845144ddc2eb0e9f70ea15c521d2e98f6f73b034b",
+      "document_id": 25,
+      "label": "2010年 · 第5题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "(11 分 ) 电路 引入 负 反 馈 后 其 性 能 会 得 到 多 方面 的 改善 ， 比 如 ， 可 以 稳\n定 放大 倍数 ， 改 变 输入 输出 电阻 ， 展 宽频 带 等 。 试 推导 出 以 下 两 种 性 能 优\n化 的 程度\n(D 稳定 放大 倍数 ，\n(2) 展 宽频 带 。\n第 81319 页\n资料 、 视 频 更 新 : www. e-studysky. com; QQ: 2696670126; Tel: 18801294486",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "1e87e16e-2674-58b8-a3dd-7a26f0025eab",
+      "fingerprint": "9aed43aeed7e67eb687f375ed30e2e7c05f7a031a1a08afcc53b028c9375c0f0",
+      "document_id": 25,
+      "label": "2010年 · 第7题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "七 、 《〈14 分 ) 如 图 3 所 示 单 管 共 射 放 大 电路 ， 根 据 晶体\n管 混合 x 模型 推导 ;\n(1) 低频 电压 放大 倍数 ;\n(2) 中 频 电压 放大 倍数 ;\n(3) 高 频 电 压 放大 倍数 ;\n(4) 增益 带宽 积 。",
+      "status": "included",
+      "bucket": "high_frequency",
+      "tags": [
+        "transistor",
+        "high_frequency"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor、high_frequency"
+      ]
+    },
+    {
+      "uuid": "a7112608-b3d9-5216-a2ac-57e95f86881b",
+      "fingerprint": "977864442254800ba4fca533f6fc449d823bb40af027fa875d040cfe92d8d9e9",
+      "document_id": 25,
+      "label": "2010年 · 第8题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "八 、 《10 分 ) 电感 反馈 式 振荡 电路 如 图 4 所 示 ， 设 Ni 的 电感\nBAL, ，Nz 的 电感 量 为 2:，Ni 、Nz 间 互感 为 M， 且 品质\n因数 远大 于 1。 求 :\n(l) 振荡 频率 ;\n(2) 反馈 系数 ;\n(3) 起 振 条 件 。 图 4\n资料 、 视 频 更 新 : www. e-studysky. com; QQ: 2696670126; Tel: 18801294486",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "bad865c7-b433-5f49-ac7e-65cc860f473f",
+      "fingerprint": "9728d25a614fda7a0e94b06c1bcc1fe7d11dccb703148d75530fddb24eadbff4",
+      "document_id": 25,
+      "label": "2011年 · 1·选择2",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "2、 要 把 方 波 电压 转换 成 三 角 波 电压 ， 应 选用 )\nA， 比 例 运算 电路 B. 积分 运算 电路\nC.， 微 分 运算 电路 D， 加 法 运算 电路",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "30c4f101-0aa3-5a89-af55-44f253621daa",
+      "fingerprint": "2bafd74cf874450539a6a4410612f404a8863285a2a8f7b3f7d25f9b99c0d81b",
+      "document_id": 25,
+      "label": "2011年 · 1·选择3",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "3、 某 多 级 放大 器 级 联 电路 ， 其 输入 信号 源 内 阻 扩大 ， 输 出 负载 很 小 ， 则 答\n入 级 、 和 输出 级 分 别 宣 选用 ( )\nA， 共 集 电 路 、 共 集 电路 ; B。 共 射电 路 、 共 集 电路\nC. 共 集 电路 、 共 射电 路 D. 共 基 电 路 、 共 射电 路",
+      "status": "included",
+      "bucket": "multistage",
+      "tags": [
+        "transistor",
+        "multistage"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor、multistage"
+      ]
+    },
+    {
+      "uuid": "f00c43cd-0f4a-5c19-b0e7-008d6a9847ee",
+      "fingerprint": "23353c8eb9a088ee4f8f11c54ecd93e0f1122048612df0d6cc209b77be8cd7eb",
+      "document_id": 25,
+      "label": "2011年 · 1·选择6",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "6、 欲 得 到 电压 -电流 转换 电路 ， 应 在 放大 电路 中 引入 ( )\nA. 串联 电压 负 反 馈 B. 串联 电流 负 反馈\nC. 并 联 电压 负 反 馈 D. 并 联 电流 负 反 馈",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "fdbd14f6-2825-5b30-acd3-c3255695da47",
+      "fingerprint": "161d45a3bf61be6f0db19f44a83a85cac84c5417f29b86d86850a268bf1e6868",
+      "document_id": 25,
+      "label": "2011年 · 1·选择12",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "12、 图 1-12 所 示 电 路 中 ， 二 极 管 的 正 向 导 通 电压 与\n外 加 电源 电压 相 比 不 可 忽略 , 而 二 极 管 的 正 向 电阻 相 比 man\n外 接 电阻 可 以 忽略 , cet RET UBT\n哪个 图 近似 表示 ( ) |\ni\ni\nv\n(B) © )\n(A)",
+      "status": "included",
+      "bucket": "diode",
+      "tags": [
+        "diode"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：diode"
+      ]
+    },
+    {
+      "uuid": "077d0f39-ec88-52d7-ad77-8ac3f48624bd",
+      "fingerprint": "e402d40451e15e42b4d8f87580da30770f73a14d3719eb87fed76afa33c35399",
+      "document_id": 25,
+      "label": "2011年 · 第3题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "三 、 (15 分 ) 电路 如 图 3 所 示 。\n(3) 若 UVo 的 最 大 幅 值 为 +14Y， 输 入 电压 最 大 值 Wamax = 10mV,\nUrzmax = 20mVy, 最 小 值 均 为 OK， 则 为 了 保证 集成 运 放 工作 在 线性 区 ，\nRz 的 最 大 值 为 多 少 ? (5 分 )\nRR,\nRok\n图 4",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "e41be85b-be93-58db-8129-6087d0e8842f",
+      "fingerprint": "7862272395fbfc804279da99350202190fe08a7f1d50cd61d0027e712710c269",
+      "document_id": 25,
+      "label": "2011年 · 第4题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "四 、 《15 分 ) 0CL 功 率 放 大 电路 如 图 4， 其 中 4 为 理想 运 放 。\n已 知 Kasl =Vees2 = 1V, R, = 80。\n(1) 求 电路 最 大 输出 功率 Pomax (5 分 )\n(2) 求 电路 电压 放大 倍数 4y = 名 ? (5 分)\n(3) 简 述 记 、Dz 的 作用 。 (5 分 )\nRFS10KQ\nRL\n+\nvi) 2Ko",
+      "status": "included",
+      "bucket": "power",
+      "tags": [
+        "opamp",
+        "power"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp、power"
+      ]
+    },
+    {
+      "uuid": "c66a4f31-f57f-50a7-ae2e-35613571a61a",
+      "fingerprint": "0ecfbed2bbdf47067c6e5823fec61527366079b3ae05ef6e7264277c0ca579eb",
+      "document_id": 25,
+      "label": "2012年 · 1·填空1",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "1、 由 了 PN 结构 成 的 半导体 二 极 管 具有 的 主要 特性 是 性 。",
+      "status": "included",
+      "bucket": "diode",
+      "tags": [
+        "diode"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：diode"
+      ]
+    },
+    {
+      "uuid": "dd41a25d-7eef-5a7b-9190-e01941e0e753",
+      "fingerprint": "1423ae1a9743cc2211fe3b57e6bceb9c2e90a5c717eceb0e7bb9bd14e76e3d60",
+      "document_id": 25,
+      "label": "2012年 · 1·填空2",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "2、 半 导体 二 极 管 的 主要 参数 为 、 .",
+      "status": "included",
+      "bucket": "diode",
+      "tags": [
+        "diode"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：diode"
+      ]
+    },
+    {
+      "uuid": "a3decb93-7591-5c03-8127-6e18c6f99f99",
+      "fingerprint": "57ebcd80bd35529ef68ffc0632c1eaea8c304aa5115a4ee2ffe74002ce81c139",
+      "document_id": 25,
+      "label": "2012年 · 1·填空3",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "3、 双 极 型 晶体 管 工作 在 放大 区 的 偏 置 条 件 是 发 射 结 、 集 电 结",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "1c901621-9830-522e-a960-4cf5881ea95f",
+      "fingerprint": "98ea8852fbc44b6fea7e53dcf8b07e658a852a02f646cb2d2542d7f292ddb753",
+      "document_id": 25,
+      "label": "2012年 · 1·填空8",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "8、 集 成 运 放电 路 的 频率 补偿 方法 可 分 为 和 两 大 类 。",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "a281495b-1f6a-5a99-9157-392ecca9e3d0",
+      "fingerprint": "f02f84c54fc1840d45bc9dc8df7a2e89233d9ae840c354c09b11f0da89bdb124",
+      "document_id": 25,
+      "label": "2012年 · 1·填空9",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "9、 差 分 放大 器 的 基本 特点 是 放大 、 抑 制",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "differential"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：differential"
+      ]
+    },
+    {
+      "uuid": "7d3d1746-d4d6-5bba-98a9-630f1e966f88",
+      "fingerprint": "c270725a0659a19c7e155cc84f990845359b17da669d87f7a61ce8bda3064a72",
+      "document_id": 25,
+      "label": "2012年 · 1·填空11",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "11、 在 放大 电路 中 为 了 提高 输入 电阻 应 引入 SLAB, 为 了 降低 输出 电阻 应\n5|A____ 负 反馈 。",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "ed11d709-ea5f-5f05-92ba-e1569d824da7",
+      "fingerprint": "827fd9cb4dba133ecfa54c055cb587b60d18d55b855937adc811c0d1cb889cc1",
+      "document_id": 25,
+      "label": "2012年 · 第3题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "、 如 图 9 所 示 电 路 ， 设 运 放 是 理想 的 ， 试 求 w 的 值 。(11 a)\nIU",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "4c095007-d622-56ef-af59-f3a651140722",
+      "fingerprint": "f7d04054e3a3d60f44df88f875d2ad79cf48af07eb1a1b137c1b0fa863e3a9c2",
+      "document_id": 25,
+      "label": "2012年 · 第4题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "四 、 在 图 10 (a) 所 示 电 路 中 ， 运 放 和 二 极 管 D; 均 为 理想 的 ， 稳 压 二 极 管 D; 和\nD3 的 性 能 相同 ，V; = 6V，Vown =0.7V。(18 分 )\n(1) 试 求 Al 和 和 Az 电 路 的 电压 传输 特性 ， 画 出 ww 一 六 和 交 ~ 闷 波 形 ， (10 分 )\n(2) Fv, AK 10 Cb) 所 示 的 信号 ， 试 分 别 画 出 w 和 ws? 的 波形 ; (8 分 )\n(a) (@)\n10",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp",
+        "diode"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp、diode"
+      ]
+    },
+    {
+      "uuid": "d5a1422a-707f-587c-81f3-28faed88bd43",
+      "fingerprint": "df6f84a40914c75549a27efd7b2b2959e30768c8d5fdeeebb651fcbe5b73b3c6",
+      "document_id": 25,
+      "label": "2013年 · 1·填空4",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "4) 在 共 射 〈( 共 源 ) 放大 电路 中 ， 使 用 电流 源 电 路 的 目的 有 两 个 ， 分 别 是\n— fi",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "transistor",
+        "differential"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor、differential"
+      ]
+    },
+    {
+      "uuid": "b66e9ffb-2b4c-5922-af86-3f4b554363c3",
+      "fingerprint": "a2c9b43b02280744176dd0a605f77bc64146dfeaa0cc1112a0abb0a74b46d70b",
+      "document_id": 25,
+      "label": "2013年 · 1·填空7",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "7) 差分 放大 器 的 基本 特点 是 放大 5 HH",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "differential"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：differential"
+      ]
+    },
+    {
+      "uuid": "c01119b6-04db-526c-bf00-dfdb1014c825",
+      "fingerprint": "9b0ee7a2bc7223a081a5af5405bbb9cc976ab0d2ce5fbe26a89ea7d98eaf61cb",
+      "document_id": 25,
+      "label": "2013年 · 2·选择1",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "D AARON T TBE, EERE RSL. O\nCA) 稳定 放大 倍数 ;人 恒 流 源 做 负载 CB) 抑制 温 漂 ; 差分 对 管\nCC) 提高 输入 阻抗 ， 增 加 一 级 放大 电路 CD) 扩展 带宽 ， 采取 两 个 输入 端",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "differential",
+        "high_frequency"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：differential、high_frequency"
+      ]
+    },
+    {
+      "uuid": "659a62e3-e0e1-542c-b4f4-19d528dadb79",
+      "fingerprint": "873d129917901e943532d25f28d37a8d5278fa96443607929ab412f3079cff83",
+      "document_id": 25,
+      "label": "2013年 · 2·选择2",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "2) 由 于 电路 中 存在 非 线 性 器 件 ， 会 有 非 线性 失真 ， 当 引入 适当 的 负 反 馈 后 ，\n会 非 线 性 失真 ， 信 噪 比 。( )\nCA) 不 改变 ; 不 改变 CBD 剔除 ， Her CC) 减 小 ; 不 改变 CD) 减 小 ;提高",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "26f0726c-7c09-5ac4-9a40-e429776e4007",
+      "fingerprint": "5d85b89806ce796001268e71a5372ead8a0108395ec5aadb6b934d0db52a4f00",
+      "document_id": 25,
+      "label": "2013年 · 2·选择5",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "5) aR, BPE 状态。()\nCA) 二 极 管 ;， 正 向 导 通 (B) 特殊 的 二 级 管 ， 反 向 击 穿\n(C) 特殊 的 晶体 管 ， 反 向 截止 ”〈D) 三 级 管 ， 反 向 击 穿",
+      "status": "included",
+      "bucket": "diode",
+      "tags": [
+        "diode"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：diode"
+      ]
+    },
+    {
+      "uuid": "8db3ae0c-22d1-5969-8a52-92f1926da6e4",
+      "fingerprint": "b14ab3a35e96310e6903314aa6e28189c5928604b7abcae1e5a2299014653382",
+      "document_id": 25,
+      "label": "2013年 · 2·选择7",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "7) 通用 集成 运 放 适 合 放 大 〈)。\n(A) 高 频 信 号 (BD) 低频 信号 〈C) 任何 频率 信号 〈D) 大 信和 号",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "8e9cea92-0bc1-5d23-aa88-74d932f39cde",
+      "fingerprint": "52fe922cacb0df7c1b27dff56503ebf78788ffe182d9c20643154da932a33af4",
+      "document_id": 25,
+      "label": "2013年 · 第4题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "四 .〈10 分 ) 共 集 - 共 发 组 合 放大 的 交流 电路 如 图 4 所 示 。 已 知 Ti，T2 管 的 参数 ，\nCoe=2pF，gnm=40mS，re=2.5SkQ，rb=0Q，fr=400MHz。 试 求 该 电路 增益 带宽 积 。\n王 回 扫 码 看 答案 与 讲解\n网 学 天 地 独家 录制\nBAAR: 电子 线路 第 3 页 共 4 页\n资料 、 视 频 更 新 : www. e-studysky. com; QQ: 2696670126; Tel: 18801294486",
+      "status": "included",
+      "bucket": "high_frequency",
+      "tags": [
+        "transistor",
+        "high_frequency"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor、high_frequency"
+      ]
+    },
+    {
+      "uuid": "31e8ae08-5fb2-5716-a0e7-613a4f122912",
+      "fingerprint": "8b39cd5db218da3713b4631ece799fb59e7da9440e677d54f3253eaf6bf9faf6",
+      "document_id": 25,
+      "label": "2013年 · 第5题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "五 . (6 分 ) 如 图 5 所 示 失 调 电流 补偿 电路 。 当 IBN=I+IE =100nA, Ipp=80nA, (8\n输出 误差 电压 Us=0V IN, oR: 1) 平衡 电阻 Rz 的 值 是 多 少 ? 2) 运 放 输入 端的 电\n压 Up» Une +Vcc (15V) gm\nJu '—~\"300k\n=> 一\nIbn\nae\ntook}\n图 5\n图 6",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "7126137a-70e1-5b31-99b1-aedcd0717a1a",
+      "fingerprint": "863e755838fbf570fb2484474acc8897f23b06ac061a69cca2e474c0ef2d585e",
+      "document_id": 25,
+      "label": "2014年 · 1·填空2",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "由 PN 结构 成 的 半导体 二 极 管 具 有 的 主要 特性 是 性 。",
+      "status": "included",
+      "bucket": "diode",
+      "tags": [
+        "diode"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：diode"
+      ]
+    },
+    {
+      "uuid": "b6645ee0-c0dd-50be-9267-da446a360757",
+      "fingerprint": "0e17fb6d337437a72e79c1dd7e53a48cd0d3f8fde02b289c330c9fba7848f782",
+      "document_id": 25,
+      "label": "2014年 · 1·填空3",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "上 上 wm oN\n设 二 极 管 的 端 电压 为 Q， 饱 和 电流 为 玉 ， 则 二 极 管 的 电流 方程 为\n互补 输出 级 采用 共 集 电极 形式 主要 是 为 了",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor",
+        "diode"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor、diode"
+      ]
+    },
+    {
+      "uuid": "c4dfd9c4-4573-52ef-b200-a2854b1dbcb6",
+      "fingerprint": "5da8f9e7f0ae32c9f138e2359dc3d96ec6193ef41779a25492c76b854c9e01c4",
+      "document_id": 25,
+      "label": "2014年 · 2·选择2",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "2. 选用 差分 放大 电路 的 原因 是 〈 )。\nA. 克服 温 漂 ”B. 提高 输入 阻抗 C. 稳定 放大 倍数 。” D. 减 小 输出 阻抗",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "differential"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：differential"
+      ]
+    },
+    {
+      "uuid": "53aea279-d855-549c-9adc-4515ad18ea9a",
+      "fingerprint": "7eebc7fe5e0dbdbdca36f7ae4eeb8144ffd20b6b44ca9a98d9ece9f965b488e3",
+      "document_id": 25,
+      "label": "2014年 · 2·选择3",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "3. 集成 运 放 电路 采用 直接 耦合 方式 是 因为 〈 )。\nA. 可 获得 很 大 的 放大 倍数 B. 可 使 温 漂 小\nC. 集成 工艺 难于 制造 大 容量 电容 C. 可 获得 很 大 的 输入 阻抗",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "174d0c0f-23a8-5938-8278-483ea3d0ec74",
+      "fingerprint": "115807793ae19b9cf3596bdb291e7d2287725a13f83fd14645975f43a09dfe63",
+      "document_id": 25,
+      "label": "2014年 · 2·选择5",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "5. 所 谓 负 反馈 就 是 在 保证 输入 量 不 变 的 情况 下 ， 引 入 反馈 后 〈 )。\nA. 输出 量 增 大 ”B. 净 输 入 量 减 小 C. 净 输 入 量 增 大 “”D. 输出 量 减 小",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "7f3c7dd4-7053-593b-987b-98c6cf6d95a0",
+      "fingerprint": "63aea74935b45b538f1bc03470035bef95f86a3daead358df3b4badeaf1effaf",
+      "document_id": 25,
+      "label": "2014年 · 2·选择6",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "6. 为 了 增 大 放大 电路 的 输入 电阻 ， 一 般 采 用 〈 ) 负 反 馈 。\nA. 电压 B. 电流 C. 串联 D. 并 联",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "5f26b5a9-e3b8-5b88-91ef-e89601770fb1",
+      "fingerprint": "3f535566a2fd09a544b660b523c485dd45135b886f7b43070034ac757edfa37c",
+      "document_id": 25,
+      "label": "2014年 · 2·选择8",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "8. 功率 放大 电路 的 最 大 输出 功率 指 的 是 在 输入 电压 为 正弦 波 时 ， 输 出 基本 不 失\n真情 况 下 ， 负 载 上 可 能 获得 的 最 大 (Do\nA. 交流 功率 B. 直流 功率 C. 平均 功率 D. 有 用 功率",
+      "status": "included",
+      "bucket": "power",
+      "tags": [
+        "power"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：power"
+      ]
+    },
+    {
+      "uuid": "d27066d5-83ac-5619-9917-d37d0ab655dd",
+      "fingerprint": "5e52abb009888f2ad5ad5464372160b60212f5439a9dfa07b921a153b863337c",
+      "document_id": 25,
+      "label": "2014年 · 4·题3",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "(3) 若 加 的 最 大 幅 值 为 +15SV， 输 入 电压 最 大 值 mma=15SmV，zxpmas=30mV， 最\n小 值 均 为 0V， 则 为 了 保证 集成 运 放 工 作 在 线性 区 ，R 的 最 大 值 为 多 少 ? 〈4 分 )\nit\n2， 单 级 放大 电路 如 图 ， 在 输入 信号 的 中 频段 C'、Cz、C3: 对 交流 短路 ， 已 知 :\n及 -=12V,R =150kO , R, =150KQ., Ro =5.lkQ ,R =2ko,R =10k2 ,7=100，\nCi",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "86b62f7b-85fb-5da0-bb16-559ddca680cc",
+      "fingerprint": "a77a4d90671c3d5a369e58dcebf13d8ade736d69bba06dedc76018c0c21d6369",
+      "document_id": 25,
+      "label": "2015年 · 1·填空2",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "2. 二 极 管 的 主要 参数 、 四 s 。(4 分 )",
+      "status": "included",
+      "bucket": "diode",
+      "tags": [
+        "diode"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：diode"
+      ]
+    },
+    {
+      "uuid": "a8784689-f549-55b8-8afa-b0c82073b422",
+      "fingerprint": "ea9acd70ab3dc9ef53c916b1f01b2cec5c1a6fadc09e57dc8fda35a7060998cd",
+      "document_id": 25,
+      "label": "2015年 · 2·选择1",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "1. 当 温度 升 高 时 ， 二 极 管 的 反 向 饱和 电流 将 〈  )。\n增 大 B. 不 变 C. wR)",
+      "status": "included",
+      "bucket": "diode",
+      "tags": [
+        "diode"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：diode"
+      ]
+    },
+    {
+      "uuid": "50259e8a-f51a-5f12-83c6-134623da442d",
+      "fingerprint": "b3d8da974943d7f51eef8ee1daa425f1b6d56f0fe2f921938112f965a442c390",
+      "document_id": 25,
+      "label": "2015年 · 2·选择3",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "3. 工 作 在 放大 区 的 某 三 极 管 ,如 果 五 从 10hA 增 大 到 20hA, 天 从 ImA 变 为 2.5mA，\nMAEM PAN Co Ri 回 扫 码 看 答案 与 讲解\nA. 100 B. 150 C. 125 it 网 学 天 地 独家 录制\n4， 互 补 输出 级 采用 共 集 形式 是 为 了 使 (  )。 ” 回 你 别 烛 上 www.e-studysky.com\nA. 电压 放大 电路 B. 不 失真 输出 电压 大 Cy 带 负载 能 力 强",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "d9d336b0-7019-57d1-9e9a-2b358c402109",
+      "fingerprint": "ec34100dfe8992fd86ab6b002ef9312c86e9839c120637f5d27ac189d82842a5",
+      "document_id": 25,
+      "label": "2015年 · 2·选择5",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "5. ASMA BARE RAGHU HAS RH Co\n和 A， 共 集 放 大 电路 B. 共 射 放 大 电路 C. 共 基 放大 电路",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "c32b6427-fb21-59b4-9f31-21e85d292dda",
+      "fingerprint": "ee1c18c1ec65d590e88105c9b47459d15bbef5489b032d005102aec247b92a1b",
+      "document_id": 25,
+      "label": "2015年 · 2·选择6",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "6 放大 电路 在 高 频 信号 作用 时 放大 倍数 数值 下 降 的 原因 是 ( 。 )。\nAL 半导体 管 极 间 电 容 和 分 布 电容 的 存在\nBe 半导体 管 的 非 线性 特性\nC. 放大 电路 的 静态 工作 点 不 适应",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": true,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "dcaf6a33-5665-50bf-9161-0918a55a5b4b",
+      "fingerprint": "2d1843d1d7b20698ee39d4408b56853b2976aaadd8690c97c441ca590df0baf3",
+      "document_id": 25,
+      "label": "2015年 · 2·选择7",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "7. 在 输入 量 不 变 的 情况 下 , 若 引 入 反馈 后 ( 。 )， 则 说 明 引 入 的 反馈 是 负 反馈 。\nA. 和 输出 量 减少 BL 净 输 入 量 增 大 C. 净 输 入 来 量 减 小",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "27a9aafa-7045-5f2f-a38f-6096e0e3d9c0",
+      "fingerprint": "c77347ced45fb31def8df4ae1b89ac6d67e4fa2d97b7b22a017457b77f234215",
+      "document_id": 25,
+      "label": "2015年 · 2·选择8",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "8 功率 放大 电路 的 转换 效率 是 指 〈( ，)。\n和 A， 输 出 功率 与 晶体 管 的 消耗 的 功率 比\nB. 最 大 输出 功率 与 电源 提供 的 平均 功率 之 比\nCo 晶体 管 所 消耗 的 功率 与 电源 提供 的 平均 功率 之 比",
+      "status": "included",
+      "bucket": "power",
+      "tags": [
+        "power"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：power"
+      ]
+    },
+    {
+      "uuid": "3e0ee1a0-13e1-5b24-befb-be321ea4129f",
+      "fingerprint": "7846ec5828bf3984cabb6437ec149ddeca39a6404be690a86ba2c1eeb1ea920d",
+      "document_id": 25,
+      "label": "2016年 · 1·填空4",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "4 互补 输出 级 采用 共 集 形式 的 主要 目的 是 。(2 分 》",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "a3628bfe-13f7-514e-ae34-baa193c08cae",
+      "fingerprint": "9c521d230fc8f1fcfd961e7a0750249900475a9de49f8a481d05887710eab345",
+      "document_id": 25,
+      "label": "2016年 · 2·选择5",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "如 果 想 把 方 波 电压 信号 转换 成 三 角 波 电压 信号 ， 应 采用 Ce\nwn\nA， 比 例 运算 电路 B， 积 分 运算 电路 C. 微分 运算 电路",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "e90ef3a9-11ca-5443-b53d-87811e3d3eb0",
+      "fingerprint": "b82c526ebcec1977680e7113610340d79dcdd93d023343be425f752771ed3be7",
+      "document_id": 25,
+      "label": "2016年 · 2·选择6",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "6. 功率 放大 电路 的 最 大 输出 功率 是 在 输入 电压 为 正弦 波 时 ， 输 出 基本 不 失真 的\n情况 下 ， 负 载 上 可 能 获得 的 最 大 (  )。\nA. 直流 功率 B. 平均 功 率 C. 交流 功率",
+      "status": "included",
+      "bucket": "power",
+      "tags": [
+        "power"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：power"
+      ]
+    },
+    {
+      "uuid": "9f2a17cc-bb76-5108-b008-c8f80a0bd6f6",
+      "fingerprint": "3c86647d255f5ff8860eb0546e01e687b62b4ee11d84d51b13344c5f3ffcd411",
+      "document_id": 25,
+      "label": "2016年 · 2·选择7",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "7. 若 要 求 放大 电路 取 用 信号 源 的 电流 小 ， 而 且 输 出 电压 不 随 负载 变化 而 变化 ，\n在 放大 电路 中 应 引入 的 负 反馈 类 型 为 ( 。 )。\nA. 电流 串联 B. 电压 串联 C. 电流 并 联 D. 电压 并 联",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "bd33c3bf-8d71-5031-b4d1-c6bb78c5f64f",
+      "fingerprint": "a5bc6787c8c9d5f98c465728c0c78741c166d8ce57362cf9ba456dc255eb32d5",
+      "document_id": 25,
+      "label": "2016年 · 2·选择8",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "8. 为 了 使 高 内 阻 信号 源 与 低 阻 负载 能 很 好 地 配合 ， 可 以 在 信号 源 与 低 阻 负载 间\nBEA ( )。\nA. 共 射 电路 B. 共 基 电路 C. 共 集 电路",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "0c7e5b1e-68c3-54ce-b976-3b4c612d1f65",
+      "fingerprint": "634567f8427589c8396b35eaed78850c5d8448c70632be8acc58762407e9ac17",
+      "document_id": 25,
+      "label": "2016年 · 2·选择9",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "9 集成 运 放 的 输入 级 多 采用 差分 放大 电路 的 目的 是 ( 。 )。",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "opamp",
+        "differential"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp、differential"
+      ]
+    },
+    {
+      "uuid": "b91a93c7-0ca0-5c0a-bb11-30b69ff9f657",
+      "fingerprint": "d8dff4ea4d5490630a9ff2ab7cf076b1058ff04b9e5939a96b6431fb73950173",
+      "document_id": 25,
+      "label": "2016年 · 3·题1",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "1. 在 直接 耦合 放大 电路 中 ， 抑 制 温度 漂移 的 方法 有 哪些 ? 〈9 分 )\n2 电路 如 图 所 示 ， 二 极 管 导 通电 压 Uo 8 0.7V, ELF Ur 5 26mV, HLA C 对",
+      "status": "included",
+      "bucket": "diode",
+      "tags": [
+        "diode"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：diode"
+      ]
+    },
+    {
+      "uuid": "71847503-e7d2-5d24-aae3-a92ff8f7b599",
+      "fingerprint": "f7d58af5761b405a75532ff04bb296c34fe1bb42ae77878bb55beb97c3b3041c",
+      "document_id": 25,
+      "label": "2016年 · 4·题1",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "1 如 图 所 示 多 路 电流 源 电路 ， 已 知 所 有 晶体 管 的 特性 相同 ，VBs 均 为 0.7V， 求\nTei, Ter. CASI B+ B) >> 3)\n; 7\n了 了\n“0 Ver\nevi",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "differential"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：differential"
+      ]
+    },
+    {
+      "uuid": "f4d9b675-f373-56f3-94c2-e8b594e26fbe",
+      "fingerprint": "7bf772c99f609c033982150847a81c10815787e0cb6c9ec48728f1f50e3b2aed",
+      "document_id": 25,
+      "label": "2017年 · 1·填空2",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "2、 多 级 放大 电路 的 耦合 方式 有 5 z : 。 (4 分 )",
+      "status": "included",
+      "bucket": "multistage",
+      "tags": [
+        "multistage"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：multistage"
+      ]
+    },
+    {
+      "uuid": "089c1d1a-a6ff-55e8-8274-686398f60fab",
+      "fingerprint": "257fdeda4c93d8a36edc02f44fc6e335e573ae3a79974b786b323b8166b84a31",
+      "document_id": 25,
+      "label": "2017年 · 1·填空4",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "4、 ”功率 放大 电路 的 主要 技术 指标 为 和 。 (2 分 )",
+      "status": "included",
+      "bucket": "power",
+      "tags": [
+        "power"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：power"
+      ]
+    },
+    {
+      "uuid": "f7fb425b-23a4-5e1c-ab0f-9cab126a7012",
+      "fingerprint": "764cce0e44d006be239fe86a44b312652a24e6c4a38d6a2ee69571ad8faf655c",
+      "document_id": 25,
+      "label": "2017年 · 1·填空5",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "5、 在 集成 运 放 的 使 用 中 ， 一 般 把 差 模 放 大 倍数 与 共 模 放 大 倍数 之 比 的 绝对\n值 叫 做 。 (2 分 )",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "opamp",
+        "differential"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp、differential"
+      ]
+    },
+    {
+      "uuid": "f19c03d0-9605-59cd-ab6f-d7d74cbc7158",
+      "fingerprint": "183857f6a05ff8d6746e0bb424d53e1402e7b2e0ff2f822a285d90d606aa2074",
+      "document_id": 25,
+      "label": "2017年 · 2·选择1",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "1、 当 温 度 升 高 时 ， 二 极 管 的 反 向 饱和 电流 将 ( ) 。\nA. 不 变 BLK OC) iD ARE",
+      "status": "included",
+      "bucket": "diode",
+      "tags": [
+        "diode"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：diode"
+      ]
+    },
+    {
+      "uuid": "85e82771-370a-5949-80d1-169484ea01f0",
+      "fingerprint": "3ed6632f169614a9091147834acbc45ff8efdd03c91c8ded0336f7dfd7d05b48",
+      "document_id": 25,
+      "label": "2017年 · 2·选择2",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "2. 当 晶 体 管 工作 在 放大 区 时 ， 反 射 结 电压 与 集 电 结 电压 应 为 ( ) 。\n和 A. 前 者 反 偏 、 后 者 反 偏 B. 前 者 正 偏 、 后 者 反 偏 C. 前 者 反 偏 、 后 者 正 偏",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "6dec59e8-3190-5532-8aa0-6c8b104d6453",
+      "fingerprint": "656bb686ae0988bbc16bcec49a890d9edf5cebca3ba479ae6236f9f07e9917de",
+      "document_id": 25,
+      "label": "2017年 · 2·选择3",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "3、 为 了 克服 温 漂 ,集成 运 放 的 输入 级 一 般 采 用 ( ”) 放 大 电路 。\nA. 差分 “B. 共 射 极 OC. 共 基 极 DL 共 集 电极",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "transistor",
+        "opamp"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor、opamp"
+      ]
+    },
+    {
+      "uuid": "a858c82c-e397-5b56-b908-3ba4d67b20a1",
+      "fingerprint": "2bbab1abbde1871a03f48e666222e124f426008db4be0284e70f5a4551634069",
+      "document_id": 25,
+      "label": "2017年 · 2·选择5",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "5、 要 想 减 小 电路 从 信号 源 获取 的 电流 ,增强 带 负载 能 力 ,应 在 放大 电路 中 引入\nC de .\nA. 电压 串联 负 反 馈 B. 电压 并 联 负 反馈 Sa\nC. 电流 串联 负 反 馈 Dz 电流 并 联 负 反馈 fn es",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "f1e267c5-4149-5d39-addf-c58c6402a4ec",
+      "fingerprint": "90f387bcf6538346207f3783d41671da10f99d34bdcc5495e42bf90bf21f3e58",
+      "document_id": 25,
+      "label": "2017年 · 2·选择7",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "7、 ”功率 放大 电路 中 功放 管 的 功 耗 一 般 用 ( RAR\n和 A. 平均 功率 BINT CZAR DAKE",
+      "status": "included",
+      "bucket": "power",
+      "tags": [
+        "power"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：power"
+      ]
+    },
+    {
+      "uuid": "5ea2d17a-5e75-5ba5-8851-f65c6b22c79d",
+      "fingerprint": "af6878c130c4373ace6df89156439e9c82936cfff45c2387e1b5fa1d18fa4b18",
+      "document_id": 25,
+      "label": "2018年 · 2·选择1",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "1、 ”关于 放大 电路 以 下 说 法 正确 的 是 ( ) 。\nA. 任何 放大 电路 都 有 功率 放大 作用\nB. 电路 中 各 电量 的 交流 成 分 是 交流 信号 源 提 供 的\nC. 放大 电路 中 输出 的 电流 和 电压 是 由 有 源 元 件 提供 的\nD. 由 于 放大 的 对 象 是 变化 量 ， 所 以 当 输 入 信号 是 直流 信号 时 ， 任 何 放大\n电路 的 输出 都 无 变化",
+      "status": "included",
+      "bucket": "power",
+      "tags": [
+        "power"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：power"
+      ]
+    },
+    {
+      "uuid": "67336f9e-f874-5348-bf5e-28fef8fb3ab4",
+      "fingerprint": "f557117ba29a3c165fa1b32315462e11205eeff29fbfd66b7db614002807206d",
+      "document_id": 25,
+      "label": "2018年 · 2·选择3",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "3、 ”关于 晶体 管 以 下 说 法 正确 的 是 ( ) 。\nA. 双 极 性 NPN 晶体 管 基 区 挨 杂 浓度 低 ， 集 电 区 挨 杂 浓度 高 ， 发 射 区 面积\n大\nB. 在 基本 共 射 放大 电路 中 ， 发 射 结 加 正 向 电压 ， 集 电极 加 反 向 电压 ， 扩 散\n运动 形成 发 射 极 电流 和 集 电极 电流\nC. 品 体 管 输入 特性 曲线 右 移 ， 一 是 由 于 温度 升 高 ， 二 是 由 于 发 射 极 和 集 电\n极 电 压 升 高\nD. 同一 型 号 的",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "c7059d93-9cab-51ce-bf48-b6231896b991",
+      "fingerprint": "9dbeffff7bcfb682001102d17b2fc0f5a1fd948b3e3e849db2c28da7a87876d5",
+      "document_id": 25,
+      "label": "2018年 · 2·选择4",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "4、 ”关于 负 反馈 及 其 对 电路 的 影响 以 下 说 法 正确 的 是 ( ) 。\nA， 引 入 负 反馈 可 以 扫 制 电路 内 部 产生 的 非 线性 失真 和 混入 输入 端的 非 线性\n信号\n阳 。 负 反馈 放大 电路 适 常 是 指引 入 了 交流 负 反 馈 的 放大 电路\nC， 信 号 源 为 内 阻 较 小 的 源 时 ， 需 要 引入 并 联 负 反馈 “ 回\n回 扫 码 看 答案 与 讲解\nD， 抑制 温 漂 并 展 宽频 带 应 引入 电压 负 反馈",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "2fd70089-7b19-51c0-8fa1-10c17532cb9a",
+      "fingerprint": "c1c94443891103e10544c68a34aec640071ca526a9bd55e4ad335911ce0bcebe",
+      "document_id": 25,
+      "label": "2018年 · 2·选择5",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "5、 ”关于 功率 放大 电路 以 下 说 法 错误 的 是 ( ) 。 :\nA. 功率 放大 电路 的 主要 技术 指标 是 最 大 输出 功率 和 转换 效率 ， 这 二 者 不 存\n在 直接 制约 因素\nB. 共 射 放大 电路 不 宜 用 作 功率 放大 电路 的 主要 原因 是 电源 提供 的 功率 始终\n不 变 ， 效 率 很 低\nC. 功率 放大 电路 的 最 大 输出 功率 一 般 指 输入 为 正弦 波 且 输出 基本 不 失真 条\n件 下 的 交流 有 效 值 功率",
+      "status": "included",
+      "bucket": "power",
+      "tags": [
+        "transistor",
+        "power"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor、power"
+      ]
+    },
+    {
+      "uuid": "c0ff860c-7f5a-533e-b871-0dc9f3b25a5b",
+      "fingerprint": "02c553920f58a99826f8124009470d33a14c351471f6125a96f0a242806cf654",
+      "document_id": 25,
+      "label": "2018年 · 第3题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "D. 功放 管 损坏 的 主要 原因 是 实际 耗 散 功率 超过 功率 管 额定 功率 ， 所 以 改善\n功率 管 的 散热 条 件 ， 可 以 在 同样 结 温 下 降低 最 大 耗 散 功率",
+      "status": "included",
+      "bucket": "power",
+      "tags": [
+        "power"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：power"
+      ]
+    },
+    {
+      "uuid": "62b9e1ad-701a-5bdb-bd8c-aafad3161d49",
+      "fingerprint": "a8c32d476ddc36ec29c66a0df310f463559bade5fc1b452baf814e78303df7ca",
+      "document_id": 25,
+      "label": "2018年 · 4·题6",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "6、 电路 如 图 11 所 示 ， 两 个 恒 流 源 为 电路 提供 静态 工作 点 ， 两 个 输入 端的 差\n值 Cun-un) 为 输入 电压 。T1 T2 为 第 一 级 放大 电路 ，T3，7T4 为 第 二 级 放\n大 电路 ，T5 一 T9 为 第 三 级 放大 电路 。 求 解 以 下 问题 : 〈14 分 )\n回 扫 码 看 答案 与 讲解\n1) “分 析 每 一 级 输出 的 极 性 ;\n2) 各 级 分 别 是 哪 种 基本 放大 电路 ; 网 学 天 地 独家 录制\nI\n3) 。 画 出",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "transistor",
+        "differential",
+        "multistage"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_static_dynamic": true,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor、differential、multistage"
+      ]
+    },
+    {
+      "uuid": "444d2595-7661-51a2-be9b-8a1933d22d1d",
+      "fingerprint": "0376f943f9bdc4cdf391954a2de6f10c09de81a966e9e4d957393ff908bb8748",
+      "document_id": 25,
+      "label": "2018年 · 4·题8",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "8、 输入 电压 和 输出 电压 的 关系 式 满足 u=l0uur-5uiz-4uisy 并 按 以 下 条 件 分 别\n设计 运算 电路 亏 给 出 电路 图 和 重要 参数 值 )-: (12 分 )\n1) 不 考虑 信号 源 内 阻 ， 采 用 单个 运 放 设计 电路 ;\n2) 。 信号 源 内 阻 是 可 变 电 阻 ， 需 要 减少 该 内 阻 的 影响 ， 设 计 电路 。",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "1b2b82c8-6560-5bd0-863b-288e6030b0f6",
+      "fingerprint": "bfb8fb89ff857ff2ae3a2d7ec12af4cc2b822bde606678b90196391f8038751c",
+      "document_id": 25,
+      "label": "2019年 · 1·填空1",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "1. 当 温 度 降低 时 ， 二 极 管 的 反 向 饱和 电流 将 ; 当场 效应 管 的 漏 极 电流\n从 lmA 变 为 2mA 时 ， 它 的 低频 跨 导 将 。",
+      "status": "included",
+      "bucket": "diode",
+      "tags": [
+        "diode"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：diode"
+      ]
+    },
+    {
+      "uuid": "b1d767b2-b87a-54e0-8f34-ff6710f4677d",
+      "fingerprint": "6a864f0f93b92696216aca9421b39307783cb89540ca1317747989b207e45f0e",
+      "document_id": 25,
+      "label": "2019年 · 1·填空3",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "3. 对 于 单 管 共 射 放大 电路 ， 当 电路 分 别 工 作 在 下 限 频 率 .用 和 上 限 频 率 记 时 ， 忆\n与 六 的 相位 关系 分 别 是 和",
+      "status": "included",
+      "bucket": "high_frequency",
+      "tags": [
+        "transistor",
+        "high_frequency"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor、high_frequency"
+      ]
+    },
+    {
+      "uuid": "3b05bc0d-b3e5-5827-9ce0-488e12fa7a14",
+      "fingerprint": "0991cfa912300a3f8c2ee42dd3c7b4667aaa456eaa26f424b170ae1d4b0033ca",
+      "document_id": 25,
+      "label": "2019年 · 1·填空5",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "5. 图 1 所 示 电 路 ，Ti 和 Tr SAA BE|U,,.|=3V5 [V-[=15V. R, =8Q, HB\n路 中 Di 和 D: 管 的 作用 是 为 了 消除 失真 ， 最 大 输出 功率 Piv =\npo + V..\nR\n工\nD,\n090 一 十\nT, - i\nD R,\nhe -\nbe — Va,",
+      "status": "included",
+      "bucket": "power",
+      "tags": [
+        "power"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：power"
+      ]
+    },
+    {
+      "uuid": "241fba4d-0a96-5605-ba94-691043328811",
+      "fingerprint": "88bb89479c90aef1faa96e0a02296ed75a670851a83b5862c398d69c98a1bcfb",
+      "document_id": 25,
+      "label": "2019年 · 1·填空6",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "6. 如 图 所 示 电 路 ， 已 知 集成 运 放 为 理想 运 放 ,， 最 大 输出 电压 为 +15SV。 设 m =1V,\n则 zw=_ OV; ARR, Ma, = Ve\n第 1 页 共 8 页\n资料 、 视 频 更 新 : www. e-studysky. com; QQ: 2696670126; Tel: 18801294486",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "df84edc1-65e9-5504-86e6-802f7d098521",
+      "fingerprint": "95f05d054d00738e8af4e01705355528e7ae094c273c89688eec5967e62854e5",
+      "document_id": 25,
+      "label": "2019年 · 2·选择2",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "2. 欲 减 小 电路 从 信号 源 索 取 的 电流 , 增 大 带 负载 能 力 ， 应 在 电路 中 引入 ( 。 )。\nA. 电压 串联 负 反 馈 B. 电压 并 联 负 反馈\nC. 电流 串联 负 反馈 D. 电流 并 联 负 反馈",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "8f4b5201-2513-5ac6-80a3-d9d7f4430587",
+      "fingerprint": "8572b8b5e92cc0a52b0679e2e8d94dd39beb7a0e05211988dc375b64f90356f3",
+      "document_id": 25,
+      "label": "2019年 · 2·选择4",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "4. 功率 放大 电路 的 转换 效率 是 指 CO)\nA. 输出 功率 与 晶体 管 所 消耗 的 功率 之 比\n最 大 输出 功率 与 电源 提供 的 平均 功率 之 比\nsoe\n晶体 管 所 消耗 的 功率 与 电源 提供 的 平均 功率 之 比\n.输出 功率 与 电源 提供 的 平均 功率 之 比",
+      "status": "included",
+      "bucket": "power",
+      "tags": [
+        "power"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：power"
+      ]
+    },
+    {
+      "uuid": "564277ee-2949-590e-9b62-9f222b6d147e",
+      "fingerprint": "887617ecce46c1e9f77ed9c7a70fc401afa10781c4dce9e34d1869adf2b64079",
+      "document_id": 25,
+      "label": "2019年 · 3·题8",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "8. 电路 如 图 所 示 , 已 知 : Anh TAC, =4pF, f, =50MHz, 7, =100Q, f= 80.\n求解 以 下 参数 : 15 分 )\nC1) 中 频 电压 放大 倍数 ;\n(2) 上 限 截止 频率 记 和 下 限 截止 频率 f, 。\n第 8 页 共 8 页",
+      "status": "included",
+      "bucket": "high_frequency",
+      "tags": [
+        "high_frequency"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：high_frequency"
+      ]
+    },
+    {
+      "uuid": "e856eb54-e942-5113-9837-971a790ff632",
+      "fingerprint": "f0f80edb70973c51bc3d66f9a1d948da8bc746e489ff3ca9b33581be11c84a33",
+      "document_id": 25,
+      "label": "2020年 · 1·选择4",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "4、 串联 型 稳 压 电路 需要 引入 负 反 馈 ， 关 于 该 反馈 以 下 说 法 错误 的 是 (  ) 。\nA. 引入 的 是 电压 负 反 馈\nB. 满足 深度 负 反馈 条 件\nC. 引入 的 反馈 不 能 使 电路 产生 自 激\nD. 当 调整 管 工 作 在 饱和 状态 时 ， 负 反馈 才 起 作用",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "6192ea7b-0e22-5f78-9b27-9026e67c34cd",
+      "fingerprint": "5e9689d4c10ab362e59d380134803bc521c56104d6f815e09ffb81880198dfff",
+      "document_id": 25,
+      "label": "2020年 · 1·选择5",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "5、 关于 功率 放大 电路 与 电压 放大 电路 ， 以 下 说 法 不 合适 的 是 CO) 。\nA. 前 者 比 后 者 效率 高\nB. 在 电源 电压 相同 的 情况 下 ， 前 者 一 定 比 后 者 的 最 大 不 失真 输出 电压 大\nC. 在 电源 电压 相同 的 情况 下 ,前 者 比 后 者 输出 功率 大\nD. 都 使 输出 功率 大 于 信号 源 提供 的 输入 功率",
+      "status": "included",
+      "bucket": "power",
+      "tags": [
+        "power"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：power"
+      ]
+    },
+    {
+      "uuid": "9dbd72d4-1ae5-5ed7-a92a-2ba0525a9c0b",
+      "fingerprint": "fc2395a3cf94cdb3dca8608551b6c4c9916de1e25c9728911479376c6361ffee",
+      "document_id": 25,
+      "label": "2021年 · 1·填空1",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "1. 两 只 稳 压 值 为 6V、8V 不 同 的 稳 压 二 极 管 串联 有 种 不 同 的 稳 压 值 ， 分\n别 是",
+      "status": "included",
+      "bucket": "diode",
+      "tags": [
+        "diode"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：diode"
+      ]
+    },
+    {
+      "uuid": "4b71d042-1f6b-58e6-a703-d5c0449b6abd",
+      "fingerprint": "3a86399385b50d3cff537243a1f954f21b3af06edca245bc7098067d6f25b585",
+      "document_id": 25,
+      "label": "2021年 · 1·填空5",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "5. OCL Lt BTL 的 电源 ， 转 换 效率 低 。",
+      "status": "included",
+      "bucket": "power",
+      "tags": [
+        "power"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：power"
+      ]
+    },
+    {
+      "uuid": "76eed12c-9510-5b41-89a5-21b11b719997",
+      "fingerprint": "f6dde876f72777d7b8ab3c7ebb4e5b92cce8b717b10c3a4112c98351f5d7bbad",
+      "document_id": 25,
+      "label": "2021年 · 1·填空7",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "7. 选择 运 放 。 (题目 不 全 )",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "940af944-4e7d-55a4-9ac5-ced925a882d1",
+      "fingerprint": "bf7550ef6d5089ce120db76558f3b7011f48a902dab7d76cd33477bbfb78c173",
+      "document_id": 25,
+      "label": "2021年 · 1·填空9",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "9. 运 放 输出 懋 什么 时 候 最 大 ， 在 什么 状态 ?",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "8bacbd51-837e-5a02-ab17-9b38ed858cae",
+      "fingerprint": "e028afd5d5262070031d6fca3b9db8aadba9d2f68f700e3bcb21c6e0c3aaaa09",
+      "document_id": 25,
+      "label": "2021年 · 3·题8",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "8. 电路 如 图 所 示 ， 已 知 五 和 了 的 饱和 管 压 降 |ress|= 2V ， 直 流动 耗 可 忽略 不 计 ，\nOt,\n18V\nR, *\nT,\no—wwe Nl oy\n_anaap 2 +\neT vp. R\nLr =2K0 A 4oz\nR;\nWV.\noO\nR, -18V\nWW\n(1) Dy D, 的 作用 分 别 是 什么 ?\n(2) 求 负载 上 可 能 获得 的 最 大 输出 功率 已. 和 电路 的 转换 效率 7\n(3) 五 和 也 的 三 个 极限 参数 Tv、Uagjcso、 P",
+      "status": "included",
+      "bucket": "power",
+      "tags": [
+        "feedback",
+        "power"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback、power"
+      ]
+    },
+    {
+      "uuid": "2356ce7c-82be-5b8e-91f9-c5af16017b65",
+      "fingerprint": "f1cbeac1f4dc4ac12a910f8b9e962da15b30b60bce509ff9c6ee18ddb9acb5cd",
+      "document_id": 25,
+      "label": "2022年 · 1·填空3",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "双 极 性 晶体 管 基本 放大 电路 组 态 有 共 射 、 共 基 和",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "0eb1cfb3-969b-58f3-86fb-607eabf055c3",
+      "fingerprint": "e7b09ad62f5ff3fa587c091287c09aeb26f2db01ae53285d004105a72d0ded5f",
+      "document_id": 25,
+      "label": "2022年 · 1·填空5",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "5. 引入 负 反 馈 后 ， 电 路 的 通 频 带 会",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback",
+        "high_frequency"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback、high_frequency"
+      ]
+    },
+    {
+      "uuid": "d7a34401-48e9-5c2a-8847-05b58962fc39",
+      "fingerprint": "bd8dff8cf0fe515549124cfc5799b711817165efb71065e80c56b50543135a38",
+      "document_id": 25,
+      "label": "2022年 · 2·选择4",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "4. 为 了 使 高 内 阻 信 号 源 与 低 阻 负载 能 很 好 地 配合 ， 可 以 在 信号 源 与 负载 间接 入\n一 个 ( ，) 组 态 放大 电路 。\nA. 共 射 放大 电路 B. 共 基 放大 电路\nC.， 共 集 放 大 电路 D. 共 源 放大 电路\n5， 互 补 输出 级 采用 共 集 形式 是 为 了 使 ( 。) 。\nA. 抑制 温 漂 B. 电压 放大 电路\nC. 不 失真 输出 电压 大 D. 带 负载 能 力 强",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "85d2f963-c261-5ffe-804d-322297e46208",
+      "fingerprint": "4777d6b0fa3be695b31a1befe2d77901c229ecfa15d35a2d5e754943f085ca5d",
+      "document_id": 25,
+      "label": "2022年 · 2·选择7",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "7. 功率 放大 电路 的 最 大 输出 功率 是 在 输入 电压 为 正弦 波 时 ， 输 出 基本 不 失真 情\n况 下 ， 负 载 上 可 能 获得 的 最 大 (  ) 。\n第 2 页 共 5 页",
+      "status": "included",
+      "bucket": "power",
+      "tags": [
+        "power"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：power"
+      ]
+    },
+    {
+      "uuid": "b48a5afb-b220-50f2-9096-403b6a405c5f",
+      "fingerprint": "64ee9cac40968019f50cad230743fa93318e3b42793146331ebb49efdb59129e",
+      "document_id": 25,
+      "label": "2022年 · 3·题1",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "1. (75S) 简 述 至 少 5 个 集成 运 放 的 性 能 指标 并 解释 。",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "7d9d2bfc-a05a-5dc4-878b-8cd9850db86c",
+      "fingerprint": "409ff44373c640528155c39345cf811c2bea08ba0006c3f21ada24ce0df997a3",
+      "document_id": 25,
+      "label": "2022年 · 3·题4",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "4. (16 分 ) OCL 功放 电路 如 图 所 示 ， 九 管 和 Tose EAI, GMAT\n率 为 Po =16W， 饱 和 管 压 降 Uces=2V, HR RL=2Q. WELZ:\nC1) WAHT Ri Ros Rsv Diy Do fi (EAA?\n(2) 求 电源 电压 Voce",
+      "status": "included",
+      "bucket": "power",
+      "tags": [
+        "power"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：power"
+      ]
+    },
+    {
+      "uuid": "dd978caf-1185-5a0f-9ae0-f92455495659",
+      "fingerprint": "d63bc09834dbc12dacf7e4dc56afd67c6bd0ab7aabbe735f7122bb0f87dca340",
+      "document_id": 25,
+      "label": "2023年 · 1·填空2",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "、 双 极 型 晶体 管 基本 三 种 接 法 ， 放 大 电流 不 放大 电压 的 是\nv2",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "f98d1987-6328-5bf1-a849-5c6455cecf62",
+      "fingerprint": "945b553dc16bcdef678b76c8b4ef358bcb59b787dba53bd2401f4ab83ce56b69",
+      "document_id": 25,
+      "label": "2023年 · 1·填空5",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "、 功 率 放大 电路 有 0CL， 变 压 器 乙 类 推 挽 等 ， 实 现 阻 容 变换 的",
+      "status": "included",
+      "bucket": "power",
+      "tags": [
+        "power"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：power"
+      ]
+    },
+    {
+      "uuid": "0595710d-9808-566a-ae8b-640d5981bd8b",
+      "fingerprint": "d4d76b904f1d7dedcdbc8b23e6c60862e9de68fdc6082187718903162901919d",
+      "document_id": 25,
+      "label": "2023年 · 2·选择1",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "1、 有 源 负 载 共 射 放大 电路 优点 错误 (  ) 。\nA、 放 大 倍数 高 。 B、 减 小 温 漂  c、 频 带宽 D、 都 不 正确",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "transistor",
+        "differential",
+        "high_frequency"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor、differential、high_frequency"
+      ]
+    },
+    {
+      "uuid": "438a743b-e608-568e-b0f2-e18c6672f3a5",
+      "fingerprint": "b74472e7cafb6698c92bcc032d504a886ed76dd01780ed82564d9f8e3a7ac241",
+      "document_id": 25,
+      "label": "2023年 · 2·选择3",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "、 集 成 放大 电路 中 ， 共 射 通常 作为 中 间 级 ， 原 因 。",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "cccba94a-90c4-56a3-ad74-d61770d315a9",
+      "fingerprint": "7dfb61322568a21c7f7a928ddfb7e2d77c9647cbcae0fcdcbbec3da1438bc036",
+      "document_id": 25,
+      "label": "2023年 · 2·选择4",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "u Bw\n、 长 尾 式 差分 放大 电路 ， 说 法 错误 的 是 (  ) 。",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "differential"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：differential"
+      ]
+    },
+    {
+      "uuid": "ba979540-d0d1-59c3-922e-aa718ea00f84",
+      "fingerprint": "857df6f348d7f83a1fd33e2cd8dcc3c995cb56e60d67fa53fbe2eab4974288d8",
+      "document_id": 25,
+      "label": "2023年 · 2·选择5",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "、 实 现 电 压 输入 转化 为 一 定 比例 电流 输出 ， 引 入 负 反 馈 (  ) 。\nA 电压 并 联 B 电压 串联 C 电流 并 联 D 电流 串联",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "1e719e74-ec07-5834-be53-6857d0209c02",
+      "fingerprint": "61fa3009414b39ae3396f580d1c8272037c66edc215194d2cafb5445b5419d7e",
+      "document_id": 25,
+      "label": "2023年 · 3·题1",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "1、 分 别 简 述 引入 直流 负 反 馈 和 交流 负 反 馈 对 放大 电路 的 影响 ?",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "f4c8f691-d62b-5568-b8a9-754f213ab7e6",
+      "fingerprint": "f420ea04fbae67f868dedbe14b806d351ede0a8967fbbbe2cbbb293a18bc2d68",
+      "document_id": 25,
+      "label": "2023年 · 3·题3",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "(3) 选择 运 放 和 电阻 忆 、 及 有 什么 基本 要 求 ?\n3、 分 析 图 中 所 示 参 数理 想 对 称 电路 ， 其 中 晶体 管 =200，ywr=2009 ，\n3\n科大 科 院 考研 网 www. kaoyancas. com ”专注 于 中 科大 、 中 科 院 考研 专业 辅导\n因为 专注 ， 所 以 专业 ! 报名 电话 : 18256097326 QQ: 2852509804",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "76ae92b9-099c-53f2-93ab-7d11775da0d9",
+      "fingerprint": "acbe25e36ea88ef4d9470d85fe403eb6c5aec41f75237490851a8db7a1d4ede0",
+      "document_id": 25,
+      "label": "2023年 · 3·题4",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "(4) 若 静 态 时 输出 ze =0， 求 解 尺 阻 值 和 电压 放大 倍数 。\n4、 下 图 中 修 和 兄 饱和 管 压 降 |wcss|= 2 ， 直 流 功 忽略 不 计 。\n& +i8V\n0\na\nLy\nuw beh RE\nae ot\nhy\nBelk | 一 taf J Re Uo\n| an\nKe\nRs\n[一 ww 一 一\nRe =lev\nPr __——_|\n科大 科 院 考研 网 www. kaoyancas. con ”专注 于 中 科大 、 中 科 院 考研 专业 辅导\n因为 专注 ， 所 以",
+      "status": "included",
+      "bucket": "power",
+      "tags": [
+        "power"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：power"
+      ]
+    },
+    {
+      "uuid": "c929afd3-07e8-55b5-8a4d-dabe7b5d9604",
+      "fingerprint": "93848563f6f8933890bc3c7a84ba47001a744643e3f1779fa0452acfb4c967f3",
+      "document_id": 25,
+      "label": "2024年 · 1·填空11",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "1、 功 率 放 大 电路 中 功放 管 的 功 耗 和 电路 最 大 输出 功率 分 别 用 〈 ) 来 描述 。\nA. 交流 功率 和 平均 功率 B. 平均 功率 和 交流 功率",
+      "status": "included",
+      "bucket": "power",
+      "tags": [
+        "power"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：power"
+      ]
+    },
+    {
+      "uuid": "23bc88d5-fd8e-5503-a620-7eeb60cac2d7",
+      "fingerprint": "efd2e47a821a0330859819f10ffa7010d41d406282bfd9501b99abcf989249c8",
+      "document_id": 25,
+      "label": "2024年 · 1·填空13",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "2. 电流 串联 和 负 反 馈 对 输入 电阻 和 输出 电阻 影响 的 是 〈 de",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "fc77e4f3-6374-5c24-bb05-c41ac1d8e746",
+      "fingerprint": "99a550085029cdd2f8a7a9e81418342e48202eaaef50569dacbb1c199ba0a4f4",
+      "document_id": 25,
+      "label": "2024年 · 3·题2",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "(2) 了 4 运 放 引 入 了 何 种 反馈 。\nR3\nRs\n> R7\nRu\nVX 公 众 号 : 电子 信息 和 集成 电路 考研\n2.(13 分 ) 分 析 下 图 由 理想 运 放 构成 的 电路 ， 解 答 下 面 问题 :\n(1) 4、 少 分 别 构成 何 种 基本 电路 ;\n(2) 求 出 xs Mu, 的 关系 曲线 ;",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    },
+    {
+      "uuid": "3e74eba7-1c31-51d0-929c-633ed811d108",
+      "fingerprint": "98c18f8796bcbfd33d02d0408bc7193c35da10487143b23f1a60af47b88ca9b6",
+      "document_id": 25,
+      "label": "2025年 · 1·填空1",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "1.\n晶体管的三个工作区域，当发射集和集电极正偏时，晶体管进入            区。",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "2b067a11-7495-5f2b-ba9a-75c77897bcd9",
+      "fingerprint": "2b4e27e11f27bd8587c1fd2ba181d19cfb05e6f2a283261c192c4c75af124801",
+      "document_id": 25,
+      "label": "2025年 · 1·填空2",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "2.\n某反馈电路，当输出电阻增大时，输出电压也增大，而输入电阻减小，该反馈电路是\n负反馈电路。",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "07fd232d-9cd4-5f4e-917e-91fe40d6e5b1",
+      "fingerprint": "fdbab5cb614eafba0fd269d86080afa1d17d719e3b4c3b9bfac84db1e76c390f",
+      "document_id": 25,
+      "label": "2025年 · 1·填空4",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "4. 深度负反馈条件下，1+AF=200，若A相对变化为10%，则AF的相对变化为              。",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "ef73913d-c2da-5079-ad49-1ee0f463aa1f",
+      "fingerprint": "6833657e4aea1b5b2e1d4cc29f3c6d68d71bff27f46780518b09544cc17ba4fc",
+      "document_id": 25,
+      "label": "2025年 · 2·选择2",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "2. 关于特征频率的叙述正确的是（      ）\nA.特征频率由于pn 结结电容引起的       B.特征频率是β 为0 点的频率\nC.特征频率是三极管的交流参数          D.频率小于特征频率时基极电流和集电极电流没有相位差",
+      "status": "included",
+      "bucket": "high_frequency",
+      "tags": [
+        "high_frequency"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：high_frequency"
+      ]
+    },
+    {
+      "uuid": "821d3836-2721-5f3f-bad3-812b921876e5",
+      "fingerprint": "5e49b6ebd80d6d3456f5a0e2e90bf138ee20ad8c29f8b0aea4e2e5605e92cec3",
+      "document_id": 25,
+      "label": "2025年 · 2·选择5",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "5. 以下哪些电路前者可以改变输入输出电阻，后者可以展宽频带的的是（      ）\nA．直流负反馈，交流负反馈\nB.直流负反馈，交流正反馈\nC．交流正反馈，直流负反馈\nD.交流负反馈，交流负反馈",
+      "status": "included",
+      "bucket": "feedback",
+      "tags": [
+        "feedback"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：feedback"
+      ]
+    },
+    {
+      "uuid": "c7f51bd8-7605-532e-8bf8-f3fbd8913c95",
+      "fingerprint": "b028c1d77c71e22112bee55c57dc6c6742f127944b70fc1761cec79f7349ae57",
+      "document_id": 25,
+      "label": "2025年 · 2·选择6",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "6. 以下单管放大电路，哪些既可放大电压，也可以放大电流（      ）\nA.共射\nB.共基           C.共集         D.以上都是",
+      "status": "included",
+      "bucket": "transistor",
+      "tags": [
+        "transistor"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：transistor"
+      ]
+    },
+    {
+      "uuid": "b391b01b-8ab4-523a-b937-e0f0207a5b32",
+      "fingerprint": "c3faf4adafa45339aff72ff4eb13ff20c8c3ba63d5a99d348b8e3d8eec6fedac",
+      "document_id": 25,
+      "label": "2025年 · 第3题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "三、下图为两个电流镜, 𝛽为同一值\n（1）𝑅!阻值为多少时，两个电路的流过的电流𝐼\"#相等\n（2）求出两幅图中𝐼\"#的值\n（3）若𝛽从9 至10，𝐼\"#的变化率分别为多少\n（4）𝑇$管的作用",
+      "status": "included",
+      "bucket": "differential",
+      "tags": [
+        "differential"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：differential"
+      ]
+    },
+    {
+      "uuid": "8df795fd-57ed-518a-b643-21b99c6c0542",
+      "fingerprint": "e74815c3eb8685f4a31ee9ef8a20cd73b81fb8211d9cf66ad226a7b8baf58f95",
+      "document_id": 25,
+      "label": "2025年 · 第4题",
+      "evidence_method": "cached_local_ocr",
+      "evidence": "四、电路图如下图所示\n（1）电路引入了何种反馈？\n（2）求𝑈%、𝑈&#、𝑈&'的关系式？\n（3）当𝑅!移动到最左端时，𝑈&# = 10𝑚𝑉, 𝑈&' = 20𝑚𝑉 ,求𝑈(\n（4）若𝑈&#(*+,) = 5𝑚𝑉, 𝑈&'(*+,) = 10𝑚𝑉, 𝑈(的输出范围是±20𝑉，要使运放工作在线性区，𝑅'最大值\n是多少。",
+      "status": "included",
+      "bucket": "opamp",
+      "tags": [
+        "opamp"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_static_dynamic": false,
+      "reason": [
+        "题干/逐题已审考点匹配：opamp"
+      ]
+    }
+  ],
+  "inventory_sha256": "ed4ad70e8630c9db6929931756ae34dc2eb5389b952d8d16481e752c27fec342"
+}

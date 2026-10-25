@@ -34,7 +34,7 @@ function navigationQueryString() {
 
 function questionRouteQuery() {
   const query: Record<string, string> = navigationQuery()
-  if (route.query.from === 'circuit-selected' || route.query.from === 'signal-selected') {
+  if (['circuit-selected', 'signal-selected', 'analog-selected'].includes(String(route.query.from))) {
     query.from = String(route.query.from)
     return query
   }
@@ -54,7 +54,7 @@ function questionRouteQuery() {
 }
 
 function backToEntryPoint() {
-  if (route.query.from === 'circuit-selected' || route.query.from === 'signal-selected') {
+  if (['circuit-selected', 'signal-selected', 'analog-selected'].includes(String(route.query.from))) {
     void router.push({ path: '/' + route.query.from, query: { ...circuitFilters(route.query), all: '1', question: props.uuid } })
     return
   }
@@ -580,7 +580,7 @@ onBeforeRouteLeave(async () => {
 
 <template>
   <section class="page question-page">
-    <button class="back-link" @click="backToEntryPoint">← {{ route.query.from === 'signal-selected' ? '返回信号严选' : route.query.from === 'circuit-selected' ? '返回电路严选' : route.query.from === 'selected-heatmap' ? 'Back to selected heatmap' : route.query.from === 'heatmap' ? 'Back to heatmap' : route.query.from === 'collection' ? 'Back to saved questions' : route.query.from === 'insight' ? 'Back to insight' : route.query.from === 'cockpit' ? 'Back to 892 cockpit' : 'Question bank' }}</button>
+    <button class="back-link" @click="backToEntryPoint">← {{ route.query.from === 'analog-selected' ? '返回模电严选' : route.query.from === 'signal-selected' ? '返回信号严选' : route.query.from === 'circuit-selected' ? '返回电路严选' : route.query.from === 'selected-heatmap' ? 'Back to selected heatmap' : route.query.from === 'heatmap' ? 'Back to heatmap' : route.query.from === 'collection' ? 'Back to saved questions' : route.query.from === 'insight' ? 'Back to insight' : route.query.from === 'cockpit' ? 'Back to 892 cockpit' : 'Question bank' }}</button>
     <p v-if="error" class="error-state">{{ error }}</p>
     <div v-if="loading" class="question-skeleton">LOADING QUESTION…</div>
     <template v-else-if="question">
