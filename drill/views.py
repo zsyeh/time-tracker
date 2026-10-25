@@ -14,7 +14,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .cleaning import SOURCE_LABELS
-from .circuit_selected import CODE as CIRCUIT_SELECTED, filter_collection
+from .selected_collections import CODES as SELECTED_COLLECTIONS, filter_collection
 from .models import (
     ExamBlueprint, ExamPaper, ExamPaperItem, Question, QuestionAsset,
     QuestionAttempt, QuestionDocument, QuestionErratum, QuestionMarker, QuestionTopic,
@@ -191,7 +191,7 @@ def topic_breadcrumbs(topic):
 
 
 def navigation_queryset(question, request):
-    selected_circuit = request.query_params.get('collection') == CIRCUIT_SELECTED
+    selected_collection = request.query_params.get('collection') in SELECTED_COLLECTIONS
     queryset = filter_collection(workspace_questions(request).filter(is_practiceable=True), request)
     document_id = request.query_params.get('document')
     topic_id = request.query_params.get('topic')
@@ -200,11 +200,11 @@ def navigation_queryset(question, request):
     marker = request.query_params.get('marker', '').strip()
     if document_id:
         queryset = queryset.filter(document_id=document_id)
-    elif not selected_circuit:
+    elif not selected_collection:
         queryset = queryset.filter(document_id=question.document_id)
     if topic_id:
         queryset = queryset.filter(similarity_topic_id=topic_id)
-    elif not source_category and not selected_circuit:
+    elif not source_category and not selected_collection:
         queryset = queryset.filter(source_category=question.source_category)
     if source_category in {choice[0] for choice in Question.SOURCE_CATEGORY_CHOICES}:
         queryset = queryset.filter(source_category=source_category)
@@ -265,7 +265,7 @@ def next_unmastered_question(question, request, navigation):
     # remaining question. This preserves past-exam/mock continuity while making
     # the next action useful at every topic and book boundary.
     fallback = workspace_questions(request).filter(is_practiceable=True).exclude(pk=question.pk)
-    fallback = filter_collection(fallback, request) if request.query_params.get('collection') == CIRCUIT_SELECTED else fallback.filter(source_category=question.source_category)
+    fallback = filter_collection(fallback, request) if request.query_params.get('collection') in SELECTED_COLLECTIONS else fallback.filter(source_category=question.source_category)
     fallback = unmastered_navigation(fallback, request.user).order_by(
         'document_id', 'question_order', 'pk',
     )
@@ -286,7 +286,7 @@ def next_unmastered_question(question, request, navigation):
 
 def next_sequential_question(question, request):
     queryset = workspace_questions(request).filter(is_practiceable=True).exclude(pk=question.pk)
-    queryset = filter_collection(queryset, request) if request.query_params.get('collection') == CIRCUIT_SELECTED else queryset.filter(source_category=question.source_category)
+    queryset = filter_collection(queryset, request) if request.query_params.get('collection') in SELECTED_COLLECTIONS else queryset.filter(source_category=question.source_category)
     queryset = queryset.order_by('document_id', 'question_order', 'pk')
     current_key = (question.document_id, question.question_order, question.pk)
     following = queryset.filter(
@@ -303,7 +303,7 @@ def next_review_question(question, request, *, overdue):
     ).order_by('-created_at', '-pk')
     cutoff = timezone.now() - datetime.timedelta(days=5)
     queryset = workspace_questions(request).filter(is_practiceable=True).exclude(pk=question.pk)
-    queryset = filter_collection(queryset, request) if request.query_params.get('collection') == CIRCUIT_SELECTED else queryset.filter(source_category=question.source_category)
+    queryset = filter_collection(queryset, request) if request.query_params.get('collection') in SELECTED_COLLECTIONS else queryset.filter(source_category=question.source_category)
     queryset = queryset.annotate(
         review_result=Subquery(latest.values('result')[:1]),
         review_created_at=Subquery(latest.values('created_at')[:1]),

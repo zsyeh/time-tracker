@@ -24,12 +24,13 @@ def review_manifest():
     return json.loads((Path(__file__).parent / 'data/circuit_selected_review_v1.json').read_text())
 
 
-def collection_records(params):
-    rows = manifest()['questions']
+def collection_records(params, data=None):
+    data = manifest() if data is None else data
+    rows = data['questions']
     bucket = params.get('bucket', '')
     tier = params.get('tier', '')
     kind = params.get('kind', '')
-    if bucket and bucket not in {b['key'] for b in manifest()['buckets']}:
+    if bucket and bucket not in {b['key'] for b in data['buckets']}:
         raise Http404('Unknown circuit bucket')
     if tier and tier not in {'core', 'advanced', 'foundation', 'cross'}:
         raise Http404('Unknown practice tier')
@@ -37,7 +38,7 @@ def collection_records(params):
         raise Http404('Unknown exercise kind')
     return [r for r in rows if (not bucket or r['bucket'] == bucket)
             and (not tier or r['tier'] == tier) and (not kind or r['kind'] == kind)
-            and (params.get('combined') != '1' or r['combined_first_order_thevenin'])]
+            and (params.get('combined') != '1' or r.get(data.get('combination_key', 'combined_first_order_thevenin'), False))]
 
 
 def material_annotations(queryset):
@@ -48,14 +49,14 @@ def material_annotations(queryset):
     )
 
 
-def filter_collection(queryset, request, *, force=False):
+def filter_collection(queryset, request, *, force=False, data=None, code=CODE):
     """Apply only when explicitly requested; retain all normal bank behaviour."""
-    if not force and request.query_params.get('collection') != CODE:
+    if not force and request.query_params.get('collection') != code:
         return queryset
     from .views import request_workspace
     if request_workspace(request) != 'ei':
         raise Http404
-    rows = collection_records(request.query_params)
+    rows = collection_records(request.query_params, data=data)
     # Check fingerprints as well as UUIDs: stale manifests cannot select a
     # reused ID or a different book/workspace. IDs are canonical, never clones.
     queryset = queryset.filter(document__workspace='ei', is_practiceable=True,

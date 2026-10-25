@@ -1,5 +1,6 @@
 from django.urls import path
 from .circuit_selected_views import CircuitSelectedView
+from .signal_selected_views import SignalSelectedView
 
 from .views import (
     DrillAssetView,
@@ -31,6 +32,7 @@ from .views import (
 
 
 urlpatterns = [
+    path('signal-selected/', SignalSelectedView.as_view(), name='ei_signal_selected'),
     path('circuit-selected/', CircuitSelectedView.as_view(), name='ei_circuit_selected'),
     path('catalog/', DrillCatalogView.as_view(), name='drill_catalog'),
     path('progress/', DrillProgressView.as_view(), name='drill_progress'),

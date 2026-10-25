@@ -10,13 +10,22 @@ from drill_sources.models import SourceQuestionAnchor
 
 class CircuitSelectedView(APIView):
     """A virtual book: existing questions, original images, original progress."""
+    def selection_manifest(self):
+        return manifest()
+
+    def selection_review(self):
+        return review_manifest()
+
+    def selection_queryset(self, queryset, request):
+        return filter_collection(queryset, request, force=True)
+
     def get(self, request):
         if request_workspace(request) != 'ei':
             raise Http404
-        data = manifest()
+        data = self.selection_manifest()
         records = {q['uuid']: q for q in data['questions']}
-        questions = question_progress(material_annotations(filter_collection(
-            Question.objects.all(), request, force=True,
+        questions = question_progress(material_annotations(self.selection_queryset(
+            Question.objects.all(), request,
         )), request.user).select_related('document').order_by('document_id', 'question_order', 'pk')
         indexed = set(SourceQuestionAnchor.objects.filter(
             question__uuid__in=records,
@@ -32,7 +41,7 @@ class CircuitSelectedView(APIView):
                 'document_id': q.document_id, 'book': q.document.display_title or q.document.title,
                 'bucket': row['bucket'], 'tier': row['tier'], 'kind': row['kind'],
                 'tags': row['tags'], 'reason': row['reason'],
-                'combined': row['combined_first_order_thevenin'],
+                'combined': row.get(data.get('combination_key', 'combined_first_order_thevenin'), False),
                 'state': 'mastered' if q.latest_result in {'done', 'correct'} else 'review' if q.latest_result == 'review' else 'unattempted',
                 'attempt_count': q.attempt_count, 'ready': ready,
                 'question_mode': '独立裁图' if q.cs_prompt else '原页定位' if q.uuid in indexed else '文字题',
@@ -44,7 +53,7 @@ class CircuitSelectedView(APIView):
         for bucket in data['buckets']:
             rows = [q for q in items if q['bucket'] == bucket['key']]
             groups.append({**bucket, 'questions': rows, 'progress': aggregate_progress(rows)})
-        review = review_manifest()['records']
+        review = self.selection_review()['records']
         return Response({
             'title': data['title'], 'basis': data['basis'], 'groups': groups,
             'progress': aggregate_progress(items), 'ready_count': sum(q['ready'] for q in items),

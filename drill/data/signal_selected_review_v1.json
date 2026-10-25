@@ -1,0 +1,5919 @@
+{
+  "schema_version": 1,
+  "inventory_count": 974,
+  "records": [
+    {
+      "uuid": "e2009a94-a4bf-5b99-907a-23265c530bd7",
+      "document_id": 14,
+      "label": "典型连续时间与离散时间信号",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "3a6ecbb2-9397-59fa-8570-34dba9f474d2",
+      "document_id": 14,
+      "label": "信号的移位、反折、尺度变换等基本运算",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "ff3e52c5-9587-5142-b67c-d2f079bb2140",
+      "document_id": 14,
+      "label": "单位阶跃、单位冲激等奇异函数",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "38f5446a-a3f0-5dd8-a262-212455c3cc03",
+      "document_id": 14,
+      "label": "信号的奇偶分解等基本分解方法",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "feb1fcd1-12e4-596a-9cfc-df6016ee5256",
+      "document_id": 14,
+      "label": "系统分类、数学模型及基本特性判断",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "6a6440e5-e26f-5abf-8576-a42fdce64b0f",
+      "document_id": 14,
+      "label": "连续时间系统微分方程模型",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "70b710df-e3ca-565e-ba2f-b4db3803d45e",
+      "document_id": 14,
+      "label": "离散时间系统差分方程模型",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "a74066ca-06b6-5b31-9dc8-1018e5be76a0",
+      "document_id": 14,
+      "label": "系统框图建立与基本互换",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "056933d3-5c78-5745-95f7-a2071709e81c",
+      "document_id": 14,
+      "label": "电路的 s 域元件模型与 s 域分析",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "4116f9f1-deb9-5d91-b570-124d25f12b2e",
+      "document_id": 14,
+      "label": "z 变换定义",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "200a68ad-db39-5ddd-b42b-1de9f7d4f21f",
+      "document_id": 14,
+      "label": "SIG-SA-01｜常见的信号分类和系统分类有哪些？说明线性、时不变、因果和稳定系统的基本判据。",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "1cae2f64-b054-5662-8194-09962280ce84",
+      "document_id": 14,
+      "label": "SIG-SA-02｜说明单位阶跃与单位冲激之间的关系，并解释信号移位、反折和尺度变换的几何意义。",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "aff364b0-043c-5913-9d45-ce7b4f117fa8",
+      "document_id": 14,
+      "label": "课后题 1-1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "ebbbc8bf-f854-5ebb-998a-bfea5d29aece",
+      "document_id": 14,
+      "label": "课后题 1-2",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "3481f36b-4910-5247-b426-4647a9aa489f",
+      "document_id": 14,
+      "label": "课后题 1-3",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "a8e04b62-6374-5a7c-a6ae-659caf3d0719",
+      "document_id": 14,
+      "label": "课后题 1-4",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "8a565970-0e31-5a2e-bc03-6b6644ace9f4",
+      "document_id": 14,
+      "label": "课后题 1-5",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "b8916e4d-d9de-545e-a03e-daf66cdf33fa",
+      "document_id": 14,
+      "label": "课后题 1-6",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "19166080-5fd5-5335-af2b-0b056a3e97ed",
+      "document_id": 14,
+      "label": "课后题 1-7",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "2fd9ae78-1d3a-5359-8b0c-09e7146fd443",
+      "document_id": 14,
+      "label": "课后题 1-8",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "92c88b44-0611-5c54-b615-2ba595dbcca8",
+      "document_id": 14,
+      "label": "课后题 1-9",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "4bd5fbb1-75da-5672-951f-bb954d049206",
+      "document_id": 14,
+      "label": "课后题 1-10",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "f3811267-3aff-5132-a01f-733d69a59df2",
+      "document_id": 14,
+      "label": "课后题 1-11",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "888d9079-c5f3-5861-a286-99b40d65c85e",
+      "document_id": 14,
+      "label": "课后题 1-12",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "1d188a60-c3ae-5b88-b60c-ed9de5b6a540",
+      "document_id": 14,
+      "label": "课后题 1-13",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "c5d0c221-3f96-5e6c-b70d-a630209233f8",
+      "document_id": 14,
+      "label": "课后题 1-14",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "07a79166-d1d1-5292-974b-8e585b865c98",
+      "document_id": 14,
+      "label": "课后题 1-15",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "3085266b-7ae5-5cdb-8ed4-cb72e7dc9373",
+      "document_id": 14,
+      "label": "课后题 1-16",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "cd335c93-3395-5415-b897-65a1b2696e5f",
+      "document_id": 14,
+      "label": "课后题 1-17",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "d3539c88-8cb9-55c4-b4ac-e402be989aca",
+      "document_id": 14,
+      "label": "课后题 1-18",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "4c72cb8c-598c-5411-ac0f-24d7f024532c",
+      "document_id": 14,
+      "label": "课后题 1-19",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "8b26657a-9954-51c9-a624-8e5207237dad",
+      "document_id": 14,
+      "label": "课后题 1-20",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "cdacf13d-ec2d-5c45-bf99-cb1a3b5cf87a",
+      "document_id": 14,
+      "label": "课后题 1-21",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "a3f3921b-ac46-51a4-9edc-ed8dfcb5f123",
+      "document_id": 14,
+      "label": "课后题 1-22",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "3c31d88d-2ca8-5d25-887d-695b912317f5",
+      "document_id": 14,
+      "label": "课后题 1-23",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "9e4e47d8-8505-515b-8499-28af9988ac38",
+      "document_id": 14,
+      "label": "课后题 1-24",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "f4e2f391-a781-5920-825c-01cfe4f09005",
+      "document_id": 14,
+      "label": "课后题 2-1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "fd1119fd-50a9-56cf-b8a8-879e19d07701",
+      "document_id": 14,
+      "label": "课后题 2-2",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "bfcda00b-9c8e-5a4c-b63d-48694b7c524d",
+      "document_id": 14,
+      "label": "课后题 2-3",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "a0a861ec-764a-509c-ab30-a2854837d2cf",
+      "document_id": 14,
+      "label": "课后题 2-4",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "229afaa7-f119-5624-9da6-c0791a7082d4",
+      "document_id": 14,
+      "label": "课后题 2-5",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "6b631ad4-e01b-5337-89ab-d1867749e384",
+      "document_id": 14,
+      "label": "课后题 2-6",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "b4ba9765-442c-5994-bbde-98363db99e62",
+      "document_id": 14,
+      "label": "课后题 2-7",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "5e9aacc6-6e57-5c83-a5f9-9e30a9def874",
+      "document_id": 14,
+      "label": "课后题 2-8",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "fa1e466f-a8a5-5ab3-a0df-f23b4df7280d",
+      "document_id": 14,
+      "label": "课后题 2-9",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "c30cb93e-b5d8-50a7-937c-18a973bd6fe0",
+      "document_id": 14,
+      "label": "课后题 2-10",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "e5de54c5-9852-5e57-9b50-fc0fa3d33817",
+      "document_id": 14,
+      "label": "课后题 2-11",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "e8f976d7-3953-5153-ab09-0dfd3311b189",
+      "document_id": 14,
+      "label": "课后题 2-12",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "64af860a-2f99-5d88-8397-b1dd97e4e0fe",
+      "document_id": 14,
+      "label": "课后题 2-13",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "641e1ef9-e9c0-5d35-baad-1c33be98f62e",
+      "document_id": 14,
+      "label": "课后题 2-14",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "c9bc3267-8e18-5c84-a60e-c6cd3bc4da1f",
+      "document_id": 14,
+      "label": "课后题 2-15",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "0622b6ed-92da-5caa-b3de-cc7a0847e03d",
+      "document_id": 14,
+      "label": "课后题 2-16",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "b982b53f-8464-5b3d-a59f-7ac49abaaa07",
+      "document_id": 14,
+      "label": "课后题 2-17",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "25a4b8b1-bf56-55b6-86dc-e4314959e07b",
+      "document_id": 14,
+      "label": "课后题 2-18",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "60454a81-d15f-556c-9427-1be52ebcce95",
+      "document_id": 14,
+      "label": "课后题 2-19",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "61e00dab-9a35-549a-b63e-e9f74f118258",
+      "document_id": 14,
+      "label": "课后题 2-20",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "1bb65f3a-51fd-5093-b6ad-dcc014ff7470",
+      "document_id": 14,
+      "label": "课后题 2-21",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "6a51f88e-d370-5480-96ac-209d331e053b",
+      "document_id": 14,
+      "label": "课后题 2-22",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "f9dfad7e-697e-5e31-91a9-f66c6d666583",
+      "document_id": 14,
+      "label": "课后题 2-23",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "e1cc6d16-1859-52dd-9d73-a7251c4fc0d4",
+      "document_id": 14,
+      "label": "课后题 2-24",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "59cc1a96-9027-56ec-9d03-65495e071bc2",
+      "document_id": 14,
+      "label": "课后题 2-25",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "d4e75b4b-232c-59b7-935f-46c7cfd24bf1",
+      "document_id": 14,
+      "label": "课后题 3-1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "5f8ac0ee-1bc1-5605-94b7-e8f8101a69ea",
+      "document_id": 14,
+      "label": "课后题 3-2",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "755b5f40-2974-5fd7-9473-125e646a1d1b",
+      "document_id": 14,
+      "label": "课后题 3-3",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "7c291b33-2b67-5f0f-9e09-33a5d2b56015",
+      "document_id": 14,
+      "label": "课后题 3-4",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "dbff4ff9-ecac-54a4-9d5e-c87fc86599cb",
+      "document_id": 14,
+      "label": "课后题 3-5",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "60929a2c-7124-5ea1-aebc-736faf0fab84",
+      "document_id": 14,
+      "label": "课后题 3-6",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "1f6b2d91-2542-5364-b2f2-4fe2636d7139",
+      "document_id": 14,
+      "label": "课后题 3-7",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "db62967c-dac5-54cf-aecf-ecb119a4424b",
+      "document_id": 14,
+      "label": "课后题 3-8",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "0907fc8d-493f-5ca5-8fd6-5a92b7a26854",
+      "document_id": 14,
+      "label": "课后题 3-9",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "4b8fd0bb-fec1-5e71-8484-d80c508bd02b",
+      "document_id": 14,
+      "label": "课后题 3-10",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "6bf7cb57-6118-5087-95c5-9d059e79d922",
+      "document_id": 14,
+      "label": "课后题 3-11",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "c06b0e26-32ff-5654-abd7-6b4dab844fa9",
+      "document_id": 14,
+      "label": "课后题 3-12",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "b964f2ae-cee7-5d3f-9865-a4563fe5269a",
+      "document_id": 14,
+      "label": "课后题 3-13",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "c5a96c3f-d87d-552e-bc7d-8a869fd9a7f2",
+      "document_id": 14,
+      "label": "课后题 3-14",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "12655361-c1c3-55d3-8899-d23fd63c2c04",
+      "document_id": 14,
+      "label": "课后题 3-15",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "88352e80-729c-51f2-8461-c6cca60a9c87",
+      "document_id": 14,
+      "label": "课后题 3-16",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "39dd9061-4dee-5b12-bafc-7e85c03245d0",
+      "document_id": 14,
+      "label": "课后题 3-17",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "1e26783d-09e9-55d3-91a9-12a805123bdd",
+      "document_id": 14,
+      "label": "课后题 3-18",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "cfbfecf4-2aef-5d6c-8a11-081c88c302f5",
+      "document_id": 14,
+      "label": "课后题 3-19",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "74649044-38d8-57d4-a160-204f8aa33f14",
+      "document_id": 14,
+      "label": "课后题 3-20",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "04e374c9-d228-51a5-9094-e61310bb3ea4",
+      "document_id": 14,
+      "label": "课后题 3-21",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "098e9a6f-1a3c-50fa-8274-f14a90b1c09b",
+      "document_id": 14,
+      "label": "课后题 3-22",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "181c025d-f9ae-5c17-952d-027758e175f3",
+      "document_id": 14,
+      "label": "课后题 3-23",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "0f88cd01-9f41-5731-863d-d30548bf4163",
+      "document_id": 14,
+      "label": "课后题 3-24",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "f6150a91-2ef3-51a1-95a0-dbb96fb3f284",
+      "document_id": 14,
+      "label": "课后题 3-25",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "98d3963f-e68f-5668-a400-80ad2fda9660",
+      "document_id": 14,
+      "label": "课后题 3-26",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "9ea437a8-ee83-5c71-99c0-7dab4ba1ee21",
+      "document_id": 14,
+      "label": "课后题 3-27",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "3ab78c3b-e5a5-5e7e-b9a7-8310c6fbbfeb",
+      "document_id": 14,
+      "label": "课后题 3-28",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "10b7111e-f8f4-52bd-a2b4-d965f4ec6ee2",
+      "document_id": 14,
+      "label": "课后题 3-29",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "d35141bc-2f8c-549d-a8cd-7991c76340f6",
+      "document_id": 14,
+      "label": "课后题 3-30",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "48969df0-8fa0-5dc0-ab3f-ab58fecfebd5",
+      "document_id": 14,
+      "label": "课后题 3-31",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "2199adff-2954-5563-b142-776589abe120",
+      "document_id": 14,
+      "label": "课后题 3-32",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "4a19358c-54fe-5e3a-afd6-c806ed72f504",
+      "document_id": 14,
+      "label": "课后题 3-33",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "9fcba369-5e13-56d3-8331-399c809e78fe",
+      "document_id": 14,
+      "label": "课后题 3-34",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "017be93f-f847-595c-8ca8-b2435f834e7c",
+      "document_id": 14,
+      "label": "课后题 3-35",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "d99e3376-3122-5281-a5f6-8b10233f1585",
+      "document_id": 14,
+      "label": "课后题 3-36",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "2d16d523-7499-5474-8471-2100add6cdec",
+      "document_id": 14,
+      "label": "课后题 3-37",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "d16e912d-b0f5-531a-a521-bbf3e36bfaca",
+      "document_id": 14,
+      "label": "课后题 3-38",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "b8e6464f-6510-55c7-b727-ebac75182993",
+      "document_id": 14,
+      "label": "课后题 3-39",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "01213303-e44d-556b-a038-8dea555009ee",
+      "document_id": 14,
+      "label": "课后题 3-40",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "9e562e47-5033-5e6d-92d5-deea76114fbb",
+      "document_id": 14,
+      "label": "课后题 3-41",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "72c1878a-caac-5324-9acd-b435a5f1bcd6",
+      "document_id": 14,
+      "label": "课后题 3-42",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "fa9042bd-09cb-51b7-b7c4-99d0ba14a149",
+      "document_id": 14,
+      "label": "课后题 4-1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "57adf9c9-6d3e-5720-93b4-c2610d16865b",
+      "document_id": 14,
+      "label": "课后题 4-2",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "d797b37d-0513-5d3d-b3d3-a8f45ca69c47",
+      "document_id": 14,
+      "label": "课后题 4-3",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "e018238b-1f09-5c06-a09b-ed6498e259bf",
+      "document_id": 14,
+      "label": "课后题 4-4",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "a993c53e-64f1-5a08-a713-a854d0d17b0b",
+      "document_id": 14,
+      "label": "课后题 4-5",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "9babb9e7-1b78-51c1-a84d-e95b0cc66c1d",
+      "document_id": 14,
+      "label": "课后题 4-6",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "897263ea-8408-5dae-a13c-aaf2218899ce",
+      "document_id": 14,
+      "label": "课后题 4-7",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "692cd039-7715-59be-8ca6-c5d6f3433894",
+      "document_id": 14,
+      "label": "课后题 4-8",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "bae00a89-182b-5eb2-85f5-e901056b9108",
+      "document_id": 14,
+      "label": "课后题 4-9",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "26a849d8-8eb0-544d-802c-1fb1212a30fe",
+      "document_id": 14,
+      "label": "课后题 4-10",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "38ad4f88-80bf-5eb4-a094-aa8a3e2736de",
+      "document_id": 14,
+      "label": "课后题 4-11",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "5e866c42-8046-5df2-a640-4205d6e2562a",
+      "document_id": 14,
+      "label": "课后题 4-12",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "0c9cad0f-1da0-5c54-9668-ebbcf1b54324",
+      "document_id": 14,
+      "label": "课后题 4-13",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "71a4b513-3de2-5418-ac9e-c6a49c87d811",
+      "document_id": 14,
+      "label": "课后题 4-14",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "6c3a4086-d5bd-56ae-90e2-8b92629ea09d",
+      "document_id": 14,
+      "label": "课后题 4-15",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "0930b147-5ce0-59a7-8b14-6259cf8ec5af",
+      "document_id": 14,
+      "label": "课后题 4-16",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "93d7be4b-bafb-51f1-a19d-2586c1affded",
+      "document_id": 14,
+      "label": "课后题 4-17",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "06416c75-80e9-5c6d-8e55-3be02bbb3624",
+      "document_id": 14,
+      "label": "课后题 4-18",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "3ecf76f2-aef9-5de0-b306-092bfe194b0c",
+      "document_id": 14,
+      "label": "课后题 4-19",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "f59dc2d4-1beb-5d61-9ebb-cc504461e4b3",
+      "document_id": 14,
+      "label": "课后题 4-20",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "b1fe6473-5017-5890-9f9a-aa481a389bc3",
+      "document_id": 14,
+      "label": "课后题 4-21",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "1c5473b4-ee77-517d-859b-ea54225bfa38",
+      "document_id": 14,
+      "label": "课后题 4-22",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "913ff30f-1edc-530b-95ef-b68582d52a6f",
+      "document_id": 14,
+      "label": "课后题 4-23",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "68bf1c95-1fc0-5188-972e-79bcfa28f15d",
+      "document_id": 14,
+      "label": "课后题 4-24",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "bfdd46e5-5ffc-5756-8e5c-994f9b04ff92",
+      "document_id": 14,
+      "label": "课后题 4-25",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "36b25eee-b1fd-5bc7-8182-ce2f376805be",
+      "document_id": 14,
+      "label": "课后题 4-26",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "19265c07-b737-5cb5-a5dd-628a7d26dc39",
+      "document_id": 14,
+      "label": "课后题 4-27",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "123e7a20-3562-5236-b325-62679f8db412",
+      "document_id": 14,
+      "label": "课后题 4-28",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "d071d9a6-5d08-5390-b1f6-40f7ac1ef29b",
+      "document_id": 14,
+      "label": "课后题 4-29",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "293ce561-f802-576d-a942-4738aaed869c",
+      "document_id": 14,
+      "label": "课后题 4-30",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "24c8bfdf-0e99-5d2e-97e5-38952bc7cd24",
+      "document_id": 14,
+      "label": "课后题 4-31",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "dcc76f6f-332c-5570-a8f7-8eb8add9e810",
+      "document_id": 14,
+      "label": "课后题 4-32",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "c2a2b7e6-742d-58e9-ba61-a87a9275314e",
+      "document_id": 14,
+      "label": "课后题 4-33",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "cf2fc5bd-553d-5c0c-89de-4951d0a4eaae",
+      "document_id": 14,
+      "label": "课后题 4-34",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "a9b6d6df-cc56-59b1-b874-43e6fd4a5459",
+      "document_id": 14,
+      "label": "课后题 4-35",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "ee991f27-bb06-5567-9452-59205bc79f9e",
+      "document_id": 14,
+      "label": "课后题 4-36",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "89d5a474-5dde-5de5-bbdd-b65ba38cd3ba",
+      "document_id": 14,
+      "label": "课后题 4-37",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "f4ede8f6-90a0-5b46-bcf3-8a9d562809ca",
+      "document_id": 14,
+      "label": "课后题 4-38",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "52e3c3a1-3d81-5920-b5c8-aa85bb74e727",
+      "document_id": 14,
+      "label": "课后题 4-39",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "ff58b5d8-cf68-5439-a0f0-b3d3bd476e13",
+      "document_id": 14,
+      "label": "课后题 4-40",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "1f2fce1b-3742-513f-85f6-28ad215b973b",
+      "document_id": 14,
+      "label": "课后题 4-41",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "b2be171d-1975-5ab0-8bf9-59d582bd266e",
+      "document_id": 14,
+      "label": "课后题 4-42",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "3b519386-9aac-5206-8dff-44d596fcf549",
+      "document_id": 14,
+      "label": "课后题 4-43",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "828f74f6-8f62-520b-9531-09f8a76650ee",
+      "document_id": 14,
+      "label": "课后题 4-44",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "8916c40c-9b6c-55ae-a926-bef376782bf6",
+      "document_id": 14,
+      "label": "课后题 4-45",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "1cc5e365-64f1-54c5-b7e7-82be4db8f138",
+      "document_id": 14,
+      "label": "课后题 4-46",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "31eec278-a8f6-5554-9517-533a2b230fbd",
+      "document_id": 14,
+      "label": "课后题 4-47",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "c5c9d838-557e-593b-a1b2-42fd5eb60342",
+      "document_id": 14,
+      "label": "课后题 4-48",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "db47acc5-40f7-532b-9370-936c58292aec",
+      "document_id": 14,
+      "label": "课后题 4-49",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "4298ed08-7e05-5422-beae-6f7842ebe5e5",
+      "document_id": 14,
+      "label": "课后题 4-50",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "6d1d75e1-c429-51cb-9ca0-8931b74f95cb",
+      "document_id": 14,
+      "label": "课后题 4-51",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "285592ae-bf70-559b-9b32-4f536aa7eab0",
+      "document_id": 14,
+      "label": "课后题 5-1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "aef1ac5e-3890-5cd5-aaca-66f7fe5c12ed",
+      "document_id": 14,
+      "label": "课后题 5-2",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "09b93e03-d013-57e0-844f-1a3735921400",
+      "document_id": 14,
+      "label": "课后题 5-3",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "da573985-fb5b-58f9-a547-5245ebcc3dcf",
+      "document_id": 14,
+      "label": "课后题 5-4",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "bd939ba9-9e29-596a-8ebd-03b94d11c39f",
+      "document_id": 14,
+      "label": "课后题 5-5",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "240840ab-5ba9-5803-8690-7ae375442d7c",
+      "document_id": 14,
+      "label": "课后题 5-6",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "61ceb417-83b2-53f2-9ee3-4bd3cddf33c0",
+      "document_id": 14,
+      "label": "课后题 5-7",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "aa0a17ea-0ab4-5932-a86c-b59023a10290",
+      "document_id": 14,
+      "label": "课后题 5-8",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "fe2953bb-91a1-504c-9a2c-fd521fd68d7a",
+      "document_id": 14,
+      "label": "课后题 5-9",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "b99d85bf-4561-538f-840a-6b5a1f8c2a11",
+      "document_id": 14,
+      "label": "课后题 5-10",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "ebfda203-f2d4-553a-bfd5-869b8c4b1775",
+      "document_id": 14,
+      "label": "课后题 5-11",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "b6fa02dc-a68e-5347-9807-9a899433b3d1",
+      "document_id": 14,
+      "label": "课后题 5-12",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "bd931619-f170-5c76-b28a-4bb218853cbc",
+      "document_id": 14,
+      "label": "课后题 5-13",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "09762e1f-22e7-59b1-8624-a0684467c329",
+      "document_id": 14,
+      "label": "课后题 5-14",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "6743965b-3884-5e24-a1d9-63c7086d8912",
+      "document_id": 14,
+      "label": "课后题 5-15",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "042c024a-b6ee-5bb7-ac8b-a940f843d00f",
+      "document_id": 14,
+      "label": "课后题 5-16",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "17974577-9240-5620-8120-9132e9867a2f",
+      "document_id": 14,
+      "label": "课后题 5-17",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "787591ac-48fb-5e57-aadd-6a9fc9ce7e62",
+      "document_id": 14,
+      "label": "课后题 5-18",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "55e6dce9-f857-5e9f-ba04-6c51ceec1d6c",
+      "document_id": 14,
+      "label": "课后题 5-19",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "b834fb7d-0863-5fdf-88ca-8cbd57f3ff8e",
+      "document_id": 14,
+      "label": "课后题 5-20",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "1573a1f6-5f01-5da5-aa0e-3592c67aafd2",
+      "document_id": 14,
+      "label": "课后题 5-21",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "05527453-c44a-54e8-8cfa-04e3cdc513ed",
+      "document_id": 14,
+      "label": "课后题 5-22",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "432c1f7d-ed62-57ba-a76d-0f744387500b",
+      "document_id": 14,
+      "label": "课后题 5-23",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "dfca52eb-b252-5303-bcfc-914d9c5602c1",
+      "document_id": 14,
+      "label": "课后题 5-24",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "e3f19c7e-61f4-5a81-9df6-11949fb61951",
+      "document_id": 14,
+      "label": "课后题 5-25",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "b647fb79-196e-5649-8be9-628074900687",
+      "document_id": 14,
+      "label": "课后题 5-26",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "d00f6a1c-c2ea-5c66-a696-c887badcc604",
+      "document_id": 14,
+      "label": "课后题 5-27",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "408e9069-a438-5ec9-bcd5-1e013f818574",
+      "document_id": 14,
+      "label": "课后题 7-1",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "8fc14405-7f94-5c57-b07f-29eee8c899ad",
+      "document_id": 14,
+      "label": "课后题 7-2",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "739748fd-6bd1-5f5e-8cc5-e7339b0f6bda",
+      "document_id": 14,
+      "label": "课后题 7-3",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "4f9b3352-a997-5b41-82e1-b9a4c4e3815b",
+      "document_id": 14,
+      "label": "课后题 7-4",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "3dbcb174-545f-5c06-a5ea-65f4bc448e78",
+      "document_id": 14,
+      "label": "课后题 7-5",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "0264b5dc-a734-560b-95a3-7abe96a1cdf9",
+      "document_id": 14,
+      "label": "课后题 7-6",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "a93e23b3-6f5c-5bf9-8b0b-a8985648edb2",
+      "document_id": 14,
+      "label": "课后题 7-7",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "9e298199-564d-5614-8df3-aa81f0de37fa",
+      "document_id": 14,
+      "label": "课后题 7-8",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "25aae451-66df-5dd5-be51-dfaf6c4ffd71",
+      "document_id": 14,
+      "label": "课后题 7-9",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "c60e2e0a-a080-5208-88ef-2c18419bba79",
+      "document_id": 14,
+      "label": "课后题 7-11",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "d3deed83-82be-5a8f-94b4-f93d1f4a93bf",
+      "document_id": 14,
+      "label": "课后题 7-12",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "5497c050-ad17-5961-a826-afd876d40993",
+      "document_id": 14,
+      "label": "课后题 7-13",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "69761c3a-255b-5158-b86b-60e3bad63b75",
+      "document_id": 14,
+      "label": "课后题 7-14",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "cf412193-6ef4-5eae-965d-c4117f87db43",
+      "document_id": 14,
+      "label": "课后题 7-15",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "73eb6eca-e0f0-54fc-a5a9-c787a5194ca9",
+      "document_id": 14,
+      "label": "课后题 7-16",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "73c43979-dad8-5e9b-b424-fb84d2f1a48f",
+      "document_id": 14,
+      "label": "课后题 7-17",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "d02f78a3-1e66-5991-bab8-e0e80dcbb893",
+      "document_id": 14,
+      "label": "课后题 7-18",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "34379583-3aea-5b6a-b58e-6aa8b2b51085",
+      "document_id": 14,
+      "label": "课后题 7-20",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "44d67ffc-6e3f-5215-ae02-ecd58639a66f",
+      "document_id": 14,
+      "label": "课后题 7-21",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "ab36b5a3-ff54-5760-a53b-d947d57c8b89",
+      "document_id": 14,
+      "label": "课后题 7-22",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "bf3cc04b-c165-5bae-9b54-77a52095e4b8",
+      "document_id": 14,
+      "label": "课后题 7-23",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "8e880177-bc1b-5c20-8460-db2485943e74",
+      "document_id": 14,
+      "label": "课后题 7-24",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "39263968-0fd2-53d6-ae7c-c99e7b091dd8",
+      "document_id": 14,
+      "label": "课后题 7-25",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "afba3026-013e-5215-83fd-72f0610dc4cd",
+      "document_id": 14,
+      "label": "课后题 7-26",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "b6a5dcda-7090-586c-83dc-7ee32ed61a00",
+      "document_id": 14,
+      "label": "课后题 7-27",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "5038da60-55df-54a2-8db8-dfa7b8a52102",
+      "document_id": 14,
+      "label": "课后题 7-28",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "73214746-6431-5276-b2da-0a3cec001377",
+      "document_id": 14,
+      "label": "课后题 7-29",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "b8687153-51c2-523f-bedc-fddfd9dc37f4",
+      "document_id": 14,
+      "label": "课后题 7-30",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "56f8cc2d-ea93-5ce0-88dd-34f2366d6158",
+      "document_id": 14,
+      "label": "课后题 7-31",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "9c7a9474-29d3-5288-883a-becfbde74584",
+      "document_id": 14,
+      "label": "课后题 7-32",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "2b598a82-c917-5ba5-813d-ab3ca5c34a20",
+      "document_id": 14,
+      "label": "课后题 7-33",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "0ec3f24a-4560-5078-918d-de03ec869cd1",
+      "document_id": 14,
+      "label": "课后题 7-34",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "4733024c-4d3c-5e65-920d-52922ea82dfb",
+      "document_id": 14,
+      "label": "课后题 7-35",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "9ef83c7d-45c8-508c-a2ca-a5df08e012fd",
+      "document_id": 14,
+      "label": "课后题 8-1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "d8d6c1c3-197f-5457-b986-4983e82d2b6b",
+      "document_id": 14,
+      "label": "课后题 8-2",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "981fcf44-00cd-597b-a3a5-24abc487164d",
+      "document_id": 14,
+      "label": "课后题 8-3",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "bd3b9043-45bb-572f-8901-4f68c91cf3c9",
+      "document_id": 14,
+      "label": "课后题 8-4",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "495baa61-c2f5-5bc5-ab63-be3cc6a77874",
+      "document_id": 14,
+      "label": "课后题 8-5",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "e4609af5-a95f-5f3a-915d-038c8ee94b1b",
+      "document_id": 14,
+      "label": "课后题 8-6",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "ddf255c6-9b6a-5af5-9343-833d076d215a",
+      "document_id": 14,
+      "label": "课后题 8-7",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "866e6db8-8b42-5391-ba03-02380e8535a3",
+      "document_id": 14,
+      "label": "课后题 8-8",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "76d071c4-54c1-53ad-af71-e04f26bc4a46",
+      "document_id": 14,
+      "label": "课后题 8-9",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "921197e5-2e31-5fca-934e-db3072c55ed8",
+      "document_id": 14,
+      "label": "课后题 8-10",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "089cb7a9-bd1b-5d12-bd92-91847296a80a",
+      "document_id": 14,
+      "label": "课后题 8-11",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "3183ae20-343c-592b-a9b2-f7754f8511d7",
+      "document_id": 14,
+      "label": "课后题 8-12",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "7eb45c3d-c00f-5bee-89a3-2e03f930ca4d",
+      "document_id": 14,
+      "label": "课后题 8-13",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "4534fddd-ab63-55c8-b0c6-29fdd0378d5e",
+      "document_id": 14,
+      "label": "课后题 8-14",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "b61e091c-1e54-5a85-8bcc-819450670f43",
+      "document_id": 14,
+      "label": "课后题 8-15",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "e6cde0e0-172f-53f0-a9ad-ee3f69212b5a",
+      "document_id": 14,
+      "label": "课后题 8-16",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "840b64c9-1036-518f-a4ab-41cd274f68c5",
+      "document_id": 14,
+      "label": "课后题 8-17",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "31867791-f3d1-5845-9366-cad9be46e3e5",
+      "document_id": 14,
+      "label": "课后题 8-18",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "ba3b2308-c544-58a5-bd39-60760b7cabd1",
+      "document_id": 14,
+      "label": "课后题 8-19",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "9207a3cd-5482-5f35-a551-b18b7a8455c6",
+      "document_id": 14,
+      "label": "课后题 8-20",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "416df061-4b65-51ec-8e84-96d0fd7f8264",
+      "document_id": 14,
+      "label": "课后题 8-21",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "0755067a-eec0-5d21-8cb3-259f1f1429eb",
+      "document_id": 14,
+      "label": "课后题 8-22",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "b87eeb90-1c39-5c1c-a198-83e8b10ad12b",
+      "document_id": 14,
+      "label": "课后题 8-23",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "e302d930-6aab-55b5-9456-a8be8bfa76bb",
+      "document_id": 14,
+      "label": "课后题 8-24",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "f75d5f5b-6a6a-5d51-8ece-c043af1498b0",
+      "document_id": 14,
+      "label": "课后题 8-25",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "fda158ae-cf04-5b16-8c4e-6e8baaab4ea3",
+      "document_id": 14,
+      "label": "课后题 8-26",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "4261c2c9-c89a-5029-bd06-65f449389018",
+      "document_id": 14,
+      "label": "课后题 8-27",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "50150eec-f309-5ac2-a66a-0ccf43484abf",
+      "document_id": 14,
+      "label": "课后题 8-28",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "e519e036-ceec-5d3d-8746-148c7aed33e6",
+      "document_id": 14,
+      "label": "课后题 8-29",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "f87edf40-e2ef-58f3-ab91-948ec3cca6a7",
+      "document_id": 14,
+      "label": "课后题 8-30",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "6faa0b08-788b-5537-9d40-c69cd9a7c4a0",
+      "document_id": 14,
+      "label": "课后题 8-31",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "c727dd72-9e95-5363-95a5-f32182e67719",
+      "document_id": 14,
+      "label": "课后题 8-32",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "b98b22fb-4ed1-5d7c-b3fe-2f09488b7f83",
+      "document_id": 14,
+      "label": "课后题 8-33",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "c993daf1-8615-53a2-8b34-fe76986f49c4",
+      "document_id": 14,
+      "label": "课后题 8-34",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "38ad3d28-15f5-56a8-9087-06610069bf04",
+      "document_id": 14,
+      "label": "课后题 8-35",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "c30f801a-83b2-5b8f-96ba-db1c79dbf278",
+      "document_id": 14,
+      "label": "课后题 8-36",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "b7d4eb15-3f09-53cc-83c5-f624b0f39141",
+      "document_id": 14,
+      "label": "课后题 8-37",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "7ea5181a-91c9-593d-8b28-9a2a1233f8b8",
+      "document_id": 14,
+      "label": "课后题 8-38",
+      "status": "excluded",
+      "reason": [
+        "同号课后题已有新版配对题答，虚拟集合优先新版，保留旧题及旧进度不修改"
+      ]
+    },
+    {
+      "uuid": "e51f319c-a4a9-5c8a-b33a-ff46e3bb367d",
+      "document_id": 14,
+      "label": "背诵简答 1 · 请问能量信号和功率信号的区别是什么？存不存在既是能量信 号又是功率信号的信号？",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "1c844780-82e7-571f-a26f-8971ca726185",
+      "document_id": 14,
+      "label": "背诵简答 2 · 请问线性系统和非线性系统怎么区分？",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "3bcd561a-498e-5186-8dac-cfb03f60cce1",
+      "document_id": 14,
+      "label": "背诵简答 3 · 请问什么是恒参系统？因果系统？稳定系统？",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "ab51a288-7d02-5128-9612-5f27f522b1b1",
+      "document_id": 14,
+      "label": "背诵简答 6 · 请问非周期信号和周期信号在时域和频域有何异同？",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "4b7a93a1-b17e-5ac0-b926-29b7e9ddd682",
+      "document_id": 14,
+      "label": "背诵简答 7 · 请问时域压缩和展宽对频域有何影响？应用此原理，想要提高信 号传输速率，应该怎么办？并解释为什么收音机放快速会出现尖叫？",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "a8b3969a-5ab2-500a-a08e-46a053c28206",
+      "document_id": 14,
+      "label": "背诵简答 8 · 请问信号经过希尔波特变换后有什么变化？实现希尔波特变换器 的变换器又称为什么？",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "9bd30f81-ffff-5c44-abd0-f4dd36edd8dc",
+      "document_id": 14,
+      "label": "背诵简答 9 · 请问什么是吉布斯现象？",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "4dec0214-6030-5c66-8151-4f4eea219d76",
+      "document_id": 14,
+      "label": "背诵简答 10 · 请问三大变换之间有什么联系？",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "5a1b0fe0-3f04-5509-b085-be4840eb308a",
+      "document_id": 14,
+      "label": "背诵简答 12 · 请问什么是全通网络？最小相移网络？",
+      "status": "review",
+      "reason": [
+        "已标超纲或包含非本轮主攻深度的扩展内容，待复核"
+      ]
+    },
+    {
+      "uuid": "f0276410-8013-54da-942a-4c579eb470c7",
+      "document_id": 14,
+      "label": "背诵简答 13 · 请问什么是频域取样定理？",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "111973e5-6a42-5af2-a424-b7a4ca803026",
+      "document_id": 14,
+      "label": "蜂考 · 课时 1 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "927ecf9c-7a9a-5c41-ac12-1f9d93350f22",
+      "document_id": 14,
+      "label": "蜂考 · 课时 1 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "8fb8d03c-5d4a-5ae4-a6fc-bf7b18a02bfe",
+      "document_id": 14,
+      "label": "蜂考 · 课时 1 · 题 2",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "6764281d-910b-533c-bc75-e3ee398227a2",
+      "document_id": 14,
+      "label": "蜂考 · 课时 1 · 题 3",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "6a6a68d4-aff7-5780-8de1-e355849ebd4f",
+      "document_id": 14,
+      "label": "蜂考 · 课时 1 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "9acd7a0d-8037-510d-b102-bdeae03b426b",
+      "document_id": 14,
+      "label": "蜂考 · 课时 3 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "f238a5d8-1489-5d16-8f42-e7d15535ed59",
+      "document_id": 14,
+      "label": "蜂考 · 课时 3 · 题 2",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "70a17d96-511c-53d2-946f-21cbe95e447c",
+      "document_id": 14,
+      "label": "蜂考 · 课时 3 · 题 3",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "e13c707c-3e56-5628-b336-943510138307",
+      "document_id": 14,
+      "label": "蜂考 · 课时 3 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "a68042a4-815c-5453-952b-64a83381ec27",
+      "document_id": 14,
+      "label": "蜂考 · 课时 3 · 题 2",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "ec870516-f466-5017-91eb-020e5661e0fc",
+      "document_id": 14,
+      "label": "蜂考 · 课时 3 · 题 3",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "ec3234cb-d100-5718-b18f-e1860b17314c",
+      "document_id": 14,
+      "label": "蜂考 · 课时 5 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "d022ba54-8725-5374-9b5f-2577c9303182",
+      "document_id": 14,
+      "label": "蜂考 · 课时 5 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "25475728-2158-59b9-b60d-2403c490157d",
+      "document_id": 14,
+      "label": "蜂考 · 课时 5 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "b4542b34-e393-5e25-adb1-8346f1dab3cd",
+      "document_id": 14,
+      "label": "蜂考 · 课时 7 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "ecc00093-2438-5728-beb0-0c77cb835498",
+      "document_id": 14,
+      "label": "蜂考 · 课时 7 · 题 2",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "27f240f6-9ed7-5ecb-bde7-cc2a0c12fbbf",
+      "document_id": 14,
+      "label": "蜂考 · 课时 7 · 题 3",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "b015a6d8-7b3b-5839-8d44-3fdc62a62fee",
+      "document_id": 14,
+      "label": "蜂考 · 课时 7 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "977e694a-a69a-5089-9c4b-fe6601682757",
+      "document_id": 14,
+      "label": "蜂考 · 课时 9 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "e500a811-c3af-516e-8b33-fd1a5babd247",
+      "document_id": 14,
+      "label": "蜂考 · 课时 9 · 题 2",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "0037f5ea-92af-5db3-b894-93987cf2b666",
+      "document_id": 14,
+      "label": "蜂考 · 课时 11 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "e3a2609e-fdc5-5775-a46d-7779619b2373",
+      "document_id": 14,
+      "label": "蜂考 · 课时 11 · 题 2",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "cf8ab115-b43c-5fee-80f9-04d722ecf03c",
+      "document_id": 14,
+      "label": "蜂考 · 课时 11 · 题 3",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "e08bc8a2-fe18-59be-93f3-0c32ca472e30",
+      "document_id": 14,
+      "label": "蜂考 · 课时 11 · 题 4",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "cd017fed-6f87-506a-95e2-72e8bec95fa2",
+      "document_id": 14,
+      "label": "蜂考 · 课时 11 · 题 5",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "e6e5bfdd-8aec-5261-96c8-1eb179c1cc1c",
+      "document_id": 14,
+      "label": "蜂考 · 课时 13 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "ae4e9cbd-43db-5f54-aa7b-55e15e664cc0",
+      "document_id": 14,
+      "label": "蜂考 · 课时 13 · 题 2",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "f95ac601-fd6e-5c70-889e-506d0ed55cda",
+      "document_id": 14,
+      "label": "蜂考 · 课时 13 · 题 3",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "a14811f3-b1b7-5999-8c03-1bea265a46d4",
+      "document_id": 14,
+      "label": "蜂考 · 课时 14 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "42e10b86-c8b9-5732-9483-5e8ad3694bd2",
+      "document_id": 14,
+      "label": "蜂考 · 课时 14 · 题 2",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "a1e0e890-cf03-581e-97ae-19f9b9626e19",
+      "document_id": 14,
+      "label": "蜂考 · 课时 14 · 题 3",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "0d290f9e-853b-5e00-9d28-2f12e8ceaf69",
+      "document_id": 14,
+      "label": "蜂考 · 课时 14 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "670d4709-6085-58a6-b8c1-4ff7d27bf0ee",
+      "document_id": 14,
+      "label": "蜂考 · 课时 14 · 题 2",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "a6bcf25f-7bb3-5ccf-8782-37b80439ff7b",
+      "document_id": 14,
+      "label": "蜂考 · 课时 16 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "d50c7da1-4674-5b0c-afb5-690c1092fea9",
+      "document_id": 14,
+      "label": "蜂考 · 课时 16 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "078c8917-b505-588a-b92e-deec4d1d85c6",
+      "document_id": 14,
+      "label": "蜂考 · 课时 16 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "53b9700f-589d-5c02-8e90-f105ea3ea2c8",
+      "document_id": 14,
+      "label": "蜂考 · 课时 16 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "aa2ed5fa-1451-5e75-8226-8f4b6ecae2b7",
+      "document_id": 14,
+      "label": "蜂考 · 课时 16 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "62bb1ff1-4b0a-5f71-9138-433490983ab0",
+      "document_id": 14,
+      "label": "蜂考 · 课时 18 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "aebdc62c-1b61-5473-8932-e7e077c4119a",
+      "document_id": 14,
+      "label": "蜂考 · 课时 18 · 题 2",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "68f73470-aa56-5a80-8300-a8b30e9ed031",
+      "document_id": 14,
+      "label": "蜂考 · 课时 18 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "97b00010-6c91-5354-9be1-4431dfd344e2",
+      "document_id": 14,
+      "label": "蜂考 · 课时 20 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "bf151376-9073-5f00-812a-f3ac1a5bae81",
+      "document_id": 14,
+      "label": "蜂考 · 课时 20 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "044b0357-e169-5456-969d-fa768659dea3",
+      "document_id": 14,
+      "label": "蜂考 · 课时 20 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "8d4e5c1b-d1eb-5095-a031-61644a3c4aeb",
+      "document_id": 14,
+      "label": "蜂考 · 课时 22 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "ca60bcde-3704-5760-a447-a4e2b0b9a437",
+      "document_id": 14,
+      "label": "蜂考 · 课时 22 · 题 2",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "db17bc8a-38ee-5ad9-b8fc-8c08beb5550e",
+      "document_id": 14,
+      "label": "蜂考 · 课时 22 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "9cb70b9e-8552-5bb4-a076-ce51f58f5e70",
+      "document_id": 14,
+      "label": "蜂考 · 课时 22 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "e7feba81-80db-5008-a831-560de1b52d8e",
+      "document_id": 14,
+      "label": "蜂考 · 课时 24 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "e4a7784d-f1d2-503a-9746-9593511148f5",
+      "document_id": 14,
+      "label": "蜂考 · 课时 24 · 题 2",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "0e32d1ee-ef49-5943-bf71-7ba67ef74255",
+      "document_id": 14,
+      "label": "蜂考 · 课时 24 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "d1a8c04d-394e-5ac2-98b5-bed5ebdd59ca",
+      "document_id": 14,
+      "label": "蜂考 · 课时 24 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "1dfecaf7-2ebe-51ee-bfc1-1b3bd9d86208",
+      "document_id": 14,
+      "label": "蜂考 · 课时 26 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "074f186e-88de-588f-bb5c-b5e82e9b8586",
+      "document_id": 14,
+      "label": "蜂考 · 课时 26 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干文字，不仅凭章节号归类"
+      ]
+    },
+    {
+      "uuid": "47f2120c-e498-53fd-89ed-0e318b13ddec",
+      "document_id": 23,
+      "label": "课后题 1-2",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "cb40d2cd-1091-5ab5-843f-faf72c515c6e",
+      "document_id": 23,
+      "label": "课后题 1-3",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "c61fac69-ab7c-5111-a8b0-42bcba467669",
+      "document_id": 23,
+      "label": "课后题 1-5",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "abc3b3a4-7625-55a8-9e30-c7af96563085",
+      "document_id": 23,
+      "label": "课后题 1-6",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "7ccbacc0-f6e8-5023-b1e3-084358a9ef19",
+      "document_id": 23,
+      "label": "课后题 1-7",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "2f6741bb-46d5-5f7e-b4de-aac3eefec199",
+      "document_id": 23,
+      "label": "课后题 1-8",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "aec45b97-746f-584f-a628-53479b95e6bd",
+      "document_id": 23,
+      "label": "课后题 1-11",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "17f46678-b2d5-58a2-b74e-635b30e94e36",
+      "document_id": 23,
+      "label": "课后题 1-12",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "11327614-6882-5507-8ff4-8e3eca737e9a",
+      "document_id": 23,
+      "label": "课后题 1-14",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "55aaeefe-0e17-5e19-880c-b5add9ce4e8f",
+      "document_id": 23,
+      "label": "课后题 1-15",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "af7cad3f-25df-5673-887c-64ff798080d5",
+      "document_id": 23,
+      "label": "课后题 1-17",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "2272f576-58cd-5b00-8a3e-0dca7d767da4",
+      "document_id": 23,
+      "label": "课后题 1-18",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "19739bd9-e616-509f-b999-d9d22e2442a7",
+      "document_id": 23,
+      "label": "课后题 1-22",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "268448d6-5ad7-59f0-bfc2-d3d77e15fd72",
+      "document_id": 23,
+      "label": "课后题 1-23",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "23682184-b063-5951-b6ee-2535e9ebc03b",
+      "document_id": 23,
+      "label": "课后题 2-2",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "9dde1e99-f395-5719-840f-1a3a8b79f8af",
+      "document_id": 23,
+      "label": "课后题 2-3",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "396f81da-8841-569e-9930-711eb070b785",
+      "document_id": 23,
+      "label": "课后题 2-5",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "869d64d0-933b-5aec-b29c-7da937c35e98",
+      "document_id": 23,
+      "label": "课后题 3-10",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "8f514997-e2ce-5e3d-becc-4bee4a8b50be",
+      "document_id": 23,
+      "label": "课后题 3-13",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "cab03032-93c4-5706-b53b-2222c3ffbbcf",
+      "document_id": 23,
+      "label": "课后题 3-14",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "434d464a-581f-55c6-826a-1f475e7a2422",
+      "document_id": 23,
+      "label": "课后题 3-19",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "0b1f280a-e491-53a4-8ddf-f34e45f46cc5",
+      "document_id": 23,
+      "label": "课后题 4-5",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "cdda335b-8a83-57ad-adf0-de617e121a44",
+      "document_id": 23,
+      "label": "课后题 4-6",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "5122f208-6142-5076-987a-ca61c3d34909",
+      "document_id": 23,
+      "label": "课后题 4-8",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "3bf979ac-8ac4-5e89-a66a-a72120c3bf40",
+      "document_id": 23,
+      "label": "课后题 4-12",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "c6d0be88-7b81-527d-a0f6-c988b738d496",
+      "document_id": 23,
+      "label": "课后题 4-14",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "02a5f669-35b3-5756-bf2c-fcf342116fd5",
+      "document_id": 23,
+      "label": "课后题 4-15",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "30763c94-dd30-59a0-9a25-4cb6f33f5afc",
+      "document_id": 23,
+      "label": "课后题 4-17",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "333ec3d6-63d9-55c1-802b-2c9417786082",
+      "document_id": 23,
+      "label": "课后题 4-24",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "b6cff347-67f7-5720-8066-34cf02e7507d",
+      "document_id": 23,
+      "label": "课后题 4-25",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "65d5b817-28a1-5c2d-986f-20331259b1de",
+      "document_id": 23,
+      "label": "课后题 4-30",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "6a07f1a6-a820-53ff-871e-a101928649f4",
+      "document_id": 23,
+      "label": "课后题 4-33",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "80796446-0622-5a16-986c-2ccf34aa781a",
+      "document_id": 23,
+      "label": "课后题 4-41",
+      "status": "review",
+      "reason": [
+        "已标超纲或包含非本轮主攻深度的扩展内容，待复核"
+      ]
+    },
+    {
+      "uuid": "56962d21-135d-52cb-82e0-78b3fd99cd67",
+      "document_id": 23,
+      "label": "课后题 4-43",
+      "status": "review",
+      "reason": [
+        "已标超纲或包含非本轮主攻深度的扩展内容，待复核"
+      ]
+    },
+    {
+      "uuid": "9ca84a45-87c7-5b06-a6f0-2ee622b67855",
+      "document_id": 23,
+      "label": "课后题 4-44",
+      "status": "review",
+      "reason": [
+        "已标超纲或包含非本轮主攻深度的扩展内容，待复核"
+      ]
+    },
+    {
+      "uuid": "f74dcfc1-b38d-5d0e-8b6f-5d9779b9ecfc",
+      "document_id": 23,
+      "label": "课后题 4-48",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "e6e2cb9b-7a1d-5528-b883-6530bf34cc8b",
+      "document_id": 23,
+      "label": "课后题 5-3",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "07633a69-0743-5bd2-8c27-dbe0c08bf5ac",
+      "document_id": 23,
+      "label": "课后题 5-6",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "2f9764eb-b7fe-525a-98c2-22a49aa76ad4",
+      "document_id": 23,
+      "label": "课后题 5-11",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "8527ae8a-d5d0-5090-a560-8c340b90bbec",
+      "document_id": 23,
+      "label": "课后题 7-1",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "df453535-b69e-5a81-93b4-8da2e3c65061",
+      "document_id": 23,
+      "label": "课后题 7-3",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "7226007c-9f5c-57f7-a794-e23c34a6e943",
+      "document_id": 23,
+      "label": "课后题 7-4",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "11b3c855-7ac3-5eee-a991-e0fc7a5f2f5e",
+      "document_id": 23,
+      "label": "课后题 7-19",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "8c924c2e-0e06-5a05-ad1d-72869e75dc1e",
+      "document_id": 23,
+      "label": "课后题 7-25",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "cb509d7a-4318-5e19-b764-2ff06a16bdd3",
+      "document_id": 23,
+      "label": "课后题 7-29",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "74ca37bd-50be-5cf5-b924-0102134189e8",
+      "document_id": 23,
+      "label": "课后题 7-32",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "a35fa7e1-1692-5956-a2b4-a1094c9bdf99",
+      "document_id": 23,
+      "label": "课后题 7-34",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "535f7184-869e-5402-a403-f06f139782f0",
+      "document_id": 23,
+      "label": "课后题 8-5",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "49908bf5-2679-5c2c-bc7a-f121a50e6088",
+      "document_id": 23,
+      "label": "课后题 8-11",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "ada389a8-82b8-5569-ab56-a6e8f31c0362",
+      "document_id": 23,
+      "label": "课后题 8-16",
+      "status": "excluded",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "1ac3da85-bfec-53e3-b389-8efcff80bff9",
+      "document_id": 23,
+      "label": "课后题 8-20",
+      "status": "review",
+      "reason": [
+        "已标超纲或包含非本轮主攻深度的扩展内容，待复核"
+      ]
+    },
+    {
+      "uuid": "ef617609-13c1-541a-b7e5-d649706a66e0",
+      "document_id": 23,
+      "label": "课后题 8-38",
+      "status": "review",
+      "reason": [
+        "已标超纲或包含非本轮主攻深度的扩展内容，待复核"
+      ]
+    },
+    {
+      "uuid": "1a082767-2cf9-5e7f-9d58-51603f346130",
+      "document_id": 26,
+      "label": "2006年 · 859信号与系统整卷（含全部小题与参考解析）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "b0693ef3-1a99-5c77-aea6-3aebd9dbefdb",
+      "document_id": 26,
+      "label": "2007年 · 859信号与系统整卷（含全部小题与参考解析）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "ba97150e-ffd5-5878-8fc7-aa669bdcc91d",
+      "document_id": 26,
+      "label": "2008年 · 859信号与系统整卷（含全部小题与参考解析）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "38d30570-e1de-54a6-b3d0-49b990939702",
+      "document_id": 26,
+      "label": "2009年 · 859信号与系统整卷（含全部小题与参考解析）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "d063ce2d-1299-5206-8207-390c922ac040",
+      "document_id": 26,
+      "label": "2010年 · 859信号与系统整卷（含全部小题与参考解析）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "3f47463f-9fe7-5d47-9137-a70d615fff77",
+      "document_id": 26,
+      "label": "2011年 · 859信号与系统整卷（含全部小题与参考解析）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "dc69280e-dd8e-53f1-8db6-d70cdaace366",
+      "document_id": 26,
+      "label": "2012年 · 859信号与系统整卷（含全部小题与参考解析）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "4efeec91-ef09-50e3-88d4-b80b3554b114",
+      "document_id": 26,
+      "label": "2013年 · 859信号与系统整卷（含全部小题与参考解析）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "4969925c-a0d1-596e-8dc1-8b794307301c",
+      "document_id": 26,
+      "label": "2014年 · 859信号与系统整卷（含全部小题与参考解析）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "f585b216-94cc-539d-980b-de5952252c65",
+      "document_id": 26,
+      "label": "2015年 · 859信号与系统整卷（含全部小题与参考解析）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "4742057d-5e51-50bd-bc4d-aaff07d1429f",
+      "document_id": 26,
+      "label": "2016年 · 859信号与系统整卷（含全部小题与参考解析）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "346f8cb3-04d4-599f-bd73-add3e1cb2208",
+      "document_id": 26,
+      "label": "2017年 · 859信号与系统整卷（含全部小题与参考解析）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "a5a6da33-5b08-5908-a1b1-ad732c04aa75",
+      "document_id": 26,
+      "label": "2018年 · 859信号与系统整卷（含全部小题与参考解析）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "2867df56-1f8a-52ac-b3c3-88e7d8847dde",
+      "document_id": 26,
+      "label": "2019年 · 859信号与系统整卷（含全部小题与参考解析）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "3821ef13-915a-5ca3-91d7-63275dd293c9",
+      "document_id": 26,
+      "label": "2020年 · 859信号与系统整卷（含全部小题与参考解析）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "ca8811c9-b8e4-5950-b8bf-1f007257408f",
+      "document_id": 26,
+      "label": "2021年 · 859信号与系统整卷（含全部小题与参考解析）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "9faba19f-17f3-5044-8256-884566c68e20",
+      "document_id": 26,
+      "label": "2022年 · 859信号与系统整卷（含全部小题与参考解析）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "abaa6376-7e8a-596b-826c-4a0f8c0441a8",
+      "document_id": 26,
+      "label": "2023年 · 859信号与系统整卷（含全部小题与参考解析）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "5325b528-947b-566d-a121-7f31e199b607",
+      "document_id": 26,
+      "label": "2024年 · 859信号与系统整卷（含全部小题与参考解析）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "362d1214-a799-5dcc-aaf2-79fce62c9e32",
+      "document_id": 26,
+      "label": "2025年 · 859信号与系统整卷（含全部小题与参考解析）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "c0d8107f-33b6-5d9e-9f2f-fa5e1b85863a",
+      "document_id": 26,
+      "label": "2006年 · 1·填空1",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "bb4165d7-dc77-5e27-b5b5-aee2e474783f",
+      "document_id": 26,
+      "label": "2006年 · 1·填空2",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "f3e598ff-1a11-548c-8737-f54eddaa7576",
+      "document_id": 26,
+      "label": "2006年 · 1·填空3",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "4078a05b-46a5-5169-b4e6-a494cdf5a827",
+      "document_id": 26,
+      "label": "2006年 · 1·填空4",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "9956d78b-27f7-5e42-ad98-2a136f342817",
+      "document_id": 26,
+      "label": "2006年 · 1·填空5",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "eaabc250-e72c-561b-8205-ccddadcfe5fe",
+      "document_id": 26,
+      "label": "2006年 · 1·填空6",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "01d6c56b-831c-59ea-880c-fd899a4c5f4d",
+      "document_id": 26,
+      "label": "2006年 · 1·填空7",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "58550469-a718-5eb7-80e2-461f0646c2fc",
+      "document_id": 26,
+      "label": "2006年 · 1·填空8",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "c379e7d0-c960-5836-85bc-60605fd548d4",
+      "document_id": 26,
+      "label": "2006年 · 1·填空10",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "a14e56a8-61fd-58f8-8edd-80d6aeeb52cb",
+      "document_id": 26,
+      "label": "2006年 · 1·填空12",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "0e45190b-eeb6-5408-a8ce-8c5bc7fb9951",
+      "document_id": 26,
+      "label": "2006年 · 1·填空16",
+      "status": "review",
+      "reason": [
+        "已标超纲或包含非本轮主攻深度的扩展内容，待复核"
+      ]
+    },
+    {
+      "uuid": "7002d598-1d5e-544e-887c-92032363cd5b",
+      "document_id": 26,
+      "label": "2006年 · 1·填空17",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "6d630754-f432-5f0d-b911-3690fc3a56c6",
+      "document_id": 26,
+      "label": "2006年 · 1·填空19",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "29abba6b-bb4f-51f2-9959-2920b7a1cf3a",
+      "document_id": 26,
+      "label": "2006年 · 2·题1",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "0405555b-5c4b-5e8e-b2db-e8317942d373",
+      "document_id": 26,
+      "label": "2006年 · 2·题2",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "f536b20b-40a6-55b8-96d6-e95fd0fde84d",
+      "document_id": 26,
+      "label": "2007年 · 第3题",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "8649e7b4-f3b7-55fa-b10a-0f814486d64a",
+      "document_id": 26,
+      "label": "2007年 · 第4题",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "e3c7524a-0ec8-52de-a1a0-9f9b126839ef",
+      "document_id": 26,
+      "label": "2007年 · 第5题",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "1291c7e3-d578-5018-81ae-c243b44011b2",
+      "document_id": 26,
+      "label": "2008年 · 1·判断3",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "e160bbed-862e-5724-8ae5-2f4d87464187",
+      "document_id": 26,
+      "label": "2008年 · 1·判断4",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "14b2b397-ec1b-5ac1-98a5-62f8598c3ca7",
+      "document_id": 26,
+      "label": "2008年 · 第3题",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "f77237a7-cf67-5646-97b7-44ddcc2913ff",
+      "document_id": 26,
+      "label": "2009年 · 1·题1",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "e24cea18-6cbb-5c5a-8390-cd44e1363e0c",
+      "document_id": 26,
+      "label": "2009年 · 1·题2",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "7ac5922e-424f-5150-a5a9-608ee0571d96",
+      "document_id": 26,
+      "label": "2009年 · 1·题3",
+      "status": "review",
+      "reason": [
+        "已标超纲或包含非本轮主攻深度的扩展内容，待复核"
+      ]
+    },
+    {
+      "uuid": "91688e64-7cb5-5cc2-9040-2deafc79d10a",
+      "document_id": 26,
+      "label": "2009年 · 1·题5",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "4707f183-ddd8-5d03-902f-4c2e555d613e",
+      "document_id": 26,
+      "label": "2010年 · 1·题2",
+      "status": "review",
+      "reason": [
+        "已标超纲或包含非本轮主攻深度的扩展内容，待复核"
+      ]
+    },
+    {
+      "uuid": "628380b0-d0bb-5b0c-9c9e-906ba87bbac2",
+      "document_id": 26,
+      "label": "2010年 · 第5题",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "aaa6af2c-7fc3-57bb-bc87-e16fcf205a04",
+      "document_id": 26,
+      "label": "2010年 · 第8题",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "72b7be80-24d2-5f62-b1e6-a8eab8ec892f",
+      "document_id": 26,
+      "label": "2011年 · 1·填空1",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "17db80d4-8981-55fe-8156-fae75f060b19",
+      "document_id": 26,
+      "label": "2011年 · 1·填空2",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "fa714246-2d55-57b6-af2d-90d84f08189c",
+      "document_id": 26,
+      "label": "2011年 · 1·填空3",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "defb7c83-b51a-5487-95b0-3bdd725dfa4e",
+      "document_id": 26,
+      "label": "2011年 · 1·填空4",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "7eca14e2-d490-54d3-90e4-b11db7b986e0",
+      "document_id": 26,
+      "label": "2011年 · 1·填空6",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "e017b321-82b3-5dfe-bf02-de4d2eee0fe5",
+      "document_id": 26,
+      "label": "2011年 · 1·填空7",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "fc12cca2-2594-5412-8cb7-84864f5cb959",
+      "document_id": 26,
+      "label": "2011年 · 1·填空8",
+      "status": "review",
+      "reason": [
+        "OCR 区段包含多个主题号，归属待复核"
+      ]
+    },
+    {
+      "uuid": "6c416069-af8f-5d75-82e6-ab4ba65a366d",
+      "document_id": 26,
+      "label": "2011年 · 1·填空9",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "6e618eb1-d7ba-58de-851f-358a834886d1",
+      "document_id": 26,
+      "label": "2011年 · 1·填空10",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "d9f4e9c7-41f5-5293-8ef8-ebce8504927b",
+      "document_id": 26,
+      "label": "2011年 · 第6题",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "52f30da7-fcc6-5485-ae67-bd37c369062b",
+      "document_id": 26,
+      "label": "2012年 · 1·题1",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "a7afd14d-7506-5913-9818-5fd3fb679bcf",
+      "document_id": 26,
+      "label": "2012年 · 1·题3",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "3ed10e7b-896e-5067-be33-2493d3e2cfa0",
+      "document_id": 26,
+      "label": "2012年 · 1·题6",
+      "status": "review",
+      "reason": [
+        "OCR 区段包含多个主题号，归属待复核"
+      ]
+    },
+    {
+      "uuid": "e9ee97fa-4f73-514b-89b1-22ecc007a063",
+      "document_id": 26,
+      "label": "2012年 · 1·题7",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "9029ed63-44ca-5bce-bb2d-d795692f92db",
+      "document_id": 26,
+      "label": "2012年 · 1·题9",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "aacc0896-b74d-5229-9101-ccf7cbeea733",
+      "document_id": 26,
+      "label": "2012年 · 3·选择3",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "ef9b0789-836b-5981-9f62-3d5bfc176344",
+      "document_id": 26,
+      "label": "2012年 · 3·选择5",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "5c9c61a2-4074-575b-862c-2cd64e8620e7",
+      "document_id": 26,
+      "label": "2012年 · 3·选择8",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "486d69fb-93e4-5dff-a770-d0323ff7775e",
+      "document_id": 26,
+      "label": "2012年 · 3·选择9",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "a34a692b-1951-5f9f-be5a-d623ba6ff689",
+      "document_id": 26,
+      "label": "2012年 · 3·选择10",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "8c13108a-0106-53e5-96ba-86cd1bebe99a",
+      "document_id": 26,
+      "label": "2012年 · 第4题",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "e1b6aa27-5ef6-5068-b0f4-bb90c06f4320",
+      "document_id": 26,
+      "label": "2013年 · 1·选择1",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "16cb2a64-92be-5a95-a391-9de72ded7a8d",
+      "document_id": 26,
+      "label": "2013年 · 1·选择2",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "b0951e09-f678-5a28-b3d7-4f87a388fb00",
+      "document_id": 26,
+      "label": "2013年 · 1·选择4",
+      "status": "review",
+      "reason": [
+        "OCR 区段包含多个主题号，归属待复核"
+      ]
+    },
+    {
+      "uuid": "a483b00e-9c5c-5669-915f-9ed935a38974",
+      "document_id": 26,
+      "label": "2013年 · 1·选择5",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "8d4bbaf9-1e50-5494-84d5-6c51917f5a68",
+      "document_id": 26,
+      "label": "2013年 · 1·选择6",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "4d6ad77b-a001-558e-aa9b-cffda162d69b",
+      "document_id": 26,
+      "label": "2013年 · 1·选择7",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "5e14a829-2f2c-5482-b28e-27d5cb25a550",
+      "document_id": 26,
+      "label": "2013年 · 1·选择8",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "f29fa1f9-b976-5d58-9868-7f08dd10c91b",
+      "document_id": 26,
+      "label": "2013年 · 1·选择9",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "a8df12c7-6cc9-5167-8928-50fe6e9db478",
+      "document_id": 26,
+      "label": "2013年 · 2·填空2",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "93da0ad6-558f-5571-bb19-4f32123fd027",
+      "document_id": 26,
+      "label": "2013年 · 2·填空3",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "5f73a678-8256-537e-b9d0-7ddfbbb56001",
+      "document_id": 26,
+      "label": "2013年 · 2·填空4",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "a2d846a6-1a4d-5c3a-b03f-5a9e739104c5",
+      "document_id": 26,
+      "label": "2013年 · 2·填空6",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "bb3d7731-5ca1-55c2-ad81-376a9adc2f77",
+      "document_id": 26,
+      "label": "2013年 · 2·填空7",
+      "status": "review",
+      "reason": [
+        "已标超纲或包含非本轮主攻深度的扩展内容，待复核"
+      ]
+    },
+    {
+      "uuid": "4f6f9e96-0842-51d8-bf6d-18658398642b",
+      "document_id": 26,
+      "label": "2013年 · 2·填空8",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "ce3005fb-5fd0-5f52-9fa9-151a54f5d66d",
+      "document_id": 26,
+      "label": "2013年 · 2·填空9",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "c64f624e-c30b-519a-b9af-a28674f9edcd",
+      "document_id": 26,
+      "label": "2013年 · 2·填空10",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "2b52aed3-8950-5870-b92a-251a0a2b2eae",
+      "document_id": 26,
+      "label": "2013年 · 3·题2",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "107cda31-93ed-5265-85df-4d02eede09e3",
+      "document_id": 26,
+      "label": "2013年 · 3·题6",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "5d62cc96-b26a-55f0-b73f-468f6e1455f4",
+      "document_id": 26,
+      "label": "2013年 · 3·题7",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "92932ad5-ee7b-5c6a-be57-f91511bde396",
+      "document_id": 26,
+      "label": "2014年 · 1·选择1",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "d256fce0-be56-520e-bd09-0724a7e0d652",
+      "document_id": 26,
+      "label": "2014年 · 1·选择2",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "98099cb7-9bad-5d5a-af67-8105e75a9e7d",
+      "document_id": 26,
+      "label": "2014年 · 1·选择3",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "88a966cd-b453-57b1-8ed9-9d2a4887e33d",
+      "document_id": 26,
+      "label": "2014年 · 1·选择4",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "057361fb-d21c-5a44-8dcc-9cc5bb7890bd",
+      "document_id": 26,
+      "label": "2014年 · 1·选择5",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "211da956-7a11-5aa4-8a59-b9b02a20ce64",
+      "document_id": 26,
+      "label": "2014年 · 1·选择6",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "49dee17c-e238-528a-acab-2445ea85fc16",
+      "document_id": 26,
+      "label": "2014年 · 1·选择7",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "02c52c00-2ac5-5f41-ac01-c9c16b6284d5",
+      "document_id": 26,
+      "label": "2014年 · 1·选择9",
+      "status": "review",
+      "reason": [
+        "已标超纲或包含非本轮主攻深度的扩展内容，待复核"
+      ]
+    },
+    {
+      "uuid": "d9c2274f-3fd8-557e-9bd3-50fe1ea416e5",
+      "document_id": 26,
+      "label": "2014年 · 1·选择10",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "1ad0cb80-8c69-5591-a515-86941672911e",
+      "document_id": 26,
+      "label": "2014年 · 2·填空1",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "29145012-728e-5a3f-9df8-77dc197d038f",
+      "document_id": 26,
+      "label": "2014年 · 2·填空2",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "1cc66ca2-a287-5931-a9b5-84e5a79135ad",
+      "document_id": 26,
+      "label": "2014年 · 2·填空4",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "0692e3ee-5e09-5dbf-ac1f-85f9c05031da",
+      "document_id": 26,
+      "label": "2014年 · 2·填空5",
+      "status": "review",
+      "reason": [
+        "OCR 区段包含多个主题号，归属待复核"
+      ]
+    },
+    {
+      "uuid": "d3d6aeea-5bd4-5c7f-9343-908a524160be",
+      "document_id": 26,
+      "label": "2014年 · 2·填空6",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "e754cfd8-7274-50bb-9ff9-96cfb3aba727",
+      "document_id": 26,
+      "label": "2014年 · 2·填空7",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "066c4caf-7a24-5497-9f75-19b7755b04c7",
+      "document_id": 26,
+      "label": "2014年 · 2·填空10",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "0f6770d7-800f-572e-b69c-dfbae8486e31",
+      "document_id": 26,
+      "label": "2014年 · 3·题1",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "0d1d0cbd-aae3-5e87-b1c5-2b51e3fc6f70",
+      "document_id": 26,
+      "label": "2014年 · 3·题2",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "e7c2eda4-a6bd-51b0-a528-46708908d056",
+      "document_id": 26,
+      "label": "2014年 · 3·题3",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "fa2c7aa3-9fdb-5185-be13-d7b113c652d0",
+      "document_id": 26,
+      "label": "2014年 · 3·题4",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "2f6876b5-bf91-52f1-951e-836f465f93bf",
+      "document_id": 26,
+      "label": "2014年 · 第5题",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "900a1b75-ad33-5adb-b14e-68dd954658a6",
+      "document_id": 26,
+      "label": "2014年 · 第7题",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "e5db1ebc-64c6-5cd7-b534-78901279df06",
+      "document_id": 26,
+      "label": "2015年 · 1·选择2",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "c200215f-6d09-57d6-a1af-cbdd7a1b79ae",
+      "document_id": 26,
+      "label": "2015年 · 1·选择3",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "81136001-2c9f-52b4-80b7-2cef9c4111ea",
+      "document_id": 26,
+      "label": "2015年 · 1·选择4",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "e48c9ed6-ebe2-531e-89c5-67701d6e8a29",
+      "document_id": 26,
+      "label": "2015年 · 1·选择5",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "2c193dd6-3e99-5c66-a313-faf7f207ac0a",
+      "document_id": 26,
+      "label": "2015年 · 1·选择7",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "9f521b03-24f7-551c-8700-ffcd4cb67f7e",
+      "document_id": 26,
+      "label": "2015年 · 1·选择8",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "2cac0751-7fc4-5504-906a-9601f31023c2",
+      "document_id": 26,
+      "label": "2015年 · 1·选择9",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "e27b1890-d84b-5cae-a1cb-a9bd7a944073",
+      "document_id": 26,
+      "label": "2015年 · 1·选择10",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "5b4fc136-24ac-56bc-9d60-c17916a2b762",
+      "document_id": 26,
+      "label": "2015年 · 2·判断3",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "1d65e817-a67b-54ef-a8fc-3f42c57333a5",
+      "document_id": 26,
+      "label": "2015年 · 2·判断4",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "1b1b7ca8-859a-5bdd-b195-f2255385d777",
+      "document_id": 26,
+      "label": "2015年 · 2·判断6",
+      "status": "review",
+      "reason": [
+        "已标超纲或包含非本轮主攻深度的扩展内容，待复核"
+      ]
+    },
+    {
+      "uuid": "a5a92077-835c-5044-ba1f-b72e4ca85042",
+      "document_id": 26,
+      "label": "2015年 · 2·判断7",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "48950858-baa8-539a-9616-867364625564",
+      "document_id": 26,
+      "label": "2015年 · 2·判断8",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "e51f0255-6ed6-5d0d-9a14-1dc7a10437de",
+      "document_id": 26,
+      "label": "2015年 · 2·判断10",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "afbacf88-a9fb-5fe6-b045-82a4cd9fc671",
+      "document_id": 26,
+      "label": "2015年 · 3·填空1",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "c0c94a3c-e41e-5983-92f2-2e855d06b261",
+      "document_id": 26,
+      "label": "2015年 · 3·填空3",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "a03e667f-6251-51c4-861a-949ad2fbebda",
+      "document_id": 26,
+      "label": "2015年 · 3·填空5",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "815e85bb-d8a1-5335-a725-6787697bf2a9",
+      "document_id": 26,
+      "label": "2015年 · 3·填空7",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "fee96d96-e079-538b-9fd2-68d2c96260a6",
+      "document_id": 26,
+      "label": "2015年 · 3·填空8",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "39a20af1-e01a-5072-b231-8fe5da2762c5",
+      "document_id": 26,
+      "label": "2015年 · 3·填空9",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "760cab27-e03b-58ca-9749-9848e1606a87",
+      "document_id": 26,
+      "label": "2015年 · 第4题",
+      "status": "review",
+      "reason": [
+        "已标超纲或包含非本轮主攻深度的扩展内容，待复核"
+      ]
+    },
+    {
+      "uuid": "587fdfcc-2b27-5068-948d-52bda946651f",
+      "document_id": 26,
+      "label": "2015年 · 第5题",
+      "status": "review",
+      "reason": [
+        "已标超纲或包含非本轮主攻深度的扩展内容，待复核"
+      ]
+    },
+    {
+      "uuid": "200eca4e-74a4-540e-803d-0126f10587e4",
+      "document_id": 26,
+      "label": "2016年 · 1·填空1",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "d7a09020-77fd-5aad-ac63-40f7e8800679",
+      "document_id": 26,
+      "label": "2016年 · 1·填空2",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "07881793-fdb1-5637-88b9-e50653a90284",
+      "document_id": 26,
+      "label": "2016年 · 1·填空3",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "0a66aaa4-b586-5816-9db5-d18cd583fa10",
+      "document_id": 26,
+      "label": "2016年 · 1·填空5",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "cac3cf13-7d6c-56aa-9ab5-74f1d1bdd6a9",
+      "document_id": 26,
+      "label": "2016年 · 1·填空6",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "d6afcd71-0626-5f65-a8d0-6202edd4afc4",
+      "document_id": 26,
+      "label": "2016年 · 1·填空7",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "3725865d-e643-5802-9201-11b6ca99563e",
+      "document_id": 26,
+      "label": "2016年 · 1·填空8",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "db12eba1-9a3a-5319-b59b-ceb36b673943",
+      "document_id": 26,
+      "label": "2016年 · 2·选择2",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "13ef7fa1-bdf4-5a09-b737-ae30678a7e2c",
+      "document_id": 26,
+      "label": "2016年 · 2·选择3",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "91a01731-56cd-5060-93fc-41a9c24067c9",
+      "document_id": 26,
+      "label": "2016年 · 2·选择4",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "83ba4a44-eb84-530d-b932-7fb3f824ee69",
+      "document_id": 26,
+      "label": "2016年 · 2·选择5",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "f596a0e1-4c60-5eb9-9ac3-57fa7484bfdd",
+      "document_id": 26,
+      "label": "2016年 · 2·选择6",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "349f4f70-2f6e-551c-bba1-c9f3f1eb7f51",
+      "document_id": 26,
+      "label": "2016年 · 2·选择7",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "2e43d802-be57-5362-9df7-85aeed2e0379",
+      "document_id": 26,
+      "label": "2016年 · 2·选择8",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "e50123d5-cdf0-5562-90e6-dab4cb1315f1",
+      "document_id": 26,
+      "label": "2016年 · 2·选择10",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "dc01d77c-5845-5683-ab16-30975ed6308a",
+      "document_id": 26,
+      "label": "2016年 · 3·判断1",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "ad361959-25ce-55c7-8833-524fb806f645",
+      "document_id": 26,
+      "label": "2016年 · 3·判断3",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "bed69a02-8190-5cfd-a6f0-c9138d5186c3",
+      "document_id": 26,
+      "label": "2016年 · 3·判断4",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "cca5b455-3778-5637-81cd-dd470cf77025",
+      "document_id": 26,
+      "label": "2016年 · 3·判断5",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "022a98ed-8aa7-5229-803a-0d7504b27033",
+      "document_id": 26,
+      "label": "2016年 · 3·判断6",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "2e7292ea-c242-50ee-9c0a-264a307c30a2",
+      "document_id": 26,
+      "label": "2016年 · 3·判断7",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "1a20b8a4-3943-5662-b797-c82d3b03abc0",
+      "document_id": 26,
+      "label": "2016年 · 3·判断9",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "8eb85940-198d-55bb-97a8-175ca29d8f48",
+      "document_id": 26,
+      "label": "2016年 · 3·判断10",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "23b166f3-28ad-5d5f-a9ef-8cd057968d07",
+      "document_id": 26,
+      "label": "2016年 · 第4题",
+      "status": "review",
+      "reason": [
+        "已标超纲或包含非本轮主攻深度的扩展内容，待复核"
+      ]
+    },
+    {
+      "uuid": "291316d7-5929-5cea-b390-e5ffb5fe71cb",
+      "document_id": 26,
+      "label": "2016年 · 第5题",
+      "status": "review",
+      "reason": [
+        "已标超纲或包含非本轮主攻深度的扩展内容，待复核"
+      ]
+    },
+    {
+      "uuid": "338fe6da-dc96-5c2c-8884-db7eadffa1d5",
+      "document_id": 26,
+      "label": "2017年 · 1·选择1",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "2c6606b6-3d8a-5e23-9505-407e8ba46780",
+      "document_id": 26,
+      "label": "2017年 · 1·选择2",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "8286df76-6f0f-5407-b802-cecefa2cbcd4",
+      "document_id": 26,
+      "label": "2017年 · 1·选择3",
+      "status": "review",
+      "reason": [
+        "已标超纲或包含非本轮主攻深度的扩展内容，待复核"
+      ]
+    },
+    {
+      "uuid": "bc2f6b7a-2bef-59b0-b03f-403f2f1f90bc",
+      "document_id": 26,
+      "label": "2017年 · 1·选择4",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "2de53fda-03f8-5dab-b9f1-9efe628b952f",
+      "document_id": 26,
+      "label": "2017年 · 1·选择5",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "61cefb09-f606-548e-bc34-1ae98e615f6b",
+      "document_id": 26,
+      "label": "2017年 · 1·选择6",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "dd38559f-023b-5029-ac5b-62d5a5ef226e",
+      "document_id": 26,
+      "label": "2017年 · 1·选择7",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "6affa4a9-e2fe-57e3-856f-bcf3a27b5e47",
+      "document_id": 26,
+      "label": "2017年 · 1·选择10",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "59a9815b-a299-5b8c-9dde-0a769aece7cb",
+      "document_id": 26,
+      "label": "2017年 · 2·判断1",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "3471d6fb-beb0-5d48-b5e8-75f51aa252eb",
+      "document_id": 26,
+      "label": "2017年 · 2·判断2",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "5775547c-b473-5eb0-ae00-76345e9360b9",
+      "document_id": 26,
+      "label": "2017年 · 2·判断3",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "dd410683-d13b-5f32-8f41-1fa4bd2a2f7f",
+      "document_id": 26,
+      "label": "2017年 · 2·判断4",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "e4d815ea-0d01-5b9f-8d5f-5fc9864c5512",
+      "document_id": 26,
+      "label": "2017年 · 2·判断7",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "dbc84d62-fb6a-5b39-9939-3ff3bb592731",
+      "document_id": 26,
+      "label": "2017年 · 2·判断8",
+      "status": "review",
+      "reason": [
+        "已标超纲或包含非本轮主攻深度的扩展内容，待复核"
+      ]
+    },
+    {
+      "uuid": "283e6bc1-c34f-5b6f-a524-b3a8de7c3784",
+      "document_id": 26,
+      "label": "2017年 · 2·判断9",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "5a155bec-e396-56be-a66e-000dd0da9fdd",
+      "document_id": 26,
+      "label": "2017年 · 2·判断10",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "d3501c06-c586-5e16-a8d5-3ffdb6177240",
+      "document_id": 26,
+      "label": "2017年 · 3·填空2",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "665fb7d1-49ba-533b-8e6e-f98522ce5d56",
+      "document_id": 26,
+      "label": "2017年 · 3·填空3",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "ffad927d-4659-528b-b548-106efa7c6bdc",
+      "document_id": 26,
+      "label": "2017年 · 第6题",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "447075a2-01ae-5c21-91e2-57b0d78879bb",
+      "document_id": 26,
+      "label": "2017年 · 第7题",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "a7cd5ddb-3300-5895-82cd-b50ebcadf551",
+      "document_id": 26,
+      "label": "2018年 · 1·选择1",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "f6e2c7bb-230f-54c8-8376-dced85319643",
+      "document_id": 26,
+      "label": "2018年 · 1·选择2",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "1b433100-be5e-539c-b7c7-6272a28d6f43",
+      "document_id": 26,
+      "label": "2018年 · 1·选择3",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "6a4ec908-220f-55dd-b22b-0240a45865d9",
+      "document_id": 26,
+      "label": "2018年 · 1·选择5",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "e5215b12-4ffc-5467-965d-9a4186bd4d66",
+      "document_id": 26,
+      "label": "2018年 · 1·选择7",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "6ea1b983-1be9-5586-a27f-856286e4b1f0",
+      "document_id": 26,
+      "label": "2018年 · 1·选择8",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "7f6fd2b9-2755-5839-b9e6-08ba48401829",
+      "document_id": 26,
+      "label": "2018年 · 1·选择9",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "f6979cd0-4d64-51ba-a8f3-8330928a566b",
+      "document_id": 26,
+      "label": "2018年 · 1·选择10",
+      "status": "review",
+      "reason": [
+        "已标超纲或包含非本轮主攻深度的扩展内容，待复核"
+      ]
+    },
+    {
+      "uuid": "8c37cbf9-b3fc-523e-9ceb-c1df66125eb8",
+      "document_id": 26,
+      "label": "2018年 · 2·判断1",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "b048a569-f588-5a73-9b3d-33f597ea38bc",
+      "document_id": 26,
+      "label": "2018年 · 2·判断2",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "6bfd0d81-8c60-548c-8738-9efa60a66d6d",
+      "document_id": 26,
+      "label": "2018年 · 2·判断3",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "38c340e3-ebe9-5cd3-b63c-8381c3ee9cf0",
+      "document_id": 26,
+      "label": "2018年 · 2·判断4",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "45a33929-480c-55b6-84bd-930633ebaa8e",
+      "document_id": 26,
+      "label": "2018年 · 2·判断5",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "e1c1abfa-9b2c-5b06-a944-cf4af87ffdd1",
+      "document_id": 26,
+      "label": "2018年 · 2·判断6",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "a626ca12-171a-5004-99d6-61e53e24b5e3",
+      "document_id": 26,
+      "label": "2018年 · 2·判断9",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "32873e08-104f-5635-a9cb-79c9a1eb463a",
+      "document_id": 26,
+      "label": "2018年 · 3·填空3",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "c8ccc0a4-7f2b-5262-a9bf-1a92d9703695",
+      "document_id": 26,
+      "label": "2018年 · 3·填空4",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "bc921d7d-55d4-5ee4-b068-398f80f807e6",
+      "document_id": 26,
+      "label": "2018年 · 3·填空5",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "25d09ad7-bf97-59aa-b3d2-2666b795d1fd",
+      "document_id": 26,
+      "label": "2018年 · 3·填空6",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "12a3fe7d-95dd-5329-90b2-0dc1042b72aa",
+      "document_id": 26,
+      "label": "2018年 · 第7题",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "f577e10b-ed77-5d99-b47c-4e8270c7855e",
+      "document_id": 26,
+      "label": "2019年 · 1·选择1",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "19d77beb-ab57-5437-97a6-cd9b6cee90e8",
+      "document_id": 26,
+      "label": "2019年 · 1·选择2",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "5fa90588-c6bd-51ed-9339-f63a04ecd9e3",
+      "document_id": 26,
+      "label": "2019年 · 1·选择3",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "a729c5fe-af82-5c54-a3c0-2b9f635803ba",
+      "document_id": 26,
+      "label": "2019年 · 1·选择6",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "b214a9ab-4ef2-556a-98e2-b6921ec17306",
+      "document_id": 26,
+      "label": "2019年 · 1·选择7",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "c64a158d-742d-5850-b7e8-614221c97824",
+      "document_id": 26,
+      "label": "2019年 · 3·题2",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "c1adba39-83e8-57c8-bc5b-e965c3039d98",
+      "document_id": 26,
+      "label": "2019年 · 3·题3",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "0e00d785-8c91-50fd-8b9c-e16e7a8bca38",
+      "document_id": 26,
+      "label": "2019年 · 第5题",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "0150a7d1-b8f3-5b3e-920d-371318546c6c",
+      "document_id": 26,
+      "label": "2019年 · 第7题",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "b162a47a-ec8f-50ae-801f-b78062b28670",
+      "document_id": 26,
+      "label": "2020年 · 1·选择3",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "c5bdbf87-1788-57f3-a02e-6de89690a838",
+      "document_id": 26,
+      "label": "2020年 · 1·选择4",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "06158cea-85bf-5ec3-b73a-d2f041074075",
+      "document_id": 26,
+      "label": "2020年 · 1·选择5",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "68414672-e3d3-5805-87b6-3a433630dc76",
+      "document_id": 26,
+      "label": "2020年 · 1·选择8",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "4658ea49-6eaf-5e9b-bdcb-ebfbe6cee6bd",
+      "document_id": 26,
+      "label": "2020年 · 1·选择9",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "d6a9b09f-1d91-58ef-8322-3f07e1440dac",
+      "document_id": 26,
+      "label": "2020年 · 1·选择10",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "cc0124f5-96e3-5262-b1f6-7a5fb3ce5151",
+      "document_id": 26,
+      "label": "2020年 · 2·判断1",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "b46394a4-1234-5f9c-9588-0907fb8e111c",
+      "document_id": 26,
+      "label": "2020年 · 2·判断2",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "e09b1d0a-b451-5529-b9aa-e72267fb2a40",
+      "document_id": 26,
+      "label": "2020年 · 2·判断4",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "6557f4d7-adb8-5ebb-92de-46f4abe62bc4",
+      "document_id": 26,
+      "label": "2020年 · 2·判断6",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "06eca370-68fe-58c6-a681-8da26213f85f",
+      "document_id": 26,
+      "label": "2020年 · 2·判断7",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "a12f6645-256f-5567-9bb7-c108e57047bb",
+      "document_id": 26,
+      "label": "2020年 · 2·判断9",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "e2a9f6fe-33b6-569e-85c5-a596427f479b",
+      "document_id": 26,
+      "label": "2020年 · 3·填空2",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "aeea7a21-f462-5184-9f10-33cf63f51d37",
+      "document_id": 26,
+      "label": "2020年 · 3·填空3",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "448c558c-a588-5387-a46e-a5f9325ba455",
+      "document_id": 26,
+      "label": "2020年 · 3·填空4",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "2605356b-3c10-5a12-8fcd-8cfe22851b3d",
+      "document_id": 26,
+      "label": "2020年 · 3·填空5",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "4a3f16a3-2b07-53b8-b7d4-3a833834d441",
+      "document_id": 26,
+      "label": "2020年 · 3·填空6",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "014df69b-11e1-524b-9b2a-2aa0f0effd9b",
+      "document_id": 26,
+      "label": "2020年 · 第4题",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "5b2d53c2-2778-5acf-b6ba-a1fa64a6c6a4",
+      "document_id": 26,
+      "label": "2020年 · 第5题",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "2134bad0-cfad-5bef-9f50-0c7d833bb1e1",
+      "document_id": 26,
+      "label": "2021年 · 1·选择1",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "42c0804f-2366-5f03-a318-cb66ca3f1088",
+      "document_id": 26,
+      "label": "2021年 · 1·选择4",
+      "status": "review",
+      "reason": [
+        "OCR 区段包含多个主题号，归属待复核"
+      ]
+    },
+    {
+      "uuid": "deb9a365-84ec-534a-8133-088168d34985",
+      "document_id": 26,
+      "label": "2021年 · 1·选择7",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "28739260-9c69-5529-85d0-686e7ee4d70e",
+      "document_id": 26,
+      "label": "2021年 · 1·选择9",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "f13ffa5b-a86e-57e5-ae42-c70c67b0efcc",
+      "document_id": 26,
+      "label": "2021年 · 2·判断3",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "ececed1f-5dfb-5a8b-9757-e344dc2fd728",
+      "document_id": 26,
+      "label": "2021年 · 2·判断7",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "e9b3c319-4d1c-5219-942f-381dd99c3c4b",
+      "document_id": 26,
+      "label": "2021年 · 2·判断8",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "ef910af5-5c47-5354-a45f-bdea856166ff",
+      "document_id": 26,
+      "label": "2021年 · 2·判断9",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "e60d383a-d22f-5916-95de-3e44884c7370",
+      "document_id": 26,
+      "label": "2021年 · 2·判断10",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "188417a0-be61-5430-a177-63a8f2719313",
+      "document_id": 26,
+      "label": "2021年 · 3·填空2",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "6e71a485-e6dc-5cd1-a557-2951db4f2a73",
+      "document_id": 26,
+      "label": "2021年 · 3·填空4",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "5d7bbe7a-f14a-5f48-bc42-a67ea71ec7e3",
+      "document_id": 26,
+      "label": "2021年 · 3·填空5",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "2bb595f2-8fb1-5beb-8364-4c6c191a92b0",
+      "document_id": 26,
+      "label": "2021年 · 3·填空6",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "99312d92-f68e-54ea-a450-51f0e98cbac8",
+      "document_id": 26,
+      "label": "2022年 · 1·选择1",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "5a706299-66ee-5e08-a3e6-a14b75bd9e10",
+      "document_id": 26,
+      "label": "2022年 · 1·选择2",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "3d97ff99-2630-53ec-ae4e-bae52a506d1d",
+      "document_id": 26,
+      "label": "2022年 · 1·选择3",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "3d01f3c1-d612-59de-9c71-3a33a7b2f8f5",
+      "document_id": 26,
+      "label": "2022年 · 1·选择4",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "d55c0bd8-e289-5ee7-ad68-7d92bceb3c0c",
+      "document_id": 26,
+      "label": "2022年 · 1·选择5",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "38e20cea-7a58-5649-b748-69238acc1982",
+      "document_id": 26,
+      "label": "2022年 · 1·选择7",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "03dee784-1a8b-5d72-8299-8480b42f4d27",
+      "document_id": 26,
+      "label": "2022年 · 1·选择8",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "813565f4-2ce3-5248-9b33-5b4bb3adcc86",
+      "document_id": 26,
+      "label": "2022年 · 1·选择9",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "344d5fd3-51c8-560b-b476-1fc99ff3ca3d",
+      "document_id": 26,
+      "label": "2022年 · 第2题",
+      "status": "review",
+      "reason": [
+        "已标超纲或包含非本轮主攻深度的扩展内容，待复核"
+      ]
+    },
+    {
+      "uuid": "9396f078-d76b-54eb-870f-fa7116d7a18e",
+      "document_id": 26,
+      "label": "2022年 · 3·填空1",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "59da88db-2c17-5dce-8ff3-751a60722403",
+      "document_id": 26,
+      "label": "2022年 · 3·填空2",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "242df21d-8c6e-5a8b-b853-3b2344ae6d69",
+      "document_id": 26,
+      "label": "2022年 · 3·填空3",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "9b49cd44-05c0-51ca-8582-7428074fadad",
+      "document_id": 26,
+      "label": "2022年 · 3·填空4",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "2c2f79a6-097c-55f0-9cdb-840b3d154616",
+      "document_id": 26,
+      "label": "2022年 · 3·填空7",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "900b1305-7ba8-537a-bc3e-cac784df2eba",
+      "document_id": 26,
+      "label": "2022年 · 第5题",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "e03be58b-eeac-5cce-a3f6-10afc4909a63",
+      "document_id": 26,
+      "label": "2023年 · 1·选择1",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "46853689-429c-505a-882b-29683fd1efc1",
+      "document_id": 26,
+      "label": "2023年 · 1·选择2",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "a9dd3e7b-37f6-599c-a4d3-1523a31b68a3",
+      "document_id": 26,
+      "label": "2023年 · 1·选择3",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "f08f04b8-815a-5efc-a4ec-3c88191a6808",
+      "document_id": 26,
+      "label": "2023年 · 1·选择8",
+      "status": "review",
+      "reason": [
+        "OCR 区段包含多个主题号，归属待复核"
+      ]
+    },
+    {
+      "uuid": "7d1db2bc-0450-5243-90e2-a8bfaa28c7fb",
+      "document_id": 26,
+      "label": "2023年 · 1·选择9",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "f6595152-c4d5-58d9-8d97-5378a61e4166",
+      "document_id": 26,
+      "label": "2023年 · 1·选择10",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "192d29ef-1eec-56dd-82ad-b4ece0e69850",
+      "document_id": 26,
+      "label": "2024年 · 1·选择1",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "92be973d-bd00-5259-b11b-679c2470820d",
+      "document_id": 26,
+      "label": "2024年 · 1·选择2",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "2e15d0ac-06c0-55e8-ac7e-ec750b938972",
+      "document_id": 26,
+      "label": "2024年 · 1·选择3",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "8ec20bd9-cd8f-5c29-8170-c1dfd75fc463",
+      "document_id": 26,
+      "label": "2024年 · 1·选择4",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "e10096a3-22c9-5ce6-8f5b-c7881fa87923",
+      "document_id": 26,
+      "label": "2024年 · 1·选择7",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "89420891-e9cc-504a-af71-061b665ee3ca",
+      "document_id": 26,
+      "label": "2024年 · 1·选择9",
+      "status": "review",
+      "reason": [
+        "OCR 区段包含多个主题号，归属待复核"
+      ]
+    },
+    {
+      "uuid": "4f3407fa-a7b8-58cc-b5d5-39fa9c60e44a",
+      "document_id": 26,
+      "label": "2024年 · 1·选择10",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "48fcb50b-390f-5517-8f68-ae6ffe55b818",
+      "document_id": 26,
+      "label": "2024年 · 2·判断1",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "47a74902-b859-5c96-957c-caaca61899ea",
+      "document_id": 26,
+      "label": "2024年 · 2·判断3",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "c61c4336-5b2d-5952-b15c-749556eac31a",
+      "document_id": 26,
+      "label": "2024年 · 2·判断4",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "564bcbc4-4c7e-58cd-8013-100c39b32df6",
+      "document_id": 26,
+      "label": "2024年 · 2·判断5",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "f3d3ca6e-566a-5af6-978c-b92240a24efe",
+      "document_id": 26,
+      "label": "2024年 · 2·判断6",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "a4452856-426c-5d4e-bf88-e781f931c6b2",
+      "document_id": 26,
+      "label": "2024年 · 2·判断7",
+      "status": "review",
+      "reason": [
+        "已标超纲或包含非本轮主攻深度的扩展内容，待复核"
+      ]
+    },
+    {
+      "uuid": "8f6bebe4-8063-5c3d-9c66-0fd9faa5740a",
+      "document_id": 26,
+      "label": "2024年 · 3·填空1",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "93299701-cbdd-5836-a543-94737d6eddcb",
+      "document_id": 26,
+      "label": "2024年 · 3·填空2",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "a83fc98e-7692-5a99-8147-097b58f80fea",
+      "document_id": 26,
+      "label": "2024年 · 3·填空3",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "4a13fd1d-2db0-516d-8135-96cfae77863f",
+      "document_id": 26,
+      "label": "2024年 · 3·填空5",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "cce2df31-9943-5c29-b610-6f4633e739d4",
+      "document_id": 26,
+      "label": "2024年 · 3·填空7",
+      "status": "review",
+      "reason": [
+        "OCR 区段包含多个主题号，归属待复核"
+      ]
+    },
+    {
+      "uuid": "d8db72fc-3ef0-5ae7-9e79-df714d300f6e",
+      "document_id": 26,
+      "label": "2024年 · 第4题",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "476e0138-0faa-5134-b777-9b56988e79ba",
+      "document_id": 26,
+      "label": "2025年 · 1·选择1",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "8d28187d-e550-51e0-8991-2b198f97d2c3",
+      "document_id": 26,
+      "label": "2025年 · 1·选择2",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "9de6bcf0-6a43-5a3e-9deb-2aa0e08c27d0",
+      "document_id": 26,
+      "label": "2025年 · 1·选择3",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "c94726e6-bab5-5913-8151-ab2eebc63b2b",
+      "document_id": 26,
+      "label": "2025年 · 1·选择4",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "eae86493-3dc3-5a81-b474-ca5c7027113c",
+      "document_id": 26,
+      "label": "2025年 · 1·选择7",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "ff01fbca-1dee-5586-8a8b-355e8676939b",
+      "document_id": 26,
+      "label": "2025年 · 1·选择8",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "98c03b7f-c7a6-5c7e-98b5-215c33de7f6a",
+      "document_id": 26,
+      "label": "2025年 · 1·选择9",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "f8520690-f8a6-58d1-8915-1309df102b29",
+      "document_id": 26,
+      "label": "2025年 · 1·选择10",
+      "status": "review",
+      "reason": [
+        "OCR 区段包含多个主题号，归属待复核"
+      ]
+    },
+    {
+      "uuid": "833d7525-f7d2-5132-9ed2-4ea687f88331",
+      "document_id": 26,
+      "label": "2025年 · 第4题",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "ce494709-7667-5210-a116-d79266f5c8c9",
+      "document_id": 26,
+      "label": "2025年 · 第5题",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    },
+    {
+      "uuid": "8ba8a85c-97cf-5d7b-8137-bec628e784ce",
+      "document_id": 26,
+      "label": "2025年 · 第6题",
+      "status": "review",
+      "reason": [
+        "未明确命中指定计算题型；信号分类、单纯画序列或建模不混入主攻组"
+      ]
+    }
+  ]
+}
