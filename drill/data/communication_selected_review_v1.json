@@ -1,0 +1,690 @@
+{
+  "schema_version": 1,
+  "inventory_count": 178,
+  "records": [
+    {
+      "uuid": "05de466d-9198-5615-b59a-26cf5acc10f5",
+      "document_id": 15,
+      "label": "通信基本概念与通信系统模型",
+      "status": "excluded",
+      "reason": [
+        "未命中本轮通信训练范围"
+      ]
+    },
+    {
+      "uuid": "7c82a38f-a4ec-5f0f-b1cd-15ad3d18c9ff",
+      "document_id": 15,
+      "label": "信道定义、分类及数学模型",
+      "status": "excluded",
+      "reason": [
+        "未命中本轮通信训练范围"
+      ]
+    },
+    {
+      "uuid": "038b5edb-3cdc-53d2-a948-0815666eb9a3",
+      "document_id": 15,
+      "label": "数字基带信号及其频谱特性",
+      "status": "excluded",
+      "reason": [
+        "未命中本轮通信训练范围"
+      ]
+    },
+    {
+      "uuid": "dd9bbaf8-851f-51dd-8480-7a65bc271c59",
+      "document_id": 15,
+      "label": "数字基带常用码型",
+      "status": "excluded",
+      "reason": [
+        "未命中本轮通信训练范围"
+      ]
+    },
+    {
+      "uuid": "0f90229d-c0ad-56d6-a324-89c0af7b8bc0",
+      "document_id": 15,
+      "label": "码间串扰 ISI 的形成",
+      "status": "excluded",
+      "reason": [
+        "未命中本轮通信训练范围"
+      ]
+    },
+    {
+      "uuid": "9a8cd950-b21c-56c4-9432-36fca40d1b7d",
+      "document_id": 15,
+      "label": "部分响应系统与时域均衡",
+      "status": "review",
+      "reason": [
+        "超纲标记、资料不全或复杂均衡/推导，非本轮主攻深度"
+      ]
+    },
+    {
+      "uuid": "7f481c3f-07aa-5b08-8559-fa9a4c72678f",
+      "document_id": 15,
+      "label": "二进制频移键控",
+      "status": "excluded",
+      "reason": [
+        "未命中本轮通信训练范围"
+      ]
+    },
+    {
+      "uuid": "e957cc6c-de28-5c80-b934-40aad39496d6",
+      "document_id": 15,
+      "label": "最佳接收原理与判决准则",
+      "status": "excluded",
+      "reason": [
+        "未命中本轮通信训练范围"
+      ]
+    },
+    {
+      "uuid": "ff525921-25e7-51dc-9eec-46ad501458e9",
+      "document_id": 15,
+      "label": "COM-SA-01｜画不出框图时，用文字说明一般通信系统由哪些基本环节组成，并说明有效性与可靠性这两类性能指标的区别。",
+      "status": "excluded",
+      "reason": [
+        "未命中本轮通信训练范围"
+      ]
+    },
+    {
+      "uuid": "25c23a6e-fbf7-50ac-8dc3-8a00623ec5d1",
+      "document_id": 15,
+      "label": "COM-SA-10｜眼图能反映数字基带传输系统的哪些性能？部分响应与时域均衡分别解决什么问题？",
+      "status": "review",
+      "reason": [
+        "超纲标记、资料不全或复杂均衡/推导，非本轮主攻深度"
+      ]
+    },
+    {
+      "uuid": "3a1814f3-f389-5f54-acad-116f0749b1f5",
+      "document_id": 15,
+      "label": "课后题 1-1",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "6d6a1303-c556-5e4b-92d4-11874c87f37f",
+      "document_id": 15,
+      "label": "课后题 1-2",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "b4f42822-eb69-5c79-874e-09245a0ec1cf",
+      "document_id": 15,
+      "label": "课后题 1-4",
+      "status": "review",
+      "reason": [
+        "超纲标记、资料不全或复杂均衡/推导，非本轮主攻深度"
+      ]
+    },
+    {
+      "uuid": "1f727c55-484f-56e4-8687-d7e7ce4ad8b4",
+      "document_id": 15,
+      "label": "课后题 1-5",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "7d0e4da6-b7c5-5142-8f57-c81e22eb765a",
+      "document_id": 15,
+      "label": "课后题 1-6",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "b4653a88-dbc5-5b77-95a6-558908319c35",
+      "document_id": 15,
+      "label": "课后题 1-7",
+      "status": "excluded",
+      "reason": [
+        "未命中本轮通信训练范围"
+      ]
+    },
+    {
+      "uuid": "06e7525f-b762-5858-9ae1-a8d8abfe9b8f",
+      "document_id": 15,
+      "label": "课后题 1-8",
+      "status": "excluded",
+      "reason": [
+        "未命中本轮通信训练范围"
+      ]
+    },
+    {
+      "uuid": "15fc2ab3-eeef-5c53-adfe-703219d9eea2",
+      "document_id": 15,
+      "label": "课后题 1-9",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "dd8c26a4-2c98-5917-89b3-b991d5b29c1d",
+      "document_id": 15,
+      "label": "课后题 1-10",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "a97cafe8-1fd2-5071-b494-311099477650",
+      "document_id": 15,
+      "label": "课后题 1-11",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "2572343e-b884-561d-9b9e-039e61324b98",
+      "document_id": 15,
+      "label": "课后题 1-12",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "51cd9d63-06b5-5975-b087-5edafe744208",
+      "document_id": 15,
+      "label": "课后题 1-13",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "6a351244-7451-53ac-85a3-4a176015b45f",
+      "document_id": 15,
+      "label": "课后题 1-14",
+      "status": "excluded",
+      "reason": [
+        "未命中本轮通信训练范围"
+      ]
+    },
+    {
+      "uuid": "8fec4f92-adf2-52bb-93d7-13ed1bbee716",
+      "document_id": 15,
+      "label": "课后题 1-15",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "64c6f817-a271-546f-a6c7-a70be55d226d",
+      "document_id": 15,
+      "label": "课后题 1-16",
+      "status": "excluded",
+      "reason": [
+        "未命中本轮通信训练范围"
+      ]
+    },
+    {
+      "uuid": "a75d4fb1-5666-54d5-bc93-8842704136be",
+      "document_id": 15,
+      "label": "课后题 1-17",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "241d5c27-ef54-59fe-b8c5-043d507e69f6",
+      "document_id": 15,
+      "label": "课后题 3-1",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "738c1202-4568-5452-9cd8-f2b6689a686f",
+      "document_id": 15,
+      "label": "课后题 3-2",
+      "status": "review",
+      "reason": [
+        "超纲标记、资料不全或复杂均衡/推导，非本轮主攻深度"
+      ]
+    },
+    {
+      "uuid": "f5367432-9805-513c-88ba-203488db132a",
+      "document_id": 15,
+      "label": "课后题 3-3",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "28f42de7-c6a6-50a1-adc5-76e6b861a986",
+      "document_id": 15,
+      "label": "课后题 3-4",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "b00f0324-4cab-5472-8545-373f396a82a8",
+      "document_id": 15,
+      "label": "课后题 3-5",
+      "status": "excluded",
+      "reason": [
+        "未命中本轮通信训练范围"
+      ]
+    },
+    {
+      "uuid": "fdbeee8d-5e17-55df-a6e8-f7c53240e817",
+      "document_id": 15,
+      "label": "课后题 3-6",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "75c7d588-8194-5c48-9a15-0c07ac4a8aaa",
+      "document_id": 15,
+      "label": "课后题 3-7",
+      "status": "review",
+      "reason": [
+        "超纲标记、资料不全或复杂均衡/推导，非本轮主攻深度"
+      ]
+    },
+    {
+      "uuid": "de8e78bc-b0d5-5b8b-addf-de91c2f0b96e",
+      "document_id": 15,
+      "label": "课后题 3-8",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "17a03719-3871-5baa-9651-dd1da05cd62c",
+      "document_id": 15,
+      "label": "课后题 3-9",
+      "status": "excluded",
+      "reason": [
+        "未命中本轮通信训练范围"
+      ]
+    },
+    {
+      "uuid": "b445cbcf-9bf3-51c8-948a-3d5776b9e94a",
+      "document_id": 15,
+      "label": "课后题 3-12",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "deec1b3f-b0f4-52e2-8b2e-33b2992b69d1",
+      "document_id": 15,
+      "label": "课后题 3-13",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "bec1904a-9ad3-5558-bd55-07df2356bf38",
+      "document_id": 15,
+      "label": "课后题 3-15",
+      "status": "review",
+      "reason": [
+        "超纲标记、资料不全或复杂均衡/推导，非本轮主攻深度"
+      ]
+    },
+    {
+      "uuid": "f78f0a91-dfba-5765-96ca-fd49bf946521",
+      "document_id": 15,
+      "label": "课后题 3-16",
+      "status": "excluded",
+      "reason": [
+        "非独立练习容器"
+      ]
+    },
+    {
+      "uuid": "a1e3607d-0309-5006-a043-45e3a47d388b",
+      "document_id": 15,
+      "label": "课后题 3-17",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "656c8206-48c7-5a6e-81a1-1bb02bab97f5",
+      "document_id": 15,
+      "label": "课后题 3-18",
+      "status": "review",
+      "reason": [
+        "超纲标记、资料不全或复杂均衡/推导，非本轮主攻深度"
+      ]
+    },
+    {
+      "uuid": "87672b95-7aac-5d59-b3d0-73233a7783cb",
+      "document_id": 15,
+      "label": "课后题 3-19",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "4878162f-f2d7-5054-9da0-29ae5c7281ed",
+      "document_id": 15,
+      "label": "课后题 3-20",
+      "status": "review",
+      "reason": [
+        "超纲标记、资料不全或复杂均衡/推导，非本轮主攻深度"
+      ]
+    },
+    {
+      "uuid": "130f94f5-6c3b-589e-8965-ba460a037376",
+      "document_id": 15,
+      "label": "课后题 3-21",
+      "status": "excluded",
+      "reason": [
+        "未命中本轮通信训练范围"
+      ]
+    },
+    {
+      "uuid": "1a8bca39-232d-55cd-b836-afdf7891f75d",
+      "document_id": 15,
+      "label": "课后题 3-23",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "2382d712-4803-5f5f-8e32-327811969f2f",
+      "document_id": 15,
+      "label": "课后题 3-24",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "1c8ecb35-efcd-5e8e-b698-6a4dc7870aa3",
+      "document_id": 15,
+      "label": "课后题 3-25",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "7e45ec35-bf9a-568e-ba6d-2b15a5392af9",
+      "document_id": 15,
+      "label": "课后题 3-28",
+      "status": "excluded",
+      "reason": [
+        "未命中本轮通信训练范围"
+      ]
+    },
+    {
+      "uuid": "56503129-9ff4-50e1-af6d-2ae050d135b7",
+      "document_id": 15,
+      "label": "课后题 4-1",
+      "status": "excluded",
+      "reason": [
+        "未命中本轮通信训练范围"
+      ]
+    },
+    {
+      "uuid": "3b4801c0-62f5-5826-840c-b6ec50012dd9",
+      "document_id": 15,
+      "label": "课后题 4-5",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "56f0221f-4a5b-50b2-898f-0232100da522",
+      "document_id": 15,
+      "label": "课后题 4-6",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "5fc19166-e355-5574-a6be-1c1dc7ce18c4",
+      "document_id": 15,
+      "label": "课后题 4-7",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "141e840b-16ee-54d9-8763-216356a34546",
+      "document_id": 15,
+      "label": "课后题 4-8",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "4583fbe8-8e75-5dff-826b-e7cf6340bb78",
+      "document_id": 15,
+      "label": "课后题 5-2",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "c0a1a09d-911c-5722-8918-788c97084523",
+      "document_id": 15,
+      "label": "课后题 5-3",
+      "status": "excluded",
+      "reason": [
+        "未命中本轮通信训练范围"
+      ]
+    },
+    {
+      "uuid": "6b16ce93-c5df-50d4-8358-766c9ef475d8",
+      "document_id": 15,
+      "label": "课后题 5-4",
+      "status": "excluded",
+      "reason": [
+        "未命中本轮通信训练范围"
+      ]
+    },
+    {
+      "uuid": "7d71f8c5-79dd-52f6-b099-be4b0dad9907",
+      "document_id": 15,
+      "label": "课后题 5-6",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "18a476a8-4f3e-5211-ae2c-c6b19de12807",
+      "document_id": 15,
+      "label": "课后题 5-9",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "d556a2ac-9284-53ad-8e90-ff9c6e1f087f",
+      "document_id": 15,
+      "label": "课后题 5-10",
+      "status": "review",
+      "reason": [
+        "超纲标记、资料不全或复杂均衡/推导，非本轮主攻深度"
+      ]
+    },
+    {
+      "uuid": "8c772fd6-d69f-5f81-bfc7-7854df78e1d0",
+      "document_id": 15,
+      "label": "课后题 5-11",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "9febd681-a963-500d-98d5-0a959a78ba44",
+      "document_id": 15,
+      "label": "课后题 5-12",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "8706b33f-6013-5a3a-8c78-1b229b82592c",
+      "document_id": 15,
+      "label": "课后题 5-13",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "b7279269-bdab-53c3-9fd7-b7999bc5150f",
+      "document_id": 15,
+      "label": "课后题 5-14",
+      "status": "excluded",
+      "reason": [
+        "未命中本轮通信训练范围"
+      ]
+    },
+    {
+      "uuid": "ead74c37-8893-520d-9c43-5af6decafc68",
+      "document_id": 15,
+      "label": "课后题 5-15",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "bfbaa342-9db4-527f-a166-82e091c7259f",
+      "document_id": 15,
+      "label": "课后题 5-18",
+      "status": "excluded",
+      "reason": [
+        "同一原PDF同号习题已在新版配对书中引用；原题和进度不修改"
+      ]
+    },
+    {
+      "uuid": "a67bb67e-7b5e-5d2b-8be4-e86ff88509bc",
+      "document_id": 15,
+      "label": "课后题 5-25",
+      "status": "review",
+      "reason": [
+        "超纲标记、资料不全或复杂均衡/推导，非本轮主攻深度"
+      ]
+    },
+    {
+      "uuid": "a6e68782-c7d0-576b-8abf-8c9bdda0e0a8",
+      "document_id": 15,
+      "label": "课后题 5-26",
+      "status": "excluded",
+      "reason": [
+        "未命中本轮通信训练范围"
+      ]
+    },
+    {
+      "uuid": "59a05fd0-0d50-5eba-92a3-24bfd36aa888",
+      "document_id": 15,
+      "label": "课后题 5-27",
+      "status": "review",
+      "reason": [
+        "超纲标记、资料不全或复杂均衡/推导，非本轮主攻深度"
+      ]
+    },
+    {
+      "uuid": "7ec2d223-f285-566e-9606-d7476d46aa5e",
+      "document_id": 15,
+      "label": "课后题 5-29",
+      "status": "excluded",
+      "reason": [
+        "未命中本轮通信训练范围"
+      ]
+    },
+    {
+      "uuid": "43751f59-c02c-59f8-8545-194907416061",
+      "document_id": 15,
+      "label": "课后题 5-31",
+      "status": "review",
+      "reason": [
+        "超纲标记、资料不全或复杂均衡/推导，非本轮主攻深度"
+      ]
+    },
+    {
+      "uuid": "e089db4a-59ce-50d1-b759-62e1bdf89e12",
+      "document_id": 15,
+      "label": "课后题 5-32",
+      "status": "review",
+      "reason": [
+        "超纲标记、资料不全或复杂均衡/推导，非本轮主攻深度"
+      ]
+    },
+    {
+      "uuid": "d6ad3640-16e2-527f-9223-78361eec24d6",
+      "document_id": 21,
+      "label": "课后题 3.23",
+      "status": "excluded",
+      "reason": [
+        "未命中本轮通信训练范围"
+      ]
+    },
+    {
+      "uuid": "c231bc70-c9cd-544d-9e0e-8f95f3ad06bf",
+      "document_id": 21,
+      "label": "课后题 5.12",
+      "status": "review",
+      "reason": [
+        "超纲标记、资料不全或复杂均衡/推导，非本轮主攻深度"
+      ]
+    },
+    {
+      "uuid": "6a655adb-16b8-5cde-8214-9acd30e10106",
+      "document_id": 21,
+      "label": "课后题 5.13",
+      "status": "review",
+      "reason": [
+        "超纲标记、资料不全或复杂均衡/推导，非本轮主攻深度"
+      ]
+    },
+    {
+      "uuid": "f09c2600-1b3c-5419-b7db-aef7f8376d1b",
+      "document_id": 21,
+      "label": "课后题 6.3",
+      "status": "excluded",
+      "reason": [
+        "未命中本轮通信训练范围"
+      ]
+    },
+    {
+      "uuid": "b9b11db4-3bad-55c1-a283-7d34898ebed4",
+      "document_id": 21,
+      "label": "课后题 6.12",
+      "status": "review",
+      "reason": [
+        "多进制/角度调制专项证明不进入本轮主攻"
+      ]
+    }
+  ]
+}

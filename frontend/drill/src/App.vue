@@ -76,6 +76,7 @@ onMounted(() => {
         <RouterLink v-if="isEi" to="/signal-selected" :class="{ active: route.name === 'signal-selected' || (route.name === 'question' && route.query.collection === 'signal_selected') }"><span>信号严选</span></RouterLink>
         <RouterLink v-if="isEi" to="/analog-selected" :class="{ active: route.name === 'analog-selected' || (route.name === 'question' && route.query.collection === 'analog_selected') }"><span>模电严选</span></RouterLink>
         <RouterLink v-if="isEi" to="/digital-selected" :class="{ active: route.name === 'digital-selected' || (route.name === 'question' && route.query.collection === 'digital_selected') }"><span>数电严选</span></RouterLink>
+        <RouterLink v-if="isEi" to="/communication-selected" :class="{ active: route.name === 'communication-selected' || (route.name === 'question' && route.query.collection === 'communication_selected') }"><span>通信严选</span></RouterLink>
         <RouterLink to="/practice" :class="{ active: route.name === 'practice' || route.name === 'question' }">
           <span>{{ t('practice') }}</span>
         </RouterLink>

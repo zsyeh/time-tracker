@@ -3,6 +3,7 @@ from .circuit_selected_views import CircuitSelectedView
 from .signal_selected_views import SignalSelectedView
 from .analog_selected_views import AnalogSelectedView
 from .digital_selected_views import DigitalSelectedView
+from .communication_selected_views import CommunicationSelectedView
 
 from .views import (
     DrillAssetView,
@@ -34,6 +35,7 @@ from .views import (
 
 
 urlpatterns = [
+    path('communication-selected/', CommunicationSelectedView.as_view(), name='ei_communication_selected'),
     path('digital-selected/', DigitalSelectedView.as_view(), name='ei_digital_selected'),
     path('analog-selected/', AnalogSelectedView.as_view(), name='ei_analog_selected'),
     path('signal-selected/', SignalSelectedView.as_view(), name='ei_signal_selected'),

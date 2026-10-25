@@ -1,0 +1,2037 @@
+{
+  "schema_version": 1,
+  "code": "communication_selected",
+  "title": "通信严选",
+  "basis": "按用户提供的892通信备考优先级，不是命题概率。重点无码间串扰、匹配滤波和PCM/香农容量；不把误码率代入题冒充匹配滤波大题。",
+  "syllabus_reference": "drill.ei_syllabus.SYLLABUS[communication]",
+  "combination_key": "combined_priority",
+  "inventory_count": 178,
+  "kinds": [
+    "calculation",
+    "analysis",
+    "concept"
+  ],
+  "buckets": [
+    {
+      "key": "isi",
+      "title": "无码间串扰／奈奎斯特／升余弦",
+      "rank": 1,
+      "tier": "core",
+      "focus": "滚降系数、带宽、最高码元速率与多电平信息速率。"
+    },
+    {
+      "key": "matched_filter",
+      "title": "匹配滤波／抽样时刻／输出信噪比",
+      "rank": 2,
+      "tier": "core",
+      "focus": "h(t)=Ks*(T−t)、信号能量与最大输出信噪比；区别普通误码率代入题。"
+    },
+    {
+      "key": "pcm_capacity",
+      "title": "PCM／信息量／香农容量",
+      "rank": 3,
+      "tier": "core",
+      "focus": "抽样、量化位数、PCM与时分复用速率、信息量和容量。"
+    },
+    {
+      "key": "analog_mod",
+      "title": "AM／DSB／SSB 频谱与带宽",
+      "rank": 4,
+      "tier": "advanced",
+      "focus": "调制表达式、谱线位置、边带和传输带宽。"
+    },
+    {
+      "key": "binary_mod",
+      "title": "2ASK／2FSK／2PSK 调制与带宽",
+      "rank": 5,
+      "tier": "advanced",
+      "focus": "典型表达式、相干解调框图、波形与第一零点带宽。"
+    },
+    {
+      "key": "baseband_basics",
+      "title": "基带码型／频谱／眼图基础",
+      "rank": 6,
+      "tier": "foundation",
+      "focus": "AMI、HDB3、基本波形和频谱；不主攻复杂均衡设计。"
+    },
+    {
+      "key": "receiver_basics",
+      "title": "接收性能／误码率基础（选练）",
+      "rank": 7,
+      "tier": "cross",
+      "focus": "基本判决与误码率公式应用，不冒充匹配滤波计算大题。"
+    },
+    {
+      "key": "angle_multilevel",
+      "title": "FM／PM／多进制基础（选练）",
+      "rank": 8,
+      "tier": "cross",
+      "focus": "概念和简单带宽比较，不主攻复杂抗噪推导。"
+    }
+  ],
+  "questions": [
+    {
+      "uuid": "d924df2e-031c-50cd-8cb4-ce309209dc11",
+      "fingerprint": "50e68ef97ec7ad1dffa3775650c791e4b2d83a8eee2dec10f085130ad4afe26f",
+      "document_id": 15,
+      "label": "信息及其度量",
+      "evidence_method": "structured_text",
+      "evidence": "某离散信源有四个等概率符号。每个符号携带的信息量是多少 bit？该信源每符号平均信息量是多少？",
+      "status": "included",
+      "bucket": "pcm_capacity",
+      "tags": [
+        "pcm_capacity"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_priority": true,
+      "reason": [
+        "题干明确匹配：pcm_capacity"
+      ]
+    },
+    {
+      "uuid": "54685f46-6520-5311-ae1d-70be9ade1c81",
+      "fingerprint": "4ec64fcc26274a53c811e63c8a929c1d2929b471490adc18a845766de79a87ac",
+      "document_id": 15,
+      "label": "通信系统主要性能指标",
+      "evidence_method": "structured_text",
+      "evidence": "某数字通信系统每秒传输 $10^6$ 个二进制符号，每个符号携带 $1$ bit。求码元速率和信息速率。",
+      "status": "included",
+      "bucket": "pcm_capacity",
+      "tags": [
+        "pcm_capacity"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_priority": true,
+      "reason": [
+        "题干明确匹配：pcm_capacity"
+      ]
+    },
+    {
+      "uuid": "4c4d34e3-86c5-5af1-9c29-d17ab2d0abb7",
+      "fingerprint": "e564022d3a1aecde29674f723171fe81b7edb7c05c505f3cdf92819743e89233",
+      "document_id": 15,
+      "label": "信道容量与香农公式",
+      "evidence_method": "structured_text",
+      "evidence": "一个带宽为 $B=3\\,\\text{kHz}$ 的理想 AWGN 信道，信噪比\n$$\n\\frac{S}{N}=15.\n$$\n按香农公式求理论信道容量。",
+      "status": "included",
+      "bucket": "pcm_capacity",
+      "tags": [
+        "pcm_capacity"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_priority": true,
+      "reason": [
+        "题干明确匹配：pcm_capacity"
+      ]
+    },
+    {
+      "uuid": "eb03b76c-f0d4-549f-baca-7899dfd46f44",
+      "fingerprint": "faaa744be9fbe04cafcfbec1c1dea552981d8c5cf240dfb372ca2cd50818ecea",
+      "document_id": 15,
+      "label": "脉冲编码调制 PCM",
+      "evidence_method": "structured_text",
+      "evidence": "语音信号按 $8\\,\\text{kHz}$ 采样，每个样值均匀量化并编码为 $8$ bit。忽略帧同步等开销，求 PCM 码率。",
+      "status": "included",
+      "bucket": "pcm_capacity",
+      "tags": [
+        "pcm_capacity"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_priority": true,
+      "reason": [
+        "题干明确匹配：pcm_capacity"
+      ]
+    },
+    {
+      "uuid": "e1cdd3e4-4d8c-5514-b1b2-36fc41ef8c40",
+      "fingerprint": "59db6df74b78d3629c5f07a41e63f53f63279279720afa4327577303b93c19ca",
+      "document_id": 15,
+      "label": "调制的目的、定义与分类",
+      "evidence_method": "structured_text",
+      "evidence": "为什么把低频基带信号搬移到较高载波频率后再发送？列举两个基本目的。",
+      "status": "included",
+      "bucket": "baseband_basics",
+      "tags": [
+        "baseband_basics"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：baseband_basics"
+      ]
+    },
+    {
+      "uuid": "e49ad0f2-a917-5b05-883a-bf3fdbbcd001",
+      "fingerprint": "c9fa20a6016c51ac0402cdc625abbbfccbee3665f84feedd54ba62e025d6faaa",
+      "document_id": 15,
+      "label": "线性调制的一般模型",
+      "evidence_method": "structured_text",
+      "evidence": "线性调制的一般乘法形式可写为\n$$\ns(t)=m(t)c(t).\n$$\n若载波\n$$\nc(t)=A_c\\cos\\omega_ct,\n$$\n则 DSB-SC 信号如何表示？",
+      "status": "included",
+      "bucket": "analog_mod",
+      "tags": [
+        "analog_mod"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：analog_mod"
+      ]
+    },
+    {
+      "uuid": "c37908c8-3372-56ef-a2d1-78f2ada0ebbc",
+      "fingerprint": "32abc401d917bb072be6bc89e727a3200d00a3ec50c8548ee67d9dd627add7a8",
+      "document_id": 15,
+      "label": "典型线性调制系统的基本关系",
+      "evidence_method": "structured_text",
+      "evidence": "单音信号\n$$\nm(t)=A_m\\cos\\omega_mt\n$$\n进行 DSB-SC 调制：\n$$\ns(t)=A_cm(t)\\cos\\omega_ct.\n$$\n展开后包含哪些频率分量？",
+      "status": "included",
+      "bucket": "analog_mod",
+      "tags": [
+        "analog_mod"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：analog_mod"
+      ]
+    },
+    {
+      "uuid": "a63c5b6b-88f8-5433-bae1-1a88a2a55576",
+      "fingerprint": "17b715ea88ec069900c1a4c848d48b4ddd38bc3179d64e674d89a6bfe27266f7",
+      "document_id": 15,
+      "label": "线性调制系统的抗噪声性能",
+      "evidence_method": "structured_text",
+      "evidence": "对于相干解调的 DSB-SC 系统，提高接收信号功率、保持噪声功率不变，会使解调输出信噪比如何变化？",
+      "status": "included",
+      "bucket": "receiver_basics",
+      "tags": [
+        "analog_mod"
+      ],
+      "tier": "cross",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：analog_mod"
+      ]
+    },
+    {
+      "uuid": "a8b8be12-f214-553e-a02e-e1fad7a66bf5",
+      "fingerprint": "dce3a8604e49ebdedd92e250c56da96f48b07a002c5bbf0ced93240352c72d44",
+      "document_id": 15,
+      "label": "调频 FM 与调相 PM 基本概念",
+      "evidence_method": "structured_text",
+      "evidence": "写出单音调频信号的一般形式，并指出 FM 中瞬时频率由什么控制。",
+      "status": "included",
+      "bucket": "angle_multilevel",
+      "tags": [
+        "angle_multilevel"
+      ],
+      "tier": "cross",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：angle_multilevel"
+      ]
+    },
+    {
+      "uuid": "d2dedd98-fc83-5c2c-999c-22e19a5224dd",
+      "fingerprint": "30cac9bff156814cd57ffcae16670714aa052d57f187535256f239105605a4ab",
+      "document_id": 15,
+      "label": "模拟调制系统性能比较",
+      "evidence_method": "structured_text",
+      "evidence": "在同样的基带带宽下，SSB 与 DSB-SC 相比，哪一种通常占用更小的传输带宽？若基带最高频率为 $W$，两者理想带宽分别约为多少？",
+      "status": "included",
+      "bucket": "analog_mod",
+      "tags": [
+        "analog_mod"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：analog_mod"
+      ]
+    },
+    {
+      "uuid": "018505c4-5ec0-5292-8f04-8870ef408bca",
+      "fingerprint": "2226f22821e8333c3e51299d54abfd1011b4bbb9104398dbe89c837ca120fabf",
+      "document_id": 15,
+      "label": "基带传输系统基本模型",
+      "evidence_method": "structured_text",
+      "evidence": "画不出图时，用文字写出数字基带传输系统最基本的功能链路。",
+      "status": "included",
+      "bucket": "baseband_basics",
+      "tags": [
+        "baseband_basics"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：baseband_basics"
+      ]
+    },
+    {
+      "uuid": "2ce7733f-fd6b-5c43-963a-36ee0a030663",
+      "fingerprint": "7323e55859c37a178ddb2d2d953f429c325b59a2d75ba26d722fbc57abcabac9",
+      "document_id": 15,
+      "label": "无码间串扰的基带传输条件",
+      "evidence_method": "structured_text",
+      "evidence": "无码间串扰的时域奈奎斯特条件要求等效脉冲 $h(t)$ 在最佳抽样时刻满足什么形式？设码元间隔为 $T$。",
+      "status": "included",
+      "bucket": "isi",
+      "tags": [
+        "isi"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：isi"
+      ]
+    },
+    {
+      "uuid": "b0766eb0-832c-5cb2-97cc-94c43b97f09d",
+      "fingerprint": "aa87f1c392854f1b6e8f40a059078d0c17fc7b33d148c575d91af9a52052738f",
+      "document_id": 15,
+      "label": "基带传输系统抗噪声性能",
+      "evidence_method": "structured_text",
+      "evidence": "二进制基带接收机中，判决变量在发送“1”和发送“0”时分别围绕两个均值随机波动。若噪声减小而两个均值间距不变，误码率通常如何变化？",
+      "status": "included",
+      "bucket": "receiver_basics",
+      "tags": [
+        "receiver_basics"
+      ],
+      "tier": "cross",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：receiver_basics"
+      ]
+    },
+    {
+      "uuid": "03507f20-8f6b-5501-b852-88af1e851d7a",
+      "fingerprint": "60206d1e1c19b93db02511f68baf7afc78c989da0248cdd1b55b7eb948201b87",
+      "document_id": 15,
+      "label": "眼图",
+      "evidence_method": "structured_text",
+      "evidence": "观察眼图时，如果“眼睛”张得更大，通常说明码间串扰和噪声影响更严重还是更轻？",
+      "status": "included",
+      "bucket": "baseband_basics",
+      "tags": [
+        "isi",
+        "baseband_basics"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：isi、baseband_basics"
+      ]
+    },
+    {
+      "uuid": "35ad929e-bdf5-52a2-8fab-abc4f4acd50d",
+      "fingerprint": "7158d6e269ab04a65ef0956088cb67e118d78cb477e3d782b25ed238337b2c02",
+      "document_id": 15,
+      "label": "二进制数字调制基本原理",
+      "evidence_method": "structured_text",
+      "evidence": "二进制数字带通调制中，用载波的幅度、频率、相位分别承载二进制信息，对应哪三类基本调制？",
+      "status": "included",
+      "bucket": "binary_mod",
+      "tags": [
+        "binary_mod"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：binary_mod"
+      ]
+    },
+    {
+      "uuid": "71a75d60-fd27-54fc-b160-868094982282",
+      "fingerprint": "75392ead2331ed1a8de75d43ef7b22a0d24b235e9295eb76c44979748c8276e4",
+      "document_id": 15,
+      "label": "二进制幅移键控",
+      "evidence_method": "structured_text",
+      "evidence": "OOK 是 2ASK 的一种形式。若比特“1”发送\n$$\nA\\cos\\omega_ct,\n$$\n比特“0”不发送载波，则写出两种发送波形。",
+      "status": "included",
+      "bucket": "binary_mod",
+      "tags": [
+        "binary_mod"
+      ],
+      "tier": "advanced",
+      "kind": "analysis",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：binary_mod"
+      ]
+    },
+    {
+      "uuid": "c81b5afa-b923-5640-86cf-cf362c8b888e",
+      "fingerprint": "271d78a4e8bef7bf604f04d906f8406eaace4ee1e8d1430e60bdaf7d9496499a",
+      "document_id": 15,
+      "label": "二进制相移键控",
+      "evidence_method": "structured_text",
+      "evidence": "相干 2PSK 中，常用两个反相信号表示二进制符号。若\n$$\ns_1(t)=A\\cos\\omega_ct,\n$$\n写出与之相差 $180^\\circ$ 的 $s_0(t)$。",
+      "status": "included",
+      "bucket": "binary_mod",
+      "tags": [
+        "binary_mod"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：binary_mod"
+      ]
+    },
+    {
+      "uuid": "b03b7a1e-a225-5a17-a080-d5bc9dcb9f02",
+      "fingerprint": "8cf2f102a985ef72a2ae5a249dbeaeca62763bb2a1bdfa0e61633a99dc4fb405",
+      "document_id": 15,
+      "label": "二进制数字调制系统抗噪声性能",
+      "evidence_method": "structured_text",
+      "evidence": "在 AWGN 信道、相干检测条件下，若两种二进制信号之间的欧氏距离增大，而噪声功率不变，误码率通常怎样变化？",
+      "status": "included",
+      "bucket": "receiver_basics",
+      "tags": [
+        "receiver_basics"
+      ],
+      "tier": "cross",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：receiver_basics"
+      ]
+    },
+    {
+      "uuid": "aac3282f-8d16-56ba-b7d9-ad726575407c",
+      "fingerprint": "5158d8078b74a2e5e3c55e63e0596c4f922da696878f2d0db2bf2fce3a719885",
+      "document_id": 15,
+      "label": "二进制系统性能比较与多进制数字调制基本原理",
+      "evidence_method": "structured_text",
+      "evidence": "一个 $M=16$ 的数字调制系统，每个码元最多携带多少 bit 信息？与二进制调制相比，其主要优势是什么？",
+      "status": "included",
+      "bucket": "binary_mod",
+      "tags": [
+        "binary_mod"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：binary_mod"
+      ]
+    },
+    {
+      "uuid": "b7dc03ce-6d7a-5812-af98-bdb5ea2e6f07",
+      "fingerprint": "457154467368512acc8ce14a49b2327cea38acb998c01c44e3d717cece50c446",
+      "document_id": 15,
+      "label": "数字信号最佳接收问题的基本模型",
+      "evidence_method": "structured_text",
+      "evidence": "数字最佳接收问题中，接收波形可表示为\n$$\nr(t)=s_i(t)+n(t).\n$$\n接收机的核心任务是什么？",
+      "status": "included",
+      "bucket": "receiver_basics",
+      "tags": [
+        "receiver_basics"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：receiver_basics"
+      ]
+    },
+    {
+      "uuid": "3966a465-5be8-5ce2-8bf1-d4e9f32e8a4f",
+      "fingerprint": "76b3f01f374428701c0e9aafa4004ff8d1677a750a963536ed21f834dd60f3e5",
+      "document_id": 15,
+      "label": "确知数字信号的最佳接收机",
+      "evidence_method": "structured_text",
+      "evidence": "两个确知信号 $s_1(t)$、$s_2(t)$ 在 $0\\le t\\le T$ 内发送。最佳接收机最终为什么可以把连续波形判决转化成有限个统计量比较？",
+      "status": "included",
+      "bucket": "receiver_basics",
+      "tags": [
+        "receiver_basics"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：receiver_basics"
+      ]
+    },
+    {
+      "uuid": "d1aa4e3f-d485-5e89-aecc-5c012134ad06",
+      "fingerprint": "d9c26bde09cb2a1391725754d79eae51bad91c96322a55c851f8a2ebe1729219",
+      "document_id": 15,
+      "label": "匹配滤波器基本原理",
+      "evidence_method": "structured_text",
+      "evidence": "已知希望在时刻 $T$ 检测确知信号 $s(t)$。在白噪声背景下，与 $s(t)$ 匹配的滤波器冲激响应一般写成什么形式？",
+      "status": "included",
+      "bucket": "matched_filter",
+      "tags": [
+        "matched_filter"
+      ],
+      "tier": "core",
+      "kind": "concept",
+      "combined_priority": true,
+      "reason": [
+        "题干明确匹配：matched_filter"
+      ]
+    },
+    {
+      "uuid": "ddc59aff-0a1c-5b0b-9c57-830b8b2ea490",
+      "fingerprint": "edcd67ed6b13eff67be4790d0f8cdfeafb69c04a2684e2c8b9aae184e8d7a6ba",
+      "document_id": 15,
+      "label": "匹配滤波接收法",
+      "evidence_method": "structured_text",
+      "evidence": "某实信号 $s(t)$ 的能量为\n$$\nE_s=\\int_{-\\infty}^{\\infty}s^2(t)\\,dt.\n$$\n使用匹配滤波器并在最佳时刻抽样，其核心优势是什么？",
+      "status": "included",
+      "bucket": "matched_filter",
+      "tags": [
+        "matched_filter"
+      ],
+      "tier": "core",
+      "kind": "concept",
+      "combined_priority": true,
+      "reason": [
+        "题干明确匹配：matched_filter"
+      ]
+    },
+    {
+      "uuid": "49049165-243e-5b9d-b347-355792ff811b",
+      "fingerprint": "7ca655184ca762d04c13d624c013c983b11f534b4ccac936623fe382a582a44f",
+      "document_id": 15,
+      "label": "最佳基带传输系统基本概念",
+      "evidence_method": "structured_text",
+      "evidence": "从“无码间串扰”和“最佳接收”两个角度看，一个理想数字基带系统的发送/接收滤波器设计希望同时实现哪两个基本目标？",
+      "status": "included",
+      "bucket": "isi",
+      "tags": [
+        "isi",
+        "receiver_basics"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_priority": true,
+      "reason": [
+        "题干明确匹配：isi、receiver_basics"
+      ]
+    },
+    {
+      "uuid": "da16ffa4-0ef2-5126-a7f4-5f01956bdc8f",
+      "fingerprint": "2dcaba2dd2b36dbe79b6b25c121bea7b79c8b07ba63a8295302b2a892e6261d2",
+      "document_id": 15,
+      "label": "COM-SA-02｜信息量的基本定义是什么？为什么概率越小的事件携带的信息量越大？",
+      "evidence_method": "structured_text",
+      "evidence": "信息量的基本定义是什么？为什么概率越小的事件携带的信息量越大？",
+      "status": "included",
+      "bucket": "pcm_capacity",
+      "tags": [
+        "pcm_capacity"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：pcm_capacity"
+      ]
+    },
+    {
+      "uuid": "7e5f7bb1-c9df-51a7-9eee-39f4dd219a5f",
+      "fingerprint": "598ca75b2bc4739586d61eb584b3fa8d6f423afcea84927e3b6e8cfebcdee89e",
+      "document_id": 15,
+      "label": "COM-SA-03｜什么是信道容量？写出 AWGN 信道的香农容量公式，并说明带宽、信号功率和噪声功率对容量的影响。",
+      "evidence_method": "structured_text",
+      "evidence": "什么是信道容量？写出 AWGN 信道的香农容量公式，并说明带宽、信号功率和噪声功率对容量的影响。",
+      "status": "included",
+      "bucket": "pcm_capacity",
+      "tags": [
+        "pcm_capacity"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：pcm_capacity"
+      ]
+    },
+    {
+      "uuid": "b8d81435-ecf9-572c-9612-19c8c0d5d0fa",
+      "fingerprint": "b4a087e325cb6545442f9d64d9547b00ccd7d6e36302e131116fa83b40e82dab",
+      "document_id": 15,
+      "label": "COM-SA-04｜PCM 的基本过程包括哪些步骤？量化为什么必然引入误差？",
+      "evidence_method": "structured_text",
+      "evidence": "PCM 的基本过程包括哪些步骤？量化为什么必然引入误差？",
+      "status": "included",
+      "bucket": "pcm_capacity",
+      "tags": [
+        "pcm_capacity"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：pcm_capacity"
+      ]
+    },
+    {
+      "uuid": "201bd4f1-d8df-5fac-b88a-8188994a9da5",
+      "fingerprint": "7ed92ec677a57b1f0f96f0d14e196d7b50083a5ffcda5be413bcc0398561c122",
+      "document_id": 15,
+      "label": "COM-SA-05｜为什么通信系统需要调制？什么是线性调制的一般思想？",
+      "evidence_method": "structured_text",
+      "evidence": "为什么通信系统需要调制？什么是线性调制的一般思想？",
+      "status": "included",
+      "bucket": "analog_mod",
+      "tags": [
+        "analog_mod"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：analog_mod"
+      ]
+    },
+    {
+      "uuid": "d73995b0-656e-5484-bd9d-270965c1c78e",
+      "fingerprint": "0a486573fc45d820a2f6736a21396cdcd5981c8431fc415acb498e0c67d5457b",
+      "document_id": 15,
+      "label": "COM-SA-06｜比较 AM、DSB-SC、SSB 三种线性调制在载波、带宽、功率利用和解调方面的典型特点。",
+      "evidence_method": "structured_text",
+      "evidence": "比较 AM、DSB-SC、SSB 三种线性调制在载波、带宽、功率利用和解调方面的典型特点。",
+      "status": "included",
+      "bucket": "analog_mod",
+      "tags": [
+        "analog_mod"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：analog_mod"
+      ]
+    },
+    {
+      "uuid": "5d448e39-9693-5df5-9499-e04935d4794f",
+      "fingerprint": "1cf6a17071f67fce86b8f24e3a11ae4ff6760c230a6fed32795ea75698776f07",
+      "document_id": 15,
+      "label": "COM-SA-07｜调频 FM 和调相 PM 有什么区别？为什么角度调制通常比线性幅度调制具有更好的抗幅度噪声能力？",
+      "evidence_method": "structured_text",
+      "evidence": "调频 FM 和调相 PM 有什么区别？为什么角度调制通常比线性幅度调制具有更好的抗幅度噪声能力？",
+      "status": "included",
+      "bucket": "angle_multilevel",
+      "tags": [
+        "angle_multilevel"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：angle_multilevel"
+      ]
+    },
+    {
+      "uuid": "5454c091-dfb9-5bb4-9580-ede445e5d264",
+      "fingerprint": "62f333a28d9c7c84997ecaa8e040c8528b12121b361862651f629c78fa542681",
+      "document_id": 15,
+      "label": "COM-SA-08｜什么是数字基带信号？选择基带码型时通常希望具备哪些特性？",
+      "evidence_method": "structured_text",
+      "evidence": "什么是数字基带信号？选择基带码型时通常希望具备哪些特性？",
+      "status": "included",
+      "bucket": "baseband_basics",
+      "tags": [
+        "baseband_basics"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：baseband_basics"
+      ]
+    },
+    {
+      "uuid": "d72e44a6-9f60-5937-96b3-a41e091a6089",
+      "fingerprint": "10c4d464dc5835fed5f7264b6e8367dd63f0ebdb5d6cbb628f51457af31ed432",
+      "document_id": 15,
+      "label": "COM-SA-09｜什么是码间串扰 ISI？写出理想抽样条件下无码间串扰的时域条件，并说明其物理意义。",
+      "evidence_method": "structured_text",
+      "evidence": "什么是码间串扰 ISI？写出理想抽样条件下无码间串扰的时域条件，并说明其物理意义。",
+      "status": "included",
+      "bucket": "isi",
+      "tags": [
+        "isi"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：isi"
+      ]
+    },
+    {
+      "uuid": "dce706fe-daee-5247-9e83-6c134c18cecf",
+      "fingerprint": "c03740cb339b1bdf3a9a194897adec68fa23d78ae76347459dffb4a8be855721",
+      "document_id": 15,
+      "label": "COM-SA-11｜比较 2ASK、2FSK、2PSK 的基本调制思想，并说明多进制调制相对于二进制调制的主要收益和代价。",
+      "evidence_method": "structured_text",
+      "evidence": "比较 2ASK、2FSK、2PSK 的基本调制思想，并说明多进制调制相对于二进制调制的主要收益和代价。",
+      "status": "included",
+      "bucket": "angle_multilevel",
+      "tags": [
+        "binary_mod",
+        "angle_multilevel"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：binary_mod、angle_multilevel"
+      ]
+    },
+    {
+      "uuid": "9a5594f6-6256-5b6e-8df1-3c68ced99035",
+      "fingerprint": "2ba53489b8e8edee8293ac6effb8604024ec82294b4b644c0e444d55630081ff",
+      "document_id": 15,
+      "label": "COM-SA-12｜什么是数字信号的最佳接收？为什么 AWGN 条件下匹配滤波器能够在判决时刻实现最佳接收意义上的重要性质？",
+      "evidence_method": "structured_text",
+      "evidence": "什么是数字信号的最佳接收？为什么 AWGN 条件下匹配滤波器能够在判决时刻实现最佳接收意义上的重要性质？",
+      "status": "included",
+      "bucket": "matched_filter",
+      "tags": [
+        "matched_filter",
+        "receiver_basics"
+      ],
+      "tier": "core",
+      "kind": "concept",
+      "combined_priority": true,
+      "reason": [
+        "题干明确匹配：matched_filter、receiver_basics"
+      ]
+    },
+    {
+      "uuid": "35c37191-30d8-5279-a9be-bbdf3f87113b",
+      "fingerprint": "55aa8ecfef0ae5bb23fe99a3c989371c36e60d8274718da9c4e42334e5f63f9b",
+      "document_id": 15,
+      "label": "课后题 1-3",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题1.3  某信息源由A，B，C，D 四个符号组成，这些符号分别用二进制\n码组00，01，10，11 表示。若每个二进制码元用宽度为5ms 的脉冲传输，试分\n别求出在下列条件下的平均信息速率。 \n（1） 这四个符号等概率出现；  （2）这四个符号出现概率如\n",
+      "status": "included",
+      "bucket": "pcm_capacity",
+      "tags": [
+        "pcm_capacity"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_priority": true,
+      "reason": [
+        "题干明确匹配：pcm_capacity"
+      ]
+    },
+    {
+      "uuid": "58302436-4aa3-5737-89bb-6e71cc570ef0",
+      "fingerprint": "4bf1e6ba829e3036b10c700d5df26b776b7d89b58d50a8018758677d5eeedaa2",
+      "document_id": 15,
+      "label": "课后题 3-10",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题3.10 将调幅波通过残留边带滤波器产生残留边带信号。若信号的传输\n函数H(w)如图所示。当调制信号为m(t)=A[sin100πt +sin6000πt]时，试确定所得\n",
+      "status": "included",
+      "bucket": "analog_mod",
+      "tags": [
+        "analog_mod"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：analog_mod"
+      ]
+    },
+    {
+      "uuid": "314b9799-d80d-58fe-8765-5374916ad692",
+      "fingerprint": "c482811002c8b229102d606e15f83566b605782cc13d6d20b46a91e1ee8eb0b4",
+      "document_id": 15,
+      "label": "课后题 3-11",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题3.11 设某信道具有均匀的双边噪声功率谱密度Pn(f)=0.5*10-3W/Hz，在\n该信道中传输抑制载波的双边带信号，并设调制信号m(t)的频带限制在5kHz，\n而载波为100kHz，已调信号的功率为10kW.若接收机的输入信号在加至解调器\n之前，先经过一理想带通滤波器滤波，试问： \n1.） 该理想带通滤波器应具有怎样的传输特性H(w)? \n2.） 解调器输入端的信噪功率比为多少? \n3.） 解调器输出端的信噪功率比为多少? \n",
+      "status": "included",
+      "bucket": "analog_mod",
+      "tags": [
+        "analog_mod"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：analog_mod"
+      ]
+    },
+    {
+      "uuid": "8abe07e0-2dcc-574a-8939-acbabd6bac35",
+      "fingerprint": "e89df5583dbe58d20cbd9c88c1fb501974d02d8512c0ee6d55dd7ab9ea6f81d9",
+      "document_id": 15,
+      "label": "课后题 3-14",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题3.14 根据图3-5 所示的调制信号波形，试画出DSB 波形 \n \n \n \n \n \nt \nM(t) \n",
+      "status": "included",
+      "bucket": "analog_mod",
+      "tags": [
+        "analog_mod"
+      ],
+      "tier": "advanced",
+      "kind": "analysis",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：analog_mod"
+      ]
+    },
+    {
+      "uuid": "031083a0-59a9-5934-8cd5-2632a7265bb3",
+      "fingerprint": "447affb20bc69d71971e45c339d77d5834db2d0caa8f0499e0c8e88485938fd7",
+      "document_id": 15,
+      "label": "课后题 3-22",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题3.22 根据图所示的调制信号波形，试画出DSB 波形。试问DSB 信号\n能不能采用包络检波法 \n \n \n \n \n \n \nM(t) \nt \n",
+      "status": "included",
+      "bucket": "analog_mod",
+      "tags": [
+        "analog_mod",
+        "receiver_basics"
+      ],
+      "tier": "advanced",
+      "kind": "analysis",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：analog_mod、receiver_basics"
+      ]
+    },
+    {
+      "uuid": "b2cebf68-a30c-503f-b6e5-500c8e3c876c",
+      "fingerprint": "fd656a6d89e00f849878d4b310fa1e046bb193799fa237ff29d9f42bb65c24bf",
+      "document_id": 15,
+      "label": "课后题 3-27",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "图3-11 调制信号波形图 \n习题3.27 已知线性调制信号表达式如下： \n            (1+0.5sinΩt)coswct \n     式中wc=4Ω，试画出它的波形图 \n",
+      "status": "included",
+      "bucket": "analog_mod",
+      "tags": [
+        "analog_mod"
+      ],
+      "tier": "advanced",
+      "kind": "analysis",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：analog_mod"
+      ]
+    },
+    {
+      "uuid": "db8d1369-4962-5e0e-97e5-1a89c090dcfc",
+      "fingerprint": "99c82a4ade3e00e0bce558ef8f7ae162f06b9d1debd8df1e92caff5a5f0e7c18",
+      "document_id": 15,
+      "label": "课后题 4-2",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题4.2  若语音信号的带宽在300～400 Hz 之间，试按照奈奎斯特准则计\n算理论上信号不失真的最小抽样频率。 \n",
+      "status": "included",
+      "bucket": "isi",
+      "tags": [
+        "isi",
+        "pcm_capacity"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_priority": true,
+      "reason": [
+        "题干明确匹配：isi、pcm_capacity"
+      ]
+    },
+    {
+      "uuid": "74ac1948-3ddb-5ea5-aa59-4d76d51b94e9",
+      "fingerprint": "5382ffd859fadd7ee90d64083a704cdb0cc43166b0ba9d956aafc5165f087312",
+      "document_id": 15,
+      "label": "课后题 4-3",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题4.3  若信号( )\nsin(314 ) 314\ns t\nt\nt\n=\n。试问： \n（1） \n最小抽样频率为多少才能保证其无失真地恢复？ \n（2） \n在用最小抽样频率对其抽样时，为保存3min 的抽样，需\n要保存多少个抽样值？ \n",
+      "status": "included",
+      "bucket": "pcm_capacity",
+      "tags": [
+        "pcm_capacity"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_priority": true,
+      "reason": [
+        "题干明确匹配：pcm_capacity"
+      ]
+    },
+    {
+      "uuid": "780ee9b8-9e1e-51e2-86a1-f7cebc65339c",
+      "fingerprint": "165cd998903557b85054ef0e2d989be27cefe3f0cdaa8cc0de64fe25b1950639",
+      "document_id": 15,
+      "label": "课后题 4-4",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题4.4  设被抽样的语音信号的带宽限制在300～3400 Hz ，抽样频率等于\n",
+      "status": "included",
+      "bucket": "pcm_capacity",
+      "tags": [
+        "pcm_capacity"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_priority": true,
+      "reason": [
+        "题干明确匹配：pcm_capacity"
+      ]
+    },
+    {
+      "uuid": "38999338-d81a-540f-83ea-9f040c0472a5",
+      "fingerprint": "26ac2d6996ed7d18dca70989d6216d860ebea8135ab637c3f27f827dcd251ec0",
+      "document_id": 15,
+      "label": "课后题 5-1",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题5.1  若消息码\n序列\n为1101001000001，试求\n出\nAMI 和\n3\nHDB 码的相应序\n列。 \n1\n0\n1\n0\n0\n0\n1\n0\n0\n1\n0\n1\n1\n1\n0\n0\n0\n0\n0\n1\n0\n0\n1\n0\n1\n1\n+\n−\n−\n+\n−\n+\n+\n−\n+\n−\n+\n",
+      "status": "included",
+      "bucket": "baseband_basics",
+      "tags": [
+        "baseband_basics"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：baseband_basics"
+      ]
+    },
+    {
+      "uuid": "0fbadc22-1e94-5848-8752-e845a932a04d",
+      "fingerprint": "6932c8b13e4c301a07e42f92d75e87019b3b8ba6a12adb58047be5721fdc9f51",
+      "document_id": 15,
+      "label": "课后题 5-5",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题5.5  设一个二进制单极性基带信号序列中的“1”和“0”分别用脉冲\n)\n(t\ng\n[见图\n5-2 的有无表示，并且它们出现的概率相等，码元持续时间等于T 。试求： \n（1） \n该序列的功率谱密度的表达式，并画出其曲线； \n（2） \n该序列中有没有概率\nT\nf\n1\n=\n的离散分量？若有，试计算其功\n率。 \nA\n)\n(t\ng\n",
+      "status": "included",
+      "bucket": "baseband_basics",
+      "tags": [
+        "baseband_basics"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：baseband_basics"
+      ]
+    },
+    {
+      "uuid": "48fe7682-f135-531b-8e76-49702b8cb623",
+      "fingerprint": "4772db58e31778bf961a5dce4b7a9e0efc75eb12c9f922682af9a589b9a771f9",
+      "document_id": 15,
+      "label": "课后题 5-7",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题5.7  设一个基带传输系统接收滤波器的输出码元波形\n)\n(t\nh\n如图5-13 所示。 \n（1） \n试求该基带传输系统的传输函数\n)\n( f\nH\n； \n（2） \n若其信道传输函数\n1\n)\n(\n=\nf\nC\n，且发送滤波器和接收滤波器的传\n输函数相同，即\n)\n(\n)\n(\nR\nT\nf\nG\nf\nG\n=\n，试求此时\n)\n(\nT f\nG\n和\n)\n(\nR f\nG\n的表达式。 \n",
+      "status": "included",
+      "bucket": "baseband_basics",
+      "tags": [
+        "baseband_basics"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：baseband_basics"
+      ]
+    },
+    {
+      "uuid": "b95c083f-0889-5999-8642-0c1cfc3476bd",
+      "fingerprint": "1c4813b91db669b5a1477de33095eff87b2b5b5c648368482f2e3e9ef9b258f9",
+      "document_id": 15,
+      "label": "课后题 5-8",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题5.8  设一个基带传输系统的传输函数\n)\n( f\nH\n如图5-7 所示。 \n（1） \n试求该系统接收滤波器输出码元波形的表达式： \n（2） \n若其中基带信号的码元传输速率\n0\nB\n2 f\nR =\n，试用奈奎斯特准则\n衡量该系统能否保证无码间串扰传输。 \n \n \n \n \n \n \n图5-7 习题5.8 图 \n1\nO\n0f\n0f\nf\n)\n( f\nH\n",
+      "status": "included",
+      "bucket": "isi",
+      "tags": [
+        "isi",
+        "baseband_basics"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_priority": true,
+      "reason": [
+        "题干明确匹配：isi、baseband_basics"
+      ]
+    },
+    {
+      "uuid": "d621c342-6935-5af1-8198-220f398fb007",
+      "fingerprint": "7446ad89f22f7ab802e5ac5ebfe5db3dff639a65d97067ca42006d58adcb624a",
+      "document_id": 15,
+      "label": "课后题 5-16",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题5.16  设某二进制数字基带信号中，数字信号“1”和“0”分别由  及  表示，\n且“1” 与“0”出现的概率相等，是升余弦频谱脉冲，即 \n2\n2\ncos\n( )\n4\n2 1\ns\ns\ns\nt\nT\nt\ng t\nSa T\nt\nT\n\n\n\n\n\n\n\n\n\n\n=\n\n\n\n\n\n\n−\n\n\n\n\n \n(1) \n写出该数字基带信号的功率谱密度表示式，并画出功率谱密度图；从该数\n字基带信号中能否直接提取频率 fs=1/Ts 的分量。 \n(2) \n若码元间隔 Ts=10-3s, 试求该数字基带信号的传码率及频带宽度。 \n",
+      "status": "included",
+      "bucket": "isi",
+      "tags": [
+        "isi",
+        "baseband_basics"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_priority": true,
+      "reason": [
+        "题干明确匹配：isi、baseband_basics"
+      ]
+    },
+    {
+      "uuid": "20fdecfc-0900-5d09-bae3-1d434e5ab415",
+      "fingerprint": "f8f981e17fa60f0c57167280884488980ca0b37011f1993f43334db42a85675f",
+      "document_id": 15,
+      "label": "课后题 5-17",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题5.17   设某双极性基带信号的基本脉冲波形如图 5-9(a)所示。它是一个高度为 1，\n宽度     得矩形脉冲，且已知数字信息“1”的出现概率为 3/4， “0”的出现概率为 1/4。   \n(1)  写出该双极性信号的功率谱密度的表示式，并画出功率谱密度图；  \n(2)  由该双极性信号中能否直接提取频率为 fs=1/Ts 的分量？若能，试计算该分量\n的功率。 \n",
+      "status": "included",
+      "bucket": "baseband_basics",
+      "tags": [
+        "baseband_basics"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：baseband_basics"
+      ]
+    },
+    {
+      "uuid": "758ee955-ded6-579e-829b-8a959b314b47",
+      "fingerprint": "89fc61bcab3d2539021e197fa12f9dcb9918110fe52bf45bdbfbbdc70c47c1be",
+      "document_id": 15,
+      "label": "课后题 5-19",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题5.19   某基带传输系统接受滤波器输出信号的基本脉冲为如图 5-10 所示的三角\n形脉冲。  \n(1)  求该基带传输系统的传输函数 H(w);  \n(2)  假设信道的传输函数 C(w)=1,发送滤波器和接受滤波器具有相同的传输函数，\n",
+      "status": "included",
+      "bucket": "baseband_basics",
+      "tags": [
+        "baseband_basics"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：baseband_basics"
+      ]
+    },
+    {
+      "uuid": "f5f5c697-1884-5f90-ab6b-dca7dda3c47b",
+      "fingerprint": "6b49fe2d2f12c1565654d9f17d7ebf5fb2a796b21f9ee6e020d97a4969b6e4a5",
+      "document_id": 15,
+      "label": "课后题 5-20",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题5.20    设某基带传输系统具有图 5-11 所示的三角形传输函数：  \n(1)  求该系统接受滤波器输出基本脉冲的时间表示式；  \n(2)  当数字基带信号的传码率 RB=w0/π时,用奈奎斯特准则验证该系统能否\n实现 \n",
+      "status": "included",
+      "bucket": "isi",
+      "tags": [
+        "isi",
+        "baseband_basics"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_priority": true,
+      "reason": [
+        "题干明确匹配：isi、baseband_basics"
+      ]
+    },
+    {
+      "uuid": "3599f43c-5b5a-5a99-a09b-1aa9befd1b22",
+      "fingerprint": "cd4953092faaa030dfdd077a0e9d03dd423a9ef130ec2ec75718c64ec3d38f0f",
+      "document_id": 15,
+      "label": "课后题 5-21",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "  习题5.21   设基带传输系统的发送器滤波器，信道及接受滤波器组成总特性为 \nH(w)，若要求以 2/Ts Baud  的速率进行数据传输，试检验图 5-12 各种H(w)满足消除抽样\n点上无码间干扰的条件否？  \n",
+      "status": "included",
+      "bucket": "isi",
+      "tags": [
+        "isi",
+        "baseband_basics"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_priority": true,
+      "reason": [
+        "题干明确匹配：isi、baseband_basics"
+      ]
+    },
+    {
+      "uuid": "9d51cabb-3765-5453-8484-7a78a233f1a5",
+      "fingerprint": "e822b914fc4d6246733516a82b3c9ae5052ff13662fd13b91ee81ad1fc4246d8",
+      "document_id": 15,
+      "label": "课后题 5-22",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题5.22    设某数字基带传输信号的传输特性 H(w)如图 5-13 所示。其中 a 为某个\n常数(0≤a≤1)。  \n(1)  试检验该系统能否实现无码间干扰传输?  \n(2)  试求该系统的最大码元传输速率为多少？这是的系统频带利用率为多大?  \n",
+      "status": "included",
+      "bucket": "isi",
+      "tags": [
+        "isi",
+        "baseband_basics"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_priority": true,
+      "reason": [
+        "题干明确匹配：isi、baseband_basics"
+      ]
+    },
+    {
+      "uuid": "d00feae7-e9a7-5b7d-a447-6ae2dc4664f0",
+      "fingerprint": "3d2527f79374728b9afa8eb725bf0f43649eb0bb71f367ec480149c6b49201a3",
+      "document_id": 15,
+      "label": "课后题 5-23",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题5.23   为了传送码元速率\n3\n10\nB\nR\nBaud\n=\n的数字基待信号， 试问系统采用图 \n5-14 中所画的哪一种传输特性较好？并简要说明其理由。  \n",
+      "status": "included",
+      "bucket": "isi",
+      "tags": [
+        "isi"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_priority": true,
+      "reason": [
+        "题干明确匹配：isi"
+      ]
+    },
+    {
+      "uuid": "c758d872-1cdd-5ccb-ba64-401b43f616a7",
+      "fingerprint": "f98ea5ed130dd0c4a5f7c32cb79aba4ff2cacc2eca5040d5ba14bffaffb104af",
+      "document_id": 15,
+      "label": "课后题 5-24",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题5.24  设二进制基带系统地分析模型如图 5-2 所示，现已知 \n\n0\n0\n0\n(1 cos\n),\n( )\n0,\nw\nw\nH w\n\n\n\n\n\n+\n\n\n= \n\n其它的w\n \n试确定该系统最高的码元传输速率 RB 及相应码元间隔 Ts.  \n",
+      "status": "included",
+      "bucket": "isi",
+      "tags": [
+        "isi"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_priority": true,
+      "reason": [
+        "题干明确匹配：isi"
+      ]
+    },
+    {
+      "uuid": "39c52565-67b8-510d-a2b8-8918cd651498",
+      "fingerprint": "4b4e99c35c77d808900ee4da1b0b960a79141c0216484cec4513bc72cfa38d26",
+      "document_id": 15,
+      "label": "课后题 5-28",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题5.28 试证明对于单极性基带波形，其最佳门限电平为\n2\n*\n(0)\nln\n2 2\n(1)\nn\nd\nA\np\nV\nA\np\n\n=\n \n最小误码率\n1\n2\npe =\n \n(\n)\n2\nn\nA\nerfc\n\n   (“1”和“0”等概出现时) \n",
+      "status": "included",
+      "bucket": "receiver_basics",
+      "tags": [
+        "receiver_basics"
+      ],
+      "tier": "cross",
+      "kind": "analysis",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：receiver_basics"
+      ]
+    },
+    {
+      "uuid": "509be1c5-d0c5-5df4-bf55-4f99de93cae3",
+      "fingerprint": "b1769c85a099cd84b843d8dc58a3fb24bb4693936d7427539231b2001b60607a",
+      "document_id": 15,
+      "label": "课后题 5-30",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题5.30 某二进制数字基带系统所传送的是单极性基带信号，且数字信息“1”和“0”\n的出现概率相等。 若数字信息为“1”时，接受滤波器输出信号在抽样判决时刻的值 A=1V，\n",
+      "status": "included",
+      "bucket": "baseband_basics",
+      "tags": [
+        "baseband_basics"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：baseband_basics"
+      ]
+    },
+    {
+      "uuid": "e87d22a7-1cb3-5e27-87ee-34ea6dbf34ac",
+      "fingerprint": "74c9dc02ee9f154456e67100e748effbc50b42510d235e46f203974a1a94142e",
+      "document_id": 21,
+      "label": "课后题 1.1",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题1.1  在英文字母中E 出现的概率最大，等于0.105，试求其信息量。 \n",
+      "status": "included",
+      "bucket": "pcm_capacity",
+      "tags": [
+        "pcm_capacity"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_priority": true,
+      "reason": [
+        "题干明确匹配：pcm_capacity"
+      ]
+    },
+    {
+      "uuid": "da60961a-172e-5f81-8c5a-8f725f643e58",
+      "fingerprint": "9a309f8ecbc4c2a8b745a0eabfee2eac79d3c0f9a6b70bb747c34415abed9642",
+      "document_id": 21,
+      "label": "课后题 1.2",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题1.2  某信息源由A，B，C，D 四个符号组成，设每个符号独立出现，\n其出现的概率分别为1/4，1/4，3/16，5/16。试求该信息源中每个符号的信息量。 \n",
+      "status": "included",
+      "bucket": "pcm_capacity",
+      "tags": [
+        "pcm_capacity"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_priority": true,
+      "reason": [
+        "题干明确匹配：pcm_capacity"
+      ]
+    },
+    {
+      "uuid": "c7fd1820-e1db-5b5f-84ae-53bd9c23c4fe",
+      "fingerprint": "6c5db7a0788b519f0d9ee465af192237ecf22b297767f1f2044a0f8562fa92ca",
+      "document_id": 21,
+      "label": "课后题 1.5",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题1.5  设一个信息源由64 个不同的符号组成，其中16 个符号的出现概\n率均为1/32，其余48 个符号出现的概率为1/96，若此信息源每秒发出1000 个独\n立的符号，试求该信息源的平均信息速率。 \n",
+      "status": "included",
+      "bucket": "pcm_capacity",
+      "tags": [
+        "pcm_capacity"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_priority": true,
+      "reason": [
+        "题干明确匹配：pcm_capacity"
+      ]
+    },
+    {
+      "uuid": "6a093257-5593-5fb8-b32f-13baf5cd4e74",
+      "fingerprint": "5190ee967a254bb23f38a7f6b50738b8da481d7aa5993ba50acdf06f787f187f",
+      "document_id": 21,
+      "label": "课后题 1.6",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题1.6  设一个信息源输出四进制等概率信号，其码元宽度为125 us。试\n求码元速率和信息速率。 \n",
+      "status": "included",
+      "bucket": "pcm_capacity",
+      "tags": [
+        "pcm_capacity"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_priority": true,
+      "reason": [
+        "题干明确匹配：pcm_capacity"
+      ]
+    },
+    {
+      "uuid": "65489025-45a1-5ed6-a4fd-77ff1ffe7cde",
+      "fingerprint": "39a50ffc204548362436a9d21d16944106bfde528baf6c40db234b22733b420b",
+      "document_id": 21,
+      "label": "课后题 1.9",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题1.9  设英文字母E 出现的概率为 0.105， x 出现的概率为0.002 。试\n求 E \n和x 的信息量。  \n",
+      "status": "included",
+      "bucket": "pcm_capacity",
+      "tags": [
+        "pcm_capacity"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_priority": true,
+      "reason": [
+        "题干明确匹配：pcm_capacity"
+      ]
+    },
+    {
+      "uuid": "bb5cd10d-0223-5b10-a970-f4507745fb16",
+      "fingerprint": "0d47450b0c54998864b4e957a11d22247731a7a42ca364a148fc3ab7447db58f",
+      "document_id": 21,
+      "label": "课后题 1.10",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题1.10 信息源的符号集由 A，B，C，D 和E 组成，设每一符号独立1/4\n出现，其出现概率为1/4,1/8,1/8,3/16 和5/16。试求该信息源符号的平均信息量。 \n",
+      "status": "included",
+      "bucket": "pcm_capacity",
+      "tags": [
+        "pcm_capacity"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_priority": true,
+      "reason": [
+        "题干明确匹配：pcm_capacity"
+      ]
+    },
+    {
+      "uuid": "82172ec9-7ca5-5432-bf5c-0f370eaa91e4",
+      "fingerprint": "deaf342be0f8e03f590e6a972481f6928a45d91c9b2195d24bbbaf9fc276bd34",
+      "document_id": 21,
+      "label": "课后题 1.11",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题1.11 设有四个消息A、B、C、D 分别以概率1/4,1/8, 1/8, 1/2 传送，每\n一消息的出现是相互独立的。试计算其平均信息量。  \n",
+      "status": "included",
+      "bucket": "pcm_capacity",
+      "tags": [
+        "pcm_capacity"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_priority": true,
+      "reason": [
+        "题干明确匹配：pcm_capacity"
+      ]
+    },
+    {
+      "uuid": "a19df889-b2c2-595e-88a3-7573f6c94b18",
+      "fingerprint": "44044d48e3c0fe63f1835a5f8893fcdc0d4a88b877623f2391ca12ebc96de150",
+      "document_id": 21,
+      "label": "课后题 1.12",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题1.12 一个由字母A，B，C，D 组成的字。对于传输的每一个字母用二\n进制脉冲编码，00 代替 A，01 代替 B，10 代替 C，11 代替D。每个脉冲宽\n度为5ms。 \n（1） 不同的字母是等概率出现时，试计算传输的平均信息速率。  \n（2） 若每个字母出现的概率为\n1\n4\nB\np =\n,\n1\n4\nC\np =\n,\n3\n10\nD\np =\n, \n试计算传输的\n平均信息速率。  \n",
+      "status": "included",
+      "bucket": "pcm_capacity",
+      "tags": [
+        "pcm_capacity"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_priority": true,
+      "reason": [
+        "题干明确匹配：pcm_capacity"
+      ]
+    },
+    {
+      "uuid": "562f6e3f-99a8-5d93-94d0-2fb328a79102",
+      "fingerprint": "0b549c3a781fb142cd2037802cd18de4e5098a6c019321795e84f1b0ba4fd415",
+      "document_id": 21,
+      "label": "课后题 1.13",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题1.13 国际莫尔斯电码用点和划的序列发送英文字母，划用持续3 单位\n的电流脉冲表示，点用持续 1 单位的电流脉冲表示，且划出现的概率是点出现\n\n的概率的1/3。 \n（1） 计算点和划的信息量；  \n（2） 计算点和划的平均信息量。  \n",
+      "status": "included",
+      "bucket": "pcm_capacity",
+      "tags": [
+        "pcm_capacity"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_priority": true,
+      "reason": [
+        "题干明确匹配：pcm_capacity"
+      ]
+    },
+    {
+      "uuid": "f08daac4-6ecd-5515-8b62-77a0d3496577",
+      "fingerprint": "6bcdd9c8049919ee71a821e26b1244305bf67e63f280d8a583d3dd31cd5f7cf7",
+      "document_id": 21,
+      "label": "课后题 1.15",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题1.15 对于二电平数字信号，每秒钟传输 300 个码元，问此传码率\nB\nR 等\n于多少？若数字信号0 和1 出现是独立等概的，那么传信率\nb\nR 等于多少？  \n",
+      "status": "included",
+      "bucket": "pcm_capacity",
+      "tags": [
+        "pcm_capacity"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_priority": true,
+      "reason": [
+        "题干明确匹配：pcm_capacity"
+      ]
+    },
+    {
+      "uuid": "2391a705-da4c-5bf8-b2bb-4372e3f101dd",
+      "fingerprint": "329e88397a90bff21d7bbc7c397204915e71281ff1814a3ce53f4c7fced4ff7d",
+      "document_id": 21,
+      "label": "课后题 1.17",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题1.17 如果二进独立等概信号，码元宽度为0.5ms，求\nB\nR 和\nb\nR ；有四进\n信号，码元宽度为0.5ms，求传码率 \nB\nR 和独立等概时的传信率\nb\nR 。  \n1\n2000\n2000\n/\nR\nB R\nbit\n",
+      "status": "included",
+      "bucket": "pcm_capacity",
+      "tags": [
+        "pcm_capacity"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_priority": true,
+      "reason": [
+        "题干明确匹配：pcm_capacity"
+      ]
+    },
+    {
+      "uuid": "3843bbc3-ff7d-5ff9-9f7a-8b1119b86f7d",
+      "fingerprint": "34dae2e2699a4658c419494ff7780148cb31b905da1544f91df3ee24bf2e9e50",
+      "document_id": 21,
+      "label": "课后题 3.1",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题3.1  设一个载波的表达式为( )\n5cos1000\nc t\nt\n\n=\n，基带调制信号的表达\n式为：m(t)=1+cos200 t\n。试求出振幅调制时已调信号的频谱，并画出此频谱图。 \n",
+      "status": "included",
+      "bucket": "analog_mod",
+      "tags": [
+        "analog_mod"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：analog_mod"
+      ]
+    },
+    {
+      "uuid": "ec35f0af-3a00-5e88-937b-75a066b63c6a",
+      "fingerprint": "db3d9bafe6160cbf341f57f7009cd5b9b24b0861b53fd90f71eef86dfb95b6ce",
+      "document_id": 21,
+      "label": "课后题 3.3",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题3.3  设一个频率调制信号的载频等于10kHZ，基带调制信号是频率为\n2 kHZ 的单一正弦波，调制频移等于5kHZ。试求其调制指数和已调信号带宽。 \n",
+      "status": "included",
+      "bucket": "angle_multilevel",
+      "tags": [
+        "angle_multilevel"
+      ],
+      "tier": "cross",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：angle_multilevel"
+      ]
+    },
+    {
+      "uuid": "2bf373ef-9626-565a-8039-583c232d5279",
+      "fingerprint": "f853c2bf2f8baad058ae07f3a8b7a2d25a884094dfe07412c1d2dcb923727bc2",
+      "document_id": 21,
+      "label": "课后题 3.4",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题3.4  试证明：若用一基带余弦波去调幅，则调幅信号的两个边带的功\n率之和最大等于载波频率的一半。 \n",
+      "status": "included",
+      "bucket": "analog_mod",
+      "tags": [
+        "analog_mod"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：analog_mod"
+      ]
+    },
+    {
+      "uuid": "b9224dc1-0542-5a3a-829f-9c880c4b4588",
+      "fingerprint": "6dfbc7cf7b92f13b9711fcad85e7fd20de68257f377789f2dd905aba42ec4f01",
+      "document_id": 21,
+      "label": "课后题 3.6",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题3.6  设一基带调制信号为正弦波，其频率等于10kHZ，振幅等于1V。\n它对频率为10mHZ 的载波进行相位调制，最大调制相移为10rad。试计算次相\n位调制信号的近似带宽。若现在调制信号的频率变为5kHZ，试求其带宽。 \n",
+      "status": "included",
+      "bucket": "angle_multilevel",
+      "tags": [
+        "angle_multilevel"
+      ],
+      "tier": "cross",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：angle_multilevel"
+      ]
+    },
+    {
+      "uuid": "4c5e9ac2-8741-5606-8b67-a53d8788b0b1",
+      "fingerprint": "83f11b99443dcd08616656255d51a749f2abb23a0926ca1e14c474a74281a906",
+      "document_id": 21,
+      "label": "课后题 3.8",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题3.8 设角度调制信号的表达式为\n6\n3\n( )\n10cos(2 *10\n10cos2 *10 )\ns t\nt\nt\n\n\n=\n+\n。\n试求： \n（1）已调信号的最大频移；（2）已调信号的最大相移；（3）已调信号\n的带宽。 \n",
+      "status": "included",
+      "bucket": "angle_multilevel",
+      "tags": [
+        "angle_multilevel"
+      ],
+      "tier": "cross",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：angle_multilevel"
+      ]
+    },
+    {
+      "uuid": "679e67e9-10e7-576f-82f8-262ce4cc79fe",
+      "fingerprint": "bc55fe18d4edc3d2eb801afe528d3712639c2b071ecbf3182ed6106358e23c70",
+      "document_id": 21,
+      "label": "课后题 3.12",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题3.12 设某信道具有均匀的双边噪声功率谱密度Pn（f）=5*10-3W/Hz，\n在该信道中传输抑制载波的单边带信号，并设调制信号m（t）的频带限制在5kHz。\n而载频是100kHz，已调信号功率是10kW。若接收机的输入信号在加至解调器\n之前，先经过一理想带通滤波器，试问： \n1） 该理想带通滤波器应具有怎样的传输特性。 \n2） 解调器输入端信噪比为多少? \n3） 解调器输出端信噪比为多少? \n",
+      "status": "included",
+      "bucket": "receiver_basics",
+      "tags": [
+        "analog_mod",
+        "receiver_basics"
+      ],
+      "tier": "cross",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：analog_mod、receiver_basics"
+      ]
+    },
+    {
+      "uuid": "d24104fe-1646-5d19-a068-2e8f383ea3c6",
+      "fingerprint": "61490788006150cab262b8f0984d0481ce2cf902fc8520f8d9fb05938a65a365",
+      "document_id": 21,
+      "label": "课后题 3.13",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题3.13 某线性调制系统的输出信噪比为20dB，输出噪声功率为10-9W，\n由发射机输出端到调制器输入端之间总的传输耗损为100dB，试求： \n1） \nDSB/SC 时的发射机输出功率。 \n2） \nSSB/SC 时的发射机输出功率。 \n",
+      "status": "included",
+      "bucket": "receiver_basics",
+      "tags": [
+        "analog_mod"
+      ],
+      "tier": "cross",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：analog_mod"
+      ]
+    },
+    {
+      "uuid": "b8cd111f-e0cd-5ba3-82c2-7844e2969aa1",
+      "fingerprint": "54d7789e3a1d2108e688904e0902033051f744fe58e3f300f382f37da9dedd82",
+      "document_id": 21,
+      "label": "课后题 3.17",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题3.17 设某信道具有均匀的双边噪声功率谱密度Pn(f)，在该信道中传输\n抑制载波的双边带信号，并设调制信号m(t)的频带限制在10kHz，而载波为\n250kHz，已调信号的功率为15kW。已知解调器输入端的信噪功率比为1000。\n若接收机的输入信号在加至解调器之前，先经过一理想带通滤波器滤波，求双边\n噪声功率谱密度Pn(f)。 \n",
+      "status": "included",
+      "bucket": "analog_mod",
+      "tags": [
+        "analog_mod"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：analog_mod"
+      ]
+    },
+    {
+      "uuid": "9289d276-6ccc-5982-85c1-b4f529dd6800",
+      "fingerprint": "021f1905c9e1e26da5b64db6ddaaed78006f385520bb3b042ac1f1c973a89d42",
+      "document_id": 21,
+      "label": "课后题 3.19",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题3.19 某线性调制系统的输出信噪比为20dB，输出噪声功率为10-8W， \nDSB/SC 时的发射机输出功率为2*103W 试求：从输出端到解调输入端之间总的\n传输损耗? \n",
+      "status": "included",
+      "bucket": "receiver_basics",
+      "tags": [
+        "analog_mod"
+      ],
+      "tier": "cross",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：analog_mod"
+      ]
+    },
+    {
+      "uuid": "53cd0534-b5dd-59dd-b435-ea71a1118dc8",
+      "fingerprint": "07ef34d31af4c9cd6299904a328e619cb6f5349f7d83f7d37de7571f849aa28f",
+      "document_id": 21,
+      "label": "课后题 3.24",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题3.24 试叙述双边带调制系统解调器的输入信号功率为什么和载波功率\n无关? \n",
+      "status": "included",
+      "bucket": "analog_mod",
+      "tags": [
+        "analog_mod"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：analog_mod"
+      ]
+    },
+    {
+      "uuid": "d3f3964a-1f5a-5d6a-a13f-f29364c72090",
+      "fingerprint": "abd8703d05a3b4c93333eed4ddc33187e9663810bc5a64ce6eb5a02204db051c",
+      "document_id": 21,
+      "label": "课后题 3.25",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题3.25 什么是门限效应?AM 信号采用包络检波法解调时为什么会产生门\n限效应? \n",
+      "status": "included",
+      "bucket": "receiver_basics",
+      "tags": [
+        "receiver_basics"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：receiver_basics"
+      ]
+    },
+    {
+      "uuid": "5897d862-97d8-5e37-82e3-32e22f43afdc",
+      "fingerprint": "72d5a97f9ee7b63557202092e10d5fcf1bdff02870835a7fd71a736e4a1a1cd3",
+      "document_id": 21,
+      "label": "课后题 4.5",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题4.5  设有一个均匀量化器，它具有256 个量化电平，试问其输出信号\n量噪比等于多少分贝？ \n",
+      "status": "included",
+      "bucket": "pcm_capacity",
+      "tags": [
+        "pcm_capacity"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_priority": true,
+      "reason": [
+        "题干明确匹配：pcm_capacity"
+      ]
+    },
+    {
+      "uuid": "bf9f9601-c46c-5e18-ac5c-bb5748013edc",
+      "fingerprint": "be73c2cdc2c22920587e0cf3ebcced8b5ae7e1080ea04d7036bb1318998a61d9",
+      "document_id": 21,
+      "label": "课后题 4.6",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题4.6  试比较非均匀量化的A 律和律的优缺点。 \n",
+      "status": "included",
+      "bucket": "pcm_capacity",
+      "tags": [
+        "pcm_capacity"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：pcm_capacity"
+      ]
+    },
+    {
+      "uuid": "afbdb127-8017-5a5c-aa65-5c2e9d5151d8",
+      "fingerprint": "dec6400383df04165098bc8b5abe8c0f244718dc5d8e15f3153580fa948f72b0",
+      "document_id": 21,
+      "label": "课后题 4.7",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题4.7  在A 律PCM 语音通信系统中，试写出当归一化输入信号抽样值等\n于0.3 时，输出的二进制码组。 \n",
+      "status": "included",
+      "bucket": "pcm_capacity",
+      "tags": [
+        "pcm_capacity"
+      ],
+      "tier": "cross",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：pcm_capacity"
+      ]
+    },
+    {
+      "uuid": "468d546a-84d9-569a-89fd-7dee56039873",
+      "fingerprint": "82e6bcb6045269bf641b55d8958af95bd64130ebe0747620662aee0cf208edb2",
+      "document_id": 21,
+      "label": "课后题 4.8",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题4.8  试述PCM、DPCM 和增量调制三者之间的关系和区别。 \n",
+      "status": "included",
+      "bucket": "pcm_capacity",
+      "tags": [
+        "pcm_capacity"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：pcm_capacity"
+      ]
+    },
+    {
+      "uuid": "94fc3993-432c-5d0f-bb74-d129f9f7cbb8",
+      "fingerprint": "0ed1c7c84f81917051e5f7ff281ec1d809facdac81dad06d0f0a4dc55a2ba54c",
+      "document_id": 21,
+      "label": "课后题 5.2",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题5.2  试画出AMI 码接收机的原理方框图。 \n",
+      "status": "included",
+      "bucket": "baseband_basics",
+      "tags": [
+        "baseband_basics"
+      ],
+      "tier": "foundation",
+      "kind": "analysis",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：baseband_basics"
+      ]
+    },
+    {
+      "uuid": "00108d5d-c6e8-55df-8002-9ff8580a5855",
+      "fingerprint": "392b9ac313a89ba9c3efd8dfd3e947d16aaa60d3392a7fc1b00934dc4f780f39",
+      "document_id": 21,
+      "label": "课后题 5.6",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题5.6  设一个二进制双极性基带信号序列的码元波形\n)\n(t\ng\n为矩形脉冲，如图5-4 所\n\n示，其高度等于1，持续时间\n3\nτ =T/\n，T 为码元宽度；且正极性脉冲出现的概率为\n4\n3 ，负\n极性脉冲出现的概率为\n4\n1 。 \n（1） \n试写出该信号序列功率谱密度的表达式，并画出其曲线； \n（2） \n该序列中是否存在\nT\nf\n1\n=\n的离散分量？若有，试计算其功率。 \n \n \n \n \n \n \n \n图5-4 习题5.6 图 \n)\n(t\ng\n1\n2\n/\n\n0\n2\n/\n\n−\n2\n/\nT\n−\nt\n2\n/\nT\n",
+      "status": "included",
+      "bucket": "baseband_basics",
+      "tags": [
+        "baseband_basics"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：baseband_basics"
+      ]
+    },
+    {
+      "uuid": "f132ff1c-58f0-5251-80b2-ae8e77f484ec",
+      "fingerprint": "5ca55be6355678ecf1bd83b115782ea9fd39e32dc5b5d7ab51c94020f35c6bfe",
+      "document_id": 21,
+      "label": "课后题 5.9",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题5.9  设一个二进制基带传输系统的传输函数为 \n\n\n\n\n\n+\n=\n其他\n,\n      \n          \n          \n0\n2\n/\n1\n),\n2\ncos\n1(\n)\n(\n0\n0\n0\n\n\n\n\nf\nf\nf\nH\n \n试确定该系统最高的码元传输速率\nB\nR 及相应的码元持续时间T。 \n",
+      "status": "included",
+      "bucket": "isi",
+      "tags": [
+        "isi",
+        "baseband_basics"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "combined_priority": true,
+      "reason": [
+        "题干明确匹配：isi、baseband_basics"
+      ]
+    },
+    {
+      "uuid": "b526b26c-8ab8-553c-a561-232f66ecc17d",
+      "fingerprint": "337e36e234fc2ba8cb0f9bee188966fbf579bbade7e7c371252b58d42b20b233",
+      "document_id": 21,
+      "label": "课后题 5.11",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题5.11  设一个二进制双极性随机信号序列的码元波形为升余弦波。试画出当扫描\n周期等于码元周期时的眼图。 \n",
+      "status": "included",
+      "bucket": "baseband_basics",
+      "tags": [
+        "isi",
+        "baseband_basics"
+      ],
+      "tier": "foundation",
+      "kind": "analysis",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：isi、baseband_basics"
+      ]
+    },
+    {
+      "uuid": "8a80eda6-d857-5f01-bab3-592e461575a6",
+      "fingerprint": "d12b1edd71a1f28985ef537d078ebc7d779596465572786af92aa90e7a25b8f2",
+      "document_id": 21,
+      "label": "课后题 5.15",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题5.15  设某二进制数字基带信号的基本脉冲为三角形脉冲，，数字信息“1”和“0”\n分别用( )\ng t 的有无表示，且“1”和“0”出现的概率相等：  \n（1）求该数字基带信号的功率谱密度。 \n（2）能否从该数字基带信号中提取码元同步所需的频率\n1/\ns\ns\nf\nT\n=\n的分量？如能，试计\n算该分量的功率。 \n",
+      "status": "included",
+      "bucket": "baseband_basics",
+      "tags": [
+        "baseband_basics"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：baseband_basics"
+      ]
+    },
+    {
+      "uuid": "924f74c9-9c11-5276-b703-6e53a41ecbac",
+      "fingerprint": "1ca9a16e9ee38a8a4e48468726dbb899caac883ba206e91283dbf77690f97059",
+      "document_id": 21,
+      "label": "课后题 5.18",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题5.18  已知信息代码为 100000000011，求相应的 AMI 码，HDB3 码，PST 码及\n双相码。 \n",
+      "status": "included",
+      "bucket": "baseband_basics",
+      "tags": [
+        "baseband_basics"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：baseband_basics"
+      ]
+    },
+    {
+      "uuid": "7593fc2a-5009-5dfe-9d72-98030778017a",
+      "fingerprint": "22187b1f113005de79a6c4485a277702260b0cd26d8b36fcfe2b24df290bd900",
+      "document_id": 21,
+      "label": "课后题 6.2",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题 6.2 试画出图6-2 中各点的波形。 \n \n图 6-2 习题6.2 图 \n定时脉冲 \ns(t) \na \nc \nb \nd \n带通 \n滤波 \n全波 \n整流 \n包络检波器 \n低通 \n滤波 \n抽样 \n判决 \n",
+      "status": "included",
+      "bucket": "receiver_basics",
+      "tags": [
+        "receiver_basics"
+      ],
+      "tier": "cross",
+      "kind": "analysis",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：receiver_basics"
+      ]
+    },
+    {
+      "uuid": "9da4fb54-8a61-5ea0-b359-81e4becade35",
+      "fingerprint": "1e444e4444cac3f92d03eba07023e7953b95d3ae9a6dd0c04601c6cd976640e6",
+      "document_id": 21,
+      "label": "课后题 6.5",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题 6.5 设有一个2PSK 信号，其码元传输速率为1000Bd，载波波形为\n(\n)t\nA\n6\n10\n4\ncos\n\n\n。 \n（1） \n试问每个码元中包含多少个载波周期？ \n（2） \n若发送“0”和“1”的概率分别是0.6 和0.4，试求\n此信号的功率谱密度的表达式。 \n",
+      "status": "included",
+      "bucket": "binary_mod",
+      "tags": [
+        "binary_mod"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：binary_mod"
+      ]
+    },
+    {
+      "uuid": "3553c8d6-73fc-5443-9255-012f7b8ee416",
+      "fingerprint": "7f79c648172f108c92751fc928ca47c63ae364b7471c2f00f51c2b7d1ca6f3bd",
+      "document_id": 21,
+      "label": "课后题 6.6",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题 6.6 设有一个4DPSK 信号，其信息速率为2400 b/s，载波频率为1800 \nHz，试问每个码元中包含多少个载波周期？ \n",
+      "status": "included",
+      "bucket": "angle_multilevel",
+      "tags": [
+        "pcm_capacity",
+        "angle_multilevel"
+      ],
+      "tier": "cross",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：pcm_capacity、angle_multilevel"
+      ]
+    },
+    {
+      "uuid": "16cdabd9-03f4-5468-a4c0-09269de7efd2",
+      "fingerprint": "422e06fae8999a924596271eb743dfc967cb3e5993641b8856ae383f100c2a06",
+      "document_id": 21,
+      "label": "课后题 6.7",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题 6.7 设有一个2DPSK 传输系统对信号采用A 方式编码，其码元速率为\n2400 Bd，载波频率为1800 Hz。若输入码元序列为011010，试画出此2DPSK 信\n号序列的波形图。 \n",
+      "status": "included",
+      "bucket": "binary_mod",
+      "tags": [
+        "binary_mod"
+      ],
+      "tier": "advanced",
+      "kind": "analysis",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：binary_mod"
+      ]
+    },
+    {
+      "uuid": "7f8e6638-7d8b-5861-8421-ede1d37cf758",
+      "fingerprint": "4c3eae91c1de5d1689d216573c66b4fdc218dcee50165607ff48f57ecd7e316d",
+      "document_id": 21,
+      "label": "课后题 6.8",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题 6.8 设一个2FSK 传输系统的两个载频分别等于10 MHz 和10.4 MHz，\n码元传输速率为\n6\n10\n2\n Bd，接收端解调器输入信号的峰值振幅\nV\n \n40 \n=\nA\n，加性\n高斯白噪声的单边功率谱密度\n18\n0\n10\n6\n−\n\n=\nn\n W/Hz 。试求： \n\n（1） \n采用非相干解调（包络检波）时的误码率； \n（2） \n采用相干解调时的误码率。 \n",
+      "status": "included",
+      "bucket": "receiver_basics",
+      "tags": [
+        "binary_mod",
+        "receiver_basics"
+      ],
+      "tier": "cross",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：binary_mod、receiver_basics"
+      ]
+    },
+    {
+      "uuid": "bdba523f-a7ab-583e-a43e-452f5c5fc3ad",
+      "fingerprint": "571312693f3fbfb2e64b32d4033f93d52f0ddb80f1ceb7ffabf91ba89c1c6631",
+      "document_id": 21,
+      "label": "课后题 6.9",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题 6.9 设在一个2DPSK 传输系统中，输入信号码元序列为\n0111001101000，试写出其变成相对码后的码元序列，以及采用A 方式编码时发\n送载波的相对相位和绝对相位序列。 \n",
+      "status": "included",
+      "bucket": "binary_mod",
+      "tags": [
+        "binary_mod"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：binary_mod"
+      ]
+    },
+    {
+      "uuid": "d97fb9d5-775e-5a34-8d1c-a37914ebc2e9",
+      "fingerprint": "053fb273c293d91a7775735a0cce2b6c35fb57d4e9f9d4c359b8ae6a400e4503",
+      "document_id": 21,
+      "label": "课后题 6.11",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题 6.11 试画出用正交调幅法产生16QAM 信号的方框图。 \n",
+      "status": "included",
+      "bucket": "angle_multilevel",
+      "tags": [
+        "analog_mod",
+        "angle_multilevel"
+      ],
+      "tier": "cross",
+      "kind": "analysis",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：analog_mod、angle_multilevel"
+      ]
+    },
+    {
+      "uuid": "83b7bcaf-10a6-5d62-a183-d76bcaa01621",
+      "fingerprint": "39ceb2e26b68bb79ddeefba1138c889fac5b7b03f0733964104805b2355ea155",
+      "document_id": 21,
+      "label": "课后题 6.13",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题6.13 试比较多进制信号和二进制信号的优缺点。 \n",
+      "status": "included",
+      "bucket": "angle_multilevel",
+      "tags": [
+        "angle_multilevel"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：angle_multilevel"
+      ]
+    },
+    {
+      "uuid": "4b3c8b0f-9a71-5737-9d07-b79765828c86",
+      "fingerprint": "1a24fe0aac5c7c85e80e5fd71712068942184f54efc4eed476f45478c71c2095",
+      "document_id": 21,
+      "label": "课后题 8.3",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题8.3 设一个二进制基带传输系统的传输函数为 \n=\n)\n( f\nH\n\n\n\n+\n,0\n,)\ncos2π\n(1\nfT\nT\n \n其他\nT\nf\n2\n1\n=\n \n式中，\n)\n(\n)\n(\n)\n(\n)\nH(\nR\nT\nf\nG\nf\nC\nf\nG\nf =\n， C\n1\n)\n(\n=\nf\n,  \n)\n(\n)\n(\n)\n(\nR\nT\nf\nH\nf\nG\nf\nG\n=\n=\n。 \n（1） \n若接受滤波器输入输出端的双边噪声功率谱密度为\n2\n0\nn\n（W/Hz）,试求接收滤波器输出噪声功率。 \n（2） \n若系统中传输的是二进制等概率信号，在抽样时刻接受滤波器输\n出信号电平取值为0 或A ，",
+      "status": "included",
+      "bucket": "receiver_basics",
+      "tags": [
+        "isi",
+        "baseband_basics",
+        "receiver_basics"
+      ],
+      "tier": "cross",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：isi、baseband_basics、receiver_basics"
+      ]
+    },
+    {
+      "uuid": "068b9e1c-adc5-5b56-a568-15c607146660",
+      "fingerprint": "9faaa3cefbd1048fc0baefdf3131bd418ce54f7b8dc0d9f9d31f3bb16053b2d6",
+      "document_id": 21,
+      "label": "课后题 8.4",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题8.4 设二进制单极性信号传输系统中信号“0”和“1”是等概率发送的。 \n（1） \n若接收滤波器在收到“1”时，在抽样时刻的输出信号电压为1 V，\n输出的高斯噪声电压平均值为0 V，均方根值为0.2 V，试问在最佳判决门限下\n\n的误码率等于多少？ \n（2） \n若要求误码率不大于\n4\n10 −，试问这时的信号电压至少应该多\n大？ \n",
+      "status": "included",
+      "bucket": "receiver_basics",
+      "tags": [
+        "receiver_basics"
+      ],
+      "tier": "cross",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：receiver_basics"
+      ]
+    },
+    {
+      "uuid": "44455f06-7a4a-534c-bd02-9313f1321edb",
+      "fingerprint": "eae0dde50701f828de5e5c171ddb68df2db44bbcfa2a75ff0d80ef42db7888c8",
+      "document_id": 21,
+      "label": "课后题 8.5",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题8.5 设二进制双极性信号基带传输系统中，信号“0”和“1”是等概率发送的，在接受\n匹配滤波器输出端抽样点上输出的信号分量电压为+1V 或-1V，输出的噪声分量电压的方差\n等于1。试求其误码率。 \n",
+      "status": "included",
+      "bucket": "receiver_basics",
+      "tags": [
+        "matched_filter",
+        "baseband_basics",
+        "receiver_basics"
+      ],
+      "tier": "cross",
+      "kind": "calculation",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：matched_filter、baseband_basics、receiver_basics"
+      ]
+    },
+    {
+      "uuid": "d2a4b514-3615-5f41-950b-a0554f8a99ae",
+      "fingerprint": "0eb5c2784e78eb5dca8748d691afdb2a8d73c429494cb01a3025fe321fe79dfe",
+      "document_id": 21,
+      "label": "课后题 8.6",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题 8.6 设二进制双极性信号最佳传输系统中，信号“0” 和“1”是等概率发送的，信号\n码元的持续时间为T，波形为幅度等于1 的矩形脉冲。系统中加性高斯白噪声的双边功率谱\n密度等于\nHz\nW\n10 4\n−\n。试问为使误码率不大于\n4\n10 −，最高传输速率可以达到多高？ \n",
+      "status": "included",
+      "bucket": "receiver_basics",
+      "tags": [
+        "receiver_basics"
+      ],
+      "tier": "cross",
+      "kind": "analysis",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：receiver_basics"
+      ]
+    },
+    {
+      "uuid": "f6ac49a5-b9cd-5a81-86dc-8e06edcfb1e5",
+      "fingerprint": "f1457deab2c4ce4575a4d370a6c13a2d91b49b24eb31b4a0cedf862605e7a1e3",
+      "document_id": 21,
+      "label": "课后题 8.7",
+      "evidence_method": "pdf_text_layer",
+      "evidence": "习题8.7 设二进制双极性信号最佳传输系统中，信号“0”和“1”是等概率发送的，信号传\n输速率为\ns\nkb\n \n56\n，波形为不归零矩形脉冲，系统中加性高斯白噪声的双边功率谱密度为\nHz\n W\n10 4\n−\n。试问为使误码率不大于\n4\n10 −，需要的最小接受信号功率等于多少？ \n",
+      "status": "included",
+      "bucket": "receiver_basics",
+      "tags": [
+        "receiver_basics"
+      ],
+      "tier": "cross",
+      "kind": "analysis",
+      "combined_priority": false,
+      "reason": [
+        "题干明确匹配：receiver_basics"
+      ]
+    }
+  ],
+  "coverage_notes": [
+    "当前匹配滤波仅有3道原理/公式题，暂无完整计算题；没有把误码率代入题冒充匹配滤波大题。"
+  ],
+  "inventory_sha256": "d3be8679b3d0045885f5e060024d0c662f4371ed63168773ab60fb5a1c9985c7"
+}

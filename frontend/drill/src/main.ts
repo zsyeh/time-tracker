@@ -19,6 +19,7 @@ import CircuitSelectedView from './views/CircuitSelectedView.vue'
 import SignalSelectedView from './views/SignalSelectedView.vue'
 import AnalogSelectedView from './views/AnalogSelectedView.vue'
 import DigitalSelectedView from './views/DigitalSelectedView.vue'
+import CommunicationSelectedView from './views/CommunicationSelectedView.vue'
 import { initializeUiPreferences } from './lib/uiPreferences'
 import './styles.css'
 
@@ -47,6 +48,7 @@ const router = createRouter({
     { path: '/signal-selected', name: 'signal-selected', component: SignalSelectedView },
     { path: '/analog-selected', name: 'analog-selected', component: AnalogSelectedView },
     { path: '/digital-selected', name: 'digital-selected', component: DigitalSelectedView },
+    { path: '/communication-selected', name: 'communication-selected', component: CommunicationSelectedView },
   ],
   scrollBehavior(_to, _from, savedPosition) {
     return savedPosition || { top: 0 }
