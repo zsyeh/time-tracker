@@ -8,6 +8,7 @@ import MarkdownAnswer from '../components/MarkdownAnswer.vue'
 import SourcePaperViewer from '../components/SourcePaperViewer.vue'
 import OriginalAnswer from '../components/OriginalAnswer.vue'
 import { sourcePracticeTarget } from '../lib/sourcePractice'
+import { circuitFilters } from '../lib/circuitSelected'
 
 const props = defineProps<{ uuid: string }>()
 const router = useRouter()
@@ -22,7 +23,7 @@ const markerOptions: Array<{ code: QuestionMarkerCode; label: string }> = [
 
 function navigationQuery() {
   const query = router.currentRoute.value.query
-  return Object.fromEntries(['document', 'topic', 'source_category', 'q', 'unattempted', 'marker']
+  return Object.fromEntries(['document', 'topic', 'source_category', 'q', 'unattempted', 'marker', 'collection', 'bucket', 'tier', 'kind', 'material', 'combined', 'state']
     .filter((key) => query[key] !== undefined && query[key] !== '')
     .map((key) => [key, String(query[key])]))
 }
@@ -33,6 +34,10 @@ function navigationQueryString() {
 
 function questionRouteQuery() {
   const query: Record<string, string> = navigationQuery()
+  if (route.query.from === 'circuit-selected') {
+    query.from = 'circuit-selected'
+    return query
+  }
   if (route.query.from === 'heatmap' || route.query.from === 'selected-heatmap') {
     query.from = String(route.query.from)
     query.heat_scope = String(route.query.heat_scope || 'all')
@@ -49,6 +54,10 @@ function questionRouteQuery() {
 }
 
 function backToEntryPoint() {
+  if (route.query.from === 'circuit-selected') {
+    void router.push({ path: '/circuit-selected', query: { ...circuitFilters(route.query), all: '1', question: props.uuid } })
+    return
+  }
   if (route.query.from === 'heatmap' || route.query.from === 'selected-heatmap') {
     void router.push({
       path: route.query.from === 'selected-heatmap' ? '/selected-heatmap' : '/heatmap',
@@ -571,7 +580,7 @@ onBeforeRouteLeave(async () => {
 
 <template>
   <section class="page question-page">
-    <button class="back-link" @click="backToEntryPoint">← {{ route.query.from === 'selected-heatmap' ? 'Back to selected heatmap' : route.query.from === 'heatmap' ? 'Back to heatmap' : route.query.from === 'collection' ? 'Back to saved questions' : route.query.from === 'insight' ? 'Back to insight' : route.query.from === 'cockpit' ? 'Back to 892 cockpit' : 'Question bank' }}</button>
+    <button class="back-link" @click="backToEntryPoint">← {{ route.query.from === 'circuit-selected' ? '返回电路严选' : route.query.from === 'selected-heatmap' ? 'Back to selected heatmap' : route.query.from === 'heatmap' ? 'Back to heatmap' : route.query.from === 'collection' ? 'Back to saved questions' : route.query.from === 'insight' ? 'Back to insight' : route.query.from === 'cockpit' ? 'Back to 892 cockpit' : 'Question bank' }}</button>
     <p v-if="error" class="error-state">{{ error }}</p>
     <div v-if="loading" class="question-skeleton">LOADING QUESTION…</div>
     <template v-else-if="question">

@@ -15,6 +15,7 @@ import FeelView from './views/FeelView.vue'
 import InsightView from './views/InsightView.vue'
 import ErrataView from './views/ErrataView.vue'
 import EiCockpitView from './views/EiCockpitView.vue'
+import CircuitSelectedView from './views/CircuitSelectedView.vue'
 import { initializeUiPreferences } from './lib/uiPreferences'
 import './styles.css'
 
@@ -39,6 +40,7 @@ const router = createRouter({
     { path: '/insight', name: 'insight', component: InsightView },
     { path: '/errata', name: 'errata', component: ErrataView },
     { path: '/cockpit', name: 'cockpit', component: EiCockpitView },
+    { path: '/circuit-selected', name: 'circuit-selected', component: CircuitSelectedView },
   ],
   scrollBehavior(_to, _from, savedPosition) {
     return savedPosition || { top: 0 }

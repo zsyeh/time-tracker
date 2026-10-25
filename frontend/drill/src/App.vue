@@ -72,6 +72,7 @@ onMounted(() => {
         <RouterLink v-if="isEi" to="/cockpit" :class="{ active: route.name === 'cockpit' }">
           <span>892 Cockpit</span>
         </RouterLink>
+        <RouterLink v-if="isEi" to="/circuit-selected" :class="{ active: route.name === 'circuit-selected' || (route.name === 'question' && route.query.collection === 'circuit_selected') }"><span>电路严选</span></RouterLink>
         <RouterLink to="/practice" :class="{ active: route.name === 'practice' || route.name === 'question' }">
           <span>{{ t('practice') }}</span>
         </RouterLink>

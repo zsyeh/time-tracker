@@ -1,0 +1,2220 @@
+{
+  "schema_version": 1,
+  "inventory_count": 457,
+  "records": [
+    {
+      "uuid": "28884b99-5d5e-55de-897a-acf9ac0be10b",
+      "document_id": 11,
+      "label": "电荷、电流、电压、电阻、功率等基本物理量",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "6715dc83-311f-55d6-81c2-53153da4bb1e",
+      "document_id": 11,
+      "label": "电压与电流的参考方向、关联参考方向",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "2dff8a5d-01b2-59bc-b4bf-9af170d32252",
+      "document_id": 11,
+      "label": "元件吸收功率与发出功率的符号判断",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "f1b59c27-af59-5b56-86be-18887d700956",
+      "document_id": 11,
+      "label": "模拟信号与数字信号的定义、特点与区别",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "8b7e1c8e-6422-5aa3-9714-bf2f1367c109",
+      "document_id": 11,
+      "label": "电阻串并联与基本等效化简",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "4401b59c-56f2-541f-a776-aa5814a7e280",
+      "document_id": 11,
+      "label": "实际电压源与实际电流源等效变换",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "06597817-551e-5a13-93b1-317510a23593",
+      "document_id": 11,
+      "label": "等效变换的端口条件与适用边界",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "d48a1506-21b6-568b-b8b6-92fbf73a6939",
+      "document_id": 11,
+      "label": "电容元件的伏安关系与基本电气特性",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "e3505179-4bfd-518a-b8f3-8a24ac18c973",
+      "document_id": 11,
+      "label": "电感元件的伏安关系与基本电气特性",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "4dd92d72-fc20-57a8-9ac5-e9a958267e25",
+      "document_id": 11,
+      "label": "R、L、C 的复阻抗与复导纳",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "60d4ce67-c3cb-5fc9-b41f-6767a907c51c",
+      "document_id": 11,
+      "label": "CIR-SA-01｜什么是关联参考方向？说明 KCL、KVL 的物理基础，并说明列写方程时参考方向的作用。",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "20a8165a-970b-5bf9-a3f5-374ef8704cdc",
+      "document_id": 11,
+      "label": "课后题 1-1",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "263ea2e0-ec8b-52f8-953b-ef6ab744d3c1",
+      "document_id": 11,
+      "label": "课后题 1-2",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "a397fad2-0095-5584-964d-8a79814f45ba",
+      "document_id": 11,
+      "label": "课后题 1-3",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "9a012493-15c9-50db-b35b-17fbe06a1aa6",
+      "document_id": 11,
+      "label": "课后题 1-4",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "a7db5c61-1a15-5ce0-b099-eecd3121c9b7",
+      "document_id": 11,
+      "label": "课后题 1-5",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "030ae96c-3a0e-515e-928f-ede72fcdbcc6",
+      "document_id": 11,
+      "label": "课后题 1-6",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "0834bd67-4706-5c72-8f39-a6a7bea82bdb",
+      "document_id": 11,
+      "label": "课后题 1-7",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "fcc78943-2b46-5371-aac5-de7a4c6d381d",
+      "document_id": 11,
+      "label": "课后题 1-8",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "69231a53-be32-5e02-9133-1a972275e588",
+      "document_id": 11,
+      "label": "课后题 1-9",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "aec8a1e0-d54e-5513-92f2-92eae3e63650",
+      "document_id": 11,
+      "label": "课后题 1-10",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "8bd9bc3c-86d7-5530-90c2-84219d037038",
+      "document_id": 11,
+      "label": "课后题 1-11",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "45f8df1c-791e-5b6c-ac12-76ce05379079",
+      "document_id": 11,
+      "label": "背诵简答 1 · 请问什么是基尔霍夫电流和基尔霍夫电压定律？依据的原理是 什么？",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "b4aa4b2b-729d-5191-8531-200432679e04",
+      "document_id": 11,
+      "label": "背诵简答 2 · 请问什么是理想电压源和理想电流源？它们能不能任意的串并 联？",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "891084c3-c1ce-539e-9d38-4ad6bced6121",
+      "document_id": 11,
+      "label": "背诵简答 12 · 请问什么是对称三相电路？并解释一下什么是瞬时功率平衡？",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "93c2a9dc-7493-59ab-a32b-1ca61727acfd",
+      "document_id": 11,
+      "label": "背诵简答 13 · 请问什么是网络函数？",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "8d7e43a7-3076-5d53-acdf-b55b3f2958fb",
+      "document_id": 11,
+      "label": "背诵简答 14 · 请问在设计滤波器时为什么要进行频率和阻抗的归一化处理？",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "5302e1da-78ba-5b85-942f-620a048e1b8c",
+      "document_id": 11,
+      "label": "背诵简答 15 · 请问巴特沃思滤波器有何特点？一般用在什么场合？",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "b2129754-9cd8-5d81-a660-854df6026558",
+      "document_id": 11,
+      "label": "背诵简答 16 · 请问切比雪夫滤波器有何特点？一般用在什么场合？椭圆滤波 器又有何特点？",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "31e6edba-c1c5-5546-8dbe-9e6e0e73a7f7",
+      "document_id": 22,
+      "label": "课后题 1-1",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "e23bda62-22f6-5224-931d-fd0b66bed0c1",
+      "document_id": 22,
+      "label": "课后题 1-2",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "d8c61fab-7ada-5cf5-bbaa-252ac58a8c0a",
+      "document_id": 22,
+      "label": "课后题 1-3",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "ab7d6d92-fd77-5f23-8475-0c389faf5e73",
+      "document_id": 22,
+      "label": "课后题 1-4",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "60ece83b-64ae-5a0b-9a16-62d5c70e1c8d",
+      "document_id": 22,
+      "label": "课后题 1-5",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "cb60df37-de60-5b53-bd5c-2a5feb123efb",
+      "document_id": 22,
+      "label": "课后题 1-6",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "6256d8c5-268e-594f-ac1b-4f4f4e9e39b7",
+      "document_id": 22,
+      "label": "课后题 1-7",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "154002e1-f628-5a21-8cce-cbf7c5928c36",
+      "document_id": 22,
+      "label": "课后题 1-8",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "6fbcd20d-540d-5310-a5bf-76425800146a",
+      "document_id": 22,
+      "label": "课后题 1-9",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "88833ef3-56ca-5837-85fa-00c8892e2a4c",
+      "document_id": 22,
+      "label": "课后题 1-10",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "586cb62a-1d89-5e7b-b084-d6f46e94b40c",
+      "document_id": 22,
+      "label": "课后题 1-11",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "3f90ec17-f1a2-509e-ae28-5b02a5a6c7b5",
+      "document_id": 22,
+      "label": "课后题 1-12",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "01735f1d-9eef-5f34-91ed-f3cad9d16aec",
+      "document_id": 22,
+      "label": "课后题 1-13",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "d69a1e6b-cd8e-581a-b1db-5cc556d3e13f",
+      "document_id": 22,
+      "label": "课后题 1-15",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "be7657df-e1c9-5e14-9cb0-bb6b322600c6",
+      "document_id": 22,
+      "label": "课后题 1-16",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "1943bfcb-7279-5b5e-bdf1-d5140d8e53cc",
+      "document_id": 22,
+      "label": "课后题 1-18",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "487b4e4e-7854-5034-bc0d-c8f861425a39",
+      "document_id": 22,
+      "label": "课后题 1-20",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "6de23548-5f8d-5e92-8609-eb0ae3abd0d6",
+      "document_id": 22,
+      "label": "课后题 2-1",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "ec5733a7-5792-5210-9b8a-fea5d2e7ec66",
+      "document_id": 22,
+      "label": "课后题 2-2",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "7152c0f3-75f6-54fd-86ec-116b4c0af4e5",
+      "document_id": 22,
+      "label": "课后题 2-3",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "23e3bfd3-1030-5f0b-a62e-c168c0ebe171",
+      "document_id": 22,
+      "label": "课后题 2-14",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "3e5f539a-2ad4-57e1-b2b4-4c56ba113f85",
+      "document_id": 22,
+      "label": "课后题 2-15",
+      "status": "excluded",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "bf7b6bb7-5c30-5c76-9e18-d45c26537a8e",
+      "document_id": 22,
+      "label": "课后题 6-1",
+      "status": "excluded",
+      "reason": [
+        "纯储能元件VCR/能量练习，非本轮重点题型"
+      ]
+    },
+    {
+      "uuid": "9ae1865a-3203-51ea-95a7-4e59ee632482",
+      "document_id": 22,
+      "label": "课后题 6-3",
+      "status": "excluded",
+      "reason": [
+        "纯储能元件VCR/能量练习，非本轮重点题型"
+      ]
+    },
+    {
+      "uuid": "be5c503a-a8b5-5b42-9bfa-2bfe322609bf",
+      "document_id": 22,
+      "label": "课后题 6-4",
+      "status": "excluded",
+      "reason": [
+        "纯储能元件VCR/能量练习，非本轮重点题型"
+      ]
+    },
+    {
+      "uuid": "3a4dd13a-16a6-5f11-a8b6-f6f778384619",
+      "document_id": 22,
+      "label": "课后题 6-5",
+      "status": "excluded",
+      "reason": [
+        "纯储能元件VCR/能量练习，非本轮重点题型"
+      ]
+    },
+    {
+      "uuid": "7fd058b5-6d25-5562-a0cf-f047fac4488a",
+      "document_id": 22,
+      "label": "课后题 6-6",
+      "status": "excluded",
+      "reason": [
+        "纯储能元件VCR/能量练习，非本轮重点题型"
+      ]
+    },
+    {
+      "uuid": "0a02a221-387c-5bca-ae5c-a9bd94a0900e",
+      "document_id": 22,
+      "label": "课后题 6-7",
+      "status": "excluded",
+      "reason": [
+        "纯储能元件VCR/能量练习，非本轮重点题型"
+      ]
+    },
+    {
+      "uuid": "51cc84e8-5604-5f45-84b5-cf6bd8169ab3",
+      "document_id": 22,
+      "label": "课后题 6-8",
+      "status": "excluded",
+      "reason": [
+        "纯储能元件VCR/能量练习，非本轮重点题型"
+      ]
+    },
+    {
+      "uuid": "f1cd4856-9a88-5f6a-80f1-7e7dc589eef4",
+      "document_id": 22,
+      "label": "课后题 6-9",
+      "status": "excluded",
+      "reason": [
+        "纯储能元件VCR/能量练习，非本轮重点题型"
+      ]
+    },
+    {
+      "uuid": "2069c4d7-b5e3-54a8-9953-ebce894827bf",
+      "document_id": 22,
+      "label": "课后题 6-10",
+      "status": "excluded",
+      "reason": [
+        "纯储能元件VCR/能量练习，非本轮重点题型"
+      ]
+    },
+    {
+      "uuid": "2c8b9ae5-d421-548b-90e6-2a7a10c02d4b",
+      "document_id": 24,
+      "label": "2002年 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "原始整卷容器，不重复计入逐题严选"
+      ]
+    },
+    {
+      "uuid": "b4c49c8c-96d4-56c8-8826-03da2b4f22bc",
+      "document_id": 24,
+      "label": "2007年 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "原始整卷容器，不重复计入逐题严选"
+      ]
+    },
+    {
+      "uuid": "f78127f5-d818-5ec2-8fbe-ac36aeac9d9e",
+      "document_id": 24,
+      "label": "2009年 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "原始整卷容器，不重复计入逐题严选"
+      ]
+    },
+    {
+      "uuid": "bbc1b648-baa7-5e7b-a170-ff4566e2130e",
+      "document_id": 24,
+      "label": "2010年 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "原始整卷容器，不重复计入逐题严选"
+      ]
+    },
+    {
+      "uuid": "e6251b4d-b2de-5aeb-b208-17d67f342eef",
+      "document_id": 24,
+      "label": "2015年 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "原始整卷容器，不重复计入逐题严选"
+      ]
+    },
+    {
+      "uuid": "61ba9751-71c6-5486-9860-41b8a6d3043c",
+      "document_id": 24,
+      "label": "2016年 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "原始整卷容器，不重复计入逐题严选"
+      ]
+    },
+    {
+      "uuid": "411d62a4-419c-5c02-997b-86cb1bc1f3d6",
+      "document_id": 24,
+      "label": "2020年 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "原始整卷容器，不重复计入逐题严选"
+      ]
+    },
+    {
+      "uuid": "b6cc9d98-ed34-560f-9abe-eaa4910c60c2",
+      "document_id": 24,
+      "label": "2021年 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "原始整卷容器，不重复计入逐题严选"
+      ]
+    },
+    {
+      "uuid": "83196f2b-19a8-5cd6-a497-0d60543cc93f",
+      "document_id": 24,
+      "label": "2025年 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "原始整卷容器，不重复计入逐题严选"
+      ]
+    },
+    {
+      "uuid": "6f058797-6735-511d-ba13-337ec7649891",
+      "document_id": 24,
+      "label": "1997年 · 第1题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "0dd5f746-569f-59a7-a390-1e7beda303f5",
+      "document_id": 24,
+      "label": "1997年 · 第2题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "4911420a-2894-5af8-b6ac-3eec0565dd43",
+      "document_id": 24,
+      "label": "1997年 · 第3题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "cab4e8ee-3b30-5205-8977-b950625a64a5",
+      "document_id": 24,
+      "label": "1997年 · 第4题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "3512386e-dc3a-5e19-a672-046766debeb0",
+      "document_id": 24,
+      "label": "1997年 · 第5题",
+      "status": "review",
+      "reason": [
+        "动态换路已识别，但图中储能结构/阶数不能仅凭OCR确认"
+      ]
+    },
+    {
+      "uuid": "09aab04d-76b9-529f-9062-2cd0b29bfb8c",
+      "document_id": 24,
+      "label": "1997年 · 第6题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "98c5f016-b154-5d47-bffd-ccfec6dfe52a",
+      "document_id": 24,
+      "label": "1997年 · 第7题",
+      "status": "review",
+      "reason": [
+        "额外考点、超纲提示或非目标题型，待复核"
+      ]
+    },
+    {
+      "uuid": "6a0e5540-53f7-5f40-ba64-e70bd4120c0c",
+      "document_id": 24,
+      "label": "1998年 · 第1题",
+      "status": "review",
+      "reason": [
+        "额外考点、超纲提示或非目标题型，待复核"
+      ]
+    },
+    {
+      "uuid": "7298d045-15d6-5595-a195-e41e0e3a286b",
+      "document_id": 24,
+      "label": "1998年 · 第3题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "1670dbd5-31d5-5f77-9052-2c10d3a8541a",
+      "document_id": 24,
+      "label": "1998年 · 第4题",
+      "status": "review",
+      "reason": [
+        "额外考点、超纲提示或非目标题型，待复核"
+      ]
+    },
+    {
+      "uuid": "df3b1f40-81bf-5763-b5b8-82020683df8a",
+      "document_id": 24,
+      "label": "1998年 · 第5题",
+      "status": "review",
+      "reason": [
+        "额外考点、超纲提示或非目标题型，待复核"
+      ]
+    },
+    {
+      "uuid": "1dbea385-f0bd-5174-b779-060c29f3db36",
+      "document_id": 24,
+      "label": "1998年 · 第6题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "4401aa2f-8994-5869-85cb-7102f0404ddd",
+      "document_id": 24,
+      "label": "1998年 · 第7题",
+      "status": "review",
+      "reason": [
+        "额外考点、超纲提示或非目标题型，待复核"
+      ]
+    },
+    {
+      "uuid": "8080fbe6-8f4e-5498-8a11-f75db7115a9d",
+      "document_id": 24,
+      "label": "1999年 · 第1题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "aa6a8732-e236-5274-b3fa-6e9bba60b06f",
+      "document_id": 24,
+      "label": "1999年 · 第2题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "589fe4d8-423e-50d4-a986-ffa70c9782f6",
+      "document_id": 24,
+      "label": "1999年 · 第4题",
+      "status": "review",
+      "reason": [
+        "额外考点、超纲提示或非目标题型，待复核"
+      ]
+    },
+    {
+      "uuid": "a799646e-9b53-5f13-9cc6-120aa719452c",
+      "document_id": 24,
+      "label": "1999年 · 第6题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "a4e1b3b5-b685-59e6-b96e-976eb7746612",
+      "document_id": 24,
+      "label": "1999年 · 第7题",
+      "status": "review",
+      "reason": [
+        "额外考点、超纲提示或非目标题型，待复核"
+      ]
+    },
+    {
+      "uuid": "b0bbfc58-3452-5c5c-9bf6-9095f56d9c8c",
+      "document_id": 24,
+      "label": "2000年 · 第1题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "32aa4474-2680-5bbe-ab9f-526c94270e3e",
+      "document_id": 24,
+      "label": "2000年 · 第2题",
+      "status": "review",
+      "reason": [
+        "动态换路已识别，但图中储能结构/阶数不能仅凭OCR确认"
+      ]
+    },
+    {
+      "uuid": "d733b925-510c-5581-9ae0-8c33bd38618f",
+      "document_id": 24,
+      "label": "2000年 · 第3题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "227d3252-c7d3-5800-b9ed-ff8175858b26",
+      "document_id": 24,
+      "label": "2000年 · 第4题",
+      "status": "review",
+      "reason": [
+        "额外考点、超纲提示或非目标题型，待复核"
+      ]
+    },
+    {
+      "uuid": "a746824c-1ba4-5e12-ac36-1e1111b04d18",
+      "document_id": 24,
+      "label": "2000年 · 第5题",
+      "status": "review",
+      "reason": [
+        "动态换路已识别，但图中储能结构/阶数不能仅凭OCR确认"
+      ]
+    },
+    {
+      "uuid": "1c75c913-e1c6-5e53-85d6-b391b4a1add5",
+      "document_id": 24,
+      "label": "2000年 · 第6题",
+      "status": "review",
+      "reason": [
+        "额外考点、超纲提示或非目标题型，待复核"
+      ]
+    },
+    {
+      "uuid": "5f0635e7-c468-5efa-85ac-2a1e4326cf57",
+      "document_id": 24,
+      "label": "2000年 · 第7题",
+      "status": "review",
+      "reason": [
+        "额外考点、超纲提示或非目标题型，待复核"
+      ]
+    },
+    {
+      "uuid": "81755bff-edac-5fc0-8c79-269b4abbe56c",
+      "document_id": 24,
+      "label": "2001年 · 第2题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "f99cab54-ddee-53a7-bb54-9589ece4e9d7",
+      "document_id": 24,
+      "label": "2001年 · 第3题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "2350f0eb-815e-584e-92cf-9f85004998ac",
+      "document_id": 24,
+      "label": "2001年 · 第4题",
+      "status": "review",
+      "reason": [
+        "动态换路已识别，但图中储能结构/阶数不能仅凭OCR确认"
+      ]
+    },
+    {
+      "uuid": "c34f1f62-5476-5b6e-92d2-c1f80c41eddb",
+      "document_id": 24,
+      "label": "2001年 · 第5题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "876ca64c-f176-5748-af46-18f7fa8adee7",
+      "document_id": 24,
+      "label": "2001年 · 第6题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "343c8f92-2655-52b5-8287-c56e8e2de830",
+      "document_id": 24,
+      "label": "2001年 · 第8题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "91b10760-a9f8-53be-9e1f-40e5b2025b1a",
+      "document_id": 24,
+      "label": "2001年 · 第9题",
+      "status": "review",
+      "reason": [
+        "额外考点、超纲提示或非目标题型，待复核"
+      ]
+    },
+    {
+      "uuid": "90963803-1a74-53f4-9946-2b2beeea9686",
+      "document_id": 24,
+      "label": "2002年 · 第1题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "6c4f4f4f-3ef8-5a56-a706-7c96d03d7369",
+      "document_id": 24,
+      "label": "2002年 · 第2题",
+      "status": "review",
+      "reason": [
+        "含额外考点/超纲标记，待人工确认，不混入必练"
+      ]
+    },
+    {
+      "uuid": "f52d801c-ae40-5510-86e3-c03734377daf",
+      "document_id": 24,
+      "label": "2002年 · 第3题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "7d3a8d50-d119-5369-830a-89cf32b1e1d7",
+      "document_id": 24,
+      "label": "2002年 · 第4题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "5a4e2774-03a5-5ee7-a440-fabe8b44e59c",
+      "document_id": 24,
+      "label": "2002年 · 第5题",
+      "status": "review",
+      "reason": [
+        "动态换路已识别，但图中储能结构/阶数不能仅凭OCR确认"
+      ]
+    },
+    {
+      "uuid": "cecc4907-155f-56c8-b3ba-4fb4554d9340",
+      "document_id": 24,
+      "label": "2002年 · 第6题",
+      "status": "review",
+      "reason": [
+        "额外考点、超纲提示或非目标题型，待复核"
+      ]
+    },
+    {
+      "uuid": "267b2a14-e0e9-584d-8167-e5411d481628",
+      "document_id": 24,
+      "label": "2002年 · 第8题",
+      "status": "review",
+      "reason": [
+        "额外考点、超纲提示或非目标题型，待复核"
+      ]
+    },
+    {
+      "uuid": "aa5cd813-9b49-5244-9de0-636844c99c5a",
+      "document_id": 24,
+      "label": "2002年 · 第9题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "b88596c4-29bf-5225-9573-11f3e1017a0c",
+      "document_id": 24,
+      "label": "2002年 · 第10题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "4235d6df-737f-5115-9e89-e785bbddd50a",
+      "document_id": 24,
+      "label": "2003年 · 题1",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "5a46d9ea-cfed-5893-aada-f154c5ea5b02",
+      "document_id": 24,
+      "label": "2003年 · 题3",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "adde6ba5-4d82-5838-8cab-53c64ffc7e92",
+      "document_id": 24,
+      "label": "2003年 · 题4",
+      "status": "review",
+      "reason": [
+        "额外考点、超纲提示或非目标题型，待复核"
+      ]
+    },
+    {
+      "uuid": "aa065ba7-0522-5f4a-bec2-cd0d0d57ac6d",
+      "document_id": 24,
+      "label": "2003年 · 题7",
+      "status": "review",
+      "reason": [
+        "额外考点、超纲提示或非目标题型，待复核"
+      ]
+    },
+    {
+      "uuid": "a66c2827-c755-58f0-9bec-2cb24ebb4b76",
+      "document_id": 24,
+      "label": "2003年 · 题8",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "51d43d73-b179-555b-9f56-1ad189a84687",
+      "document_id": 24,
+      "label": "2003年 · 题9",
+      "status": "review",
+      "reason": [
+        "额外考点、超纲提示或非目标题型，待复核"
+      ]
+    },
+    {
+      "uuid": "6f86e0c9-203e-5280-9c0b-ece846a8bbf3",
+      "document_id": 24,
+      "label": "2003年 · 题10",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "b5bbe246-1c9f-5086-b161-cc23c9807a92",
+      "document_id": 24,
+      "label": "2004年 · 题2",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "1c4710c4-80fc-53b0-9f5a-446bc0c94a58",
+      "document_id": 24,
+      "label": "2004年 · 题3",
+      "status": "review",
+      "reason": [
+        "额外考点、超纲提示或非目标题型，待复核"
+      ]
+    },
+    {
+      "uuid": "d2ff8c51-543b-5d38-aefc-2ccd72b83079",
+      "document_id": 24,
+      "label": "2004年 · 题4",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "bb186572-8100-5617-954a-4a77705dc13d",
+      "document_id": 24,
+      "label": "2004年 · 题5",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "0f52a7df-d916-5c1d-9df6-16bf0c9c2697",
+      "document_id": 24,
+      "label": "2004年 · 题6",
+      "status": "review",
+      "reason": [
+        "额外考点、超纲提示或非目标题型，待复核"
+      ]
+    },
+    {
+      "uuid": "0d54b547-be41-512a-871c-919f0ab69888",
+      "document_id": 24,
+      "label": "2005年 · 题1",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "08ba0866-695c-5528-a983-a0207ca33b73",
+      "document_id": 24,
+      "label": "2005年 · 题3",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "99f52c9d-15be-5ba5-9c0b-bd67fbe708c8",
+      "document_id": 24,
+      "label": "2005年 · 题4",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "4c0c0a49-df28-57da-a1b7-a23208dcc425",
+      "document_id": 24,
+      "label": "2005年 · 题5",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "2bc9ea85-4614-55c9-b079-102d7cb22c29",
+      "document_id": 24,
+      "label": "2005年 · 题7",
+      "status": "review",
+      "reason": [
+        "额外考点、超纲提示或非目标题型，待复核"
+      ]
+    },
+    {
+      "uuid": "080e2569-e97c-5c49-b778-828099e53cba",
+      "document_id": 24,
+      "label": "2005年 · 题8",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "47fcc1e2-7746-583e-a23d-b34500bb25ca",
+      "document_id": 24,
+      "label": "2005年 · 题9",
+      "status": "review",
+      "reason": [
+        "额外考点、超纲提示或非目标题型，待复核"
+      ]
+    },
+    {
+      "uuid": "40038683-eb9a-5e0a-ab41-3b419494ffd9",
+      "document_id": 24,
+      "label": "2007年 · 第1题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "2636efe8-31ce-546f-b6d6-2a657c6979c7",
+      "document_id": 24,
+      "label": "2007年 · 第3题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "691f89e4-573f-5a3d-b67c-bda83e6b21b3",
+      "document_id": 24,
+      "label": "2007年 · 第6题",
+      "status": "review",
+      "reason": [
+        "额外考点、超纲提示或非目标题型，待复核"
+      ]
+    },
+    {
+      "uuid": "93c04f13-2a8d-50af-b94f-a493dff82693",
+      "document_id": 24,
+      "label": "2007年 · 第9题",
+      "status": "review",
+      "reason": [
+        "额外考点、超纲提示或非目标题型，待复核"
+      ]
+    },
+    {
+      "uuid": "cbb41713-f0bf-5cde-b90b-80bb5dcd74b8",
+      "document_id": 24,
+      "label": "2009年 · 题3",
+      "status": "review",
+      "reason": [
+        "OCR区段含多个题号，不能可靠归属，待边界复核"
+      ]
+    },
+    {
+      "uuid": "5487e084-eae2-5446-8b3a-1439d21de467",
+      "document_id": 24,
+      "label": "2009年 · 题6",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "f6fb363a-f9c9-51ee-b56a-94eb53c4e9da",
+      "document_id": 24,
+      "label": "2009年 · 题7",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "45370021-933b-5879-a8d5-951f50edf9b3",
+      "document_id": 24,
+      "label": "2009年 · 题8",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "058fda63-e234-52b8-a01c-979c985b91ad",
+      "document_id": 24,
+      "label": "2009年 · 题9",
+      "status": "review",
+      "reason": [
+        "动态换路已识别，但图中储能结构/阶数不能仅凭OCR确认"
+      ]
+    },
+    {
+      "uuid": "03d167d2-b3bc-5918-b0c6-7c370ba72f61",
+      "document_id": 24,
+      "label": "2010年 · 题1",
+      "status": "review",
+      "reason": [
+        "OCR区段含多个题号，不能可靠归属，待边界复核"
+      ]
+    },
+    {
+      "uuid": "3ad3540d-a9c8-5abc-807a-195aaf5be148",
+      "document_id": 24,
+      "label": "2010年 · 题3",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "7b8b3e17-6fbf-53f3-86a0-909bf65b9485",
+      "document_id": 24,
+      "label": "2010年 · 题4",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "59e1a7e6-378e-5c27-9f70-14de02a9eb15",
+      "document_id": 24,
+      "label": "2010年 · 题6",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "63edc394-9a3a-56f6-bb51-9e649f4525e4",
+      "document_id": 24,
+      "label": "2010年 · 题7",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "2475e1f9-e059-5640-bf33-da963bb23137",
+      "document_id": 24,
+      "label": "2010年 · 题8",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "6a51196d-98ac-57a0-a934-53d3e0fe5ffe",
+      "document_id": 24,
+      "label": "2010年 · 题9",
+      "status": "review",
+      "reason": [
+        "额外考点、超纲提示或非目标题型，待复核"
+      ]
+    },
+    {
+      "uuid": "a7ace66e-fe52-5686-8ca9-f339814867a8",
+      "document_id": 24,
+      "label": "2014年 · 第1题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "e63d9da3-2433-5cd4-a561-43333d373b65",
+      "document_id": 24,
+      "label": "2014年 · 第2题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "60b469f9-56fb-5400-8134-12708bb18d41",
+      "document_id": 24,
+      "label": "2014年 · 第3题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "65283fec-ff11-5a7b-a026-ac21ffa4e317",
+      "document_id": 24,
+      "label": "2014年 · 第4题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "46fe4124-0485-568a-8c48-756f3a3a7a96",
+      "document_id": 24,
+      "label": "2014年 · 第5题",
+      "status": "review",
+      "reason": [
+        "动态换路已识别，但图中储能结构/阶数不能仅凭OCR确认"
+      ]
+    },
+    {
+      "uuid": "60a16515-0afb-5353-8429-49f1a3f68435",
+      "document_id": 24,
+      "label": "2014年 · 第6题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "11e225f2-c453-5f0f-9d0a-465c27137277",
+      "document_id": 24,
+      "label": "2014年 · 第8题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "57bd2210-b998-53fa-b0b0-d8ce85a2b4e8",
+      "document_id": 24,
+      "label": "2014年 · 第9题",
+      "status": "review",
+      "reason": [
+        "额外考点、超纲提示或非目标题型，待复核"
+      ]
+    },
+    {
+      "uuid": "e69dcc02-e4eb-52e9-899c-0c91532fc256",
+      "document_id": 24,
+      "label": "2015年 · 题1",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "723efd45-d8cf-56f0-923c-df81d2d63579",
+      "document_id": 24,
+      "label": "2015年 · 题2",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "bde31404-d211-5466-94e6-2f942ed1e314",
+      "document_id": 24,
+      "label": "2015年 · 题5",
+      "status": "review",
+      "reason": [
+        "OCR区段含多个题号，不能可靠归属，待边界复核"
+      ]
+    },
+    {
+      "uuid": "b1c92f43-e392-59ff-b2c9-4b8aefc5f5d7",
+      "document_id": 24,
+      "label": "2015年 · 题7",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "200cd00b-2d0b-5395-835f-8e54b4e65b16",
+      "document_id": 24,
+      "label": "2015年 · 题8",
+      "status": "review",
+      "reason": [
+        "OCR区段含多个题号，不能可靠归属，待边界复核"
+      ]
+    },
+    {
+      "uuid": "77e6159d-417e-56eb-abf2-c8557afa297b",
+      "document_id": 24,
+      "label": "2016年 · 第1题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "83f59310-75f7-543d-8870-4d217ad33605",
+      "document_id": 24,
+      "label": "2016年 · 第4题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "370cf5a3-671b-57aa-beb1-474ac9b16955",
+      "document_id": 24,
+      "label": "2016年 · 第5题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "64eff59d-101e-5568-aacf-1c13d1226b6a",
+      "document_id": 24,
+      "label": "2016年 · 第6题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "542637ec-f20e-5b5f-883c-12118263070f",
+      "document_id": 24,
+      "label": "2016年 · 第7题",
+      "status": "review",
+      "reason": [
+        "额外考点、超纲提示或非目标题型，待复核"
+      ]
+    },
+    {
+      "uuid": "791b308d-260c-5d7a-b728-e9491f19a4f5",
+      "document_id": 24,
+      "label": "2016年 · 第8题",
+      "status": "review",
+      "reason": [
+        "动态换路已识别，但图中储能结构/阶数不能仅凭OCR确认"
+      ]
+    },
+    {
+      "uuid": "dd3b070b-db13-5feb-8db7-f8a57d819415",
+      "document_id": 24,
+      "label": "2017年 · 第1题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "0f50ad42-3ad7-54bf-841c-1bc6195d0d62",
+      "document_id": 24,
+      "label": "2017年 · 第3题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "ba96e79d-3b2b-5c4e-a8a0-4e00480fb9e2",
+      "document_id": 24,
+      "label": "2017年 · 第4题",
+      "status": "review",
+      "reason": [
+        "动态换路已识别，但图中储能结构/阶数不能仅凭OCR确认"
+      ]
+    },
+    {
+      "uuid": "1e3199f0-d23e-5692-aaf7-1b93f58941fd",
+      "document_id": 24,
+      "label": "2017年 · 第5题",
+      "status": "review",
+      "reason": [
+        "额外考点、超纲提示或非目标题型，待复核"
+      ]
+    },
+    {
+      "uuid": "ff277a85-ad93-5cc5-8687-9adedaea04ab",
+      "document_id": 24,
+      "label": "2017年 · 第6题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "7af16b3a-86e2-572d-a126-9c846dd6d221",
+      "document_id": 24,
+      "label": "2017年 · 第7题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "a64fe035-ba2f-5695-a7df-b2f486bed270",
+      "document_id": 24,
+      "label": "2017年 · 第8题",
+      "status": "review",
+      "reason": [
+        "含额外考点/超纲标记，待人工确认，不混入必练"
+      ]
+    },
+    {
+      "uuid": "5e16246d-8a96-5fd1-a50e-15f38f59f15a",
+      "document_id": 24,
+      "label": "2018年 · 第1题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "7f4230d5-3f6d-5ad8-8651-6a0f8e7eec99",
+      "document_id": 24,
+      "label": "2018年 · 第3题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "b6df4a60-38f9-5739-869d-b42aabfa89bd",
+      "document_id": 24,
+      "label": "2018年 · 第4题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "633bc741-9fe1-52c8-ae0b-846cf8d14546",
+      "document_id": 24,
+      "label": "2018年 · 第6题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "8d316d61-042e-554b-848a-c4d5158aae69",
+      "document_id": 24,
+      "label": "2018年 · 第7题",
+      "status": "review",
+      "reason": [
+        "额外考点、超纲提示或非目标题型，待复核"
+      ]
+    },
+    {
+      "uuid": "5f956605-631b-5e31-a10c-9e3f1674f797",
+      "document_id": 24,
+      "label": "2018年 · 第9题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "152ecb47-3e90-5422-9acf-b28a07df43ef",
+      "document_id": 24,
+      "label": "2019年 · 第3题",
+      "status": "review",
+      "reason": [
+        "额外考点、超纲提示或非目标题型，待复核"
+      ]
+    },
+    {
+      "uuid": "ac783044-9795-5781-851f-312087ea6a9a",
+      "document_id": 24,
+      "label": "2019年 · 第4题",
+      "status": "review",
+      "reason": [
+        "动态换路已识别，但图中储能结构/阶数不能仅凭OCR确认"
+      ]
+    },
+    {
+      "uuid": "675c8630-47e5-509d-a019-8863c23e6c34",
+      "document_id": 24,
+      "label": "2019年 · 第5题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "131d6a98-0984-5286-b8ab-bc44433f49de",
+      "document_id": 24,
+      "label": "2019年 · 第7题",
+      "status": "review",
+      "reason": [
+        "额外考点、超纲提示或非目标题型，待复核"
+      ]
+    },
+    {
+      "uuid": "6b0ab3d8-153a-5181-a5d3-9d1a6df11fea",
+      "document_id": 24,
+      "label": "2019年 · 第8题",
+      "status": "review",
+      "reason": [
+        "动态换路已识别，但图中储能结构/阶数不能仅凭OCR确认"
+      ]
+    },
+    {
+      "uuid": "49d60469-fb40-50dc-a370-4de1413c2a07",
+      "document_id": 24,
+      "label": "2019年 · 第9题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "7ef75bcb-e0c3-536c-97f8-97d32a5a6690",
+      "document_id": 24,
+      "label": "2020年 · 第2题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "46ed7fa9-56ff-54ad-a1b0-808aed3d5b59",
+      "document_id": 24,
+      "label": "2020年 · 第3题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "a248a7ec-6ce7-5604-a3b4-a4c1f5d44a20",
+      "document_id": 24,
+      "label": "2020年 · 第4题",
+      "status": "review",
+      "reason": [
+        "动态换路已识别，但图中储能结构/阶数不能仅凭OCR确认"
+      ]
+    },
+    {
+      "uuid": "31370778-2534-5d4d-9055-c2f6ad350c40",
+      "document_id": 24,
+      "label": "2020年 · 第5题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "5f7a7b31-f511-5cf7-91f9-cd4c9a17db2f",
+      "document_id": 24,
+      "label": "2020年 · 第8题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "ef89492b-814d-5c9a-9e12-2b27db6b1561",
+      "document_id": 24,
+      "label": "2021年 · 第1题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "41a4895b-de71-5b25-9f23-024abe38ae58",
+      "document_id": 24,
+      "label": "2021年 · 第3题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "3a044033-779c-5569-be9c-29117675ae99",
+      "document_id": 24,
+      "label": "2021年 · 第4题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "5935bd6c-d09a-5c49-b282-e9e1ec9b0161",
+      "document_id": 24,
+      "label": "2021年 · 第8题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "71ae440c-9887-5fdc-ad29-6e5696a5bb8a",
+      "document_id": 24,
+      "label": "2021年 · 第9题",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "0689272c-71e7-53c0-890d-f8abf194a2fe",
+      "document_id": 24,
+      "label": "2022年 · 1·题1",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "7f450b8d-59c5-5d70-a307-94235897b5cf",
+      "document_id": 24,
+      "label": "2022年 · 1·题2",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "c06ac5f9-34ac-577d-94a3-3e1a26e7f6a0",
+      "document_id": 24,
+      "label": "2022年 · 1·题3",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "1ed65c8f-1380-5707-b72f-e2ba52281b2f",
+      "document_id": 24,
+      "label": "2022年 · 2·题1",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "30ec3bef-6e3f-5d9a-86a9-31175aa0ba10",
+      "document_id": 24,
+      "label": "2022年 · 2·题2",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "625627d0-30ee-5624-87c5-fe2fa4ba3f83",
+      "document_id": 24,
+      "label": "2022年 · 2·题3",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "2c1ccc57-9921-5ac2-bf16-8530de6f9a4f",
+      "document_id": 24,
+      "label": "2022年 · 2·题5",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "b7729542-0ffa-5f2c-8cd9-e0542568b642",
+      "document_id": 24,
+      "label": "2022年 · 2·题6",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "410906e3-73c5-5ee2-b0c0-f247bbc4ed07",
+      "document_id": 24,
+      "label": "2022年 · 2·题8",
+      "status": "review",
+      "reason": [
+        "动态换路已识别，但图中储能结构/阶数不能仅凭OCR确认"
+      ]
+    },
+    {
+      "uuid": "654b53bb-d22d-51e8-9950-fa43bcfffee6",
+      "document_id": 24,
+      "label": "2022年 · 2·题9",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "08b21da0-ec6c-5ad1-81dd-6c2a784f7d05",
+      "document_id": 24,
+      "label": "2023年 · 1·题1",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "ed85fb8a-daef-5e56-bd7b-7506233bc97c",
+      "document_id": 24,
+      "label": "2023年 · 1·题2",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "43a99723-ffa0-5668-882b-b246278ebd4c",
+      "document_id": 24,
+      "label": "2023年 · 2·题1",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "c3818413-db98-540f-99dc-79f2eaa1a02d",
+      "document_id": 24,
+      "label": "2023年 · 2·题2",
+      "status": "review",
+      "reason": [
+        "OCR区段含多个题号，不能可靠归属，待边界复核"
+      ]
+    },
+    {
+      "uuid": "ae99ef81-8301-5586-ac26-ff10b275b962",
+      "document_id": 24,
+      "label": "2023年 · 2·题4",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "b1b5049f-014d-5b02-823c-1d362d6ccf8e",
+      "document_id": 24,
+      "label": "2023年 · 2·题5",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "5e2dc7e6-2815-58f4-95d4-92960aaf0bcd",
+      "document_id": 24,
+      "label": "2023年 · 2·题6",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "a36ec8c2-0cfd-5ea6-a28d-f0df94273108",
+      "document_id": 24,
+      "label": "2023年 · 2·题7",
+      "status": "review",
+      "reason": [
+        "动态换路已识别，但图中储能结构/阶数不能仅凭OCR确认"
+      ]
+    },
+    {
+      "uuid": "dcb794a7-5865-5a46-9978-701e570cb3f4",
+      "document_id": 24,
+      "label": "2023年 · 2·题8",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "427bfcd2-f0d1-53c4-bcc9-dae6096fcba1",
+      "document_id": 24,
+      "label": "2024年 · 2·题1",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "baafac8f-cdf8-5517-af3f-1ae9a7e6f8fc",
+      "document_id": 24,
+      "label": "2024年 · 2·题2",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "f6044bdb-76ee-59b3-9067-febe0e12bc41",
+      "document_id": 24,
+      "label": "2024年 · 2·题3",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "20a20de0-152f-5c9d-9785-3c62aba508c8",
+      "document_id": 24,
+      "label": "2024年 · 2·题4",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "d88deddd-e3f0-5a65-8a85-20721a0d49db",
+      "document_id": 24,
+      "label": "2024年 · 2·题5",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "9c2d8c2a-1ab0-548e-9de2-2306c48d651a",
+      "document_id": 24,
+      "label": "2024年 · 2·题6",
+      "status": "review",
+      "reason": [
+        "动态换路已识别，但图中储能结构/阶数不能仅凭OCR确认"
+      ]
+    },
+    {
+      "uuid": "f7cc455c-0cfb-5287-a045-06f2f35f9532",
+      "document_id": 24,
+      "label": "2024年 · 2·题7",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "795ed8e4-6bb7-5732-b431-118812edc593",
+      "document_id": 24,
+      "label": "2024年 · 2·题8",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "fa3f57ca-74ea-57f6-a1d4-d2ae6ba25169",
+      "document_id": 24,
+      "label": "2025年 · 1·填空1",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "ad4078e7-3903-5b20-9d5a-f7c9c4580f6c",
+      "document_id": 24,
+      "label": "2025年 · 1·填空2",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "c86a164a-9003-5480-b8b5-623757a67328",
+      "document_id": 24,
+      "label": "2025年 · 1·填空3",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "c28a97ea-2a48-5460-a7df-20ae462ed8c1",
+      "document_id": 24,
+      "label": "2025年 · 1·填空5",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "0bd1e1a3-c466-5f70-ad65-4e2816da4703",
+      "document_id": 24,
+      "label": "2025年 · 1·填空7",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "29acef47-17ff-517f-bed6-774962809753",
+      "document_id": 24,
+      "label": "2025年 · 1·填空8",
+      "status": "review",
+      "reason": [
+        "额外考点、超纲提示或非目标题型，待复核"
+      ]
+    },
+    {
+      "uuid": "a42e82dc-741b-5219-a2d2-23ad24c85481",
+      "document_id": 24,
+      "label": "2025年 · 2·题1",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "80d423e4-6fa6-59e6-b001-a843c0ad8623",
+      "document_id": 24,
+      "label": "2025年 · 2·题2",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "704f867b-b868-50e8-bc06-3b70d71d4d8d",
+      "document_id": 24,
+      "label": "2025年 · 2·题3",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "a6410062-6df0-5b7c-bb8f-079cb37f62c3",
+      "document_id": 24,
+      "label": "2025年 · 2·题5",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "71558cf6-b778-5e0e-90f3-75916b0529ae",
+      "document_id": 24,
+      "label": "2025年 · 2·题6",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "85754e6b-6de1-5276-8ae7-54a43cdd6e41",
+      "document_id": 24,
+      "label": "2025年 · 3·题7",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "c037a525-b0d6-5392-8ef3-59f405fac0da",
+      "document_id": 24,
+      "label": "2025年 · 3·题8",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "9032d5f1-f499-5ea1-82fe-e27689540b3b",
+      "document_id": 24,
+      "label": "2026年 · 1·填空1",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "b37e0e71-42f7-5fd4-804b-227cf86d07e1",
+      "document_id": 24,
+      "label": "2026年 · 1·填空2",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "7887b33e-f695-54bb-a0be-c200a3ef14da",
+      "document_id": 24,
+      "label": "2026年 · 1·填空3",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "2690f3bb-b1f6-5e33-8cb1-fde166c9dd62",
+      "document_id": 24,
+      "label": "2026年 · 1·填空5",
+      "status": "review",
+      "reason": [
+        "额外考点、超纲提示或非目标题型，待复核"
+      ]
+    },
+    {
+      "uuid": "c7c200ba-839f-500b-a9c5-ff6cd2d4b61a",
+      "document_id": 24,
+      "label": "2026年 · 1·填空6",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "8cb371ef-6a0f-57a2-8e70-876564f9c45d",
+      "document_id": 24,
+      "label": "2026年 · 1·填空7",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "96e20dad-4ab5-500b-b92d-4ba2bb68f4cc",
+      "document_id": 24,
+      "label": "2026年 · 1·填空9",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "448366ab-9e11-52b2-9829-0bb011b40799",
+      "document_id": 24,
+      "label": "2026年 · 1·填空10",
+      "status": "review",
+      "reason": [
+        "额外考点、超纲提示或非目标题型，待复核"
+      ]
+    },
+    {
+      "uuid": "6af97fa5-4900-5e75-902d-45096e5961af",
+      "document_id": 24,
+      "label": "2026年 · 2·题1",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "28515054-786f-5853-991e-37c2de7ff393",
+      "document_id": 24,
+      "label": "2026年 · 2·题2",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "dc25e538-c92c-514d-9950-ed3b7cdeaa0c",
+      "document_id": 24,
+      "label": "2026年 · 2·题5",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "2365012a-d926-5560-ac3f-025af3276fd9",
+      "document_id": 24,
+      "label": "2026年 · 2·题6",
+      "status": "review",
+      "reason": [
+        "题干未命中指定考点；图示信息不足时不猜题型"
+      ]
+    },
+    {
+      "uuid": "4e460d88-65c9-5afc-be35-c20eec79c316",
+      "document_id": 24,
+      "label": "2026年 · 第3题",
+      "status": "review",
+      "reason": [
+        "OCR区段含多个题号，不能可靠归属，待边界复核"
+      ]
+    }
+  ]
+}

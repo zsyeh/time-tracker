@@ -1,0 +1,4581 @@
+{
+  "schema_version": 1,
+  "code": "circuit_selected",
+  "title": "892 · 电路严选",
+  "basis": "按用户提供的主观备考优先级筛选，不是历年命题概率统计。复用现有题目UUID与掌握记录；不复制题、答案或图片。",
+  "syllabus_reference": "drill.ei_syllabus.SYLLABUS[circuit]",
+  "buckets": [
+    {
+      "key": "first_order",
+      "title": "一阶 RC/RL · 换路与三要素",
+      "rank": 1,
+      "tier": "core",
+      "focus": "初始值、稳态值、时间常数；零输入、零状态与全响应。"
+    },
+    {
+      "key": "thevenin",
+      "title": "戴维南／诺顿 · 含受控源",
+      "rank": 2,
+      "tier": "core",
+      "focus": "开路电压、等效电阻、测试源法；受控源不能直接置零。"
+    },
+    {
+      "key": "phasor",
+      "title": "正弦稳态 · 相量、阻抗与功率",
+      "rank": 3,
+      "tier": "core",
+      "focus": "支路电压电流、相位、复功率；区分有效值与峰值。"
+    },
+    {
+      "key": "nodal_mesh",
+      "title": "节点电压／网孔电流",
+      "rank": 4,
+      "tier": "core",
+      "focus": "含受控源、无伴电压源；作为综合题的分析工具。"
+    },
+    {
+      "key": "second_order",
+      "title": "二阶 RLC · 时域响应",
+      "rank": 5,
+      "tier": "advanced",
+      "focus": "微分方程、特征根；过阻尼、临界阻尼、欠阻尼。"
+    },
+    {
+      "key": "max_power",
+      "title": "共轭匹配／最大功率",
+      "rank": 6,
+      "tier": "advanced",
+      "focus": "交流共轭匹配与直流最大功率，注意负载约束。"
+    },
+    {
+      "key": "resonance",
+      "title": "RLC 谐振／品质因数 Q",
+      "rank": 7,
+      "tier": "foundation",
+      "focus": "谐振条件、品质因数与带宽。"
+    },
+    {
+      "key": "transformer",
+      "title": "理想变压器",
+      "rank": 8,
+      "tier": "advanced",
+      "focus": "电压电流比、阻抗折算与功率。"
+    },
+    {
+      "key": "y_delta_bridge",
+      "title": "Y–Δ／平衡电桥",
+      "rank": 9,
+      "tier": "foundation",
+      "focus": "电阻等效化简与桥路平衡。"
+    },
+    {
+      "key": "superposition_sources",
+      "title": "叠加／电源变换",
+      "rank": 10,
+      "tier": "foundation",
+      "focus": "独立源置零与受控源保留，掌握适用边界。"
+    },
+    {
+      "key": "laplace",
+      "title": "s 域电路交叉题（选练）",
+      "rank": 11,
+      "tier": "cross",
+      "focus": "单独列出，不替代三要素法、戴维南与相量法。"
+    }
+  ],
+  "inventory_count": 457,
+  "inventory_sha256": "4294be10a1797ed95cee8c95d031b2d07ccab487ca7d904650aa5ee96704d8a2",
+  "questions": [
+    {
+      "uuid": "8aabe726-f8e5-55c3-9473-2db67846c374",
+      "fingerprint": "d13453f5f476cf13f6d2e69db68be00b15177ea1e6b89ecade89112aeefd64ea",
+      "document_id": 11,
+      "label": "基尔霍夫电流定律 KCL",
+      "status": "included",
+      "bucket": "nodal_mesh",
+      "tags": [
+        "nodal_mesh"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：nodal_mesh"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "某节点有三条支路。已知 $i_1=2\\,\\text{A}$、$i_2=5\\,\\text{A}$ 流入节点，$i_3$ 流出节点。求 $i_3$。",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "f648a3ab-c3a3-5901-a65e-6844d1c09bf6",
+      "fingerprint": "9b0f45763eebc15e3a57805c971058060f4e003110d2f252994eee054ded3c26",
+      "document_id": 11,
+      "label": "基尔霍夫电压定律 KVL",
+      "status": "included",
+      "bucket": "nodal_mesh",
+      "tags": [
+        "nodal_mesh"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：nodal_mesh"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "一个单回路中含 $10\\,\\text{V}$ 电压源和两个串联电阻 $R_1=2\\,\\Omega$、$R_2=3\\,\\Omega$。用 KVL 求回路电流。",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "533ed907-d080-52f3-92fc-83592796ce0a",
+      "fingerprint": "e3764076fe099ce9a0dd78d0be8784a46834d580013400144d4bff5316e902e0",
+      "document_id": 11,
+      "label": "Y-Δ / Δ-Y 等效变换",
+      "status": "included",
+      "bucket": "y_delta_bridge",
+      "tags": [
+        "y_delta_bridge"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：y_delta_bridge"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "一个对称 $\\Delta$ 形电阻网络三条边均为 $6\\,\\Omega$。将其等效为 $Y$ 形网络，求三条星形支路电阻。",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "4a53bde2-2af5-5227-83d0-7f9e33186eef",
+      "fingerprint": "caee56ad2c8877f0b816bbc9fce82e84c343027084fd140a4f5f51975d649e92",
+      "document_id": 11,
+      "label": "平衡电桥及其等效判断",
+      "status": "included",
+      "bucket": "y_delta_bridge",
+      "tags": [
+        "y_delta_bridge"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：y_delta_bridge"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "惠斯通电桥四臂电阻分别为 $R_1=2\\,\\Omega$、$R_2=4\\,\\Omega$、$R_3=3\\,\\Omega$、$R_4=6\\,\\Omega$。判断电桥是否平衡。",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "253e891a-0b71-5487-9287-ac9dfa110cee",
+      "fingerprint": "52716ad7dee56c1af3f0c6ee8c95b62c362c2548011c7c007754c6e54cda1a5c",
+      "document_id": 11,
+      "label": "含受控源电路的等效处理",
+      "status": "included",
+      "bucket": "thevenin",
+      "tags": [
+        "thevenin"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "reason": [
+        "匹配题干关键词：thevenin"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "某二端网络仅含电阻和一个受控电流源 $g u_x$。为了求它的端口等效电阻，能否像独立源一样直接把受控源置零？应采用什么基本方法？",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "72f2a442-42ea-5a87-a3c9-0880dc73cadc",
+      "fingerprint": "780d62211962961aa975c2d4e3eedef5abfe8be9668008656223f3afdbc95d8d",
+      "document_id": 11,
+      "label": "节点电压法建模与方程列写",
+      "status": "included",
+      "bucket": "nodal_mesh",
+      "tags": [
+        "nodal_mesh"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：nodal_mesh"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "节点 $A$ 通过 $2\\,\\Omega$ 电阻接地，通过 $4\\,\\Omega$ 电阻连接到已知 $8\\,\\text{V}$ 节点，同时有 $1\\,\\text{A}$ 电流源从地注入节点 $A$。列出节点电压 $V_A$ 方程并求解。",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "80f972bf-dd60-5c2c-a3d4-b26d368deacb",
+      "fingerprint": "4a863b81b8f2c2a1081f9aec5eb33a846e3712a88ae47754949241e188a4dd53",
+      "document_id": 11,
+      "label": "含电压源节点的节点电压法处理",
+      "status": "included",
+      "bucket": "nodal_mesh",
+      "tags": [
+        "nodal_mesh"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "reason": [
+        "匹配题干关键词：nodal_mesh"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "节点 $A$、$B$ 之间接有理想电压源 $U_s=5\\,\\text{V}$，方向为 $V_A-V_B=5\\,\\text{V}$，且两节点都不接地。节点电压法中应如何处理这一电压源？",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "6c0f7720-9fd9-5f6f-aa6e-870f9d77629d",
+      "fingerprint": "35e2cc8894cd3baf5be7b864426d090e55f06b99c1af85804a27e27fd6dffc2f",
+      "document_id": 11,
+      "label": "网孔电流法与回路电流法",
+      "status": "included",
+      "bucket": "nodal_mesh",
+      "tags": [
+        "nodal_mesh"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：nodal_mesh"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "两个相邻网孔电流均取顺时针，分别为 $I_1$、$I_2$，公共支路电阻为 $R$。从网孔 1 方向看，公共电阻上的电压降应如何表示？",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "aabd43f8-1d39-5c9a-a21e-be0ddd0e327f",
+      "fingerprint": "42f42914932bba6e908f92b6db8e0046afd6d8e68f06460ec09500b9af93eaac",
+      "document_id": 11,
+      "label": "叠加定理及独立源置零规则",
+      "status": "included",
+      "bucket": "superposition_sources",
+      "tags": [
+        "superposition_sources"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "reason": [
+        "匹配题干关键词：superposition_sources"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "线性电路中含两个独立电压源 $U_1$、$U_2$。使用叠加定理只保留 $U_1$ 时，应如何处理 $U_2$？若电路中还有受控源，又应如何处理？",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "c3d9bbbe-c150-5ea7-8a4c-0529e9abbc90",
+      "fingerprint": "d68aea648003e27db78b9571b75acc2b519ea3d2fc6ba2a743167b2745c65a3e",
+      "document_id": 11,
+      "label": "戴维南等效电路",
+      "status": "included",
+      "bucket": "thevenin",
+      "tags": [
+        "thevenin"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：thevenin"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "某线性二端网络开路电压为 $U_{oc}=10\\,\\text{V}$，短路电流为 $I_{sc}=2\\,\\text{A}$。求其戴维南等效参数。",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "248e8bee-cd4e-576b-aa02-f9c83b388291",
+      "fingerprint": "d15802312b161311ce2beb8d1bb1737ab5ca05e8a362b1e0b37116b660c50e93",
+      "document_id": 11,
+      "label": "诺顿等效电路及与戴维南模型的互换",
+      "status": "included",
+      "bucket": "thevenin",
+      "tags": [
+        "thevenin"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：thevenin"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "某二端网络的戴维南等效为 $U_{Th}=8\\,\\text{V}$、$R_{Th}=4\\,\\Omega$。求对应诺顿等效。",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "42c02eac-21d8-5916-9d67-d8bf88537527",
+      "fingerprint": "89fc3122dcac478f23b4a86cb30412d8c1e8f799dec96cf1c01a08b59fda2a18",
+      "document_id": 11,
+      "label": "换路定则与动态元件连续性",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：first_order"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "某开关在 $t=0$ 动作。已知 $u_C(0^-)=6\\,\\text{V}$、$i_L(0^-)=2\\,\\text{A}$，且电路中不存在使状态变量产生冲激跃变的特殊条件。求 $u_C(0^+)$ 与 $i_L(0^+)$。",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "fe14146f-3dbc-500e-bb3b-73c84866efd4",
+      "fingerprint": "89ef22c16a691bd2bd08104bb3bf83439d80dcdcc862ab8d1d668d8575b52cda",
+      "document_id": 11,
+      "label": "换路前后初始值计算",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：first_order"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "一个 $1\\,\\mu\\text{F}$ 电容在换路前长期接在 $10\\,\\text{V}$ 直流电源两端。$t=0$ 时切换到另一网络。求换路后的电容初始电压。",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "cbef8d8f-efd3-5d52-8ebc-684be316c368",
+      "fingerprint": "894c73549bd4dda09e2aa0d7eaaaaf44e8f830d81fb8d91aee270de11cacc803",
+      "document_id": 11,
+      "label": "一阶 RC / RL 电路三要素法",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：first_order"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "一阶 RC 电路中，$R=2\\,\\text{k}\\Omega$，$C=10\\,\\mu\\text{F}$，已知 $u_C(0^+)=2\\,\\text{V}$，最终值 $u_C(\\infty)=8\\,\\text{V}$。写出 $u_C(t)$。",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "bd6d0b39-50b9-5d7b-844a-29291d14f2e5",
+      "fingerprint": "dea429cf5b2ade9466351f17e8e424872c28ce50d6f2caf587c16cc2aa5a48af",
+      "document_id": 11,
+      "label": "零输入响应、零状态响应与全响应",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：first_order"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "某一阶线性电路对输入 $u_s(t)$ 的零状态响应为 $y_{zs}(t)=3(1-e^{-2t})$，同一初始状态在输入置零时的零输入响应为 $y_{zi}(t)=2e^{-2t}$。写出全响应。",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "f73280da-9b5d-5d19-92c3-b8d636f4d70f",
+      "fingerprint": "89857be8808b108208f523b3217108bc7016be005c56b4feb67625e89fcb52db",
+      "document_id": 11,
+      "label": "正弦量及其相量表示",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：phasor"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "将正弦电压\n$$\nu(t)=10\\sqrt{2}\\cos(100t+30^\\circ)\\,\\text{V}\n$$\n表示为以有效值为幅值的相量。",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "a3eb607c-b73b-5ce6-84e6-a128acf95ef0",
+      "fingerprint": "cbad4275748e39166de3c42971d43845845f49d6c3540ffa9015b3bef79048fd",
+      "document_id": 11,
+      "label": "正弦稳态电路的相量法",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：phasor"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "串联电路中 $R=3\\,\\Omega$、$X_L=4\\,\\Omega$，电源相量为 $\\dot U=10\\angle0^\\circ\\,\\text{V}$。求电流相量。",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "eb7aedaf-3346-544f-b377-657c2e65d16b",
+      "fingerprint": "3e0e54830fd77ce9197cabda2f0946246a5a2380b75202548b268d2043c11cce",
+      "document_id": 11,
+      "label": "相量图及幅值、相位关系",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "reason": [
+        "匹配题干关键词：phasor"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "一个串联 RC 电路中，以电流相量 $\\dot I$ 为参考相量。电阻电压 $\\dot U_R$ 与电容电压 $\\dot U_C$ 分别相对 $\\dot I$ 具有怎样的相位关系？",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "cb832264-6e4e-57c6-b10b-0161c2efb511",
+      "fingerprint": "58dd5099e64ceba5ff1d9454774e8a1aac8fd0198b041da81b75bdd428ae3f96",
+      "document_id": 11,
+      "label": "正弦稳态功率与共轭匹配",
+      "status": "included",
+      "bucket": "max_power",
+      "tags": [
+        "thevenin",
+        "phasor",
+        "max_power"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：thevenin,phasor,max_power"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "某交流电源的戴维南阻抗为\n$$\nZ_s=4+j3\\,\\Omega.\n$$\n为了获得最大平均功率，负载阻抗应取多少？",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "191946cc-8acb-5f68-9898-85cd749951d5",
+      "fingerprint": "c618dab77cd52fec571a63826617df683d43a0fbc98ba981b0bd259ca90142ab",
+      "document_id": 11,
+      "label": "谐振、品质因数与理想变压器基本关系",
+      "status": "included",
+      "bucket": "transformer",
+      "tags": [
+        "resonance",
+        "transformer"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：resonance,transformer"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "串联 RLC 电路中 $L=10\\,\\text{mH}$、$C=10\\,\\mu\\text{F}$。求谐振角频率 $\\omega_0$。若理想变压器原副边匝数比 $N_1:N_2=2:1$，副边接 $8\\,\\Omega$ 负载，折算到原边的等效阻抗是多少？",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "7c7ad755-4686-5631-afe5-e0b870577df4",
+      "fingerprint": "72af754b7f3597f8b65e07f4f9f3ed6fb1d00e2e34fbba7af3f9907b3737aa0b",
+      "document_id": 11,
+      "label": "CIR-SA-02｜说明实际电压源与实际电流源等效变换的条件、参数关系和适用边界。",
+      "status": "included",
+      "bucket": "superposition_sources",
+      "tags": [
+        "superposition_sources"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "reason": [
+        "匹配题干关键词：superposition_sources"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "说明实际电压源与实际电流源等效变换的条件、参数关系和适用边界。",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "6dc4fcf2-97d3-5a67-8db1-2691f3a9414e",
+      "fingerprint": "23aafaa67f99cbec26ec2ba55e61fdd83bc695c08d54928bce622e22d18758b7",
+      "document_id": 11,
+      "label": "CIR-SA-03｜叙述叠加定理，并说明使用叠加定理时独立电压源、独立电流源和受控源应如何处理。为什么功率不能直接叠加？",
+      "status": "included",
+      "bucket": "superposition_sources",
+      "tags": [
+        "superposition_sources"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "reason": [
+        "匹配题干关键词：superposition_sources"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "叙述叠加定理，并说明使用叠加定理时独立电压源、独立电流源和受控源应如何处理。为什么功率不能直接叠加？",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "49b33041-8a86-5eb4-9a06-af61a0482539",
+      "fingerprint": "4d89293da982a898a238897755d1b96f73792bf801666cced47a69352470d1a9",
+      "document_id": 11,
+      "label": "CIR-SA-04｜分别说明戴维南定理和诺顿定理，并写出两种等效参数之间的关系。",
+      "status": "included",
+      "bucket": "thevenin",
+      "tags": [
+        "thevenin"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "reason": [
+        "匹配题干关键词：thevenin"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "分别说明戴维南定理和诺顿定理，并写出两种等效参数之间的关系。",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "b13d99ec-86e8-5d66-8931-bc82f18fb01e",
+      "fingerprint": "f6230eb6884a6406637c057b84d13077ebeae4a250fc2f2710c2936e7c47b5eb",
+      "document_id": 11,
+      "label": "CIR-SA-05｜说明电容电压和电感电流在换路瞬间为何通常不能突变，并写出换路定则。",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "reason": [
+        "匹配题干关键词：first_order"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "说明电容电压和电感电流在换路瞬间为何通常不能突变，并写出换路定则。",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "f97229a9-6b5c-5979-992b-e6348c1e06ac",
+      "fingerprint": "05f761d0beec46933f0b89d44c87f90ca3b5f9cb9ddc27e6999ce712bcb309ed",
+      "document_id": 11,
+      "label": "CIR-SA-06｜什么是一阶电路三要素法？写出一阶电路响应的统一表达式，并说明三个要素分别是什么。",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "reason": [
+        "匹配题干关键词：first_order"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "什么是一阶电路三要素法？写出一阶电路响应的统一表达式，并说明三个要素分别是什么。",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "cd56cf0d-68c0-500d-aa49-a28e7a4519aa",
+      "fingerprint": "2e3416c055daef33fbd6214fc63557772a049149f08c7e5449e1049ee5e43a42",
+      "document_id": 11,
+      "label": "CIR-SA-07｜区分零输入响应、零状态响应和全响应，并说明它们之间的关系。",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "reason": [
+        "匹配题干关键词：first_order"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "区分零输入响应、零状态响应和全响应，并说明它们之间的关系。",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "863ffc45-7456-5324-9289-41916a543f31",
+      "fingerprint": "b470b79d750131f089614b48fc1d109e299a5c4d54972c38d6cf207258e788f4",
+      "document_id": 11,
+      "label": "CIR-SA-08｜为什么正弦稳态电路可以使用相量法？说明相量、阻抗和导纳分别解决了什么问题。",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "reason": [
+        "匹配题干关键词：phasor"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "为什么正弦稳态电路可以使用相量法？说明相量、阻抗和导纳分别解决了什么问题。",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "0de99681-d1ba-507f-869b-69ec1569f740",
+      "fingerprint": "a89422df553b61478f6d6daef422fdcdd333c0398e23e80176655eb3fcbfeb13",
+      "document_id": 11,
+      "label": "CIR-SA-09｜什么是相量图？使用相量图时为什么必须保证各正弦量频率相同？",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "reason": [
+        "匹配题干关键词：phasor"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "什么是相量图？使用相量图时为什么必须保证各正弦量频率相同？",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "057584ae-fce0-5bf7-8392-8c6f36ccb5cb",
+      "fingerprint": "fec92f743b10c350b897dc159ff13cca93cc05723fc3a00deec31c3406249c28",
+      "document_id": 11,
+      "label": "CIR-SA-10｜什么是交流电路的共轭匹配？写出最大平均功率传输条件，并说明其含义。",
+      "status": "included",
+      "bucket": "max_power",
+      "tags": [
+        "phasor",
+        "max_power"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "reason": [
+        "匹配题干关键词：phasor,max_power"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "什么是交流电路的共轭匹配？写出最大平均功率传输条件，并说明其含义。",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "ef9e8cf8-8a26-5a12-aff7-fac5cd527f26",
+      "fingerprint": "27401e363a528580dc4c2b1fdd4f70c9d4ad1fbf050dabb7272a6c8c21e67fe4",
+      "document_id": 11,
+      "label": "CIR-SA-11｜说明串联谐振的基本条件、谐振时电路特征以及品质因数 $Q$ 的物理含义。",
+      "status": "included",
+      "bucket": "resonance",
+      "tags": [
+        "resonance"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "reason": [
+        "匹配题干关键词：resonance"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "说明串联谐振的基本条件、谐振时电路特征以及品质因数 $Q$ 的物理含义。",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "6e1dd5ba-96db-5693-89e5-1981b44e3568",
+      "fingerprint": "41cefd1c6e742f77ab47e745adf88559c87c060742ea26ea06adb4723acce142",
+      "document_id": 11,
+      "label": "CIR-SA-12｜写出理想变压器的基本电压、电流和阻抗变换关系，并说明其功率特性。",
+      "status": "included",
+      "bucket": "transformer",
+      "tags": [
+        "transformer"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "reason": [
+        "匹配题干关键词：transformer"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "写出理想变压器的基本电压、电流和阻抗变换关系，并说明其功率特性。",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "cd8381f0-3a19-5a40-a093-27bd3e7c6c1b",
+      "fingerprint": "f1963f772f12988270114b60cb23956c536703a5bc5c02a4cbe5389d92c49d2b",
+      "document_id": 11,
+      "label": "背诵简答 3 · 请问什么是零输入响应和零状态响应？为什么说求零输入响应 和求零状态本质上是一样的？",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "reason": [
+        "匹配题干关键词：first_order"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "请问什么是零输入响应和零状态响应？为什么说求零输入响应\n\n和求零状态本质上是一样的？",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "d8b43e8b-e54c-5198-8b7a-fdfb1162641b",
+      "fingerprint": "fac993eb2daeec836ca3e95d0b40819f059c0bf09b56e6e609270cad3c17b648",
+      "document_id": 11,
+      "label": "背诵简答 4 · 请问网孔和回路的区别是什么？网孔电流法与支路电流法相比 更适用于哪些电路？",
+      "status": "included",
+      "bucket": "nodal_mesh",
+      "tags": [
+        "nodal_mesh"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "reason": [
+        "匹配题干关键词：nodal_mesh"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "请问网孔和回路的区别是什么？网孔电流法与支路电流法相比\n\n更适用于哪些电路？",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "5eaee670-65ed-5f93-b3ab-2e09096af286",
+      "fingerprint": "f0f5c6dd2ff7704f2be97a2b2c35ba43d8f83f6deec97d0c50da7e9cb91ead57",
+      "document_id": 11,
+      "label": "背诵简答 5 · 请问什么是节点电压？节点电压法列什么电路方程？与回路电 流法和支路电流法相比，更适合于哪些电路？",
+      "status": "included",
+      "bucket": "nodal_mesh",
+      "tags": [
+        "nodal_mesh"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "reason": [
+        "匹配题干关键词：nodal_mesh"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "请问什么是节点电压？节点电压法列什么电路方程？与回路电\n\n流法和支路电流法相比，更适合于哪些电路？",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "2d9e5b03-5c8e-5c1c-8156-1269359cf26a",
+      "fingerprint": "935634f2eaf14eae053f06dd14c0f5b5e2a18a2ad59275fd7a2595ec2463ec81",
+      "document_id": 11,
+      "label": "背诵简答 6 · 请问什么是替代定理？什么是戴维南定理和诺顿定理？",
+      "status": "included",
+      "bucket": "thevenin",
+      "tags": [
+        "thevenin"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "reason": [
+        "匹配题干关键词：thevenin"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "请问什么是替代定理？什么是戴维南定理和诺顿定理？",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "1738a214-b7c4-5aa4-85ac-32e1585189db",
+      "fingerprint": "7eb71fd597d641ca171fd90d18e122783f29b4d440de4cd486bf602c826caf72",
+      "document_id": 11,
+      "label": "背诵简答 7 · 请问什么情况下戴维南定理和诺顿定理不能等效变换？",
+      "status": "included",
+      "bucket": "thevenin",
+      "tags": [
+        "thevenin"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "reason": [
+        "匹配题干关键词：thevenin"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "请问什么情况下戴维南定理和诺顿定理不能等效变换？",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "029bee56-3ab8-5d9e-8f59-994d348ff336",
+      "fingerprint": "15d75d76dc3acdcd4b7a43be3ae68775f5a7df120cc3b21c977fef2b838e07a3",
+      "document_id": 11,
+      "label": "背诵简答 8 · 请问什么是最大功率传输定理？最大功率时的效率是多少？",
+      "status": "included",
+      "bucket": "max_power",
+      "tags": [
+        "max_power"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "reason": [
+        "匹配题干关键词：max_power"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "请问什么是最大功率传输定理？最大功率时的效率是多少？",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "f269ab1f-aa44-5253-9170-6c6b2c98a0ef",
+      "fingerprint": "f72c39ee236940886c991a41668d8efece4fd3d9c919ca635d706ba21972f105",
+      "document_id": 11,
+      "label": "背诵简答 9 · 请问自由响应和强迫响应与零输入和零输出响应之间有什么联 系？",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "reason": [
+        "匹配题干关键词：first_order"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "请问自由响应和强迫响应与零输入和零输出响应之间有什么联\n\n系？",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "f28d42a4-2433-5eef-8a62-2ac17524219c",
+      "fingerprint": "4cb151b5c8bf7724268e99f290009ae93000bc9a0e4a2090481241de68bfbf4a",
+      "document_id": 11,
+      "label": "背诵简答 10 · 请问什么是瞬时功率？什么是有功功率？无功功率？功率因 数？",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "reason": [
+        "匹配题干关键词：phasor"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "请问什么是瞬时功率？什么是有功功率？无功功率？功率因\n\n数？",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "0a392e1e-05c1-5389-be6e-8951c12c840f",
+      "fingerprint": "fcf5d04e6568de62ba1cecf236f9e00a29c332f347a0e128d1aa219d959d32dc",
+      "document_id": 11,
+      "label": "背诵简答 11 · 请问什么是谐振？品质因数？品质因数高低反应了什么？为什 么采用耦合谐振回路？",
+      "status": "included",
+      "bucket": "resonance",
+      "tags": [
+        "resonance"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "reason": [
+        "匹配题干关键词：resonance"
+      ],
+      "evidence_method": "structured_text",
+      "evidence": "请问什么是谐振？品质因数？品质因数高低反应了什么？为什\n\n么采用耦合谐振回路？",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "30fc467f-0996-5174-aa3c-4ca5771ed69e",
+      "fingerprint": "825ec2ac1b0c9e525e418802e618a5cbd410cd0141b758bfadbccde1bca02602",
+      "document_id": 22,
+      "label": "课后题 1-17",
+      "status": "included",
+      "bucket": "nodal_mesh",
+      "tags": [
+        "nodal_mesh"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：nodal_mesh,nodal_mesh"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "1-17 利用KCL 与KVL 求图1-27 中I(提示：利用KVL 将180 V 电源支路电流用I 来表示，\n然后在结点①写KCL 方程求解)。\n图1-27\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "7599ad5e-b1fa-5bfe-b88f-5556ed2e8ab7",
+      "fingerprint": "628f47aa525914803e0d51124bc4dd82a71e0b57f9696d57c4d2c61253116150",
+      "document_id": 22,
+      "label": "课后题 2-4",
+      "status": "included",
+      "bucket": "nodal_mesh",
+      "tags": [
+        "nodal_mesh",
+        "y_delta_bridge"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：nodal_mesh,y_delta_bridge"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "2-4 求图2-12 所示各电路的等效电阻Rab，其中R1=R2=1 Ω，R3=R4=2 Ω，R5=4 Ω，G1=G2=1 \nS，R=2 Ω。\n\n图2-12\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "5a51a166-0c28-5df3-9f9c-7025cdf5a6ee",
+      "fingerprint": "4aaeaf328fa28432bbafade3ac12af7ed40e95ecd91cacfa21104d3e844e78cd",
+      "document_id": 22,
+      "label": "课后题 2-5",
+      "status": "included",
+      "bucket": "nodal_mesh",
+      "tags": [
+        "nodal_mesh",
+        "y_delta_bridge"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：nodal_mesh,y_delta_bridge,nodal_mesh,y_delta_bridge"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "2-5 用△-Y 等效变换法求图2.9 中a、b 端的等效电阻：\n(1)将结点①、②、③之间的三个9Ω 电阻构成的△形变换为Y 形；\n\n(2)将结点①、③、④与作为内部公共结点的②之间的三个9Ω 电阻构成的Y 形变换为△形。\n图2-17\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "7132d591-5cc0-5934-b498-ded7d782bac5",
+      "fingerprint": "4bdbe9f6beba9d5e539a119c5272bf9a3e0e37b4dc29c67f09cea153bcae8c26",
+      "document_id": 22,
+      "label": "课后题 2-6",
+      "status": "included",
+      "bucket": "y_delta_bridge",
+      "tags": [
+        "y_delta_bridge"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：y_delta_bridge"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "2-6 利用Y-△等效变换求图2-19 中a、b 端的等效电阻。\n图2-19\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "1738a5b7-d0da-5e0a-876e-86075117cc54",
+      "fingerprint": "dec620f4c8a01443d7f1a3915855e96f0a6ae07c55d4cbdf93f4a7d21b9ac5e2",
+      "document_id": 22,
+      "label": "课后题 2-7",
+      "status": "included",
+      "bucket": "superposition_sources",
+      "tags": [
+        "superposition_sources"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：superposition_sources,superposition_sources"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "2-7 在图2-21(a)所示电路中，uS1=24V，uS2=6V，R1=12kΩ，R2=6kΩ，R3=2kΩ。图2-21(b)为\n经电源变换后的等效电路。\n(1)求等效电路的iS和R；\n(2)根据等效电路求R3中电流和消耗功率；\n(3)分别在图2-21(a)、(b)中求出R1、R2及R3消耗的功率；\n(4)试问uS1、uS2发出的功率是否等于iS发出的功率",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "25185ac6-498c-59d6-9f9d-74fb845efaf5",
+      "fingerprint": "80b5372694b9282caa35b054667de7d0b57cd780609ac48ea79a52740398ea5a",
+      "document_id": 22,
+      "label": "课后题 2-8",
+      "status": "included",
+      "bucket": "y_delta_bridge",
+      "tags": [
+        "y_delta_bridge"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：y_delta_bridge"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "2-8 求图2-23 所示电路中对角线电压U 及总电压Uab。\n图2-23\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "d1c8d3ed-dc01-55c4-8fca-1b66076c7936",
+      "fingerprint": "95bb0efa51bd6af88219324386bec1d1b5fb93c9f1547c6db96d8e90ea74acb4",
+      "document_id": 22,
+      "label": "课后题 2-9",
+      "status": "included",
+      "bucket": "y_delta_bridge",
+      "tags": [
+        "y_delta_bridge"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：y_delta_bridge"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "2-9 图2-25 所示为由桥T 电路构成的衰减器。\n(1)试证明当R2=R1=RL时，Rab=RL，且有\n；\n(2)试证明当\n时，Rab=RL，并求此时电压比\n。\n图2-25\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "9c382768-c4ea-544f-a149-117770065c75",
+      "fingerprint": "4d3b6bcc59f4fe76520a4522976a40ccaaff8bb7e13573d2ca502e604f0233f5",
+      "document_id": 22,
+      "label": "课后题 2-10",
+      "status": "included",
+      "bucket": "superposition_sources",
+      "tags": [
+        "superposition_sources"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：superposition_sources,superposition_sources"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "2-10 在图2-27(a)中，uS1=45V，uS2=20V，uS4=20V，uS5=50V；R1=R3=15Ω，R2=20Ω，\nR4=50Ω，R5=8Ω；在图2-27(b)中uS1=20V，uS5=30V，iS2=8 A，iS4=17 A，R1=5Ω，R3=10Ω，\nR5=10Ω。利用电源的等效变换求图2-27(a)、(b)中的电压uab。\n图2-27\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "cfacbaec-bc49-5e75-9464-1bba9110e01b",
+      "fingerprint": "021d67adbffbfe614256c5a5172844ea28de9cb246cd125927263b3291ead265",
+      "document_id": 22,
+      "label": "课后题 2-11",
+      "status": "included",
+      "bucket": "superposition_sources",
+      "tags": [
+        "superposition_sources"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：superposition_sources,superposition_sources"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "2-11 利用电源的等效变换，求图2-29 所示电路的电流i。\n图2-29\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "b820a90d-fbde-5e68-ae2c-345f0fb0a98a",
+      "fingerprint": "af7a826502ac9ea359708db2e29fd8bbaed932b3b0e4f67185ba26249b7b3709",
+      "document_id": 22,
+      "label": "课后题 2-12",
+      "status": "included",
+      "bucket": "superposition_sources",
+      "tags": [
+        "superposition_sources"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：superposition_sources,superposition_sources"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "2-12 利用电源的等效变换，求图2-31 所示电路中电压比\n。已知R1=R2=2Ω，\nR3=R4=1Ω。\n图2-31\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "88129d6b-d13e-59e6-8322-4a110ebe55d2",
+      "fingerprint": "76a49f2638e5ad1bef65603589e204fcab6ee05e9dd19564ec225f8f66e80b3f",
+      "document_id": 22,
+      "label": "课后题 2-13",
+      "status": "included",
+      "bucket": "superposition_sources",
+      "tags": [
+        "superposition_sources"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：superposition_sources"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "2-13 图2-33 所示电路中R1=R3=R4，R2=2R1，CCVS 的电压uc=4R1i1，利用电源的等效变换\n求电压u10。\n图2-33\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "055cd267-2e34-50b3-91cd-4d45e796decd",
+      "fingerprint": "9a9c6c74ea9a2677bff9a8a8843218f8066c147b8daa2a7aa38cddb95d045737",
+      "document_id": 22,
+      "label": "课后题 2-16",
+      "status": "included",
+      "bucket": "y_delta_bridge",
+      "tags": [
+        "y_delta_bridge"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：y_delta_bridge"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "2-16 图2-39 所示电路中全部电阻均为1Ω，求输入电阻Ri。\n图2-39\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "6ac0e5db-fa7c-5b6b-b1bd-8ffbae392f6b",
+      "fingerprint": "93078395343acbb562eecb173001d8dbbcef1979d2df2e48b5558621e6b38842",
+      "document_id": 22,
+      "label": "课后题 3-7",
+      "status": "included",
+      "bucket": "nodal_mesh",
+      "tags": [
+        "nodal_mesh"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：nodal_mesh,nodal_mesh"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "3-7 图3-7 所示电路中R1=R2=10 Ω，R3=4 Ω，R4=R5=8 Ω，R6=2 Ω，uS3=20 V，uS6=40 V，用\n支路电流法求解电流i5。\n图3-7\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "29270589-dc5c-5c92-9eb2-138be7f18a83",
+      "fingerprint": "4905cd50223463ea52b45a0ed41bf0e5d225b8cb4008ba28769676c628da4fff",
+      "document_id": 22,
+      "label": "课后题 3-8",
+      "status": "included",
+      "bucket": "nodal_mesh",
+      "tags": [
+        "nodal_mesh"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：nodal_mesh,nodal_mesh"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "3-8 用网孔电流法求解图3-7 中电流i5。\n\n图3-7\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "f58148d0-5ad2-5260-9d7d-fff80196c1c8",
+      "fingerprint": "a205c995fa235e0519afa98e66d7b268b77bd1fc8c21de9e7246c9e2858d37ee",
+      "document_id": 22,
+      "label": "课后题 3-9",
+      "status": "included",
+      "bucket": "nodal_mesh",
+      "tags": [
+        "nodal_mesh"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：nodal_mesh,nodal_mesh"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "3-9 用回路电流法求解图3-7 中电流i3。\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "fe3766b4-2ab7-5ac7-92ed-c220559a1bd0",
+      "fingerprint": "9d7cc3459112193773fbe8c5b081c49bac2e509fce7658471492b5c91bb6cd47",
+      "document_id": 22,
+      "label": "课后题 3-10",
+      "status": "included",
+      "bucket": "nodal_mesh",
+      "tags": [
+        "nodal_mesh"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：nodal_mesh,nodal_mesh"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "3-10 用回路电流法求解图3-10 中5 Ω 电阻中的电流i。\n图3-10\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "dfce1840-f66d-5f2e-b7b0-6b0cd8d265b1",
+      "fingerprint": "ea1df9ba4efc0d5e9ec1b6cf4c8fcf91285fa4ef5a6926ad93e6b5221758bdce",
+      "document_id": 22,
+      "label": "课后题 3-11",
+      "status": "included",
+      "bucket": "nodal_mesh",
+      "tags": [
+        "nodal_mesh"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：nodal_mesh"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "3-11 用回路电流法求解图3-12 所示电路中电流I。\n图3-12\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "a8ed2eca-dca7-5a30-b6af-68b0b8685e95",
+      "fingerprint": "e784d08a579d1e7c1eb2b1beeec32f529e1e657f30e0ba2e3c37db462acd15cb",
+      "document_id": 22,
+      "label": "课后题 3-12",
+      "status": "included",
+      "bucket": "nodal_mesh",
+      "tags": [
+        "nodal_mesh"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：nodal_mesh,nodal_mesh"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "3-12 用回路电流法求解图3-14 所示电路中电流Iα及电压Uo。\n图3-14\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "83bc78da-94e2-54d1-b6ac-23d26c74ab9b",
+      "fingerprint": "d482208fd3c701b09f2d5943ccda446524958b2d6b8f69d44c848fc7d58a230f",
+      "document_id": 22,
+      "label": "课后题 3-13",
+      "status": "included",
+      "bucket": "nodal_mesh",
+      "tags": [
+        "nodal_mesh"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：nodal_mesh,nodal_mesh"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "3-13 用回路电流法求解：(1)图3-16(a)中的Ux；(2)图3-16(b)中的I。\n图3-16\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "25faef2c-386c-5ad3-b27f-d9536de448a2",
+      "fingerprint": "e13fe74f8e73f12944fbb913a0b11775803a2d0318f0b8e8d5ee0a947715b74e",
+      "document_id": 22,
+      "label": "课后题 3-14",
+      "status": "included",
+      "bucket": "nodal_mesh",
+      "tags": [
+        "nodal_mesh"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：nodal_mesh,nodal_mesh"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "3-14 用回路法求解图3-18 所示电路中Ix以及CCVS 的功率。\n图3-18\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "df8c4ee3-b1f6-599a-aa75-987d1725fae6",
+      "fingerprint": "f5df393a6506eb7c40b3fbd7741ee44b543b41cf041597b91d7e01e0f1c68ff0",
+      "document_id": 22,
+      "label": "课后题 3-15",
+      "status": "included",
+      "bucket": "nodal_mesh",
+      "tags": [
+        "nodal_mesh"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：nodal_mesh,nodal_mesh"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "3-15 列出图3-20(a)、(b)所示电路的结点电压方程。\n\n图3-20\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "f05121f4-f2ef-5840-9d26-37e8331fa12d",
+      "fingerprint": "e2d12978a71871a02fabf25dfefb3574ec3f1edf8a0092705dd6dd7a31aaf6d8",
+      "document_id": 22,
+      "label": "课后题 3-16",
+      "status": "included",
+      "bucket": "nodal_mesh",
+      "tags": [
+        "nodal_mesh"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：nodal_mesh,nodal_mesh"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "3-16 列出图3-22(a)、(b)所示电路的结点电压方程。\n图3-22\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "c8ab76b3-fb66-5d3f-b6c6-82c925398467",
+      "fingerprint": "1088f288bfbe84983d8f6b64674e23fa5f8ec9bb442fcaaf254b05ddc71a8e04",
+      "document_id": 22,
+      "label": "课后题 3-17",
+      "status": "included",
+      "bucket": "nodal_mesh",
+      "tags": [
+        "nodal_mesh",
+        "superposition_sources"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：nodal_mesh,nodal_mesh,superposition_sources"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "3-17 图3-24 所示为由电压源和电阻组成的一个独立结点的电路，用结点电压法证明其结点\n电压为\n此式又称为弥尔曼定理。\n图3-24\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "a252fc2c-b170-5939-830d-6193d634f5bb",
+      "fingerprint": "2ed46380c74de8d41a7b0c6efcbba255ab4f3dd249d03739dc370aeaf8d30714",
+      "document_id": 22,
+      "label": "课后题 3-18",
+      "status": "included",
+      "bucket": "nodal_mesh",
+      "tags": [
+        "nodal_mesh"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：nodal_mesh,nodal_mesh"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "3-18 列出图3-25(a)、(b)所示电路的结点电压方程。\n\n图3-25\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "197bcb61-5770-5c51-b19c-5b4378d63555",
+      "fingerprint": "8e4419d478f7a062da152251e38e27c16da4dc5ea224b5591b78a49a731c9c6e",
+      "document_id": 22,
+      "label": "课后题 3-19",
+      "status": "included",
+      "bucket": "nodal_mesh",
+      "tags": [
+        "nodal_mesh"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：nodal_mesh,nodal_mesh"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "3-19 用结点电压法求解图3-27 所示电路中各支路电流。\n\n图3-27\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "f23f6dfe-6106-5229-b690-c551ce951211",
+      "fingerprint": "de88e727a203ab0bfaff8aba514ebeab07f412eee060d419a8a13d397b8f2752",
+      "document_id": 22,
+      "label": "课后题 3-20",
+      "status": "included",
+      "bucket": "nodal_mesh",
+      "tags": [
+        "nodal_mesh"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：nodal_mesh,nodal_mesh"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "3-20 图3-29 所示电路中电源为无伴电压源，用结点电压法求解电流IS和IO。\n图3-29\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "3973fd39-759d-50ae-a57f-e926679d5ea0",
+      "fingerprint": "5e0cb768e519e467b4890a9d920619ff919158d3dec1b250d133979444b291c7",
+      "document_id": 22,
+      "label": "课后题 3-21",
+      "status": "included",
+      "bucket": "nodal_mesh",
+      "tags": [
+        "nodal_mesh"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：nodal_mesh,nodal_mesh"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "3-21 用结点电压法求解图3-31 所示电路中电压U。\n图3-31\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "03c1112f-53b6-59bf-8db6-31b4086180a0",
+      "fingerprint": "594cff4b1835e965afe34d8d2355c5403e1cb3286a19a87dd91275101534118c",
+      "document_id": 22,
+      "label": "课后题 3-24",
+      "status": "included",
+      "bucket": "nodal_mesh",
+      "tags": [
+        "nodal_mesh"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：nodal_mesh,nodal_mesh"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "3-24 用结点电压法求解图3-35 所示电路后，求各元件的功率并检验功率是否平衡。\n\n图3-35\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "48119344-5976-5bb1-85a7-387c982419ae",
+      "fingerprint": "fb9cb317f4fc49d700822de7d5658ba37726937a2166751c03d632d699fe2f40",
+      "document_id": 22,
+      "label": "课后题 3-25",
+      "status": "included",
+      "bucket": "nodal_mesh",
+      "tags": [
+        "nodal_mesh"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：nodal_mesh,nodal_mesh"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "3-25 用结点电压法求解图3-37 所示电路中un1和un2，你对此题有什么看法?\n\n图3-37\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "e00bf4a3-7744-5ac9-8b62-9b1679732f3f",
+      "fingerprint": "8c666cf96509284ad90c8ad300b4221e1fa534dc35ae9bd3045a13cbac3254cb",
+      "document_id": 22,
+      "label": "课后题 3-26",
+      "status": "included",
+      "bucket": "nodal_mesh",
+      "tags": [
+        "nodal_mesh"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：nodal_mesh,nodal_mesh"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "3-26 列出图3-39 所示电路的结点电压方程。如果RS=0，则方程又如何？(提示：为避免引\n入过多附加电流变量，对连有无伴电压源的结点部分，可在包含无伴电压源的封闭面S 上\n写出KCL 方程。)\n图3-39\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "64907773-e3d6-5c12-b19e-c4195ebca2c8",
+      "fingerprint": "e34fa52b543c9c6ca3ffa143503693f3d112d98464bedd005797e5c458ebf6c9",
+      "document_id": 22,
+      "label": "课后题 4-1",
+      "status": "included",
+      "bucket": "nodal_mesh",
+      "tags": [
+        "superposition_sources",
+        "nodal_mesh"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：superposition_sources,nodal_mesh,superposition_sources"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "4-1 应用叠加定理求图4-7 所示电路中电压\n。\n图4-7\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "aae318d5-1d2e-5da3-8735-3a9fea946a2c",
+      "fingerprint": "1a5de6e85dc4958e931d7d11097eb29b6f4c0c7ad35f50e7611d687125c9be1a",
+      "document_id": 22,
+      "label": "课后题 4-2",
+      "status": "included",
+      "bucket": "nodal_mesh",
+      "tags": [
+        "superposition_sources",
+        "nodal_mesh"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：superposition_sources,nodal_mesh,superposition_sources"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "4-2 应用叠加定理求图4-9 所示电路中电压u。\n图4-9\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "0afc2748-84c4-55d7-af5c-7b1f42e88122",
+      "fingerprint": "f12bab2aa1f923e4982866e6c04331392d17e18e7dde3b8c114986093b47ecd2",
+      "document_id": 22,
+      "label": "课后题 4-3",
+      "status": "included",
+      "bucket": "superposition_sources",
+      "tags": [
+        "superposition_sources"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：superposition_sources,superposition_sources"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "4-3 应用叠加定理求图4-11 所示电路中电流I。\n图4-11\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "c5cd76d3-46b0-52bf-8893-047e081b8bc9",
+      "fingerprint": "1c1ce6f5e67957c33965331a70ab78489bee4851984fb44b7e58d1b1c5744ebc",
+      "document_id": 22,
+      "label": "课后题 4-4",
+      "status": "included",
+      "bucket": "superposition_sources",
+      "tags": [
+        "superposition_sources"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：superposition_sources,superposition_sources"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "4-4 应用叠加定理求：(1)图4-13(a)中电压u2；(2)图4-13(b)中电压U。\n图4-13\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "5b68d344-a81b-5908-9715-e709313b4bf8",
+      "fingerprint": "bad483ba8b9b6a9c129b70b1f5ba882fc3bc37de7db49e16b2cbd58fc09e0520",
+      "document_id": 22,
+      "label": "课后题 4-5",
+      "status": "included",
+      "bucket": "superposition_sources",
+      "tags": [
+        "superposition_sources"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：superposition_sources"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "4-5 应用叠加定理，按下列步骤求解图4-15 中\n。\n(1)将受控源参与叠加，画出三个分电路，第三分电路中受控源电压为6\n，\n并非分响应，\n而为未知总响应；\n(2)求出三个分电路的分响应\n、\n与\n，\n中包含未知量\n；\n(3)利用\n=\n＋\n＋\n解出\n。\n图4-15\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "9aca7361-fc12-56c7-b9fb-2e09088f433c",
+      "fingerprint": "293f8761fa05e4a7591776b1e442516683a42ee8ed5de4ff48d16e621bc64b41",
+      "document_id": 22,
+      "label": "课后题 4-9",
+      "status": "included",
+      "bucket": "thevenin",
+      "tags": [
+        "thevenin",
+        "superposition_sources"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：thevenin,thevenin,superposition_sources"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "4-9 求图4-21 所示电路的戴维宁或诺顿等效电路。\n图4-21\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "c93df7be-c6d1-5fca-a849-38dfd1238402",
+      "fingerprint": "ef1f2a899aa0a25f107b205ca7e8f26e4f581725b39bb0ed455b47ea65910bd2",
+      "document_id": 22,
+      "label": "课后题 4-10",
+      "status": "included",
+      "bucket": "thevenin",
+      "tags": [
+        "thevenin",
+        "y_delta_bridge"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：thevenin,thevenin,y_delta_bridge"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "4-10 求图4-23 中各电路在ab 端口的戴维宁等效电路或诺顿等效电路。\n图4-23\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "0e3792a9-abbd-591b-bd6a-d62fad35529c",
+      "fingerprint": "b75a61901f800cd571298d66f5a708d1df0d74923802a069cb4e1c8e2336f58c",
+      "document_id": 22,
+      "label": "课后题 4-12",
+      "status": "included",
+      "bucket": "thevenin",
+      "tags": [
+        "thevenin",
+        "nodal_mesh",
+        "superposition_sources"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：thevenin,thevenin,nodal_mesh,superposition_sources"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "4-12 求图4-26 所示各电路的等效戴维宁电路或诺顿电路。\n图4-26\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "b7e57817-574a-50ba-b575-14113753b3e9",
+      "fingerprint": "75fab49253939167500ea9e9ee6f8c2f99932e4db155c6b4e3a31af3635e1437",
+      "document_id": 22,
+      "label": "课后题 4-13",
+      "status": "included",
+      "bucket": "thevenin",
+      "tags": [
+        "thevenin"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：thevenin,thevenin"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "4-13 求图4-28 所示两个端口的戴维宁或诺顿等效电路，并解释所得结果。\n图4-28\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "29197a9b-f204-5214-9452-628f8a9595dc",
+      "fingerprint": "0031699c643d3cd2d5da1e21638b0ec7e74e0c32b324245fbf13609b4b6f2e5c",
+      "document_id": 22,
+      "label": "课后题 7-1",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-1 图7-10(a)、(b)所示电路中开关S 在t=0 时动作，试求电路在t=0+时刻电压、电流的初始\n值。\n图7-10\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "98176076-93f9-5b0f-8bcb-26aaf9ae48b4",
+      "fingerprint": "5973d0287c87de54f495189848d8fb9c30a607ad3892cf96dce96e54f2fb7dce",
+      "document_id": 22,
+      "label": "课后题 7-2",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-2 图7-11 所示各电路中开关S 在t=0 时动作，试求各电路在t=0+时刻的电压、电流。已知\n图7-11(d)中的\n。\n图7-11\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "7d97eb7c-a223-5ed5-a9df-1a962b97012f",
+      "fingerprint": "60d66d86014574029f0043f1649e0eed9995f5b7dd6138c3c57c5e11778fbb48",
+      "document_id": 22,
+      "label": "课后题 7-3",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-3 电路如图7-13 所示，开关未动作前电路已达稳态，t=0 时开关S 打开。求\n。\n\n图7-13\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "c506311b-dab6-5852-8cef-84225c9a97f9",
+      "fingerprint": "c2621d160d6bcf1431157b517464a8ee33034a0047628b6b4c1ec34db0bd1c4f",
+      "document_id": 22,
+      "label": "课后题 7-4",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-4 电路如图7-15 所示，开关S 原在位置1 已久，t=0 时合向位置2，求\n(t)和i(t)。\n\n图7-15\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "aac4d37f-b2eb-5fd6-9919-636b48720643",
+      "fingerprint": "96c9711efcd52549e67cc6be7eab9c03b3b74bfdbb1b0a064f1a6a8e7d0b320d",
+      "document_id": 22,
+      "label": "课后题 7-5",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-5 图7-16 中开关S 在位置1 已久，t=0 时合向位置2，求换路后的i(t)和\n(t)。\n图7-16\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "7d91ebfa-2a74-5163-9bc8-02c034391ab8",
+      "fingerprint": "c7bcc06e7406372fe2fd9fcedfb135fd1deff90b94fe8dfdbffea32cab3db407",
+      "document_id": 22,
+      "label": "课后题 7-6",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-6 图7-17 所示电路中，若t=0 时开关S 闭合，求电流i。\n图7-17\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "8123fa00-b495-5d0b-abe0-4cd40a778b36",
+      "fingerprint": "46d17ba158e8bb22795e9eb13de2e860fe987ea6331e1ae369fe8c8d9f507ad2",
+      "document_id": 22,
+      "label": "课后题 7-7",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-7 图7-19 所示电路中，已知电容电压\n(0-)=10 V，t=0 时开关S 闭合，求t≥0 时电流\ni(t)。\n图7-19\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "cf5decca-e52a-52e8-a5f3-e863f647475e",
+      "fingerprint": "fc6685258d2c2795967bc79518f06a81c055ec1c5b129de8d314c49318fc7330",
+      "document_id": 22,
+      "label": "课后题 7-8",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-8 图7-20 所示电路开关原合在位置1，t=0 时开关由位置1 合向位置2，求t≥0 时电感电压\n(t)。\n\n图7-20\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "70dfc828-efa1-5918-a924-69b34d151acc",
+      "fingerprint": "51018bab0b5a1d224151fe81e8ba5a1505d6627840b2b71a49b0c5f409a3fe48",
+      "document_id": 22,
+      "label": "课后题 7-9",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order",
+        "superposition_sources"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-9 图7-21 所示电路中，若t=0 时开关S 打开，求\n和电流源发出的功率。\n图7-21\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "3b06b327-514b-5f94-a1dc-7e94e25271ec",
+      "fingerprint": "1def6ccfb22e7b62daa109c485e68525a9c32cc9cb61b76ea72732deaf9ff7d6",
+      "document_id": 22,
+      "label": "课后题 7-10",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-10 图7-22 所示电路中开关S 闭合前，电容电压\n为零。在t=0 时S 闭合，求t＞0 时的\n(t)和\n(t)。\n\n图7-22\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "6daee0ad-430c-50d2-bdbf-3b87bd0f579a",
+      "fingerprint": "0a048b7cff97bcd425587d43dd3a3c84c405deae762062baee28295b72090ca0",
+      "document_id": 22,
+      "label": "课后题 7-11",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order",
+        "superposition_sources"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-11 图7-23 所示电路中开关S 打开前已处稳定状态。t=0 开关S 打开，求t≥0 时的\n(t)和\n电压源发出的功率。\n图7-23\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "ae7d83bd-2e18-5c95-a707-a2c7898506d0",
+      "fingerprint": "aae2c0c19b91c8b525940d57b989646e0af152f49edb7ce0178255dae651ce6f",
+      "document_id": 22,
+      "label": "课后题 7-12",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order",
+        "thevenin"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-12 图7-24 所示电路中开关闭合前电容无初始储能，t=0 时开关S 闭合，求t≥0 时的电容电\n压\n(t)。\n图7-24\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": true
+    },
+    {
+      "uuid": "8d12ec40-a2e2-59c8-9ba9-71c6246d836d",
+      "fingerprint": "15e4b5bb4724f63b9db0c27548b579cfeb200d5eb4b7d7116aeb29196ce82f43",
+      "document_id": 22,
+      "label": "课后题 7-13",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order",
+        "thevenin"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-13 图7-25 所示电路，已知\n(0-)=0，t=0 时开关闭合，求t≥0 时的电压\n(t)和电流\n(t)。\n图7-25\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": true
+    },
+    {
+      "uuid": "b0b40089-d4e1-5886-a21a-6baab2eb9364",
+      "fingerprint": "07a8b9775fbd8376d3412dfb4c0b7cfe4980a2b76ca494485bae304b9fbbd769",
+      "document_id": 22,
+      "label": "课后题 7-14",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order",
+        "superposition_sources"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-14 图7-27 所示电路，已知\n(0-)=0，t=0 时开关闭合，求t≥0 时的电流\n(t)和电压\n(t)。\n图7-27\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "46ae2b68-9ee0-5d5f-bce8-e552c3da750e",
+      "fingerprint": "93b8888f07cf800f68649fb5f6d5f85d168c8f9ebfb24b57f5830ef8890a588b",
+      "document_id": 22,
+      "label": "课后题 7-15",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-15 图7-28 所示电路中\n，t=0 时合上开关S。求：\n(1)\n；(2)\n(0-)为何值时，瞬态分量为零?\n\n图7-28\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "90526ee4-d5a5-5118-be76-ce866bb8ffbb",
+      "fingerprint": "ad1800e014e5ba0c7026b0a288a1c3f09c606562dd6464e80e19f0f2a046b6ec",
+      "document_id": 22,
+      "label": "课后题 7-16",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-16 图7-29 所示电路中直流电压源的电压为24 V，且电路原已达稳态，t=0 时合上开关\nS，求：(1)电感电流\n；(2)直流电压源发出的功率。\n图7-29\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "628369bb-2fd3-5b29-a617-68879f957794",
+      "fingerprint": "79728db9920f9885d9994becbf01d5ad28c94550063330bd9f6c95b28bf61e30",
+      "document_id": 22,
+      "label": "课后题 7-17",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-17 图7-30 所示电路中开关打开以前电路已达稳态，t=0 时开关S 打开。求t≥0 时的\n(t)，\n并求t=2 ms 时电容的能量。\n图7-30\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "f4da559e-d605-5bde-b2f1-c9fce41de3db",
+      "fingerprint": "582222edcea1951a13b3286f34d23d9e7606f01ebff068aebcf6c983c61ff96d",
+      "document_id": 22,
+      "label": "课后题 7-18",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order",
+        "thevenin",
+        "superposition_sources"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-18 图7-31 所示电路中各参数已给定，开关S 打开前电路为稳态。t=0 时开关S 打开，求\n开关打开后电压u(t)。\n图7-31\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": true
+    },
+    {
+      "uuid": "98dfdd96-bb00-5a52-84b6-c04e0c25610f",
+      "fingerprint": "e1dd917d76a33a5e27724bdf812cc73bbab141e5b879e538aaa336160c5eb49d",
+      "document_id": 22,
+      "label": "课后题 7-19",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order",
+        "thevenin",
+        "nodal_mesh"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-19 图7-33 所示电路开关原合在位置1，已达稳态。t=0 时开关由位置1 合向位置2，求\nt≥0 时电容电压\n(t)。\n图7-33\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": true
+    },
+    {
+      "uuid": "ac1440a8-eecc-5491-b04f-e608dfd58043",
+      "fingerprint": "b84f17cdc6b1ca3c0680c2560420eac29468bff294833bc884494701321f0f47",
+      "document_id": 22,
+      "label": "课后题 7-20",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order",
+        "thevenin"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-20 图7-35 所示电路，开关合在位置1 时已达稳定状态，t=0 时开关由位置1 合向位置2，\n求t≥0 时的电压\n。\n图7-35\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": true
+    },
+    {
+      "uuid": "1b86eabc-3180-5970-8ed4-8d8199848ff2",
+      "fingerprint": "8b2274453356e94a506e87647d4268b84ca36ee46153fe768df0ef93cce4028f",
+      "document_id": 22,
+      "label": "课后题 7-21",
+      "status": "included",
+      "bucket": "second_order",
+      "tags": [
+        "first_order",
+        "second_order"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-21 图7-37 所示电路中，电容原先已充电，\n(0-)=6 V，R=2.5Ω，L=0.25 H，C=0.25 F。\n试求：\n(1)开关闭合后的\n(t)、i(t)；\n(2)使电路在临界阻尼下放电，当L 和C 不变时，电阻R 应为何值?\n\n图7-37\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "7eeae0ad-1fb5-5203-8f69-221825b442a8",
+      "fingerprint": "e0018de27adc360400c2b3e226878b88643ff03b10da8603a3bf5bdd28a5a5e9",
+      "document_id": 22,
+      "label": "课后题 7-22",
+      "status": "included",
+      "bucket": "second_order",
+      "tags": [
+        "first_order",
+        "second_order"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-22 图7-38 所示电路中开关S 闭合已久，t=0 时S 打开。求\n、\n。\n图7-38\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "be462410-109c-5592-bd72-d222f891f73a",
+      "fingerprint": "434e8cdde6e52945ff13ac7d4977b36f8d978f9f93af380fdc744177052fdaf9",
+      "document_id": 22,
+      "label": "课后题 7-23",
+      "status": "included",
+      "bucket": "second_order",
+      "tags": [
+        "first_order",
+        "second_order"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-23 图7-39 所示电路在开关S 打开之前已达稳态；t=0 时，开关S 打开，求t＞0 时的\n。\n图7-39\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "409bc513-3ac3-5191-8172-54158f98cbef",
+      "fingerprint": "d5317583c56d9dd1daaa3f99ffd63e6b36c74bf3dce261472b3640c9245ac54e",
+      "document_id": 22,
+      "label": "课后题 7-24",
+      "status": "included",
+      "bucket": "second_order",
+      "tags": [
+        "first_order",
+        "second_order"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-24 电路如图7-40 所示，t=0 时开关S 闭合，设\n(0-)=0，i(0-)=0，L=1 H，C=1μF，\nU=100 V。若(1)电阻R=3 kΩ；(2)R=2 kΩ；(3)R=200 Ω，试分别求在上述电阻值时电路中\n的电流i 和电压\n。\n\n图7-40\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "9ddb4d02-8bbd-5472-95dd-d772475e1aa8",
+      "fingerprint": "8f9896ba226d223fd3b429f9b3d1b6f78236f0726fa7de2cdad8d4ed67cb982f",
+      "document_id": 22,
+      "label": "课后题 7-25",
+      "status": "included",
+      "bucket": "second_order",
+      "tags": [
+        "first_order",
+        "second_order"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-25 图7-41 所示电路中R=3 Ω，L=6 mH，C=1μF，\n=12 V，电路已处稳态。设开关S 在\nt=0 时打开，试求\n(t)。\n图7-41\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "c1c20fbf-b98a-509a-82d6-e16b244dd845",
+      "fingerprint": "077a5fc1d72138bcb52886453be0098744885eb8dc5bb3824bccbfb3e57e9c3a",
+      "document_id": 22,
+      "label": "课后题 7-26",
+      "status": "included",
+      "bucket": "second_order",
+      "tags": [
+        "first_order",
+        "second_order"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-26 图7-42 所示电路在开关S 动作前已达稳态；t=0 时S 由1 接至2，求t＞0 时的\n。\n图7-42\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "6b8de7b5-8803-5ced-9755-24aabdc74930",
+      "fingerprint": "c59bdb5cc8944f17f011755270a1c8fda8ee46aa722eefed40b394105c069ca9",
+      "document_id": 22,
+      "label": "课后题 7-27",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order",
+        "thevenin"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-27 图7-43 所示电路中，已知\n=10ε(t)A，R1=1 Ω，R2=2 Ω，C=1μF，\n(0-)=2 V，g=0.25 \ns。求全响应i1(t)、\n(t)、\n(t)。\n图7-43\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": true
+    },
+    {
+      "uuid": "4decb53f-baf9-561c-8d7d-6eb5570c8f68",
+      "fingerprint": "0646147bd456edcf5199d78ea9aca8ebafc7ad9f1095b0363657775c712ee8aa",
+      "document_id": 22,
+      "label": "课后题 7-28",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-28 图7-45(a)所示电路中的电压u(t)的波形如图7-45(b)所示，试求电流i(t)。\n图7-45\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "cf7e1309-dac2-58b2-862d-33722f0b8aa6",
+      "fingerprint": "e14f54b786a976d01449d69a25468227dbe3463ebd6d16d425a280e9c9f3dcd5",
+      "document_id": 22,
+      "label": "课后题 7-29",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-29 RC 电路中电容C 原未充电，所加u(t)的波形如图7-46 所示，其中R=1000 Ω，\nC=10μF。求电容电压\n，并把\n：\n(1)用分段形式写出；(2)用一个表达式写出。\n图7-46\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "d2418068-3819-536b-902d-987d1df57f42",
+      "fingerprint": "41e44aa8b7fbd831b2b52b1a3ebe8858e85139cd811a185b96ef74392170e38c",
+      "document_id": 22,
+      "label": "课后题 7-30",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order",
+        "thevenin"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-30 图7-47 所示电路中，\n(0-)=0，R1=3 kΩ，R2=6 kΩ，C=2.5 μF，试求电路的冲激响应\n、i1和\n。\n图7-47\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": true
+    },
+    {
+      "uuid": "157b0df4-c5fa-5413-b26e-63336c2c1fbe",
+      "fingerprint": "e007cbc2d40f3e9bf1a6ed858abbd4f0f12c58a17e50a239aa2906f107dc58d0",
+      "document_id": 22,
+      "label": "课后题 7-31",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order",
+        "thevenin"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-31 图7-48 所示电路中\n(0-)=0，R1=6 Ω，R2=4 Ω，L=100 mH。求冲激响应\n和\n。\n图7-48\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": true
+    },
+    {
+      "uuid": "6b2c726c-26b4-5e61-8cd2-41a56e871c2b",
+      "fingerprint": "17d28781ae8062143c74f316b525b16fd3b6e3968f66f589983bd9171cc38800",
+      "document_id": 22,
+      "label": "课后题 7-32",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order",
+        "thevenin"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-32 图7-49 所示电路中电容原未充电，求当\n给定为下列情况时的\n和\n：\n(1)\n=25ε(t)mA；(2)\n=δ(t)mA。\n图7-49\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": true
+    },
+    {
+      "uuid": "de9f921f-1c07-5bfa-ac5b-af526a92571e",
+      "fingerprint": "dd43be5d7f74248da37dc78f52abb6d43929ab691f18607410b5dec6633631b0",
+      "document_id": 22,
+      "label": "课后题 7-33",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order",
+        "thevenin"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-33 电路如图7-50 所示，当：(1)\n=δ(t)A，\n(0-)=0；(2)\n=δ(t)A，\n(0-)=1 V；(3)\n=3δ(t-2)A，\n(0-)=2 V 时，试求响应\n(t)。\n图7-50\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": true
+    },
+    {
+      "uuid": "e97e120b-d20d-5bad-81f1-9faf9b6c3607",
+      "fingerprint": "7a952ab52f77bee01405b3bfef3aeb445f85e459f9b904988636fa1fe885a9b9",
+      "document_id": 22,
+      "label": "课后题 7-34",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order",
+        "thevenin"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-34 图7-51 所示电路中，\n=ε(t)V，\n=5ε(t)V，试求电路响应\n(t)。\n图7-51\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": true
+    },
+    {
+      "uuid": "b45c8ff6-11cc-530d-b24f-0387ccff9de0",
+      "fingerprint": "e9f6b2f6601b1bc7286796e24b253dd2a50ce10fd97b71a47f6a05c702e056fe",
+      "document_id": 22,
+      "label": "课后题 7-35",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order",
+        "thevenin",
+        "superposition_sources"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-35 图7-52 所示电路中，电源\n=[50ε(t)+2δ(t)]V，求t＞0 时电感支路的电流i(t)。\n图7-52\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": true
+    },
+    {
+      "uuid": "c094e564-47d2-5752-9d76-2a5e31ac8759",
+      "fingerprint": "ea60c411b504f0e6c938d5598c0f91d523295dea8a0bdd7bbc76df257dfa1076",
+      "document_id": 22,
+      "label": "课后题 7-36",
+      "status": "included",
+      "bucket": "second_order",
+      "tags": [
+        "second_order"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-36 图7-53 所示电路中，G=5 S，L=0.25 H，C=1 F。求：\n(1)\n(t)=ε(t)A 时，电路的阶跃响应\n(t)；\n(2)\n(t)=8(t)A 时，电路的冲激响应\n(t)。\n图7-53\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "0eea1739-6832-5da3-93ae-79eef8d3a5d5",
+      "fingerprint": "1c542f4a709dfc9e9d056828294054b740f27fa1e5ad2ff3368e23633cf8a56e",
+      "document_id": 22,
+      "label": "课后题 7-37",
+      "status": "included",
+      "bucket": "second_order",
+      "tags": [
+        "second_order"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-37 当\n(t)为下列情况时，求图7-54 所示电路的响应\n：\n(1)\n(t)=10ε(t)V；(2)\n(t)=10δ(t)V。\n图7-54\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "5f356868-f518-5efc-8388-732d0b61e503",
+      "fingerprint": "8857e3de587e8c40ca2d9e3295e77ba794437cdd71ba75124b330212733fa401",
+      "document_id": 22,
+      "label": "课后题 7-38",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "已核对第7章逐题题干/解答；RLC二阶题号单独列明，非整章当一阶"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "7-38 已知图7-55(a)电路中，\n(t)=ε(t)V，C=2 F，其零状态响应为\n如果用L=2 H 的电感代替电容C，如图7-55(b)所示，试求零状态响应u2(t)。\n图7-55\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "a43930ba-b887-53f2-b590-096c2277dd6a",
+      "fingerprint": "a62bd2bad166d05d8ba64877b6b2060614dfb44b115315b65819bce24785d884",
+      "document_id": 22,
+      "label": "课后题 8-1",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "8-1 将下列复数化为极坐标形式：\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "e9b82fe1-8419-5667-9196-80cc49cee078",
+      "fingerprint": "deea61d6de7f7ad1e87458713a7d94833e4d35f3bc023da1102b02e96fb8a7da",
+      "document_id": 22,
+      "label": "课后题 8-2",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "8-2 将下列复数化为代数形式：\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "9b6222f7-e8a6-5b12-bca5-dda3dbbe00a6",
+      "fingerprint": "517ea3be9a9c61a27e76c9b2d901bc01a7cf1701cd4c81b0e42fe904de8d95f5",
+      "document_id": 22,
+      "label": "课后题 8-3",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "8-3 若\n，求A 和\n。\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "e2115c8b-af11-50a6-9d13-147daeefaf87",
+      "fingerprint": "45560b849f2dc2e70237fbecfdfa150687c48b4e1c8991c650fd420e0df1055e",
+      "document_id": 22,
+      "label": "课后题 8-6",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "8-6 已知\n。求\n最小时的F1。\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "d24c4e81-065c-5e4a-85f3-c6e7ab95865e",
+      "fingerprint": "791cd3f7efd020c4ae87b367c5ac481e5a43a7002f08f0372626a7178ab75ac9",
+      "document_id": 22,
+      "label": "课后题 8-7",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "8-7 若已知两个同频正弦电压的相量分别为\nV，其频率f=100 \nHz。求：(1)u1、u2的时域形式；(2)u1与u2的相位差。\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "c705e0ea-81b1-504e-acb4-669b81db4cff",
+      "fingerprint": "f9b2b41db35ce3fb7b1c7a12cb2cd99955168e8461d635c0b27ab692d33d4fc1",
+      "document_id": 22,
+      "label": "课后题 8-8",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "8-8 已知一段电路的电压、电流为\n(1)画出它们的波形图，求出它们的有效值、频率f 和周期T；\n(2)写出它们的相量和画出其相量图，求出它们的相位差；\n(3)如把电压u 的参考方向反向，重新回答(1)、(2)。\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "bf2b8432-3b33-5b67-b838-dc20ae12f07c",
+      "fingerprint": "9e841c9beef06d013ae583687bf0d13567a2118c79b9050ec4c470e2d5bc8360",
+      "document_id": 22,
+      "label": "课后题 8-9",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "8-9 已知图8-7 所示3 个电压源的电压分别为\n\n求：(1)3 个电压的和；(2)\n、\n；(3)画出它们的相量图。\n图8-7\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "32cb5441-4f0d-525c-bbfb-000dbc8ff1f1",
+      "fingerprint": "6125e57517ee45507a057d9d95eb4ef4b179871a10a764149cd6293bc359c1e7",
+      "document_id": 22,
+      "label": "课后题 8-10",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "8-10 已知图8-9(a)中电压表读数为V1：30V，V2：60V；图8-9(b)中的V1：15 V，V2：80 \nV，V3：100 V(电压表的读数为正弦电压的有效值)。求图8-9 中电压\n的有效值Us。\n\n图8-9\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "163cee84-c643-5a9e-bc6e-fbd65e9ed9c3",
+      "fingerprint": "239be2dd71ca8a52f1ca52ca62f005b2a16a65080b97fd69992394cd2a46affc",
+      "document_id": 22,
+      "label": "课后题 8-11",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "8-11 如果维持图8-11 所示电路中A1的读数不变，而把电源的频率提高一倍，再求电流表A\n的读数。\n图8-11\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "f45ded9b-8b32-5d45-9b8d-d1b0915bb68e",
+      "fingerprint": "cae0708492f17f9601c2008583b499b327cc6dc0b1059a5faeb78ed60f88ca0d",
+      "document_id": 22,
+      "label": "课后题 8-12",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "8-12 对RC 并联电路作如下2 次测量：(1)端口加120 V 直流电压(ω=0)时，输入电流为4 \nA；(2)端口加频率为50 Hz，有效值为120 V 的正弦电压时，输入电流有效值为5 A。求R\n和C 的值。\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "dcbfcc05-6dfa-5ed5-ba99-92b26c63ecfe",
+      "fingerprint": "5a37ceb7be23fb44f6035eadb87d184ba250e3b999262df4ecb52f04bc0daaa4",
+      "document_id": 22,
+      "label": "课后题 8-13",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "8-13 某一元件的电压、电流(关联方向)分别为下述4 种情况时，它可能是什么元件?\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "357590cc-732d-5661-9d6c-2fa16500f932",
+      "fingerprint": "e6cfd2ae7d9f6b30757221e9f989f005855bfd589205e923a287cb4f3e90bb9b",
+      "document_id": 22,
+      "label": "课后题 8-14",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "8-14 电路由电压源\n=100cos(103t)V 及R 和L=0.025H 串联组成，电感端电压的有效值为\n25 V\n求R 值和电流的表达式\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "bf581b51-a0c4-5724-9673-99e706d6e51a",
+      "fingerprint": "b9869c1552597dab78306e819f40a140006f1dd91f9df04f1a9844c79ef1006e",
+      "document_id": 22,
+      "label": "课后题 8-16",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "8-16 图8-13 所示电路中\n。求电压\n。\n图8-13\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "7ebf48d1-7242-5636-a42a-c90168c373a2",
+      "fingerprint": "039c1b198e506279f5ad2d90e227f5ab2eae849ebf45b85a1c09e400d77fb1dd",
+      "document_id": 22,
+      "label": "课后题 8-18",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "superposition_sources",
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "8-18 已知图8-15 中US=10 V(直流)，L=1μH，R1=1 Ω，\n=2cos(106t+45°)A。用叠加定理求\n电压\n和电流\n。\n图8-15\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "2d0d2a84-76d1-5828-aec2-e48d4f92278a",
+      "fingerprint": "77e107a1ca2e5a6b8e6488aa6caf4eb30e2d3219f242672cc1b1a5fcf83bd041",
+      "document_id": 22,
+      "label": "课后题 8-19",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor",
+        "nodal_mesh"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "8-19 求图8-17 中所示的电流\n(分三种情况：β＞1，β＜1 和β=1)。\n图8-17\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "989f90a2-4148-56af-a6b7-ed41a3219e77",
+      "fingerprint": "608c3bf32da8714625956d6ab5e57af328972b36c2360de56081b1f2e18fa9e8",
+      "document_id": 22,
+      "label": "课后题 8-20",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "8-20 已知图8-18 中\n，R=3 Ω，C=0.2 μF，\n。求：\n(1)各支路电流；(2)支路1 可能是什么元件?\n图8-18\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "4232e8c1-f7a1-54d1-87b0-590c1d8e3d0d",
+      "fingerprint": "e648a7994ff24f6a676a374b263f2e0c821e310300768584b390e6396fa47d6f",
+      "document_id": 22,
+      "label": "课后题 9-1",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor",
+        "thevenin"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "9-1 试求图9-3 所示各电路的输入阻抗Z 和导纳Y。\n图9-3\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "f308f188-b775-55a5-af11-ff9c94bb237f",
+      "fingerprint": "0bc47e5e54fedafd3d603b6a94fafe9d66913c9f6ec530a2e54661b51da81d72",
+      "document_id": 22,
+      "label": "课后题 9-2",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "y_delta_bridge",
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "9-2 将图9-4 所示三角形[图9-4(a)]和星形[图9-4(b)]联结的电路转换为等效星形和三角形联\n结的电路。\n图9-4\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "3f48be70-f014-5933-a1e7-32debb932a94",
+      "fingerprint": "7196ef51ba9e4085c02571846864cea9833c29cdf41c9f4bd4dfb63ac0e95335",
+      "document_id": 22,
+      "label": "课后题 9-3",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "9-3 图9-5 中N 为不含独立源的一端口，端口电压u、电流i 分别如下列各式所示。试求每\n一种情况下的输入阻抗Z 和导纳Y，并给出等效电路图(包括元件的参数值)。\n图9-5\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "5ca7b46d-8574-5faf-b847-005a7c59e05f",
+      "fingerprint": "ef0b7b83905a45d695d9ce352f82e22483517a6e76fb32f496666df385c86a34",
+      "document_id": 22,
+      "label": "课后题 9-4",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "9-4 已知图9-7 所示电路中\n，电流表A 的读数为5 A。ωL=4 Ω，求电\n流表A1、A2的读数。\n图9-7\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "087736ba-99df-57c2-bca5-64af2d2485fd",
+      "fingerprint": "1b3d9de4a99442279f9cf1f9f55294edbee6c1e2f8a63b2704f5b2163ba2c7ad",
+      "document_id": 22,
+      "label": "课后题 9-5",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "9-5 图9-8 所示电路中，\n，求电流\n和电压\n，并画出电路的相量图。\n图9-8\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "8599ec6b-5438-5f12-89db-0940be361d27",
+      "fingerprint": "49e66e311121e5e13c78e56b694542ffea4e9a9e3cba1b2611160b8598f75e12",
+      "document_id": 22,
+      "label": "课后题 9-6",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "9-6 图9-10 中\n，调节电容，使电压\n，电流表A1的读数为50 \nmA。求电流表A2的读数。\n图9-10\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "312767c6-17a9-56f8-a179-3edba3b803e6",
+      "fingerprint": "48106a2a1400ce83f2fa4b35201468af352231c470eec80ddb137bf8ee4d134d",
+      "document_id": 22,
+      "label": "课后题 9-8",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "9-8 已知图9-13 所示电路中U=8 V，Z=(1-j0.5)Ω，Z1=(1+j1)Ω，Z2=(3-j1)Ω。求各支路电流\n和电路的输入导纳、画出电路的相量图。\n图9-13\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "254e61d5-65a6-5062-acef-8ad8cb123062",
+      "fingerprint": "f66d045376e5ee7e985d87aa50ac3c2726f672254c673e86cf173ca51c5f2d2c",
+      "document_id": 22,
+      "label": "课后题 9-10",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "9-10 图9-17 所示电路中，当S 闭合时，各表读数如下：V 为220 V、A 为10 A、W 为1000 \nW；当S 打开时，各表读数依次为220 V、12 A 和1 600 W。求阻抗Z1和Z2，设Z1为感性\n(图9-17 中表W 称为功率表，其读数=Re[\n]，U 为表W 跨接的电压相量，\n为从*端流\n进表W 的电流相量)。\n图9-17\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "91c923e8-9b91-5b49-ab7d-e3a048c83462",
+      "fingerprint": "91b22e392370a059d43fd01fcf6f155195f85b36592f7b97627631be2415de63",
+      "document_id": 22,
+      "label": "课后题 9-11",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "9-11 已知图9-18 所示电路中，各交流电表的读数分别为V：100 V；V1：171 V； V2：240 \nV。I=4 A，P1=240 W(Z1吸收)，求阻抗Z1和Z2。\n图9-18\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "a76959be-0c16-53e7-96fc-08dce1cbfe92",
+      "fingerprint": "f640bb5e2696267fc4b2e78153ba5fd6175ba706cf36f3a776a60c9f56df85f3",
+      "document_id": 22,
+      "label": "课后题 9-12",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "9-12 如果图9-19 所示电路中R 改变时电流I 保持不变，L、C 应满足什么条件?\n图9-19\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "0f9e6440-4474-5096-b3a7-34193fd19f03",
+      "fingerprint": "ad0ea5c4a8fd511ccb13060937e2927b879fb06763da35e121eabd29c2181636",
+      "document_id": 22,
+      "label": "课后题 9-13",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "9-13 如图9-20 所示电路在任意频率下都有Ucd=Us试求：\n(1)满足上述要求的条件；(2)Ucd相位的可变范围。\n图9-20\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "a7fad8d7-038b-543b-ae02-1d129946e464",
+      "fingerprint": "e75ee1f2b1b10b09e1647dbdcfb900af898cdf95dec800f0b8d44a2de8ec9750",
+      "document_id": 22,
+      "label": "课后题 9-14",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor",
+        "y_delta_bridge"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "9-14 已知图9-21 所示电路中的电压源为正弦量，L=1 mH，R0=1 kΩ，Z=(3+j5)Ω。试求：\n(1)当\n=0 时，C 值为多少?(2)当条件(1)满足时，试证明输入阻抗为R0。\n图9-21\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "0386ccc4-6a6d-526f-8e42-2f93540a089f",
+      "fingerprint": "86e3a5fdb9076236b9b244b7551703f321838dc73052299e244d44d3e5b8105c",
+      "document_id": 22,
+      "label": "课后题 9-15",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "9-15 在图9-22 所示电路中，已知U=100 V，R2=6.5Ω，R=20 Ω，当调节触点c 使Rac=4 Ω 时，\n电压表的读数最小，其值为30 V。求阻抗Z。\n\n图9-22\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "b8e81b35-c90d-583c-9937-8681d61c0a18",
+      "fingerprint": "2edbad4b55753a0c30e3c597a3b8c5cbf33b24196af89a0d5d1edd3d73b7efd9",
+      "document_id": 22,
+      "label": "课后题 9-16",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "9-16 已知图9-23 所示电路中，当Z=0 时，\n=\n；当Z=∞时，\n=\n。端口2-\n的\n输入阻抗为ZA。试证明Z 为任意值时有\n图9-23\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "229910e5-bc8f-544a-803e-8fd0f4fce55c",
+      "fingerprint": "58beeac6971cfb6965e83eda3bf23ed972e7a133c93b9a5f3de550ed2ff79fcd",
+      "document_id": 22,
+      "label": "课后题 9-17",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "nodal_mesh",
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "9-17 列出图9-24 所示电路的回路电流方程和结点电压方程。已知\n=14.14cos(2t)V，\n=1.414cos(2t+30°)A。\n\n图9-24\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "1ded8fba-fe2e-530a-a1c8-307f2106c65f",
+      "fingerprint": "4f13bf2b16b5e46501627e3967e2e2bcd19c306147711b8f01385b74967d02b6",
+      "document_id": 22,
+      "label": "课后题 9-18",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "9-18 已知图9-26 所示电路中，\n=10 A，ω=5 000 rad/s，R1=R2=10Ω，C=10μF，μ=0.5。求\n电源发出的复功率。\n图9-26\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "4e72400f-e677-534a-add2-4f01d495a08a",
+      "fingerprint": "742d542a66c5592beea3bca5d996dd3c581d2a5037ea8d39a2b2af9b7e9f81cc",
+      "document_id": 22,
+      "label": "课后题 9-19",
+      "status": "included",
+      "bucket": "max_power",
+      "tags": [
+        "phasor",
+        "max_power",
+        "thevenin"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "9-19 图9-28 所示电路中R 可变动，\n。试求R 为何值时，电源\n发出的功率\n最大(有功功率)?\n图9-28\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "9bd50384-b854-5725-b113-2ef4db656c0c",
+      "fingerprint": "e5dc74f5dfb89d859c0aad01afaa0f88467e2ed4fa0dd1881aefaabbe8b22220",
+      "document_id": 22,
+      "label": "课后题 9-21",
+      "status": "included",
+      "bucket": "max_power",
+      "tags": [
+        "max_power",
+        "phasor"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "9-21 如图9-29 所示电路中，已知\n=0.6 A，R=1 kΩ，C=1 μF。如果电流源的角频率可变，\n问在什么频率时，RC 串联部分获最大功率?\n图9-29\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "84e1fa75-8f90-5071-963d-254af977cd60",
+      "fingerprint": "07ac3fb9ffffe1d824fe3062a5684c53114ae7f4133442e22d273b0a629e6c5c",
+      "document_id": 22,
+      "label": "课后题 9-22",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "9-22 图9-31 所示电路中R1=R2=10 Ω，电压表的读数为20 V，功率表的读数为120 W。试\n求\n和电源发出的复功率\n(L=0.25 H，C=10-3 F)。\n图9-31\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "27087230-78d8-5128-be95-69ce88a0f409",
+      "fingerprint": "977810df28c4fb8c08711f8f209ad54940da511d3af4a7a471898c2b4f4451dd",
+      "document_id": 22,
+      "label": "课后题 9-23",
+      "status": "included",
+      "bucket": "max_power",
+      "tags": [
+        "max_power",
+        "phasor",
+        "thevenin"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "9-23 图9-32 中R1=R2=100 Ω，\n=\n=1 H，C=100μF，\n，ω=100 rad/s。求\n能获得的最大功率。\n图9-32\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "938fa632-8b4f-5d49-8646-cd88fd30a4cf",
+      "fingerprint": "6d367d98f0b69caf98b865ec762770fa4671bcd3e10848032517be5b53771323",
+      "document_id": 22,
+      "label": "课后题 9-24",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor",
+        "thevenin"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "9-24 图9-34 中的独立电源为同频正弦量，当S 打开时，电压表的读数为25 V。电路中的阻\n抗为Z1=(6+j12)Ω，Z2=2Z1。求S 闭合后\n为何值时，图中电压表V 的读数最大?并求\n此时电压表V 的读数。\n\n图9-34\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "0393b859-a427-5c36-8cef-b88937e9507e",
+      "fingerprint": "03f9b66abf9d56d5949808400a8a57e2bc5e16dd76a914a7546d1defb1b87415",
+      "document_id": 22,
+      "label": "课后题 9-25",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "9-25 把3 个负载并联接到220 V 正弦电源上，各负载取用的功率和电流分别为：P1=4.4 \nkW，\n=44.7 A(感性)；P2=8.8 kW，\n=50 A(感性)；P3=6.6 kW，\n=60 A(容性)。求图9-\n36 中表A、W 的读数和电路的功率因数。\n图9-36\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "50505ed3-b76e-5a26-b5cf-11f62615f914",
+      "fingerprint": "b3c1966efa92fb9dd75226cd967b1e8662ca5dae79c1c9718825aae028a6e98c",
+      "document_id": 22,
+      "label": "课后题 9-26",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "9-26 已知图9-37 中\nN0中无独立源。求N0吸收的复功率和输入阻抗\n。\n图9-37\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "96e678d8-7b3c-501f-9b27-11d2e0e890f4",
+      "fingerprint": "460f813e3aa1214938dfd1016d6370ec1798d0441fe501af0c62b40123feda26",
+      "document_id": 22,
+      "label": "课后题 9-27",
+      "status": "included",
+      "bucket": "max_power",
+      "tags": [
+        "phasor",
+        "max_power",
+        "thevenin",
+        "nodal_mesh"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "reason": [
+        "题干/解答为同频相量、阻抗或交流功率计算"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "9-27 已知图9-38 中\n。求当\n获最大功率时各独立源\n发出的复功率。\n图9-38\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "46dfae15-e314-5cc5-88ff-7fb12016f134",
+      "fingerprint": "5ffa263d29e75969686d187604154c6df78ea09c28236774a753738665bb6a0f",
+      "document_id": 22,
+      "label": "课后题 10-17",
+      "status": "included",
+      "bucket": "transformer",
+      "tags": [
+        "max_power",
+        "transformer"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "reason": [
+        "所选10-17、10-19、10-20题干明确为理想变压器"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "10-17 如果使10Ω 电阻能获得最大功率，试确定图10-32 所示电路中理想变压器的变比n。\n图10-32\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "c550b3c1-d67e-5c93-815b-92c90f551ad1",
+      "fingerprint": "66d65473ce049aad33b02024a83c8b8b87712367ef0fe6905f89f0f063e02bb9",
+      "document_id": 22,
+      "label": "课后题 10-19",
+      "status": "included",
+      "bucket": "transformer",
+      "tags": [
+        "transformer"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "reason": [
+        "所选10-17、10-19、10-20题干明确为理想变压器"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "10-19 已知图10-35 所示电路的输入电阻Rab=0.25Ω。求理想变压器的变比n。\n图10-35\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "9a7e8c78-315c-5566-89a8-93deee86357c",
+      "fingerprint": "9771e9a84ad9932aaa2c6f28c73455cbdc77b4071128f28c0edb11a1b00c7237",
+      "document_id": 22,
+      "label": "课后题 10-20",
+      "status": "included",
+      "bucket": "transformer",
+      "tags": [
+        "first_order",
+        "transformer"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "reason": [
+        "所选10-17、10-19、10-20题干明确为理想变压器"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "10-20 图10-37 所示电路中开关S 闭合时\n=\ncostV，求电流i1和i2，并根据结果给出含\n理想变压器的等效电路。\n\n图10-37\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "3bccab3a-dc2d-5c9d-abad-5176bf076ac6",
+      "fingerprint": "dfcd1fc5176b0337c2d12ed174533fae678f8a584e96f0d79fd6c00d6b0faac3",
+      "document_id": 22,
+      "label": "课后题 11-3",
+      "status": "included",
+      "bucket": "resonance",
+      "tags": [
+        "resonance"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "reason": [
+        "题干明确谐振、Q或带宽"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "11-3 RLC 串联电路中R=1 Ω，L=0.01 H，C=1μF。求：\n(1)输入阻抗与频率ω 的关系；(2)画出阻抗的频率响应；\n(3)谐振频率ω0；(4)谐振电路的品质因数Q；(5)通频带的宽度BW。\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "bb7fa4e9-65b2-561a-a314-c2e183e9dad9",
+      "fingerprint": "fd1e02beb88890370f4422f8b359a774db55ec2a5509454f50b41ae049704137",
+      "document_id": 22,
+      "label": "课后题 11-5",
+      "status": "included",
+      "bucket": "resonance",
+      "tags": [
+        "resonance"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "reason": [
+        "题干明确谐振、Q或带宽"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "11-5 已知RLC 串联电路中，R=50 Ω，L=400 mH，谐振角频率ω0=5000 rad/s，Us=1 V。求\n电容C 及各元件电压的瞬时表达式。\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "1f5df15a-f1f3-5f3d-8006-c40fc144166b",
+      "fingerprint": "d6ab1cd0c0d1e8ab9623de3cf7485a6d5c49bcd414b5ebda4f0fbf826cf57d1b",
+      "document_id": 22,
+      "label": "课后题 11-8",
+      "status": "included",
+      "bucket": "resonance",
+      "tags": [
+        "resonance"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "reason": [
+        "题干明确谐振、Q或带宽"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "11-8 RLC 串联电路谐振时，已知BW=6.4 kHz，电阻的功耗2μW，\n(t)=\ncos(ω0t)mV 和\nC=400 pF。求：L、谐振频率\n和谐振时电感电压\n。\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "2fc6640f-2741-538d-82f4-295e01830798",
+      "fingerprint": "00a1b469319ce1f212244a6dede3bef06f49b5fbdce209b9671991c4c9957c60",
+      "document_id": 22,
+      "label": "课后题 11-9",
+      "status": "included",
+      "bucket": "resonance",
+      "tags": [
+        "resonance"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "reason": [
+        "题干明确谐振、Q或带宽"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "11-9 RLC 串联电路中，Us=1 V，电源频率\n=1 MHz，发生谐振时1(jω0)=100 mA，\n(jω0)=100 V，试求R、L 和C 的值，Q 值和通带BW。\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "9567e00e-1633-551a-93d3-70fb59381d26",
+      "fingerprint": "f1c1953c24aa1c250349f58a63813dcf9419d68708f9ba289e930c57d2e5b719",
+      "document_id": 22,
+      "label": "课后题 11-10",
+      "status": "included",
+      "bucket": "resonance",
+      "tags": [
+        "resonance"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "reason": [
+        "题干明确谐振、Q或带宽"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "11-10 RLC 并联谐振时，\n=1 kHz，Z(jω0)=100 kΩ，BW=100 Hz，求R、L 和C。\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "531cdf69-4a20-580f-8cf6-9f10ce9e87fd",
+      "fingerprint": "42b1a731ba0480304f31c169907016793391a73d263ba720a5e9e930dd8630e8",
+      "document_id": 22,
+      "label": "课后题 11-11",
+      "status": "included",
+      "bucket": "resonance",
+      "tags": [
+        "resonance"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "reason": [
+        "题干明确谐振、Q或带宽"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "11-11 求图11-11 所示电路的谐振频率及各频段的电抗性质。\n图11-11\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "dcd10793-b871-5277-a278-d5b3bd6d180e",
+      "fingerprint": "a84f4f4e8a073335fdb0e88a7616a3b4032f68da975bf21cf5a4903191e73f6f",
+      "document_id": 22,
+      "label": "课后题 11-12",
+      "status": "included",
+      "bucket": "resonance",
+      "tags": [
+        "max_power",
+        "resonance"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "reason": [
+        "题干明确谐振、Q或带宽"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "11-12 图11-12 所示电路中\n=20 mA，L=100μH，C=400 pF，R=10 Ω。求：电路谐振时的\n通带BW 和\n等于何值时能获得最大功率，并求最大功率。\n图11-12\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "4c25dcce-fdb1-5677-88f9-393ae3418fc3",
+      "fingerprint": "99bff92abf83e797bbe141c326b5b11baeded36373bf2a870cdaad2529921db9",
+      "document_id": 22,
+      "label": "课后题 11-13",
+      "status": "included",
+      "bucket": "resonance",
+      "tags": [
+        "phasor",
+        "resonance"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "reason": [
+        "题干明确谐振、Q或带宽"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "11-13 图11-13 所示电路中R=10 Ω，c=0.1 μF，正弦电压\n的有效值Us=1 V，电路的Q 值\n为100，求：参数L 和谐振时的\n。\n图11-13\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "846dbf34-59c2-5520-ac91-7452130fbb8c",
+      "fingerprint": "46b811c2372b1c1f277de67b20525042abad75aef86cf00b49e603a379001fc7",
+      "document_id": 22,
+      "label": "课后题 11-14",
+      "status": "included",
+      "bucket": "resonance",
+      "tags": [
+        "resonance"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "reason": [
+        "题干明确谐振、Q或带宽"
+      ],
+      "evidence_method": "pdf_text_layer",
+      "evidence": "11-14 图11-14 中C2=400 pF，\n=100μH。求下列两种条件下，电路的谐振频率ω0：\n\n图11-14\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "befe9a83-82c1-58e5-9b17-b42703a8bc8a",
+      "fingerprint": "de369bbc79a1a532c9c164b57422f57f4c16a20552f266f9e958bc7a12b9cdd2",
+      "document_id": 24,
+      "label": "1998年 · 第2题",
+      "status": "included",
+      "bucket": "resonance",
+      "tags": [
+        "resonance"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：resonance"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "=. (15 分 ) 试 求 RLC 串联 电路 〈 如 下 图 ) 的 电流 幅 频 响应 十 = 7(O,B) 和 电\n0\n流 相 频 响 应 W -wo =f (O,B)\n15\nBok: KABARAAH ARS: KARAS ASTRA\nIKAREERR 中 科 院 电工 所 考研 联系 狗 哥 09:3456449441\n式 中 ， 故 -谐振 电",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "ae8c24de-5e98-5c3e-8d41-7fde0f2998af",
+      "fingerprint": "15b5821d435b37e4e96f4d2a87a5699113044ad215814a15c7afdf11d4d3b131",
+      "document_id": 24,
+      "label": "1999年 · 第3题",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：phasor"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "三 、 5 4) WFAA, BRU, =23.5xV2cos(10000-45°)V , R = 102,\nR, = 400, L, =50mH,L, =1H\n(1) WUREER LF RU, WR RENIO, RPMS?\n(2) 当 厅 为 上 述 数值 时 ， 求 电压 源 V7s 输出 的 复 功率 。\nR j 4\n一 [一 一\nR, |\nai ",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "bbea9a0d-cdb6-5139-9bd7-0d944932adec",
+      "fingerprint": "8020429fe477e8e476710f42ebee9213160dae74c31301eb2497c410459a1a55",
+      "document_id": 24,
+      "label": "1999年 · 第5题",
+      "status": "included",
+      "bucket": "laplace",
+      "tags": [
+        "laplace"
+      ],
+      "tier": "cross",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：laplace"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "五 、 15 分 ) EATER, R=30,L=1H,C=0.5F,i, =14,U, =e2P, 厂 C 元\n件 初 始 储 能 为 0， 用 运算 法 求 电流 雹 的 时 域 响应 。\n21\nBik: KABA BASH AS: KATATE CT BATS\nTKABEA 中 科 院 电工 所 考研 联系 狗 哥 99:3456449441",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "c13a9885-f219-56ea-a3cc-d85bfaec4d59",
+      "fingerprint": "1bb16f36d59d4e90034821457b558d99b317946aeb443d2c40e41faa1b0308a5",
+      "document_id": 24,
+      "label": "2001年 · 第1题",
+      "status": "included",
+      "bucket": "max_power",
+      "tags": [
+        "max_power"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：max_power"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "一 、(10 分 ) 图 示 电路 中 ， 负 载 电阻 玉 NE, RR 为 何 值 时 可 吸收 最 大 功率 ? 并 计算\n此 功率 值 和 刺 的 电压 和 电流 值 。\ni, 2i, 42\n> +\n2a 4i,\n2a ie\n+ R,\nOw",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "39d500df-5b86-5558-86f0-d3cf6354bc61",
+      "fingerprint": "422ea390986e1b7419c9ab52402a11f025da9cd90d20b637a8bc388a8c7558e3",
+      "document_id": 24,
+      "label": "2001年 · 第7题",
+      "status": "included",
+      "bucket": "resonance",
+      "tags": [
+        "phasor",
+        "resonance"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：phasor,resonance"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "七 、( 5 分 ) 图 示 电路 中 ， 避 ,为 正弦 电压 ， 角 频率 为 w ， 求 其 输入 阻抗 ， 当 为何 值 时 ，\n该 电路 发 生 谐 振 ， 此 时 对 应 的 输入 阻抗 为 多 少 ?",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "079305ae-3a1a-5229-b6ea-810440d8fb0b",
+      "fingerprint": "fbf27e7b7d50797553d81a0f87a562ee8752b5ae014e5936c08e7d56dbf10a67",
+      "document_id": 24,
+      "label": "2003年 · 题2",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：first_order"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "2, (15 分 ) 图 示 电路 中 ， 在 != 0 时 刻 开关 在 位 置 1 闭合 ， 然 后 在 一 个 时 间\n常数 后 ， 开 关 移 到 位 置 2， 求 +> 0 的 电流 iD) 。\n31\nB 站 ， 水 木 政 研 电气 考研 ARS: ARS CT BAST\n水 木 政 研 中 科 院 电工 所 考研 联系 狗 哥 99:34564",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "6e1b84f4-13be-5d7a-94c0-7c6f5e4a057a",
+      "fingerprint": "cbd3c3d73b5b371a5a80da4d80a3eeb10aba3a7b6597ede205723c5e396fc16d",
+      "document_id": 24,
+      "label": "2003年 · 题5",
+      "status": "included",
+      "bucket": "resonance",
+      "tags": [
+        "thevenin",
+        "resonance"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：thevenin,resonance"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "5、 (12 分 ) 一 个 线圈 与 电容 相 串 联 ， 线 圈 电 阻 R=16.20 ， 线 圈 电 感\n工 =0.26m7， 当 把 电容 调节 到 100Z 下 时 发 生 串 联 谐振 。\nCL) 求 谐振 频率 和 品质 因数 。\n(2) 设 外 加 电压 为 10U7 ， 当 频率 等 于 线路 谐振 频率 和 比 谐振 频率 高 10%\n",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "0034dab3-84d4-50cb-9068-dc61aa92e13f",
+      "fingerprint": "89141e50898b227f6380b9b8b0a60e77322143804bc076539c664194fdc9343c",
+      "document_id": 24,
+      "label": "2003年 · 题6",
+      "status": "included",
+      "bucket": "thevenin",
+      "tags": [
+        "thevenin"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：thevenin"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "6、 (ISS) RAAB EE ab 端的 戴 维 南 和 诺顿 等 效 电 路 。【 ”电工 所\n班主 任 狗 哥 qq:; 3456449441)\n49 J10Q. 3\nob",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "6e81086d-59fe-547e-af24-f27d568cee7b",
+      "fingerprint": "9fad40594b09e701420d3db9f574e16af45ad36af84bffd60dcea37ca7d26fc8",
+      "document_id": 24,
+      "label": "2004年 · 题1",
+      "status": "included",
+      "bucket": "thevenin",
+      "tags": [
+        "thevenin"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：thevenin"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "1、 用 戴 维 南 定理 求 题 图 1 所 示 电 路 的 电流 羡 〈30 分 ) 。\n中 a 吉 *",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "0e131a5e-1f84-5ac7-97b2-cf13cab3dd63",
+      "fingerprint": "d717bb1b3bdb3d809c7d632720f00cb26a32debae8e3f32fc80c9de3c8d57c73",
+      "document_id": 24,
+      "label": "2005年 · 题2",
+      "status": "included",
+      "bucket": "max_power",
+      "tags": [
+        "max_power"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：max_power"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "2. (15 分 ) 在 图 2 中 ，R 为 多 少时 获得 最 大 功率 ， 最 大 功率 为 多 大 ?\n69\n[|\nLt\n39\nBoA: KARAS ARS: KARAS BAST\nTRAE 中 科 院 电工 所 考研 联系 狗 哥 99:3456449441",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "41137f00-2002-5f68-8713-8de7c3d1f6f6",
+      "fingerprint": "2dac1fa67c159abc62ce5e69f1e14e8732f714dff642bb59c96da7c24c7a36f6",
+      "document_id": 24,
+      "label": "2005年 · 题6",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：phasor"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "6、 (15 分 ) 如 图 6， 已 知 电源 电压 UV=2007 ， 电 路 吸收 的 有 功 功率\nP=1000W, yas o=3l4rad/s, HR=R,=R=R, L=1,=1,=1R\nR、L、C 的 值 。【 电工 所 班主 任 狗 哥 qq;， 3456449441)",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "7b9c70df-89da-5a93-a645-d25b39742a06",
+      "fingerprint": "540f19bcbf182ce454873a96cb8582a726236b67c0624009b000db538f0428c2",
+      "document_id": 24,
+      "label": "2007年 · 第4题",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：phasor"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "PY. 15 分 ) 图 4 中 ， 正 弦 稳 态 电路 中 ， 避 =100 及 只 =500,R, =1002, #\nLWW, A: X, =? 整 个 电路 的 功率 因数 最 小 ， 并 求 此 时 电路 的 功率 因数 和 电\n路 的 有 功 功率 。【 电工 所 班主 任 狗 哥 qq; 3456449441]\nO\n十\nR, i\nU i, t ",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "d23e8326-1f0b-5563-bf03-cc1926438ef5",
+      "fingerprint": "3afb873bba39d1c005fb17c3387cc70b42c94e68e5c40443ee3e80ea52f2346d",
+      "document_id": 24,
+      "label": "2007年 · 第5题",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：phasor"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "Fy (15 分 ) 图 示 正 弦 交 流 电路 ， 已 知 电 路 消耗 的 有 功 功率 P=17.320,\nwR 2 =1,=1,, HEARUBU =U, =U, =U, =20V » Rx, x. Zz, Fil\nZz°\nAy _,,C\n44\nB 站 : KARR AST 公众 号 : ATES RTT ASOT\nTRASRAT 中 科 院 电工",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "0703e1f2-cb21-5f4f-98b8-08496623f004",
+      "fingerprint": "32fc2d41e02a31e1771b0d663448f5f5258a0bd58f06e865c7c21a52d8c7212a",
+      "document_id": 24,
+      "label": "2009年 · 题1",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：first_order"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "1、 求 下 图 的 时 间 常数 ， 已 知 Rl1=10Q2，R2=69，L=0.SH。【 电工 所 班主 任\n狗 哥 qq: 3456449441)\n十 0.5u,",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "a6493a0d-fee2-57b2-ba73-a86db8b59431",
+      "fingerprint": "1701fdee285cde570f9b4ad7b0f0fc035af35ef5339e5ced042658c46f16379a",
+      "document_id": 24,
+      "label": "2009年 · 题2",
+      "status": "included",
+      "bucket": "max_power",
+      "tags": [
+        "max_power"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：max_power"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "2, FARAH PPA. RR, 获得 最 大 功率 的 条 件 ， 并 求 此 最 大 功率 。\n1k\n[一 上 一\n7 3kQ\n27\nmD 2[] 6” Is\n47\nBoi: KABA RTSH ARS: AGT RTE ARTES",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "6748f66c-dc8a-5181-bcad-05ca99c7438c",
+      "fingerprint": "d22b3526dad3c6ab08df3a7ba69070bed3e160c68af5f46732eacf90a045d049",
+      "document_id": 24,
+      "label": "2010年 · 题2",
+      "status": "included",
+      "bucket": "max_power",
+      "tags": [
+        "max_power"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：max_power"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "2, BARR, R,=R, =200,R, =100,C =250uF,g,, =0.0258,U, = 20V FB\n压 源 角 频 率 为 100rad /1s 。 试 问 : HAZ, 为 何 值 时 ， 可 获得 最 大 功率 ? 并 求 出\n该 功率 的 值 。【 电工 所 班主 任 狗 哥 qq; 3456449441)",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "516f7fe6-ff8d-5cfb-9a97-0fd802ce36e2",
+      "fingerprint": "1b342a6c08cd828e04d06968f62d4f12b9c02a180815a485142f90bd0e3b7750",
+      "document_id": 24,
+      "label": "2014年 · 第7题",
+      "status": "included",
+      "bucket": "max_power",
+      "tags": [
+        "max_power"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：max_power"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "七 、 (20 分 ) 电路 如 下 图 所 示 ， 已 知 电压 源\nus (t)=10V2 sin(ot +90°)V,100 电阻 上 流 过 的 电流 为 ?， 受 控 电 压 源 上 的\n电压 为 5 ， 方 向 如 图 。 求 负载 Z 多 大 时 ， 获 得 最 大 功率 P。。",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "00117e8e-ed32-567e-ba02-9693ce0ab708",
+      "fingerprint": "566ee1a610761dfd6035df1ecc7efaa632aee219f62716845e269940a5ca7c2a",
+      "document_id": 24,
+      "label": "2015年 · 题3",
+      "status": "included",
+      "bucket": "max_power",
+      "tags": [
+        "max_power"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：max_power"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "3、 电 路 如 图 所 示 。 为 线性 电阻 网 络 ， 已 知 条 件 如 图 (a) 所 示 。\n求 图 (b) 电路 中 及 取 何 值 可 获得 最 大 功率 ? 最 大 功率 为 ?\n1 5A 2\n1 2 22\n+ 器\n»D | Ne | @lle 省 Nr 16\n+ ISA,\n7 \" 2\n7 2 1\n59\nBik: AABHABASH AS:",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "99ce2db9-f735-56c1-8e95-e9fa83200578",
+      "fingerprint": "c40e4314752c97481adfe10f73fbc760a61a7c804e43692beebc46e8749d958b",
+      "document_id": 24,
+      "label": "2015年 · 题4",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：phasor"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "ES eae oe nr\n时 ， 由 变压器 原 边 传输 到 副 边 的 有 功 功 率 为 最 大 ? 此 时 电阻 R 消耗\n的 功率 是 多 少 ?\nGHO2 52",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "7dcd86db-2e35-53f2-925f-9227f0b27fad",
+      "fingerprint": "bb4a44cd4389e7ebff9c26c6a1da804abb39df95c4f426bc4c6a1e52fe1e8431",
+      "document_id": 24,
+      "label": "2016年 · 第3题",
+      "status": "included",
+      "bucket": "max_power",
+      "tags": [
+        "max_power"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：max_power"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "三 、 如 图 所 示 电 路 ， 求 Z 为 多 少时 ， 获 得 最 大 功率 。\n14\n<\n， L\n2 中 10 i []z",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "d94ec883-693c-577f-a4fb-b23fa94eeaa6",
+      "fingerprint": "0739f3d086d55de4f90e7d5d866bd3ea419983f443f991238b53aabbd7437ab8",
+      "document_id": 24,
+      "label": "2017年 · 第2题",
+      "status": "included",
+      "bucket": "max_power",
+      "tags": [
+        "max_power"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：max_power"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "=. MARR, RZ, 为 多 少时 ， 获 最 大 功率 ， 最 大 功率 为\n多 少 。\n1+JG\n1\n| Se .\n+ I\n[一 一\nov (|\nL_\nYY\niN\n5\n已\nxX",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "89e4f9bc-9f11-5397-8dc3-91e19ef5e82d",
+      "fingerprint": "41ddf3570c885453821cc7d3e221047d0e4bcdfef0d0f07788e398881842e1c0",
+      "document_id": 24,
+      "label": "2018年 · 第2题",
+      "status": "included",
+      "bucket": "thevenin",
+      "tags": [
+        "thevenin"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：thevenin"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "二 、 电 路 如 图 所 示 ， 求 端口 ab 的 戴 维 南 等 效 电路 。\n34\n<\n1502\n{_}\n400 100\n+o a\n+\n3007 ({) 80",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "8914539e-5cee-5013-9426-751c1d1a7dc1",
+      "fingerprint": "9f6861dabab37b71c4f0740c31ad18e809aa114321d1e87985bdbff5fb35a81e",
+      "document_id": 24,
+      "label": "2018年 · 第5题",
+      "status": "included",
+      "bucket": "resonance",
+      "tags": [
+        "resonance"
+      ],
+      "tier": "foundation",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：resonance"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "五 、 电 路 如 图 所 示 ， 已 知 电 路 的 具体 参数 如 下 所 示 :\nR=200,@=5000rad /s,U,, =100V,L =12mH, C = 5 uF\nR: C1) i(t),UpUyUes (2) 四 和 品质 因数 Q 。\n+U, 一 +U7 一\n202 学",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "519033f5-bbee-59e7-9191-2dd50f38fb57",
+      "fingerprint": "8a9e09adb095edcff371fc99aa59f2c7c7b2db3d67671d991356427c94960ea4",
+      "document_id": 24,
+      "label": "2018年 · 第8题",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：phasor"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "八 、 下 图 所 示 的 正弦 交流 稳 态 电路 中 ， 当 电压 工作 频率 为\nwor-1000rad1s 时 ， 电 阻 电压 几 的 =0， 当 其 工作 频率 增加 一 倍 时 ， 电 阻\n电压 的 有 效 值 为 电源 电压 有 效 值 的 交 倍 ， 当 电源 电压\nu,(t) =100+100V2 sin1000¢-+100V2sin20",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "7480710b-caec-5896-8a0d-f841dea5badc",
+      "fingerprint": "5e162d9020a68d7cb61ee8b3e7676b86d5ac8602d7390594e54b25123b16ffad",
+      "document_id": 24,
+      "label": "2019年 · 第1题",
+      "status": "included",
+      "bucket": "thevenin",
+      "tags": [
+        "thevenin"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "reason": [
+        "匹配题干关键词：thevenin"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "一 、 简 述 戴 维 宁 定 理 。",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "cef4576f-605b-5a19-a3db-b5bdf4c282e2",
+      "fingerprint": "847d89f5770ca30be5e0af1240999440e79a2a3bf57c017b489bbe6406a9f91c",
+      "document_id": 24,
+      "label": "2019年 · 第2题",
+      "status": "included",
+      "bucket": "max_power",
+      "tags": [
+        "thevenin",
+        "max_power"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：thevenin,max_power"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "二 、 如 图 所 示 ， 玉 可 变 ， 化 简 该 电路 RL 两 端 端口 的 戴 维 宁 电 路 ，\nFF:\n1) SR, ARMEN, R, 可 获得 最 大 功率 ?\n2) 当 尺 .为 何 值 时 ，R 可 获得 最 大 功率 ?\n— 2, + 40.\n20\n4i,\n72\nBik: KASSAB AMS: AROS RT ASE\nTKASET ",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "c7f94852-0bd8-5fbf-a440-79171fd96f15",
+      "fingerprint": "b0490f14eb15db5fc82b94139bc55d3fea6369f5a0514c0410495cedffc980fe",
+      "document_id": 24,
+      "label": "2019年 · 第6题",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：phasor"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "六 、 如 图 6 所 示 ，vx=380coswrV ， 感 性 负载 Z 的 电流 为 已 =10A ， 功\nAMA =06， 有 R=300 ， 求 总 功率 因数 4;， 若 将 4 提高 至 0.9， 应 当\n40\n- 0",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "1ba72390-91f1-5a90-a93f-abbf082c0655",
+      "fingerprint": "521c402bf2bd82782fe61ba07bc8c34bc9329e2fc2c5d5646f7d91ee86390cb8",
+      "document_id": 24,
+      "label": "2020年 · 第1题",
+      "status": "included",
+      "bucket": "thevenin",
+      "tags": [
+        "thevenin"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "reason": [
+        "匹配题干关键词：thevenin"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "一 、 请 简 述 戴 维 南 〈 戴 维 宁 ) 定理 。",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "6104746a-713d-58c2-ac48-8beb352af30d",
+      "fingerprint": "8c3f7803bb5479490d135deead27ed755c0cf3c62f57384631fb04ffb932024d",
+      "document_id": 24,
+      "label": "2020年 · 第6题",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：phasor"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "六 、 电 路 如 图 所 示 ， 已 知 图 中 电压 为 220V 〈50Hz) ， 负 载 电流 的 有\n效 值 为 =318A， 负 载 功 率 P=42kw。\n站 和\n(1) 求 该 电阻 电感 电路 的 功率 因数\n(2) 加 入 20kw 的 白炽 灯 ， 为 图 中 R2， 求 接 入 后 六 的 时 域 表 达 式 和\n功率 因数\n0\ni ",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "36e591e9-f0ee-5c20-a840-c1cccf7c14f9",
+      "fingerprint": "e2c9b3cd91735b97de35bfb6323ed23625752a155bb5f522c871845afef6bba6",
+      "document_id": 24,
+      "label": "2021年 · 第2题",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：phasor"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "二 、 建 立 一 个 线圈 在 直流 ， 低 频 交 流 ， 高 频 交 流下 的 电路 模型 .〈 用\n理想 电路 元 件 ) .\n80\nBok: ARR ARS: KARST RST",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "ddc41850-6c3f-545d-8eac-1de29df81093",
+      "fingerprint": "53e8cf70e63acccc7613228fb8399c89ce2daef242bd510c851804564f4014b3",
+      "document_id": 24,
+      "label": "2021年 · 第6题",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：phasor"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "六 、C=10UF w=5000rad/s Uo =50-/150V, R=R,=102, g=0.5\n求 Ve 和 受 控 源 分 别 发 出 的 复 功 率\n82\nB 站 : KARAS ARS: ARASH RTS",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "c12d5cd8-5795-5035-ba60-151a83708664",
+      "fingerprint": "c1565fbf60c6cdcf9300c2b362c34432460e29ba9614f5cc85bad004ac40227f",
+      "document_id": 24,
+      "label": "2022年 · 2·题4",
+      "status": "included",
+      "bucket": "thevenin",
+      "tags": [
+        "thevenin"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：thevenin"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "4. 如 图 2 所 示 ， 求 电路 的 戴 维 宁 等 效 电路 。\n32 - V+\n人 S Oa\n[| 40 30 中",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": true,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "4140d2be-f30b-5e32-849b-eb3aab544786",
+      "fingerprint": "331f3a8603fc558f63b48a71c9b2a676086c581172c7e0e6fbaba23148e3d094",
+      "document_id": 24,
+      "label": "2022年 · 2·题7",
+      "status": "included",
+      "bucket": "nodal_mesh",
+      "tags": [
+        "nodal_mesh"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：nodal_mesh"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "7. 如 图 5 所 示 ， 用 网 孔 电流 法 求解 电路 中 电流 元 及 电压 us。\n8Q\n1\na\n1 [sn (Dur\n20 t\n4Q -一\nhat\n| 159 4,",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "6d5691f8-ec7c-5694-86f3-8f8244ca39c9",
+      "fingerprint": "51953a3fe1d697c9033a6e9c69c7b7e38d9068c4a36673530b1ebd996df2ea83",
+      "document_id": 24,
+      "label": "2023年 · 2·题3",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "core",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：phasor"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "图 2\n3. 如 图 3 所 示 ， 为 了 确定 某 RC 并 联 电路 的 参数 ， 作 如 下 两 次 测量 。\n第 一 次 测量 如 图 3 (a) 所 示 ，RCc 并 联 电路 的 端口 加 1207 直流 电压 时 ，\n测 得 输入 电流 为 24 。 第 二 次 测量 如 图 3 (b) 所 示 ，RC 并 联 电路 的\n端口 加 频率 为 ",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "90b881d4-ee49-5059-ab75-c1d050f51083",
+      "fingerprint": "bcd49cf365708dbd8c354f40e3dd6eca54ee3e12e09985119408543f904145ff",
+      "document_id": 24,
+      "label": "2024年 · 1·题1",
+      "status": "included",
+      "bucket": "thevenin",
+      "tags": [
+        "thevenin"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "reason": [
+        "匹配题干关键词：thevenin"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "CL) 简 述 戴 维 南 定理",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "adfbf6a2-8232-5a8e-a411-c2178bdacf50",
+      "fingerprint": "2d78d594d48455a981072d454ac686c53277fc262fd2d67b9752a7635aec333f",
+      "document_id": 24,
+      "label": "2024年 · 1·题2",
+      "status": "included",
+      "bucket": "thevenin",
+      "tags": [
+        "thevenin"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "reason": [
+        "匹配题干关键词：thevenin"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "〈2) 简 述 戴 维 南 定理 能 解决 的 问题\n计算 题 :",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "cc8df21a-f674-5676-9808-31635aaf033b",
+      "fingerprint": "fcb9d27314892db6588b2ad49ce76c55661c36eefad21bb6ed85b232b2b87d3d",
+      "document_id": 24,
+      "label": "2025年 · 1·填空4",
+      "status": "included",
+      "bucket": "first_order",
+      "tags": [
+        "first_order"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "reason": [
+        "匹配题干关键词：first_order"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "4, 电路 在 S 闭合 前 稳 态 ，S 闭合 时 , 立 (0)=_; 决定 了 电压 /电流 变化 快慢 的 是 ，\n也 叫 时 间 常 数 。LR 电路 中 时 间 常 数 为 °\nIl0 i\n[上 >\nWAN\n2i 个 4H\nna\n“中 a} 人",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "b4ed89e5-00ec-59a4-b07b-29fbe31a77d9",
+      "fingerprint": "3529994f9e0b2d6db001346f8401be53323bb6c07a92b0c7a4e1c0f43ffe0047",
+      "document_id": 24,
+      "label": "2025年 · 1·填空6",
+      "status": "included",
+      "bucket": "resonance",
+      "tags": [
+        "resonance"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "reason": [
+        "匹配题干关键词：resonance"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "6、RLC 串联 电路 中 ，Xc = 人 时 ， 略 = ， 品 质 因 数 妃 = 。",
+      "has_own_question_crop": true,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "180c5602-9674-53e7-9e2e-7c3aab6d9667",
+      "fingerprint": "67ba8260c92b5c13545ae5604a0dd98bf092d6c1184597cf00c49708fb23ce0c",
+      "document_id": 24,
+      "label": "2026年 · 1·填空4",
+      "status": "included",
+      "bucket": "phasor",
+      "tags": [
+        "phasor"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "reason": [
+        "匹配题干关键词：phasor"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "4、 复 功率 的 模 值 是\n功率 ， 虚 部 是 功率 。",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "666b330b-5d3a-51dd-831c-c7c7bcfa92ba",
+      "fingerprint": "ca2aa232ace232ac656add4ff55619cfdcbbd34c12ecf54de960b2d51c8d2b0f",
+      "document_id": 24,
+      "label": "2026年 · 1·填空8",
+      "status": "included",
+      "bucket": "nodal_mesh",
+      "tags": [
+        "nodal_mesh"
+      ],
+      "tier": "foundation",
+      "kind": "concept",
+      "reason": [
+        "匹配题干关键词：nodal_mesh"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "8、 一 个 电路 中 有 了 个 节点 和 b 个 支 路 ， 可 以 列 出 “个 独立 的 KCL 方程 ， 个 独\n立 的 KVL 方程 。",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "e4d73f83-2b2b-59ed-915c-dba0de9f114a",
+      "fingerprint": "25e4a624a1a51d27a293b3034d3ea102aad1e3656bf9c359a58e8f8c0d189881",
+      "document_id": 24,
+      "label": "2026年 · 2·题3",
+      "status": "included",
+      "bucket": "laplace",
+      "tags": [
+        "first_order",
+        "laplace"
+      ],
+      "tier": "cross",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：first_order,laplace"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "3、 电 路 如 图 3 tax, 开关 S 闭合 前 电路 已 达 稳 态 ,=0 时 开关 SHI, U=10V, R=40Q,\nC=100UF， 工 =1H ， 用 运算 法 求 上 t> 0 时 的 (0。\nS(t=0)  p\neT\noD) took",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    },
+    {
+      "uuid": "25ff2088-04b1-58eb-878d-720be3d4ed0c",
+      "fingerprint": "9a496d495abece2b2948d2d499bfa89705eda63b8917e6f1165b213852918d91",
+      "document_id": 24,
+      "label": "2026年 · 2·题4",
+      "status": "included",
+      "bucket": "max_power",
+      "tags": [
+        "max_power"
+      ],
+      "tier": "advanced",
+      "kind": "calculation",
+      "reason": [
+        "匹配题干关键词：max_power"
+      ],
+      "evidence_method": "cached_local_ocr",
+      "evidence": "4、 电 路 如 图 4 iat, us (t)=10cos20rV , i,(t)=10cos201A , L=0.05H, C=0.1F, R=1Q,\nZ, 可 变 ， 当 2 为 多 少时 ，2, 可 获得 最 大 功率 ， 并 求 此 最 大 功率 。\n+\ni, Cred) 一 c R Yo\n图 4",
+      "has_own_question_crop": false,
+      "has_own_answer_crop": false,
+      "combined_first_order_thevenin": false
+    }
+  ]
+}
