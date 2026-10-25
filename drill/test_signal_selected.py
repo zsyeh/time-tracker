@@ -38,6 +38,7 @@ class SignalRuleTests(SimpleTestCase):
         self.assertEqual(classify('计算傅里叶级数并画频谱')['bucket'], 'fourier_series')
         self.assertEqual(classify('由维纳–辛钦定理求相关函数')['bucket'], 'correlation')
         self.assertEqual(classify('卷积性质是否正确', label='2020年 · 判断3')['tier'], 'foundation')
+        self.assertEqual(classify('说明Z变换和单位圆的关系', label='SIG-SA-12')['tier'], 'foundation')
         self.assertEqual(classify('', topic='z变换')['status'], 'review')
         self.assertEqual(classify('求z变换', scope='out_of_scope')['status'], 'review')
         self.assertEqual(classify('1、求卷积\n2、求频谱', source='cached_local_ocr')['status'], 'review')

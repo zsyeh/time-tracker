@@ -550,8 +550,8 @@
         "laplace",
         "convolution"
       ],
-      "tier": "core",
-      "kind": "calculation",
+      "tier": "foundation",
+      "kind": "concept",
       "combined_z_initial": false,
       "reason": [
         "题干明确匹配：laplace、convolution"
@@ -569,8 +569,8 @@
       "tags": [
         "laplace"
       ],
-      "tier": "core",
-      "kind": "calculation",
+      "tier": "foundation",
+      "kind": "concept",
       "combined_z_initial": false,
       "reason": [
         "题干明确匹配：laplace"
@@ -611,7 +611,7 @@
         "fourier_series"
       ],
       "tier": "foundation",
-      "kind": "calculation",
+      "kind": "concept",
       "combined_z_initial": false,
       "reason": [
         "题干明确匹配：fourier、fourier_series"
@@ -629,8 +629,8 @@
       "tags": [
         "sampling"
       ],
-      "tier": "advanced",
-      "kind": "calculation",
+      "tier": "foundation",
+      "kind": "concept",
       "combined_z_initial": false,
       "reason": [
         "题干明确匹配：sampling"
@@ -649,8 +649,8 @@
         "fourier",
         "system_function"
       ],
-      "tier": "core",
-      "kind": "calculation",
+      "tier": "foundation",
+      "kind": "concept",
       "combined_z_initial": false,
       "reason": [
         "题干明确匹配：fourier、system_function"
@@ -687,8 +687,8 @@
       "tags": [
         "spectrum"
       ],
-      "tier": "advanced",
-      "kind": "calculation",
+      "tier": "foundation",
+      "kind": "concept",
       "combined_z_initial": false,
       "reason": [
         "题干明确匹配：spectrum"
@@ -707,8 +707,8 @@
         "laplace",
         "system_function"
       ],
-      "tier": "core",
-      "kind": "calculation",
+      "tier": "foundation",
+      "kind": "concept",
       "combined_z_initial": false,
       "reason": [
         "题干明确匹配：laplace、system_function"
@@ -727,8 +727,8 @@
         "z_transform",
         "system_function"
       ],
-      "tier": "core",
-      "kind": "calculation",
+      "tier": "foundation",
+      "kind": "concept",
       "combined_z_initial": false,
       "reason": [
         "题干明确匹配：z_transform、system_function"

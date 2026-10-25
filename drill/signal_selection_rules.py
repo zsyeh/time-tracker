@@ -66,6 +66,7 @@ def classify(stem, *, label='', topic='', scope='', source='structured_text'):
     # A bare h(t) computation via convolution is a convolution exercise, not
     # an assumption that the question explicitly asks for a Laplace method.
     concept = ('填空' in label or '选择' in label or '判断' in label or '背诵' in topic
+               or bool(re.search(r'SA-\d|简答', label))
                or bool(re.search(r'简述|简答|说明.{0,8}(?:条件|性质|区别)|什么是|何谓', text)))
     result.update(status='included', bucket=primary,
                   tier='foundation' if concept else next(b[2] for b in BUCKETS if b[0] == primary),
