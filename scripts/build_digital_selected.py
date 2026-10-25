@@ -19,6 +19,7 @@ from drill.digital_selection_rules import BUCKETS, classify
 
 def build(inventory, workbook, index, caches):
     papers = {p['source_fingerprint']: p for p in index['papers'] if p['book'] == 'electronics'}
+    overrides={r['uuid']:r for r in json.loads((Path(__file__).resolve().parents[1]/'drill/data/digital_selected_priority_overrides_v1.json').read_text())['questions']}
     records = []
     for q in inventory:
         stem = q['prompt']; method = 'structured_text'; skip = ''
@@ -65,6 +66,11 @@ def build(inventory, workbook, index, caches):
                 heading = re.search(r'\n[一二三四五六七八九十]+\s*[、．.]\s*(?:填\s*空|选\s*择|判\s*断|计\s*算|解\s*答|简\s*答)', stem)
                 if heading: stem = stem[:heading.start()]
         classified = classify(stem, label=q['label'], topic=q['topic'], scope=q['scope'], source=method)
+        override=overrides.get(q['uuid'])
+        if override and override['fingerprint']==q['fingerprint'] and q['scope']!='out_of_scope':
+            stem=override['evidence'];method='reviewed_source_override'
+            classified.update(status='included',bucket=override['bucket'],tier=override['tier'],kind=override['kind'],
+                              tags=[override['bucket']],combined_standard=True,reason=[override['reason']])
         if q['document']==25 and len([a for a in q['assets'] if a['asset_type']=='question_crop'])>3:
             classified.update(status='review',reason=['多页旧裁图可能混入整卷/多题，独立归属待核对'])
         if q['document']==25 and q['label']=='2003年 · 版本1 · 题1':

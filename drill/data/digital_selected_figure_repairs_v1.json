@@ -1,0 +1,16 @@
+{
+  "schema_version": 1,
+  "source_sha256": "4dd052df4cabe65aa0c4bd31cb6911015610547a77b7c516bede26a5a9a422f0",
+  "regions": [
+    {
+      "uuid": "0c097fa8-6d62-5d48-82f4-9a3052c61df3",
+      "fingerprint": "9f4c519150c80e997755eb113016608e30dfe220bb02cbb264d942430bb2ecb0",
+      "label": "课后题 4.21",
+      "page_index": 222,
+      "bbox": [42, 438, 210, 581],
+      "position": 1,
+      "figure_label": "图 A4.21",
+      "review_reason": "答案图在下一题题干下方，与图P4.22并排；已对照整页确认只取左侧图A4.21，不能用水平整行扩展而混入下一题。此框包含数据选择器、A/B/C输入、输出Y及完整图注。"
+    }
+  ]
+}

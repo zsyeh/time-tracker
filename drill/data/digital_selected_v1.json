@@ -1221,15 +1221,16 @@
       "evidence_method": "local_crop_ocr",
       "evidence": "[题 2.1] 试用列真值表的方法证明下列异或运算公式。\n(1) 4@0 =4               (2) A@1 =A\"\n\n(3) A@A=0              (4) 494'=1\n\n(5) (A®@B)@C=AS( BOC)    (6) A(B@C)= AB@AC\n(7) A@B’=(A@B)'=A@BO1\n",
       "status": "included",
-      "bucket": "comb_analysis",
+      "bucket": "logic_basics",
       "tags": [
-        "comb_analysis"
+        "comb_analysis",
+        "logic_basics"
       ],
-      "tier": "core",
-      "kind": "analysis",
-      "combined_standard": true,
+      "tier": "foundation",
+      "kind": "calculation",
+      "combined_standard": false,
       "reason": [
-        "题干明确匹配：comb_analysis"
+        "题干明确匹配：comb_analysis、logic_basics"
       ]
     },
     {
@@ -1240,15 +1241,16 @@
       "evidence_method": "local_crop_ocr",
       "evidence": "[题2.3] 已知逻辑函数 Y, AMY, 的真值表如表 P2.3(a) .(b)所示,试写出 内 和 六 的逻辑函数式。\n表 P2.3(a)                            # P2.3(b)\nA 8 ¢|]%                    A 606 © D1;\n000 | 4                     oo 0 ofo\neye a ie                   0 0 1 oft\nwey We i                    0 o 1 1] ",
       "status": "included",
-      "bucket": "comb_analysis",
+      "bucket": "logic_basics",
       "tags": [
-        "comb_analysis"
+        "comb_analysis",
+        "logic_basics"
       ],
-      "tier": "core",
-      "kind": "analysis",
-      "combined_standard": true,
+      "tier": "foundation",
+      "kind": "calculation",
+      "combined_standard": false,
       "reason": [
-        "题干明确匹配：comb_analysis"
+        "题干明确匹配：comb_analysis、logic_basics"
       ]
     },
     {
@@ -1259,15 +1261,16 @@
       "evidence_method": "local_crop_ocr",
       "evidence": "[题 2.5j 列出下列逻辑机数的真值表。\n(1) ¥,=A\"B+BC+ACD\"\n(2) ¥,=A'B'CD'+( BOC) 'D+AD\n",
       "status": "included",
-      "bucket": "comb_analysis",
+      "bucket": "logic_basics",
       "tags": [
-        "comb_analysis"
+        "comb_analysis",
+        "logic_basics"
       ],
-      "tier": "core",
-      "kind": "analysis",
-      "combined_standard": true,
+      "tier": "foundation",
+      "kind": "calculation",
+      "combined_standard": false,
       "reason": [
-        "题干明确匹配：comb_analysis"
+        "题干明确匹配：comb_analysis、logic_basics"
       ]
     },
     {
@@ -1278,15 +1281,16 @@
       "evidence_method": "local_crop_ocr",
       "evidence": "[题2.8] 已知逻辑函数了的波形图如图 P2.8 所示,试求了的真值表和逻辑函数式。\nLIA.\noO\nB | | 1 1 | fiifi & | I t\n\n1    I    1\n1    1    1\n1    I    1\nULL\n1 1 1      | 1\n1 1 1      1 ot\n上| | 1      tot\noO\n7 | | 1 i 1 1 1 | | | t\n1 ot [| 1 1 1 1\n1 1      toto\n| | | i | | |\nOr 7\n图 P2.8\n",
       "status": "included",
-      "bucket": "comb_analysis",
+      "bucket": "logic_basics",
       "tags": [
-        "comb_analysis"
+        "comb_analysis",
+        "logic_basics"
       ],
-      "tier": "core",
-      "kind": "analysis",
-      "combined_standard": true,
+      "tier": "foundation",
+      "kind": "calculation",
+      "combined_standard": false,
       "reason": [
-        "题干明确匹配：comb_analysis"
+        "题干明确匹配：comb_analysis、logic_basics"
       ]
     },
     {
@@ -1513,15 +1517,16 @@
       "evidence_method": "local_crop_ocr",
       "evidence": "[题3.10] 图P3.10中的G-G, Je OD 输出结构的与非门 74HC03 ,它们接成线与结构。试写出线与输出\nY AGHA A, A,B, B,C, C.D, Dy 之间的逻辑关系式,并计算外接电阻 Ry 取值的允许范围。\n已知 yw=5 V,74HC03 输出高电平时漏电流的最大值为 fww many = 5 hA,低电平输出电流最大值为 /wo=\n5.2 mA,此时的输出低电平为 Vion aun) = 0.33 V。负载门每个输入端的高 .低电平输入电流最大值为*1 kA。要\nORE Voy 24",
       "status": "included",
-      "bucket": "comb_analysis",
+      "bucket": "electrical",
       "tags": [
-        "comb_analysis"
+        "comb_analysis",
+        "electrical"
       ],
-      "tier": "core",
-      "kind": "analysis",
-      "combined_standard": true,
+      "tier": "cross",
+      "kind": "calculation",
+      "combined_standard": false,
       "reason": [
-        "题干明确匹配：comb_analysis"
+        "题干明确匹配：comb_analysis、electrical"
       ]
     },
     {
@@ -1742,18 +1747,18 @@
       "fingerprint": "9f4c519150c80e997755eb113016608e30dfe220bb02cbb264d942430bb2ecb0",
       "document_id": 20,
       "label": "课后题 4.21",
-      "evidence_method": "local_crop_ocr",
-      "evidence": "[题4.21] 设计用3个开关控制一个电灯的逻辑电路,要求改变任何一个开关的状态都能控制电灯由亮\n",
+      "evidence_method": "reviewed_source_override",
+      "evidence": "题4.21：设计用3个开关控制一个电灯的逻辑电路，要求改变任何一个开关的状态都能控制电灯由亮变灭或者由灭变亮。要求用数据选择器来实现。",
       "status": "included",
-      "bucket": "comb_design",
+      "bucket": "mux",
       "tags": [
-        "comb_analysis"
+        "mux"
       ],
-      "tier": "core",
+      "tier": "advanced",
       "kind": "design",
       "combined_standard": true,
       "reason": [
-        "题干明确匹配：comb_analysis"
+        "逐题对照原稿：旧OCR漏掉第二行的数据选择器限制；按用户优先级归入MUX器件应用，不当作基础门电路设计核心题。"
       ]
     },
     {
@@ -1902,15 +1907,16 @@
       "evidence_method": "local_crop_ocr",
       "evidence": "[题5.1] 画出图 P5. 1 由与非门组成的 SR 锁存器输出端 QQ'的电压波形,输入端 Sy .Rs 的电压波形如图\n中所示。\nSo.\nDO\nRy                        i\no                       t\n图 P5.1\n",
       "status": "included",
-      "bucket": "comb_analysis",
+      "bucket": "flipflop",
       "tags": [
-        "comb_analysis"
+        "comb_analysis",
+        "flipflop"
       ],
-      "tier": "core",
+      "tier": "advanced",
       "kind": "analysis",
-      "combined_standard": true,
+      "combined_standard": false,
       "reason": [
-        "题干明确匹配：comb_analysis"
+        "题干明确匹配：comb_analysis、flipflop"
       ]
     },
     {
@@ -1921,15 +1927,16 @@
       "evidence_method": "local_crop_ocr",
       "evidence": "[题5.2] 面出图 P5.2 由或非门组成的 SR 锁存器输出端 QQ'的电压波形,输入端 Se Ry 的电压波形如\n图中所示。\nSo\nSo           o\nO\nRy                   ‘\nRy           2\n0\n图 P5.2\n",
       "status": "included",
-      "bucket": "comb_analysis",
+      "bucket": "flipflop",
       "tags": [
-        "comb_analysis"
+        "comb_analysis",
+        "flipflop"
       ],
-      "tier": "core",
+      "tier": "advanced",
       "kind": "analysis",
-      "combined_standard": true,
+      "combined_standard": false,
       "reason": [
-        "题干明确匹配：comb_analysis"
+        "题干明确匹配：comb_analysis、flipflop"
       ]
     },
     {
@@ -3471,25 +3478,6 @@
       "combined_standard": false,
       "reason": [
         "题干明确匹配：comb_analysis"
-      ]
-    },
-    {
-      "uuid": "01b0a824-d224-5492-9ebf-8cd749d4b4b4",
-      "fingerprint": "b6ac17550a76d6e2e7172aa78b1c8a604c6112f8d2c07190145da73f23cc2c5a",
-      "document_id": 25,
-      "label": "2008年 · 第2题 · 选择4",
-      "evidence_method": "cached_local_ocr",
-      "evidence": "4) “输入 失调 电压 越 大 表明 运 放 ( +).\nCA) 放大 倍数 越 大 (B) 输入 差分 级 失 配 越 严 重\n(C) 场 效 应 管 温 漂 越 大 CD) 功 耗 越 大",
-      "status": "included",
-      "bucket": "electrical",
-      "tags": [
-        "electrical"
-      ],
-      "tier": "foundation",
-      "kind": "concept",
-      "combined_standard": false,
-      "reason": [
-        "题干明确匹配：electrical"
       ]
     },
     {
@@ -5766,6 +5754,7 @@
       "tags": [
         "counter",
         "decoder",
+        "flipflop",
         "logic_basics",
         "shift_register"
       ],
@@ -5773,7 +5762,7 @@
       "kind": "concept",
       "combined_standard": false,
       "reason": [
-        "题干明确匹配：counter、decoder、logic_basics、shift_register"
+        "题干明确匹配：counter、decoder、flipflop、logic_basics、shift_register"
       ]
     },
     {
@@ -6257,15 +6246,16 @@
       "evidence_method": "cached_local_ocr",
       "evidence": "8. 下 列 选项 中 ， 选 项 〈 ) 逻辑 函数 式 的 真 值 表 是 下 表 。\nA.Y =A'B'CHA'BC'+AB'C'+ABC' B. Y=ABC'+A'B' C+AC\nC. Y=B' C+BC'+AC' D. Y=B' C+BC' +AB\n输入 输出 中 科 院 电子 信息 856 考研 群 : 912583405\nA B c Y\n0 0 0 0\n0 0 1 1\n0 1 0 1\n0 1 1 0\n1 0 0 1\n1 0 1 1\n1 1 0 1\n1 1 1 0\n第 2 页 共 7 页",
       "status": "included",
-      "bucket": "comb_analysis",
+      "bucket": "logic_basics",
       "tags": [
-        "comb_analysis"
+        "comb_analysis",
+        "logic_basics"
       ],
       "tier": "foundation",
       "kind": "concept",
       "combined_standard": false,
       "reason": [
-        "题干明确匹配：comb_analysis"
+        "题干明确匹配：comb_analysis、logic_basics"
       ]
     },
     {

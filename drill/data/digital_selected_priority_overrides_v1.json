@@ -1,0 +1,14 @@
+{
+  "schema_version": 1,
+  "questions": [
+    {
+      "uuid": "0c097fa8-6d62-5d48-82f4-9a3052c61df3",
+      "fingerprint": "9f4c519150c80e997755eb113016608e30dfe220bb02cbb264d942430bb2ecb0",
+      "bucket": "mux",
+      "tier": "advanced",
+      "kind": "design",
+      "evidence": "题4.21：设计用3个开关控制一个电灯的逻辑电路，要求改变任何一个开关的状态都能控制电灯由亮变灭或者由灭变亮。要求用数据选择器来实现。",
+      "reason": "逐题对照原稿：旧OCR漏掉第二行的数据选择器限制；按用户优先级归入MUX器件应用，不当作基础门电路设计核心题。"
+    }
+  ]
+}

@@ -8,4 +8,6 @@ Question navigation carries the collection, course, scope and material filters. 
 
 Initial manifest totals (2026-10-26): circuit 123, signal 169, analog 63, digital 42, communication 32; total 429. These are curated priorities, not exam probabilities. Material availability is **not** individual verification of completeness or answer matching. The page explicitly states that importance, question/diagram completeness and answer completeness need a separate audit. Do not call an image-presence check a passed visual review.
 
+Subsequent source review downgraded eight digital questions (pure Boolean/truth-table basics, latch waveforms, OD load resistance and MUX-specific design), without deleting them. Current core total: **421**, including digital 34. See `ei-selected-audit-20261026.md` for evidence and remaining checks.
+
 Checks: `python manage.py test drill.test_core_selected`; full Drill regression; frontend type/build; read-only desktop/mobile browser QA. Production deployment must first push GitHub, then fast-forward VPS, collect static and gracefully reload Gunicorn; never replace the production database.

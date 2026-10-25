@@ -3,6 +3,13 @@
   "inventory_count": 952,
   "records": [
     {
+      "uuid": "01b0a824-d224-5492-9ebf-8cd749d4b4b4",
+      "document_id": 25,
+      "label": "2008年 · 第2题 · 选择4",
+      "status": "excluded",
+      "reason": ["逐题复核：运放输入失调电压属于模电；不能因选项出现功耗而归入数电门电路电气特性。保留原题和模电归类。"]
+    },
+    {
       "uuid": "4c0fbc46-eac1-5b7d-b3e7-6ffbf66d218f",
       "document_id": 13,
       "label": "CMOS 门静态输入特性",

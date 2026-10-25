@@ -23,17 +23,17 @@ PATTERNS = {
     'comb_design':r'表决器|投票|奇偶校验|奇偶检测',
     'sync_design':r'设计.{0,15}(?:同步|时序)|状态编码|状态分配',
     'counter':r'计数器|计数电路|计数功能|74(?:LS|HC|HCT)?(?:161|163|160|162|90|92|93)|模[Nn\d一二三四五六七八九十]+计数',
-    'mux':r'数据选择器|多路选择器|MUX|[24816]+选[1一]|74(?:LS|HC)?(?:151|153|157)',
+    'mux':r'数据选[择译]器|多路选择器|MUX|[24816]+选[1一]|74(?:LS|HC)?(?:151|153|157)',
     'decoder':r'编码器|译码器|译码电路|74(?:LS|HC)?(?:138|139|148|154)',
-    'flipflop':r'触发器|[DJKTRS]+.{0,3}触发|特性方程|激励表',
+    'flipflop':r'触发器|锁存器|[DJKTRS]+.{0,3}触发|特性方程|激励表',
     'adder_comparator':r'加法器|半加器|全加器|数字比较器|数值比较器|比较.{0,5}(?:大小|器)|74(?:LS|HC)?(?:283|85)',
     'hazard':r'竞争|冒险|冗余项',
     'cmos':r'CMOS|MOS门|上拉网络|下拉网络|三态门|漏极开路|OD门',
     'logic_basics':r'卡诺图|化简|最小项|最大项|补码|反码|原码|进制|无关项|最简.{0,6}(?:与或|或与|逻辑)|逻辑代数|摩根|逻辑变量|逻辑运算',
     'shift_register':r'移位寄存器|移位过程|串并转换|序列发生器|序列信号发生|顺序脉冲|74(?:LS|HC)?(?:194|195)',
-    'electrical':r'噪声容限|噪声容[量限]|扇出|扇入|传播延迟|传输延迟|传输时间|功耗|驱动能力|噪声裕量|电气特性',
+    'electrical':r'噪声容限|噪声容[量限]|扇出|扇入|传播延迟|传输延迟|传输时间|功耗|驱动能力|噪声裕量|电气特性|外接电阻|上拉电阻|负载电阻',
 }
-ANALOG=r'深度负反馈|放大器|放大电路|集电极|基极|发射极|小信号等效|运算放大器|理想运放|功率放大|米勒效应|OCL|电压比较器|滞回|共模抑制'
+ANALOG=r'深度负反馈|放大器|放大电路|集电极|基极|发射极|小信号等效|运算放大器|运放|输入失调电压|功率放大|米勒效应|OCL|电压比较器|滞回|共模抑制|正向导通电压|正向电阻'
 EXTRA=r'异步时序|锁相环|微程序|动态RAM|动态存储器|地址扩展|存储器扩展|地址译码|乘法阵列|流水线|复杂级联|Verilog|VHDL|HDL|FPGA|CPLD|题目不全|图缺失|缺图|图不全|条件不全|题干不全|单稳态|多谐振荡'
 
 
@@ -54,7 +54,12 @@ def classify(stem,*,label='',topic='',scope='',source='structured_text'):
     design=bool(re.search(r'设计|实现.{0,15}(?:逻辑函数|函数|计数|电路|状态)|构成.{0,15}(?:计数器|时序电路|组合电路)',text))
     # A chip counter application is not automatically a state-machine design.
     chip=bool(re.search(r'74(?:LS|HC|HCT)?(?:161|163|160|162|90|92|93)',text,re.I))
-    if 'shift_register' in tags:primary='shift_register'
+    pure_logic=('真值表' in text and bool(re.search(r'逻辑[函机]数|逻辑恒等|运算公式|异或',text))
+                and not re.search(r'电路|触发器|锁存器|选择器|译码器|表决|与非门|或非门',text))
+    if pure_logic:
+        primary='logic_basics'
+        if primary not in tags:tags.append(primary)
+    elif 'shift_register' in tags:primary='shift_register'
     elif 'counter' in tags and (chip or not design):primary='counter'
     elif design and ('sync_design' in tags or ('flipflop' in tags and ('sync_analysis' in tags or 'counter' in tags))):primary='sync_design'
     elif 'counter' in tags:primary='counter'

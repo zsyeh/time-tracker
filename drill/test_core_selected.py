@@ -11,7 +11,7 @@ from .web_views import _safe_drill_target
 class CoreManifestTests(SimpleTestCase):
     def test_union_is_core_only_unique_and_has_five_courses(self):
         m=core_selected.manifest();rows=m['questions']
-        self.assertEqual(len(rows),429);self.assertEqual(len({q['uuid'] for q in rows}),429)
+        self.assertEqual(len(rows),421);self.assertEqual(len({q['uuid'] for q in rows}),421)
         self.assertTrue(all(q['tier']=='core' for q in rows))
         self.assertEqual({q['course'] for q in rows},{c[0] for c in core_selected.COURSES})
         self.assertEqual(_safe_drill_target('/core-heatmap?course=analog',site='ei'),'/core-heatmap?course=analog')
