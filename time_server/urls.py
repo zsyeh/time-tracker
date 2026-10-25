@@ -142,6 +142,7 @@ urlpatterns = [
     path('circuit-selected', drill_spa_view, name='ei_circuit_selected_page'),
     path('signal-selected', drill_spa_view, name='ei_signal_selected_page'),
     path('analog-selected', drill_spa_view, name='ei_analog_selected_page'),
+    path('digital-selected', drill_spa_view, name='ei_digital_selected_page'),
     path('paper', drill_spa_view, name='drill_paper_page'),
     path('papers', drill_spa_view, name='drill_papers_page'),
     path('papers/new', drill_spa_view, name='drill_paper_new_page'),

@@ -34,7 +34,7 @@ def collection_records(params, data=None):
         raise Http404('Unknown circuit bucket')
     if tier and tier not in {'core', 'advanced', 'foundation', 'cross'}:
         raise Http404('Unknown practice tier')
-    if kind and kind not in {'concept', 'calculation'}:
+    if kind and kind not in set(data.get('kinds', ['concept', 'calculation'])):
         raise Http404('Unknown exercise kind')
     return [r for r in rows if (not bucket or r['bucket'] == bucket)
             and (not tier or r['tier'] == tier) and (not kind or r['kind'] == kind)

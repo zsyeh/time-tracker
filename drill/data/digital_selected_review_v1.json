@@ -1,0 +1,5622 @@
+{
+  "schema_version": 1,
+  "inventory_count": 952,
+  "records": [
+    {
+      "uuid": "4c0fbc46-eac1-5b7d-b3e7-6ffbf66d218f",
+      "document_id": 13,
+      "label": "CMOS 门静态输入特性",
+      "status": "excluded",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "8e9cdb3b-1ee1-5a7c-924b-4f74c1f52cf9",
+      "document_id": 13,
+      "label": "双稳态与存储的基本思想",
+      "status": "excluded",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "0e806f71-5159-5850-8e79-3e913c7b88e5",
+      "document_id": 13,
+      "label": "课后题 1-2",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "e9f0c534-0485-5251-a160-48bb1d2bc678",
+      "document_id": 13,
+      "label": "课后题 1-8",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "d5b54d6f-fa9e-51ec-9f56-852d5864e7e9",
+      "document_id": 13,
+      "label": "课后题 2-2",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "d894217c-96ae-53d9-8c19-3f977d406484",
+      "document_id": 13,
+      "label": "课后题 2-4",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "ef60faf8-e887-5577-bdfc-fd1918b00bd9",
+      "document_id": 13,
+      "label": "课后题 2-12",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "e9a8847a-f43e-5df3-92f4-6bd1463cfc50",
+      "document_id": 13,
+      "label": "课后题 2-14",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "dfd45f46-7cd0-5e32-ab3b-aac7b36581c7",
+      "document_id": 13,
+      "label": "课后题 3-2",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "6fb91b9f-fd68-5fdb-b760-c60a163141c2",
+      "document_id": 13,
+      "label": "课后题 3-4",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "a8976f68-e88d-5bcc-a2fe-234de836d4d9",
+      "document_id": 13,
+      "label": "课后题 3-12",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "62d3109a-488b-501e-9ae7-e505e0e2b375",
+      "document_id": 13,
+      "label": "课后题 3-15",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "a6fdaab5-eeab-5132-b2ce-e5b764569654",
+      "document_id": 13,
+      "label": "课后题 4-2",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "c60f039d-f62e-5d7b-a24d-a45623c8fea6",
+      "document_id": 13,
+      "label": "课后题 4-3",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "e1ccc400-a95e-56d6-9ab7-c88e96811421",
+      "document_id": 13,
+      "label": "课后题 4-6",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "77548fb9-f0e8-5d03-b7b6-bd00b4d8f683",
+      "document_id": 13,
+      "label": "课后题 4-7",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "0a3d8901-e1b9-51fa-b832-0ea7735d7746",
+      "document_id": 13,
+      "label": "课后题 4-8",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "b2e0fc29-eb01-59bf-8055-71c5e282d48f",
+      "document_id": 13,
+      "label": "课后题 4-12",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "b87d3900-79cb-5cee-bb63-3a3901e740c2",
+      "document_id": 13,
+      "label": "课后题 5-2",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "f1b4a81d-bdf3-57f8-97e2-d8c5ae760426",
+      "document_id": 13,
+      "label": "课后题 5-3",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "43f2e0a2-4aff-569b-a1d6-5f39ff6e82bb",
+      "document_id": 13,
+      "label": "课后题 5-4",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "d23abdba-9519-5703-8ee8-2fc66bbf6553",
+      "document_id": 13,
+      "label": "课后题 5-13",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "2b74a1f5-97de-51d8-814b-2bc8dd857e38",
+      "document_id": 13,
+      "label": "课后题 5-18",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "770f221d-7d98-5a2f-9518-b91373398114",
+      "document_id": 13,
+      "label": "课后题 5-19",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "ac539c7f-0489-5a1a-bc75-45f301332e6a",
+      "document_id": 13,
+      "label": "课后题 5-35",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "0aa74dfe-17bb-5f85-8eca-4a32bc14df34",
+      "document_id": 13,
+      "label": "课后题 6-3",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "1fe23650-4831-58f5-842b-d6d18471a2b7",
+      "document_id": 13,
+      "label": "课后题 6-8",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "505242ee-b583-5946-a07e-9b0f71ca7865",
+      "document_id": 13,
+      "label": "课后题 6-12",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "8ec299fc-e07d-5ecc-9934-874342d73a7b",
+      "document_id": 13,
+      "label": "课后题 6-15",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "2959f0bc-07a0-581f-8474-f9489e29965e",
+      "document_id": 13,
+      "label": "课后题 6-19",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "81fef2cf-8709-589a-b611-05cf7918c7e7",
+      "document_id": 13,
+      "label": "背诵简答 1 · 请问什么是模拟信号和数字信号？什么是模拟电路和数字电 路？现代数字电路的软硬件载体？",
+      "status": "excluded",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "d1c7ecec-7527-58fc-a99b-2b686018f203",
+      "document_id": 13,
+      "label": "背诵简答 2 · 有符号数的表示形式有哪三种？是如何表示正数和负数的？",
+      "status": "excluded",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "f78c3379-7fc5-5c4e-a9d9-69eb53417c53",
+      "document_id": 13,
+      "label": "背诵简答 4 · 请问什么是线与？普通的TTL 门可以直接线与吗？解决方法是 什么？",
+      "status": "excluded",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "283ce787-253d-59dc-a420-bebc2f946710",
+      "document_id": 13,
+      "label": "背诵简答 8 · 什么是数据分配器？简述其工作原理。",
+      "status": "excluded",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "771244a4-4b31-5c93-a863-09c07c86123f",
+      "document_id": 13,
+      "label": "背诵简答 16 · 请问什么是单稳态触发器？有哪些应用？",
+      "status": "review",
+      "reason": [
+        "超纲标记或非本轮简单设计深度的扩展内容"
+      ]
+    },
+    {
+      "uuid": "3fde16f4-aef0-5ccd-ad81-fa8133fcf283",
+      "document_id": 13,
+      "label": "背诵简答 17 · 请问什么是多谐振荡器？为什么常采用石英晶体振荡器？",
+      "status": "review",
+      "reason": [
+        "超纲标记或非本轮简单设计深度的扩展内容"
+      ]
+    },
+    {
+      "uuid": "a2558aaf-ebf2-5a41-b607-831749994514",
+      "document_id": 13,
+      "label": "背诵简答 18 · 请问ROM（只读存储器）和RAM（随机存储器）有什么区别？",
+      "status": "excluded",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "93ac0bf3-20b4-53f1-827b-9ef5b033d3ec",
+      "document_id": 13,
+      "label": "背诵简答 19 · 请问存储器容量不够用时，可以采用哪些扩展方式？",
+      "status": "excluded",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "f7013efa-4b7a-52b9-81e2-9ec128de7352",
+      "document_id": 13,
+      "label": "背诵简答 20 · 请问为什么要进行数模和模数转换？实现的电路叫什么？",
+      "status": "excluded",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "f32ab1fc-5fd1-5754-adca-014c30225d49",
+      "document_id": 13,
+      "label": "蜂考 · 课时 1 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "142336a2-dee8-5d6b-99a1-2f730dcef91e",
+      "document_id": 13,
+      "label": "蜂考 · 课时 1 · 题 2",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "a0951d9d-0377-55a8-b68b-d904b50b46f0",
+      "document_id": 13,
+      "label": "蜂考 · 课时 1 · 题 3",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "c1871985-1464-51d1-8e63-e4c0d069a9c6",
+      "document_id": 13,
+      "label": "蜂考 · 课时 1 · 题 4",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "fa43e8ef-bdb0-577b-9796-6a05ed488479",
+      "document_id": 13,
+      "label": "蜂考 · 课时 1 · 题 5",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "aadf7b2a-f4f2-5856-93e2-db9533126517",
+      "document_id": 13,
+      "label": "蜂考 · 课时 1 · 题 6",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "21926562-a4f4-551d-846e-94b5be13ebd2",
+      "document_id": 13,
+      "label": "蜂考 · 课时 1 · 题 7",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "86728a30-e6f5-5b48-889c-d9bf462f38d3",
+      "document_id": 13,
+      "label": "蜂考 · 课时 1 · 题 8",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "d2ae8860-7ee6-59de-8c18-5ba93f95b9e6",
+      "document_id": 13,
+      "label": "蜂考 · 课时 1 · 题 9",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "6fac6cf8-8fbb-5c03-86ef-d5651a65e7aa",
+      "document_id": 13,
+      "label": "蜂考 · 课时 3 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "0159638a-4397-5ace-a25c-01dab28f9f0c",
+      "document_id": 13,
+      "label": "蜂考 · 课时 3 · 题 2",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "038041b6-24ed-5ac7-ace6-11db0d84e9e3",
+      "document_id": 13,
+      "label": "蜂考 · 课时 3 · 题 3",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "0d990fc4-5d25-55d3-8f36-cfe80f0a52bd",
+      "document_id": 13,
+      "label": "蜂考 · 课时 3 · 题 4",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "7a8b5f8c-744a-558c-9ad5-f70a4931496e",
+      "document_id": 13,
+      "label": "蜂考 · 课时 3 · 题 5",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "a57548d2-d1d8-5454-9a39-e66403093c2f",
+      "document_id": 13,
+      "label": "蜂考 · 课时 3 · 题 6",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "3a3b7f44-652f-5ec5-b56a-d6568cd77915",
+      "document_id": 13,
+      "label": "蜂考 · 课时 3 · 题 7",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "d71f932a-4fec-5db9-8ea2-b5bb343b2565",
+      "document_id": 13,
+      "label": "蜂考 · 课时 3 · 题 8",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "e73c4641-3b05-5adb-bf74-329f63bdd4ff",
+      "document_id": 13,
+      "label": "蜂考 · 课时 3 · 题 9",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "36c1bb21-eeee-50dc-b8d4-97564e18bbc3",
+      "document_id": 13,
+      "label": "蜂考 · 课时 3 · 题 10",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "fdad6ea2-3e52-5cb1-8577-21d4fd9f09f5",
+      "document_id": 13,
+      "label": "蜂考 · 课时 3 · 题 11",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "4e3c74b9-9a48-5b34-ae0d-725edc625a8e",
+      "document_id": 13,
+      "label": "蜂考 · 课时 5 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "6f994d03-e201-5d74-8438-fc9a0a6a4931",
+      "document_id": 13,
+      "label": "蜂考 · 课时 5 · 题 2",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "1b78976f-88e3-5c42-9a69-768b649adc58",
+      "document_id": 13,
+      "label": "蜂考 · 课时 5 · 题 3",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "c19d94f7-4eaa-56b6-ba6f-8451413ccb2b",
+      "document_id": 13,
+      "label": "蜂考 · 课时 5 · 题 4",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "3b069187-c058-5cd1-bffa-d94732d2351d",
+      "document_id": 13,
+      "label": "蜂考 · 课时 5 · 题 5",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "53a0a840-c6f3-5748-bfd6-ebb8154ff096",
+      "document_id": 13,
+      "label": "蜂考 · 课时 5 · 题 6",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "b7370f40-1942-56fb-984e-229e8adfb44c",
+      "document_id": 13,
+      "label": "蜂考 · 课时 5 · 题 7",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "433651ef-224b-5cdf-aa0c-fe290cde7c45",
+      "document_id": 13,
+      "label": "蜂考 · 课时 5 · 题 8",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "3596447f-215b-5540-997e-8ab5174b3e22",
+      "document_id": 13,
+      "label": "蜂考 · 课时 7 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "37a51f54-81c4-5e8e-89d2-ad1d4e062e06",
+      "document_id": 13,
+      "label": "蜂考 · 课时 7 · 题 2",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "7dceec5f-2744-5e75-b0bd-51e2e84b02fd",
+      "document_id": 13,
+      "label": "蜂考 · 课时 7 · 题 3",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "c827c4d7-548e-5378-9a55-2f785ba9efa5",
+      "document_id": 13,
+      "label": "蜂考 · 课时 7 · 题 4",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "3f114d04-8eaa-53bc-9548-1929ce2bae4c",
+      "document_id": 13,
+      "label": "蜂考 · 课时 7 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "4cc4bae9-7529-5c15-b369-9d07dd4ca2cd",
+      "document_id": 13,
+      "label": "蜂考 · 课时 7 · 题 2",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "b285c7d5-e0f0-5fb3-aa1b-cc0ae2c9309e",
+      "document_id": 13,
+      "label": "蜂考 · 课时 7 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "6d74ffc3-fe00-51ae-bbd4-88e89088e2ba",
+      "document_id": 13,
+      "label": "蜂考 · 课时 11 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "e691b55e-4836-5050-99e6-9e5506db9131",
+      "document_id": 13,
+      "label": "蜂考 · 课时 11 · 题 2",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "0f0fcf5d-f0a8-5e85-b48b-99f321e42cec",
+      "document_id": 13,
+      "label": "蜂考 · 课时 11 · 题 3",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "dc565583-d6ab-58fd-b819-fbd4ed4d4ac3",
+      "document_id": 13,
+      "label": "蜂考 · 课时 11 · 题 4",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "6420d679-7717-5457-b557-0d71bd38c46a",
+      "document_id": 13,
+      "label": "蜂考 · 课时 11 · 题 5",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "301787b6-df3a-58c8-8fa3-3dcb8a49735f",
+      "document_id": 13,
+      "label": "蜂考 · 课时 11 · 题 6",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "062f46b7-cbc5-5029-b371-7a81f1b290b3",
+      "document_id": 13,
+      "label": "蜂考 · 课时 13 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "360a9b37-432f-5f17-995e-97f607c9c162",
+      "document_id": 13,
+      "label": "蜂考 · 课时 13 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "f2b0f56e-bdfb-50c1-b71f-ab403e7308bc",
+      "document_id": 13,
+      "label": "蜂考 · 课时 13 · 题 2",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "d5ca4ffa-b543-5e94-9978-506c0f12aed6",
+      "document_id": 13,
+      "label": "蜂考 · 课时 13 · 题 3",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "0643ad2a-05ac-5c45-964a-4f01083b6f58",
+      "document_id": 13,
+      "label": "蜂考 · 课时 13 · 题 4",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "662a8312-657e-5eeb-bcbc-a8aad9d4ae8f",
+      "document_id": 13,
+      "label": "蜂考 · 课时 15 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "71ed2727-e0c7-58f2-8043-8e019822f24c",
+      "document_id": 13,
+      "label": "蜂考 · 课时 15 · 题 2",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "ae3396fe-d972-5e50-be84-11862691f640",
+      "document_id": 13,
+      "label": "蜂考 · 课时 15 · 题 3",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "5f7f9969-9faa-5491-8489-fe1866600483",
+      "document_id": 13,
+      "label": "蜂考 · 课时 15 · 题 4",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "7a292f80-40e9-595a-bff4-535af2c71efa",
+      "document_id": 13,
+      "label": "蜂考 · 课时 17 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "ffe9a76d-aeba-52e9-90a3-cea37288b0bc",
+      "document_id": 13,
+      "label": "蜂考 · 课时 17 · 题 2",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "934eef29-4162-5886-b28f-0a4ed2db4bbc",
+      "document_id": 13,
+      "label": "蜂考 · 课时 17 · 题 3",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "44ecd929-8609-590c-b5eb-d2d1948c9b11",
+      "document_id": 13,
+      "label": "蜂考 · 课时 17 · 题 4",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "6b3620d4-12ae-5e39-976f-a68fabab323e",
+      "document_id": 13,
+      "label": "蜂考 · 课时 17 · 题 5",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "21a8c3cb-7ee1-5ecb-85d8-0c673a29ca25",
+      "document_id": 13,
+      "label": "蜂考 · 课时 17 · 题 6",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "6dd9c7f1-a96f-5b4a-bf3c-f6ce9b388dd9",
+      "document_id": 13,
+      "label": "蜂考 · 课时 17 · 题 7",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "c4231b4d-2d2c-5948-ad7f-252dc97fe72b",
+      "document_id": 13,
+      "label": "蜂考 · 课时 19 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "8416079f-6d9b-5c9c-bd68-7ee8386fbb0d",
+      "document_id": 13,
+      "label": "蜂考 · 课时 19 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "95c61feb-c6bd-5a6a-ada9-2afa90c16c4b",
+      "document_id": 13,
+      "label": "蜂考 · 课时 19 · 题 2",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "71b5dbcd-fa44-5149-9a1d-ef547b576da1",
+      "document_id": 13,
+      "label": "蜂考 · 课时 19 · 题 3",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "13770a66-e0d3-59f8-a2a2-6446a6505c80",
+      "document_id": 13,
+      "label": "蜂考 · 课时 21 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "0d04bd6b-8ddb-5c10-bb25-e3318521822a",
+      "document_id": 13,
+      "label": "蜂考 · 课时 21 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "4dd9b312-967b-55e5-8420-4aa93ed3ff37",
+      "document_id": 13,
+      "label": "蜂考 · 课时 21 · 题 2",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "6ed82aed-f19a-5c05-9cf5-a819684627a5",
+      "document_id": 13,
+      "label": "蜂考 · 课时 21 · 题 1",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "1691aa45-d08e-5442-8960-2a25a288bfdb",
+      "document_id": 13,
+      "label": "蜂考 · 课时 7 · 题 2",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "753f003c-96d4-568c-bcbd-4f8b5949305f",
+      "document_id": 20,
+      "label": "课后题 2.2",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "cdd876e0-e41f-5d70-9fe5-7245e89ba99f",
+      "document_id": 20,
+      "label": "课后题 2.19",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "419e8481-aea4-504c-884d-057de808fa63",
+      "document_id": 20,
+      "label": "课后题 2.26",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "f6c2c704-83bb-5bfc-9780-48b45c8cbb6c",
+      "document_id": 20,
+      "label": "课后题 4.6",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "7d6f31fc-f12e-5783-9a42-02046c51871e",
+      "document_id": 20,
+      "label": "课后题 4.34",
+      "status": "review",
+      "reason": [
+        "超纲标记或非本轮简单设计深度的扩展内容"
+      ]
+    },
+    {
+      "uuid": "af3b61fe-6af3-54cc-a9ca-d665dac2486a",
+      "document_id": 20,
+      "label": "课后题 5.3",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "5458b387-270a-5845-91cb-295d7a2857bf",
+      "document_id": 25,
+      "label": "1998年 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "4fb23c8e-3652-5b76-b556-b852422dcdb2",
+      "document_id": 25,
+      "label": "1999年 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "84d68ed7-9d37-51cc-86b0-80ce640243e3",
+      "document_id": 25,
+      "label": "2000年 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "fa8d6ae9-5a71-5cbe-8ee8-57127269fa40",
+      "document_id": 25,
+      "label": "2001年 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "88a3507c-4166-536c-b41d-095621b044af",
+      "document_id": 25,
+      "label": "2002年 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "86498f44-1ccb-57c8-85d2-3831fef6822f",
+      "document_id": 25,
+      "label": "2003年 · 版本1 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "d1f41d60-eb04-54aa-b1aa-feb32d297dc5",
+      "document_id": 25,
+      "label": "2003年 · 版本2 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "77395d84-a188-52f1-a551-c0703ed7dd1e",
+      "document_id": 25,
+      "label": "2004年 · 版本1 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "71defed1-a19f-53e8-a10e-638cefc8724b",
+      "document_id": 25,
+      "label": "2004年 · 版本2 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "a86f1866-4e04-5530-8d96-f810b24a4705",
+      "document_id": 25,
+      "label": "2004年 · 电子学基础 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "d78cb986-3a0e-57d6-a7c6-f5ba3c5d9a95",
+      "document_id": 25,
+      "label": "2005年 · 版本1 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "44a2d861-7caa-56d6-966d-57bcf2e69044",
+      "document_id": 25,
+      "label": "2005年 · 版本2 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "7774cf6a-b52b-5610-bae3-62d834f8ea32",
+      "document_id": 25,
+      "label": "2005年 · 电子学基础 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "229d133b-ad86-5163-953e-fefbf25cd86e",
+      "document_id": 25,
+      "label": "2006年 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "9abfddb3-e45a-5581-87e4-0404a362e823",
+      "document_id": 25,
+      "label": "2007年 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "89e0ec5d-9be7-5e45-81ae-a6e085818bbd",
+      "document_id": 25,
+      "label": "2008年 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "48967e15-6adb-5f19-a8f5-a43f766f70ce",
+      "document_id": 25,
+      "label": "2009年 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "60c92664-c16a-5540-89e8-9f57a19c3195",
+      "document_id": 25,
+      "label": "2010年 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "c2615e2b-3217-5c25-aa8c-cb8ed1b623f2",
+      "document_id": 25,
+      "label": "2011年 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "3c0e5a96-a152-568b-b7a5-9a2fc02b4250",
+      "document_id": 25,
+      "label": "2012年 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "abc048ca-67b0-56b3-baad-388d62a40cfa",
+      "document_id": 25,
+      "label": "2013年 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "a1cbd10d-da28-5c22-835b-2daf65b8eaa0",
+      "document_id": 25,
+      "label": "2014年 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "1b960aee-9ca1-55e2-95d6-3e3e0df9b5ee",
+      "document_id": 25,
+      "label": "2015年 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "969da8f0-1694-5d3f-b764-354bfcf3eeef",
+      "document_id": 25,
+      "label": "2016年 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "1a0d8f84-203f-5c03-a241-99799c6e9c03",
+      "document_id": 25,
+      "label": "2017年 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "3da856db-af44-5559-9006-1fe1880ba931",
+      "document_id": 25,
+      "label": "2018年 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "713295c3-e11e-56ab-a086-c02894ec4047",
+      "document_id": 25,
+      "label": "2019年 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "3f60eab8-9835-5ba3-aaaa-64a4fa2b9ac8",
+      "document_id": 25,
+      "label": "2020年 · 第1部分（原卷整组题）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "09ff09dc-a645-5b33-9c45-f6786696609e",
+      "document_id": 25,
+      "label": "2020年 · 第2部分（原卷整组题）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "095f72a9-d711-5c47-a2cb-9d67b62dd678",
+      "document_id": 25,
+      "label": "2020年 · 第3部分（原卷整组题）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "bae45a0c-76b7-5802-9d72-5af7e7fe3931",
+      "document_id": 25,
+      "label": "2021年 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "c9c0c0a0-6992-5490-bb06-cbacce8fd5b2",
+      "document_id": 25,
+      "label": "2022年 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "fea837f5-cfbf-53aa-8c5a-2bc244ad2643",
+      "document_id": 25,
+      "label": "2023年 · 整卷（保留全部小题与电路图）",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "268b0bda-06b7-5fac-97cb-113a68ac44d7",
+      "document_id": 25,
+      "label": "2024年 · 第1部分（原卷整组题） · 原资料无答案",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "ef7ed96d-e314-5ebe-aa6d-e413ed93a406",
+      "document_id": 25,
+      "label": "2024年 · 第2部分（原卷整组题） · 原资料无答案",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "fe429cf1-8682-563c-9a12-dc5501f6ebea",
+      "document_id": 25,
+      "label": "2024年 · 第3部分（原卷整组题） · 原资料无答案",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "b7905bdc-cfbc-5877-a69a-22dbd86709f8",
+      "document_id": 25,
+      "label": "2025年 · 整卷（保留全部小题与电路图） · 仅模电答案",
+      "status": "excluded",
+      "reason": [
+        "整卷/非练习容器，避免与逐题索引重复"
+      ]
+    },
+    {
+      "uuid": "74fdfb04-84d7-5d23-9875-8b6cd8efaf07",
+      "document_id": 25,
+      "label": "1998年 · 第1题",
+      "status": "review",
+      "reason": [
+        "OCR区段含多个主题号，题意归属待核对"
+      ]
+    },
+    {
+      "uuid": "4e8898a1-6288-59a9-accd-2fc39962cfb5",
+      "document_id": 25,
+      "label": "1998年 · 第2题",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "30625314-f06a-5296-9df6-610f25cd9287",
+      "document_id": 25,
+      "label": "1998年 · 第3题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "3c7e4e94-e1ba-595e-815d-72d955f23376",
+      "document_id": 25,
+      "label": "1998年 · 第4题",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "af0e4fc7-e7af-5f54-a2fd-a5161dfca5c4",
+      "document_id": 25,
+      "label": "1998年 · 第5题",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "a6a98c26-8314-5f59-8e86-76e250679e02",
+      "document_id": 25,
+      "label": "1998年 · 第6题",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "aa96a9d5-5b1b-5a81-b6c4-ea64036fd847",
+      "document_id": 25,
+      "label": "1998年 · 第7题",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "4b8d4525-7a05-547e-96be-a0605e84c14f",
+      "document_id": 25,
+      "label": "1998年 · 第8题",
+      "status": "review",
+      "reason": [
+        "OCR区段含多个主题号，题意归属待核对"
+      ]
+    },
+    {
+      "uuid": "332e3594-81a7-5a85-882d-a421f7974e58",
+      "document_id": 25,
+      "label": "1998年 · 第9题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "2abf44f7-cb90-5eca-8761-6ad2d382d331",
+      "document_id": 25,
+      "label": "1999年 · 1·题1",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "b8d245cb-48be-5157-9489-66f60abce781",
+      "document_id": 25,
+      "label": "1999年 · 1·题2",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "96e8a597-22b5-5328-8fff-8113ec98971a",
+      "document_id": 25,
+      "label": "1999年 · 1·题4",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "e6939bf0-2e59-5f60-a38f-a76a399c4022",
+      "document_id": 25,
+      "label": "1999年 · 1·题5",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "f5baec46-d3cd-5ada-939a-eb855ccd23fe",
+      "document_id": 25,
+      "label": "1999年 · 2·题1",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "e71a5ceb-f543-579e-bd83-4332c0da95d4",
+      "document_id": 25,
+      "label": "1999年 · 2·题2",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "bee778a2-5b12-5b0d-b088-c31df051dcaa",
+      "document_id": 25,
+      "label": "1999年 · 2·题3",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "fb4e46a8-eb48-5579-a7f3-7a6accb2720b",
+      "document_id": 25,
+      "label": "1999年 · 2·题4",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "841b8e43-add7-5311-a883-923c913b1c69",
+      "document_id": 25,
+      "label": "1999年 · 2·题5",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "8dc065b3-90dc-5615-bb4a-a05c8ed5b27b",
+      "document_id": 25,
+      "label": "1999年 · 第3题",
+      "status": "review",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "9bad49fd-dee2-503e-9aee-1f91c9401155",
+      "document_id": 25,
+      "label": "2000年 · 1·题1",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "a49bc538-2822-5542-bdff-1a9cf843d3c3",
+      "document_id": 25,
+      "label": "2000年 · 1·题2",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "5f64f49b-08aa-5ea7-ac02-350bd16eb1e3",
+      "document_id": 25,
+      "label": "2000年 · 1·题3",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "4a7f67c6-36e6-5336-bb20-d8d71f42b1c1",
+      "document_id": 25,
+      "label": "2000年 · 1·题4",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "bc6e65da-d3d6-5c50-8a25-68dc8b69f7ba",
+      "document_id": 25,
+      "label": "2000年 · 1·题5",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "83def588-e14d-572f-84b2-3084208ec3fb",
+      "document_id": 25,
+      "label": "2000年 · 2·题1",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "e43730e8-edd5-5142-af14-13de8de661bd",
+      "document_id": 25,
+      "label": "2000年 · 2·题2",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "efd7696b-1fb0-5139-b13e-dc82ba8e4f95",
+      "document_id": 25,
+      "label": "2000年 · 2·题4",
+      "status": "review",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "49e90396-f275-5555-a657-d4e5d5916c9e",
+      "document_id": 25,
+      "label": "2001年 · 题1",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "98c12b62-d60c-5df0-9ee2-66d44bd29d6e",
+      "document_id": 25,
+      "label": "2001年 · 题2",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "c3db9e51-a05f-505c-9172-e7d49e6cdad1",
+      "document_id": 25,
+      "label": "2001年 · 题3",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "ee28c6c2-0f91-52b3-bb77-0b4857f8bb06",
+      "document_id": 25,
+      "label": "2001年 · 题5",
+      "status": "review",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "b90fa084-79bd-5674-8766-68debaf61f00",
+      "document_id": 25,
+      "label": "2002年 · 题1",
+      "status": "review",
+      "reason": [
+        "OCR区段含多个主题号，题意归属待核对"
+      ]
+    },
+    {
+      "uuid": "278c917c-8070-52c9-b2c0-ea8d2df5cbbd",
+      "document_id": 25,
+      "label": "2002年 · 题7",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "bd3b1a78-b93b-5260-8616-4d9b9c67562e",
+      "document_id": 25,
+      "label": "2002年 · 题8",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "aba3a600-7244-5594-98c1-117ae1711f22",
+      "document_id": 25,
+      "label": "2002年 · 题9",
+      "status": "review",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "1eb7d932-623d-58e2-99a4-edcb53545f20",
+      "document_id": 25,
+      "label": "2002年 · 题10",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "07c1e3a5-df30-5a1e-a33c-d92136f4d6fe",
+      "document_id": 25,
+      "label": "2002年 · 题11",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "ddcbb5f1-482b-52fd-be04-150dafd5bd32",
+      "document_id": 25,
+      "label": "2003年 · 版本1 · 题1",
+      "status": "review",
+      "reason": [
+        "旧索引仅有整卷混合片段，模电/数电多题归属不可靠"
+      ]
+    },
+    {
+      "uuid": "abc277df-6dce-5601-979d-42e3e9f0d60d",
+      "document_id": 25,
+      "label": "2003年 · 版本2 · 第1题（1）",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "65d0b8ad-8960-5253-82a2-37b1c3f084ea",
+      "document_id": 25,
+      "label": "2003年 · 版本2 · 第1题（4）",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "414fa8a4-d7f1-552f-abd3-e3ca2215a70f",
+      "document_id": 25,
+      "label": "2003年 · 版本2 · 第1题（5）",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "ce0b0d91-09d5-561a-b29a-965e1b169bd9",
+      "document_id": 25,
+      "label": "2003年 · 版本2 · 第1题（6）",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "a577e3bd-a0ba-5992-a4de-fb752da821a0",
+      "document_id": 25,
+      "label": "2003年 · 版本2 · 第1题（7）",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "075e2ca7-7a7c-5aaa-8eb8-27a47c831a2b",
+      "document_id": 25,
+      "label": "2003年 · 版本2 · 第2题",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "baf34ff5-9a84-52f2-844b-d4024d2a2db2",
+      "document_id": 25,
+      "label": "2003年 · 版本2 · 第3题",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "0fed61f8-d144-576c-ac50-14ec345e7b09",
+      "document_id": 25,
+      "label": "2003年 · 版本2 · 第4题",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "adb5b57b-a99e-573f-9c13-a935dc0a1c81",
+      "document_id": 25,
+      "label": "2003年 · 版本2 · 第5题",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "5fef100a-1302-50c3-b8b3-d25a6a741489",
+      "document_id": 25,
+      "label": "2003年 · 版本2 · 第6题",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "652f053d-cd82-5093-8147-b148df9ed847",
+      "document_id": 25,
+      "label": "2003年 · 版本2 · 第7题",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "0de6ae8a-9886-5ca8-bb45-6ac263e5626e",
+      "document_id": 25,
+      "label": "2003年 · 版本2 · 第8题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "67a4641e-4b46-58a0-8687-281216322934",
+      "document_id": 25,
+      "label": "2003年 · 版本2 · 第9题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "7347a2a4-e736-5c3e-8192-00bbe263732d",
+      "document_id": 25,
+      "label": "2003年 · 版本2 · 第10题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "1b33b597-92c6-5388-bd3f-cc7f6af96709",
+      "document_id": 25,
+      "label": "2004年 · 版本1 · 第1题",
+      "status": "review",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "83bdef49-8aef-5471-a510-2c5a9fd54a81",
+      "document_id": 25,
+      "label": "2004年 · 版本1 · 第2题",
+      "status": "review",
+      "reason": [
+        "OCR区段含多个主题号，题意归属待核对"
+      ]
+    },
+    {
+      "uuid": "b71c4598-42e2-5163-9825-86b72965c07e",
+      "document_id": 25,
+      "label": "2004年 · 版本1 · 第3题",
+      "status": "review",
+      "reason": [
+        "OCR区段含多个主题号，题意归属待核对"
+      ]
+    },
+    {
+      "uuid": "d97fc9fe-dd9f-5105-b98e-f882c356bdfd",
+      "document_id": 25,
+      "label": "2004年 · 版本1 · 第4题",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "dca3afa7-79a8-5308-9ef9-aaf0a9778b83",
+      "document_id": 25,
+      "label": "2004年 · 版本1 · 第5题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "d9615169-2089-531c-b0ba-8703c99b85a3",
+      "document_id": 25,
+      "label": "2004年 · 版本1 · 第6题",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "87237898-5088-5f93-9bde-6b1864c5f8f8",
+      "document_id": 25,
+      "label": "2004年 · 版本1 · 第7题",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "313f2553-ddeb-5ec6-8012-f7a91f2ae8d2",
+      "document_id": 25,
+      "label": "2004年 · 版本2 · 第1题",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "dded4e00-3ab2-5954-a625-8a62bc7a36d5",
+      "document_id": 25,
+      "label": "2004年 · 版本2 · 第2题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "81c83808-8471-58de-8451-27392b74ebc3",
+      "document_id": 25,
+      "label": "2004年 · 版本2 · 第3题",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "ea029c96-d5d5-59ff-884a-c6fed34d14c9",
+      "document_id": 25,
+      "label": "2004年 · 版本2 · 4·判断1",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "d189ed05-2b28-51d9-bbdb-bc75bd192b22",
+      "document_id": 25,
+      "label": "2004年 · 版本2 · 4·判断2",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "42fac852-5b94-5a53-be76-dd1574304585",
+      "document_id": 25,
+      "label": "2004年 · 版本2 · 4·判断3",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "63d4b84a-5120-5a93-821f-ec2df024b147",
+      "document_id": 25,
+      "label": "2004年 · 版本2 · 第5题",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "80abd8ef-1d72-5239-99cc-93797b316fbc",
+      "document_id": 25,
+      "label": "2004年 · 版本2 · 第7题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "af14161f-72b4-550a-ad39-94b7118ab5e0",
+      "document_id": 25,
+      "label": "2004年 · 电子学基础 · 第2题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "c07a89ef-c46d-528d-897d-e398a9574492",
+      "document_id": 25,
+      "label": "2004年 · 电子学基础 · 第3题",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "aa017638-7bfc-5753-ac72-14e2986f7550",
+      "document_id": 25,
+      "label": "2004年 · 电子学基础 · 第4题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "699770ed-36d4-59a4-829c-94072df258f3",
+      "document_id": 25,
+      "label": "2004年 · 电子学基础 · 第5题",
+      "status": "review",
+      "reason": [
+        "OCR区段含多个主题号，题意归属待核对"
+      ]
+    },
+    {
+      "uuid": "51dea2e9-8244-5a59-aa9a-8207438e2e00",
+      "document_id": 25,
+      "label": "2004年 · 电子学基础 · 第6题",
+      "status": "review",
+      "reason": [
+        "OCR区段含多个主题号，题意归属待核对"
+      ]
+    },
+    {
+      "uuid": "8e30b5de-e6c0-5313-a063-71289b05ccf3",
+      "document_id": 25,
+      "label": "2004年 · 电子学基础 · 第7题",
+      "status": "review",
+      "reason": [
+        "OCR区段含多个主题号，题意归属待核对"
+      ]
+    },
+    {
+      "uuid": "d6037220-157a-5bc7-b4df-4ad00059f769",
+      "document_id": 25,
+      "label": "2005年 · 版本1 · 1·填空1",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "ca8099ed-0d20-5172-bdb7-1dea3449c440",
+      "document_id": 25,
+      "label": "2005年 · 版本1 · 1·填空2",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "430d67e0-11ac-53fa-a976-603c46e59824",
+      "document_id": 25,
+      "label": "2005年 · 版本1 · 1·填空3",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "89ee9e37-9df3-5e98-8894-6ba47c11da84",
+      "document_id": 25,
+      "label": "2005年 · 版本1 · 1·填空4",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "564b28f4-e724-53db-a0f8-665ee35789b6",
+      "document_id": 25,
+      "label": "2005年 · 版本1 · 1·填空5",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "df10b45d-33b4-5a1c-b854-80eff34ade0e",
+      "document_id": 25,
+      "label": "2005年 · 版本1 · 1·填空7",
+      "status": "review",
+      "reason": [
+        "OCR区段含多个主题号，题意归属待核对"
+      ]
+    },
+    {
+      "uuid": "18427224-d0d1-5cdb-80f1-3542003e2d03",
+      "document_id": 25,
+      "label": "2005年 · 版本1 · 1·填空8",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "2e1b126d-d8ea-58b0-b869-c45aa6e66a27",
+      "document_id": 25,
+      "label": "2005年 · 版本1 · 1·填空10",
+      "status": "review",
+      "reason": [
+        "OCR区段含多个主题号，题意归属待核对"
+      ]
+    },
+    {
+      "uuid": "10a763f9-931b-5486-be3d-40d5c5ddeb77",
+      "document_id": 25,
+      "label": "2005年 · 版本1 · 第2题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "7b1437d3-8307-5a84-ab53-635e5488f04a",
+      "document_id": 25,
+      "label": "2005年 · 版本1 · 2·题1",
+      "status": "review",
+      "reason": [
+        "OCR区段含多个主题号，题意归属待核对"
+      ]
+    },
+    {
+      "uuid": "bcc4c2d5-0bc9-5fea-a998-049906711418",
+      "document_id": 25,
+      "label": "2005年 · 版本1 · 第3题",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "76b1f364-b8fe-53e8-8276-4057ad0f1132",
+      "document_id": 25,
+      "label": "2005年 · 版本1 · 第5题",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "0e4f9fb6-292f-58d9-aabc-ce49eb36d69b",
+      "document_id": 25,
+      "label": "2005年 · 版本1 · 第6题",
+      "status": "review",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "10674c9b-266b-532c-9aeb-194d1bf914ae",
+      "document_id": 25,
+      "label": "2005年 · 版本2 · 第2题",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "4a8fb7d9-2eb0-59a5-99c5-8134f77b4063",
+      "document_id": 25,
+      "label": "2005年 · 版本2 · 第3题",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "7864f76b-4d3f-59c7-85a8-292015b247d2",
+      "document_id": 25,
+      "label": "2005年 · 版本2 · 第4题",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "6cd7f186-2e0b-5bfc-a7e3-30624691bbc8",
+      "document_id": 25,
+      "label": "2005年 · 电子学基础 · 题1",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "6c9ddd50-d09e-5e8c-a68c-5a2feb756887",
+      "document_id": 25,
+      "label": "2005年 · 电子学基础 · 题2",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "4ec240d1-3e00-5130-9bb9-fcaceb5f005c",
+      "document_id": 25,
+      "label": "2005年 · 电子学基础 · 题3",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "b1aba79c-6456-53aa-8251-c4c1a37d1a43",
+      "document_id": 25,
+      "label": "2005年 · 电子学基础 · 题4",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "6fe63351-8ecb-5b8d-bb23-1358f5b191c9",
+      "document_id": 25,
+      "label": "2005年 · 电子学基础 · 题8",
+      "status": "review",
+      "reason": [
+        "超纲标记或非本轮简单设计深度的扩展内容"
+      ]
+    },
+    {
+      "uuid": "74cdfa47-c0bc-5653-8223-b5c1433db177",
+      "document_id": 25,
+      "label": "2005年 · 电子学基础 · 题10",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "8b4876e6-f5d4-52ca-a0b8-d3cc83143456",
+      "document_id": 25,
+      "label": "2006年 · 第1题",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "050cca9c-4978-5e02-8671-f5238ab31a17",
+      "document_id": 25,
+      "label": "2006年 · 第4题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "a569784a-f19c-5def-8538-1d1aea9714d3",
+      "document_id": 25,
+      "label": "2006年 · 第7题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "96e3cdd1-bc2e-5681-ba7d-6e146a93e4c9",
+      "document_id": 25,
+      "label": "2006年 · 第9题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "c7519024-c47c-5b31-8e74-6bd08e8fd809",
+      "document_id": 25,
+      "label": "2007年 · 1·填空1",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "33603493-a79a-59de-837e-91acbc92545c",
+      "document_id": 25,
+      "label": "2007年 · 1·填空2",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "1ac5d927-12e6-580a-8d56-eb576ba92d72",
+      "document_id": 25,
+      "label": "2007年 · 1·填空3",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "064fe067-ae1c-580a-8931-66f4abe50eee",
+      "document_id": 25,
+      "label": "2007年 · 1·填空4",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "049b8558-f225-5cb7-88ef-d9c2c1e6090f",
+      "document_id": 25,
+      "label": "2007年 · 1·填空5",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "9e69b564-b315-5317-934c-591893cdf018",
+      "document_id": 25,
+      "label": "2007年 · 1·填空6",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "e0246145-f04d-5569-b145-3e045db85537",
+      "document_id": 25,
+      "label": "2007年 · 1·填空10",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "fb0c5e44-76bb-5e38-952f-66df30fbde85",
+      "document_id": 25,
+      "label": "2007年 · 1·填空11",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "8cb99f2c-eabd-56b0-add7-877f9ebc9fe5",
+      "document_id": 25,
+      "label": "2007年 · 1·填空13",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "35b1cd5b-dd47-561b-98f3-62be032085aa",
+      "document_id": 25,
+      "label": "2007年 · 1·填空15",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "5e372f79-8ea1-5912-9ed6-3c3addee688c",
+      "document_id": 25,
+      "label": "2007年 · 1·填空18",
+      "status": "review",
+      "reason": [
+        "超纲标记或非本轮简单设计深度的扩展内容"
+      ]
+    },
+    {
+      "uuid": "490efb9a-cba9-5e02-a0f1-9472d3180bb6",
+      "document_id": 25,
+      "label": "2007年 · 第2题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "311f067f-1bea-584a-81f2-161021295461",
+      "document_id": 25,
+      "label": "2007年 · 第3题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "da65eb26-c5dc-5577-b1f5-c9d7b44670ce",
+      "document_id": 25,
+      "label": "2007年 · 第4题",
+      "status": "review",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "bee4ff7c-7141-5aed-aaf2-f91feb65cd4a",
+      "document_id": 25,
+      "label": "2007年 · 第6题",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "4b50417f-c9f2-5e95-b71b-ae927cef01db",
+      "document_id": 25,
+      "label": "2007年 · 第7题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "331d7061-3ccc-5a6d-a58e-660d2cf25d54",
+      "document_id": 25,
+      "label": "2007年 · 第8题",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "c6a95c3d-2640-563c-bc23-d89684589103",
+      "document_id": 25,
+      "label": "2008年 · 第1题 · 填空1",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "b5f725a2-edbf-59ed-ad97-0840d24b2f6a",
+      "document_id": 25,
+      "label": "2008年 · 第1题 · 填空2",
+      "status": "review",
+      "reason": [
+        "缺少可靠题干，不按章节号猜题型"
+      ]
+    },
+    {
+      "uuid": "f0689b36-31a9-5400-9329-fa47e116819d",
+      "document_id": 25,
+      "label": "2008年 · 第1题 · 填空3",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "7a16cc54-f6b9-5c08-8920-19f132072728",
+      "document_id": 25,
+      "label": "2008年 · 第1题 · 填空4",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "d6ffd4b0-a4da-5d82-94b9-2b7317ad15f3",
+      "document_id": 25,
+      "label": "2008年 · 第1题 · 填空5",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "3853b052-6d8d-5bec-b5a5-ecdbf2b05941",
+      "document_id": 25,
+      "label": "2008年 · 第1题 · 填空8",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "d697aea7-d75f-580a-b8dd-e12f0dd6c8ff",
+      "document_id": 25,
+      "label": "2008年 · 第1题 · 填空11",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "53ce6495-9d61-54df-acd7-ed2baa074d91",
+      "document_id": 25,
+      "label": "2008年 · 第1题 · 填空13",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "8db57b24-1b8d-50b1-9666-8b9e71a5a79e",
+      "document_id": 25,
+      "label": "2008年 · 第2题 · 选择1",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "c441dfea-71b4-5b53-9593-99e560f6608f",
+      "document_id": 25,
+      "label": "2008年 · 第2题 · 选择2",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "67cad3ae-e7c1-52e6-8012-9e9ad3b1fb68",
+      "document_id": 25,
+      "label": "2008年 · 第2题 · 选择3",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "871a5129-0dc8-565c-8a8b-1367c548880a",
+      "document_id": 25,
+      "label": "2008年 · 第2题 · 选择5",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "d238b357-f08d-572e-8434-d970a3aefa37",
+      "document_id": 25,
+      "label": "2008年 · 第2题 · 选择6",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "3350a673-0047-5bec-842e-ad7344644c65",
+      "document_id": 25,
+      "label": "2008年 · 第2题 · 选择7",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "19790d8b-fdf4-5d1d-b2a1-78ba4e8f6606",
+      "document_id": 25,
+      "label": "2008年 · 第2题 · 选择8",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "83e0cdf4-b271-597b-a869-b9ddc2048d76",
+      "document_id": 25,
+      "label": "2008年 · 第2题 · 选择9",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "7e1daee2-de8e-523e-97f2-8830e230f18f",
+      "document_id": 25,
+      "label": "2008年 · 第2题 · 选择10",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "9cc1139b-248d-5bce-a04e-85011eef034a",
+      "document_id": 25,
+      "label": "2008年 · 第2题 · 选择12",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "c87d605b-7323-5872-829f-bf257749e761",
+      "document_id": 25,
+      "label": "2008年 · 第2题 · 选择13",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "c8d4efeb-7276-528b-a078-b3ebf8e54e4f",
+      "document_id": 25,
+      "label": "2008年 · 第3题",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "d1bc9429-93d8-5412-bb33-5d6463071e8f",
+      "document_id": 25,
+      "label": "2008年 · 第4题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "e840dbd5-b734-5dd7-8c13-c6feb7fe9420",
+      "document_id": 25,
+      "label": "2008年 · 第5题",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "ba43a016-d1fb-56da-9a18-13fb1c4b45cc",
+      "document_id": 25,
+      "label": "2008年 · 第6题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "f591fe3b-a7da-5858-8bce-101bf6393b7d",
+      "document_id": 25,
+      "label": "2008年 · 第8题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "2b727780-9a9e-51dd-be35-2a595dfcfe48",
+      "document_id": 25,
+      "label": "2008年 · 第10题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "a067cc69-ad95-5fd8-92ff-e34a6956788f",
+      "document_id": 25,
+      "label": "2009年 · 第2题",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "41c72905-1103-5338-b1ea-4423bff42a81",
+      "document_id": 25,
+      "label": "2009年 · 第3题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "2c316245-c17a-58bc-a852-203623ec0a85",
+      "document_id": 25,
+      "label": "2009年 · 第5题",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "3850c965-b115-59d8-9d25-06a35386a73d",
+      "document_id": 25,
+      "label": "2010年 · 1·选择1",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "c188932e-09dd-58de-8193-89567ee9a52b",
+      "document_id": 25,
+      "label": "2010年 · 1·选择2",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "0268d2d2-4700-5b4d-b382-b33255d08078",
+      "document_id": 25,
+      "label": "2010年 · 1·选择3",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "e4204cd2-fd93-5433-92e6-a6330f696828",
+      "document_id": 25,
+      "label": "2010年 · 1·选择4",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "d8fccbd1-5449-57ec-bde9-6f5d6b4d29c8",
+      "document_id": 25,
+      "label": "2010年 · 1·选择6",
+      "status": "review",
+      "reason": [
+        "超纲标记或非本轮简单设计深度的扩展内容"
+      ]
+    },
+    {
+      "uuid": "344418d5-488b-5446-913a-690cfce6aa43",
+      "document_id": 25,
+      "label": "2010年 · 第2题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "14c8bcd5-1a33-5fcb-a4c2-87d79bfdcd0a",
+      "document_id": 25,
+      "label": "2010年 · 第3题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "93fb8457-3662-5126-bf5a-d82e2792b495",
+      "document_id": 25,
+      "label": "2010年 · 第4题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "2357e2c6-db9d-5c53-b376-1950af058c9e",
+      "document_id": 25,
+      "label": "2010年 · 第5题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "f39c0270-789c-5555-a8da-1ceaf73986b9",
+      "document_id": 25,
+      "label": "2010年 · 第6题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "1e87e16e-2674-58b8-a3dd-7a26f0025eab",
+      "document_id": 25,
+      "label": "2010年 · 第7题",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "a7112608-b3d9-5216-a2ac-57e95f86881b",
+      "document_id": 25,
+      "label": "2010年 · 第8题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "ac833d9f-b8aa-5eed-ba3a-76525ea74c5f",
+      "document_id": 25,
+      "label": "2010年 · 第9题",
+      "status": "review",
+      "reason": [
+        "OCR区段含多个主题号，题意归属待核对"
+      ]
+    },
+    {
+      "uuid": "d7ddf7e6-3ff7-5c63-9a93-28793680729d",
+      "document_id": 25,
+      "label": "2011年 · 第1题",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "65b2618b-1d8a-5ff7-8b60-14493faf2ff5",
+      "document_id": 25,
+      "label": "2011年 · 1·选择1",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "bad865c7-b433-5f49-ac7e-65cc860f473f",
+      "document_id": 25,
+      "label": "2011年 · 1·选择2",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "30c4f101-0aa3-5a89-af55-44f253621daa",
+      "document_id": 25,
+      "label": "2011年 · 1·选择3",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "dcd3e8a9-61be-5436-8cef-0b07cae17cb4",
+      "document_id": 25,
+      "label": "2011年 · 1·选择4",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "63608614-7351-5537-a6b3-2a9580a0e77a",
+      "document_id": 25,
+      "label": "2011年 · 1·选择5",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "f00c43cd-0f4a-5c19-b0e7-008d6a9847ee",
+      "document_id": 25,
+      "label": "2011年 · 1·选择6",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "a32677bf-11a9-52e6-a31c-705aab54b6e5",
+      "document_id": 25,
+      "label": "2011年 · 1·选择7",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "4a2269da-e6a9-594e-bc34-b758c5426a8b",
+      "document_id": 25,
+      "label": "2011年 · 1·选择11",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "fdbd14f6-2825-5b30-acd3-c3255695da47",
+      "document_id": 25,
+      "label": "2011年 · 1·选择12",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "3bbc45ed-72cc-56a6-b45f-1f3b83aae950",
+      "document_id": 25,
+      "label": "2011年 · 1·选择14",
+      "status": "review",
+      "reason": [
+        "超纲标记或非本轮简单设计深度的扩展内容"
+      ]
+    },
+    {
+      "uuid": "919b9ff0-bf43-5291-9a12-82fefa076d74",
+      "document_id": 25,
+      "label": "2011年 · 1·选择17",
+      "status": "review",
+      "reason": [
+        "超纲标记或非本轮简单设计深度的扩展内容"
+      ]
+    },
+    {
+      "uuid": "911cfc71-bb08-5d99-a16a-228d9627bf61",
+      "document_id": 25,
+      "label": "2011年 · 1·选择18",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "077d0f39-ec88-52d7-ad77-8ac3f48624bd",
+      "document_id": 25,
+      "label": "2011年 · 第3题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "e41be85b-be93-58db-8129-6087d0e8842f",
+      "document_id": 25,
+      "label": "2011年 · 第4题",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "9f2961fb-95da-544c-a25b-bcb3b17bdc2a",
+      "document_id": 25,
+      "label": "2011年 · 第5题",
+      "status": "review",
+      "reason": [
+        "OCR区段含多个主题号，题意归属待核对"
+      ]
+    },
+    {
+      "uuid": "37129cd5-a557-5f87-92cc-758f16dc21e2",
+      "document_id": 25,
+      "label": "2011年 · 第9题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "2d62c814-38db-5091-a3f9-ac1df2c225e4",
+      "document_id": 25,
+      "label": "2012年 · 第1题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "c66a4f31-f57f-50a7-ae2e-35613571a61a",
+      "document_id": 25,
+      "label": "2012年 · 1·填空1",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "dd41a25d-7eef-5a7b-9190-e01941e0e753",
+      "document_id": 25,
+      "label": "2012年 · 1·填空2",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "a3decb93-7591-5c03-8127-6e18c6f99f99",
+      "document_id": 25,
+      "label": "2012年 · 1·填空3",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "e4afc345-4e01-5963-8b7e-b8bf97c174bd",
+      "document_id": 25,
+      "label": "2012年 · 1·填空4",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "a402281a-dbaf-5745-a97d-a350d72a3c8b",
+      "document_id": 25,
+      "label": "2012年 · 1·填空5",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "d219582e-e4f6-5b16-8c58-1fcf688a7a4f",
+      "document_id": 25,
+      "label": "2012年 · 1·填空6",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "ab05bbed-1c98-5b7d-b880-3c5b320a7fd6",
+      "document_id": 25,
+      "label": "2012年 · 1·填空7",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "1c901621-9830-522e-a960-4cf5881ea95f",
+      "document_id": 25,
+      "label": "2012年 · 1·填空8",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "a281495b-1f6a-5a99-9157-392ecca9e3d0",
+      "document_id": 25,
+      "label": "2012年 · 1·填空9",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "abd7f7b8-a1ea-5d7e-bc93-3ff7fca8fb2e",
+      "document_id": 25,
+      "label": "2012年 · 1·填空10",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "7d3d1746-d4d6-5bba-98a9-630f1e966f88",
+      "document_id": 25,
+      "label": "2012年 · 1·填空11",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "e41c2c50-95eb-5f26-afda-1b4d7e15b767",
+      "document_id": 25,
+      "label": "2012年 · 1·填空12",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "04f5e601-64d5-5c63-b8aa-ef2f568deb3c",
+      "document_id": 25,
+      "label": "2012年 · 1·填空21",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "3606667f-894c-5394-b400-fdde36f22bbe",
+      "document_id": 25,
+      "label": "2012年 · 1·填空23",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "303e407b-9366-5007-807c-4c4c24d719d8",
+      "document_id": 25,
+      "label": "2012年 · 1·填空24",
+      "status": "review",
+      "reason": [
+        "超纲标记或非本轮简单设计深度的扩展内容"
+      ]
+    },
+    {
+      "uuid": "6218aee1-e8c7-5c1c-93fc-d194b524c00a",
+      "document_id": 25,
+      "label": "2012年 · 1·填空26",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "49cb70ea-a491-55cf-86ca-7fefa70ac84e",
+      "document_id": 25,
+      "label": "2012年 · 1·填空27",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "c503826d-7efd-5cf3-98bb-719ce7537912",
+      "document_id": 25,
+      "label": "2012年 · 第2题",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "ed11d709-ea5f-5f05-92ba-e1569d824da7",
+      "document_id": 25,
+      "label": "2012年 · 第3题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "4c095007-d622-56ef-af59-f3a651140722",
+      "document_id": 25,
+      "label": "2012年 · 第4题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "52b7d555-1c32-5945-83d1-06bb416c77b0",
+      "document_id": 25,
+      "label": "2013年 · 1·填空1",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "56503850-41df-5e35-935b-a1f63ef99cd9",
+      "document_id": 25,
+      "label": "2013年 · 1·填空2",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "782dd5ef-b2fd-560b-a6e7-b3a42699e74e",
+      "document_id": 25,
+      "label": "2013年 · 1·填空3",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "d5a1422a-707f-587c-81f3-28faed88bd43",
+      "document_id": 25,
+      "label": "2013年 · 1·填空4",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "44331c18-54f7-576e-833e-35093b3c2862",
+      "document_id": 25,
+      "label": "2013年 · 1·填空5",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "91b44808-80cd-57e0-88f8-03e23c8ee759",
+      "document_id": 25,
+      "label": "2013年 · 1·填空6",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "b66e9ffb-2b4c-5922-af86-3f4b554363c3",
+      "document_id": 25,
+      "label": "2013年 · 1·填空7",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "9b3d16f1-0fcf-59e4-bf41-b4809cfcb236",
+      "document_id": 25,
+      "label": "2013年 · 1·填空14",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "c01119b6-04db-526c-bf00-dfdb1014c825",
+      "document_id": 25,
+      "label": "2013年 · 2·选择1",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "659a62e3-e0e1-542c-b4f4-19d528dadb79",
+      "document_id": 25,
+      "label": "2013年 · 2·选择2",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "332a6308-2178-57d7-a277-a55c798c8b0d",
+      "document_id": 25,
+      "label": "2013年 · 2·选择3",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "a6899eb2-934f-530f-b5d5-21a662b5bbbb",
+      "document_id": 25,
+      "label": "2013年 · 2·选择4",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "26f0726c-7c09-5ac4-9a40-e429776e4007",
+      "document_id": 25,
+      "label": "2013年 · 2·选择5",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "c99c457d-45ee-5d64-bf22-8e89db80e2b2",
+      "document_id": 25,
+      "label": "2013年 · 2·选择6",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "8db3ae0c-22d1-5969-8a52-92f1926da6e4",
+      "document_id": 25,
+      "label": "2013年 · 2·选择7",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "ea65b80d-ef6d-5475-890c-7be9833272eb",
+      "document_id": 25,
+      "label": "2013年 · 2·选择12",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "b80c40fb-f78c-5bff-b673-5b847957785b",
+      "document_id": 25,
+      "label": "2013年 · 2·选择13",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "da6f68ad-d47b-5226-ba62-6ac0f92dd3ae",
+      "document_id": 25,
+      "label": "2013年 · 2·选择14",
+      "status": "review",
+      "reason": [
+        "超纲标记或非本轮简单设计深度的扩展内容"
+      ]
+    },
+    {
+      "uuid": "053a58a6-05c1-52c3-95a3-de8a79be3f70",
+      "document_id": 25,
+      "label": "2013年 · 第3题",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "8e9cea92-0bc1-5d23-aa88-74d932f39cde",
+      "document_id": 25,
+      "label": "2013年 · 第4题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "31e8ae08-5fb2-5716-a0e7-613a4f122912",
+      "document_id": 25,
+      "label": "2013年 · 第5题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "786d89d1-fe0d-5a7c-8f0f-1f7c811e2a20",
+      "document_id": 25,
+      "label": "2013年 · 第6题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "980e1eec-fa63-50a1-a413-860ceba5adca",
+      "document_id": 25,
+      "label": "2014年 · 1·填空1",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "7126137a-70e1-5b31-99b1-aedcd0717a1a",
+      "document_id": 25,
+      "label": "2014年 · 1·填空2",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "b6645ee0-c0dd-50be-9267-da446a360757",
+      "document_id": 25,
+      "label": "2014年 · 1·填空3",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "f44802cc-7fac-5a8b-8d67-f6036f0e3b2f",
+      "document_id": 25,
+      "label": "2014年 · 1·填空5",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "6d90d324-43a7-5a48-a751-586df7f78eda",
+      "document_id": 25,
+      "label": "2014年 · 1·填空10",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "efaab9fa-1950-56b5-bc60-8c171f0f0180",
+      "document_id": 25,
+      "label": "2014年 · 1·填空11",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "cf405f15-127f-5019-a2d9-846e4681f930",
+      "document_id": 25,
+      "label": "2014年 · 1·填空12",
+      "status": "review",
+      "reason": [
+        "OCR区段含多个主题号，题意归属待核对"
+      ]
+    },
+    {
+      "uuid": "2175f805-dff2-5573-81bd-47a916611a41",
+      "document_id": 25,
+      "label": "2014年 · 2·选择1",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "c4dfd9c4-4573-52ef-b200-a2854b1dbcb6",
+      "document_id": 25,
+      "label": "2014年 · 2·选择2",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "53aea279-d855-549c-9adc-4515ad18ea9a",
+      "document_id": 25,
+      "label": "2014年 · 2·选择3",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "9fd5b019-7729-5e9e-9102-051995fcc2ca",
+      "document_id": 25,
+      "label": "2014年 · 2·选择4",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "174d0c0f-23a8-5938-8278-483ea3d0ec74",
+      "document_id": 25,
+      "label": "2014年 · 2·选择5",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "7f3c7dd4-7053-593b-987b-98c6cf6d95a0",
+      "document_id": 25,
+      "label": "2014年 · 2·选择6",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "0021ceb1-6eaa-59b3-8580-d0aa467f7a3b",
+      "document_id": 25,
+      "label": "2014年 · 2·选择7",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "5f26b5a9-e3b8-5b88-91ef-e89601770fb1",
+      "document_id": 25,
+      "label": "2014年 · 2·选择8",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "a6a19396-68b8-54b6-bf84-e8c661b038cc",
+      "document_id": 25,
+      "label": "2014年 · 2·选择9",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "4f3d45b7-c663-503d-aae4-fea2eb7b3a13",
+      "document_id": 25,
+      "label": "2014年 · 2·选择10",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "576f3c24-37c5-5056-a128-48bde15c0323",
+      "document_id": 25,
+      "label": "2014年 · 2·选择16",
+      "status": "review",
+      "reason": [
+        "超纲标记或非本轮简单设计深度的扩展内容"
+      ]
+    },
+    {
+      "uuid": "edcbe8f5-c54a-5b0c-9ccd-89e2563c5e80",
+      "document_id": 25,
+      "label": "2014年 · 2·选择17",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "36fa3ef5-ff00-57ec-98c3-8c84f1fb1957",
+      "document_id": 25,
+      "label": "2014年 · 3·题1",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "d35c00f6-8c83-5a2a-88c6-6a1206d18f55",
+      "document_id": 25,
+      "label": "2014年 · 3·题2",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "1b354720-5eb9-53fc-a1c6-aea00f68ccdd",
+      "document_id": 25,
+      "label": "2014年 · 3·题3",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "6f7a2cdb-fdab-56de-9fa9-d262aab9b196",
+      "document_id": 25,
+      "label": "2014年 · 4·题1",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "dc98c604-9b4e-53c9-ae3f-fb9e94cc9008",
+      "document_id": 25,
+      "label": "2014年 · 4·题2",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "d27066d5-83ac-5619-9917-d37d0ab655dd",
+      "document_id": 25,
+      "label": "2014年 · 4·题3",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "4104c938-6939-5fdf-aa66-2fd681e7b81b",
+      "document_id": 25,
+      "label": "2015年 · 1·填空1",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "86b62f7b-85fb-5da0-bb16-559ddca680cc",
+      "document_id": 25,
+      "label": "2015年 · 1·填空2",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "d003ae69-a257-572e-bbf5-730b1ffa1073",
+      "document_id": 25,
+      "label": "2015年 · 1·填空3",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "9980de33-c6fc-5c41-a604-ec9bb9279834",
+      "document_id": 25,
+      "label": "2015年 · 1·填空4",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "8426d94a-73e7-57d8-8479-ea6b7168e343",
+      "document_id": 25,
+      "label": "2015年 · 1·填空5",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "832bcd05-80de-504a-9a7b-9d3d351a944b",
+      "document_id": 25,
+      "label": "2015年 · 1·填空6",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "866cd769-51eb-5c3a-a771-0c26e80c4fe3",
+      "document_id": 25,
+      "label": "2015年 · 1·填空8",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "16c1491d-4293-5615-be9f-cfafbcbec280",
+      "document_id": 25,
+      "label": "2015年 · 1·填空9",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "9f3ed283-650b-564b-9b04-c3401de86b80",
+      "document_id": 25,
+      "label": "2015年 · 1·填空10",
+      "status": "review",
+      "reason": [
+        "OCR区段含多个主题号，题意归属待核对"
+      ]
+    },
+    {
+      "uuid": "a8784689-f549-55b8-8afa-b0c82073b422",
+      "document_id": 25,
+      "label": "2015年 · 2·选择1",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "0b038e01-e058-5736-aece-8b0212483262",
+      "document_id": 25,
+      "label": "2015年 · 2·选择2",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "50259e8a-f51a-5f12-83c6-134623da442d",
+      "document_id": 25,
+      "label": "2015年 · 2·选择3",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "d9d336b0-7019-57d1-9e9a-2b358c402109",
+      "document_id": 25,
+      "label": "2015年 · 2·选择5",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "c32b6427-fb21-59b4-9f31-21e85d292dda",
+      "document_id": 25,
+      "label": "2015年 · 2·选择6",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "dcaf6a33-5665-50bf-9161-0918a55a5b4b",
+      "document_id": 25,
+      "label": "2015年 · 2·选择7",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "27a9aafa-7045-5f2f-a38f-6096e0e3d9c0",
+      "document_id": 25,
+      "label": "2015年 · 2·选择8",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "c921174f-ef0c-5038-b383-d709c645187e",
+      "document_id": 25,
+      "label": "2015年 · 2·选择9",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "d3f4cdae-ed3d-566e-94b0-8c7ab21f014e",
+      "document_id": 25,
+      "label": "2015年 · 2·选择17",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "137d1ed4-edba-5997-a38e-f55f561bb793",
+      "document_id": 25,
+      "label": "2015年 · 3·题1",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "23932661-4bbc-50e4-bfa7-6be36755ee06",
+      "document_id": 25,
+      "label": "2015年 · 3·题2",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "76995fd7-5218-51e6-9f74-c3b4bde60102",
+      "document_id": 25,
+      "label": "2015年 · 3·题3",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "40bf05e9-f916-551e-8701-00b3bc9f4e0c",
+      "document_id": 25,
+      "label": "2015年 · 3·题4",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "4e99dc99-f603-592d-970d-8c2ced25e2e9",
+      "document_id": 25,
+      "label": "2015年 · 3·题5",
+      "status": "review",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "9c5d04f2-0894-5fa5-886e-ba6b996446d2",
+      "document_id": 25,
+      "label": "2015年 · 4·题1",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "89fa0b33-e843-5fa5-8f93-7c34eb5a427e",
+      "document_id": 25,
+      "label": "2016年 · 1·填空1",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "8f27102d-7029-5199-94f0-b19ae088d7eb",
+      "document_id": 25,
+      "label": "2016年 · 1·填空2",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "55208d81-e5fe-5b12-a08b-a9e0c3784bde",
+      "document_id": 25,
+      "label": "2016年 · 1·填空3",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "3e0ee1a0-13e1-5b24-befb-be321ea4129f",
+      "document_id": 25,
+      "label": "2016年 · 1·填空4",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "0f6cd318-df7a-59a3-ad68-9cf16c420431",
+      "document_id": 25,
+      "label": "2016年 · 1·填空5",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "4d710e02-f7e3-5fec-a3c5-d7704195aeb7",
+      "document_id": 25,
+      "label": "2016年 · 1·填空7",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "48c28cd6-a83c-5c5d-978f-4a52cc7b94bf",
+      "document_id": 25,
+      "label": "2016年 · 1·填空10",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "1c8cfc8b-ce41-5126-b19f-1da14b1ef765",
+      "document_id": 25,
+      "label": "2016年 · 1·填空11",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "c2c7e931-37b0-5c1f-b846-cb7babf0df98",
+      "document_id": 25,
+      "label": "2016年 · 2·选择1",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "d03c2ae4-4cf8-501e-ba5c-463df88579bc",
+      "document_id": 25,
+      "label": "2016年 · 2·选择3",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "b9f1ecab-2f7d-5f54-a6b6-a541461255a3",
+      "document_id": 25,
+      "label": "2016年 · 2·选择4",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "a3628bfe-13f7-514e-ae34-baa193c08cae",
+      "document_id": 25,
+      "label": "2016年 · 2·选择5",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "e90ef3a9-11ca-5443-b53d-87811e3d3eb0",
+      "document_id": 25,
+      "label": "2016年 · 2·选择6",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "9f2a17cc-bb76-5108-b008-c8f80a0bd6f6",
+      "document_id": 25,
+      "label": "2016年 · 2·选择7",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "bd33c3bf-8d71-5031-b4d1-c6bb78c5f64f",
+      "document_id": 25,
+      "label": "2016年 · 2·选择8",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "0c7e5b1e-68c3-54ce-b976-3b4c612d1f65",
+      "document_id": 25,
+      "label": "2016年 · 2·选择9",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "81135482-e987-5bbc-9cba-24ea4597e990",
+      "document_id": 25,
+      "label": "2016年 · 2·选择11",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "d2dcec8b-b184-5ca3-b56f-f2035b80c4a4",
+      "document_id": 25,
+      "label": "2016年 · 2·选择12",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "477c5806-4c86-577d-a52e-d4a642d42455",
+      "document_id": 25,
+      "label": "2016年 · 2·选择18",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "b91a93c7-0ca0-5c0a-bb11-30b69ff9f657",
+      "document_id": 25,
+      "label": "2016年 · 3·题1",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "71847503-e7d2-5d24-aae3-a92ff8f7b599",
+      "document_id": 25,
+      "label": "2016年 · 4·题1",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "5f392e98-5c75-59ea-9c37-e9d63a92ba33",
+      "document_id": 25,
+      "label": "2017年 · 1·填空1",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "f4d9b675-f373-56f3-94c2-e8b594e26fbe",
+      "document_id": 25,
+      "label": "2017年 · 1·填空2",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "f3b77f7e-800b-5ff1-a656-f6bf3debc6e0",
+      "document_id": 25,
+      "label": "2017年 · 1·填空3",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "089c1d1a-a6ff-55e8-8274-686398f60fab",
+      "document_id": 25,
+      "label": "2017年 · 1·填空4",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "f7fb425b-23a4-5e1c-ab0f-9cab126a7012",
+      "document_id": 25,
+      "label": "2017年 · 1·填空5",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "a73ea484-f9e1-5a0f-9aa2-da0a25706c01",
+      "document_id": 25,
+      "label": "2017年 · 1·填空6",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "dc678c2e-0399-544c-962b-7a59b22b57c1",
+      "document_id": 25,
+      "label": "2017年 · 1·填空9",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "7dd5a8b1-e5ca-50b4-8e19-a5256ab3c308",
+      "document_id": 25,
+      "label": "2017年 · 1·填空10",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "f19c03d0-9605-59cd-ab6f-d7d74cbc7158",
+      "document_id": 25,
+      "label": "2017年 · 2·选择1",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "85e82771-370a-5949-80d1-169484ea01f0",
+      "document_id": 25,
+      "label": "2017年 · 2·选择2",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "6dec59e8-3190-5532-8aa0-6c8b104d6453",
+      "document_id": 25,
+      "label": "2017年 · 2·选择3",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "a52aa466-0e0e-5adf-910b-04ab1a3b7867",
+      "document_id": 25,
+      "label": "2017年 · 2·选择4",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "a858c82c-e397-5b56-b908-3ba4d67b20a1",
+      "document_id": 25,
+      "label": "2017年 · 2·选择5",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "ff2fba6f-b9d0-58ae-9c68-3a4f48f054e7",
+      "document_id": 25,
+      "label": "2017年 · 2·选择6",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "f1e267c5-4149-5d39-addf-c58c6402a4ec",
+      "document_id": 25,
+      "label": "2017年 · 2·选择7",
+      "status": "review",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "62652107-1ded-5ca8-8b07-383cec6bc1aa",
+      "document_id": 25,
+      "label": "2017年 · 2·选择8",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "1dae57ef-fd72-5937-9aa0-b46521a85291",
+      "document_id": 25,
+      "label": "2017年 · 2·选择9",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "51fb3be0-4e6e-508e-90b1-7d0ac800fc61",
+      "document_id": 25,
+      "label": "2017年 · 2·选择11",
+      "status": "review",
+      "reason": [
+        "超纲标记或非本轮简单设计深度的扩展内容"
+      ]
+    },
+    {
+      "uuid": "bd91ab50-da81-5d24-a83e-06f26c4edfae",
+      "document_id": 25,
+      "label": "2017年 · 2·选择14",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "80b68ae9-2120-57d6-b4ab-1f60391faf55",
+      "document_id": 25,
+      "label": "2017年 · 2·选择15",
+      "status": "review",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "f74a4817-8a8c-5d1b-a153-b1d02b338e69",
+      "document_id": 25,
+      "label": "2017年 · 2·选择16",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "4df59f47-4761-550c-9fe0-cccc7e80b3ee",
+      "document_id": 25,
+      "label": "2017年 · 2·选择17",
+      "status": "review",
+      "reason": [
+        "超纲标记或非本轮简单设计深度的扩展内容"
+      ]
+    },
+    {
+      "uuid": "e5e256d9-c37a-5a32-8dd4-651601e29ad6",
+      "document_id": 25,
+      "label": "2017年 · 第3题",
+      "status": "review",
+      "reason": [
+        "超纲标记或非本轮简单设计深度的扩展内容"
+      ]
+    },
+    {
+      "uuid": "af11d91f-0e57-5536-971a-87e045b27ea9",
+      "document_id": 25,
+      "label": "2017年 · 4·题1",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "b2b34a8b-fd69-5c84-89f9-9e89c45ba992",
+      "document_id": 25,
+      "label": "2018年 · 第1题",
+      "status": "review",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "5ea2d17a-5e75-5ba5-8851-f65c6b22c79d",
+      "document_id": 25,
+      "label": "2018年 · 2·选择1",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "1aeb70cb-5dde-5d6c-b4d3-1c5600cff6a3",
+      "document_id": 25,
+      "label": "2018年 · 2·选择2",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "67336f9e-f874-5348-bf5e-28fef8fb3ab4",
+      "document_id": 25,
+      "label": "2018年 · 2·选择3",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "c7059d93-9cab-51ce-bf48-b6231896b991",
+      "document_id": 25,
+      "label": "2018年 · 2·选择4",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "2fd70089-7b19-51c0-8fa1-10c17532cb9a",
+      "document_id": 25,
+      "label": "2018年 · 2·选择5",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "c0ff860c-7f5a-533e-b871-0dc9f3b25a5b",
+      "document_id": 25,
+      "label": "2018年 · 第3题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "3b7d70e0-2a28-5675-ab18-c21c5dbdc275",
+      "document_id": 25,
+      "label": "2018年 · 4·题2",
+      "status": "review",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "fb7dfaaa-4190-5ebe-baa6-4d952e171cd9",
+      "document_id": 25,
+      "label": "2018年 · 4·题3",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "6ac10e70-768d-5d61-bec2-566f22d31574",
+      "document_id": 25,
+      "label": "2018年 · 4·题4",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "62b9e1ad-701a-5bdb-bd8c-aafad3161d49",
+      "document_id": 25,
+      "label": "2018年 · 4·题6",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "326c26ef-5b1e-5865-85f0-d80e439c171a",
+      "document_id": 25,
+      "label": "2018年 · 4·题7",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "444d2595-7661-51a2-be9b-8a1933d22d1d",
+      "document_id": 25,
+      "label": "2018年 · 4·题8",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "1b2b82c8-6560-5bd0-863b-288e6030b0f6",
+      "document_id": 25,
+      "label": "2019年 · 1·填空1",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "c1b164bd-bf9b-5b14-af2e-8fecf1f42161",
+      "document_id": 25,
+      "label": "2019年 · 1·填空2",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "b1d767b2-b87a-54e0-8f34-ff6710f4677d",
+      "document_id": 25,
+      "label": "2019年 · 1·填空3",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "36eeb77b-c74c-5316-a996-dbc2a1fe3350",
+      "document_id": 25,
+      "label": "2019年 · 1·填空4",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "3b05bc0d-b3e5-5827-9ce0-488e12fa7a14",
+      "document_id": 25,
+      "label": "2019年 · 1·填空5",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "241fba4d-0a96-5605-ba94-691043328811",
+      "document_id": 25,
+      "label": "2019年 · 1·填空6",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "010896f8-9064-5cf4-9c47-cc6c5379863d",
+      "document_id": 25,
+      "label": "2019年 · 1·填空12",
+      "status": "review",
+      "reason": [
+        "超纲标记或非本轮简单设计深度的扩展内容"
+      ]
+    },
+    {
+      "uuid": "b4c1968b-6bce-522c-b2e8-c4393554d790",
+      "document_id": 25,
+      "label": "2019年 · 2·选择1",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "df84edc1-65e9-5504-86e6-802f7d098521",
+      "document_id": 25,
+      "label": "2019年 · 2·选择2",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "3115b170-ec21-5287-8944-25f0b362ce64",
+      "document_id": 25,
+      "label": "2019年 · 2·选择3",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "8f4b5201-2513-5ac6-80a3-d9d7f4430587",
+      "document_id": 25,
+      "label": "2019年 · 2·选择4",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "57f8c5e5-3f38-5aff-a585-c3b419522b79",
+      "document_id": 25,
+      "label": "2019年 · 2·选择5",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "6e18f62e-95c8-58e8-9f05-6fa06d2357c8",
+      "document_id": 25,
+      "label": "2019年 · 2·选择6",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "4e9a435e-7736-50e8-b9c8-012738d96c16",
+      "document_id": 25,
+      "label": "2019年 · 2·选择9",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "bf68ff70-f45e-57ee-9396-eac79091a45a",
+      "document_id": 25,
+      "label": "2019年 · 2·选择10",
+      "status": "review",
+      "reason": [
+        "超纲标记或非本轮简单设计深度的扩展内容"
+      ]
+    },
+    {
+      "uuid": "7ddd3cf3-52cd-56d5-a0f7-782f7e1d3245",
+      "document_id": 25,
+      "label": "2019年 · 2·选择11",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "b9c3dde1-d2c3-57e8-afa9-ef6691b2cf42",
+      "document_id": 25,
+      "label": "2019年 · 2·选择12",
+      "status": "review",
+      "reason": [
+        "超纲标记或非本轮简单设计深度的扩展内容"
+      ]
+    },
+    {
+      "uuid": "52b5d455-53bb-578c-8010-9eaa6311460e",
+      "document_id": 25,
+      "label": "2019年 · 3·题3",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "d71bde07-689f-55ba-83c5-a5c65388c069",
+      "document_id": 25,
+      "label": "2019年 · 3·题4",
+      "status": "review",
+      "reason": [
+        "超纲标记或非本轮简单设计深度的扩展内容"
+      ]
+    },
+    {
+      "uuid": "c05bc503-8e52-59d2-9c94-245346d94e51",
+      "document_id": 25,
+      "label": "2019年 · 3·题5",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "e40f161a-8a2b-5fd0-9406-971395daab93",
+      "document_id": 25,
+      "label": "2019年 · 3·题6",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "a9ed76c1-2d0a-5d3c-8ef7-bb251d3fa705",
+      "document_id": 25,
+      "label": "2019年 · 3·题7",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "564277ee-2949-590e-9b62-9f222b6d147e",
+      "document_id": 25,
+      "label": "2019年 · 3·题8",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "afe138c3-3e6d-5213-9f34-e2ced7e0e2d0",
+      "document_id": 25,
+      "label": "2020年 · 第1题",
+      "status": "review",
+      "reason": [
+        "超纲标记或非本轮简单设计深度的扩展内容"
+      ]
+    },
+    {
+      "uuid": "41ebf168-f6ec-5827-afa0-c3720b17cb5c",
+      "document_id": 25,
+      "label": "2020年 · 1·选择1",
+      "status": "review",
+      "reason": [
+        "OCR区段含多个主题号，题意归属待核对"
+      ]
+    },
+    {
+      "uuid": "120a1f2b-85ca-5cd6-ae13-63ea7f132d8b",
+      "document_id": 25,
+      "label": "2020年 · 1·选择2",
+      "status": "review",
+      "reason": [
+        "OCR区段含多个主题号，题意归属待核对"
+      ]
+    },
+    {
+      "uuid": "a50c3b5d-10aa-5194-8ba1-abb985639a86",
+      "document_id": 25,
+      "label": "2020年 · 1·选择3",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "e856eb54-e942-5113-9837-971a790ff632",
+      "document_id": 25,
+      "label": "2020年 · 1·选择4",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "6192ea7b-0e22-5f78-9b27-9026e67c34cd",
+      "document_id": 25,
+      "label": "2020年 · 1·选择5",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "fc8891d9-d579-502d-a306-4ddce1f5f463",
+      "document_id": 25,
+      "label": "2020年 · 1·选择6",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "4bbd5c6a-d67a-533f-b881-6eb5757121c4",
+      "document_id": 25,
+      "label": "2020年 · 1·选择7",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "04e39a72-e6c9-59dc-90be-654e9bf39328",
+      "document_id": 25,
+      "label": "2020年 · 1·选择11",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "f2bb4251-5210-5236-b7fd-f17d3c970bfd",
+      "document_id": 25,
+      "label": "2020年 · 1·选择12",
+      "status": "review",
+      "reason": [
+        "OCR区段含多个主题号，题意归属待核对"
+      ]
+    },
+    {
+      "uuid": "202efd48-0fce-524f-8fe8-f297405e96ca",
+      "document_id": 25,
+      "label": "2020年 · 1·选择13",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "83a5c072-fb35-5de8-9986-8568ac798b6c",
+      "document_id": 25,
+      "label": "2020年 · 第3题",
+      "status": "review",
+      "reason": [
+        "多页旧裁图可能混入整卷/多题，独立归属待核对"
+      ]
+    },
+    {
+      "uuid": "9dbd72d4-1ae5-5ed7-a92a-2ba0525a9c0b",
+      "document_id": 25,
+      "label": "2021年 · 1·填空1",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "dd6acc89-1577-5fdc-ab42-ff7057216c42",
+      "document_id": 25,
+      "label": "2021年 · 1·填空2",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "3516909e-0bfd-5550-905c-354c22f1d1aa",
+      "document_id": 25,
+      "label": "2021年 · 1·填空3",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "4b71d042-1f6b-58e6-a703-d5c0449b6abd",
+      "document_id": 25,
+      "label": "2021年 · 1·填空5",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "76eed12c-9510-5b41-89a5-21b11b719997",
+      "document_id": 25,
+      "label": "2021年 · 1·填空7",
+      "status": "review",
+      "reason": [
+        "超纲标记或非本轮简单设计深度的扩展内容"
+      ]
+    },
+    {
+      "uuid": "ceeaa6f1-5099-5c49-a10a-7b069f0abf48",
+      "document_id": 25,
+      "label": "2021年 · 1·填空8",
+      "status": "review",
+      "reason": [
+        "超纲标记或非本轮简单设计深度的扩展内容"
+      ]
+    },
+    {
+      "uuid": "940af944-4e7d-55a4-9ac5-ced925a882d1",
+      "document_id": 25,
+      "label": "2021年 · 1·填空9",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "5443a0fb-cc8f-5dd3-918a-db0f8ace8a2b",
+      "document_id": 25,
+      "label": "2021年 · 1·填空10",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "c6723ca8-57e4-5986-a19f-e845351afa0b",
+      "document_id": 25,
+      "label": "2021年 · 1·填空11",
+      "status": "review",
+      "reason": [
+        "超纲标记或非本轮简单设计深度的扩展内容"
+      ]
+    },
+    {
+      "uuid": "115fcaa1-a43d-57a3-8535-62f6a4c6d9a6",
+      "document_id": 25,
+      "label": "2021年 · 2·选择1",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "b242883d-14ba-563b-ac48-4bc5078ba02c",
+      "document_id": 25,
+      "label": "2021年 · 2·选择2",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "a9cec35a-5bf4-5386-9418-8177e1c63553",
+      "document_id": 25,
+      "label": "2021年 · 2·选择3",
+      "status": "review",
+      "reason": [
+        "超纲标记或非本轮简单设计深度的扩展内容"
+      ]
+    },
+    {
+      "uuid": "9dded38a-d82f-5d02-884f-225d08072062",
+      "document_id": 25,
+      "label": "2021年 · 3·题3",
+      "status": "review",
+      "reason": [
+        "超纲标记或非本轮简单设计深度的扩展内容"
+      ]
+    },
+    {
+      "uuid": "43ac2488-2510-585c-ae3f-0410dbbdc489",
+      "document_id": 25,
+      "label": "2021年 · 3·题4",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "7ab7ed00-91b2-5560-baab-9023344ed309",
+      "document_id": 25,
+      "label": "2021年 · 3·题5",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "2aa4b889-fc2f-5177-bc6d-305a8384ac8f",
+      "document_id": 25,
+      "label": "2021年 · 3·题6",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "d6a01a46-ac96-5db6-ae43-862a89bf928d",
+      "document_id": 25,
+      "label": "2021年 · 3·题7",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "8bacbd51-837e-5a02-ab17-9b38ed858cae",
+      "document_id": 25,
+      "label": "2021年 · 3·题8",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "2367b551-5e67-5857-af49-df9ab58ac792",
+      "document_id": 25,
+      "label": "2022年 · 1·填空1",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "3f91252b-3d8e-589a-b775-e0b51b97371b",
+      "document_id": 25,
+      "label": "2022年 · 1·填空2",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "2356ce7c-82be-5b8e-91f9-c5af16017b65",
+      "document_id": 25,
+      "label": "2022年 · 1·填空3",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "1a3e36b5-1512-5f2b-95ab-23a9b26b818d",
+      "document_id": 25,
+      "label": "2022年 · 1·填空4",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "0eb1cfb3-969b-58f3-86fb-607eabf055c3",
+      "document_id": 25,
+      "label": "2022年 · 1·填空5",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "fb2086d3-773d-560d-8f4b-246cd7632c0a",
+      "document_id": 25,
+      "label": "2022年 · 1·填空6",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "4caef2d2-f23d-5d68-92b8-5dd4bbedc744",
+      "document_id": 25,
+      "label": "2022年 · 1·填空7",
+      "status": "review",
+      "reason": [
+        "OCR区段含多个主题号，题意归属待核对"
+      ]
+    },
+    {
+      "uuid": "a71d0c17-89d6-5ef7-a254-d0f54bacb61f",
+      "document_id": 25,
+      "label": "2022年 · 1·填空12",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "59d595f7-895c-54fb-ab4b-c9eb62446fc0",
+      "document_id": 25,
+      "label": "2022年 · 2·选择1",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "346b7930-ccdb-5f11-ae38-d65f0bd66047",
+      "document_id": 25,
+      "label": "2022年 · 2·选择2",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "992e1e59-82a5-52a0-b7ad-af978be4d347",
+      "document_id": 25,
+      "label": "2022年 · 2·选择3",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "d7a34401-48e9-5c2a-8847-05b58962fc39",
+      "document_id": 25,
+      "label": "2022年 · 2·选择4",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "85d2f963-c261-5ffe-804d-322297e46208",
+      "document_id": 25,
+      "label": "2022年 · 2·选择7",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "9f053823-5104-5552-b4d8-92149384fd28",
+      "document_id": 25,
+      "label": "2022年 · 2·选择10",
+      "status": "review",
+      "reason": [
+        "超纲标记或非本轮简单设计深度的扩展内容"
+      ]
+    },
+    {
+      "uuid": "d87f813a-e123-58f5-86c8-056a932ea589",
+      "document_id": 25,
+      "label": "2022年 · 2·选择11",
+      "status": "review",
+      "reason": [
+        "超纲标记或非本轮简单设计深度的扩展内容"
+      ]
+    },
+    {
+      "uuid": "b48a5afb-b220-50f2-9096-403b6a405c5f",
+      "document_id": 25,
+      "label": "2022年 · 3·题1",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "a07f07b0-df56-5543-a1e4-688bbc38b386",
+      "document_id": 25,
+      "label": "2022年 · 3·题2",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "879f7d40-a746-5c79-b0c3-246fc191ad89",
+      "document_id": 25,
+      "label": "2022年 · 3·题3",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "7d9d2bfc-a05a-5dc4-878b-8cd9850db86c",
+      "document_id": 25,
+      "label": "2022年 · 3·题4",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "e8a092a6-c5ba-5c01-ba8b-a9179bcae96d",
+      "document_id": 25,
+      "label": "2022年 · 3·题5",
+      "status": "review",
+      "reason": [
+        "超纲标记或非本轮简单设计深度的扩展内容"
+      ]
+    },
+    {
+      "uuid": "7a1dee75-8aaa-5880-8c94-64c8c36fd5fa",
+      "document_id": 25,
+      "label": "2022年 · 3·题7",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "0cc38553-a03a-57b4-a41e-b7ca60070bc3",
+      "document_id": 25,
+      "label": "2022年 · 3·题8",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "554f40a5-31f1-52ee-8f75-c7fd874c1652",
+      "document_id": 25,
+      "label": "2023年 · 1·填空1",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "dd978caf-1185-5a0f-9ae0-f92455495659",
+      "document_id": 25,
+      "label": "2023年 · 1·填空2",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "844ade80-f56f-56c7-8c89-1d010811eaad",
+      "document_id": 25,
+      "label": "2023年 · 1·填空3",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "64473c17-cd9b-5514-8d9f-c35f68b6690b",
+      "document_id": 25,
+      "label": "2023年 · 1·填空4",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "f98d1987-6328-5bf1-a849-5c6455cecf62",
+      "document_id": 25,
+      "label": "2023年 · 1·填空5",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "08ec6e87-cc8c-5fbd-95e8-574c3483ac97",
+      "document_id": 25,
+      "label": "2023年 · 1·填空6",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "c9f67bd5-c74c-5136-bb45-74ae1b225f5c",
+      "document_id": 25,
+      "label": "2023年 · 1·填空10",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "7558ec37-1c73-5314-98fa-50bad6cdddc4",
+      "document_id": 25,
+      "label": "2023年 · 1·填空11",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "c2ca11d0-6f44-5960-b254-58bacf286a5c",
+      "document_id": 25,
+      "label": "2023年 · 1·填空12",
+      "status": "review",
+      "reason": [
+        "OCR区段含多个主题号，题意归属待核对"
+      ]
+    },
+    {
+      "uuid": "0595710d-9808-566a-ae8b-640d5981bd8b",
+      "document_id": 25,
+      "label": "2023年 · 2·选择1",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "40eb647d-1b63-5e96-9356-370c74ea05e9",
+      "document_id": 25,
+      "label": "2023年 · 2·选择2",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "438a743b-e608-568e-b0f2-e18c6672f3a5",
+      "document_id": 25,
+      "label": "2023年 · 2·选择3",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "cccba94a-90c4-56a3-ad74-d61770d315a9",
+      "document_id": 25,
+      "label": "2023年 · 2·选择4",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "ba979540-d0d1-59c3-922e-aa718ea00f84",
+      "document_id": 25,
+      "label": "2023年 · 2·选择5",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "02e0a081-3262-536f-b4bb-5dd89f955e98",
+      "document_id": 25,
+      "label": "2023年 · 2·选择6",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "b158a8a8-1924-5d46-94c0-54949076213d",
+      "document_id": 25,
+      "label": "2023年 · 2·选择7",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "310d609e-3f6b-51d6-84b8-be01b5a380c2",
+      "document_id": 25,
+      "label": "2023年 · 2·选择8",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "af425ce1-00a8-557c-877e-855aff9c346e",
+      "document_id": 25,
+      "label": "2023年 · 2·选择10",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "f4a1a92d-d786-5f15-8ba5-9966983cd63f",
+      "document_id": 25,
+      "label": "2023年 · 2·选择11",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "e86ca961-3038-5361-952e-dfd1cd50020e",
+      "document_id": 25,
+      "label": "2023年 · 2·选择12",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "58a5aed2-c5c9-5d49-b646-560bb96af173",
+      "document_id": 25,
+      "label": "2023年 · 2·选择14",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "1e719e74-ec07-5834-be53-6857d0209c02",
+      "document_id": 25,
+      "label": "2023年 · 3·题1",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "ff489437-5d08-5d27-97d4-ed09a05767cf",
+      "document_id": 25,
+      "label": "2023年 · 3·题2",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "f4c8f691-d62b-5568-b8a9-754f213ab7e6",
+      "document_id": 25,
+      "label": "2023年 · 3·题3",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "76ae92b9-099c-53f2-93ab-7d11775da0d9",
+      "document_id": 25,
+      "label": "2023年 · 3·题4",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "8852522c-b3e5-5e62-90cc-def37e52c86b",
+      "document_id": 25,
+      "label": "2023年 · 3·题7",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "cb5191cc-fb14-517b-bc88-f220d69b16d9",
+      "document_id": 25,
+      "label": "2023年 · 3·题8",
+      "status": "review",
+      "reason": [
+        "超纲标记或非本轮简单设计深度的扩展内容"
+      ]
+    },
+    {
+      "uuid": "a7e6e5cb-dbb9-5bc8-8035-bbca03c91c44",
+      "document_id": 25,
+      "label": "2024年 · 1·填空1",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "358c8d95-58f2-55e9-bde1-715b03c9525e",
+      "document_id": 25,
+      "label": "2024年 · 1·填空2",
+      "status": "review",
+      "reason": [
+        "OCR区段含多个主题号，题意归属待核对"
+      ]
+    },
+    {
+      "uuid": "0e0be69a-b71a-5801-b436-3fd79ee23704",
+      "document_id": 25,
+      "label": "2024年 · 1·填空3",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "6aa0835d-078e-5e12-bcb3-9d2ce1c16d95",
+      "document_id": 25,
+      "label": "2024年 · 1·填空4",
+      "status": "review",
+      "reason": [
+        "OCR区段含多个主题号，题意归属待核对"
+      ]
+    },
+    {
+      "uuid": "a9fe6e42-c360-5ffe-b6df-137d8eec5d09",
+      "document_id": 25,
+      "label": "2024年 · 1·填空5",
+      "status": "review",
+      "reason": [
+        "超纲标记或非本轮简单设计深度的扩展内容"
+      ]
+    },
+    {
+      "uuid": "2532bb1f-bc2f-5970-af8c-56854257b552",
+      "document_id": 25,
+      "label": "2024年 · 1·填空6",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "156ccf5b-567d-5343-a01e-407784c4cd90",
+      "document_id": 25,
+      "label": "2024年 · 1·填空10",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "c929afd3-07e8-55b5-8a4d-dabe7b5d9604",
+      "document_id": 25,
+      "label": "2024年 · 1·填空11",
+      "status": "review",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "9c2fee3c-2c8b-5566-8fad-0fb19a970a17",
+      "document_id": 25,
+      "label": "2024年 · 1·填空12",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "23bc88d5-fd8e-5503-a620-7eeb60cac2d7",
+      "document_id": 25,
+      "label": "2024年 · 1·填空13",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "266ea48e-ec7b-5f2e-bfd2-019464ef16a0",
+      "document_id": 25,
+      "label": "2024年 · 2·选择1",
+      "status": "review",
+      "reason": [
+        "OCR区段含多个主题号，题意归属待核对"
+      ]
+    },
+    {
+      "uuid": "0dbdf622-40c2-5438-bf8e-1edbbce49309",
+      "document_id": 25,
+      "label": "2024年 · 2·选择2",
+      "status": "review",
+      "reason": [
+        "超纲标记或非本轮简单设计深度的扩展内容"
+      ]
+    },
+    {
+      "uuid": "e85189fb-9dcc-595d-9591-68bf53f4ab17",
+      "document_id": 25,
+      "label": "2024年 · 2·选择3",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "f373f209-e953-52d9-8256-2b16d2e606e1",
+      "document_id": 25,
+      "label": "2024年 · 2·选择4",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "1a194eb7-cd76-597b-b55b-e8ba26f09160",
+      "document_id": 25,
+      "label": "2024年 · 2·选择5",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "af2ef11b-d303-53ba-93ac-18482dffc507",
+      "document_id": 25,
+      "label": "2024年 · 2·选择6",
+      "status": "review",
+      "reason": [
+        "OCR区段含多个主题号，题意归属待核对"
+      ]
+    },
+    {
+      "uuid": "ebfb2255-579a-5757-b556-e5c26fc45ec7",
+      "document_id": 25,
+      "label": "2024年 · 2·选择7",
+      "status": "review",
+      "reason": [
+        "OCR区段含多个主题号，题意归属待核对"
+      ]
+    },
+    {
+      "uuid": "e72ccba6-b7c5-59ee-b9f6-c4dea25a462e",
+      "document_id": 25,
+      "label": "2024年 · 2·选择10",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "81003c39-7e80-59e5-8fa2-d7df02b90cf0",
+      "document_id": 25,
+      "label": "2024年 · 2·选择11",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "c0d299e2-b2ca-5a05-8c1e-f0b270436cb4",
+      "document_id": 25,
+      "label": "2024年 · 2·选择12",
+      "status": "review",
+      "reason": [
+        "OCR区段含多个主题号，题意归属待核对"
+      ]
+    },
+    {
+      "uuid": "7133c7ca-4a67-5513-abe0-b1870970e1c9",
+      "document_id": 25,
+      "label": "2024年 · 2·选择14",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "b341d9fc-22c5-5079-bc6b-c97ce9973dec",
+      "document_id": 25,
+      "label": "2024年 · 3·题1",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "fc77e4f3-6374-5c24-bb05-c41ac1d8e746",
+      "document_id": 25,
+      "label": "2024年 · 3·题2",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "bc680be1-bf87-51b2-a75d-7871f1482774",
+      "document_id": 25,
+      "label": "2024年 · 3·题3",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "31d03eff-7c4f-5003-a8cb-3491bdd6ce61",
+      "document_id": 25,
+      "label": "2024年 · 3·题4",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "ee443bba-dcf1-5da6-ace3-1874451bd564",
+      "document_id": 25,
+      "label": "2024年 · 3·题5",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "40aec685-b2a9-54d0-b6cb-9f2975eaf2b2",
+      "document_id": 25,
+      "label": "2024年 · 3·题8",
+      "status": "review",
+      "reason": [
+        "超纲标记或非本轮简单设计深度的扩展内容"
+      ]
+    },
+    {
+      "uuid": "3e74eba7-1c31-51d0-929c-633ed811d108",
+      "document_id": 25,
+      "label": "2025年 · 1·填空1",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "2b067a11-7495-5f2b-ba9a-75c77897bcd9",
+      "document_id": 25,
+      "label": "2025年 · 1·填空2",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "b65ec30b-04b1-5def-be51-6cdc25755de6",
+      "document_id": 25,
+      "label": "2025年 · 1·填空3",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "07fd232d-9cd4-5f4e-917e-91fe40d6e5b1",
+      "document_id": 25,
+      "label": "2025年 · 1·填空4",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "ed82fed0-633b-591d-92b6-cbd7887b2f8b",
+      "document_id": 25,
+      "label": "2025年 · 1·填空5",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "be80e803-c07b-5562-95bc-6a2653f49358",
+      "document_id": 25,
+      "label": "2025年 · 1·填空6",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "46df7bfb-f9d9-524a-8eae-b2ddeffe5995",
+      "document_id": 25,
+      "label": "2025年 · 1·填空11",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "ed35c738-8a1c-55a6-ae71-cfc1cf74492b",
+      "document_id": 25,
+      "label": "2025年 · 2·选择1",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "ef73913d-c2da-5079-ad49-1ee0f463aa1f",
+      "document_id": 25,
+      "label": "2025年 · 2·选择2",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "b6143366-8083-5cb1-acbd-9eb21e1afd7e",
+      "document_id": 25,
+      "label": "2025年 · 2·选择3",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "d7098ca8-40ce-56d5-9894-fcb80122a7b9",
+      "document_id": 25,
+      "label": "2025年 · 2·选择4",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "821d3836-2721-5f3f-bad3-812b921876e5",
+      "document_id": 25,
+      "label": "2025年 · 2·选择5",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "c7f51bd8-7605-532e-8bf8-f3fbd8913c95",
+      "document_id": 25,
+      "label": "2025年 · 2·选择6",
+      "status": "excluded",
+      "reason": [
+        "模电或数模混合题，不直接混入数电严选"
+      ]
+    },
+    {
+      "uuid": "03440ab1-dfbc-5d5a-8906-c1a22ed832be",
+      "document_id": 25,
+      "label": "2025年 · 2·选择7",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "774dd6cd-d47c-593b-bd05-4f8a5d6a43d3",
+      "document_id": 25,
+      "label": "2025年 · 2·选择8",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "cb37c569-043b-5c70-be5d-ec37399db0e4",
+      "document_id": 25,
+      "label": "2025年 · 2·选择9",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "fe6c587d-dbce-5a94-9849-da52f068c623",
+      "document_id": 25,
+      "label": "2025年 · 2·选择13",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "b391b01b-8ab4-523a-b937-e0f0207a5b32",
+      "document_id": 25,
+      "label": "2025年 · 第3题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "8df795fd-57ed-518a-b643-21b99c6c0542",
+      "document_id": 25,
+      "label": "2025年 · 第4题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "8b3449f0-54ea-5b75-a666-16690088632e",
+      "document_id": 25,
+      "label": "2025年 · 第5题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "00b5d5f6-147b-5e25-9f9a-2c3fd9e1bcce",
+      "document_id": 25,
+      "label": "2025年 · 第7题",
+      "status": "review",
+      "reason": [
+        "超纲标记或非本轮简单设计深度的扩展内容"
+      ]
+    },
+    {
+      "uuid": "74d90cfb-3cc0-5373-a1d7-edf9e1ecd7d7",
+      "document_id": 25,
+      "label": "2025年 · 第8题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    },
+    {
+      "uuid": "cfefe1da-5302-5846-a47c-76f2f5f61ae6",
+      "document_id": 25,
+      "label": "2025年 · 第9题",
+      "status": "review",
+      "reason": [
+        "未可靠命中指定数电题型"
+      ]
+    }
+  ]
+}
