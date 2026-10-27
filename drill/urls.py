@@ -23,10 +23,12 @@ from .views import (
     DrillPaperListCreateView,
     DrillPaperPdfView,
     DrillPaperReviewView,
+    DrillPaperShareView,
     DrillProgressView,
     DrillQuestionAttemptView,
     DrillQuestionDetailView,
     DrillQuestionListView,
+    DrillQuestionShareView,
     DrillQuestionMarkerView,
     DrillQuestionTimingView,
     DrillQuestionUserStateView,
@@ -56,6 +58,7 @@ urlpatterns = [
     path('papers/', DrillPaperListCreateView.as_view(), name='drill_papers'),
     path('papers/<uuid:paper_uuid>/', DrillPaperDetailView.as_view(), name='drill_paper_detail'),
     path('papers/<uuid:paper_uuid>/review/', DrillPaperReviewView.as_view(), name='drill_paper_review'),
+    path('papers/<uuid:paper_uuid>/share/', DrillPaperShareView.as_view(), name='drill_paper_share'),
     path(
         'papers/<uuid:paper_uuid>/pdf/<str:kind>/',
         DrillPaperPdfView.as_view(),
@@ -75,6 +78,11 @@ urlpatterns = [
         'questions/<uuid:question_uuid>/similar/',
         DrillSimilarQuestionView.as_view(),
         name='drill_question_similar',
+    ),
+    path(
+        'questions/<uuid:question_uuid>/share/',
+        DrillQuestionShareView.as_view(),
+        name='drill_question_share',
     ),
     path(
         'questions/<uuid:question_uuid>/timing/',

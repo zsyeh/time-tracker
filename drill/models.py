@@ -722,6 +722,80 @@ class ExamPaperItem(models.Model):
         return f'{self.paper_id} · {self.position} · {self.question_id}'
 
 
+class DrillContentShare(models.Model):
+    """Hashed public capability for one question or one persisted paper."""
+
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='drill_content_shares',
+    )
+    workspace = models.CharField(max_length=16, choices=QuestionDocument.WORKSPACE_CHOICES)
+    question = models.ForeignKey(
+        Question,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name='public_shares',
+    )
+    paper = models.ForeignKey(
+        ExamPaper,
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name='public_shares',
+    )
+    token_digest = models.CharField(max_length=64, unique=True, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True, db_index=True)
+    revoked_at = models.DateTimeField(null=True, blank=True)
+    is_active = models.BooleanField(default=True, db_index=True)
+
+    class Meta:
+        ordering = ('-created_at', '-pk')
+        constraints = [
+            models.CheckConstraint(
+                check=(
+                    models.Q(question__isnull=False, paper__isnull=True)
+                    | models.Q(question__isnull=True, paper__isnull=False)
+                ),
+                name='drill_share_exactly_one_resource',
+            ),
+        ]
+        indexes = [
+            models.Index(fields=('owner', 'question'), name='drill_share_owner_q_idx'),
+            models.Index(fields=('owner', 'paper'), name='drill_share_owner_p_idx'),
+        ]
+
+    @staticmethod
+    def digest(raw_token):
+        return hashlib.sha256(raw_token.strip().encode('utf-8')).hexdigest()
+
+    @classmethod
+    def issue(cls, *, owner, workspace, question=None, paper=None):
+        prefix = 'question' if question is not None else 'paper'
+        raw_token = f'{prefix}_{secrets.token_urlsafe(32)}'
+        share = cls.objects.create(
+            owner=owner,
+            workspace=workspace,
+            question=question,
+            paper=paper,
+            token_digest=cls.digest(raw_token),
+        )
+        return share, raw_token
+
+    def revoke(self):
+        if not self.is_active:
+            return False
+        self.is_active = False
+        self.revoked_at = timezone.now()
+        self.save(update_fields=('is_active', 'revoked_at'))
+        return True
+
+    def __str__(self):
+        resource = f'question {self.question_id}' if self.question_id else f'paper {self.paper_id}'
+        return f'{self.workspace} share for {resource}'
+
+
 class DrillLoginHandoff(models.Model):
     """Short-lived, one-time authentication handoff from Timer to Drill."""
 

@@ -16,7 +16,7 @@ from rest_framework.views import APIView
 from .cleaning import SOURCE_LABELS
 from .selected_collections import CODES as SELECTED_COLLECTIONS, filter_collection
 from .models import (
-    ExamBlueprint, ExamPaper, ExamPaperItem, Question, QuestionAsset,
+    DrillContentShare, ExamBlueprint, ExamPaper, ExamPaperItem, Question, QuestionAsset,
     QuestionAttempt, QuestionDocument, QuestionErratum, QuestionMarker, QuestionTopic,
     QuestionRevisionAsset, QuestionUserState, TopicMastery,
 )
@@ -638,6 +638,28 @@ class DrillPaperReviewView(APIView):
         return Response(exam_paper_payload(paper, review=True))
 
 
+class DrillPaperShareView(APIView):
+    def post(self, request, paper_uuid):
+        paper = get_object_or_404(
+            ExamPaper.objects.select_related('blueprint'),
+            uuid=paper_uuid,
+            user=request.user,
+        )
+        workspace = 'ei' if paper.blueprint.subject == 'ei' else 'drill'
+        if request_workspace(request) != workspace:
+            raise Http404
+        _share, raw_token = DrillContentShare.issue(
+            owner=request.user,
+            workspace=workspace,
+            paper=paper,
+        )
+        share_url = request.build_absolute_uri(f'/share/{raw_token}')
+        return Response({
+            'share_url': share_url,
+            'markdown_url': f'{share_url}/content.md',
+        }, status=status.HTTP_201_CREATED)
+
+
 class DrillPaperItemView(APIView):
     def patch(self, request, paper_uuid, position):
         if request_workspace(request) != 'drill':
@@ -791,6 +813,27 @@ class DrillQuestionDetailView(APIView):
         from drill_sources.presentation import attach_source_context
         attach_source_context(payload, question, request)
         return Response(payload)
+
+
+class DrillQuestionShareView(APIView):
+    def post(self, request, question_uuid):
+        workspace = request_workspace(request)
+        question = get_object_or_404(
+            Question.objects.select_related('document'),
+            uuid=question_uuid,
+            document__workspace=workspace,
+            is_practiceable=True,
+        )
+        _share, raw_token = DrillContentShare.issue(
+            owner=request.user,
+            workspace=workspace,
+            question=question,
+        )
+        share_url = request.build_absolute_uri(f'/share/{raw_token}')
+        return Response({
+            'share_url': share_url,
+            'markdown_url': f'{share_url}/content.md',
+        }, status=status.HTTP_201_CREATED)
 
 
 class EiCockpitView(APIView):

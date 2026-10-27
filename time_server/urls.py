@@ -46,6 +46,8 @@ from drill.web_views import (
     drill_login_complete,
     drill_login_start,
     drill_spa_view,
+    public_drill_share_asset_view,
+    public_drill_share_markdown_view,
     site_icon_redirect,
 )
 
@@ -132,6 +134,16 @@ urlpatterns = [
     path('sessions/<uuid:session_uuid>', spa_view, name='spa_session_detail'),
     path('issues', spa_view, name='spa_issues'),
     path('settings', spa_view, name='spa_settings'),
+    path(
+        'share/<str:raw_token>/assets/<int:asset_id>',
+        public_drill_share_asset_view,
+        name='drill_public_share_asset',
+    ),
+    path(
+        'share/<str:raw_token>/content.md',
+        public_drill_share_markdown_view,
+        name='drill_public_share_markdown',
+    ),
     path('share/<str:raw_token>', public_spa_view, name='spa_public_share'),
     path('practice', drill_spa_view, name='drill_practice'),
     path('practice/<uuid:question_uuid>', drill_spa_view, name='drill_question'),

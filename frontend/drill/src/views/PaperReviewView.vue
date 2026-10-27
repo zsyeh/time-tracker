@@ -4,10 +4,25 @@ import { api } from '../lib/api'
 import MarkdownAnswer from '../components/MarkdownAnswer.vue'
 import PaperQuestionContent from '../components/PaperQuestionContent.vue'
 import type { ExamPaper, ExamPaperItem, PaperItemResult } from '../types'
+import { createAndCopyShare } from '../lib/share'
 
 const props = defineProps<{ uuid: string }>()
 const paper = ref<ExamPaper | null>(null)
 const error = ref('')
+const shareState = ref<'idle' | 'sharing' | 'copied'>('idle')
+
+async function sharePaper() {
+  if (shareState.value === 'sharing') return
+  shareState.value = 'sharing'
+  try {
+    await createAndCopyShare(`/api/drill/papers/${props.uuid}/share/`)
+    shareState.value = 'copied'
+    window.setTimeout(() => { shareState.value = 'idle' }, 2500)
+  } catch (reason) {
+    shareState.value = 'idle'
+    error.value = (reason as Error).message
+  }
+}
 
 async function mark(item: ExamPaperItem, result: PaperItemResult) {
   item.result = result
@@ -24,7 +39,7 @@ onMounted(async () => {
 
 <template>
   <section class="page paper-review-page">
-    <header class="page-header"><div><span class="eyebrow">REVIEW</span><h1>{{ paper?.title || 'Paper review' }}</h1><p>Compare your work with the source answer and update the learning signal.</p></div><div class="paper-header-actions"><a :href="`/api/drill/papers/${uuid}/pdf/questions/`">Question PDF</a><a :href="`/api/drill/papers/${uuid}/pdf/solutions/`">Solution PDF</a><RouterLink :to="`/papers/${uuid}`">Exam view</RouterLink></div></header>
+    <header class="page-header"><div><span class="eyebrow">REVIEW</span><h1>{{ paper?.title || 'Paper review' }}</h1><p>Compare your work with the source answer and update the learning signal.</p></div><div class="paper-header-actions"><button type="button" :disabled="shareState === 'sharing'" @click="sharePaper">{{ shareState === 'sharing' ? 'Creating…' : shareState === 'copied' ? 'Link copied ✓' : 'Share paper + answers' }}</button><a :href="`/api/drill/papers/${uuid}/pdf/questions/`">Question PDF</a><a :href="`/api/drill/papers/${uuid}/pdf/solutions/`">Solution PDF</a><RouterLink :to="`/papers/${uuid}`">Exam view</RouterLink></div></header>
     <p v-if="error" class="error-state">{{ error }}</p>
     <article v-for="item in paper?.items" :key="item.position" class="paper-review-item">
       <header><span>{{ item.position }}</span><div><strong>{{ item.question.display_label }}</strong><small>{{ item.question.document }} · {{ item.question.topic }}</small></div><em>{{ item.score }} pts</em></header>

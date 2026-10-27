@@ -8,11 +8,12 @@ from django.contrib.auth import login
 from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.http import Http404, HttpResponse
-from django.shortcuts import redirect, render
+from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import timezone
 from django.views.decorators.cache import never_cache
 
-from .models import DrillLoginHandoff
+from .models import DrillLoginHandoff, QuestionAsset
+from .sharing import public_share, public_share_context, share_contains_asset, share_markdown
 
 
 @lru_cache(maxsize=4)
@@ -74,6 +75,61 @@ def is_practice_host(request):
 
 def is_drill_host(request):
     return practice_site(request) == 'drill'
+
+
+def _public_share_headers(response):
+    response['Cache-Control'] = 'no-store, max-age=0'
+    response['X-Robots-Tag'] = 'noindex, nofollow, noarchive'
+    response['Referrer-Policy'] = 'no-referrer'
+    response['X-Content-Type-Options'] = 'nosniff'
+    return response
+
+
+@never_cache
+def public_drill_share_view(request, raw_token):
+    workspace = practice_site(request)
+    if workspace is None:
+        raise Http404
+    share = public_share(raw_token, workspace)
+    context = public_share_context(request, share, raw_token)
+    context.update({
+        'is_authenticated': request.user.is_authenticated,
+        'markdown_url': request.build_absolute_uri(f'/share/{raw_token}/content.md'),
+    })
+    response = render(request, 'drill/public_share.html', context)
+    response['Content-Security-Policy'] = (
+        "default-src 'none'; style-src 'unsafe-inline'; img-src 'self'; "
+        "base-uri 'none'; frame-ancestors 'none'; form-action 'none'"
+    )
+    response['Link'] = f'<{context["markdown_url"]}>; rel="alternate"; type="text/markdown"'
+    return _public_share_headers(response)
+
+
+@never_cache
+def public_drill_share_markdown_view(request, raw_token):
+    workspace = practice_site(request)
+    if workspace is None:
+        raise Http404
+    share = public_share(raw_token, workspace)
+    context = public_share_context(request, share, raw_token)
+    response = HttpResponse(share_markdown(context), content_type='text/markdown; charset=utf-8')
+    response['Content-Disposition'] = 'inline; filename="shared-study-content.md"'
+    return _public_share_headers(response)
+
+
+@never_cache
+def public_drill_share_asset_view(request, raw_token, asset_id):
+    workspace = practice_site(request)
+    if workspace is None:
+        raise Http404
+    share = public_share(raw_token, workspace)
+    if not share_contains_asset(share, asset_id):
+        raise Http404
+    asset = get_object_or_404(QuestionAsset.objects.only('image_data', 'mime_type', 'sha256'), pk=asset_id)
+    response = HttpResponse(bytes(asset.image_data), content_type=asset.mime_type)
+    response['ETag'] = f'"{asset.sha256}"'
+    response['Content-Disposition'] = f'inline; filename="shared-question-{asset_id}.png"'
+    return _public_share_headers(response)
 
 
 @never_cache

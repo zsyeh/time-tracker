@@ -4,6 +4,7 @@ import { useRouter } from 'vue-router'
 import { api } from '../lib/api'
 import PaperQuestionContent from '../components/PaperQuestionContent.vue'
 import type { ExamPaper, PaperItemResult } from '../types'
+import { createAndCopyShare } from '../lib/share'
 
 const props = defineProps<{ uuid: string }>()
 const router = useRouter()
@@ -11,6 +12,7 @@ const paper = ref<ExamPaper | null>(null)
 const index = ref(0)
 const error = ref('')
 const now = ref(Date.now())
+const shareState = ref<'idle' | 'sharing' | 'copied'>('idle')
 let timer = 0
 const item = computed(() => paper.value?.items[index.value] || null)
 const remaining = computed(() => {
@@ -38,6 +40,19 @@ async function complete() {
   await router.push(`/papers/${props.uuid}/review`)
 }
 
+async function sharePaper() {
+  if (shareState.value === 'sharing') return
+  shareState.value = 'sharing'
+  try {
+    await createAndCopyShare(`/api/drill/papers/${props.uuid}/share/`)
+    shareState.value = 'copied'
+    window.setTimeout(() => { shareState.value = 'idle' }, 2500)
+  } catch (reason) {
+    shareState.value = 'idle'
+    error.value = (reason as Error).message
+  }
+}
+
 onMounted(async () => {
   try {
     paper.value = await api<ExamPaper>(`/api/drill/papers/${props.uuid}/`)
@@ -52,7 +67,7 @@ onUnmounted(() => window.clearInterval(timer))
 
 <template>
   <section class="page paper-exam-page">
-    <header v-if="paper" class="paper-exam-header"><RouterLink to="/papers">← Papers</RouterLink><div><strong>{{ paper.title }}</strong><small>{{ index + 1 }} / {{ paper.items.length }}</small></div><span>{{ remaining }} min left</span></header>
+    <header v-if="paper" class="paper-exam-header"><RouterLink to="/papers">← Papers</RouterLink><div class="paper-exam-title"><strong>{{ paper.title }}</strong><small>{{ index + 1 }} / {{ paper.items.length }}</small></div><div class="paper-exam-actions"><button type="button" :disabled="shareState === 'sharing'" @click="sharePaper">{{ shareState === 'sharing' ? 'Creating…' : shareState === 'copied' ? 'Link copied ✓' : 'Share + answers' }}</button><span>{{ remaining }} min left</span></div></header>
     <p v-if="error" class="error-state">{{ error }}</p>
     <template v-if="paper && item">
       <div class="paper-question-shell">

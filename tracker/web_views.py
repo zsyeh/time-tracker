@@ -50,6 +50,11 @@ def spa_view(request, **_route):
 def public_spa_view(request, **_route):
     """Serve only the anonymous Vue share shell; data still comes from its capability API."""
 
+    from drill.web_views import is_practice_host, public_drill_share_view
+
+    if is_practice_host(request):
+        return public_drill_share_view(request, _route['raw_token'])
+
     html = _frontend_html()
     if not html:
         return render(request, 'frontend_missing.html', status=503)

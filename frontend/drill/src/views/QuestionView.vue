@@ -9,6 +9,7 @@ import SourcePaperViewer from '../components/SourcePaperViewer.vue'
 import OriginalAnswer from '../components/OriginalAnswer.vue'
 import { sourcePracticeTarget } from '../lib/sourcePractice'
 import { circuitFilters } from '../lib/circuitSelected'
+import { createAndCopyShare } from '../lib/share'
 
 const props = defineProps<{ uuid: string }>()
 const router = useRouter()
@@ -116,6 +117,20 @@ const erratumKind = ref('crop')
 const erratumDescription = ref('')
 const erratumSaving = ref(false)
 const erratumMessage = ref('')
+const shareState = ref<'idle' | 'sharing' | 'copied'>('idle')
+
+async function shareQuestion() {
+  if (shareState.value === 'sharing') return
+  shareState.value = 'sharing'
+  try {
+    await createAndCopyShare(`/api/drill/questions/${props.uuid}/share/`)
+    shareState.value = 'copied'
+    window.setTimeout(() => { shareState.value = 'idle' }, 2500)
+  } catch (reason) {
+    shareState.value = 'idle'
+    error.value = (reason as Error).message
+  }
+}
 
 function questionAssets(loadedQuestion: QuestionDetail) {
   return loadedQuestion.question_assets || loadedQuestion.assets || []
@@ -597,6 +612,7 @@ onBeforeRouteLeave(async () => {
       <nav class="question-nav"><button :disabled="!question.previous_question_uuid" @click="question.previous_question_uuid && router.push({ path: `/practice/${question.previous_question_uuid}`, query: questionRouteQuery() })">← Previous</button><button :disabled="!question.sequential_next_question_uuid || nextLoading" @click="goToNext('sequential')">{{ nextLoading ? 'Finding next…' : 'Next →' }}</button></nav>
 
       <div class="question-save-actions">
+        <button type="button" :disabled="shareState === 'sharing'" @click="shareQuestion"><b>↗</b>{{ shareState === 'sharing' ? 'Creating…' : shareState === 'copied' ? 'Link copied ✓' : 'Share question + answer' }}</button>
         <button type="button" :class="{ active: erratumOpen }" @click="erratumOpen = !erratumOpen"><b>!</b>Report correction</button>
         <button type="button" :class="{ active: question.is_favorite }" :disabled="stateSaving" @click="saveUserState({ is_favorite: !question.is_favorite })"><b>{{ question.is_favorite ? '★' : '☆' }}</b>{{ question.is_favorite ? 'Favorited' : 'Favorite' }}</button>
         <button type="button" :class="{ active: question.review_later }" :disabled="stateSaving" @click="saveUserState({ review_later: !question.review_later })"><b>↻</b>{{ question.review_later ? 'Added to next time' : 'Add to next time' }}</button>

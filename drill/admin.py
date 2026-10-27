@@ -3,6 +3,7 @@ from django.contrib import admin
 from .models import (
     ExamBlueprint,
     ExamBlueprintSection,
+    DrillContentShare,
     ExamPaper,
     ExamPaperItem,
     Question,
@@ -17,6 +18,14 @@ from .models import (
     QuestionUserState,
     TopicMastery,
 )
+
+
+@admin.register(DrillContentShare)
+class DrillContentShareAdmin(admin.ModelAdmin):
+    list_display = ('workspace', 'owner', 'question', 'paper', 'is_active', 'created_at', 'revoked_at')
+    list_filter = ('workspace', 'is_active', 'created_at')
+    search_fields = ('owner__username', 'question__display_label', 'paper__uuid', 'token_digest')
+    readonly_fields = ('token_digest', 'created_at', 'revoked_at')
 
 
 @admin.register(QuestionErratum)

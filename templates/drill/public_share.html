@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="A read-only shared study question with its answer and explanation.">
+  <link rel="alternate" type="text/markdown" href="{{ markdown_url }}" title="AI-readable Markdown">
+  <title>{{ title }} · Shared study content</title>
+  <style>
+    :root { color-scheme: dark; --bg:#111214; --surface:#181a1e; --line:#2a2d33; --text:#e6e7ea; --muted:#9297a1; --accent:#8b87f8; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:var(--bg); color:var(--text); font:14px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+    .shell { width:min(980px,calc(100% - 32px)); margin:0 auto; padding:36px 0 72px; }
+    .topbar { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; padding-bottom:24px; border-bottom:1px solid var(--line); }
+    .eyebrow { color:var(--accent); font-size:11px; font-weight:650; letter-spacing:.08em; text-transform:uppercase; }
+    h1 { margin:5px 0 3px; font-size:24px; line-height:1.25; letter-spacing:-.02em; }
+    .subtitle,.machine-note { margin:0; color:var(--muted); }
+    .actions { display:flex; gap:8px; flex-wrap:wrap; }
+    .actions a { min-height:32px; padding:5px 10px; border:1px solid var(--line); border-radius:6px; color:var(--text); text-decoration:none; white-space:nowrap; }
+    .actions a:hover { border-color:#454954; background:var(--surface); }
+    .machine-note { margin-top:14px; font-size:12px; }
+    .question { padding:32px 0; border-bottom:1px solid var(--line); }
+    .question > header { display:flex; align-items:baseline; justify-content:space-between; gap:16px; margin-bottom:18px; }
+    h2 { margin:0; font-size:17px; }
+    .meta { color:var(--muted); font-size:12px; }
+    h3 { margin:24px 0 10px; color:var(--muted); font-size:11px; letter-spacing:.07em; text-transform:uppercase; }
+    pre { margin:0; padding:14px 16px; overflow:auto; border:1px solid var(--line); border-radius:7px; background:var(--surface); color:var(--text); font:13px/1.65 ui-monospace,SFMono-Regular,Menlo,monospace; white-space:pre-wrap; overflow-wrap:anywhere; }
+    figure { margin:12px 0; }
+    figure img { display:block; width:auto; max-width:100%; height:auto; margin:0 auto; border-radius:5px; background:#fff; }
+    figcaption { margin-top:6px; color:var(--muted); font-size:11px; text-align:center; }
+    .empty { color:var(--muted); }
+    footer { padding-top:20px; color:var(--muted); font-size:11px; }
+    @media (max-width:640px) { .shell{width:min(100% - 20px,980px);padding-top:20px}.topbar{display:grid}.question{padding:24px 0}.question>header{display:grid;gap:3px}h1{font-size:20px}.actions a{flex:1;text-align:center} }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div>
+        <span class="eyebrow">Read-only shared {{ kind }}</span>
+        <h1>{{ title }}</h1>
+        <p class="subtitle">{{ subtitle }}</p>
+      </div>
+      <nav class="actions" aria-label="Shared content actions">
+        <a href="{{ markdown_url }}">AI-readable Markdown</a>
+        {% if is_authenticated %}<a href="{{ open_path }}">Open in practice</a>{% endif %}
+      </nav>
+    </header>
+    <p class="machine-note">This page intentionally contains only the shared questions and their source answers. The Markdown alternative exposes the same content and absolute image URLs for AI tools.</p>
+
+    {% for item in items %}
+      <article class="question" id="question-{{ item.position }}">
+        <header>
+          <h2>{{ item.label }}</h2>
+          <span class="meta">{{ item.document }}{% if item.topic %} · {{ item.topic }}{% endif %}</span>
+        </header>
+        <section aria-labelledby="question-heading-{{ item.position }}">
+          <h3 id="question-heading-{{ item.position }}">Question</h3>
+          {% if item.prompt_text %}<pre>{{ item.prompt_text }}</pre>{% endif %}
+          {% if item.latex_text and item.latex_text != item.prompt_text %}<pre aria-label="TeX source">{{ item.latex_text }}</pre>{% endif %}
+          {% for asset in item.question_assets %}<figure><img src="{{ asset.url }}" width="{{ asset.width }}" height="{{ asset.height }}" alt="Question image {{ forloop.counter }} for {{ item.label }}"><figcaption>Question image {{ forloop.counter }}</figcaption></figure>{% endfor %}
+        </section>
+        <section aria-labelledby="answer-heading-{{ item.position }}">
+          <h3 id="answer-heading-{{ item.position }}">Answer and explanation</h3>
+          {% if item.answer_markdown %}<pre>{{ item.answer_markdown }}</pre>{% endif %}
+          {% for asset in item.answer_assets %}<figure><img src="{{ asset.url }}" width="{{ asset.width }}" height="{{ asset.height }}" alt="Answer image {{ forloop.counter }} for {{ item.label }}"><figcaption>Answer image {{ forloop.counter }}</figcaption></figure>{% endfor %}
+          {% if not item.answer_markdown and not item.answer_assets %}<p class="empty">No answer is currently available.</p>{% endif %}
+        </section>
+      </article>
+    {% endfor %}
+    <footer>Shared from {{ workspace|upper }} · Read-only · No account, progress, notes, or mastery data is exposed.</footer>
+  </main>
+</body>
+</html>
