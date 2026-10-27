@@ -49,7 +49,7 @@ function start(group?: Group) {
 watch(() => route.fullPath, load)
 onMounted(() => {
   if (!Object.keys(filters.value).length && !route.query.all) {
-    void router.replace({ path: '/analog-selected', query: { tier: 'core', material: 'ready' } })
+    void router.replace({ path: '/analog-selected', query: { tier: 'core' } })
   } else void load()
 })
 </script>
@@ -57,12 +57,11 @@ onMounted(() => {
 <template>
   <section class="page analog-selected-page">
     <header class="page-header"><div><span class="eyebrow">892 · ANALOG SELECTED</span><h1>模电严选</h1><p>先练静态与小信号、深度负反馈和运放；再补差分、高频与综合分析。原题原记录，不重复建题。</p></div><button class="primary-action" :disabled="!data?.progress.total || loading" @click="start()">开始／继续刷题 →</button></header>
-    <p class="analog-notice">排序采用你的备考优先级，不代表命题概率。静态＋动态是首轮重点；差分、高频、多级可专项补强，基础小题单列。默认只显示“核心必练＋题答已具备”的题目。</p>
+    <p class="analog-notice">排序采用你的备考优先级，不代表命题概率。静态＋动态是首轮重点；差分、高频、多级可专项补强，基础小题单列。默认展示核心必练中的全部题目，不区分当前是否已有答案。</p>
     <section class="analog-filters" aria-label="模电严选筛选">
       <label>训练层级<select :value="filters.tier || ''" @change="change('tier', ($event.target as HTMLSelectElement).value)"><option value="">全部层级</option><option v-for="(title, key) in labels" :key="key" :value="key">{{ title }}</option></select></label>
       <label>考点<select :value="filters.bucket || ''" @change="change('bucket', ($event.target as HTMLSelectElement).value)"><option value="">全部考点</option><option v-for="group in data?.groups || []" :key="group.key" :value="group.key">{{ group.rank }} · {{ group.title }}</option></select></label>
       <label>题型<select :value="filters.kind || ''" @change="change('kind', ($event.target as HTMLSelectElement).value)"><option value="">计算＋概念</option><option value="calculation">计算／综合</option><option value="concept">概念／简答</option></select></label>
-      <label>素材<select :value="filters.material || ''" @change="change('material', ($event.target as HTMLSelectElement).value)"><option value="">全部匹配（含待配答案）</option><option value="ready">题目与本题答案已具备</option></select></label>
       <label>掌握<select :value="filters.state || ''" @change="change('state', ($event.target as HTMLSelectElement).value)"><option value="">全部状态</option><option value="unattempted">未做</option><option value="review">待复习</option><option value="mastered">已掌握</option></select></label>
       <label>组合训练<select :value="filters.combined || ''" @change="change('combined', ($event.target as HTMLSelectElement).value)"><option value="">全部</option><option value="1">静态＋动态综合</option></select></label>
       <button @click="router.replace({ path: '/analog-selected', query: { all: '1' } })">查看全部匹配</button>

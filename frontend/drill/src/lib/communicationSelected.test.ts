@@ -8,6 +8,6 @@ describe('communication selected context', () => {
   })
   it('keeps communication context for next and return', () => {
     expect(communicationPracticeQuery({ material: 'ready', state: 'review' }))
-      .toEqual({ material: 'ready', state: 'review', collection: 'communication_selected', from: 'communication-selected' })
+      .toEqual({ state: 'review', collection: 'communication_selected', from: 'communication-selected' })
   })
 })

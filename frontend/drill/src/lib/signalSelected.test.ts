@@ -8,6 +8,6 @@ describe('signal selected navigation', () => {
   })
   it('keeps signal return context and initial-condition filter', () => {
     expect(signalPracticeQuery({ tier: 'core', combined: '1', material: 'ready' }))
-      .toEqual({ tier: 'core', combined: '1', material: 'ready', collection: 'signal_selected', from: 'signal-selected' })
+      .toEqual({ tier: 'core', combined: '1', collection: 'signal_selected', from: 'signal-selected' })
   })
 })

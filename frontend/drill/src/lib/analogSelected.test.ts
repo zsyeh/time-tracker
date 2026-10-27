@@ -8,6 +8,6 @@ describe('analog selected context', () => {
   })
   it('keeps the analog origin and static/dynamic combination', () => {
     expect(analogPracticeQuery({ combined: '1', material: 'ready' }))
-      .toEqual({ combined: '1', material: 'ready', collection: 'analog_selected', from: 'analog-selected' })
+      .toEqual({ combined: '1', collection: 'analog_selected', from: 'analog-selected' })
   })
 })

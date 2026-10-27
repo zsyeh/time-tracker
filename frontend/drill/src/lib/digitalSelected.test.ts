@@ -8,6 +8,6 @@ describe('digital selected context', () => {
   })
   it('preserves standard-template filtering and return origin', () => {
     expect(digitalPracticeQuery({ combined: '1', material: 'ready' }))
-      .toEqual({ combined: '1', material: 'ready', collection: 'digital_selected', from: 'digital-selected' })
+      .toEqual({ combined: '1', collection: 'digital_selected', from: 'digital-selected' })
   })
 })
