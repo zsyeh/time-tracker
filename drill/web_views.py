@@ -101,7 +101,7 @@ def public_drill_share_view(request, raw_token):
         "default-src 'none'; style-src 'unsafe-inline'; img-src 'self'; "
         "base-uri 'none'; frame-ancestors 'none'; form-action 'none'"
     )
-    response['Link'] = f'<{context["markdown_url"]}>; rel="alternate"; type="text/markdown"'
+    response['Link'] = f'<{context["markdown_url"]}>; rel="alternate"; type="text/plain"'
     return _public_share_headers(response)
 
 
@@ -112,7 +112,10 @@ def public_drill_share_markdown_view(request, raw_token):
         raise Http404
     share = public_share(raw_token, workspace)
     context = public_share_context(request, share, raw_token)
-    response = HttpResponse(share_markdown(context), content_type='text/markdown; charset=utf-8')
+    # A number of AI/web readers reject the still-uncommon text/markdown MIME
+    # even though the body is ordinary UTF-8 text. Keep Markdown syntax while
+    # advertising the broadly supported plain-text representation.
+    response = HttpResponse(share_markdown(context), content_type='text/plain; charset=utf-8')
     response['Content-Disposition'] = 'inline; filename="shared-study-content.md"'
     return _public_share_headers(response)
 

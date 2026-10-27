@@ -85,13 +85,13 @@ class DrillContentShareTests(TestCase):
         self.assertNotContains(page, self.user.username)
         self.assertNotContains(page, 'MASTERED')
         self.assertNotContains(page, 'Needs review')
-        self.assertContains(page, 'AI-readable Markdown')
+        self.assertContains(page, 'AI-readable text')
 
         markdown = self.client.get(
             f'/share/{raw_token}/content.md', HTTP_HOST='drill.ehzsy.site', secure=True,
         )
         self.assertEqual(markdown.status_code, 200)
-        self.assertEqual(markdown['Content-Type'], 'text/markdown; charset=utf-8')
+        self.assertEqual(markdown['Content-Type'], 'text/plain; charset=utf-8')
         self.assertContains(markdown, '### Question')
         self.assertContains(markdown, '### Answer and explanation')
         self.assertContains(markdown, f'/share/{raw_token}/assets/{self.asset.pk}')

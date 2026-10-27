@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="description" content="A read-only shared study question with its answer and explanation.">
-  <link rel="alternate" type="text/markdown" href="{{ markdown_url }}" title="AI-readable Markdown">
+  <link rel="alternate" type="text/plain" href="{{ markdown_url }}" title="AI-readable Markdown text">
   <title>{{ title }} · Shared study content</title>
   <style>
     :root { color-scheme: dark; --bg:#111214; --surface:#181a1e; --line:#2a2d33; --text:#e6e7ea; --muted:#9297a1; --accent:#8b87f8; }
@@ -42,11 +42,11 @@
         <p class="subtitle">{{ subtitle }}</p>
       </div>
       <nav class="actions" aria-label="Shared content actions">
-        <a href="{{ markdown_url }}">AI-readable Markdown</a>
+        <a href="{{ markdown_url }}">AI-readable text</a>
         {% if is_authenticated %}<a href="{{ open_path }}">Open in practice</a>{% endif %}
       </nav>
     </header>
-    <p class="machine-note">This page intentionally contains only the shared questions and their source answers. The Markdown alternative exposes the same content and absolute image URLs for AI tools.</p>
+    <p class="machine-note">This page intentionally contains only the shared questions and their source answers. The AI-readable text alternative uses Markdown structure and absolute image URLs with a widely supported plain-text response.</p>
 
     {% for item in items %}
       <article class="question" id="question-{{ item.position }}">
