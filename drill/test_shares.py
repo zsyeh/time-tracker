@@ -1,5 +1,7 @@
+import base64
+
 from django.contrib.auth import get_user_model
-from django.test import TestCase
+from django.test import TestCase, override_settings
 
 from .models import (
     DrillContentShare,
@@ -15,6 +17,10 @@ from .models import (
 )
 
 
+@override_settings(
+    DATA_ENCRYPTION_MASTER_KEY=base64.urlsafe_b64encode(b'S' * 32).decode('ascii'),
+    DATA_ENCRYPTION_KEY_PATH='/unused/drill-share-test.key',
+)
 class DrillContentShareTests(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user(username='share-owner', password='password')
@@ -101,6 +107,33 @@ class DrillContentShareTests(TestCase):
         )
         self.assertEqual(image.status_code, 200)
         self.assertEqual(image.content, b'public-image-bytes')
+
+    def test_question_share_reuses_one_link_across_users_and_retires_legacy_links(self):
+        legacy, legacy_token = DrillContentShare.issue(
+            owner=self.user,
+            workspace='drill',
+            question=self.question,
+        )
+        raw_token = self.create_question_share()
+        legacy.refresh_from_db()
+        self.assertFalse(legacy.is_active)
+        self.assertNotEqual(raw_token, legacy_token)
+
+        self.client.force_login(self.other)
+        repeated = self.client.post(
+            f'/api/drill/questions/{self.question.uuid}/share/',
+            data={},
+            content_type='application/json',
+            HTTP_HOST='drill.ehzsy.site',
+            secure=True,
+        )
+        self.assertEqual(repeated.status_code, 200)
+        self.assertEqual(repeated.json()['share_url'].split('/share/', 1)[1], raw_token)
+        self.assertEqual(
+            DrillContentShare.objects.filter(question=self.question, is_active=True).count(),
+            1,
+        )
+        self.assertFalse(DrillContentShare.objects.get(question=self.question, is_active=True).token_encrypted == '')
 
     def test_question_share_is_bound_to_workspace_and_token(self):
         raw_token = self.create_question_share()

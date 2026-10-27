@@ -22,10 +22,10 @@ from .models import (
 
 @admin.register(DrillContentShare)
 class DrillContentShareAdmin(admin.ModelAdmin):
-    list_display = ('workspace', 'owner', 'question', 'paper', 'is_active', 'created_at', 'revoked_at')
-    list_filter = ('workspace', 'is_active', 'created_at')
+    list_display = ('workspace', 'owner', 'question', 'paper', 'is_canonical', 'is_active', 'created_at', 'revoked_at')
+    list_filter = ('workspace', 'is_canonical', 'is_active', 'created_at')
     search_fields = ('owner__username', 'question__display_label', 'paper__uuid', 'token_digest')
-    readonly_fields = ('token_digest', 'created_at', 'revoked_at')
+    readonly_fields = ('token_digest', 'token_encrypted', 'created_at', 'revoked_at')
 
 
 @admin.register(QuestionErratum)

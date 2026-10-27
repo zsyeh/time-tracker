@@ -746,6 +746,8 @@ class DrillContentShare(models.Model):
         related_name='public_shares',
     )
     token_digest = models.CharField(max_length=64, unique=True, db_index=True)
+    token_encrypted = models.TextField(blank=True)
+    is_canonical = models.BooleanField(default=False, db_index=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
     revoked_at = models.DateTimeField(null=True, blank=True)
     is_active = models.BooleanField(default=True, db_index=True)
@@ -759,6 +761,16 @@ class DrillContentShare(models.Model):
                     | models.Q(question__isnull=True, paper__isnull=False)
                 ),
                 name='drill_share_exactly_one_resource',
+            ),
+            models.UniqueConstraint(
+                fields=('question',),
+                condition=models.Q(is_canonical=True, question__isnull=False),
+                name='drill_share_one_canonical_question',
+            ),
+            models.UniqueConstraint(
+                fields=('paper',),
+                condition=models.Q(is_canonical=True, paper__isnull=False),
+                name='drill_share_one_canonical_paper',
             ),
         ]
         indexes = [
@@ -783,12 +795,82 @@ class DrillContentShare(models.Model):
         )
         return share, raw_token
 
+    @property
+    def token_context(self):
+        if self.question_id:
+            return f'drill-share:question:{self.question_id}'
+        return f'drill-share:paper:{self.paper_id}'
+
+    def recover_token(self):
+        from tracker.data_encryption import decrypt_payload
+
+        payload = decrypt_payload(
+            self.token_encrypted,
+            user_id=self.owner_id,
+            context=self.token_context,
+        )
+        raw_token = str(payload.get('token', ''))
+        if not raw_token or self.digest(raw_token) != self.token_digest:
+            raise ValueError('The stored share token failed verification.')
+        return raw_token
+
+    @classmethod
+    def get_or_issue(cls, *, owner, workspace, question=None, paper=None):
+        """Return one recoverable canonical link while preserving legacy URLs."""
+        from tracker.data_encryption import encrypt_payload, master_key
+
+        if (question is None) == (paper is None):
+            raise ValueError('Provide exactly one shared resource.')
+        with transaction.atomic():
+            if question is not None:
+                question = Question.objects.select_for_update().get(pk=question.pk)
+                lookup = {'question': question}
+            else:
+                paper = ExamPaper.objects.select_for_update().get(pk=paper.pk)
+                lookup = {'paper': paper}
+            # The first click after this upgrade retires every legacy duplicate;
+            # from then on exactly one active, recoverable URL represents the resource.
+            cls.objects.filter(
+                **lookup,
+                is_active=True,
+                is_canonical=False,
+            ).update(is_active=False, revoked_at=timezone.now())
+            existing = cls.objects.select_related('owner').filter(
+                **lookup,
+                is_canonical=True,
+                is_active=True,
+                revoked_at__isnull=True,
+            ).first()
+            if existing is not None:
+                return existing, existing.recover_token(), False
+
+            # Ensure the server key exists before publishing the database row.
+            master_key(create=True)
+            prefix = 'question' if question is not None else 'paper'
+            raw_token = f'{prefix}_{secrets.token_urlsafe(32)}'
+            share = cls.objects.create(
+                owner=owner,
+                workspace=workspace,
+                question=question,
+                paper=paper,
+                token_digest=cls.digest(raw_token),
+                is_canonical=True,
+            )
+            share.token_encrypted = encrypt_payload(
+                {'token': raw_token},
+                user_id=owner.pk,
+                context=share.token_context,
+            )
+            share.save(update_fields=('token_encrypted',))
+            return share, raw_token, True
+
     def revoke(self):
         if not self.is_active:
             return False
         self.is_active = False
+        self.is_canonical = False
         self.revoked_at = timezone.now()
-        self.save(update_fields=('is_active', 'revoked_at'))
+        self.save(update_fields=('is_active', 'is_canonical', 'revoked_at'))
         return True
 
     def __str__(self):

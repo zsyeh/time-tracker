@@ -648,7 +648,7 @@ class DrillPaperShareView(APIView):
         workspace = 'ei' if paper.blueprint.subject == 'ei' else 'drill'
         if request_workspace(request) != workspace:
             raise Http404
-        _share, raw_token = DrillContentShare.issue(
+        _share, raw_token, created = DrillContentShare.get_or_issue(
             owner=request.user,
             workspace=workspace,
             paper=paper,
@@ -657,7 +657,7 @@ class DrillPaperShareView(APIView):
         return Response({
             'share_url': share_url,
             'markdown_url': f'{share_url}/content.md',
-        }, status=status.HTTP_201_CREATED)
+        }, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
 
 
 class DrillPaperItemView(APIView):
@@ -824,7 +824,7 @@ class DrillQuestionShareView(APIView):
             document__workspace=workspace,
             is_practiceable=True,
         )
-        _share, raw_token = DrillContentShare.issue(
+        _share, raw_token, created = DrillContentShare.get_or_issue(
             owner=request.user,
             workspace=workspace,
             question=question,
@@ -833,7 +833,7 @@ class DrillQuestionShareView(APIView):
         return Response({
             'share_url': share_url,
             'markdown_url': f'{share_url}/content.md',
-        }, status=status.HTTP_201_CREATED)
+        }, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
 
 
 class EiCockpitView(APIView):
