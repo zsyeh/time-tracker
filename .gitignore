@@ -30,5 +30,11 @@ gunicorn.conf.py
 backups/
 reports/
 work/
+exports/
+imports/
+.ei-pdf-pages-drill-build/
+*.pre_*
+*.audit.json
+note-merge-audit*.json
 *_review.jsonl
 question_type_agent_review.jsonl

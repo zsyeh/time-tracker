@@ -7,8 +7,13 @@ export interface ShareLinkResponse {
 
 async function copyText(value: string) {
   if (navigator.clipboard?.writeText) {
-    await navigator.clipboard.writeText(value)
-    return
+    try {
+      await navigator.clipboard.writeText(value)
+      return
+    } catch {
+      // Safari may reject the async Clipboard API after the network request;
+      // fall through to the selection-based copy path while the click continues.
+    }
   }
   const input = document.createElement('textarea')
   input.value = value
@@ -24,6 +29,10 @@ async function copyText(value: string) {
 
 export async function createAndCopyShare(endpoint: string) {
   const response = await post<ShareLinkResponse>(endpoint, {})
-  await copyText(response.share_url)
+  try {
+    await copyText(response.share_url)
+  } catch {
+    window.prompt('复制分享链接', response.share_url)
+  }
   return response
 }

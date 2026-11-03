@@ -5,6 +5,7 @@ import { api, post } from './lib/api'
 import { configureWorkspaceScope } from './lib/workspace'
 import type { Progress } from './types'
 import { useUiPreferences, type UiLanguage } from './lib/uiPreferences'
+import { runtimeWorkspace } from './lib/runtimePath'
 
 const route = useRoute()
 const username = ref('')
@@ -22,7 +23,7 @@ const storedSidebarState = (() => {
 })()
 const hasSidebarPreference = ref(storedSidebarState !== null)
 const sidebarCollapsed = ref(storedSidebarState ?? route.name === 'question')
-const isEi = location.hostname.toLowerCase().startsWith('ei.')
+const isEi = runtimeWorkspace === 'ei'
 const workspaceIcon = '/static/drill/drill-icon-180.png?v=img9392'
 const { language, scheme, setLanguage, setScheme, t } = useUiPreferences()
 
@@ -69,14 +70,17 @@ onMounted(() => {
         <img :src="workspaceIcon" alt="" aria-hidden="true" /><strong>{{ isEi ? '892 LAB' : 'DRILL' }}</strong><small>{{ isEi ? 'ELECTRONIC INFORMATION' : 'QUESTION PRACTICE' }}</small>
       </RouterLink>
       <nav>
+        <RouterLink to="/diagnostics" :class="{ active: route.name === 'diagnostics' || route.name === 'diagnostic-queue' }"><span>解题能力</span></RouterLink>
         <RouterLink v-if="isEi" to="/cockpit" :class="{ active: route.name === 'cockpit' }">
-          <span>892 Cockpit</span>
+          <span>892 总览</span>
         </RouterLink>
         <RouterLink v-if="isEi" to="/circuit-selected" :class="{ active: route.name === 'circuit-selected' || (route.name === 'question' && route.query.collection === 'circuit_selected') }"><span>电路严选</span></RouterLink>
         <RouterLink v-if="isEi" to="/signal-selected" :class="{ active: route.name === 'signal-selected' || (route.name === 'question' && route.query.collection === 'signal_selected') }"><span>信号严选</span></RouterLink>
+        <RouterLink v-if="isEi" to="/signal-formulas" :class="{ active: route.name === 'signal-formulas' }"><span>892 每日公式</span></RouterLink>
         <RouterLink v-if="isEi" to="/analog-selected" :class="{ active: route.name === 'analog-selected' || (route.name === 'question' && route.query.collection === 'analog_selected') }"><span>模电严选</span></RouterLink>
         <RouterLink v-if="isEi" to="/digital-selected" :class="{ active: route.name === 'digital-selected' || (route.name === 'question' && route.query.collection === 'digital_selected') }"><span>数电严选</span></RouterLink>
         <RouterLink v-if="isEi" to="/communication-selected" :class="{ active: route.name === 'communication-selected' || (route.name === 'question' && route.query.collection === 'communication_selected') }"><span>通信严选</span></RouterLink>
+        <RouterLink v-if="isEi" to="/selected-pdf-pages" :class="{ active: route.name === 'selected-pdf-pages' }"><span>严选题 PDF 页码记录</span></RouterLink>
         <RouterLink v-if="isEi" to="/core-heatmap" :class="{ active: route.name === 'core-heatmap' || (route.name === 'question' && route.query.collection === 'core_selected') }"><span>五科核心热力图</span></RouterLink>
         <RouterLink to="/practice" :class="{ active: route.name === 'practice' || route.name === 'question' }">
           <span>{{ t('practice') }}</span>
@@ -109,7 +113,7 @@ onMounted(() => {
           <span>{{ t('insight') }}</span>
         </RouterLink>
         <RouterLink to="/errata" :class="{ active: route.name === 'errata' }">
-          <span>Errata</span>
+          <span>勘误</span>
         </RouterLink>
       </nav>
       <div v-if="progress" class="sidebar-progress">

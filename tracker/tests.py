@@ -364,6 +364,28 @@ class AuthAndIsolationTests(TestCase):
         self.assertContains(response, '/guide/')
 
     @override_settings(DEBUG=True)
+    def test_ip_login_uses_fixed_passkey_handoff_and_retains_password_fallback(self):
+        response = self.client.get(
+            '/accounts/login/',
+            HTTP_X_TIME_TRACKER_HA='standby-promoted',
+            HTTP_X_TIME_TRACKER_EXTERNAL_HOST='47.95.10.128',
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertNotContains(response, 'id="passkey_login"')
+        self.assertContains(response, 'id="ip_passkey_login"')
+        self.assertContains(response, '/ip-auth/start?next=/')
+        self.assertContains(response, 'name="password"')
+
+    @override_settings(DEBUG=True)
+    def test_timer_domain_keeps_native_passkey_even_on_the_writer_proxy(self):
+        response = self.client.get(
+            '/accounts/login/', HTTP_X_TIME_TRACKER_HA='standby-promoted',
+        )
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, 'id="passkey_login"')
+        self.assertNotContains(response, 'id="ip_passkey_login"')
+
+    @override_settings(DEBUG=True)
     def test_django_admin_login_uses_project_branding_and_styles(self):
         response = self.client.get('/admin/login/')
         self.assertEqual(response.status_code, 200)

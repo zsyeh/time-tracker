@@ -47,17 +47,22 @@ def schedule_for_grade(grade, *, now=None, streak=0):
     return now + datetime.timedelta(days=days)
 
 
-def apply_mastery_grade(record, grade, *, independent=None, reviewed=False, now=None):
+def apply_mastery_grade(record, grade, *, independent=None, reviewed=False, now=None, manual=False):
     now = now or timezone.now()
-    record.grade = grade
+    if manual:
+        record.manual_grade = grade
+    else:
+        record.system_grade = grade
+    record.grade = record.manual_grade or record.system_grade
     if reviewed:
         record.review_count += 1
         record.last_reviewed_at = now
         record.correct_streak = record.correct_streak + 1 if grade in ('A', 'B') else 0
     if independent is not None:
         record.independent_last_time = independent
-    record.retention_score = {'A': 100, 'B': 72, 'C': 35, 'D': 0}[grade]
-    record.next_review_at = schedule_for_grade(grade, now=now, streak=record.correct_streak)
+    effective_grade = record.grade
+    record.retention_score = {'A': 100, 'B': 72, 'C': 35, 'D': 0}[effective_grade]
+    record.next_review_at = schedule_for_grade(effective_grade, now=now, streak=record.correct_streak)
     return record
 
 

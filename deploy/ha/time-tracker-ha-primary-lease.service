@@ -1,0 +1,14 @@
+[Unit]
+Description=Time Tracker HA primary writer lease and self-fencing
+ConditionPathExists=/etc/time-tracker/legacy-ha-explicitly-enabled
+After=network-online.target time-tracker-ha-tunnel.service
+Wants=network-online.target time-tracker-ha-tunnel.service
+
+[Service]
+Type=simple
+ExecStart=/usr/local/sbin/time-tracker-ha-primary-lease
+Restart=always
+RestartSec=2
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,108 @@
+#!/bin/sh
+set -eu
+
+remote=root@47.95.10.128
+target=/var/lib/postgresql/15/main
+# pg_dump runs as postgres, so every parent directory must be traversable by
+# that user. /root is intentionally not; keep the single protection dump in a
+# dedicated root-owned system backup tree instead.
+backup_root=/var/backups/time-tracker/ha-rejoin
+lock=/run/time-tracker-ha/rejoin.lock
+slot=time_tracker_ha_primary_rejoin
+
+mkdir -p /run/time-tracker-ha "$backup_root"
+exec 9>"$lock"
+flock -n 9 || exit 0
+
+mode=$(ssh -o BatchMode=yes -o ConnectTimeout=5 "$remote" \
+    'cat /run/time-tracker-ha/mode 2>/dev/null || printf unknown' 2>/dev/null || printf unreachable)
+[ "$mode" = standby-promoted ] || exit 0
+
+# The former primary must never accept writes after remote promotion.
+systemctl stop time-tracker-web.service
+
+if sudo -u postgres psql -Atqc 'select pg_is_in_recovery()' 2>/dev/null | grep -qx t; then
+    exit 0
+fi
+
+source_conn='host=127.0.0.1 port=55433 user=time_tracker_ha_rewind dbname=postgres'
+PGPASSFILE=/var/lib/postgresql/.pgpass psql "$source_conn" \
+    -Atqc 'select pg_is_in_recovery()' | grep -qx f
+
+stamp=$(date -u +%Y%m%dT%H%M%SZ)
+dump="$backup_root/former-primary-before-rewind-$stamp.dump"
+partial="$backup_root/.former-primary-before-rewind-$stamp.dump.partial"
+checksum="$dump.sha256"
+checksum_partial="$checksum.partial"
+
+# Pre-create the staging file for postgres inside the final filesystem. The
+# final rename is then atomic and never needs a second full-size copy.
+install -o postgres -g postgres -m 600 /dev/null "$partial"
+if ! sudo -u postgres pg_dump --format=custom --compress=3 --no-owner --no-acl \
+    --file="$partial" time_tracker; then
+    rm -f -- "$partial"
+    exit 1
+fi
+chown root:root "$partial"
+chmod 600 "$partial"
+mv "$partial" "$dump"
+sha256sum "$dump" > "$checksum_partial"
+sha256sum -c "$checksum_partial"
+mv "$checksum_partial" "$checksum"
+
+# Retain exactly one verified protection dump. Never prune the previous dump
+# until its replacement exists and has passed checksum verification.
+find "$backup_root" -maxdepth 1 -type f \
+    -name 'former-primary-before-rewind-*.dump' ! -name "$(basename "$dump")" \
+    -print | while IFS= read -r old_dump; do
+        rm -f -- "$old_dump" "$old_dump.sha256"
+    done
+find "$backup_root" -maxdepth 1 -type f \
+    -name 'former-primary-before-rewind-*.dump.sha256' ! -name "$(basename "$checksum")" \
+    -delete
+find "$backup_root" -maxdepth 1 -type f \
+    -name '.former-primary-before-rewind-*.dump.partial' ! -name "$(basename "$partial")" \
+    -delete
+
+# Reserve WAL before the old data directory is changed. The source role is a
+# dedicated local-tunnel-only maintenance superuser so it can run pg_rewind
+# and manage this physical slot.
+PGPASSFILE=/var/lib/postgresql/.pgpass psql "$source_conn" -v ON_ERROR_STOP=1 \
+    -Atqc \
+    "select case when exists (select 1 from pg_replication_slots where slot_name = 'time_tracker_ha_primary_rejoin') then 'time_tracker_ha_primary_rejoin' else (pg_create_physical_replication_slot('time_tracker_ha_primary_rejoin', true)).slot_name end"
+
+systemctl stop postgresql.service
+if sudo -u postgres env PGPASSFILE=/var/lib/postgresql/.pgpass \
+    /usr/lib/postgresql/15/bin/pg_rewind \
+    --target-pgdata="$target" \
+    --source-server="$source_conn" \
+    --progress --write-recovery-conf; then
+    printf "primary_slot_name = '%s'\n" "$slot" >> "$target/postgresql.auto.conf"
+else
+    # Clusters created without checksums or wal_log_hints cannot use
+    # pg_rewind. The promoted node is authoritative and a verified protection
+    # dump exists above, so rebuild this fenced former primary from a fresh
+    # physical base backup instead of retrying forever.
+    [ "$target" = /var/lib/postgresql/15/main ] || exit 1
+    find /var/lib/postgresql/15/main -mindepth 1 -maxdepth 1 \
+        -exec rm -rf -- {} +
+    sudo -u postgres env PGPASSFILE=/var/lib/postgresql/.pgpass \
+        /usr/lib/postgresql/15/bin/pg_basebackup \
+        --dbname="$source_conn" \
+        --pgdata=/var/lib/postgresql/15/main \
+        --wal-method=stream \
+        --slot="$slot" \
+        --write-recovery-conf \
+        --progress
+fi
+chown postgres:postgres "$target/postgresql.auto.conf"
+systemctl start postgresql.service
+attempts=0
+while [ "$attempts" -lt 60 ]; do
+    if sudo -u postgres psql -Atqc 'select pg_is_in_recovery()' 2>/dev/null | grep -qx t; then
+        touch /run/time-tracker-ha/rejoined-as-standby
+        exit 0
+    fi
+    attempts=$((attempts + 1)); sleep 1
+done
+exit 1

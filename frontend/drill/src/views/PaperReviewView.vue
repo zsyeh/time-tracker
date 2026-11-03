@@ -5,6 +5,7 @@ import MarkdownAnswer from '../components/MarkdownAnswer.vue'
 import PaperQuestionContent from '../components/PaperQuestionContent.vue'
 import type { ExamPaper, ExamPaperItem, PaperItemResult } from '../types'
 import { createAndCopyShare } from '../lib/share'
+import { withWorkspacePrefix } from '../lib/runtimePath'
 
 const props = defineProps<{ uuid: string }>()
 const paper = ref<ExamPaper | null>(null)
@@ -45,7 +46,7 @@ onMounted(async () => {
       <header><span>{{ item.position }}</span><div><strong>{{ item.question.display_label }}</strong><small>{{ item.question.document }} · {{ item.question.topic }}</small></div><em>{{ item.score }} pts</em></header>
       <PaperQuestionContent :question="item.question" />
       <section class="paper-your-answer"><span>Your answer</span><p>{{ item.user_answer || 'No answer recorded.' }}</p></section>
-      <section class="paper-solution"><span>Source answer / explanation</span><MarkdownAnswer v-if="item.question.answer_markdown" :source="item.question.answer_markdown" /><div v-if="item.question.answer_assets?.length" class="paper-question-assets"><img v-for="asset in item.question.answer_assets" :key="asset.id" :src="asset.url" :width="asset.width" :height="asset.height" loading="lazy" decoding="async" alt="Answer" /></div><p v-if="!item.question.answer_markdown && !item.question.answer_assets?.length">No source answer is currently available.</p></section>
+      <section class="paper-solution"><span>Source answer / explanation</span><MarkdownAnswer v-if="item.question.answer_markdown" :source="item.question.answer_markdown" /><div v-if="item.question.answer_assets?.length" class="paper-question-assets"><img v-for="asset in item.question.answer_assets" :key="asset.id" :src="withWorkspacePrefix(asset.url)" :width="asset.width" :height="asset.height" loading="lazy" decoding="async" alt="Answer" /></div><p v-if="!item.question.answer_markdown && !item.question.answer_assets?.length">No source answer is currently available.</p></section>
       <footer><span>Current: {{ item.question.mastery_state }}</span><div><button :class="{ selected: item.result === 'correct' }" @click="mark(item, 'correct')">Correct / mastered</button><button :class="{ selected: item.result === 'review' || item.result === 'incorrect' }" @click="mark(item, 'review')">Needs review</button></div></footer>
     </article>
   </section>

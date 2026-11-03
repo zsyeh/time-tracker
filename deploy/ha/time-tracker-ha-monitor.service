@@ -1,0 +1,15 @@
+[Unit]
+Description=Time Tracker conservative standby monitor and promotion controller
+ConditionPathExists=/etc/time-tracker/legacy-ha-explicitly-enabled
+After=network-online.target time-tracker-ha-postgres.service time-tracker-ha-web.service
+Wants=network-online.target time-tracker-ha-web.service
+Requires=time-tracker-ha-postgres.service
+
+[Service]
+Type=simple
+ExecStart=/usr/local/sbin/time-tracker-ha-monitor
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=multi-user.target

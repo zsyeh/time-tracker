@@ -35,8 +35,10 @@ from .models import (
     Question,
     QuestionAsset,
     QuestionAttempt,
+    QuestionAttemptError,
     QuestionDocument,
     QuestionMarker,
+    QuestionTimingSession,
     QuestionTopic,
     QuestionUserState,
     TopicMastery,
@@ -52,6 +54,13 @@ from .management.commands.agent_classify_question_types import Command as AgentT
 
 
 TEST_PNG = b'\x89PNG\r\n\x1a\nquestion-image'
+
+
+class SoleWriterSessionConfigurationTests(SimpleTestCase):
+    def test_read_only_requests_do_not_force_session_database_writes(self):
+        from django.conf import settings
+
+        self.assertFalse(settings.SESSION_SAVE_EVERY_REQUEST)
 
 
 @override_settings(SECURE_SSL_REDIRECT=False)
@@ -212,6 +221,27 @@ class DrillApiTests(TestCase):
         self.assertTrue(TopicMastery.objects.filter(user=self.alice, topic=topic, grade='B').exists())
         refreshed = self.client.get('/api/drill/cockpit/', HTTP_HOST='ei.ehzsy.site').json()
         self.assertEqual(refreshed['coverage_percent'], 100)
+
+        attempt = self.client.post(
+            f'/api/drill/questions/{question.uuid}/attempts/',
+            {
+                'result': 'correct', 'is_independent': True,
+                'submission_key': 'f495266d-5b47-4539-afdd-ac343283fc1f',
+            },
+            content_type='application/json', HTTP_HOST='ei.ehzsy.site',
+        )
+        self.assertEqual(attempt.status_code, 201)
+        record = TopicMastery.objects.get(user=self.alice, topic=topic)
+        self.assertEqual(record.manual_grade, 'B')
+        self.assertEqual(record.system_grade, 'C')
+        undone = self.client.delete(
+            f'/api/drill/questions/{question.uuid}/attempts/', HTTP_HOST='ei.ehzsy.site',
+        )
+        self.assertEqual(undone.status_code, 200)
+        record.refresh_from_db()
+        self.assertEqual(record.manual_grade, 'B')
+        self.assertEqual(record.system_grade, 'D')
+        self.assertEqual(record.grade, 'B')
 
     def test_mastery_schedule_rewards_retention_and_resets_weakness(self):
         now = timezone.now()
@@ -519,6 +549,26 @@ class DrillApiTests(TestCase):
         self.assertEqual(detail['confidence'], 75)
         self.assertEqual(detail['note'], '定义域边界需要复查')
 
+    def test_attempt_submission_key_is_idempotent_and_does_not_duplicate_state(self):
+        self.client.force_login(self.alice)
+        endpoint = f'/api/drill/questions/{self.question.uuid}/attempts/'
+        submission_key = 'a62fcd49-d458-4e45-b1d2-a279b91ed43f'
+        first = self.client.post(
+            endpoint, {'result': 'review', 'submission_key': submission_key},
+            content_type='application/json',
+        )
+        repeated = self.client.post(
+            endpoint, {'result': 'review', 'submission_key': submission_key},
+            content_type='application/json',
+        )
+        self.assertEqual(first.status_code, 201)
+        self.assertEqual(repeated.status_code, 200)
+        self.assertTrue(repeated.json()['deduplicated'])
+        self.assertEqual(first.json()['id'], repeated.json()['id'])
+        self.assertEqual(
+            QuestionAttempt.objects.filter(user=self.alice, question=self.question).count(), 1,
+        )
+
     def test_attempt_time_is_saved_only_for_completed_question_states(self):
         endpoint = f'/api/drill/questions/{self.question.uuid}/attempts/'
         self.client.force_login(self.alice)
@@ -585,6 +635,72 @@ class DrillApiTests(TestCase):
         self.assertEqual(cancelled.status_code, 200)
         self.assertIsNone(cancelled.json()['starts_at'])
 
+    def test_question_timers_are_isolated_between_browser_tabs(self):
+        endpoint = f'/api/drill/questions/{self.question.uuid}/timing/'
+        attempt_endpoint = f'/api/drill/questions/{self.question.uuid}/attempts/'
+        first_key = '5e06fb76-2798-4212-bfcf-32f8df284a0b'
+        second_key = 'b872b96e-90c1-4b90-bbd6-bc9d90a502d7'
+        self.client.force_login(self.alice)
+        first = self.client.post(
+            endpoint, {'action': 'begin', 'timing_key': first_key},
+            content_type='application/json',
+        )
+        second = self.client.post(
+            endpoint, {'action': 'begin', 'timing_key': second_key},
+            content_type='application/json',
+        )
+        self.assertEqual(first.status_code, 200)
+        self.assertEqual(second.status_code, 200)
+        self.client.post(
+            endpoint, {'action': 'cancel', 'timing_key': first_key},
+            content_type='application/json',
+        )
+        first_session = QuestionTimingSession.objects.get(client_key=first_key)
+        second_session = QuestionTimingSession.objects.get(client_key=second_key)
+        self.assertIsNotNone(first_session.stopped_at)
+        self.assertIsNone(second_session.stopped_at)
+        second_session.starts_at = timezone.now() - datetime.timedelta(seconds=45)
+        second_session.save(update_fields=['starts_at'])
+        completed = self.client.post(
+            attempt_endpoint,
+            {
+                'result': 'correct', 'timing_key': second_key,
+                'submission_key': '4b10b73e-8259-4a7d-9059-09106398980e',
+            },
+            content_type='application/json',
+        )
+        self.assertEqual(completed.status_code, 201)
+        self.assertGreaterEqual(completed.json()['time_spent_seconds'], 44)
+        second_session.refresh_from_db()
+        self.assertIsNotNone(second_session.stopped_at)
+
+    def test_reset_stops_only_its_tab_timer_and_can_begin_a_fresh_round(self):
+        timing_endpoint = f'/api/drill/questions/{self.question.uuid}/timing/'
+        attempt_endpoint = f'/api/drill/questions/{self.question.uuid}/attempts/'
+        key = 'f9d0382d-07fd-44fd-8ca9-bf54c4fe48a5'
+        self.client.force_login(self.alice)
+        self.client.post(
+            timing_endpoint, {'action': 'begin', 'timing_key': key},
+            content_type='application/json',
+        )
+        reset = self.client.post(
+            attempt_endpoint,
+            {
+                'result': 'reset', 'timing_key': key,
+                'submission_key': '84784f3d-17c7-4376-bdd5-3a633651fe7f',
+            },
+            content_type='application/json',
+        )
+        self.assertEqual(reset.status_code, 201)
+        stopped_at = QuestionTimingSession.objects.get(client_key=key).stopped_at
+        self.assertIsNotNone(stopped_at)
+        restarted = self.client.post(
+            timing_endpoint, {'action': 'begin', 'timing_key': key},
+            content_type='application/json',
+        )
+        self.assertEqual(restarted.status_code, 200)
+        self.assertIsNone(QuestionTimingSession.objects.get(client_key=key).stopped_at)
+
     def test_note_favorite_and_review_later_are_private_and_do_not_create_attempts(self):
         endpoint = f'/api/drill/questions/{self.question.uuid}/state/'
         self.client.force_login(self.alice)
@@ -615,6 +731,67 @@ class DrillApiTests(TestCase):
         self.assertFalse(other_detail['is_favorite'])
         self.assertEqual(other_detail['note'], '')
 
+    def test_user_state_version_prevents_stale_note_overwrite(self):
+        endpoint = f'/api/drill/questions/{self.question.uuid}/state/'
+        self.client.force_login(self.alice)
+        first = self.client.post(
+            endpoint, {'note': 'tab one'}, content_type='application/json',
+        )
+        self.assertEqual(first.status_code, 200)
+        version = first.json()['version']
+        newer = self.client.post(
+            endpoint, {'note': 'tab two', 'version': version}, content_type='application/json',
+        )
+        self.assertEqual(newer.status_code, 200)
+        stale = self.client.post(
+            endpoint, {'note': 'stale tab one', 'version': version}, content_type='application/json',
+        )
+        self.assertEqual(stale.status_code, 409)
+        self.assertTrue(stale.json()['conflict'])
+        self.assertEqual(stale.json()['note'], 'tab two')
+        self.assertEqual(
+            QuestionUserState.objects.get(user=self.alice, question=self.question).note,
+            'tab two',
+        )
+
+    def test_attempt_saves_while_preserving_newer_server_note_on_conflict(self):
+        state = QuestionUserState.objects.create(
+            user=self.alice, question=self.question, note='newer note', version=3,
+        )
+        self.client.force_login(self.alice)
+        response = self.client.post(
+            f'/api/drill/questions/{self.question.uuid}/attempts/',
+            {
+                'result': 'correct', 'note': 'old local note', 'state_version': 2,
+                'submission_key': '31c18429-8d8c-45c0-a7f6-5f89ea9460e5',
+            },
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(response.json()['note_conflict'])
+        state.refresh_from_db()
+        self.assertEqual(state.note, 'newer note')
+        self.assertEqual(state.version, 3)
+        self.assertEqual(QuestionAttempt.objects.get().note, 'old local note')
+
+    def test_attempt_with_unchanged_note_does_not_bump_state_version(self):
+        state = QuestionUserState.objects.create(
+            user=self.alice, question=self.question, note='keep me', version=7,
+        )
+        self.client.force_login(self.alice)
+        response = self.client.post(
+            f'/api/drill/questions/{self.question.uuid}/attempts/',
+            {
+                'result': 'correct', 'note': 'keep me', 'state_version': 7,
+                'submission_key': 'ea4597f8-93bc-4e9a-9a56-2df88fbb44b3',
+            },
+            content_type='application/json',
+        )
+        self.assertEqual(response.status_code, 201)
+        state.refresh_from_db()
+        self.assertEqual(state.version, 7)
+        self.assertEqual(state.note, 'keep me')
+
     def test_feel_and_insight_are_user_scoped(self):
         QuestionAttempt.objects.create(user=self.alice, question=self.question, result='correct')
         QuestionAttempt.objects.create(user=self.bob, question=self.similar, result='review')
@@ -627,6 +804,31 @@ class DrillApiTests(TestCase):
         self.assertEqual(insight['recent_questions']['count'], 1)
         self.assertEqual(insight['recent_questions']['results'][0]['uuid'], str(self.question.uuid))
         self.assertEqual(insight['recent_notes']['results'][0]['note'], 'Recent note')
+
+    def test_insight_filters_diagnosis_and_uses_only_canonical_note(self):
+        old = QuestionAttempt.objects.create(
+            user=self.alice, question=self.question, result='review', note='obsolete attempt note',
+        )
+        QuestionAttemptError.objects.create(attempt=old, code='B2', is_primary=True)
+        QuestionUserState.objects.create(
+            user=self.alice, question=self.question, note='latest canonical Note',
+        )
+        other = QuestionAttempt.objects.create(
+            user=self.alice, question=self.similar, result='correct', note='other old note',
+        )
+        QuestionAttemptError.objects.create(attempt=other, code='C1', is_primary=True)
+        self.client.force_login(self.alice)
+
+        payload = self.client.get('/api/drill/insight/?error=B2&has_note=1').json()
+        self.assertEqual(payload['recent_questions']['count'], 1)
+        self.assertEqual(payload['recent_questions']['results'][0]['diagnoses'], ['B2'])
+        self.assertEqual(payload['recent_notes']['count'], 1)
+        self.assertEqual(payload['recent_notes']['results'][0]['note'], 'latest canonical Note')
+        self.assertEqual(payload['recent_notes']['results'][0]['primary_error'], 'B2')
+        self.assertNotContains(
+            self.client.get('/api/drill/insight/?q=obsolete%20attempt%20note'),
+            'obsolete attempt note',
+        )
 
     def test_multiple_learning_markers_coexist_with_state_and_are_private(self):
         marker_url = f'/api/drill/questions/{self.question.uuid}/markers/'
@@ -698,7 +900,7 @@ class DrillApiTests(TestCase):
         )
         self.assertEqual(response.status_code, 201)
         self.assertIsNone(response.json()['confidence'])
-        self.assertIsNone(response.json()['note'])
+        self.assertEqual(response.json()['note'], '')
 
     def test_attempt_frequency_and_heatmap_are_private_per_user(self):
         QuestionAttempt.objects.create(user=self.alice, question=self.question, result='done')
@@ -1554,6 +1756,23 @@ class DrillHostRoutingTests(TestCase):
         self.assertContains(timer_response, 'TIMER FRONTEND')
         self.assertEqual(blocked.status_code, 404)
 
+    def test_unknown_ui_path_gets_spa_but_api_auth_share_and_timer_keep_real_404(self):
+        user = get_user_model().objects.create_user('route-user', password='password')
+        self.client.force_login(user)
+        with tempfile.TemporaryDirectory() as temporary:
+            drill = Path(temporary)
+            (drill / 'index.html').write_text('<html>DRILL FRONTEND</html>', encoding='utf-8')
+            with self.settings(DRILL_FRONTEND_DIST=drill):
+                unknown = self.client.get('/typed-the-wrong-page', HTTP_HOST='drill.ehzsy.site')
+                malformed_question = self.client.get('/practice/not-a-uuid', HTTP_HOST='ei.ehzsy.site')
+        self.assertContains(unknown, 'DRILL FRONTEND')
+        self.assertContains(malformed_question, 'DRILL FRONTEND')
+        self.assertEqual(self.client.get('/api/not-real', HTTP_HOST='drill.ehzsy.site').status_code, 404)
+        self.assertEqual(self.client.get('/api', HTTP_HOST='drill.ehzsy.site').status_code, 404)
+        self.assertEqual(self.client.get('/accounts/not-real', HTTP_HOST='drill.ehzsy.site').status_code, 404)
+        self.assertEqual(self.client.get('/share/not-real', HTTP_HOST='drill.ehzsy.site').status_code, 404)
+        self.assertEqual(self.client.get('/typed-the-wrong-page', HTTP_HOST='timer.ehzsy.site').status_code, 404)
+
 
 @override_settings(
     SECURE_SSL_REDIRECT=False,
@@ -1703,6 +1922,111 @@ class DrillPasskeyHandoffTests(TestCase):
         )
         self.assertEqual(response.status_code, 302)
         self.assertEqual(DrillLoginHandoff.objects.get().target_path, '/practice')
+
+    @override_settings(
+        IP_AUTH_CALLBACK_ORIGIN='https://47.95.10.128',
+        IP_AUTH_EXTERNAL_HOST='47.95.10.128',
+    )
+    def test_ip_entry_uses_canonical_passkey_then_fragment_and_csrf_post(self):
+        ip = Client(enforce_csrf_checks=True)
+        requested = ip.get(
+            '/ip-auth/start?next=/drill/practice/00000000-0000-0000-0000-000000000001',
+            HTTP_HOST='timer.ehzsy.site',
+            HTTP_X_TIME_TRACKER_EXTERNAL_HOST='47.95.10.128',
+            secure=True,
+        )
+        self.assertEqual(requested.status_code, 302)
+        self.assertTrue(requested.url.startswith('https://timer.ehzsy.site/ip-auth/start?'))
+
+        anonymous = Client().get(
+            '/ip-auth/start?next=/drill/practice/00000000-0000-0000-0000-000000000001',
+            HTTP_HOST='timer.ehzsy.site', secure=True,
+        )
+        self.assertEqual(anonymous.status_code, 302)
+        self.assertTrue(anonymous.url.startswith('/accounts/login/?next='))
+
+        timer = Client()
+        timer.force_login(self.user)
+        issued = timer.get(
+            '/ip-auth/start?next=/drill/practice/00000000-0000-0000-0000-000000000001',
+            HTTP_HOST='timer.ehzsy.site', secure=True,
+        )
+        self.assertEqual(issued.status_code, 302)
+        self.assertTrue(issued.url.startswith('https://47.95.10.128/ip-auth/complete#drill_'))
+        raw_token = issued.url.split('#', 1)[1]
+        self.assertNotIn(raw_token, urlsplit(issued.url).path)
+        handoff = DrillLoginHandoff.objects.get()
+        self.assertEqual(handoff.target_site, 'ip')
+        self.assertNotEqual(handoff.token_digest, raw_token)
+
+        callback = ip.get(
+            '/ip-auth/complete', HTTP_HOST='timer.ehzsy.site',
+            HTTP_X_TIME_TRACKER_EXTERNAL_HOST='47.95.10.128', secure=True,
+        )
+        self.assertEqual(callback.status_code, 200)
+        csrf = ip.cookies['csrftoken'].value
+        completed = ip.post(
+            '/ip-auth/complete', data=json.dumps({'token': raw_token}),
+            content_type='application/json', HTTP_HOST='timer.ehzsy.site',
+            HTTP_X_TIME_TRACKER_EXTERNAL_HOST='47.95.10.128',
+            HTTP_ORIGIN='https://47.95.10.128', HTTP_X_CSRFTOKEN=csrf, secure=True,
+        )
+        self.assertEqual(completed.status_code, 200)
+        self.assertEqual(
+            completed.json()['redirect'],
+            '/drill/practice/00000000-0000-0000-0000-000000000001',
+        )
+        self.assertEqual(int(ip.session['_auth_user_id']), self.user.pk)
+        self.assertFalse(DrillLoginHandoff.objects.exists())
+
+        csrf = ip.cookies['csrftoken'].value
+        replay = ip.post(
+            '/ip-auth/complete', data=json.dumps({'token': raw_token}),
+            content_type='application/json', HTTP_HOST='timer.ehzsy.site',
+            HTTP_X_TIME_TRACKER_EXTERNAL_HOST='47.95.10.128',
+            HTTP_ORIGIN='https://47.95.10.128', HTTP_X_CSRFTOKEN=csrf, secure=True,
+        )
+        self.assertEqual(replay.status_code, 400)
+
+    @override_settings(
+        IP_AUTH_CALLBACK_ORIGIN='https://47.95.10.128',
+        IP_AUTH_EXTERNAL_HOST='47.95.10.128',
+    )
+    def test_ip_handoff_rejects_expiry_wrong_origin_host_and_open_redirect(self):
+        timer = Client()
+        timer.force_login(self.user)
+        issued = timer.get(
+            '/ip-auth/start?next=https://evil.example/steal',
+            HTTP_HOST='timer.ehzsy.site', secure=True,
+        )
+        token = issued.url.split('#', 1)[1]
+        handoff = DrillLoginHandoff.objects.get()
+        self.assertEqual(handoff.target_path, '/')
+        handoff.expires_at = timezone.now() - datetime.timedelta(seconds=1)
+        handoff.save(update_fields=['expires_at'])
+
+        ip = Client(enforce_csrf_checks=True)
+        ip.get(
+            '/ip-auth/complete', HTTP_HOST='timer.ehzsy.site',
+            HTTP_X_TIME_TRACKER_EXTERNAL_HOST='47.95.10.128', secure=True,
+        )
+        csrf = ip.cookies['csrftoken'].value
+        wrong_origin = ip.post(
+            '/ip-auth/complete', data=json.dumps({'token': token}),
+            content_type='application/json', HTTP_HOST='timer.ehzsy.site',
+            HTTP_X_TIME_TRACKER_EXTERNAL_HOST='47.95.10.128',
+            HTTP_ORIGIN='https://evil.example', HTTP_X_CSRFTOKEN=csrf, secure=True,
+        )
+        self.assertEqual(wrong_origin.status_code, 403)
+        expired = ip.post(
+            '/ip-auth/complete', data=json.dumps({'token': token}),
+            content_type='application/json', HTTP_HOST='timer.ehzsy.site',
+            HTTP_X_TIME_TRACKER_EXTERNAL_HOST='47.95.10.128',
+            HTTP_ORIGIN='https://47.95.10.128', HTTP_X_CSRFTOKEN=csrf, secure=True,
+        )
+        self.assertEqual(expired.status_code, 400)
+        wrong_host = ip.get('/ip-auth/complete', HTTP_HOST='timer.ehzsy.site', secure=True)
+        self.assertEqual(wrong_host.status_code, 404)
 
 
 class PairedPdfCropTests(SimpleTestCase):

@@ -17,18 +17,26 @@ import ErrataView from './views/ErrataView.vue'
 import EiCockpitView from './views/EiCockpitView.vue'
 import CircuitSelectedView from './views/CircuitSelectedView.vue'
 import SignalSelectedView from './views/SignalSelectedView.vue'
+import SignalFormulaReviewView from './views/SignalFormulaReviewView.vue'
 import AnalogSelectedView from './views/AnalogSelectedView.vue'
 import DigitalSelectedView from './views/DigitalSelectedView.vue'
 import CommunicationSelectedView from './views/CommunicationSelectedView.vue'
+import PdfPageStatusView from './views/PdfPageStatusView.vue'
+import DiagnosticDashboardView from './views/DiagnosticDashboardView.vue'
+import DiagnosticQueueView from './views/DiagnosticQueueView.vue'
+import NotFoundView from './views/NotFoundView.vue'
 import { initializeUiPreferences } from './lib/uiPreferences'
+import { routerBase } from './lib/runtimePath'
 import './styles.css'
 
 const router = createRouter({
-  history: createWebHistory(),
+  history: createWebHistory(routerBase),
   routes: [
     { path: '/', redirect: '/practice' },
     { path: '/practice', name: 'practice', component: PracticeView },
     { path: '/practice/:uuid', name: 'question', component: QuestionView, props: true },
+    { path: '/diagnostics', name: 'diagnostics', component: DiagnosticDashboardView },
+    { path: '/diagnostic-queue', name: 'diagnostic-queue', component: DiagnosticQueueView },
     { path: '/heatmap', name: 'heatmap', component: HeatmapView },
     { path: '/selected-heatmap', name: 'selected-heatmap', component: HeatmapView, props: { selectedOnly: true } },
     { path: '/activity', name: 'activity', component: ActivityView },
@@ -46,10 +54,13 @@ const router = createRouter({
     { path: '/cockpit', name: 'cockpit', component: EiCockpitView },
     { path: '/circuit-selected', name: 'circuit-selected', component: CircuitSelectedView },
     { path: '/signal-selected', name: 'signal-selected', component: SignalSelectedView },
+    { path: '/signal-formulas', name: 'signal-formulas', component: SignalFormulaReviewView },
     { path: '/analog-selected', name: 'analog-selected', component: AnalogSelectedView },
     { path: '/digital-selected', name: 'digital-selected', component: DigitalSelectedView },
     { path: '/communication-selected', name: 'communication-selected', component: CommunicationSelectedView },
+    { path: '/selected-pdf-pages', name: 'selected-pdf-pages', component: PdfPageStatusView },
     { path: '/core-heatmap', name: 'core-heatmap', component: HeatmapView, props: { selectedOnly: true, coreOnly: true } },
+    { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFoundView },
   ],
   scrollBehavior(_to, _from, savedPosition) {
     return savedPosition || { top: 0 }

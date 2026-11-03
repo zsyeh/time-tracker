@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, defineAsyncComponent, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api } from '../lib/api'
 import { cachedCatalog, cachedQuestionPage, fetchCatalog, prefetchQuestion, storeQuestionPage } from '../lib/workspace'
 import type { Catalog, Page, QuestionSummary } from '../types'
 import { useUiPreferences } from '../lib/uiPreferences'
+import { runtimeWorkspace } from '../lib/runtimePath'
+
+const PracticeTrendPanel = defineAsyncComponent(() => import('../components/PracticeTrendPanel.vue'))
 
 const router = useRouter()
 const { t } = useUiPreferences()
@@ -32,7 +35,7 @@ let requestSequence = 0
 let restoring = true
 const stateKey = 'drill.practice.state.v1'
 const searchFocused = ref(false)
-const isEi = location.hostname.toLowerCase().startsWith('ei.')
+const isEi = runtimeWorkspace === 'ei'
 
 const topics = computed(() => catalog.value.topics.filter((topic) => (
   !documentId.value || topic.document_id === Number(documentId.value)
@@ -193,41 +196,43 @@ onUnmounted(() => {
 <template>
   <section class="page practice-page">
     <header class="page-header">
-      <div><span class="eyebrow">{{ isEi ? t('foundationBank') : t('questionIndex') }}</span><h1>{{ isEi ? t('electronicInformation') : t('questionBank') }}</h1><p>{{ catalog.summary.practiceable_count.toLocaleString() }} practice records. {{ catalog.summary.outline_count.toLocaleString() }} source-outline rows are hidden.</p></div>
+      <div><span class="eyebrow">{{ isEi ? t('foundationBank') : t('questionIndex') }}</span><h1>{{ isEi ? t('electronicInformation') : t('questionBank') }}</h1><p>共 {{ catalog.summary.practiceable_count.toLocaleString() }} 道可练习题；另有 {{ catalog.summary.outline_count.toLocaleString() }} 条资料目录记录未作为题目展示。</p></div>
       <button v-if="lastQuestionUuid || questions?.results.length" class="primary-action" @pointerenter="prefetchQuestion(lastQuestionUuid || questions?.results[0]?.uuid || null, navigationQueryString())" @click="openQuestion(lastQuestionUuid || questions!.results[0].uuid)">{{ lastQuestionUuid ? t('resumeLast') : t('openNext') }} <b>→</b></button>
     </header>
 
-    <aside v-if="!isEi" class="collection-credit"><strong>THANKS TO CXY</strong><span>All question-bank source material was collected and organized by Bilibili creator cxy (澄潇宇). PDF authorship is shown separately when available.</span></aside>
-    <aside v-else class="collection-credit"><strong>892 · EI</strong><span>156 foundational examples and 60 short-answer questions imported from the owner-provided Markdown bank. Formulae are rendered from the original LaTeX.</span></aside>
+    <PracticeTrendPanel />
+
+    <aside v-if="!isEi" class="collection-credit"><strong>感谢 CXY</strong><span>题库源资料由 Bilibili 创作者 cxy（澄潇宇）收集整理；可确认时会另行标注 PDF 作者。</span></aside>
+    <aside v-else class="collection-credit"><strong>892 · EI</strong><span>已从用户提供的 Markdown 题库导入基础例题与简答题，公式按原始 LaTeX 渲染。</span></aside>
 
     <div class="taxonomy-grid">
-      <button :class="{ active: sourceCategory === '' }" @click="sourceCategory = ''"><span>ALL PRACTICE</span><strong>{{ catalog.summary.practiceable_count.toLocaleString() }}</strong><small>cleaned records</small></button>
-      <button v-for="item in categoryOptions" :key="item.value" :class="[`category-${item.value}`, { active: sourceCategory === item.value }]" @click="sourceCategory = item.value"><span>{{ item.label.toUpperCase() }}</span><strong>{{ item.count.toLocaleString() }}</strong><small>{{ item.value === 'past_exam' ? 'verified official source' : 'source-labelled records' }}</small></button>
+      <button :class="{ active: sourceCategory === '' }" @click="sourceCategory = ''"><span>全部练习</span><strong>{{ catalog.summary.practiceable_count.toLocaleString() }}</strong><small>已清洗题目</small></button>
+      <button v-for="item in categoryOptions" :key="item.value" :class="[`category-${item.value}`, { active: sourceCategory === item.value }]" @click="sourceCategory = item.value"><span>{{ item.label }}</span><strong>{{ item.count.toLocaleString() }}</strong><small>{{ item.value === 'past_exam' ? '已核验正式来源' : '按资料来源标记' }}</small></button>
     </div>
 
-    <aside v-if="catalog.coverage.missing.length" class="source-gap"><strong>SOURCE GAP</strong><span>{{ catalog.coverage.missing.join(', ') }} is not present in <code>Downloads.7z</code>. It is not hidden by a filter.</span></aside>
+    <aside v-if="catalog.coverage.missing.length" class="source-gap"><strong>资料缺失</strong><span><code>{{ catalog.coverage.missing.join(', ') }}</code> 不在 Downloads.7z 中，并非被筛选条件隐藏。</span></aside>
 
-    <aside v-if="markerCode" class="marker-filter"><span>MARKER</span><strong>{{ markerCode === 'overconfident' ? 'Overconfident' : markerCode === 'concept_gap' ? 'Concept Gap' : markerCode === 'rusty' ? 'Rusty' : 'Forgotten' }}</strong><button type="button" @click="markerCode = ''">Clear</button></aside>
+    <aside v-if="markerCode" class="marker-filter"><span>学习标记</span><strong>{{ markerCode === 'overconfident' ? '过度自信' : markerCode === 'concept_gap' ? '概念缺口' : markerCode === 'rusty' ? '生疏' : '遗忘' }}</strong><button type="button" @click="markerCode = ''">清除</button></aside>
 
     <div class="filter-panel">
-      <label class="search-field"><span>SEARCH</span><input v-model="search" placeholder="Source, topic, or question text" @focus="searchFocused = true" @blur="closeCandidatesLater" @input="searchChanged" /><div v-if="localCandidates.length" class="local-candidates"><button v-for="candidate in localCandidates" :key="`${candidate.kind}-${candidate.value}`" type="button" @mousedown.prevent="chooseCandidate(candidate)"><small>LOCAL {{ candidate.kind.toUpperCase() }}</small><strong>{{ candidate.label }}</strong></button></div></label>
-      <label><span>BOOK</span><select v-model="documentId"><option value="">All books</option><option v-for="item in catalog.documents" :key="item.id" :value="item.id">{{ item.title }} · {{ item.question_count }}</option></select></label>
-      <label><span>TOPIC PATH</span><select v-model="topicId"><option value="">All topics</option><optgroup v-for="group in topicGroups" :key="group.document.id" :label="group.document.title"><option v-for="item in group.topics" :key="item.id" :value="item.id">{{ item.path }} · {{ item.question_count }}</option></optgroup></select></label>
-      <div class="toggle-row"><button :class="{ active: unattempted }" @click="unattempted = !unattempted">Unattempted</button></div>
+      <label class="search-field"><span>搜索</span><input v-model="search" placeholder="资料、知识点或题目文字" @focus="searchFocused = true" @blur="closeCandidatesLater" @input="searchChanged" /><div v-if="localCandidates.length" class="local-candidates"><button v-for="candidate in localCandidates" :key="`${candidate.kind}-${candidate.value}`" type="button" @mousedown.prevent="chooseCandidate(candidate)"><small>本地匹配 · {{ candidate.kind }}</small><strong>{{ candidate.label }}</strong></button></div></label>
+      <label><span>题册</span><select v-model="documentId"><option value="">全部题册</option><option v-for="item in catalog.documents" :key="item.id" :value="item.id">{{ item.title }} · {{ item.question_count }}</option></select></label>
+      <label><span>知识点</span><select v-model="topicId"><option value="">全部知识点</option><optgroup v-for="group in topicGroups" :key="group.document.id" :label="group.document.title"><option v-for="item in group.topics" :key="item.id" :value="item.id">{{ item.path }} · {{ item.question_count }}</option></optgroup></select></label>
+      <div class="toggle-row"><button :class="{ active: unattempted }" @click="unattempted = !unattempted">仅看未作答</button></div>
     </div>
 
-    <div class="result-meta"><span>{{ questions?.count ?? 0 }} PRACTICE RECORDS</span><span class="state-legend"><i class="status-unattempted" /> NOT STARTED <i class="status-mastered" /> MASTERED <i class="status-review" /> REVIEW <i class="status-overdue" /> OVERDUE</span><span v-if="loading">LOADING…</span></div>
+    <div class="result-meta"><span>{{ questions?.count ?? 0 }} 道题</span><span class="state-legend"><i class="status-unattempted" /> 未开始 <i class="status-mastered" /> 已掌握 <i class="status-review" /> 待复习 <i class="status-overdue" /> 已到期</span><span v-if="loading">正在加载…</span></div>
     <p v-if="error" class="error-state">{{ error }}</p>
     <div v-else class="question-list" :class="{ loading }">
       <button v-for="question in questions?.results" :key="question.uuid" class="question-row" @pointerenter="prefetchQuestion(question.uuid, navigationQueryString())" @pointerdown="prefetchQuestion(question.uuid, navigationQueryString())" @click="openQuestion(question.uuid)">
         <span class="question-index">{{ String(question.question_order).padStart(4, '0') }}</span>
-        <span class="question-copy"><strong>{{ question.display_label || `Question ${question.question_order}` }}</strong><small>{{ question.document }} · {{ question.topic || 'General' }}<em v-if="question.record_kind === 'grouped'"> · grouped extract</em></small></span>
+        <span class="question-copy"><strong>{{ question.display_label || `题目 ${question.question_order}` }}</strong><small>{{ question.document }} · {{ question.topic || '未分类' }}<em v-if="question.record_kind === 'grouped'"> · 组合题摘录</em><em v-if="question.pdf_pages"> · PDF 题 {{ question.pdf_pages.question }} / 答 {{ question.pdf_pages.answer }} / 对照 {{ question.pdf_pages.paired }} 页</em></small></span>
         <span class="source-badge" :class="`category-${question.source_category}`">{{ question.source_category_label }}</span>
         <span class="attempt-mark" :class="question.review_overdue ? 'status-overdue' : `status-${question.state}`" :title="`${question.review_overdue ? 'overdue review' : question.state}; ${question.attempt_count} recorded attempts`">{{ question.attempt_count || '' }}</span>
         <b class="row-arrow">→</b>
       </button>
-      <div v-if="!loading && !questions?.results.length" class="empty-state">No questions match these filters.</div>
+      <div v-if="!loading && !questions?.results.length" class="empty-state">没有符合当前筛选条件的题目。</div>
     </div>
-    <footer v-if="questions && (questions.previous || questions.next)" class="pager"><button :disabled="!questions.previous" @click="page--; loadQuestions()">← Previous</button><span>PAGE {{ page }}</span><button :disabled="!questions.next" @click="page++; loadQuestions()">Next →</button></footer>
+    <footer v-if="questions && (questions.previous || questions.next)" class="pager"><button :disabled="!questions.previous" @click="page--; loadQuestions()">← 上一页</button><span>第 {{ page }} 页</span><button :disabled="!questions.next" @click="page++; loadQuestions()">下一页 →</button></footer>
   </section>
 </template>

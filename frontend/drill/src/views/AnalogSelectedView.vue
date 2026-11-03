@@ -6,7 +6,7 @@ import { analogFilters, analogPracticeQuery } from '../lib/analogSelected'
 import HeatmapProgress from '../components/HeatmapProgress.vue'
 
 type Progress = { total: number; attempted: number; mastered: number; unattempted: number }
-type Item = { uuid: string; label: string; book: string; bucket: string; tier: string; kind: string; state: 'mastered' | 'review' | 'unattempted'; ready: boolean; combined: boolean; question_mode: string; answer_mode: string; scope_note: string; has_open_erratum: boolean; tags: string[]; reason: string[] }
+type Item = { uuid: string; label: string; book: string; bucket: string; tier: string; kind: string; state: 'mastered' | 'review' | 'unattempted'; ready: boolean; combined: boolean; question_mode: string; answer_mode: string; scope_note: string; has_open_erratum: boolean; pdf_pages: { question: number; answer: number; paired: number } | null; tags: string[]; reason: string[] }
 type Group = { key: string; title: string; rank: number; tier: string; focus: string; progress: Progress; questions: Item[] }
 type Payload = { title: string; basis: string; groups: Group[]; progress: Progress; ready_count: number; inventory_count: number; selected_count: number; review_count: number; excluded_count: number; review_items: { uuid: string; label: string; reason: string[] }[] }
 const route = useRoute()
@@ -79,7 +79,7 @@ onMounted(() => {
         <div class="analog-question-grid" :class="{ compact: !showLabels }">
           <button v-for="(question, index) in group.questions" :key="question.uuid" :class="[question.state, { selected: route.query.question === question.uuid }]" :data-analog-question="question.uuid" :aria-label="`${question.label} · ${question.book} · ${question.state}`" :title="`${question.book}\n${question.label}\n${question.reason.join('；')}\n${question.question_mode} · ${question.answer_mode}`" @click="open(question)">
             <strong>{{ showLabels ? question.label : index + 1 }}</strong>
-            <template v-if="showLabels"><small>{{ question.book }}</small><span>{{ question.question_mode }} · {{ question.answer_mode }}</span><em v-if="question.combined">静态＋动态综合</em><em v-if="question.kind === 'concept'">概念／简答</em><em v-if="question.has_open_erratum">有待处理勘误</em><em v-if="question.scope_note">原书部分超纲</em></template>
+            <template v-if="showLabels"><small>{{ question.book }}</small><small v-if="question.pdf_pages">PDF 题 {{ question.pdf_pages.question }} · 答 {{ question.pdf_pages.answer }} · 对照 {{ question.pdf_pages.paired }} 页</small><span>{{ question.question_mode }} · {{ question.answer_mode }}</span><em v-if="question.combined">静态＋动态综合</em><em v-if="question.kind === 'concept'">概念／简答</em><em v-if="question.has_open_erratum">有待处理勘误</em><em v-if="question.scope_note">原书部分超纲</em></template>
           </button>
         </div>
       </article>

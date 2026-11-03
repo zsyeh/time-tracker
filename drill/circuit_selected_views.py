@@ -4,6 +4,7 @@ from django.http import Http404
 
 from .circuit_selected import aggregate_progress, filter_collection, manifest, material_annotations, review_manifest
 from .models import Question
+from .ei_selected_pdf_pages import pdf_pages_for
 from .views import question_progress, request_workspace
 from drill_sources.models import SourceQuestionAnchor
 
@@ -38,6 +39,7 @@ class CircuitSelectedView(APIView):
             ready = bool((q.cs_prompt or q.prompt_text) and (q.cs_answer or q.answer_markdown) and not q.cs_erratum)
             items.append({
                 'uuid': str(q.uuid), 'label': q.display_label or q.source_label,
+                'pdf_pages': pdf_pages_for(q),
                 'document_id': q.document_id, 'book': q.document.display_title or q.document.title,
                 'bucket': row['bucket'], 'tier': row['tier'], 'kind': row['kind'],
                 'tags': row['tags'], 'reason': row['reason'],

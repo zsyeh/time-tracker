@@ -5,10 +5,23 @@
     <div class="auth-card-heading">
         <span class="auth-kicker">IDENTITY CHECK</span>
         <h1>Access your workspace.</h1>
-        <p>Use a passkey on this device, or continue with your account password.</p>
+        {% if request.META.HTTP_X_TIME_TRACKER_EXTERNAL_HOST %}
+            <p>这是 47 IP 独立会话。可在 Timer 域名完成现有 Passkey 验证，然后安全返回当前页面。</p>
+        {% else %}
+            <p>Use a passkey on this device, or continue with your account password.</p>
+        {% endif %}
     </div>
 
-    {% if PASSKEY_LOGIN_ENABLED %}
+    {% if request.META.HTTP_X_TIME_TRACKER_EXTERNAL_HOST %}
+        <a class="passkey-button" id="ip_passkey_login" href="{% url 'ip_passkey_start' %}?next={{ request.GET.next|default:'/'|urlencode }}">
+            <span class="passkey-icon" aria-hidden="true">🔑</span>
+            <span><strong>使用现有 Passkey 登录</strong><small>在 timer.ehzsy.site 验证后返回 47 IP</small></span>
+            <b aria-hidden="true">→</b>
+        </a>
+        <div class="auth-divider"><span>或使用账号密码</span></div>
+    {% endif %}
+
+    {% if PASSKEY_LOGIN_ENABLED and not request.META.HTTP_X_TIME_TRACKER_EXTERNAL_HOST %}
         <button class="passkey-button" type="submit" form="mfa_login" id="passkey_login">
             <span class="passkey-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" role="img"><path d="M12 2a5 5 0 0 0-5 5v2.1A4.99 4.99 0 0 0 4 13.7V16a2 2 0 0 0 2 2h1v2a2 2 0 0 0 4 0v-2h2v2a2 2 0 0 0 4 0v-2h1a2 2 0 0 0 2-2v-2.3a4.99 4.99 0 0 0-3-4.6V7a5 5 0 0 0-5-5Zm0 2a3 3 0 0 1 3 3v1.02A5.04 5.04 0 0 0 14.7 8H9.3c-.1 0-.2.01-.3.02V7a3 3 0 0 1 3-3Zm-2 7a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z"/></svg>
@@ -60,7 +73,7 @@
 {% endblock content %}
 {% block extra_body %}
     {{ block.super }}
-    {% if PASSKEY_LOGIN_ENABLED %}
+    {% if PASSKEY_LOGIN_ENABLED and not request.META.HTTP_X_TIME_TRACKER_EXTERNAL_HOST %}
         {% include "mfa/webauthn/snippets/login_script.html" with button_id="passkey_login" %}
     {% endif %}
 {% endblock extra_body %}

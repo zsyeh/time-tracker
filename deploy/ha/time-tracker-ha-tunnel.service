@@ -1,0 +1,14 @@
+[Unit]
+Description=Time Tracker HA PostgreSQL reverse SSH tunnel
+ConditionPathExists=/etc/time-tracker/legacy-ha-explicitly-enabled
+After=network-online.target postgresql.service
+Wants=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/ssh -NT -o BatchMode=yes -o ExitOnForwardFailure=yes -o ServerAliveInterval=10 -o ServerAliveCountMax=3 -o StrictHostKeyChecking=yes -L 127.0.0.1:55433:127.0.0.1:55433 -R 127.0.0.1:55432:127.0.0.1:5432 root@47.95.10.128
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

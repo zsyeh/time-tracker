@@ -5,6 +5,13 @@ function cookie(name: string): string {
 
 const inflightGets = new Map<string, Promise<unknown>>()
 
+export class ApiError extends Error {
+  constructor(public status: number, message: string, public body: Record<string, unknown> = {}) {
+    super(message)
+    this.name = 'ApiError'
+  }
+}
+
 export async function api<T>(url: string, options: RequestInit = {}): Promise<T> {
   const method = (options.method || 'GET').toUpperCase()
   if (method === 'GET' && !options.signal) {
@@ -23,22 +30,29 @@ async function requestJson<T>(url: string, options: RequestInit): Promise<T> {
   if (options.body) headers.set('Content-Type', 'application/json')
   const csrf = cookie('csrftoken')
   if (csrf) headers.set('X-CSRFToken', csrf)
-  const response = await fetch(url, { ...options, headers, credentials: 'same-origin' })
-  if (response.status === 401 || response.status === 403) {
-    const site = location.hostname.toLowerCase().startsWith('ei.') ? 'ei' : 'drill'
-    const next = location.pathname + location.search
-    location.assign(`https://timer.ehzsy.site/drill-auth/start?site=${site}&next=${encodeURIComponent(next)}`)
-    throw new Error('Your session has expired.')
+  const response = await fetch(withWorkspacePrefix(url), { ...options, headers, credentials: 'same-origin' })
+  let body: Record<string, unknown> = {}
+  if (response.status !== 204) {
+    try { body = await response.json() as Record<string, unknown> } catch { /* non-JSON response */ }
+  }
+  const detail = typeof body.detail === 'string' ? body.detail : ''
+  const missingSession = response.status === 401
+    || (response.status === 403 && /authentication credentials were not provided/i.test(detail))
+  if (missingSession) {
+    const next = withoutWorkspacePrefix(location.pathname) + location.search
+    location.assign(`/drill-auth/start?site=${runtimeWorkspace}&next=${encodeURIComponent(next)}`)
+    throw new ApiError(response.status, '登录已失效，正在重新认证。', body)
   }
   if (!response.ok) {
-    let message = `Request failed (${response.status})`
-    try {
-      const body = await response.json()
-      message = body.detail || Object.values(body).flat().join('; ') || message
-    } catch { /* non-JSON response */ }
-    throw new Error(message)
+    const fallback: Record<number, string> = {
+      403: '没有权限执行此操作。', 404: '请求的题目或资源不存在。',
+      409: '数据已在其他页面更新，请确认后重试。', 429: '操作过于频繁，请稍后重试。',
+    }
+    const message = detail || Object.values(body).flat().join('; ')
+      || fallback[response.status] || (response.status >= 500 ? '服务器暂时不可用，请稍后重试。' : `请求失败（${response.status}）`)
+    throw new ApiError(response.status, message, body)
   }
-  return response.status === 204 ? undefined as T : response.json() as Promise<T>
+  return response.status === 204 ? undefined as T : body as T
 }
 
 export const post = <T>(url: string, body: unknown) => api<T>(url, {
@@ -47,3 +61,4 @@ export const post = <T>(url: string, body: unknown) => api<T>(url, {
 })
 
 export const remove = <T>(url: string) => api<T>(url, { method: 'DELETE' })
+import { runtimeWorkspace, withWorkspacePrefix, withoutWorkspacePrefix } from './runtimePath'

@@ -1,0 +1,12 @@
+[Unit]
+Description=Check whether the former Time Tracker primary must rejoin
+ConditionPathExists=/etc/time-tracker/legacy-ha-explicitly-enabled
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=1min
+RandomizedDelaySec=10s
+Persistent=true
+
+[Install]
+WantedBy=timers.target

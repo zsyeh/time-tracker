@@ -19,8 +19,10 @@ export interface QuestionSummary {
   review_later: boolean
   saved_note: string
   review_overdue: boolean
+  pdf_pages: { course: string; question: number; answer: number; paired: number } | null
   confidence?: number | null
   note?: string | null
+  state_version?: number
 }
 
 export interface QuestionDetail extends QuestionSummary {
@@ -52,6 +54,7 @@ export interface QuestionDetail extends QuestionSummary {
   last_time_spent_seconds: number | null
   last_timed_at: string | null
   note: string | null
+  state_version: number
   markers: QuestionMarkerCode[]
   breadcrumbs: Array<{ id: number; title: string; level: number }>
   assets?: Array<{ id: number; url: string; width: number; height: number; position: number }>
@@ -62,6 +65,86 @@ export interface QuestionDetail extends QuestionSummary {
   answer_source: string
   answer_confidence: number | null
   answer_generated_at: string | null
+  latest_diagnosis: AttemptDiagnosis | null
+  review_plan: ReviewPlan | null
+}
+
+export type ErrorCode = 'A' | 'B1' | 'B2' | 'B3' | 'C1' | 'C2' | 'C3' | 'D'
+
+export interface AttemptDiagnosis {
+  id: number
+  result: 'done' | 'correct' | 'review' | 'reset'
+  outcome: 'unknown' | 'correct' | 'incorrect' | 'incomplete'
+  knowledge_level: 'K0' | 'K1' | 'K2' | null
+  method_level: 'M0' | 'M1' | 'M2' | null
+  execution_level: 'E0' | 'E1' | 'E2' | null
+  used_hint: boolean | null
+  viewed_answer: boolean | null
+  is_independent: boolean | null
+  judgement_source: 'unknown' | 'self' | 'auto'
+  training_stage: 'unknown' | 'first' | 'same_day_redo' | 'next_day_redo' | 'review'
+  attempt_round: number | null
+  correction_note: string
+  knowledge_note: string
+  first_step_note: string
+  time_spent_seconds: number | null
+  started_at: string | null
+  created_at: string
+  errors: Array<{ code: ErrorCode; is_primary: boolean }>
+  primary_error: ErrorCode | null
+}
+
+export interface ReviewPlan {
+  status: 'active' | 'completed' | 'paused'
+  step: number
+  checkpoint: string
+  schedule_days: number[]
+  next_review_at: string | null
+}
+
+export interface DiagnosticMetric {
+  value: number | null
+  numerator?: number
+  sample: number
+}
+
+export interface DiagnosticDashboard {
+  workspace: 'drill' | 'ei'
+  range: { start: string; end: string }
+  today: { new_questions: number; review_questions: number; completed_questions: number; submissions: number; first_sample: number; first_independent_correct: number }
+  period_activity: { daily_unique_questions: number; submissions: number; unique_questions: number; diagnosed_attempts: number; legacy_unknown_attempts: number }
+  activity: Array<{ date: string; daily_unique_questions: number; submissions: number; new_questions: number; review_questions: number; diagnosed_questions: number; legacy_unknown_questions: number }>
+  metrics: {
+    first_independent_accuracy: DiagnosticMetric
+    second_independent_accuracy: DiagnosticMetric
+    pending_redo_count: number
+    error_recurrence_rate: DiagnosticMetric
+    method_start_failure_rate: DiagnosticMetric
+  }
+  error_distribution: Array<{ code: ErrorCode; count: number }>
+  due_count: number
+  trend: Array<{
+    date: string
+    first_sample: number
+    first_independent_correct: number
+    second_sample: number
+    second_independent_correct: number
+  }>
+  courses: Array<{
+    code: string
+    label: string
+    question_count: number
+    first_sample: number
+    first_independent_accuracy: number | null
+    knowledge_gap_rate: number | null
+    method_failure_rate: number | null
+    execution_error_rate: number | null
+    redo_sample: number
+    redo_pass_rate: number | null
+  }>
+  repeated_topics: Array<{ topic: string; diagnosed_errors: number }>
+  topic_trends: Array<{ topic: string; current_rate: number; previous_rate: number; change: number; current_sample: number; previous_sample: number }>
+  notice: string
 }
 
 export type QuestionMarkerCode = 'overconfident' | 'concept_gap' | 'rusty' | 'forgotten'
@@ -168,6 +251,7 @@ export interface InsightPayload {
     topic: string
     result: 'done' | 'correct' | 'review'
     created_at: string
+    diagnoses: ErrorCode[]
   }>
   recent_notes: InsightPage<{
     uuid: string
@@ -176,7 +260,15 @@ export interface InsightPayload {
     topic: string
     note: string
     updated_at: string
+    result: 'done' | 'correct' | 'review' | null
+    primary_error: ErrorCode | null
   }>
+  options: {
+    errors: Array<{ code: ErrorCode; label: string }>
+    courses: Array<{ code: string; label: string }>
+    documents: Array<{ id: number; label: string }>
+    topics: Array<{ id: number; label: string }>
+  }
 }
 
 export interface InsightPage<T> {

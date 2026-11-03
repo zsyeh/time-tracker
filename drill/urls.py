@@ -4,6 +4,12 @@ from .signal_selected_views import SignalSelectedView
 from .analog_selected_views import AnalogSelectedView
 from .digital_selected_views import DigitalSelectedView
 from .communication_selected_views import CommunicationSelectedView
+from .signal_formula_review_views import SignalFormulaReviewView
+from .practice_trend_views import PracticeTrendView
+from .pdf_page_status_views import PdfPageStatusView
+from .diagnostic_views import (
+    AttemptDiagnosisView, DiagnosticDashboardView, DiagnosticQuestionListView, ReviewPlanView,
+)
 
 from .views import (
     DrillAssetView,
@@ -37,6 +43,13 @@ from .views import (
 
 
 urlpatterns = [
+    path('diagnostics/', DiagnosticDashboardView.as_view(), name='diagnostic_dashboard'),
+    path('diagnostics/questions/', DiagnosticQuestionListView.as_view(), name='diagnostic_questions'),
+    path('attempts/<int:attempt_id>/diagnosis/', AttemptDiagnosisView.as_view(), name='attempt_diagnosis'),
+    path('questions/<uuid:question_uuid>/review-plan/', ReviewPlanView.as_view(), name='question_review_plan'),
+    path('pdf-page-status/', PdfPageStatusView.as_view(), name='pdf_page_status'),
+    path('practice-trends/', PracticeTrendView.as_view(), name='practice_trends'),
+    path('signal-formulas/', SignalFormulaReviewView.as_view(), name='ei_signal_formula_review'),
     path('communication-selected/', CommunicationSelectedView.as_view(), name='ei_communication_selected'),
     path('digital-selected/', DigitalSelectedView.as_view(), name='ei_digital_selected'),
     path('analog-selected/', AnalogSelectedView.as_view(), name='ei_analog_selected'),

@@ -1,3 +1,4 @@
+from urllib.parse import quote
 from django.db.models import Prefetch
 from django.http import Http404
 from django.shortcuts import get_object_or_404
@@ -8,6 +9,29 @@ from .models import (
     QuestionAsset,
     QuestionRevisionAsset,
 )
+
+
+def public_share_url(request, workspace, raw_token, suffix=''):
+    """Return a public URL that automated readers can fetch from the active node.
+
+    The normal hostname is Cloudflare-fronted and currently targets the promoted
+    47 node.  Literal-IP and sslip.io URLs work in browsers, but are rejected by
+    several link-preview/AI fetchers as private or unsafe dynamic-DNS targets.
+    """
+    prefix = request.META.get('HTTP_X_FORWARDED_PREFIX', '').rstrip('/')
+    external_host = request.META.get('HTTP_X_TIME_TRACKER_EXTERNAL_HOST', '')
+    expected_prefix = f'/{workspace}'
+    if prefix == expected_prefix and external_host in {
+        '47.95.10.128', f'{workspace}.47-95-10-128.sslip.io',
+    }:
+        public_host = f'{workspace}.ehzsy.site'
+        return f'https://{quote(public_host, safe=".:-")}/share/{raw_token}{suffix}'
+    return request.build_absolute_uri(f'/share/{raw_token}{suffix}')
+
+
+def public_app_path(request, workspace, path):
+    prefix = request.META.get('HTTP_X_FORWARDED_PREFIX', '').rstrip('/')
+    return f'{prefix}{path}' if prefix == f'/{workspace}' else path
 
 
 def public_share(raw_token, workspace):
@@ -24,10 +48,10 @@ def public_share(raw_token, workspace):
     )
 
 
-def _asset_payload(request, raw_token, asset):
+def _asset_payload(request, workspace, raw_token, asset):
     return {
         'id': asset.pk,
-        'url': request.build_absolute_uri(f'/share/{raw_token}/assets/{asset.pk}'),
+        'url': public_share_url(request, workspace, raw_token, f'/assets/{asset.pk}'),
         'width': asset.width,
         'height': asset.height,
     }
@@ -71,12 +95,12 @@ def public_share_context(request, share, raw_token):
             'prompt_text': question.prompt_text,
             'latex_text': question.latex_text,
             'question_assets': [
-                _asset_payload(request, raw_token, asset)
+                _asset_payload(request, share.workspace, raw_token, asset)
                 for asset in question_assets
             ],
             'answer_markdown': answer_markdown,
             'answer_assets': [
-                _asset_payload(request, raw_token, asset)
+                _asset_payload(request, share.workspace, raw_token, asset)
                 for asset in answer_assets
             ],
         }]
@@ -86,7 +110,7 @@ def public_share_context(request, share, raw_token):
             'subtitle': items[0]['document'],
             'workspace': share.workspace,
             'items': items,
-            'open_path': f'/practice/{question.uuid}',
+            'open_path': public_app_path(request, share.workspace, f'/practice/{question.uuid}'),
         }
 
     revision_assets = QuestionRevisionAsset.objects.select_related('asset').order_by('position')
@@ -109,11 +133,11 @@ def public_share_context(request, share, raw_token):
             'prompt_text': '' if question_assets else revision.prompt_text,
             'latex_text': '' if question_assets else revision.latex_text,
             'question_assets': [
-                _asset_payload(request, raw_token, asset) for asset in question_assets
+                _asset_payload(request, share.workspace, raw_token, asset) for asset in question_assets
             ],
             'answer_markdown': revision.answer_markdown,
             'answer_assets': [
-                _asset_payload(request, raw_token, asset) for asset in answer_assets
+                _asset_payload(request, share.workspace, raw_token, asset) for asset in answer_assets
             ],
         })
     return {
@@ -122,7 +146,7 @@ def public_share_context(request, share, raw_token):
         'subtitle': f'{len(items)} questions · {share.paper.blueprint.total_score} points',
         'workspace': share.workspace,
         'items': items,
-        'open_path': f'/papers/{share.paper.uuid}/review',
+        'open_path': public_app_path(request, share.workspace, f'/papers/{share.paper.uuid}/review'),
     }
 
 

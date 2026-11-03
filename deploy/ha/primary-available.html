@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Primary service is available</title>
+<style>
+  :root{color-scheme:dark;background:#0c0d10;color:#e7e9ee;font:15px/1.55 system-ui,sans-serif}
+  body{min-height:100vh;margin:0;display:grid;place-items:center}.box{width:min(460px,calc(100% - 40px));border:1px solid #262932;border-radius:10px;padding:24px;background:#121419}
+  h1{font-size:18px;margin:0 0 8px}.ok{color:#4cc38a}p{color:#a9aeba;margin:8px 0 20px}a{display:block;text-align:center;padding:10px 12px;border-radius:7px;text-decoration:none;margin-top:9px}
+  .primary{background:#e7e9ee;color:#111318}.secondary{border:1px solid #30343e;color:#d7dae1}
+</style>
+<main class="box"><h1><span class="ok">●</span> Primary server is available</h1><p>This standby endpoint is healthy. Use the canonical site for passkey support, or continue through this standby proxy.</p><a class="primary" id="primary" href="https://timer.ehzsy.site/">Open primary site</a><a class="secondary" id="continue" href="/ha/continue?site=timer">Continue here</a></main>
+<script>
+const primaryByEndpoint={
+  'drill.47-95-10-128.sslip.io':'https://drill.ehzsy.site/',
+  'ei.47-95-10-128.sslip.io':'https://ei.ehzsy.site/'
+};
+const pathSite=location.pathname==='/drill'?'drill':location.pathname==='/ei'?'ei':'timer';
+const primaryBySite={timer:'https://timer.ehzsy.site/',drill:'https://drill.ehzsy.site/',ei:'https://ei.ehzsy.site/'};
+document.getElementById('primary').href=primaryByEndpoint[location.hostname]||primaryByEndpoint[location.port]||primaryBySite[pathSite];
+document.getElementById('continue').href='/ha/continue?site='+pathSite;
+</script>
+</html>

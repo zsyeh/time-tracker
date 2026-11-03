@@ -426,6 +426,23 @@ class QuestionAttempt(models.Model):
         ('review', 'Needs review'),
         ('reset', 'Reset to unattempted'),
     ]
+    OUTCOME_CHOICES = [
+        ('unknown', 'Unknown'),
+        ('correct', 'Correct'),
+        ('incorrect', 'Incorrect'),
+        ('incomplete', 'Incomplete'),
+    ]
+    KNOWLEDGE_CHOICES = [('K0', 'Unknown'), ('K1', 'Partial recall'), ('K2', 'Accurate recall')]
+    METHOD_CHOICES = [('M0', 'No starting point'), ('M1', 'Needs a prompt'), ('M2', 'Independent path')]
+    EXECUTION_CHOICES = [('E0', 'Could not complete'), ('E1', 'Completed with errors'), ('E2', 'Correct and verified')]
+    JUDGEMENT_CHOICES = [('unknown', 'Unknown'), ('self', 'Self assessed'), ('auto', 'Automatically graded')]
+    STAGE_CHOICES = [
+        ('unknown', 'Unknown'),
+        ('first', 'First valid attempt'),
+        ('same_day_redo', 'Same-day redo'),
+        ('next_day_redo', 'Next-day independent redo'),
+        ('review', 'Later review'),
+    ]
 
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL,
@@ -437,6 +454,21 @@ class QuestionAttempt(models.Model):
     confidence = models.PositiveSmallIntegerField(null=True, blank=True)
     note = models.TextField(null=True, blank=True)
     time_spent_seconds = models.PositiveIntegerField(null=True, blank=True)
+    started_at = models.DateTimeField(null=True, blank=True)
+    outcome = models.CharField(max_length=12, choices=OUTCOME_CHOICES, default='unknown', db_index=True)
+    knowledge_level = models.CharField(max_length=2, choices=KNOWLEDGE_CHOICES, null=True, blank=True)
+    method_level = models.CharField(max_length=2, choices=METHOD_CHOICES, null=True, blank=True)
+    execution_level = models.CharField(max_length=2, choices=EXECUTION_CHOICES, null=True, blank=True)
+    used_hint = models.BooleanField(null=True, blank=True)
+    viewed_answer = models.BooleanField(null=True, blank=True)
+    is_independent = models.BooleanField(null=True, blank=True, db_index=True)
+    judgement_source = models.CharField(max_length=12, choices=JUDGEMENT_CHOICES, default='unknown')
+    training_stage = models.CharField(max_length=20, choices=STAGE_CHOICES, default='unknown', db_index=True)
+    attempt_round = models.PositiveIntegerField(null=True, blank=True)
+    correction_note = models.TextField(blank=True)
+    knowledge_note = models.TextField(blank=True)
+    first_step_note = models.TextField(blank=True)
+    submission_key = models.UUIDField(null=True, blank=True, unique=True)
     created_at = models.DateTimeField(default=timezone.now, db_index=True)
 
     class Meta:
@@ -444,10 +476,67 @@ class QuestionAttempt(models.Model):
         indexes = [
             models.Index(fields=('user', 'question'), name='drill_attempt_user_q_idx'),
             models.Index(fields=('user', 'created_at'), name='drill_attempt_user_time_idx'),
+            models.Index(fields=('user', 'outcome', 'created_at'), name='drill_attempt_diag_idx'),
         ]
 
     def __str__(self):
         return f'{self.user_id} · {self.question_id} · {self.result}'
+
+
+class QuestionAttemptError(models.Model):
+    """Editable, multi-label diagnosis attached to one immutable attempt."""
+
+    ERROR_CHOICES = [
+        ('A', 'Knowledge gap'),
+        ('B1', 'Recall failure'),
+        ('B2', 'Method start failure'),
+        ('B3', 'Method combination failure'),
+        ('C1', 'Calculation error'),
+        ('C2', 'Symbol / direction / phase / unit error'),
+        ('C3', 'Boundary / initial condition / applicability error'),
+        ('D', 'Still not understood after explanation'),
+    ]
+
+    attempt = models.ForeignKey(QuestionAttempt, on_delete=models.CASCADE, related_name='error_tags')
+    code = models.CharField(max_length=2, choices=ERROR_CHOICES, db_index=True)
+    is_primary = models.BooleanField(default=False, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        ordering = ('-is_primary', 'code')
+        constraints = [
+            models.UniqueConstraint(fields=('attempt', 'code'), name='drill_attempt_error_unique'),
+            models.UniqueConstraint(
+                fields=('attempt',), condition=models.Q(is_primary=True),
+                name='drill_attempt_one_primary_error',
+            ),
+        ]
+        indexes = [models.Index(fields=('code', 'attempt'), name='drill_error_code_attempt_idx')]
+
+
+class QuestionReviewPlan(models.Model):
+    """Per-user remediation queue; attempts remain the immutable evidence."""
+
+    STATUS_CHOICES = [('active', 'Active'), ('completed', 'Completed'), ('paused', 'Paused')]
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='question_review_plans')
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='review_plans')
+    status = models.CharField(max_length=12, choices=STATUS_CHOICES, default='active', db_index=True)
+    schedule_days = models.JSONField(default=list)
+    step = models.PositiveSmallIntegerField(default=0)
+    next_review_at = models.DateTimeField(null=True, blank=True, db_index=True)
+    last_attempt = models.ForeignKey(
+        QuestionAttempt, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name='updated_review_plans',
+    )
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=('user', 'question'), name='drill_user_question_review_plan_unique'),
+        ]
+        indexes = [models.Index(fields=('user', 'status', 'next_review_at'), name='drill_review_due_idx')]
 
 
 class QuestionUserState(models.Model):
@@ -467,6 +556,7 @@ class QuestionUserState(models.Model):
     is_favorite = models.BooleanField(default=False, db_index=True)
     review_later = models.BooleanField(default=False, db_index=True)
     active_timing_started_at = models.DateTimeField(null=True, blank=True)
+    version = models.PositiveIntegerField(default=1)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True, db_index=True)
 
@@ -484,6 +574,28 @@ class QuestionUserState(models.Model):
 
     def __str__(self):
         return f'{self.user_id} · {self.question_id} · saved state'
+
+
+class QuestionTimingSession(models.Model):
+    """One server-authoritative timer per browser tab and question."""
+
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='+')
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='timing_sessions')
+    client_key = models.UUIDField()
+    starts_at = models.DateTimeField()
+    stopped_at = models.DateTimeField(null=True, blank=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=('user', 'question', 'client_key'),
+                name='drill_timing_user_question_client_unique',
+            ),
+        ]
+        indexes = [
+            models.Index(fields=('user', 'question', 'stopped_at'), name='drill_timing_active_idx'),
+        ]
 
 
 class QuestionMarker(models.Model):
@@ -573,6 +685,8 @@ class TopicMastery(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='ei_topic_mastery')
     topic = models.ForeignKey(QuestionTopic, on_delete=models.CASCADE, related_name='mastery_records')
     grade = models.CharField(max_length=1, choices=GRADE_CHOICES, default='D', db_index=True)
+    system_grade = models.CharField(max_length=1, choices=GRADE_CHOICES, default='D')
+    manual_grade = models.CharField(max_length=1, choices=GRADE_CHOICES, null=True, blank=True)
     last_reviewed_at = models.DateTimeField(null=True, blank=True)
     next_review_at = models.DateTimeField(null=True, blank=True, db_index=True)
     correct_streak = models.PositiveSmallIntegerField(default=0)
@@ -591,6 +705,47 @@ class TopicMastery(models.Model):
 
     def __str__(self):
         return f'{self.user_id} · {self.topic_id} · {self.grade}'
+
+
+class SignalFormulaMastery(models.Model):
+    """Per-user A/B/C mastery and explicit review dates for all five 892 formula banks."""
+
+    GRADE_CHOICES = [('A', 'Fluent'), ('B', 'Developing'), ('C', 'Weak')]
+
+    user = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.CASCADE,
+        related_name='signal_formula_mastery',
+    )
+    formula_key = models.CharField(max_length=80, db_index=True)
+    grade = models.CharField(max_length=1, choices=GRADE_CHOICES)
+    last_reviewed_on = models.DateField(db_index=True)
+    next_review_on = models.DateField(null=True, blank=True, db_index=True)
+    due_dates = models.JSONField(default=list, blank=True)
+    review_count = models.PositiveIntegerField(default=1)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(
+                fields=('user', 'formula_key'),
+                name='drill_user_signal_formula_unique',
+            ),
+        ]
+        indexes = [
+            models.Index(
+                fields=('user', 'next_review_on'),
+                name='drill_formula_user_due_idx',
+            ),
+            models.Index(
+                fields=('user', 'grade'),
+                name='drill_formula_user_grade_idx',
+            ),
+        ]
+
+    def __str__(self):
+        return f'{self.user_id} · {self.formula_key} · {self.grade}'
 
 
 class ExamBlueprint(models.Model):
@@ -890,7 +1045,11 @@ class DrillLoginHandoff(models.Model):
     target_path = models.CharField(max_length=500, default='/practice')
     target_site = models.CharField(
         max_length=16,
-        choices=[*QuestionDocument.WORKSPACE_CHOICES, ('dash', 'Operations dashboard')],
+        choices=[
+            *QuestionDocument.WORKSPACE_CHOICES,
+            ('dash', 'Operations dashboard'),
+            ('ip', 'Direct IP entry point'),
+        ],
         default='drill',
     )
     expires_at = models.DateTimeField(db_index=True)

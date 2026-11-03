@@ -1,4 +1,5 @@
 import { api } from './api'
+import { withWorkspacePrefix } from './runtimePath'
 import type { Catalog, Page, QuestionDetail, QuestionSummary } from '../types'
 
 const catalogKey = 'drill.taxonomy.v1'
@@ -13,6 +14,35 @@ const listCache = new Map<string, { value: Page<QuestionSummary>; savedAt: numbe
 const detailCache = new Map<string, { value: QuestionDetail; savedAt: number }>()
 const detailInflight = new Map<string, Promise<QuestionDetail>>()
 const heatmapCache = new Map<string, { value: unknown; savedAt: number }>()
+const stateEventKey = 'drill.question-state-event.v1'
+
+function invalidateDerivedCaches() {
+  listCache.clear()
+  heatmapCache.clear()
+  if (!cacheScope) return
+  for (const key of Object.keys(sessionStorage)) {
+    if (
+      key.startsWith(`drill.heatmap.v1.${cacheScope}.`) ||
+      key.startsWith(`drill.question-list.v1.${cacheScope}.`)
+    ) sessionStorage.removeItem(key)
+  }
+}
+
+if (typeof window !== 'undefined') {
+  window.addEventListener('storage', (event) => {
+    if (event.key !== stateEventKey || !event.newValue) return
+    invalidateDerivedCaches()
+    try {
+      const payload = JSON.parse(event.newValue)
+      if (payload?.uuid) {
+        for (const key of [...detailCache.keys()]) {
+          if (key.startsWith(`${payload.uuid}?`)) detailCache.delete(key)
+        }
+      }
+      window.dispatchEvent(new CustomEvent('drill:question-state-changed', { detail: payload }))
+    } catch { /* ignore malformed cross-tab events */ }
+  })
+}
 
 function readStored<T>(key: string, ttl: number): T | null {
   try {
@@ -92,38 +122,48 @@ export function storeQuestion(uuid: string, query: string, value: QuestionDetail
   if (storageKey) sessionStorage.setItem(storageKey, JSON.stringify(entry))
 }
 
-export function fetchQuestion(uuid: string, query = '', force = false): Promise<QuestionDetail> {
+export function fetchQuestion(uuid: string, query = '', force = false, signal?: AbortSignal): Promise<QuestionDetail> {
   const key = detailKey(uuid, query)
   if (!force) {
     const cached = cachedQuestion(uuid, query)
     if (cached) return Promise.resolve(cached)
   }
-  const existing = detailInflight.get(key)
+  const existing = signal ? null : detailInflight.get(key)
   if (existing) return existing
   const suffix = query ? `?${query}` : ''
-  const request = api<QuestionDetail>(`/api/drill/questions/${uuid}/${suffix}`)
+  const request = api<QuestionDetail>(`/api/drill/questions/${uuid}/${suffix}`, signal ? { signal } : {})
     .then((value) => {
       storeQuestion(uuid, query, value)
       return value
     })
-    .finally(() => detailInflight.delete(key))
-  detailInflight.set(key, request)
+    .finally(() => { if (!signal) detailInflight.delete(key) })
+  if (!signal) detailInflight.set(key, request)
   return request
+}
+
+export function warmQuestionMedia(question: QuestionDetail) {
+  // Keep both sides of the exercise in the browser's long-lived HTTP cache.
+  // QuestionAsset responses are immutable for a year, so this turns the extra
+  // transfer into reusable local storage rather than repeated network work.
+  const questionAssets = question.question_assets?.length ? question.question_assets : question.assets || []
+  const urls = new Set([
+    ...questionAssets.map((asset) => asset.url),
+    ...(question.answer_assets || []).map((asset) => asset.url),
+  ])
+  for (const url of urls) {
+    const image = new Image()
+    image.decoding = 'async'
+    image.fetchPriority = 'low'
+    image.referrerPolicy = 'same-origin'
+    image.src = withWorkspacePrefix(url)
+  }
 }
 
 export async function prefetchQuestion(uuid: string | null, query = '') {
   if (!uuid) return
   try {
     const question = await fetchQuestion(uuid, query)
-    // Warm every image needed to render the next question page. The browser
-    // HTTP cache retains the responses even after these Image objects expire.
-    const assets = question.question_assets?.length ? question.question_assets : question.assets || []
-    for (const asset of assets) {
-      const image = new Image()
-      image.decoding = 'async'
-      image.fetchPriority = 'low'
-      image.src = asset.url
-    }
+    warmQuestionMedia(question)
     return question
   } catch { /* background prefetch must never block practice */ }
 }
@@ -162,15 +202,15 @@ export function clearNoteDraft(uuid: string) {
 }
 
 export function patchQuestionState(uuid: string, patch: Partial<QuestionDetail>) {
-  heatmapCache.clear()
-  if (cacheScope) {
-    for (const key of Object.keys(sessionStorage)) {
-      if (key.startsWith(`drill.heatmap.v1.${cacheScope}.`)) sessionStorage.removeItem(key)
-    }
-  }
+  invalidateDerivedCaches()
   for (const [key, entry] of detailCache) {
     if (!key.startsWith(`${uuid}?`)) continue
     const value = { ...entry.value, ...patch }
     storeQuestion(uuid, key.slice(uuid.length + 1), value)
   }
+  // A storage event wakes other tabs. The custom event lets the current tab's
+  // list/heatmap widgets refresh from the same database-backed API contract.
+  const payload = { uuid, savedAt: Date.now() }
+  localStorage.setItem(stateEventKey, JSON.stringify(payload))
+  window.dispatchEvent(new CustomEvent('drill:question-state-changed', { detail: payload }))
 }

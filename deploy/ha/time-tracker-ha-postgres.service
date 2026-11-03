@@ -1,0 +1,16 @@
+[Unit]
+Description=Time Tracker PostgreSQL 15 hot standby
+After=snap.docker.dockerd.service network-online.target
+Requires=snap.docker.dockerd.service
+
+[Service]
+Type=simple
+ExecStartPre=-/snap/bin/docker rm -f time-tracker-ha-postgres
+ExecStart=/snap/bin/docker run --rm --name time-tracker-ha-postgres --network host --stop-timeout 60 -v time_tracker_ha_pgdata:/var/lib/postgresql/data -v /var/snap/docker/common/time-tracker-ha/postgres-config:/run/time-tracker-ha:ro -v /var/snap/docker/common/time-tracker-ha/secrets/replication.pgpass:/run/secrets/replication.pgpass:ro postgres:15-bookworm postgres -c config_file=/run/time-tracker-ha/postgresql.conf
+ExecStop=/snap/bin/docker stop -t 60 time-tracker-ha-postgres
+Restart=always
+RestartSec=5
+TimeoutStopSec=75
+
+[Install]
+WantedBy=multi-user.target

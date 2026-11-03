@@ -3,14 +3,17 @@ import { ref } from 'vue'
 import { api } from '../lib/api'
 import type { QuestionDetail } from '../types'
 import MarkdownAnswer from './MarkdownAnswer.vue'
+import { withWorkspacePrefix } from '../lib/runtimePath'
 
 const props = defineProps<{ uuid: string }>()
+const emit = defineEmits<{ opened: [] }>()
 const answer = ref<QuestionDetail | null>(null)
 const loading = ref(false)
 const error = ref('')
 
 async function load(event: Event) {
   if (!(event.currentTarget as HTMLDetailsElement).open || answer.value || loading.value) return
+  emit('opened')
   loading.value = true
   error.value = ''
   try {
@@ -29,7 +32,7 @@ async function load(event: Event) {
     <p v-if="loading" role="status">正在加载完整版答案…</p>
     <p v-if="error" role="alert">{{ error }}</p>
     <div v-if="answer" class="original-answer-pages">
-      <img v-for="asset in answer.answer_assets" :key="asset.id" :src="asset.url" :width="asset.width" :height="asset.height" alt="完整版答案页面" loading="lazy" decoding="async" />
+      <img v-for="asset in answer.answer_assets" :key="asset.id" :src="withWorkspacePrefix(asset.url)" :width="asset.width" :height="asset.height" alt="完整版答案页面" loading="lazy" decoding="async" />
       <MarkdownAnswer v-if="answer.answer_markdown" :source="answer.answer_markdown" />
     </div>
   </details>

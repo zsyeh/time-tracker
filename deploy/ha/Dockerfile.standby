@@ -1,0 +1,18 @@
+FROM python:3.11-slim
+
+ENV PYTHONDONTWRITEBYTECODE=1 \
+    PYTHONUNBUFFERED=1 \
+    PIP_NO_CACHE_DIR=1
+
+WORKDIR /app
+COPY requirements.txt ./
+RUN pip install --no-cache-dir -r requirements.txt
+COPY . .
+RUN DJANGO_SECRET_KEY=standby-image-build-only DJANGO_DEBUG=false \
+    python manage.py collectstatic --noinput
+
+EXPOSE 8000
+HEALTHCHECK --interval=15s --timeout=5s --start-period=20s --retries=4 \
+  CMD python -c "import urllib.request; r=urllib.request.Request('http://127.0.0.1:18000/admin/login/',headers={'Host':'timer.ehzsy.site','X-Forwarded-Proto':'https'}); urllib.request.urlopen(r,timeout=3)" || exit 1
+
+CMD ["gunicorn", "--workers", "2", "--bind", "127.0.0.1:18000", "--error-logfile", "-", "time_server.wsgi:application"]

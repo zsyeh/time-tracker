@@ -1,0 +1,35 @@
+#!/bin/sh
+set -eu
+
+# Post-renew hook for the RainYun edge. Domain certificates are copied into a
+# dedicated Nginx directory on 47; the IP certificate directory is never a
+# possible destination.
+remote=${TIME_TRACKER_CERT_REMOTE:-root@47.95.10.128}
+source_live=${RENEWED_LINEAGE:-/etc/letsencrypt/live/ehzsy.site}
+lineage=$(basename "$source_live")
+case "$lineage" in
+  ehzsy.site|drill.ehzsy.site|ei.ehzsy.site) ;;
+  *) echo "Refusing unexpected certificate lineage: $lineage" >&2; exit 2 ;;
+esac
+destination=/etc/nginx/certs/edge-sync/$lineage
+
+test -s "$source_live/fullchain.pem"
+test -s "$source_live/privkey.pem"
+openssl x509 -in "$source_live/fullchain.pem" -noout -checkend 86400
+
+ssh "$remote" "install -d -m 700 '$destination'"
+scp "$source_live/fullchain.pem" "$remote:$destination/fullchain.pem.new"
+scp "$source_live/privkey.pem" "$remote:$destination/privkey.pem.new"
+ssh "$remote" "set -eu
+openssl x509 -in '$destination/fullchain.pem.new' -noout -checkend 86400
+cert_key=\$(mktemp)
+private_key=\$(mktemp)
+trap 'rm -f \"\$cert_key\" \"\$private_key\"' EXIT
+openssl x509 -in '$destination/fullchain.pem.new' -pubkey -noout >\"\$cert_key\"
+openssl pkey -in '$destination/privkey.pem.new' -pubout >\"\$private_key\"
+cmp -s \"\$cert_key\" \"\$private_key\"
+install -m 644 '$destination/fullchain.pem.new' '$destination/fullchain.pem'
+install -m 600 '$destination/privkey.pem.new' '$destination/privkey.pem'
+rm -f '$destination/fullchain.pem.new' '$destination/privkey.pem.new'
+nginx -t
+systemctl reload nginx"

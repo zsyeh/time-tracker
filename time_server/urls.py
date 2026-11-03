@@ -1,5 +1,5 @@
 from django.contrib import admin
-from django.urls import include, path
+from django.urls import include, path, re_path
 from allauth.account.views import signup_by_passkey
 from allauth.mfa.webauthn.views import signup_webauthn
 
@@ -45,6 +45,8 @@ from tracker.web_views import (
 from drill.web_views import (
     drill_login_complete,
     drill_login_start,
+    ip_login_complete,
+    ip_login_start,
     drill_spa_view,
     public_drill_share_asset_view,
     public_drill_share_markdown_view,
@@ -120,6 +122,8 @@ urlpatterns = [
     path('api/export/markdown/', export_markdown, name='export_markdown'),
     path('api/drill/', include('drill.urls')),
     path('drill-auth/start', drill_login_start, name='drill_login_start'),
+    path('ip-auth/start', ip_login_start, name='ip_passkey_start'),
+    path('ip-auth/complete', ip_login_complete, name='ip_passkey_complete'),
     path(
         'drill-auth/complete/<str:raw_token>',
         drill_login_complete,
@@ -151,8 +155,11 @@ urlpatterns = [
     path('book-activity', drill_spa_view, name='drill_book_activity_page'),
     path('heatmap', drill_spa_view, name='drill_heatmap_page'),
     path('selected-heatmap', drill_spa_view, name='drill_selected_heatmap_page'),
+    path('diagnostics', drill_spa_view, name='drill_diagnostics_page'),
+    path('diagnostic-queue', drill_spa_view, name='drill_diagnostic_queue_page'),
     path('circuit-selected', drill_spa_view, name='ei_circuit_selected_page'),
     path('signal-selected', drill_spa_view, name='ei_signal_selected_page'),
+    path('signal-formulas', drill_spa_view, name='ei_signal_formula_review_page'),
     path('analog-selected', drill_spa_view, name='ei_analog_selected_page'),
     path('digital-selected', drill_spa_view, name='ei_digital_selected_page'),
     path('communication-selected', drill_spa_view, name='ei_communication_selected_page'),
@@ -173,4 +180,12 @@ urlpatterns = [
     path('errata', drill_spa_view, name='drill_errata_page'),
     path('cockpit', drill_spa_view, name='ei_cockpit_page'),
     path('', root_spa_view, name='dashboard'),
+    # Drill/EI only: serve the Vue shell for an unknown browser path so the
+    # client can show a recoverable Chinese 404. API/auth/static/share routes
+    # remain real HTTP 404s and are deliberately excluded.
+    re_path(
+        r'^(?!(?:api|static|accounts|admin|share|drill-auth|ip-auth)(?:/|$)).+$',
+        drill_spa_view,
+        name='drill_spa_not_found',
+    ),
 ]

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import type { ExamPaperQuestion } from '../types'
+import { withWorkspacePrefix } from '../lib/runtimePath'
 
 defineProps<{ question: ExamPaperQuestion }>()
 </script>
@@ -11,7 +12,7 @@ defineProps<{ question: ExamPaperQuestion }>()
       <img
         v-for="asset in question.question_assets"
         :key="asset.id"
-        :src="asset.url"
+        :src="withWorkspacePrefix(asset.url)"
         :width="asset.width"
         :height="asset.height"
         loading="lazy"

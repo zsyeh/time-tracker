@@ -1,0 +1,12 @@
+[Unit]
+Description=Safely rejoin the former Time Tracker primary after standby promotion
+ConditionPathExists=/etc/time-tracker/legacy-ha-explicitly-enabled
+After=network-online.target time-tracker-ha-tunnel.service
+Wants=network-online.target time-tracker-ha-tunnel.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/time-tracker-ha-rejoin-primary
+Nice=10
+IOSchedulingClass=best-effort
+IOSchedulingPriority=7

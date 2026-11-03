@@ -17,13 +17,20 @@ from .cleaning import SOURCE_LABELS
 from .selected_collections import CODES as SELECTED_COLLECTIONS, filter_collection
 from .models import (
     DrillContentShare, ExamBlueprint, ExamPaper, ExamPaperItem, Question, QuestionAsset,
-    QuestionAttempt, QuestionDocument, QuestionErratum, QuestionMarker, QuestionTopic,
-    QuestionRevisionAsset, QuestionUserState, TopicMastery,
+    QuestionAttempt, QuestionAttemptError, QuestionDocument, QuestionErratum, QuestionMarker,
+    QuestionReviewPlan, QuestionTimingSession, QuestionTopic, QuestionRevisionAsset,
+    QuestionUserState, TopicMastery,
 )
 from .cockpit import COURSES, apply_mastery_grade, course_for_title, eligible_topic_questions, syllabus_documents, syllabus_topics
 from .ei_syllabus import EXAM_OVERVIEW, course_syllabus_payload, match_official_requirement
 from .paper_generator import PaperGenerationError, PaperGenerator
 from .paper_pdf import render_paper_pdf
+from .diagnostics import (
+    attempt_payload, infer_stage, rebuild_review_plan, rebuild_topic_mastery,
+    review_plan_payload, update_review_plan,
+)
+from .sharing import public_share_url
+from .notes import MAX_QUESTION_NOTE_LENGTH, merge_note_values
 from .serializers import (
     ExamPaperCreateSerializer, ExamPaperItemUpdateSerializer,
     ExamPaperStatusSerializer, PaperGenerateSerializer, QuestionAttemptCreateSerializer,
@@ -150,8 +157,13 @@ def exam_paper_payload(paper, *, review=False):
         attempts = QuestionAttempt.objects.filter(
             user=paper.user,
             question_id__in=[item.question_id for item in items],
-        ).order_by('question_id', '-created_at', '-pk').distinct('question_id')
-        latest_by_question = {attempt.question_id: attempt.result for attempt in attempts}
+        ).only('question_id', 'result', 'created_at').order_by(
+            'question_id', '-created_at', '-pk',
+        )
+        # Avoid PostgreSQL-only DISTINCT ON: local/CI SQLite must exercise the
+        # same review semantics as production.
+        for attempt in attempts:
+            latest_by_question.setdefault(attempt.question_id, attempt.result)
     return {
         'uuid': str(paper.uuid),
         'title': paper.blueprint.title,
@@ -653,7 +665,7 @@ class DrillPaperShareView(APIView):
             workspace=workspace,
             paper=paper,
         )
-        share_url = request.build_absolute_uri(f'/share/{raw_token}')
+        share_url = public_share_url(request, workspace, raw_token)
         return Response({
             'share_url': share_url,
             'markdown_url': f'{share_url}/content.md',
@@ -742,6 +754,9 @@ class DrillQuestionDetailView(APIView):
         user_state = QuestionUserState.objects.filter(
             user=request.user, question=question,
         ).first()
+        review_plan = QuestionReviewPlan.objects.filter(
+            user=request.user, question=question,
+        ).first()
         marker_codes = list(QuestionMarker.objects.filter(
             user=request.user, question=question,
         ).order_by('created_at', 'pk').values_list('code', flat=True))
@@ -757,6 +772,7 @@ class DrillQuestionDetailView(APIView):
             'last_time_spent_seconds': last_timed.time_spent_seconds if last_timed else None,
             'last_timed_at': last_timed.created_at if last_timed else None,
             'note': user_state.note if user_state else (latest.note if latest else ''),
+            'state_version': user_state.version if user_state else 0,
             'markers': marker_codes,
             'next_question_uuid': str(next_question_uuid) if next_question_uuid else None,
             'sequential_next_question_uuid': (
@@ -772,6 +788,8 @@ class DrillQuestionDetailView(APIView):
                 latest and latest.result == 'review'
                 and latest.created_at <= timezone.now() - datetime.timedelta(days=5)
             ),
+            'latest_diagnosis': attempt_payload(latest) if latest else None,
+            'review_plan': review_plan_payload(review_plan),
             'previous_question_uuid': str(previous_question_uuid) if previous_question_uuid else None,
             'breadcrumbs': topic_breadcrumbs(question.topic),
             'question_assets': [
@@ -829,7 +847,7 @@ class DrillQuestionShareView(APIView):
             workspace=workspace,
             question=question,
         )
-        share_url = request.build_absolute_uri(f'/share/{raw_token}')
+        share_url = public_share_url(request, workspace, raw_token)
         return Response({
             'share_url': share_url,
             'markdown_url': f'{share_url}/content.md',
@@ -978,6 +996,7 @@ class EiCockpitTopicView(APIView):
             record, grade,
             independent=request.data.get('independent') if isinstance(request.data.get('independent'), bool) else None,
             reviewed=bool(request.data.get('reviewed', True)),
+            manual=True,
         )
         record.save()
         return Response({
@@ -1105,6 +1124,7 @@ class DrillQuestionAttemptView(APIView):
         else:
             state = 'unattempted'
         user_state = QuestionUserState.objects.filter(user=user, question=question).first()
+        review_plan = QuestionReviewPlan.objects.filter(user=user, question=question).first()
         return {
             'attempt_count': attempt_count,
             'latest_result': latest_result,
@@ -1112,6 +1132,7 @@ class DrillQuestionAttemptView(APIView):
             'can_undo': latest is not None,
             'confidence': latest.confidence if latest else None,
             'note': user_state.note if user_state else (latest.note if latest else ''),
+            'state_version': user_state.version if user_state else 0,
             'is_favorite': user_state.is_favorite if user_state else False,
             'review_later': user_state.review_later if user_state else False,
             'review_overdue': bool(
@@ -1120,32 +1141,149 @@ class DrillQuestionAttemptView(APIView):
             ),
             'last_time_spent_seconds': last_timed.time_spent_seconds if last_timed else None,
             'last_timed_at': last_timed.created_at if last_timed else None,
+            'latest_diagnosis': attempt_payload(latest) if latest else None,
+            'review_plan': review_plan_payload(review_plan),
         }
+
+    def get(self, request, question_uuid):
+        question = get_object_or_404(workspace_questions(request), uuid=question_uuid)
+        attempts = QuestionAttempt.objects.filter(
+            user=request.user, question=question,
+        ).prefetch_related('error_tags').order_by('-created_at', '-pk')
+        plan = QuestionReviewPlan.objects.filter(user=request.user, question=question).first()
+        return Response({
+            'results': [attempt_payload(attempt) for attempt in attempts],
+            'review_plan': review_plan_payload(plan),
+        })
 
     def post(self, request, question_uuid):
         serializer = QuestionAttemptCreateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         question = get_object_or_404(workspace_questions(request), uuid=question_uuid)
         result = serializer.validated_data['result']
+        submission_key = serializer.validated_data.get('submission_key')
+        if submission_key:
+            existing = QuestionAttempt.objects.filter(
+                user=request.user, question=question, submission_key=submission_key,
+            ).prefetch_related('error_tags').first()
+            if existing:
+                return Response({
+                    **attempt_payload(existing),
+                    **self._payload(request.user, question),
+                    'deduplicated': True,
+                })
         with transaction.atomic():
+            # Serialize submissions for this question before the second
+            # idempotency check. This closes the double-click/network-retry
+            # race on PostgreSQL without relying on a client-side flag.
+            Question.objects.select_for_update().get(pk=question.pk)
+            if submission_key:
+                existing = QuestionAttempt.objects.filter(
+                    user=request.user, question=question, submission_key=submission_key,
+                ).prefetch_related('error_tags').first()
+                if existing:
+                    return Response({
+                        **attempt_payload(existing),
+                        **self._payload(request.user, question),
+                        'deduplicated': True,
+                    })
             user_state = QuestionUserState.objects.select_for_update().filter(
                 user=request.user, question=question,
             ).first()
+            legacy_texts = [
+                serializer.validated_data.get(field, '')
+                for field in ('correction_note', 'knowledge_note', 'first_step_note')
+            ]
+            note_was_submitted = 'note' in serializer.validated_data
+            if user_state is None and (note_was_submitted or any(legacy_texts)):
+                user_state = QuestionUserState.objects.create(
+                    user=request.user, question=question,
+                )
+            note_conflict = False
             time_spent_seconds = serializer.validated_data.get('time_spent_seconds')
+            started_at = user_state.active_timing_started_at if user_state else None
+            timing_session = None
+            timing_key = serializer.validated_data.get('timing_key')
+            if timing_key:
+                timing_session = QuestionTimingSession.objects.select_for_update().filter(
+                    user=request.user, question=question, client_key=timing_key,
+                    stopped_at__isnull=True,
+                ).first()
+                if timing_session:
+                    started_at = timing_session.starts_at
             if result in {'correct', 'review'} and user_state and user_state.active_timing_started_at:
                 server_elapsed = int((timezone.now() - user_state.active_timing_started_at).total_seconds())
                 time_spent_seconds = server_elapsed if 1 <= server_elapsed <= 43200 else None
+            if timing_session:
+                if result in {'correct', 'review'}:
+                    server_elapsed = int((timezone.now() - timing_session.starts_at).total_seconds())
+                    time_spent_seconds = server_elapsed if 1 <= server_elapsed <= 43200 else None
+                timing_session.stopped_at = timezone.now()
+                timing_session.save(update_fields=['stopped_at'])
+            state_update_fields = []
             if user_state and user_state.active_timing_started_at:
                 user_state.active_timing_started_at = None
-                user_state.save(update_fields=['active_timing_started_at', 'updated_at'])
+                state_update_fields.append('active_timing_started_at')
+            canonical_note = user_state.note if user_state else ''
+            if user_state and (note_was_submitted or any(legacy_texts)):
+                expected_version = serializer.validated_data.get('state_version')
+                if expected_version is not None and expected_version != user_state.version:
+                    note_conflict = True
+                else:
+                    base_note = serializer.validated_data.get('note') if note_was_submitted else user_state.note
+                    canonical_note = merge_note_values(base_note, *legacy_texts)
+                    if len(canonical_note) > MAX_QUESTION_NOTE_LENGTH:
+                        return Response(
+                            {'note': [f'题目笔记不能超过 {MAX_QUESTION_NOTE_LENGTH} 字。']},
+                            status=status.HTTP_400_BAD_REQUEST,
+                        )
+                    if canonical_note != user_state.note:
+                        user_state.note = canonical_note
+                        user_state.version += 1
+                        state_update_fields.extend(['note', 'version'])
+            elif user_state:
+                canonical_note = user_state.note
+            if user_state and state_update_fields:
+                user_state.save(update_fields=[*set(state_update_fields), 'updated_at'])
+            now = timezone.now()
+            training_stage, attempt_round = infer_stage(request.user, question, now)
+            attempt_note = (
+                serializer.validated_data.get('note')
+                if note_conflict and note_was_submitted
+                else canonical_note
+            )
             attempt = QuestionAttempt.objects.create(
                 user=request.user,
                 question=question,
                 result=result,
                 confidence=serializer.validated_data.get('confidence'),
-                note=serializer.validated_data.get('note'),
+                note=attempt_note,
                 time_spent_seconds=time_spent_seconds,
+                started_at=started_at,
+                outcome=serializer.validated_data.get('outcome', 'unknown'),
+                knowledge_level=serializer.validated_data.get('knowledge_level'),
+                method_level=serializer.validated_data.get('method_level'),
+                execution_level=serializer.validated_data.get('execution_level'),
+                used_hint=serializer.validated_data.get('used_hint'),
+                viewed_answer=serializer.validated_data.get('viewed_answer'),
+                is_independent=serializer.validated_data.get('is_independent'),
+                judgement_source=serializer.validated_data.get('judgement_source', 'unknown'),
+                training_stage=training_stage,
+                attempt_round=attempt_round,
+                correction_note='',
+                knowledge_note='',
+                first_step_note='',
+                submission_key=submission_key,
+                created_at=now,
             )
+            primary_error = serializer.validated_data.get('primary_error')
+            QuestionAttemptError.objects.bulk_create([
+                QuestionAttemptError(
+                    attempt=attempt, code=code, is_primary=code == primary_error,
+                )
+                for code in serializer.validated_data.get('error_codes', [])
+            ])
+            update_review_plan(attempt)
             if request_workspace(request) == 'ei' and question.similarity_topic_id:
                 canonical_document_ids = {item.pk for item in syllabus_documents().values()}
                 topic = QuestionTopic.objects.select_related('document').filter(
@@ -1157,28 +1295,20 @@ class DrillQuestionAttemptView(APIView):
                     )
                     if result == 'review':
                         grade = 'C'
-                    elif mastery.grade == 'D':
+                    elif mastery.system_grade == 'D':
                         grade = 'C'
-                    elif mastery.grade == 'C':
+                    elif mastery.system_grade == 'C':
                         grade = 'B'
-                    elif mastery.grade == 'B' and mastery.correct_streak >= 1:
+                    elif mastery.system_grade == 'B' and mastery.correct_streak >= 1:
                         grade = 'A'
                     else:
-                        grade = mastery.grade
+                        grade = mastery.system_grade
                     apply_mastery_grade(mastery, grade, independent=result == 'correct', reviewed=True)
                     mastery.save()
-        if serializer.validated_data.get('note') is not None:
-            QuestionUserState.objects.update_or_create(
-                user=request.user,
-                question=question,
-                defaults={'note': serializer.validated_data.get('note') or ''},
-            )
         return Response({
-            'id': attempt.pk,
-            'result': attempt.result,
-            'created_at': attempt.created_at,
-            'time_spent_seconds': attempt.time_spent_seconds,
+            **attempt_payload(attempt),
             **self._payload(request.user, question),
+            'note_conflict': note_conflict,
         }, status=status.HTTP_201_CREATED)
 
     def delete(self, request, question_uuid):
@@ -1190,10 +1320,13 @@ class DrillQuestionAttemptView(APIView):
             ).order_by('-created_at', '-pk').first()
             if latest is None:
                 return Response(
-                    {'detail': 'There is no question-state change to undo.'},
+                    {'detail': '没有可以撤销的题目状态变更。'},
                     status=status.HTTP_409_CONFLICT,
                 )
             latest.delete()
+            rebuild_review_plan(request.user, question)
+            if request_workspace(request) == 'ei':
+                rebuild_topic_mastery(request.user, question)
         return Response(self._payload(request.user, question))
 
 
@@ -1204,17 +1337,33 @@ class DrillQuestionUserStateView(APIView):
         question = get_object_or_404(
             workspace_questions(request), uuid=question_uuid, is_practiceable=True,
         )
-        state, _ = QuestionUserState.objects.get_or_create(
-            user=request.user,
-            question=question,
-        )
-        for field, value in serializer.validated_data.items():
-            setattr(state, field, value)
-        state.save()
+        expected_version = serializer.validated_data.pop('version', None)
+        with transaction.atomic():
+            state, _ = QuestionUserState.objects.select_for_update().get_or_create(
+                user=request.user,
+                question=question,
+            )
+            if expected_version is not None and expected_version != state.version:
+                return Response({
+                    'detail': '该题已在另一个标签页或设备更新，请确认后重试。',
+                    'conflict': True,
+                    'note': state.note,
+                    'is_favorite': state.is_favorite,
+                    'review_later': state.review_later,
+                    'version': state.version,
+                    'updated_at': state.updated_at,
+                }, status=status.HTTP_409_CONFLICT)
+            update_fields = []
+            for field, value in serializer.validated_data.items():
+                setattr(state, field, value)
+                update_fields.append(field)
+            state.version += 1
+            state.save(update_fields=[*update_fields, 'version', 'updated_at'])
         return Response({
             'note': state.note,
             'is_favorite': state.is_favorite,
             'review_later': state.review_later,
+            'version': state.version,
             'updated_at': state.updated_at,
         })
 
@@ -1225,6 +1374,28 @@ class DrillQuestionTimingView(APIView):
         serializer.is_valid(raise_exception=True)
         question = get_object_or_404(workspace_questions(request), uuid=question_uuid)
         now = timezone.now()
+        timing_key = serializer.validated_data.get('timing_key')
+        if timing_key:
+            with transaction.atomic():
+                session = QuestionTimingSession.objects.select_for_update().filter(
+                    user=request.user, question=question, client_key=timing_key,
+                ).first()
+                if serializer.validated_data['action'] == 'cancel':
+                    if session and session.stopped_at is None:
+                        session.stopped_at = now
+                        session.save(update_fields=['stopped_at'])
+                    starts_at = None
+                else:
+                    if session is None or session.stopped_at is not None:
+                        session, _created = QuestionTimingSession.objects.update_or_create(
+                            user=request.user, question=question, client_key=timing_key,
+                            defaults={
+                                'starts_at': now + datetime.timedelta(seconds=5),
+                                'stopped_at': None,
+                            },
+                        )
+                    starts_at = session.starts_at
+            return Response({'server_now': now, 'starts_at': starts_at})
         with transaction.atomic():
             state, _created = QuestionUserState.objects.select_for_update().get_or_create(
                 user=request.user, question=question,
@@ -1358,24 +1529,107 @@ class DrillInsightView(APIView):
         }
 
     def get(self, request):
+        workspace = request_workspace(request)
+        params = request.query_params
+        error_code = params.get('error', '').upper()
+        valid_errors = {code for code, _label in QuestionAttemptError.ERROR_CHOICES}
+        if error_code and error_code not in valid_errors:
+            return Response({'detail': 'Unknown diagnosis code.'}, status=400)
+
         recent_attempts = QuestionAttempt.objects.filter(
             user=request.user,
             result__in=('done', 'correct', 'review'),
             question__is_practiceable=True,
-            question__document__workspace=request_workspace(request),
-        ).select_related('question__document', 'question__similarity_topic').order_by('-created_at', '-pk')
+            question__document__workspace=workspace,
+        ).select_related('question__document', 'question__similarity_topic').prefetch_related(
+            'error_tags',
+        )
         saved_notes = QuestionUserState.objects.filter(
             user=request.user,
             question__is_practiceable=True,
-            question__document__workspace=request_workspace(request),
+            question__document__workspace=workspace,
         ).exclude(note='').select_related('question__document', 'question__similarity_topic').order_by('-updated_at')
-        attempt_notes = QuestionAttempt.objects.filter(
-            user=request.user,
-            question__is_practiceable=True,
-            question__document__workspace=request_workspace(request),
-        ).exclude(note__isnull=True).exclude(note='').select_related(
-            'question__document', 'question__similarity_topic',
+
+        document = params.get('document', '')
+        topic = params.get('topic', '')
+        query = params.get('q', '').strip()
+        state = params.get('state', '')
+        course = params.get('course', '')
+        has_note = params.get('has_note', '')
+        start = params.get('start', '')
+        end = params.get('end', '')
+        sort = params.get('sort', 'recent')
+        if state not in {'', 'mastered', 'review'} or has_note not in {'', '1', '0'} or sort not in {'recent', 'oldest'}:
+            return Response({'detail': 'Invalid Insight filter.'}, status=400)
+        try:
+            start_date = datetime.date.fromisoformat(start) if start else None
+            end_date = datetime.date.fromisoformat(end) if end else None
+        except ValueError:
+            return Response({'detail': 'Dates must use YYYY-MM-DD.'}, status=400)
+        if start_date and end_date and start_date > end_date:
+            return Response({'detail': 'Start date must not be after end date.'}, status=400)
+
+        document_ids = list(QuestionDocument.objects.filter(workspace=workspace).values_list('id', 'title', 'display_title'))
+        course_document_ids = {
+            code: [pk for pk, title, display in document_ids if course_for_title(display or title)[0] == code]
+            for code, _label, _needles in COURSES
+        }
+        if course:
+            if course not in course_document_ids:
+                return Response({'detail': 'Unknown course.'}, status=400)
+            recent_attempts = recent_attempts.filter(question__document_id__in=course_document_ids[course])
+            saved_notes = saved_notes.filter(question__document_id__in=course_document_ids[course])
+        if document:
+            recent_attempts = recent_attempts.filter(question__document_id=document)
+            saved_notes = saved_notes.filter(question__document_id=document)
+        if topic:
+            recent_attempts = recent_attempts.filter(question__similarity_topic_id=topic)
+            saved_notes = saved_notes.filter(question__similarity_topic_id=topic)
+        if error_code:
+            recent_attempts = recent_attempts.filter(error_tags__code=error_code)
+            saved_notes = saved_notes.filter(question__attempts__user=request.user, question__attempts__error_tags__code=error_code)
+        if query:
+            lookup = (
+                Q(question__display_label__icontains=query) |
+                Q(question__source_label__icontains=query) |
+                Q(question__document__title__icontains=query) |
+                Q(question__document__display_title__icontains=query) |
+                Q(question__similarity_topic__title__icontains=query)
+            )
+            recent_attempts = recent_attempts.filter(lookup)
+            saved_notes = saved_notes.filter(lookup | Q(note__icontains=query))
+        if has_note == '1':
+            recent_attempts = recent_attempts.filter(question__user_states__user=request.user).exclude(question__user_states__note='')
+        elif has_note == '0':
+            recent_attempts = recent_attempts.exclude(question__user_states__user=request.user, question__user_states__note__gt='')
+        if state == 'mastered':
+            recent_attempts = recent_attempts.filter(result__in=('done', 'correct'))
+        elif state == 'review':
+            recent_attempts = recent_attempts.filter(result='review')
+        if start_date:
+            recent_attempts = recent_attempts.filter(created_at__date__gte=start_date)
+            saved_notes = saved_notes.filter(updated_at__date__gte=start_date)
+        if end_date:
+            recent_attempts = recent_attempts.filter(created_at__date__lte=end_date)
+            saved_notes = saved_notes.filter(updated_at__date__lte=end_date)
+
+        latest_attempt = QuestionAttempt.objects.filter(
+            user=request.user, question_id=OuterRef('question_id'), result__in=('done', 'correct', 'review'),
         ).order_by('-created_at', '-pk')
+        latest_primary_error = QuestionAttemptError.objects.filter(
+            attempt__user=request.user, attempt__question_id=OuterRef('question_id'), is_primary=True,
+        ).order_by('-attempt__created_at', '-attempt_id')
+        saved_notes = saved_notes.annotate(
+            latest_result=Subquery(latest_attempt.values('result')[:1]),
+            primary_error=Subquery(latest_primary_error.values('code')[:1]),
+        )
+        if state == 'mastered':
+            saved_notes = saved_notes.filter(latest_result__in=('done', 'correct'))
+        elif state == 'review':
+            saved_notes = saved_notes.filter(latest_result='review')
+        direction = '' if sort == 'oldest' else '-'
+        recent_attempts = recent_attempts.distinct().order_by(f'{direction}created_at', f'{direction}pk')
+        saved_notes = saved_notes.distinct().order_by(f'{direction}updated_at', f'{direction}pk')
 
         def question_identity(question):
             return {
@@ -1387,30 +1641,11 @@ class DrillInsightView(APIView):
                 ) if question.similarity_topic else 'General',
             }
 
-        note_candidates = [
-            (item.updated_at, item.question, item.note)
-            for item in saved_notes
-        ] + [
-            (item.created_at, item.question, item.note)
-            for item in attempt_notes
-        ]
-        note_candidates.sort(key=lambda item: item[0], reverse=True)
-        note_payload = []
-        seen_question_ids = set()
-        for updated_at, question, note in note_candidates:
-            if question.pk in seen_question_ids:
-                continue
-            seen_question_ids.add(question.pk)
-            note_payload.append({
-                **question_identity(question),
-                'note': note,
-                'updated_at': updated_at,
-            })
         question_page, question_pagination = self.paginate(
             recent_attempts, request.query_params.get('questions_page', 1),
         )
         note_page, note_pagination = self.paginate(
-            note_payload, request.query_params.get('notes_page', 1),
+            saved_notes, request.query_params.get('notes_page', 1),
         )
 
         marker_counts = {
@@ -1418,7 +1653,7 @@ class DrillInsightView(APIView):
             for row in QuestionMarker.objects.filter(
                 user=request.user,
                 question__is_practiceable=True,
-                question__document__workspace=request_workspace(request),
+                question__document__workspace=workspace,
             ).values('code').annotate(count=Count('question', distinct=True))
         }
 
@@ -1430,18 +1665,31 @@ class DrillInsightView(APIView):
                     **question_identity(item.question),
                     'result': item.result,
                     'created_at': item.created_at,
+                    'diagnoses': [tag.code for tag in item.error_tags.all()],
                 }
                 for item in question_page.object_list
                 ],
             },
             'recent_notes': {
                 **note_pagination,
-                'results': list(note_page.object_list),
+                'results': [{
+                    **question_identity(item.question),
+                    'note': item.note,
+                    'updated_at': item.updated_at,
+                    'result': item.latest_result,
+                    'primary_error': item.primary_error,
+                } for item in note_page.object_list],
             },
             'marker_stats': [
                 {'code': code, 'label': label, 'count': marker_counts.get(code, 0)}
                 for code, label in QuestionMarker.MARKER_CHOICES
             ],
+            'options': {
+                'errors': [{'code': code, 'label': label} for code, label in QuestionAttemptError.ERROR_CHOICES],
+                'courses': [{'code': code, 'label': label} for code, label, _needles in COURSES if course_document_ids.get(code)],
+                'documents': [{'id': pk, 'label': display or title} for pk, title, display in document_ids],
+                'topics': [{'id': pk, 'label': display or title} for pk, title, display in QuestionTopic.objects.filter(document__workspace=workspace).values_list('id', 'title', 'display_title').order_by('document_id', 'sort_order')],
+            },
         })
 
 

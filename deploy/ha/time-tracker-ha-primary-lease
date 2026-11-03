@@ -1,0 +1,44 @@
+#!/bin/sh
+set -eu
+
+remote=root@47.95.10.128
+failures=0
+stable_leases=0
+mkdir -p /run/time-tracker-ha
+
+local_database_is_primary() {
+    runuser -u postgres -- pg_isready -q \
+        && [ "$(runuser -u postgres -- psql -d postgres -Atqc 'select pg_is_in_recovery()' 2>/dev/null)" = f ]
+}
+
+while :; do
+    now=$(date +%s)
+    if local_database_is_primary \
+        && mode=$(ssh -o BatchMode=yes -o ConnectTimeout=4 -o ServerAliveInterval=3 \
+        -o ServerAliveCountMax=1 "$remote" \
+        "install -d -m 700 /run/time-tracker-ha; printf '%s\n' '$now' > /run/time-tracker-ha/primary.lease.new; mv /run/time-tracker-ha/primary.lease.new /run/time-tracker-ha/primary.lease; cat /run/time-tracker-ha/mode 2>/dev/null || printf standby" 2>/dev/null); then
+        failures=0
+        stable_leases=$((stable_leases + 1))
+        printf '%s\n' "$now" > /run/time-tracker-ha/last-lease
+
+        if [ "$mode" != "standby" ]; then
+            stable_leases=0
+            systemctl stop time-tracker-web.service
+        elif [ "$stable_leases" -ge 3 ] \
+            && ! systemctl is-active --quiet time-tracker-web.service \
+            && ! runuser -u postgres -- psql -d postgres -Atqc 'select pg_is_in_recovery()' | grep -qx t; then
+            # Communication recovered before the standby promoted. Three
+            # consecutive leases make it safe to restore the primary web tier.
+            systemctl start time-tracker-web.service
+        fi
+    else
+        failures=$((failures + 1))
+        stable_leases=0
+        if [ "$failures" -ge 12 ]; then
+            # Fence before the remote monitor can promote (~120 seconds), while
+            # tolerating brief SSH congestion and backup traffic.
+            systemctl stop time-tracker-web.service
+        fi
+    fi
+    sleep 5
+done

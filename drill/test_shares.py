@@ -135,6 +135,21 @@ class DrillContentShareTests(TestCase):
         )
         self.assertFalse(DrillContentShare.objects.get(question=self.question, is_active=True).token_encrypted == '')
 
+    def test_ip_entry_point_returns_ai_fetchable_canonical_share_url(self):
+        self.client.force_login(self.user)
+        response = self.client.post(
+            f'/api/drill/questions/{self.question.uuid}/share/',
+            data={},
+            content_type='application/json',
+            HTTP_HOST='drill.ehzsy.site',
+            HTTP_X_FORWARDED_PREFIX='/drill',
+            HTTP_X_TIME_TRACKER_EXTERNAL_HOST='47.95.10.128',
+            secure=True,
+        )
+        self.assertEqual(response.status_code, 201)
+        self.assertTrue(response.json()['share_url'].startswith('https://drill.ehzsy.site/share/'))
+        self.assertNotIn('sslip.io', response.json()['share_url'])
+
     def test_question_share_is_bound_to_workspace_and_token(self):
         raw_token = self.create_question_share()
         self.client.logout()

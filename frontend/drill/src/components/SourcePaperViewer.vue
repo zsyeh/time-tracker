@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, ref, watch } from 'vue'
 import type { QuestionDetail } from '../types'
+import { withWorkspacePrefix } from '../lib/runtimePath'
 
 const props = defineProps<{ question: QuestionDetail }>()
 const emit = defineEmits<{ select: [uuid: string] }>()
@@ -33,7 +34,7 @@ defineExpose({ scrollToCurrent })
     <p v-if="question.source_context?.anchor" class="source-paper-help">本题切分边界尚待核对，暂保留完整原卷，避免遗漏题图。</p>
     <p v-if="question.source_context?.index_complete === false" class="source-paper-help">本卷部分扫描题号尚待补全，原卷所有页面仍完整保留。</p>
     <figure v-for="asset in assets" :key="asset.id" class="source-paper-page" :style="{ aspectRatio: `${asset.width} / ${asset.height}` }" :data-source-asset="asset.id">
-      <img :src="asset.url" :width="asset.width" :height="asset.height" alt="完整原卷页面" loading="eager" decoding="async" />
+      <img :src="withWorkspacePrefix(asset.url)" :width="asset.width" :height="asset.height" alt="完整原卷页面" loading="eager" decoding="async" />
       <button v-for="anchor in anchors.filter((item) => item.asset_id === asset.id)" :key="anchor.uuid"
         type="button" class="source-question-pin" :class="[`source-state-${anchor.state}`, { current: anchor.uuid === question.uuid }]"
         :style="{ top: `${anchor.y * 100}%` }" :data-source-question="anchor.uuid"

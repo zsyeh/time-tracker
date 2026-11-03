@@ -1,0 +1,16 @@
+[Unit]
+Description=Time Tracker standby web application
+After=snap.docker.dockerd.service time-tracker-ha-postgres.service
+Requires=snap.docker.dockerd.service time-tracker-ha-postgres.service
+
+[Service]
+Type=simple
+ExecStartPre=-/snap/bin/docker rm -f time-tracker-ha-web
+ExecStart=/snap/bin/docker run --rm --name time-tracker-ha-web --network host --stop-timeout 30 --env-file /var/snap/docker/common/time-tracker-ha/secrets/app.env -v /var/snap/docker/common/time-tracker-ha/secrets/app.env:/app/.env:ro -v /var/snap/docker/common/time-tracker-ha/secrets/database.env:/app/.env.database:ro -v /var/snap/docker/common/time-tracker-ha/secrets/data-encryption.key:/app/.data-encryption.key:ro time-tracker-ha:20261031-r21
+ExecStop=/snap/bin/docker stop -t 30 time-tracker-ha-web
+Restart=always
+RestartSec=5
+TimeoutStopSec=45
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,95 @@
+#!/bin/sh
+set -eu
+
+state=/srv/time-tracker-ha/state
+mode_file=/run/time-tracker-ha/mode
+active_nginx=/etc/nginx/conf.d/time-tracker-ha.conf
+promoted_nginx=/etc/nginx/time-tracker-ha/nginx-standby-promoted.conf
+failures=0
+mkdir -p "$state" /run/time-tracker-ha
+[ -s "$mode_file" ] || printf 'standby\n' > "$mode_file"
+[ -s "$state/last-replication-safe" ] || printf '0\n' > "$state/last-replication-safe"
+
+sample_replication() {
+    /snap/bin/docker exec -u postgres time-tracker-ha-postgres \
+        psql -p 55433 -d postgres -Atqc \
+        "select status || '|' || coalesce(pg_wal_lsn_diff(latest_end_lsn, pg_last_wal_replay_lsn()), 0) from pg_stat_wal_receiver" \
+        2>/dev/null || true
+}
+
+primary_healthy() {
+    for host in timer.ehzsy.site drill.ehzsy.site ei.ehzsy.site; do
+        curl --fail --silent --show-error --insecure --output /dev/null --max-time 5 \
+            --resolve "$host:443:98.142.241.45" "https://$host/" || return 1
+    done
+}
+
+promote() {
+    [ "$(cat "$mode_file")" = standby ] || return 0
+    /snap/bin/docker exec -u postgres time-tracker-ha-postgres \
+        pg_ctl promote -D /var/lib/postgresql/data -W
+    attempts=0
+    while [ "$attempts" -lt 30 ]; do
+        recovery=$(/snap/bin/docker exec -u postgres time-tracker-ha-postgres \
+            psql -p 55433 -U postgres -Atqc 'select pg_is_in_recovery()' 2>/dev/null || true)
+        [ "$recovery" = f ] && break
+        attempts=$((attempts + 1)); sleep 1
+    done
+    [ "${recovery:-}" = f ] || return 1
+    printf 'promotion-in-progress\n' > "$mode_file.new"
+    mv "$mode_file.new" "$mode_file"
+    systemctl restart time-tracker-ha-web.service
+    attempts=0
+    while [ "$attempts" -lt 30 ]; do
+        if curl -fsS -o /dev/null -H 'Host: timer.ehzsy.site' \
+            -H 'X-Forwarded-Proto: https' http://127.0.0.1:18000/accounts/login/; then break; fi
+        attempts=$((attempts + 1)); sleep 1
+    done
+    [ "$attempts" -lt 30 ] || return 1
+    cp "$promoted_nginx" "$active_nginx.new"
+    chmod 644 "$active_nginx.new"
+    mv "$active_nginx.new" "$active_nginx"
+    nginx -t
+    systemctl reload nginx
+    printf 'standby-promoted\n' > "$mode_file.new"
+    mv "$mode_file.new" "$mode_file"
+}
+
+while :; do
+    mode=$(cat "$mode_file")
+    now=$(date +%s)
+    lease=$(cat /run/time-tracker-ha/primary.lease 2>/dev/null || printf 0)
+    age=$((now - lease))
+    replication=$(sample_replication)
+    if [ "$replication" = "streaming|0" ]; then
+        printf '%s\n' "$now" > "$state/last-replication-safe.new"
+        mv "$state/last-replication-safe.new" "$state/last-replication-safe"
+    fi
+    last_replication_safe=$(cat "$state/last-replication-safe")
+    replication_safe=false
+    # At promotion time the receiver is necessarily disconnected. Require
+    # proof that it was caught up near the primary's final writer lease so a
+    # long-stale standby can never be promoted automatically.
+    if [ "$last_replication_safe" -ge $((lease - 30)) ]; then
+        replication_safe=true
+    fi
+    if [ "$mode" = standby ] && [ "$age" -gt 60 ]; then
+        if primary_healthy; then failures=0; else failures=$((failures + 1)); fi
+        if [ "$failures" -ge 6 ] && [ "$replication_safe" = true ]; then
+            if promote; then
+                failures=0
+            else
+                # Keep retrying after one more failed probe without letting a
+                # transient promotion error restart the monitor and erase the
+                # accumulated outage evidence.
+                failures=5
+            fi
+        fi
+    else
+        failures=0
+    fi
+    printf '{"mode":"%s","lease_age_seconds":%s,"failed_probe_rounds":%s,"replication":"%s","last_replication_safe":%s,"automatic_promotion_safe":%s,"checked_at":%s}\n' \
+        "$mode" "$age" "$failures" "$replication" "$last_replication_safe" "$replication_safe" "$now" > "$state/status.json.new"
+    mv "$state/status.json.new" "$state/status.json"
+    sleep 10
+done

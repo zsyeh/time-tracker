@@ -12,8 +12,10 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 
 import os
 from pathlib import Path
+from urllib.parse import urlsplit
 
 import dj_database_url
+from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -331,7 +333,9 @@ SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_SAMESITE = 'Lax'
 CSRF_COOKIE_SAMESITE = 'Lax'
 SESSION_COOKIE_AGE = env_int('SESSION_REMEMBER_DAYS', 30) * 24 * 60 * 60
-SESSION_SAVE_EVERY_REQUEST = True
+# Read-only page loads must not create database writes. Authentication and
+# explicit session mutations still save normally.
+SESSION_SAVE_EVERY_REQUEST = False
 
 LOGIN_URL = '/accounts/login/'
 LOGIN_REDIRECT_URL = '/'
@@ -359,6 +363,24 @@ MFA_SUPPORTED_TYPES = ['webauthn']
 MFA_PASSKEY_LOGIN_ENABLED = True
 MFA_WEBAUTHN_ALLOW_INSECURE_ORIGIN = DEBUG
 
+# WebAuthn remains bound to the canonical Timer RP.  Direct-IP users complete
+# Passkey authentication there, then redeem a short-lived one-time handoff on
+# this fixed callback origin.  This must never be derived from request input.
+IP_AUTH_CALLBACK_ORIGIN = os.environ.get(
+    'IP_AUTH_CALLBACK_ORIGIN', 'https://47.95.10.128',
+).rstrip('/')
+IP_AUTH_EXTERNAL_HOST = os.environ.get('IP_AUTH_EXTERNAL_HOST', '47.95.10.128')
+_ip_callback = urlsplit(IP_AUTH_CALLBACK_ORIGIN)
+if (
+    _ip_callback.scheme != 'https'
+    or _ip_callback.hostname != IP_AUTH_EXTERNAL_HOST
+    or _ip_callback.path
+    or _ip_callback.query
+    or _ip_callback.fragment
+):
+    raise ImproperlyConfigured(
+        'IP_AUTH_CALLBACK_ORIGIN must be the fixed HTTPS origin for IP_AUTH_EXTERNAL_HOST.'
+    )
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': [
         'tracker.loadtest_renderers.LoadTestJSONRenderer',
@@ -425,3 +447,8 @@ CSRF_TRUSTED_ORIGINS = [
     ).split(',')
     if origin.strip()
 ]
+# The callback is proxied with the canonical Timer Host, while browsers retain
+# the direct-IP Origin. Trust only this operator-configured fixed origin so
+# Django's CSRF middleware can validate the same-origin callback POST.
+if IP_AUTH_CALLBACK_ORIGIN not in CSRF_TRUSTED_ORIGINS:
+    CSRF_TRUSTED_ORIGINS.append(IP_AUTH_CALLBACK_ORIGIN)

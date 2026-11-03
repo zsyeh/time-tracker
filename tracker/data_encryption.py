@@ -10,6 +10,7 @@ import hashlib
 import hmac
 import json
 import os
+import errno
 from functools import lru_cache
 from pathlib import Path
 
@@ -49,10 +50,15 @@ def _read_configured_key(configured_value: str, key_path_value: str) -> bytes | 
         return None
     try:
         key = _decode_key(key_path.read_text(encoding='ascii'))
-        os.chmod(key_path, 0o600)
-        return key
     except OSError as exc:
         raise DataEncryptionError('The server data encryption key is not readable.') from exc
+    try:
+        os.chmod(key_path, 0o600)
+    except OSError as exc:
+        # Production injects the already-protected key as a read-only bind mount.
+        if exc.errno not in {errno.EROFS, errno.EACCES, errno.EPERM}:
+            raise DataEncryptionError('The server data encryption key permissions could not be secured.') from exc
+    return key
 
 
 def _key_sources() -> tuple[str, str]:
