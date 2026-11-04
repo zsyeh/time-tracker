@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { nextTick, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api } from '../lib/api'
 import { cachedHeatmap, storeHeatmap } from '../lib/workspace'
 import { useUiPreferences } from '../lib/uiPreferences'
 import HeatmapProgress from '../components/HeatmapProgress.vue'
+import LearningSharePanel from '../components/LearningSharePanel.vue'
 
 const props = withDefaults(defineProps<{ selectedOnly?: boolean; coreOnly?: boolean }>(), { selectedOnly: false, coreOnly: false })
 const { t } = useUiPreferences()
@@ -96,6 +97,11 @@ const initialMode = ['topics', 'questions'].includes(String(route.query.mode))
   ? String(route.query.mode) as 'topics' | 'questions'
   : 'questions'
 const scope = ref<'past_exam' | 'mock_exam' | 'all'>(initialScope)
+const shareScope = computed(() => ({
+  source_category: scope.value,
+  ...(props.coreOnly ? { collection: 'core_selected', course: course.value, material: material.value }
+    : props.selectedOnly ? { collection: 'selected' } : {}),
+}))
 const mode = ref<'topics' | 'questions'>(props.selectedOnly ? 'questions' : initialMode)
 let pendingQuestionUuid = String(route.query.question || '')
 const returnStateKey = 'drill.heatmap.return.v1'
@@ -246,6 +252,7 @@ onMounted(load)
         <div class="heat-legend"><i class="status-unattempted" /><span>NOT STARTED</span><i class="status-progress" /><span>IN PROGRESS</span><i class="status-mastered" /><span>MASTERED</span><i class="status-review" /><span>REVIEW</span><i class="status-overdue" /><span>OVERDUE</span></div>
       </div>
     </header>
+    <LearningSharePanel :current-scope="shareScope" />
     <div v-if="props.coreOnly" class="core-controls">
       <label>学科<select v-model="course"><option value="">全部五科</option><option v-for="item in data?.courses || []" :key="item.key" :value="item.key">{{ item.title }} · 核心 {{ item.total }} 题</option></select></label>
       <label>资料<select v-model="material"><option value="ready">题答已具备，且无未处理勘误</option><option value="all">全部核心（含待补资料）</option></select></label>

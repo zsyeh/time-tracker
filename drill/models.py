@@ -576,6 +576,40 @@ class QuestionUserState(models.Model):
         return f'{self.user_id} · {self.question_id} · saved state'
 
 
+class LearningShare(models.Model):
+    """Seven-day, owner-scoped read capability for learning data."""
+
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='learning_shares')
+    workspace = models.CharField(max_length=16, choices=QuestionDocument.WORKSPACE_CHOICES)
+    token_digest = models.CharField(max_length=64, unique=True, db_index=True)
+    kind = models.CharField(max_length=16, choices=[
+        ('heatmap', 'Heatmap'), ('daily', 'Daily'), ('weekly', 'Weekly'), ('global', 'Global'),
+    ])
+    scope = models.JSONField(default=dict)
+    include_notes = models.BooleanField(default=True)
+    created_at = models.DateTimeField(default=timezone.now)
+    expires_at = models.DateTimeField()
+    revoked_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        indexes = [models.Index(fields=('owner', 'workspace', 'expires_at'), name='drill_learning_share_owner_idx')]
+
+    @staticmethod
+    def digest(token):
+        return hashlib.sha256(token.encode('ascii')).hexdigest()
+
+    @classmethod
+    def issue(cls, *, owner, workspace, kind, scope, include_notes=True):
+        token = secrets.token_urlsafe(32)
+        now = timezone.now()
+        share = cls.objects.create(
+            owner=owner, workspace=workspace, kind=kind, scope=scope,
+            include_notes=include_notes, token_digest=cls.digest(token),
+            created_at=now, expires_at=now + datetime.timedelta(days=7),
+        )
+        return share, token
+
+
 class QuestionTimingSession(models.Model):
     """One server-authoritative timer per browser tab and question."""
 
