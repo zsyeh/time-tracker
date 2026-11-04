@@ -4,19 +4,19 @@
 
 ## 当前生产事实源（维护前必须阅读）
 
-> 本节记录 2026-11-04 的真实生产状态和本轮长期对话形成的强制约束。若仓库中的旧文档、脚本名称、systemd 描述或历史 HA 配置与本节冲突，以本节为准。不得根据文件名中的 `standby`、`promoted` 或旧故障切换脚本推断当前角色。
+> 本节记录 2026-11-05 的真实生产状态和本轮长期对话形成的强制约束。若仓库中的旧文档、脚本名称、systemd 描述或历史 HA 配置与本节冲突，以本节为准。不得根据文件名中的 `standby`、`promoted` 或旧故障切换脚本推断当前角色。
 
 ### 当前版本与服务入口
 
 | 项目 | 当前事实 |
 | --- | --- |
-| GitHub 分支/提交 | `master` / `1bea62bc91a7b7c6c16cc2343d920fd0e986db83` |
-| 生产镜像 | `time-tracker-ha:20261103-r25` |
+| GitHub 分支/提交 | `codex/ai-learning-share-20261104`（Draft PR #12；生产应用代码 revision `7302b9f`） |
+| 生产镜像 | `time-tracker-ha:20261105-ai-share` |
 | 唯一业务写入节点 | `47.95.10.128` |
 | 业务组件 | Timer、Drill、EI、Django Session 和业务 PostgreSQL 均在 47 写入 |
 | RainYun | HTTPS/证书/反向代理节点，不运行可独立写业务数据的 Django/PostgreSQL |
 | NUC | 单向内容克隆/离线副本；同步功能关闭，不得成为写入或自动故障提升节点 |
-| 数据库迁移 | `drill` 已应用到 `0030_question_timing_sessions` |
+| 数据库迁移 | `drill` 已应用到 `0031_learningshare` |
 | 生产验证基线 | Django 357 项测试、前端 74 项测试、TypeScript、Vite 生产构建均通过 |
 
 目前主要访问方式：
@@ -42,9 +42,9 @@
 
 ### 生产备份、迁移与回滚
 
-2026-11-03 部署 r25 前已执行完整 PostgreSQL custom-format dump，并使用 `pg_restore --list` 和 SHA-256 校验。生产遵循“仅保留最新完整 dump”：
+2026-11-05 部署 AI 学习数据分享前已执行完整 PostgreSQL custom-format dump，并使用 `pg_restore --list` 和 SHA-256 校验。生产遵循“仅保留最新完整 dump”；新备份验证后可清理旧备份：
 
-- dump：`/var/backups/time-tracker/postgresql/time-tracker-20261103-230518.dump`
+- dump：`/var/backups/time-tracker/postgresql/time-tracker-20261105-011957.dump`
 - 校验文件：同目录 `.dump.sha256`
 - dump 权限：`600`
 - 当前大小：约 2.86 GB
@@ -66,7 +66,7 @@
 8. 仅切换 47 Web 服务，等待 `active`、容器 `healthy`、登录页、静态哈希资源及公网 Timer/Drill/EI 全部通过。
 9. 回滚应用时恢复上一镜像 tag；新增迁移均为加法时通常保留数据库结构。只有确认数据恢复必要时才还原 dump。
 
-r25 的 systemd drop-in 切换前副本保存在 47 的 `/etc/systemd/system/time-tracker-ha-web.service.d/`。r24 镜像应暂时保留作为快速应用回滚点，不应把切换到旧数据库当作回滚。
+r25 的 systemd drop-in 切换前副本保存在 47 的 `/etc/systemd/system/time-tracker-ha-web.service.d/20-local-ports.conf.pre-ai-share-20261105`；r25 镜像保留作为快速应用回滚点。新迁移只新增分享表，不应把切换到旧数据库当作常规回滚。
 
 ### IP Passkey 登录的真实实现
 
