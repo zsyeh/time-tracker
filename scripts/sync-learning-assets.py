@@ -7,6 +7,7 @@ import os
 from pathlib import Path
 import shutil
 import subprocess
+import sys
 import tarfile
 import tempfile
 import time
@@ -17,7 +18,8 @@ REMOTE = 'docker exec time-tracker-ha-web python manage.py export_learning_asset
 
 
 def ssh(command, *, capture=False):
-    return subprocess.run(['ssh', '-o', 'BatchMode=yes', SOURCE, command],
+    return subprocess.run(['ssh', '-o', 'BatchMode=yes', '-o', 'ServerAliveInterval=20',
+                           '-o', 'ServerAliveCountMax=3', SOURCE, command],
                           check=True, capture_output=capture)
 
 
@@ -49,7 +51,8 @@ def verified(path, row):
 def install_stream(rows):
     expected = {f"{row['workspace']}/{row['id']}/{row['sha256']}": row for row in rows}
     ids = ','.join(str(row['id']) for row in rows)
-    process = subprocess.Popen(['ssh', '-o', 'BatchMode=yes', SOURCE,
+    process = subprocess.Popen(['ssh', '-o', 'BatchMode=yes', '-o', 'ServerAliveInterval=20',
+                                '-o', 'ServerAliveCountMax=3', SOURCE,
                                 f'{REMOTE} --ids {ids}'], stdout=subprocess.PIPE)
     received = set()
     try:
@@ -99,7 +102,19 @@ def main():
         chunk = missing[offset:offset + 500]
         if shutil.disk_usage(CACHE_ROOT).free < sum(row['size'] for row in chunk) + 2 * 1024**3:
             raise RuntimeError('Stopping: less than 2 GiB reserve would remain')
-        install_stream(chunk)
+        for attempt in range(1, 6):
+            remaining = [row for row in chunk if not verified(key(row), row)]
+            if not remaining:
+                break
+            try:
+                install_stream(remaining)
+                break
+            except (OSError, subprocess.SubprocessError, tarfile.TarError, RuntimeError) as exc:
+                if attempt == 5:
+                    raise
+                print(json.dumps({'retry': attempt, 'remaining': len(remaining),
+                                  'error_type': type(exc).__name__}), file=sys.stderr, flush=True)
+                time.sleep(min(5 * attempt, 30))
     removed = 0
     if args.prune:
         current = {key(row) for row in rows}
