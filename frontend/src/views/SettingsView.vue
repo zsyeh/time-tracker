@@ -28,7 +28,7 @@ const inviteOpen = ref(false)
 const revealedInvite = ref<InviteCode | null>(null)
 const runtimeForm = reactive<RuntimeSettingsValues>({
   homepage_content: '', study_room_code: '', tracking_start_date: '2026-05-23',
-  exam_date: '2026-12-26', countdown_label: '2026 Postgraduate Exam',
+  exam_date: '2026-12-19', countdown_label: '2026 Postgraduate Exam',
 })
 const form = reactive({ name: 'Study shortcut', subject: 'math', source_label: 'iPhone Shortcuts', max_uses: null as number | null, expires_at: null as string | null, notes: '', available_from: '06:00', available_until: '22:00' })
 const tokenConfigureForm = reactive({ name: '', source_label: '', max_uses: null as number | null, expires_at: null as string | null, notes: '', available_from: '06:00', available_until: '22:00' })

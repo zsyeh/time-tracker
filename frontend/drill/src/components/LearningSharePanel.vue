@@ -168,14 +168,21 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.learning-share-panel { margin: 1rem 0; padding: 1rem; border: 1px solid var(--border-color, #b8c4d3); border-radius: 12px; background: var(--surface, #fff); }
+.learning-share-panel { margin: 1rem 0; padding: 1rem; border: 1px solid var(--border-default); border-radius: var(--radius-lg); color: var(--text-primary); background: var(--bg-surface); }
 .learning-share-panel summary { cursor: pointer; font-weight: 700; min-height: 44px; }
+.learning-share-panel p { color: var(--text-secondary); }
+.learning-share-panel a { color: var(--accent); }
 .learning-share-controls, .share-actions { display: flex; flex-wrap: wrap; gap: .7rem; align-items: end; }
-.learning-share-controls label { display: grid; gap: .3rem; }
+.learning-share-controls label { display: grid; gap: .3rem; color: var(--text-primary); }
 .learning-share-controls .note-choice { display: flex; align-items: center; min-height: 44px; }
-.learning-share-panel button, .learning-share-panel select, .learning-share-panel input { min-height: 44px; }
-.learning-share-panel button { padding: .5rem .8rem; }
+.learning-share-panel button, .learning-share-panel select, .learning-share-panel input { min-height: 44px; color: var(--text-primary); background: var(--bg-sidebar); border: 1px solid var(--border-default); border-radius: var(--radius-sm); }
+.learning-share-panel input[type="checkbox"] { min-height: auto; accent-color: var(--accent); }
+.learning-share-panel button { padding: .5rem .8rem; cursor: pointer; }
+.learning-share-panel button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
+.learning-share-controls > button { border-color: var(--accent); color: var(--bg-app); background: var(--accent); font-weight: 700; }
+.learning-share-controls > button:hover:not(:disabled) { color: var(--bg-app); background: var(--accent-hover); }
+.learning-share-panel input, .learning-share-panel select, .learning-share-panel textarea { padding: .5rem; }
 .created-share input { box-sizing: border-box; width: 100%; }
-.created-share textarea { box-sizing: border-box; width: 100%; min-height: 10rem; }
+.created-share textarea { box-sizing: border-box; width: 100%; min-height: 10rem; color: var(--text-primary); background: var(--bg-sidebar); border: 1px solid var(--border-default); }
 .scope { overflow-wrap: anywhere; opacity: .8; }
 </style>

@@ -30,7 +30,7 @@ PUBLIC_DEFAULT_VALUES = {
     'homepage_content': '',
     'study_room_code': '',
     'tracking_start_date': '2026-05-23',
-    'exam_date': '2026-12-26',
+    'exam_date': '2026-12-19',
     'countdown_label': '2026 Postgraduate Exam',
 }
 

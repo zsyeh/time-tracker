@@ -342,6 +342,7 @@ class AuthAndIsolationTests(TestCase):
         self.assertTrue(settings.MFA_PASSKEY_LOGIN_ENABLED)
         self.assertTrue(settings.SESSION_COOKIE_HTTPONLY)
         self.assertEqual(settings.SESSION_COOKIE_SAMESITE, 'Lax')
+        self.assertTrue(settings.ACCOUNT_SESSION_REMEMBER)
         self.client.force_login(self.alice)
         response = self.client.get('/accounts/2fa/')
         self.assertEqual(response.status_code, 200)
@@ -384,6 +385,31 @@ class AuthAndIsolationTests(TestCase):
         self.assertEqual(response.status_code, 200)
         self.assertContains(response, 'id="passkey_login"')
         self.assertNotContains(response, 'id="ip_passkey_login"')
+
+    @override_settings(DEBUG=True, ALLOWED_HOSTS=['drill.ehzsy.site', 'ei.ehzsy.site'])
+    def test_practice_domains_send_passkey_to_canonical_timer_origin(self):
+        for host, site in [('drill.ehzsy.site', 'drill'), ('ei.ehzsy.site', 'ei')]:
+            with self.subTest(host=host):
+                response = self.client.get('/accounts/login/?next=/practice', HTTP_HOST=host)
+                self.assertEqual(response.status_code, 200)
+                self.assertNotContains(response, 'id="passkey_login"')
+                self.assertContains(
+                    response,
+                    f'https://timer.ehzsy.site/drill-auth/start?site={site}&amp;next=/practice',
+                )
+
+    def test_active_session_is_refreshed_at_most_once_per_day(self):
+        self.client.force_login(self.alice)
+        first = self.client.get('/api/auth/session/')
+        self.assertEqual(first.status_code, 200)
+        refreshed_at = self.client.session['_keepalive_at']
+        second = self.client.get('/api/auth/session/')
+        self.assertEqual(second.status_code, 200)
+        self.assertEqual(self.client.session['_keepalive_at'], refreshed_at)
+        with mock.patch('tracker.session_keepalive.timezone.now', return_value=timezone.now() + datetime.timedelta(hours=25)):
+            third = self.client.get('/api/auth/session/')
+        self.assertEqual(third.status_code, 200)
+        self.assertGreater(self.client.session['_keepalive_at'], refreshed_at)
 
     @override_settings(DEBUG=True)
     def test_django_admin_login_uses_project_branding_and_styles(self):

@@ -95,6 +95,7 @@ MIDDLEWARE = [
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
+    'tracker.session_keepalive.SessionKeepaliveMiddleware',
     'allauth.account.middleware.AccountMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -226,7 +227,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 TRACKER_OWNER_USERNAME = os.environ.get('TRACKER_OWNER_USERNAME', '').strip()
 TRACKER_DAILY_TARGET_MINUTES = env_int('TRACKER_DAILY_TARGET_MINUTES', 360)
 TRACKER_WEEKLY_TARGET_MINUTES = env_int('TRACKER_WEEKLY_TARGET_MINUTES', 2520)
-TRACKER_EXAM_DATE = os.environ.get('TRACKER_EXAM_DATE', '2026-12-26')
+TRACKER_EXAM_DATE = os.environ.get('TRACKER_EXAM_DATE', '2026-12-19')
 TRACKER_HEATMAP_START_DATE = os.environ.get('TRACKER_HEATMAP_START_DATE', '2026-05-23')
 STUDY_ROOM_CODE = os.environ.get('STUDY_ROOM_CODE', '').strip()
 TRACKER_HOMEPAGE_CONTENT = os.environ.get('TRACKER_HOMEPAGE_CONTENT', '').strip()
@@ -350,7 +351,7 @@ ACCOUNT_ADAPTER = 'tracker.account_adapter.PrivateAccountAdapter'
 ACCOUNT_FORMS = {'signup': 'tracker.forms.InviteSignupForm'}
 ACCOUNT_LOGIN_METHODS = {'username'}
 ACCOUNT_SIGNUP_FIELDS = ['username*', 'password1*', 'password2*']
-ACCOUNT_SESSION_REMEMBER = None
+ACCOUNT_SESSION_REMEMBER = True
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_RATE_LIMITS = {
     # The failed-login limit is deliberately the binding rule: twenty failed

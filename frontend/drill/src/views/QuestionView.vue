@@ -1037,10 +1037,12 @@ onBeforeRouteLeave(() => {
         <div class="attempt-counter"><span>当前状态</span><strong class="state-name" :class="question.review_overdue ? 'text-overdue' : `text-${question.state}`">{{ question.review_overdue ? '复习已到期' : question.state === 'mastered' ? '已掌握' : question.state === 'review' ? '待复习' : '未开始' }}</strong><small>已记录 {{ question.attempt_count }} 次作答</small><small v-if="question.last_time_spent_seconds !== null" class="last-solving-time">上次用时 · {{ formatRecordedDuration(question.last_time_spent_seconds) }}</small></div>
       </header>
 
-      <details class="question-save-actions">
-        <summary>题目工具</summary>
-        <div><button type="button" :disabled="shareState === 'sharing'" @click="shareQuestion"><b>↗</b>{{ shareState === 'sharing' ? '正在生成…' : shareState === 'copied' ? '链接已复制 ✓' : '复制分享链接' }}</button><button type="button" :class="{ active: erratumOpen }" @click="erratumOpen = !erratumOpen"><b>!</b>提交勘误</button><button type="button" :class="{ active: question.is_favorite }" :disabled="stateSaving" @click="saveUserState({ is_favorite: !question.is_favorite })"><b>{{ question.is_favorite ? '★' : '☆' }}</b>{{ question.is_favorite ? '已收藏' : '收藏' }}</button><button type="button" :class="{ active: question.review_later }" :disabled="stateSaving" @click="saveUserState({ review_later: !question.review_later })"><b>↻</b>{{ question.review_later ? '已加入下次复习' : '加入下次复习' }}</button></div>
-      </details>
+      <div class="question-save-actions" aria-label="题目工具">
+        <button type="button" :class="{ active: question.is_favorite }" :disabled="stateSaving" @click="saveUserState({ is_favorite: !question.is_favorite })"><b>{{ question.is_favorite ? '★' : '☆' }}</b>{{ question.is_favorite ? '已收藏' : '收藏' }}</button>
+        <button type="button" :disabled="shareState === 'sharing'" @click="shareQuestion"><b>↗</b>{{ shareState === 'sharing' ? '正在生成…' : shareState === 'copied' ? '链接已复制 ✓' : '复制分享链接' }}</button>
+        <button type="button" :class="{ active: question.review_later }" :disabled="stateSaving" @click="saveUserState({ review_later: !question.review_later })"><b>↻</b>{{ question.review_later ? '已加入下次复习' : '加入下次复习' }}</button>
+        <button type="button" :class="{ active: erratumOpen }" @click="erratumOpen = !erratumOpen"><b>!</b>提交勘误</button>
+      </div>
 
       <section v-if="erratumOpen" class="erratum-compose">
         <header><div><strong>提交勘误</strong><small>同一工作区的用户都可以看到。</small></div><RouterLink to="/errata">查看全部勘误 →</RouterLink></header>

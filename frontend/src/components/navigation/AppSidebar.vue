@@ -29,6 +29,11 @@ onBeforeUnmount(() => document.body.classList.remove('navigation-drawer-open'))
 
   <aside id="app-sidebar" class="sidebar" :class="{ 'mobile-open': mobileOpen }" @keydown.esc="mobileOpen = false">
     <div class="sidebar-topline"><WorkspaceSwitcher /><button type="button" class="mobile-sidebar-close" aria-label="Close navigation" @click="mobileOpen = false">×</button></div>
+    <nav class="workspace-quick-links" aria-label="切换学习空间">
+      <a href="https://timer.ehzsy.site/today" aria-current="page">Timer</a>
+      <a href="https://drill.ehzsy.site/practice">Drill</a>
+      <a href="https://ei.ehzsy.site/practice">EI</a>
+    </nav>
     <GlobalSearch />
 
     <nav class="sidebar-navigation" aria-label="Primary navigation">

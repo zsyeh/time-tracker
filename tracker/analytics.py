@@ -125,7 +125,7 @@ def build_dashboard_overview(user, days=180, config=None):
     try:
         exam_date = datetime.date.fromisoformat(config['exam_date'])
     except (TypeError, ValueError):
-        exam_date = datetime.date(2026, 12, 26)
+        exam_date = datetime.date(2026, 12, 19)
 
     heatmap = []
     heatmap_last_day = max(local_today, exam_date)
