@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Run on RainYun: pull verified immutable bytes from 47 without a database copy."""
 import argparse
+from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import json
 import os
@@ -91,6 +92,22 @@ def install_stream(rows):
             process.wait()
 
 
+def transfer_chunk(chunk):
+    for attempt in range(1, 6):
+        remaining = [row for row in chunk if not verified(key(row), row)]
+        if not remaining:
+            return
+        try:
+            install_stream(remaining)
+            return
+        except (OSError, subprocess.SubprocessError, tarfile.TarError, RuntimeError) as exc:
+            if attempt == 5:
+                raise
+            print(json.dumps({'retry': attempt, 'remaining': len(remaining),
+                              'error_type': type(exc).__name__}), file=sys.stderr, flush=True)
+            time.sleep(min(5 * attempt, 30))
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('--prune', action='store_true', help='Remove no-longer-current asset versions')
@@ -98,23 +115,14 @@ def main():
     CACHE_ROOT.mkdir(parents=True, exist_ok=True)
     rows = manifest()
     missing = [row for row in rows if not verified(key(row), row)]
-    for offset in range(0, len(missing), 500):
-        chunk = missing[offset:offset + 500]
-        if shutil.disk_usage(CACHE_ROOT).free < sum(row['size'] for row in chunk) + 2 * 1024**3:
-            raise RuntimeError('Stopping: less than 2 GiB reserve would remain')
-        for attempt in range(1, 6):
-            remaining = [row for row in chunk if not verified(key(row), row)]
-            if not remaining:
-                break
-            try:
-                install_stream(remaining)
-                break
-            except (OSError, subprocess.SubprocessError, tarfile.TarError, RuntimeError) as exc:
-                if attempt == 5:
-                    raise
-                print(json.dumps({'retry': attempt, 'remaining': len(remaining),
-                                  'error_type': type(exc).__name__}), file=sys.stderr, flush=True)
-                time.sleep(min(5 * attempt, 30))
+    if shutil.disk_usage(CACHE_ROOT).free < sum(row['size'] for row in missing) + 2 * 1024**3:
+        raise RuntimeError('Stopping: less than 2 GiB reserve would remain')
+    chunks = [missing[offset:offset + 500] for offset in range(0, len(missing), 500)]
+    # Two independent read-only streams improve cross-border throughput while
+    # keeping the small authoritative host's memory demand bounded.
+    with ThreadPoolExecutor(max_workers=2) as executor:
+        for index, _ in enumerate(executor.map(transfer_chunk, chunks), 1):
+            print(json.dumps({'completed_batches': index, 'total_batches': len(chunks)}), flush=True)
     removed = 0
     if args.prune:
         current = {key(row) for row in rows}
