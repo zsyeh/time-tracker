@@ -64,7 +64,7 @@ Nginx 的 `/__learning_asset_cache/<workspace>/<id>/<sha>` 为 `internal`。每�
 - 实际 Nginx 仅合并新分享与题图位置。RainYun 到 47 的公网 TLS 在带域名 SNI 时发生连接重置，所以新分享专用 `time-tracker-47-share-tunnel.service` 将本地 `127.0.0.1:18443` 经 SSH 转发至 47 的 HTTPS；边缘仍验证 Drill/EI 域名证书。旧登录与其他代理位置未改动。新位置关闭含 token 的访问/错误日志；早期调试中边缘错误日志出现的测试 token 已脱敏。
 - 真实公网无 Cookie 测试：Drill/EI 的 HTML、Markdown、JSON、当前 Note、题图均 200；Drill 一个 910 题范围完整分页；Drill 全局目录显示 5,847 题、全局总结 515 道历史去重已做题，响应约 4 秒；跨 workspace UUID 和内部缓存路径 404。冷缓存 `miss`、预热后两个 workspace 的图片 `hit` 均经 SHA-256 验证。撤销临时分享后入口、逐题及已缓存图片都立即 410，临时明文 token 文件已删除。
 - RainYun 的旧 `time-tracker-github-sync.service` 因本机 PostgreSQL 已停用而每分钟失败。新脚本由 RainYun 经 SSH 只读取得 47 的待同步学习记录，在 RainYun 提交 GitHub，成功后请求 47 更新同步 outbox；没有在 RainYun 恢复业务数据库。真实提交及回写已通过，积压记录清零。部署文件为 `scripts/sync-github-notes-from-47.py` 与 `deploy/ha/time-tracker-github-sync-from-47.service`；原服务单元有回滚副本。
-- RainYun 题图同步脚本以最多 500 个资产为一批、最多两路并发全量预热，`time-tracker-learning-asset-sync.service` 正在运行，daily timer 已启用；完成后以 `/var/cache/time-tracker/learning-asset-sync.json`、文件数、总字节与 SHA 校验作最终核对。跨境 SSH tar 流曾中断一次，已新增同批剩余资产重试及 systemd 失败重启，从现有哈希校验通过的缓存续传。同步失败只影响命中率，冷缓存继续经 47 授权回源。
+- RainYun 题图同步脚本以最多 500 个资产为一批、单路全量预热，`time-tracker-learning-asset-sync.service` 正在运行，daily timer 已启用；完成后以 `/var/cache/time-tracker/learning-asset-sync.json`、文件数、总字节与 SHA 校验作最终核对。跨境 SSH tar 流曾中断一次，已新增同批剩余资产重试及 systemd 失败重启，从现有哈希校验通过的缓存续传。同步失败只影响命中率，冷缓存继续经 47 授权回源。
 - Cloudflare 对默认 `Python-urllib/3.13` User-Agent 返回 1010；`ChatGPT-User/1.0`、curl、浏览器 UA 已验证 200。RainYun 现有 Cloudflare 令牌只有 DNS 权限，Rulesets API 返回 403。待具备 WAF 编辑权限后，按官方文档只在 Drill/EI 的 GET/HEAD `/share/learning/` 路径跳过 Browser Integrity Check，不改全站保护。iPad Safari 的实体复制操作仍需设备实测。
 
 建议的 Cloudflare 自定义规则表达式：

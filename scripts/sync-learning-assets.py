@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 """Run on RainYun: pull verified immutable bytes from 47 without a database copy."""
 import argparse
-from concurrent.futures import ThreadPoolExecutor
 import hashlib
 import json
 import os
@@ -118,11 +117,9 @@ def main():
     if shutil.disk_usage(CACHE_ROOT).free < sum(row['size'] for row in missing) + 2 * 1024**3:
         raise RuntimeError('Stopping: less than 2 GiB reserve would remain')
     chunks = [missing[offset:offset + 500] for offset in range(0, len(missing), 500)]
-    # Two independent read-only streams improve cross-border throughput while
-    # keeping the small authoritative host's memory demand bounded.
-    with ThreadPoolExecutor(max_workers=2) as executor:
-        for index, _ in enumerate(executor.map(transfer_chunk, chunks), 1):
-            print(json.dumps({'completed_batches': index, 'total_batches': len(chunks)}), flush=True)
+    for index, chunk in enumerate(chunks, 1):
+        transfer_chunk(chunk)
+        print(json.dumps({'completed_batches': index, 'total_batches': len(chunks)}), flush=True)
     removed = 0
     if args.prune:
         current = {key(row) for row in rows}
