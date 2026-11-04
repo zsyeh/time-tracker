@@ -7,4 +7,4 @@ Wants=network-online.target
 Type=oneshot
 ExecStart=/usr/bin/python3 /root/time-tracker/scripts/sync-learning-assets.py --prune
 User=root
-TimeoutStartSec=2h
+TimeoutStartSec=6h

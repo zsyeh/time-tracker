@@ -66,3 +66,11 @@ Nginx 的 `/__learning_asset_cache/<workspace>/<id>/<sha>` 为 `internal`。每�
 - RainYun 的旧 `time-tracker-github-sync.service` 因本机 PostgreSQL 已停用而每分钟失败。新脚本由 RainYun 经 SSH 只读取得 47 的待同步学习记录，在 RainYun 提交 GitHub，成功后请求 47 更新同步 outbox；没有在 RainYun 恢复业务数据库。真实提交及回写已通过，积压记录清零。部署文件为 `scripts/sync-github-notes-from-47.py` 与 `deploy/ha/time-tracker-github-sync-from-47.service`；原服务单元有回滚副本。
 - RainYun 题图同步脚本以最多 500 个资产为一批全量预热，`time-tracker-learning-asset-sync.service` 正在运行，daily timer 已启用；完成后以 `/var/cache/time-tracker/learning-asset-sync.json`、文件数、总字节与 SHA 校验作最终核对。同步失败只影响命中率，冷缓存继续经 47 授权回源。
 - Cloudflare 对默认 `Python-urllib/3.13` User-Agent 返回 1010；`ChatGPT-User/1.0`、curl、浏览器 UA 已验证 200。RainYun 现有 Cloudflare 令牌只有 DNS 权限，Rulesets API 返回 403。待具备 WAF 编辑权限后，按官方文档只在 Drill/EI 的 GET/HEAD `/share/learning/` 路径跳过 Browser Integrity Check，不改全站保护。iPad Safari 的实体复制操作仍需设备实测。
+
+建议的 Cloudflare 自定义规则表达式：
+
+```text
+(http.host in {"drill.ehzsy.site" "ei.ehzsy.site"} and starts_with(http.request.uri.path, "/share/learning/") and http.request.method in {"GET" "HEAD"})
+```
+
+动作为 `Skip`，只选 `Browser Integrity Check`（API `products: ["bic"]`），其他安全产品继续生效。依据：[Cloudflare Browser Integrity Check](https://developers.cloudflare.com/waf/tools/browser-integrity-check/)、[Skip options](https://developers.cloudflare.com/waf/custom-rules/skip/options/)。
