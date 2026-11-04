@@ -1,0 +1,16 @@
+[Unit]
+Description=Commit Personal Learning OS notes on RainYun from 47 primary data
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+WorkingDirectory=/root/time-tracker
+Environment=PYTHONUNBUFFERED=1
+ExecStart=/root/time-tracker/.venv/bin/python /root/time-tracker/scripts/sync-github-notes-from-47.py --limit 5
+TimeoutStartSec=10m
+Nice=10
+PrivateTmp=true
+NoNewPrivileges=true

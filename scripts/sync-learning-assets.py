@@ -95,8 +95,8 @@ def main():
     CACHE_ROOT.mkdir(parents=True, exist_ok=True)
     rows = manifest()
     missing = [row for row in rows if not verified(key(row), row)]
-    for offset in range(0, len(missing), 100):
-        chunk = missing[offset:offset + 100]
+    for offset in range(0, len(missing), 500):
+        chunk = missing[offset:offset + 500]
         if shutil.disk_usage(CACHE_ROOT).free < sum(row['size'] for row in chunk) + 2 * 1024**3:
             raise RuntimeError('Stopping: less than 2 GiB reserve would remain')
         install_stream(chunk)

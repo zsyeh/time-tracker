@@ -1,0 +1,14 @@
+[Unit]
+Description=Verified TLS transport to 47 for AI learning share proxy
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+User=root
+ExecStart=/usr/bin/ssh -NT -o BatchMode=yes -o StrictHostKeyChecking=yes -o ExitOnForwardFailure=yes -o ServerAliveInterval=20 -o ServerAliveCountMax=3 -L 127.0.0.1:18443:127.0.0.1:443 root@47.95.10.128
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
