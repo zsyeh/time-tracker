@@ -2,6 +2,179 @@
 
 一个私有优先、低摩擦启动、重视结束复盘的个人学习操作系统。后端是 Django/DRF，前端是 Vue 3 + TypeScript + Vite + ECharts + Element Plus，生产环境保持同源部署。
 
+## 当前生产事实源（维护前必须阅读）
+
+> 本节记录 2026-11-04 的真实生产状态和本轮长期对话形成的强制约束。若仓库中的旧文档、脚本名称、systemd 描述或历史 HA 配置与本节冲突，以本节为准。不得根据文件名中的 `standby`、`promoted` 或旧故障切换脚本推断当前角色。
+
+### 当前版本与服务入口
+
+| 项目 | 当前事实 |
+| --- | --- |
+| GitHub 分支/提交 | `master` / `1bea62bc91a7b7c6c16cc2343d920fd0e986db83` |
+| 生产镜像 | `time-tracker-ha:20261103-r25` |
+| 唯一业务写入节点 | `47.95.10.128` |
+| 业务组件 | Timer、Drill、EI、Django Session 和业务 PostgreSQL 均在 47 写入 |
+| RainYun | HTTPS/证书/反向代理节点，不运行可独立写业务数据的 Django/PostgreSQL |
+| NUC | 单向内容克隆/离线副本；同步功能关闭，不得成为写入或自动故障提升节点 |
+| 数据库迁移 | `drill` 已应用到 `0030_question_timing_sessions` |
+| 生产验证基线 | Django 357 项测试、前端 74 项测试、TypeScript、Vite 生产构建均通过 |
+
+目前主要访问方式：
+
+- `https://47.95.10.128/`：Timer。
+- `https://47.95.10.128/drill/`：Drill 数学题库。
+- `https://47.95.10.128/ei/`：EI 892 题库。
+- `https://timer.ehzsy.site`、`https://drill.ehzsy.site`、`https://ei.ehzsy.site`：兼容域名入口；应用写入仍最终到达 47。
+
+47 的 Nginx 会处理 `/drill`、`/ei` 前缀重写。直接请求 Django 内部端口时这些前缀可能返回 404，这是代理层与应用层的边界，不应据此修改 Django 路由。公网入口才是验收对象。
+
+### 不可破坏的数据与拓扑约束
+
+1. 47 是唯一业务 PostgreSQL 主库。禁止双向同步、双主、冲突合并、自动提升旧主或把 RainYun/NUC 恢复为业务写入节点。
+2. RainYun 即使只提供页面读取，也必须反向代理到 47；Django Session 读取可能产生写入，不能在 RainYun 本地运行一套业务 Django。
+3. 不得删除或重建题库，不得修改题目 UUID，不得覆盖用户作答、Note、诊断、计时、收藏、复习计划和掌握度。
+4. 生产迁移、服务重启、Nginx/证书调整和主备角色变化必须得到明确授权。普通代码审计不包含这些权限。
+5. 旧 HA 单元和脚本只用于历史分析。不得创建 `/etc/time-tracker/legacy-ha-explicitly-enabled`，不得启用自动 promotion、`pg_rewind`、旧 lease 或数据库合并流程。
+6. 47 上业务库实际连接到本机 `127.0.0.1:55433`，经验证 `pg_is_in_recovery() = false`、`transaction_read_only = off`。主机还存在一个历史 5432 PostgreSQL listener；未观察到业务客户端使用它，但在确认消费者和留存需求前不得擅自删除。
+7. 备份是恢复输入，不是在线同步输入。恢复 dump 前必须停止写入并进行人工确认，不能把 dump 导入正在服务的第二主库。
+
+当前架构选择“单一权威写入和可验证恢复”，不再承诺旧设计中的自动双机写入故障切换。RainYun 代理本身不能在 47 完全不可达时继续接受题目状态写入；若未来重新要求自动容灾，需要重新设计单写主库的共识/提升流程，不能复用历史双向同步。
+
+### 生产备份、迁移与回滚
+
+2026-11-03 部署 r25 前已执行完整 PostgreSQL custom-format dump，并使用 `pg_restore --list` 和 SHA-256 校验。生产遵循“仅保留最新完整 dump”：
+
+- dump：`/var/backups/time-tracker/postgresql/time-tracker-20261103-230518.dump`
+- 校验文件：同目录 `.dump.sha256`
+- dump 权限：`600`
+- 当前大小：约 2.86 GB
+- Note 合并回滚审计：`/var/backups/time-tracker/note-merge/note-merge-audit-20261103-r25.json`，权限 `600`
+
+审计文件含用户原始文本，禁止提交 Git、复制到 RainYun 或打印到日志。数据库连接串、Passkey 材料、Session Cookie、一次性 handoff token 和加密密钥同样不得进入 README、issue、命令输出或访问日志。
+
+生产 secret bind mount 当前使用 `root:tracker` 和 `0640`：root 可写、容器内 tracker 组只读。不要机械改成 `0600`；这会导致非 root 容器无法读取 `.env.database` 并在入口迁移阶段反复退出。dump 和不需要容器读取的审计文件才使用 `0600`。
+
+推荐发布顺序：
+
+1. 确认 47 为可写主库、RainYun 无业务写入、旧 HA marker 不存在。
+2. 记录当前镜像 tag，创建并校验新的完整 dump；只有新 dump 成功后才清理旧 dump。
+3. 在隔离测试库运行后端测试，在前端运行单测、类型检查和两个 Vite build。
+4. 构建带 Git revision label 的不可变镜像并加载到 47。
+5. 使用新镜像运行 `manage.py check`、`migrate --plan` 和数据迁移 dry-run。
+6. 数据迁移必须幂等；正式执行后立即二次执行并确认 `changed_pairs = 0`。
+7. 先在独立端口按真实 entrypoint 启动烟雾测试。不能绕过 `collectstatic` 后把缺失 manifest 误判为应用故障。
+8. 仅切换 47 Web 服务，等待 `active`、容器 `healthy`、登录页、静态哈希资源及公网 Timer/Drill/EI 全部通过。
+9. 回滚应用时恢复上一镜像 tag；新增迁移均为加法时通常保留数据库结构。只有确认数据恢复必要时才还原 dump。
+
+r25 的 systemd drop-in 切换前副本保存在 47 的 `/etc/systemd/system/time-tracker-ha-web.service.d/`。r24 镜像应暂时保留作为快速应用回滚点，不应把切换到旧数据库当作回滚。
+
+### IP Passkey 登录的真实实现
+
+WebAuthn RP ID 不能使用裸 IP，因此禁止把 `47.95.10.128` 配置成 RP ID，也禁止关闭 WebAuthn 校验。IP 登录流程是：
+
+1. 用户在 `https://47.95.10.128` 选择“使用 Passkey 登录”。
+2. 浏览器跳转到 `https://timer.ehzsy.site`，继续使用原有 Passkey/Face ID/Touch ID。
+3. Timer 生成服务器端仅保存摘要的一次性 `DrillLoginHandoff`。
+4. token 通过 URL fragment 回到固定的 `https://47.95.10.128/ip-auth/complete`，前端立刻移除 fragment，再以 CSRF 保护的 POST 兑换。
+5. 47 原子消费凭证并建立独立 IP Host Session，然后返回经过白名单校验的原始站内路径。
+
+凭证有效期不超过 90 秒、不可重放、不可跨目标站点使用；回调 Host/Origin 固定，禁止根据任意 Host、Referer 或用户 URL 决定目标。IP 入口必须保留密码登录。Linux 自动化只能验证服务器流程，Face ID、iPadOS Safari、安全区和系统剪贴板必须在实体设备上验收。
+
+### Drill / EI 的核心数据语义
+
+- 只有成功保存的 `QuestionAttempt` 才算一次有效作答；打开题目、浏览、看答案不自动计为完成。
+- 每次作答追加新 Attempt，不覆盖历史。客户端 submission key 和服务端事务共同防止双击、超时重试导致重复 Attempt 或 TopicMastery 虚假升级。
+- 状态分为未开始、已掌握、待复习；Undo/Reset 必须重建由系统推导的复习/掌握结果，不能删除无关的手动评价。
+- 作答状态、结构化诊断、独立程度和题目 Note 是四个不同维度，不能互相替代。
+- 诊断保留 A、B1、B2、B3、C1、C2、C3、D，以及 K/M/E 三层能力信息、提示/答案使用情况和 D0/D1/D3/D7 复习计划。
+- 当前唯一可编辑自由文本是 `QuestionUserState.note`。`QuestionAttempt.note/correction_note/knowledge_note/first_step_note` 仅作为历史证据保留。
+- r25 上线时将 19 个用户—题目组合的旧自由文本无损合并到 canonical Note；最长合并结果 113 字符，二次执行变更为 0。
+- Note 使用版本号/HTTP 409 防止多标签页或多设备旧内容覆盖新内容；快速切题必须保留本地草稿并隔离旧请求响应。
+- Drill 与 EI 共用实现和账号，但所有题目、统计和用户状态必须按当前用户与 workspace/host 隔离。
+
+诊断指标口径见 [`docs/attempt-diagnostics.md`](docs/attempt-diagnostics.md)。部署与回滚细节见 [`docs/drill-ei-reliability-deployment.md`](docs/drill-ei-reliability-deployment.md)。
+
+### 当前题目页、统计和导入功能
+
+- 题目页采用“题目工作区 + 顶部稳定导航 + 紧凑统一作答栏 + 按需辅助面板”。上一题/下一题位于顶部；题图或当前题加载失败时仍保留恢复与可用导航，不得继续显示旧题伪装为新题。
+- 主要操作是“掌握并下一题”和“待复习并下一题”；诊断会自动保存并有明确动画/状态反馈。诊断选择可联动待复习，但错误类型不等于知识掌握等级。
+- iPad 竖屏优先保证题干/题图宽度，手机使用约 44px 触摸目标，横屏/桌面可使用题目与控制区双栏。每次翻页保持全局框架稳定并回到合理阅读位置。
+- “复制题图”优先使用 Clipboard API；多图纵向拼成 PNG。Safari 不支持时降级为系统分享或下载，不能悄悄只复制第一张图。
+- 分享按钮复制当前权威站点 URI，不唤起 Apple Share；使用 47 时链接保持 `/drill/...` 或 `/ei/...` 完整链条。
+- Vue Router 有未知路径兜底；Django SPA fallback 只覆盖合法页面，不能把 `/api/`、`/static/`、认证、Passkey 回调和分享接口的真实 404 改成 200。
+- Insight 支持诊断、科目、书籍/章节、状态、日期、是否含 Note、关键词和排序的服务端组合筛选；Note 可原地展开，返回时恢复过滤器、分页和滚动位置。
+- 刷题趋势按北京时间自然日统计同一题当日去重题数、提交次数和周期不同题数；三者不能混淆。支持 7/14/30/50/90 天、7 日移动平均、目标线和截止日预测。
+- PDF 页码状态入口只处理“严选题”，题目册页码与题答对照册页码分开输入；可预览匹配、批量标记 Mastered/Need to review、记录同款结构化诊断和唯一 Note，不能导入标准题库。
+- 892 每日公式及其他四科公式循环是独立训练入口；历史表现不可用时不得编造 A/B/C 掌握状态。
+
+### 本轮长期对话形成的关键决策
+
+以下是从问题定位到 r25 上线的关键中间结论，供后续维护者理解“为什么这样实现”：
+
+1. 最初尝试过本机、47、RainYun、NUC 的主从/灾备与反向同步；由于双向写入会产生无法可靠自动合并的用户状态，最终明确 47 为唯一权威写入节点。
+2. 47 曾以 `/timer`、`/drill`、`/ei` 和端口混合暴露，出现 CSRF、空白页、URI 链不完整和分享 500。最终统一到 HTTPS 443，用 `/drill`、`/ei` 前缀与域名兼容入口。
+3. 题目页曾存在重复的 Next、红/黄复习、Mastered、Need to review、诊断和笔记卡片，横屏侧栏还会只弹出一半或收起正文。最终改成稳定顶部导航和单一作答工作流。
+4. EI 题图曾因代理/资源 URI 问题整体无法加载；因此静态哈希资源、题图 API、Host 与前缀重写必须作为每次部署的烟雾测试。
+5. 旧刷题数据没有进入新诊断看板，根因是新能力字段无法从历史行为可靠推断。历史记录保留为 unknown，不能把“做过”伪造为“独立做对”。
+6. “错误原因”自由文本和 Note 并存造成重复与丢失风险，最终确定唯一自由文本 Note；结构化 A-D 诊断继续独立保存。
+7. PDF 页码功能最初错误覆盖标准题库，最终限制为严选题并要求题目册/题答对照册双页码核验。
+8. IP Passkey 不能直接使用裸 IP RP ID，最终复用 Timer 域名的 WebAuthn 和一次性 handoff，而不是降低安全校验。
+9. r25 发布前完成 357 个 Django 测试、74 个前端测试、类型检查和双前端构建；生产先备份再迁移，Note 合并通过幂等复跑。
+10. 部署中一次诊断命令意外暴露了数据库连接凭据，已在 2026-11-03 完成数据库密码轮换并清除旧凭据临时副本。后续禁止打印完整进程命令行或连接串。
+
+## 维护者 / Codex Agent 主提示词
+
+下面的提示词整合了本轮对话中反复确认的边界。可以直接交给后续 Agent；具体需求附在末尾，不要删除安全约束。
+
+```text
+你正在维护 GitHub 项目 zsyeh/time-tracker。请直接检查真实代码、测试和生产角色，完成可运行实现，不要只给方案。
+
+生产事实：
+- 47.95.10.128 是 Timer、Drill、EI、Django Session 和业务 PostgreSQL 的唯一写入节点。
+- RainYun 只允许做 HTTPS、证书和反向代理；NUC 只允许单向内容克隆。
+- 禁止双主、双向数据库同步、数据合并、自动提升旧主以及启用历史 HA marker。
+- 仓库、历史文档和 systemd 文件名可能落后于真实生产，必须先只读核对 Git commit、镜像 tag、迁移状态、数据库角色和线上代码差异。
+
+数据安全：
+- 不得删除/重建题库，不得改变题目 UUID，不得清空或覆盖用户作答、Note、诊断、计时、收藏、复习计划和掌握度。
+- 任何数据迁移都要先完整 PostgreSQL dump、校验、dry-run、脱敏统计、幂等复跑和明确回滚审计。
+- 禁止输出数据库连接串、密码、Cookie、Passkey 材料、一次性 token、加密密钥或用户文本。
+- 未经明确授权，不得部署、重启生产服务、执行生产迁移、修改 Nginx/证书或切换数据库角色。
+
+认证与路由：
+- 裸 IP 不能作为 WebAuthn RP ID。IP Passkey 必须跳到 timer.ehzsy.site 完成认证，再通过固定 Origin/Host、90 秒内、摘要存储、一次性原子消费的 handoff 返回 47。
+- 保持 CSRF、Secure/HttpOnly/SameSite Cookie、限流和密码备用登录。
+- 47 使用 443 和 /drill、/ei 前缀；域名入口必须兼容。分享链接由当前权威入口生成完整 URI。
+- SPA fallback 只能处理合法前端路由，API、静态资源、认证、分享和回调必须保留真实状态码。
+
+刷题语义：
+- 只有成功保存的 QuestionAttempt 才算作答；浏览、看题、看答案不算完成。
+- submission key 幂等，Attempt、TopicMastery、复习计划和状态变更必须在事务内一致。
+- 作答状态、结构化诊断、独立程度和 QuestionUserState.note 是四个独立维度。
+- 唯一可编辑自由文本是 canonical Note；历史 Attempt 文本只能无损迁入，不能删除。
+- 旧数据缺少独立作答/诊断证据时必须标 unknown，禁止推断。
+- Drill/EI 的用户与 workspace 数据必须隔离。
+
+前端体验：
+- 题目页保持稳定顶部上一题/下一题；加载失败不得显示旧题，也不能让可用导航消失。
+- 主操作统一为掌握/待复习并按设置进入下一题；诊断自动保存必须有清晰反馈。
+- Note 自动保存需版本冲突保护，本地草稿不可无提示覆盖服务器新值。
+- iPad 竖屏优先题干与题图，手机触摸区约 44px，横屏侧栏不能遮挡、半开或带走正文。
+- 图片复制使用原始图和 ClipboardItem，多图明确拼接，Safari 提供分享/下载降级。
+
+实施顺序：
+1. 只读审计真实分支、部署版本、模型、接口、前端和数据语义。
+2. 先写/补回归测试，再修数据一致性、认证和路由，再做交互与视觉优化。
+3. 运行 Django 全量测试、前端单测、TypeScript 检查、Timer 与 Drill 两套 production build。
+4. 报告修改文件、迁移、测试、兼容风险、未完成的实体 Safari 验证。
+5. 只有得到部署授权后，才按“备份 -> 校验 -> dry-run -> 新镜像独立烟雾测试 -> 47 切换 -> 公网健康检查 -> 保留上一镜像回滚”的顺序上线。
+
+本次具体任务：
+[在这里追加本次需求。]
+```
+
+README 只保存长期有效、已脱敏的工程事实。完整聊天原文可能包含过期假设、临时故障和敏感数据，不应原样提交；需要保留的中间信息应像上面这样提炼为决策、根因、约束和验收标准。
+
 ## Docker Hub 与一键部署
 
 > **[打开一键部署页面](https://app.ehzsy.site)** · **[Docker Hub 镜像](https://dockerhub.ehzsy.site)** · 镜像：`ehzsy/time-tracker:latest`
