@@ -70,6 +70,7 @@ Nginx 的 `/__learning_asset_cache/<workspace>/<id>/<sha>` 为 `internal`。每�
 - 用户提出的界面与登录修复已发布为 `time-tracker-ha:20261105-ui-auth`（Git `667fffa`），原镜像和 systemd drop-in 保留回滚。AI 分享面板改用当前工作区主题变量；做题页收藏、复制链接常驻；Timer、Drill、EI 侧边栏添加直接切换；Drill/EI Passkey 转至 Timer 域名验证并使用一次性回跳；默认记住登录且活跃会话每日续期。考试日期的公开默认值、应用默认值与 47 本地配置均为 2026-12-19。Timer/Drill/EI 的公网静态资源与登录页均 200，新容器健康，Django check 通过，前端 74 项与针对性后端 18 项通过。原 Django session 与 Secret Key 配置未替换；用户设备上的既有会话仍以实际 Cookie 状态为准。
 - 侧边栏工作区切换按用户要求统一使用 47 的 IP URI：`https://47.95.10.128/today`、`/drill/practice`、`/ei/practice`。三条路径的公网 TLS 证书验证正常，未登录时按现有 IP 会话流程跳转。AI 学习数据的正式分享 URL 继续使用 Drill/EI 域名。
 - 2026-11-05 Passkey IP 登录回跳修复：用户截图的 Timer `Not Found` 对应 RainYun 和 47 的访问日志 `GET /ip-auth/complete 404`。47 正确返回 `https://47.95.10.128/ip-auth/complete#<one-time-token>`，但 RainYun Timer 原有通用反代的默认 `proxy_redirect` 将绝对 IP 地址改成 `timer.ehzsy.site`。在 Timer 的 `/ip-auth/start` 增加专用位置，保留 Cookie，并关闭该重定向重写；上游通过已有的 47 SSH TLS 隧道验证 Timer 证书。RainYun 原配置已备份，`nginx -t` 通过且已 reload。生产隔离测试登录会话经公网 Timer 请求后得到 `302`、回调源 `https://47.95.10.128`、路径 `/ip-auth/complete`，并删除测试会话和未使用的一次性 token。IP 回调页公网 GET 为 200；实体 iPhone Passkey 操作需用户再次确认。
+- 后续用户指出 IP Passkey 登录未弹出验证。根因是 Timer 的既有会话能直接触发 `/ip-auth/start` 签发一次性回跳 token。现在该入口只接受刚完成且尚未用于回跳的 Passkey 登录记录；其他已登录 Timer 会话必须在专用页面完成一次新的 WebAuthn challenge/response 校验，未登记 Passkey 的账号无法借已有 Timer 会话跳过验证。`drill/web_views.py`、`templates/account/ip_passkey_verify.html` 和 `drill/tests.py` 包含实现与防绕过测试。测试记录与镜像版本见下次部署条目。
 
 建议的 Cloudflare 自定义规则表达式：
 

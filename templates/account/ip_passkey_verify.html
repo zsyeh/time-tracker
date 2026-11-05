@@ -1,0 +1,26 @@
+{% extends "account/base_entrance.html" %}
+{% load i18n %}
+{% block head_title %}Verify Passkey · Personal Learning OS{% endblock head_title %}
+{% block content %}
+  <div class="auth-card-heading">
+    <span class="auth-kicker">PASSKEY VERIFICATION</span>
+    <h1>验证本次登录</h1>
+    <p>请使用 Timer 上已登记的 Passkey。验证成功后返回 47 主站。</p>
+  </div>
+  {% if has_passkey %}
+    <form class="auth-form" method="post" action="{% url 'ip_passkey_start' %}?next={{ target_path|urlencode }}">
+      {% csrf_token %}
+      {{ form.credential }}
+      {% if form.errors %}<div class="auth-errors" role="alert">Passkey 验证失败，请重试。</div>{% endif %}
+      <button id="ip_passkey_verify" class="passkey-button" type="button"><span class="passkey-icon" aria-hidden="true">🔑</span><span><strong>验证 Passkey</strong><small>Face ID · Touch ID · device PIN</small></span><b aria-hidden="true">→</b></button>
+    </form>
+    {{ js_data|json_script:"js_data" }}
+    {% include "mfa/webauthn/snippets/scripts.html" %}
+    <script data-allauth-onload="allauth.webauthn.forms.authenticateForm" type="application/json">{
+      "ids": {"authenticate": "ip_passkey_verify", "credential": "{{ form.credential.auto_id }}", "data": "js_data"}
+    }</script>
+  {% else %}
+    <p class="auth-errors" role="alert">当前账号没有已登记的 Passkey。请先在 Timer 上添加，再重新发起登录。</p>
+    <a class="password-button" href="{% url 'mfa_add_webauthn' %}">添加 Passkey</a>
+  {% endif %}
+{% endblock content %}

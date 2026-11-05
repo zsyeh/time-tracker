@@ -2,6 +2,7 @@ import datetime
 import hashlib
 import json
 import tempfile
+from unittest import mock
 from pathlib import Path
 from urllib.parse import urlsplit
 
@@ -1789,6 +1790,45 @@ class DrillPasskeyHandoffTests(TestCase):
     def setUp(self):
         self.user = get_user_model().objects.create_user('handoff-user', password='password')
 
+    def _mark_fresh_passkey(self, client):
+        session = client.session
+        session['account_authentication_methods_user'] = str(self.user.pk)
+        session['account_authentication_methods'] = [{
+            'method': 'mfa', 'type': 'webauthn', 'passwordless': True,
+            'at': timezone.now().timestamp(),
+        }]
+        session.save()
+
+    def test_existing_timer_session_cannot_skip_passkey_verification(self):
+        timer = Client()
+        timer.force_login(self.user)
+        response = timer.get('/ip-auth/start?next=/drill/practice', HTTP_HOST='timer.ehzsy.site', secure=True)
+        self.assertEqual(response.status_code, 200)
+        self.assertContains(response, '没有已登记的 Passkey')
+        self.assertFalse(DrillLoginHandoff.objects.exists())
+
+    def test_fresh_passkey_login_allows_one_ip_handoff_only(self):
+        timer = Client()
+        timer.force_login(self.user)
+        self._mark_fresh_passkey(timer)
+        first = timer.get('/ip-auth/start?next=/drill/practice', HTTP_HOST='timer.ehzsy.site', secure=True)
+        self.assertEqual(first.status_code, 302)
+        self.assertTrue(first.url.startswith('https://47.95.10.128/ip-auth/complete#drill_'))
+        second = timer.get('/ip-auth/start?next=/drill/practice', HTTP_HOST='timer.ehzsy.site', secure=True)
+        self.assertEqual(second.status_code, 200)
+        self.assertEqual(DrillLoginHandoff.objects.count(), 1)
+
+    def test_ip_handoff_verification_page_rejects_missing_credential(self):
+        timer = Client()
+        timer.force_login(self.user)
+        with mock.patch('drill.web_views.webauthn_auth.get_credentials', return_value=[object()]), \
+             mock.patch('drill.web_views.webauthn_auth.begin_authentication', return_value={'challenge': 'test'}):
+            page = timer.get('/ip-auth/start?next=/ei/practice', HTTP_HOST='timer.ehzsy.site', secure=True)
+            self.assertContains(page, 'id="ip_passkey_verify"')
+            denied = timer.post('/ip-auth/start?next=/ei/practice', {}, HTTP_HOST='timer.ehzsy.site', secure=True)
+        self.assertEqual(denied.status_code, 200)
+        self.assertFalse(DrillLoginHandoff.objects.exists())
+
     def test_anonymous_drill_page_uses_timer_login_origin(self):
         response = self.client.get(
             '/practice?document=2',
@@ -1947,6 +1987,7 @@ class DrillPasskeyHandoffTests(TestCase):
 
         timer = Client()
         timer.force_login(self.user)
+        self._mark_fresh_passkey(timer)
         issued = timer.get(
             '/ip-auth/start?next=/drill/practice/00000000-0000-0000-0000-000000000001',
             HTTP_HOST='timer.ehzsy.site', secure=True,
@@ -1995,6 +2036,7 @@ class DrillPasskeyHandoffTests(TestCase):
     def test_ip_handoff_rejects_expiry_wrong_origin_host_and_open_redirect(self):
         timer = Client()
         timer.force_login(self.user)
+        self._mark_fresh_passkey(timer)
         issued = timer.get(
             '/ip-auth/start?next=https://evil.example/steal',
             HTTP_HOST='timer.ehzsy.site', secure=True,
