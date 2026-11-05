@@ -4,11 +4,10 @@ import { ArrowDown } from '@element-plus/icons-vue'
 
 const open = ref(false)
 const workspaceLinks = computed(() => {
-  const production = location.hostname.endsWith('.ehzsy.site')
   return [
-    { label: 'Learning OS', href: production ? 'https://timer.ehzsy.site/today' : '/today', current: location.hostname.startsWith('timer.') || !production },
-    { label: 'Mathematics Drill', href: production ? 'https://drill.ehzsy.site/practice' : 'https://drill.ehzsy.site/practice', current: false },
-    { label: '892 Practice', href: production ? 'https://ei.ehzsy.site/practice' : 'https://ei.ehzsy.site/practice', current: false },
+    { label: 'Learning OS', href: 'https://47.95.10.128/today', current: true },
+    { label: 'Mathematics Drill', href: 'https://47.95.10.128/drill/practice', current: false },
+    { label: '892 Practice', href: 'https://47.95.10.128/ei/practice', current: false },
   ]
 })
 </script>
