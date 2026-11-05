@@ -24,10 +24,10 @@
     {% endif %}
 
     {% if PASSKEY_LOGIN_ENABLED and request.META.HTTP_HOST == 'drill.ehzsy.site' %}
-        <a class="passkey-button" href="https://timer.ehzsy.site/drill-auth/start?site=drill&amp;next={{ request.GET.next|default:'/practice'|urlencode }}"><span class="passkey-icon" aria-hidden="true">🔑</span><span><strong>Continue with Passkey</strong><small>在 Timer 验证后返回 Drill</small></span><b aria-hidden="true">→</b></a>
+        <a class="passkey-button" href="https://timer.ehzsy.site/drill-auth/start?site=drill&amp;next={{ request.GET.next|default:'/practice'|urlencode }}&amp;verify=1"><span class="passkey-icon" aria-hidden="true">🔑</span><span><strong>Continue with Passkey</strong><small>在 Timer 验证后返回 Drill</small></span><b aria-hidden="true">→</b></a>
         <div class="auth-divider"><span>或使用账号密码</span></div>
     {% elif PASSKEY_LOGIN_ENABLED and request.META.HTTP_HOST == 'ei.ehzsy.site' %}
-        <a class="passkey-button" href="https://timer.ehzsy.site/drill-auth/start?site=ei&amp;next={{ request.GET.next|default:'/practice'|urlencode }}"><span class="passkey-icon" aria-hidden="true">🔑</span><span><strong>Continue with Passkey</strong><small>在 Timer 验证后返回 EI</small></span><b aria-hidden="true">→</b></a>
+        <a class="passkey-button" href="https://timer.ehzsy.site/drill-auth/start?site=ei&amp;next={{ request.GET.next|default:'/practice'|urlencode }}&amp;verify=1"><span class="passkey-icon" aria-hidden="true">🔑</span><span><strong>Continue with Passkey</strong><small>在 Timer 验证后返回 EI</small></span><b aria-hidden="true">→</b></a>
         <div class="auth-divider"><span>或使用账号密码</span></div>
     {% elif PASSKEY_LOGIN_ENABLED and not request.META.HTTP_X_TIME_TRACKER_EXTERNAL_HOST %}
         <button class="passkey-button" type="submit" form="mfa_login" id="passkey_login">

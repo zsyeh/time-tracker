@@ -397,6 +397,7 @@ class AuthAndIsolationTests(TestCase):
                     response,
                     f'https://timer.ehzsy.site/drill-auth/start?site={site}&amp;next=/practice',
                 )
+                self.assertContains(response, 'verify=1')
 
     def test_active_session_is_refreshed_at_most_once_per_day(self):
         self.client.force_login(self.alice)

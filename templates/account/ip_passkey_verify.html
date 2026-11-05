@@ -5,10 +5,10 @@
   <div class="auth-card-heading">
     <span class="auth-kicker">PASSKEY VERIFICATION</span>
     <h1>验证本次登录</h1>
-    <p>请使用 Timer 上已登记的 Passkey。验证成功后返回 47 主站。</p>
+    <p>请使用 Timer 上已登记的 Passkey。验证成功后返回{{ target_site|upper }}学习空间。</p>
   </div>
   {% if has_passkey %}
-    <form class="auth-form" method="post" action="{% url 'ip_passkey_start' %}?next={{ target_path|urlencode }}">
+    <form class="auth-form" method="post" action="{{ action }}">
       {% csrf_token %}
       {{ form.credential }}
       {% if form.errors %}<div class="auth-errors" role="alert">Passkey 验证失败，请重试。</div>{% endif %}

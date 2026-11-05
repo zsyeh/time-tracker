@@ -1818,6 +1818,18 @@ class DrillPasskeyHandoffTests(TestCase):
         self.assertEqual(second.status_code, 200)
         self.assertEqual(DrillLoginHandoff.objects.count(), 1)
 
+    def test_explicit_drill_passkey_button_requires_fresh_verification(self):
+        timer = Client()
+        timer.force_login(self.user)
+        path = '/drill-auth/start?site=drill&next=/practice&verify=1'
+        existing_session = timer.get(path, HTTP_HOST='timer.ehzsy.site', secure=True)
+        self.assertEqual(existing_session.status_code, 200)
+        self.assertFalse(DrillLoginHandoff.objects.exists())
+        self._mark_fresh_passkey(timer)
+        verified = timer.get(path, HTTP_HOST='timer.ehzsy.site', secure=True)
+        self.assertEqual(verified.status_code, 302)
+        self.assertTrue(verified.url.startswith('https://drill.ehzsy.site/drill-auth/complete/'))
+
     def test_ip_handoff_verification_page_rejects_missing_credential(self):
         timer = Client()
         timer.force_login(self.user)
