@@ -7,6 +7,8 @@
         <h1>Access your workspace.</h1>
         {% if request.META.HTTP_X_TIME_TRACKER_EXTERNAL_HOST %}
             <p>这是 47 IP 独立会话。可在 Timer 域名完成现有 Passkey 验证，然后安全返回当前页面。</p>
+        {% elif request.META.HTTP_HOST == 'drill.ehzsy.site' or request.META.HTTP_HOST == 'ei.ehzsy.site' %}
+            <p>在 Timer 域名验证现有 Passkey，然后安全返回当前题库。</p>
         {% else %}
             <p>Use a passkey on this device, or continue with your account password.</p>
         {% endif %}
@@ -21,7 +23,13 @@
         <div class="auth-divider"><span>或使用账号密码</span></div>
     {% endif %}
 
-    {% if PASSKEY_LOGIN_ENABLED and not request.META.HTTP_X_TIME_TRACKER_EXTERNAL_HOST %}
+    {% if PASSKEY_LOGIN_ENABLED and request.META.HTTP_HOST == 'drill.ehzsy.site' %}
+        <a class="passkey-button" href="https://timer.ehzsy.site/drill-auth/start?site=drill&amp;next={{ request.GET.next|default:'/practice'|urlencode }}&amp;verify=1"><span class="passkey-icon" aria-hidden="true">🔑</span><span><strong>Continue with Passkey</strong><small>在 Timer 验证后返回 Drill</small></span><b aria-hidden="true">→</b></a>
+        <div class="auth-divider"><span>或使用账号密码</span></div>
+    {% elif PASSKEY_LOGIN_ENABLED and request.META.HTTP_HOST == 'ei.ehzsy.site' %}
+        <a class="passkey-button" href="https://timer.ehzsy.site/drill-auth/start?site=ei&amp;next={{ request.GET.next|default:'/practice'|urlencode }}&amp;verify=1"><span class="passkey-icon" aria-hidden="true">🔑</span><span><strong>Continue with Passkey</strong><small>在 Timer 验证后返回 EI</small></span><b aria-hidden="true">→</b></a>
+        <div class="auth-divider"><span>或使用账号密码</span></div>
+    {% elif PASSKEY_LOGIN_ENABLED and not request.META.HTTP_X_TIME_TRACKER_EXTERNAL_HOST %}
         <button class="passkey-button" type="submit" form="mfa_login" id="passkey_login">
             <span class="passkey-icon" aria-hidden="true">
                 <svg viewBox="0 0 24 24" role="img"><path d="M12 2a5 5 0 0 0-5 5v2.1A4.99 4.99 0 0 0 4 13.7V16a2 2 0 0 0 2 2h1v2a2 2 0 0 0 4 0v-2h2v2a2 2 0 0 0 4 0v-2h1a2 2 0 0 0 2-2v-2.3a4.99 4.99 0 0 0-3-4.6V7a5 5 0 0 0-5-5Zm0 2a3 3 0 0 1 3 3v1.02A5.04 5.04 0 0 0 14.7 8H9.3c-.1 0-.2.01-.3.02V7a3 3 0 0 1 3-3Zm-2 7a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm4 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z"/></svg>
@@ -73,7 +81,7 @@
 {% endblock content %}
 {% block extra_body %}
     {{ block.super }}
-    {% if PASSKEY_LOGIN_ENABLED and not request.META.HTTP_X_TIME_TRACKER_EXTERNAL_HOST %}
+    {% if PASSKEY_LOGIN_ENABLED and request.META.HTTP_HOST != 'drill.ehzsy.site' and request.META.HTTP_HOST != 'ei.ehzsy.site' and not request.META.HTTP_X_TIME_TRACKER_EXTERNAL_HOST %}
         {% include "mfa/webauthn/snippets/login_script.html" with button_id="passkey_login" %}
     {% endif %}
 {% endblock extra_body %}

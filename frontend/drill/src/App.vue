@@ -69,6 +69,11 @@ onMounted(() => {
       <RouterLink class="wordmark" to="/practice" aria-label="Drill home">
         <img :src="workspaceIcon" alt="" aria-hidden="true" /><strong>{{ isEi ? '892 LAB' : 'DRILL' }}</strong><small>{{ isEi ? 'ELECTRONIC INFORMATION' : 'QUESTION PRACTICE' }}</small>
       </RouterLink>
+      <nav class="workspace-links" aria-label="切换学习空间">
+        <a href="https://47.95.10.128/today">Timer</a>
+        <a href="https://47.95.10.128/drill/practice" :aria-current="!isEi ? 'page' : undefined">Drill</a>
+        <a href="https://47.95.10.128/ei/practice" :aria-current="isEi ? 'page' : undefined">EI</a>
+      </nav>
       <nav>
         <RouterLink to="/diagnostics" :class="{ active: route.name === 'diagnostics' || route.name === 'diagnostic-queue' }"><span>解题能力</span></RouterLink>
         <RouterLink v-if="isEi" to="/cockpit" :class="{ active: route.name === 'cockpit' }">

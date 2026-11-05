@@ -14,6 +14,9 @@ from django.utils import timezone
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.views.decorators.http import require_http_methods
+from allauth.account.internal.flows.login import get_authentication_records
+from allauth.mfa.webauthn.forms import ReauthenticateWebAuthnForm
+from allauth.mfa.webauthn.internal import auth as webauthn_auth
 
 from .models import DrillLoginHandoff, QuestionAsset
 from .sharing import (
@@ -199,8 +202,9 @@ def _timer_handoff_url(target_path, site):
 
 
 @never_cache
+@require_http_methods(['GET', 'POST'])
 def ip_login_start(request):
-    """Move an IP session to the canonical WebAuthn RP, then back to fixed IP."""
+    """Verify a fresh Timer Passkey assertion before issuing an IP session."""
     target_path = _safe_ip_target(request.GET.get('next', '/'))
     hostname = request.get_host().partition(':')[0].lower()
     if _is_ip_entry_request(request):
@@ -210,6 +214,44 @@ def ip_login_start(request):
         raise Http404
     if not request.user.is_authenticated:
         return redirect(f'{settings.LOGIN_URL}?{urlencode({"next": request.get_full_path()})}')
+    return _verify_passkey_handoff(request, target_path, 'ip')
+
+
+def _verify_passkey_handoff(request, target_path, target_site):
+    """Require one current WebAuthn assertion for an explicit Passkey handoff."""
+    if request.method == 'GET':
+        used_at = request.session.get('handoff_used_passkey_at', 0)
+        if not isinstance(used_at, (int, float)):
+            used_at = 0
+        now = timezone.now().timestamp()
+        fresh = next((record for record in reversed(get_authentication_records(request, request.user))
+                      if record.get('method') == 'mfa'
+                      and record.get('type') == 'webauthn'
+                      and record.get('passwordless') is True
+                      and isinstance(record.get('at'), (int, float))
+                      and used_at < record['at'] <= now
+                      and now - record['at'] <= 120), None)
+        if fresh is not None:
+            request.session['handoff_used_passkey_at'] = fresh['at']
+            return _issue_verified_handoff(request, target_path, target_site)
+
+    has_passkey = bool(webauthn_auth.get_credentials(request.user))
+    form = ReauthenticateWebAuthnForm(request.POST or None, user=request.user)
+    if request.method == 'POST' and has_passkey and form.is_valid():
+        form.save()
+        return _issue_verified_handoff(request, target_path, target_site)
+    js_data = {'request_options': webauthn_auth.begin_authentication(request.user)} if has_passkey else None
+    action = ('/ip-auth/start?' + urlencode({'next': target_path}) if target_site == 'ip'
+              else '/drill-auth/start?' + urlencode({'site': target_site, 'next': target_path, 'verify': '1'}))
+    response = render(request, 'account/ip_passkey_verify.html', {
+        'form': form, 'js_data': js_data, 'has_passkey': has_passkey,
+        'target_path': target_path, 'target_site': target_site, 'action': action,
+    })
+    response['Cache-Control'] = 'private, no-store'
+    return response
+
+
+def _issue_ip_login_handoff(request, target_path):
     _, raw_token = DrillLoginHandoff.issue(
         user=request.user,
         target_path=target_path,
@@ -217,6 +259,18 @@ def ip_login_start(request):
         lifetime_seconds=90,
     )
     response = redirect(f'{settings.IP_AUTH_CALLBACK_ORIGIN}/ip-auth/complete#{raw_token}')
+    response['Cache-Control'] = 'no-store, max-age=0'
+    response['Referrer-Policy'] = 'no-referrer'
+    return response
+
+
+def _issue_verified_handoff(request, target_path, target_site):
+    if target_site == 'ip':
+        return _issue_ip_login_handoff(request, target_path)
+    _, raw_token = DrillLoginHandoff.issue(
+        user=request.user, target_path=target_path, target_site=target_site,
+    )
+    response = redirect(f'{_target_origin(target_site)}/drill-auth/complete/{raw_token}')
     response['Cache-Control'] = 'no-store, max-age=0'
     response['Referrer-Policy'] = 'no-referrer'
     return response
@@ -293,6 +347,7 @@ def drill_spa_view(request, **_route):
 
 @login_required
 @never_cache
+@require_http_methods(['GET', 'POST'])
 def drill_login_start(request):
     hostname = request.get_host().partition(':')[0].lower()
     if hostname != settings.DRILL_AUTH_HOST and not settings.DEBUG:
@@ -301,6 +356,8 @@ def drill_login_start(request):
     if target_site not in {'drill', 'ei', 'dash'}:
         raise Http404
     target_path = _safe_drill_target(request.GET.get('next', '/practice'), target_site)
+    if request.GET.get('verify') == '1':
+        return _verify_passkey_handoff(request, target_path, target_site)
     _, raw_token = DrillLoginHandoff.issue(
         user=request.user,
         target_path=target_path,

@@ -1,0 +1,12 @@
+[Unit]
+Description=Verify and incrementally prewarm read-only Drill/EI image cache
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /root/time-tracker/scripts/sync-learning-assets.py --prune
+User=root
+TimeoutStartSec=6h
+Restart=on-failure
+RestartSec=5min

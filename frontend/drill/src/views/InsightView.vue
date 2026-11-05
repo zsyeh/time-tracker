@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { nextTick, onMounted, reactive, ref } from 'vue'
+import { computed, nextTick, onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api } from '../lib/api'
 import type { InsightPayload } from '../types'
+import LearningSharePanel from '../components/LearningSharePanel.vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -17,6 +18,10 @@ const filterKeys = ['q', 'course', 'document', 'topic', 'state', 'error', 'start
 const filters = reactive(Object.fromEntries(filterKeys.map((key) => [
   key, String(route.query[key] || (key === 'sort' ? 'recent' : '')),
 ])) as Record<typeof filterKeys[number], string>)
+const shareScope = computed(() => Object.fromEntries(
+  (['q', 'course', 'document', 'topic', 'state', 'error', 'has_note', 'start', 'end'] as const)
+    .filter((key) => filters[key]).map((key) => [key, filters[key]]),
+))
 
 function activeQuery() {
   return Object.fromEntries([
@@ -94,6 +99,7 @@ onMounted(async () => {
 <template>
   <section class="page insight-page">
     <header class="page-header"><div><span class="eyebrow">学习记录</span><h1>学习洞察</h1><p>按科目、诊断和笔记快速定位需要回看的题目。</p></div></header>
+    <LearningSharePanel :current-scope="shareScope" />
     <form class="insight-filters" @submit.prevent="applyFilters">
       <label class="wide">关键词<input v-model="filters.q" type="search" placeholder="题号、章节或 Note 内容"></label>
       <label v-if="data?.options.courses.length">科目<select v-model="filters.course"><option value="">全部科目</option><option v-for="item in data.options.courses" :key="item.code" :value="item.code">{{ item.label }}</option></select></label>

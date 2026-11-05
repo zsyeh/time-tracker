@@ -1,4 +1,5 @@
 from django.urls import path
+from .learning_shares import manage_learning_shares, revoke_learning_share
 from .circuit_selected_views import CircuitSelectedView
 from .signal_selected_views import SignalSelectedView
 from .analog_selected_views import AnalogSelectedView
@@ -43,6 +44,8 @@ from .views import (
 
 
 urlpatterns = [
+    path('learning-shares/', manage_learning_shares, name='learning_shares'),
+    path('learning-shares/<int:share_id>/', revoke_learning_share, name='learning_share_revoke'),
     path('diagnostics/', DiagnosticDashboardView.as_view(), name='diagnostic_dashboard'),
     path('diagnostics/questions/', DiagnosticQuestionListView.as_view(), name='diagnostic_questions'),
     path('attempts/<int:attempt_id>/diagnosis/', AttemptDiagnosisView.as_view(), name='attempt_diagnosis'),
