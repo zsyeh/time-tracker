@@ -53,13 +53,18 @@ contains the 300-question human annotation queue. Fill `human_label`,
 `annotator` and `evidence` only after inspecting the original question, using
 `question_url` for image-only records. Existing verified labels remain marked
 `existing_verified`. An AI prediction is never a human gold label.
+Regenerating the queue preserves manual labels and rejects labels whose source
+content hash changed. Reports from this trial directory count only the current
+validation sample, even if older result caches remain in the directory.
 
 The script rejects missing, duplicate or unexpected IDs, invalid workspace
 types, malformed subquestion counts and unknown labels without review. It
 stores no model confidence number. Hashes include metadata and question-image
 SHA-256 values. If a record changes, the old cache entry is ignored. Image
 follow-up reads one asset at a time from 47 with a read-only DB transaction,
-checks its SHA-256 locally, and limits each image to 4 MB. Image-only decisions
+checks its SHA-256 locally, limits each image to 4 MB, and keeps at most
+`--concurrency` images in flight. The production importer reads question and
+asset metadata in chunks without loading `image_data`. Image-only decisions
 remain review-required even when the model returns a type.
 
 ## Full run and incremental run — after approval and 300 human labels

@@ -9,8 +9,9 @@ from pathlib import Path
 
 from django.core.management.base import BaseCommand, CommandError
 from django.db import connection, transaction
+from django.db.models import Prefetch
 
-from drill.models import Question, QuestionExamType
+from drill.models import Question, QuestionAsset, QuestionExamType
 
 
 ALLOWED = {
@@ -82,20 +83,20 @@ class Command(BaseCommand):
                 rows.append(row)
         if not rows:raise CommandError('No import rows')
         ids=[row['question_id'] for row in rows]
-        questions={}
+        assets=QuestionAsset.objects.only('id','question_id','position','asset_type','sha256')
         for start in range(0,len(ids),200):
             chunk=Question.objects.filter(pk__in=ids[start:start+200]).select_related(
-                'document','similarity_topic').prefetch_related('assets')
-            questions.update((q.pk,q) for q in chunk)
-        for row in rows:
-            question=questions.get(row['question_id'])
-            if not question or question.document.workspace!=row['source_system']:
-                raise CommandError(f'Missing or cross-workspace question {row["question_id"]}')
-            if digest_for_question(question)!=row['content_hash']:
-                raise CommandError(f'Stale question content {row["question_id"]}; re-export before importing')
-            old=LEGACY.get(question.question_type)
-            if row['question_type']=='unknown' or (old and old!=row['question_type']) or not (question.prompt_text or question.latex_text):
-                row['review_required']=True
+                'document','similarity_topic').prefetch_related(Prefetch('assets',queryset=assets))
+            questions={q.pk:q for q in chunk}
+            for row in rows[start:start+200]:
+                question=questions.get(row['question_id'])
+                if not question or question.document.workspace!=row['source_system']:
+                    raise CommandError(f'Missing or cross-workspace question {row["question_id"]}')
+                if digest_for_question(question)!=row['content_hash']:
+                    raise CommandError(f'Stale question content {row["question_id"]}; re-export before importing')
+                old=LEGACY.get(question.question_type)
+                if row['question_type']=='unknown' or (old and old!=row['question_type']) or not (question.prompt_text or question.latex_text):
+                    row['review_required']=True
         table_exists=QuestionExamType._meta.db_table in connection.introspection.table_names()
         if options['apply'] and not table_exists:
             raise CommandError('Migration 0032_questionexamtype must be applied before --apply')

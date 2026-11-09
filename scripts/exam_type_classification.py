@@ -11,13 +11,14 @@ import csv
 import hashlib
 import json
 import logging
+import os
 import random
 import re
 import subprocess
 import sys
 from copy import deepcopy
 from collections import Counter, defaultdict
-from concurrent.futures import ThreadPoolExecutor, as_completed
+from concurrent.futures import FIRST_COMPLETED, ThreadPoolExecutor, as_completed, wait
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -103,9 +104,29 @@ def rule_decision(row):
 
 def prepare(args):
     rows = list(read_jsonl(args.input))
+    by_key = {(r['source_system'], str(r['question_id'])): r for r in rows}
+    out = Path(args.output_dir); out.mkdir(parents=True, exist_ok=True)
+    queue_path = out/'validation_queue.csv'
+    previous = {}
+    manual_rows = []
+    if queue_path.exists():
+        with queue_path.open(encoding='utf-8', newline='') as source:
+            for entry in csv.DictReader(source):
+                key = (entry['source_system'], entry['question_id'])
+                previous[key] = entry
+                if entry.get('human_label') and entry.get('annotator') != 'existing_verified':
+                    row = by_key.get(key)
+                    if not row or not entry.get('content_hash') or entry['content_hash'] != content_hash(row):
+                        raise ValueError(f'Human annotation {key} is stale; resolve it before regenerating the queue')
+                    if entry['human_label'] not in ALLOWED[row['source_system']]:
+                        raise ValueError(f'Invalid human label for {key}')
+                    manual_rows.append(row)
+    if len(manual_rows) > args.size:
+        raise ValueError('Existing human annotations exceed requested sample size')
     rng = random.Random(20261109)
     verified = [r for r in rows if r.get('legacy_human_verified') and r.get('legacy_source') == 'human']
-    others = [r for r in rows if r not in verified]
+    verified_ids = {r['question_id'] for r in verified}
+    others = [r for r in rows if r['question_id'] not in verified_ids]
     def stratum(r):
         prompt = (r.get('prompt_text') or '').lower()
         if not prompt and not r.get('latex_text'): return 'image_only'
@@ -117,7 +138,8 @@ def prepare(args):
     groups = defaultdict(list)
     for row in others: groups[stratum(row)].append(row)
     for group in groups.values(): rng.shuffle(group)
-    sample = verified[:]
+    manual_ids = {r['question_id'] for r in manual_rows}
+    sample = manual_rows + [r for r in verified if r['question_id'] not in manual_ids]
     selected = {row['question_id'] for row in sample}
 
     def add_matching(predicate, quota):
@@ -143,22 +165,28 @@ def prepare(args):
             if groups[name]:
                 row=groups[name].pop();sample.append(row);selected.add(row['question_id'])
     sample = sample[:args.size]
-    out = Path(args.output_dir); out.mkdir(parents=True, exist_ok=True)
-    with (out/'validation_queue.csv').open('w', encoding='utf-8', newline='') as target:
-        writer = csv.DictWriter(target, fieldnames=['question_id','uuid','question_url','source_system','stratum','legacy_type','legacy_source',
+    temporary = queue_path.with_name(queue_path.name+'.tmp')
+    with temporary.open('w', encoding='utf-8', newline='') as target:
+        writer = csv.DictWriter(target, fieldnames=['question_id','uuid','content_hash','question_url','source_system','stratum','legacy_type','legacy_source',
             'document_title','display_label','prompt_excerpt','has_image','human_label','annotator','evidence'])
         writer.writeheader()
         for row in sample:
             known = rule_decision(row) if row.get('legacy_human_verified') else None
+            prior = previous.get((row['source_system'], str(row['question_id'])), {})
+            manual = prior.get('human_label') and prior.get('annotator') != 'existing_verified'
             writer.writerow({'question_id':row['question_id'],'uuid':row['uuid'],
+                'content_hash':content_hash(row),
                 'question_url':f'https://{row["source_system"]}.ehzsy.site/practice/{row["uuid"]}',
                 'source_system':row['source_system'],
                 'stratum':stratum(row),'legacy_type':row.get('legacy_type'),'legacy_source':row.get('legacy_source'),
                 'document_title':row.get('document_title'),'display_label':row.get('display_label'),
                 'prompt_excerpt':(row.get('prompt_text') or '')[:500],
                 'has_image':any(a['type']=='question_crop' for a in row.get('assets') or []),
-                'human_label':known[0] if known else '', 'annotator':'existing_verified' if known else '',
-                'evidence':known[1] if known else ''})
+                'human_label':prior['human_label'] if manual else known[0] if known else '',
+                'annotator':prior['annotator'] if manual else 'existing_verified' if known else '',
+                'evidence':prior.get('evidence','') if manual else known[1] if known else ''})
+        target.flush();os.fsync(target.fileno())
+    os.replace(temporary, queue_path)
     ordered = sample[:]
     rng.shuffle(ordered)
     # Gold-backed cases first; then EI cases so a small trial tests both workspaces.
@@ -297,25 +325,44 @@ def followup(args):
     if args.limit:candidates=candidates[:args.limit]
     logging.info('start image followup candidates=%s effort=%s',len(candidates),args.effort)
     print(f'log={out/f"run-{args.effort}-image.log"} candidates={len(candidates)}',flush=True)
+    if not candidates:return
     key=load_key()
-    with cache_path.open('a',encoding='utf-8') as target:
+    with cache_path.open('a',encoding='utf-8') as target,ThreadPoolExecutor(max_workers=args.concurrency) as pool:
+        pending={}
+
+        def collect(completed):
+            for future in completed:
+                index,row=pending.pop(future)
+                qid=row['question_id']
+                try:
+                    item,usage=future.result()
+                    record={'source_system':row['source_system'],'question_id':qid,
+                        'question_type':item['question_type'],'subquestion_count':item['subquestion_count'],
+                        'classification_source':'ai_image','model_id':MODEL,'classification_version':VERSION,
+                        'content_hash':content_hash(row),'review_required':needs_review(row,item),
+                        'reason':item['reason'],'evidence_missing':item['evidence_missing'],'usage':usage}
+                    target.write(json.dumps(record,ensure_ascii=False)+'\n');target.flush()
+                    logging.info('image_done %s/%s id=%s label=%s input=%s output=%s',index,len(candidates),
+                                 qid,item['question_type'],usage['input_tokens'],usage['output_tokens'])
+                except Exception as error:
+                    logging.exception('image_failed id=%s error=%s',qid,error)
+
         for index,row in enumerate(candidates,1):
             qid=row['question_id']
             try:
                 image=fetch_question_image(row,out)
                 if image is None:
                     logging.warning('image_unavailable id=%s',qid);continue
-                item,usage=call_image_followup(row,image,args.effort,key)
-                record={'source_system':row['source_system'],'question_id':qid,
-                    'question_type':item['question_type'],'subquestion_count':item['subquestion_count'],
-                    'classification_source':'ai_image','model_id':MODEL,'classification_version':VERSION,
-                    'content_hash':content_hash(row),'review_required':needs_review(row,item),
-                    'reason':item['reason'],'evidence_missing':item['evidence_missing'],'usage':usage}
-                target.write(json.dumps(record,ensure_ascii=False)+'\n');target.flush()
-                logging.info('image_done %s/%s id=%s label=%s input=%s output=%s',index,len(candidates),
-                             qid,item['question_type'],usage['input_tokens'],usage['output_tokens'])
+                future=pool.submit(call_image_followup,row,image,args.effort,key)
+                pending[future]=(index,row)
+                if len(pending)>=args.concurrency:
+                    completed,_=wait(pending,return_when=FIRST_COMPLETED)
+                    collect(completed)
             except Exception as error:
-                logging.exception('image_failed id=%s error=%s',qid,error)
+                logging.exception('image_fetch_failed id=%s error=%s',qid,error)
+        while pending:
+            completed,_=wait(pending,return_when=FIRST_COMPLETED)
+            collect(completed)
     logging.info('finished')
 
 
@@ -380,24 +427,35 @@ def run(args):
 def report(args):
     input_rows=list(read_jsonl(args.input)); by_id={(r['source_system'],r['question_id']):r for r in input_rows}
     out=Path(args.output_dir);records={}
+    sample_path=out/'validation_sample.jsonl'
+    sample_ids={(r['source_system'],r['question_id']) for r in read_jsonl(sample_path)} if sample_path.exists() else None
     for effort in ('none','low'):
         path=out/f'results-{effort}.jsonl'
         if path.exists():
             for row in read_jsonl(path):
                 original=by_id.get((row['source_system'],row['question_id']))
-                if original and row['content_hash']==content_hash(original): records[(effort,row['source_system'],row['question_id'])]=row
+                if (original and row['content_hash']==content_hash(original)
+                        and (sample_ids is None or (row['source_system'],row['question_id']) in sample_ids)):
+                    records[(effort,row['source_system'],row['question_id'])]=row
     gold={}
     queue=out/'validation_queue.csv'
     if queue.exists():
         with queue.open(encoding='utf-8',newline='') as source:
             for row in csv.DictReader(source):
-                if row['human_label'] and row['annotator'] and row['human_label'] in ALLOWED[row['source_system']]:
+                original=by_id.get((row['source_system'],int(row['question_id'])))
+                if (original and row.get('content_hash')==content_hash(original)
+                        and row['human_label'] and row['annotator']
+                        and row['human_label'] in ALLOWED[row['source_system']]):
                     gold[(row['source_system'],int(row['question_id']))]=row['human_label']
+    queue_size=0
+    if queue.exists():
+        with queue.open(encoding='utf-8',newline='') as source:
+            queue_size=sum(1 for _ in csv.DictReader(source))
     result={'snapshot':{w:{'total':sum(r['source_system']==w for r in input_rows),
-        'trained':sum(r['source_system']==w and r.get('has_training') for r in input_rows),
+        'trained':sum(r['source_system']==w and bool(r.get('has_training')) for r in input_rows),
         'legacy_types':dict(Counter(r.get('legacy_type') for r in input_rows if r['source_system']==w)),
         'rule_candidates':sum(r['source_system']==w and rule_decision(r) is not None for r in input_rows)} for w in ('drill','ei')},
-        'validation':{'queue_size':sum(1 for _ in csv.DictReader(queue.open(encoding='utf-8',newline=''))) if queue.exists() else 0,
+        'validation':{'queue_size':queue_size,
                       'human_gold_count':len(gold)},'efforts':{}}
     for effort in ('none','low'):
         selected=[r for (e,_,_),r in records.items() if e==effort]
@@ -436,7 +494,11 @@ def report(args):
             'tokens':dict(usage),'estimated_usd':round(cost,6)}
         image_path=out/f'results-{effort}-image.jsonl'
         if image_path.exists():
-            image_rows=list(read_jsonl(image_path));image_usage=Counter();image_cost=0
+            image_rows=[r for r in read_jsonl(image_path)
+                        if (r['source_system'],r['question_id']) in by_id
+                        and r['content_hash']==content_hash(by_id[(r['source_system'],r['question_id'])])
+                        and (sample_ids is None or (r['source_system'],r['question_id']) in sample_ids)]
+            image_usage=Counter();image_cost=0
             for row in image_rows:
                 u=row.get('usage') or {};image_usage.update(u)
                 image_cost+=(u.get('input_tokens',0)-u.get('cached_input_tokens',0))*INPUT_PRICE+u.get('cached_input_tokens',0)*CACHED_INPUT_PRICE+u.get('output_tokens',0)*OUTPUT_PRICE
@@ -492,6 +554,7 @@ def main():
         if name=='followup':
             p.add_argument('--effort',choices=['none','low'],required=True)
             p.add_argument('--limit',type=int,default=0)
+            p.add_argument('--concurrency',type=int,default=10)
         if name=='export':p.add_argument('--effort',choices=['none','low'],required=True)
     args=parser.parse_args()
     if args.command=='prepare':prepare(args)

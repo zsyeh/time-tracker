@@ -5,10 +5,12 @@ from tempfile import TemporaryDirectory
 
 from django.core.management import call_command
 from django.core.management.base import CommandError
+from django.db import connection
 from django.test import TestCase
+from django.test.utils import CaptureQueriesContext
 
 from drill.management.commands.import_exam_types import digest_for_question
-from drill.models import Question, QuestionDocument, QuestionExamType
+from drill.models import Question, QuestionAsset, QuestionDocument, QuestionExamType
 
 
 class ExamTypeImportTests(TestCase):
@@ -63,3 +65,16 @@ class ExamTypeImportTests(TestCase):
                              batch_id='test_batch_002', backup=Path(directory) / 'backup.json',
                              stdout=StringIO())
             self.assertEqual(QuestionExamType.objects.count(), 0)
+
+    def test_dry_run_does_not_select_binary_asset_data(self):
+        QuestionAsset.objects.create(
+            source_id=991232, question=self.question, position=0,
+            asset_type='question_crop', sha256='f' * 64,
+            image_data=b'private-image-bytes', width=10, height=10,
+        )
+        with TemporaryDirectory() as directory:
+            source = Path(directory) / 'rows.jsonl'
+            source.write_text(json.dumps(self.record()) + '\n')
+            with CaptureQueriesContext(connection) as queries:
+                call_command('import_exam_types', input=source, stdout=StringIO())
+            self.assertFalse(any('"image_data"' in query['sql'] for query in queries))
