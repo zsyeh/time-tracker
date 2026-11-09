@@ -15,7 +15,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .cleaning import SOURCE_LABELS
-from .exam_types import with_exam_type, filter_exam_type, type_group, type_statistics
+from .exam_types import with_exam_type, filter_exam_type, type_group, queryset_type_statistics
 from .selected_collections import CODES as SELECTED_COLLECTIONS, filter_collection
 from .models import (
     DrillContentShare, ExamBlueprint, ExamPaper, ExamPaperItem, Question, QuestionAsset,
@@ -584,6 +584,7 @@ class DrillQuestionListView(APIView):
             )
         if marker in dict(QuestionMarker.MARKER_CHOICES):
             queryset = queryset.filter(markers__user=request.user, markers__code=marker)
+        format_statistics = queryset_type_statistics(queryset, request.user)
         queryset = question_progress(filter_exam_type(queryset, request.query_params), request.user).order_by(
             'document_id', 'question_order',
         )
@@ -591,7 +592,7 @@ class DrillQuestionListView(APIView):
         paginator.page_size = 24
         page = paginator.paginate_queryset(queryset, request)
         response = paginator.get_paginated_response(QuestionSummarySerializer(page, many=True).data)
-        response.data['type_statistics'] = type_statistics(queryset.values('pk','final_question_type','latest_result'))
+        response.data['type_statistics'] = format_statistics
         return response
 
 
@@ -1868,6 +1869,7 @@ class DrillHeatmapView(APIView):
             )
         if collection == 'core_selected':
             question_queryset = filter_collection(question_queryset, request)
+        format_statistics = queryset_type_statistics(question_queryset, request.user)
         question_queryset = filter_exam_type(question_queryset, request.query_params)
         questions = list(
             question_queryset.select_related('document', 'similarity_topic').only(
@@ -2104,8 +2106,7 @@ class DrillHeatmapView(APIView):
                          'visible':sum(q['course']==key for q in visible)} for key,title,_module in COURSES]}
         return Response({
             **extra,
-            'type_statistics': type_statistics({'question_type':q.final_question_type,
-                'latest_result':progress.get(q.pk,{}).get('latest_result')} for q in questions),
+            'type_statistics': format_statistics,
             'mode': mode,
             'question_count': len(questions),
             'topic_count': len(unique_topic_ids),

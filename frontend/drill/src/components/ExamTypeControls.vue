@@ -1,10 +1,14 @@
 <script setup lang="ts">
+import { watch } from 'vue'
 import { runtimeWorkspace } from '../lib/runtimePath'
 const isEi = runtimeWorkspace === 'ei'
 import { formatColours, typeGroups, typeLabel, typeText, type TypeStats } from '../lib/examTypes'
-const visibleGroups = typeGroups.filter((key) => isEi || key !== 'short_answer')
-defineProps<{ modelValue: string; stats?: TypeStats }>()
+const visibleGroups = typeGroups.filter((key) => isEi || key === 'small' || key === 'large')
+const props = defineProps<{ modelValue: string; stats?: TypeStats }>()
 const emit = defineEmits<{ 'update:modelValue': [value: string]; practice: [] }>()
+watch(() => props.modelValue, (value) => {
+  if (value && !visibleGroups.some((key) => key === value)) emit('update:modelValue', '')
+}, { immediate: true })
 </script>
 <template>
   <section class="exam-type-controls" :aria-label="typeText('题型筛选与分析', 'Format filters and analysis')">

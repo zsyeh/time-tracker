@@ -53,6 +53,17 @@ def type_statistics(items):
     return stats
 
 
+def queryset_type_statistics(queryset, user):
+    """Count formats inside the current scope, before the format selector."""
+    from django.db.models import OuterRef, Subquery
+    from .models import QuestionAttempt
+    latest = QuestionAttempt.objects.filter(user=user, question_id=OuterRef('pk')).order_by('-created_at', '-pk')
+    items = with_exam_type(queryset).annotate(
+        latest_result=Subquery(latest.values('result')[:1]),
+    ).order_by().values('pk', 'final_question_type', 'latest_result').distinct()
+    return type_statistics(items)
+
+
 def audit_reasons(question, record):
     reasons = []
     if record['question_type'] == 'unknown':

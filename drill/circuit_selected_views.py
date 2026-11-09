@@ -4,7 +4,7 @@ from django.http import Http404
 
 from .circuit_selected import aggregate_progress, filter_collection, manifest, material_annotations, review_manifest
 from .models import Question
-from .exam_types import filter_exam_type, type_group, type_statistics
+from .exam_types import filter_exam_type, type_group, queryset_type_statistics
 from .ei_selected_pdf_pages import pdf_pages_for
 from .views import question_progress, request_workspace
 from drill_sources.models import SourceQuestionAnchor
@@ -26,9 +26,14 @@ class CircuitSelectedView(APIView):
             raise Http404
         data = self.selection_manifest()
         records = {q['uuid']: q for q in data['questions']}
-        questions = question_progress(material_annotations(self.selection_queryset(
-            filter_exam_type(Question.objects.all(),request.query_params), request,
-        )), request.user).select_related('document').order_by('document_id', 'question_order', 'pk')
+        scoped = self.selection_queryset(Question.objects.all(), request)
+        valid_ids = [pk for pk, question_uuid, fingerprint in scoped.values_list('pk', 'uuid', 'fingerprint')
+                     if records.get(str(question_uuid), {}).get('fingerprint') == fingerprint]
+        scoped = scoped.filter(pk__in=valid_ids)
+        format_statistics = queryset_type_statistics(scoped, request.user)
+        questions = question_progress(material_annotations(
+            filter_exam_type(scoped, request.query_params),
+        ), request.user).select_related('document').order_by('document_id', 'question_order', 'pk')
         indexed = set(SourceQuestionAnchor.objects.filter(
             question__uuid__in=records,
         ).values_list('question__uuid', flat=True))
@@ -59,7 +64,7 @@ class CircuitSelectedView(APIView):
             groups.append({**bucket, 'questions': rows, 'progress': aggregate_progress(rows)})
         review = self.selection_review()['records']
         return Response({
-            'type_statistics': type_statistics(items),
+            'type_statistics': format_statistics,
             'title': data['title'], 'basis': data['basis'], 'groups': groups,
             'progress': aggregate_progress(items), 'ready_count': sum(q['ready'] for q in items),
             'inventory_count': data['inventory_count'], 'selected_count': len(records),

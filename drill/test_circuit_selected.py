@@ -60,6 +60,21 @@ class CircuitCollectionTests(TestCase):
         req=self.factory.get('/?'+query,HTTP_HOST=host);force_authenticate(req,user=user or self.user)
         return view.as_view()(req,**({'question_uuid':question.uuid} if question else {}))
 
+    def test_type_cards_keep_counts_inside_selected_material_scope(self):
+        for question, label in ((self.q1,'single_choice'), (self.q2,'solution'), (self.q3,'fill_blank')):
+            question.question_type=label
+            question.save(update_fields=['question_type'])
+        QuestionAttempt.objects.create(user=self.user, question=self.q2, result='review')
+        baseline=self.get().data['type_statistics']
+        self.assertEqual(baseline['small']['total'],2)
+        self.assertEqual(baseline['large']['review'],1)
+        for group in ('small','large','unknown'):
+            self.assertEqual(self.get('type_group='+group).data['type_statistics'],baseline)
+        ready=self.get('material=ready&type_group=small').data
+        self.assertEqual(ready['type_statistics']['small']['total'],1)
+        self.assertEqual(ready['type_statistics']['large']['total'],1)
+        self.assertEqual([q['uuid'] for g in ready['groups'] for q in g['questions']],[str(self.q1.uuid)])
+
     def test_collection_is_read_only_and_progress_is_shared_but_user_scoped(self):
         QuestionAttempt.objects.create(user=self.user,question=self.q1,result='correct')
         QuestionAttempt.objects.create(user=self.other,question=self.q2,result='review')

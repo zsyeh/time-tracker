@@ -55,3 +55,34 @@ class FinalExamTypeTests(TestCase):
     def test_workspace_and_invalid_filter(self):
         self.assertEqual(self.client.get('/api/drill/questions/?type_group=invalid').status_code,400)
         self.assertEqual(self.client.get('/api/drill/questions/',HTTP_HOST='ei.test').data['count'],0)
+
+    def test_format_cards_keep_all_counts_when_switching_formats(self):
+        QuestionAttempt.objects.create(user=self.user, question=self.questions[0], result='correct')
+        QuestionAttempt.objects.create(user=self.user, question=self.questions[2], result='review')
+        for url in ('/api/drill/questions/?', '/api/drill/heatmap/?scope=all&'):
+            baseline = self.client.get(url).data['type_statistics']
+            self.assertEqual(baseline['large'], {'total':1, 'attempted':1, 'mastered':0, 'review':1})
+            for group in ('small', 'large', 'unknown'):
+                with self.subTest(url=url, group=group):
+                    response = self.client.get(url + 'type_group=' + group)
+                    self.assertEqual(response.status_code, 200)
+                    self.assertEqual(response.data['type_statistics'], baseline)
+            self.assertEqual(self.client.get(url+'exam_type=choice').data['type_statistics'], baseline)
+
+    def test_format_counts_preserve_document_search_and_selected_scope(self):
+        other = QuestionDocument.objects.create(workspace='drill', source_id=772, filename='other.pdf',
+            title='Other', sha256='c'*64, page_count=1)
+        Question.objects.create(document=other, question_order=1, fingerprint='z'*64,
+            is_practiceable=True, prompt_text='Outside', question_type='solution')
+        self.doc.relation_type='selected_question_book'
+        self.doc.save()
+        for url in ('/api/drill/questions/?', '/api/drill/heatmap/?scope=all&'):
+            data = self.client.get(url+'collection=selected&type_group=small').data
+            self.assertEqual(data['type_statistics']['large']['total'], 1)
+            self.assertEqual(data['type_statistics']['small']['total'], 2)
+        data=self.client.get(f'/api/drill/questions/?document={self.doc.pk}&type_group=small').data
+        self.assertEqual(data['type_statistics']['large']['total'],1)
+        data=self.client.get('/api/drill/questions/?q=Outside&type_group=small').data
+        self.assertEqual(data['count'],0)
+        self.assertEqual(data['type_statistics']['large']['total'],1)
+        self.assertEqual(data['type_statistics']['small']['total'],0)

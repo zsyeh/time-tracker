@@ -80,4 +80,16 @@ it.each(['drill', 'ei'])('shows short-answer filters only for EI (%s)', async (w
   expect(!!host.querySelector('option[value="short_answer"]')).toBe(workspace === 'ei')
   expect(!!host.querySelector('.exam-type-stats .exam-short_answer')).toBe(workspace === 'ei')
   expect(host.textContent!.includes('true / false')).toBe(workspace === 'ei')
+  expect(!!host.querySelector('option[value="unknown"]')).toBe(workspace === 'ei')
+  expect(!!host.querySelector('.exam-type-stats .exam-unknown')).toBe(workspace === 'ei')
+})
+
+it('clears an old Drill unknown filter so the hidden entry cannot leave an empty page', async () => {
+  runtime.workspace = 'drill'
+  host = document.createElement('div'); document.body.append(host)
+  const update = vi.fn()
+  app = createApp(ExamTypeControls, { modelValue: 'unknown', stats: {}, 'onUpdate:modelValue': update })
+  app.mount(host); await flush()
+  expect(update).toHaveBeenCalledWith('')
+  expect(host.querySelector('option[value="unknown"]')).toBeNull()
 })
