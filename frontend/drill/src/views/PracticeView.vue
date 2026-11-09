@@ -214,7 +214,7 @@ onUnmounted(() => {
   <section :class="{ 'exam-type-colours': formatColours }" class="page practice-page">
     <header class="page-header">
       <div><span class="eyebrow">{{ isEi ? t('foundationBank') : t('questionIndex') }}</span><h1>{{ isEi ? t('electronicInformation') : t('questionBank') }}</h1><p>共 {{ catalog.summary.practiceable_count.toLocaleString() }} 道可练习题；另有 {{ catalog.summary.outline_count.toLocaleString() }} 条资料目录记录未作为题目展示。</p></div>
-      <button v-if="lastQuestionUuid || questions?.results.length" class="primary-action" @pointerenter="prefetchQuestion(lastQuestionUuid || questions?.results[0]?.uuid || null, navigationQueryString())" @click="openQuestion(lastQuestionUuid || questions!.results[0].uuid)">{{ lastQuestionUuid ? t('resumeLast') : t('openNext') }} <b>→</b></button>
+      <button v-if="lastQuestionUuid || questions?.results.length" class="primary-action" :disabled="loading" @pointerenter="prefetchQuestion(lastQuestionUuid || questions?.results[0]?.uuid || null, navigationQueryString())" @click="openQuestion(lastQuestionUuid || questions!.results[0].uuid)">{{ lastQuestionUuid ? t('resumeLast') : t('openNext') }} <b>→</b></button>
     </header>
 
     <PracticeTrendPanel />
@@ -242,7 +242,7 @@ onUnmounted(() => {
     <div class="result-meta"><span>{{ questions?.count ?? 0 }} 道题</span><span class="state-legend"><i class="status-unattempted" /> 未开始 <i class="status-mastered" /> 已掌握 <i class="status-review" /> 待复习 <i class="status-overdue" /> 已到期</span><span v-if="loading">正在加载…</span></div>
     <p v-if="error" class="error-state">{{ error }}</p>
     <div v-else class="question-list" :class="{ loading }">
-      <button v-for="question in questions?.results" :key="question.uuid" :data-type-group="question.type_group" class="question-row" @pointerenter="prefetchQuestion(question.uuid, navigationQueryString())" @pointerdown="prefetchQuestion(question.uuid, navigationQueryString())" @click="openQuestion(question.uuid)">
+      <button v-for="question in questions?.results" :key="question.uuid" :data-type-group="question.type_group" :disabled="loading" class="question-row" @pointerenter="prefetchQuestion(question.uuid, navigationQueryString())" @pointerdown="prefetchQuestion(question.uuid, navigationQueryString())" @click="openQuestion(question.uuid)">
         <span class="question-index">{{ String(question.question_order).padStart(4, '0') }}</span>
         <span class="question-copy"><strong>{{ question.display_label || `题目 ${question.question_order}` }}</strong><small><ExamTypeBadge :type="question.question_type" :group="question.type_group" /> · {{ question.document }} · {{ question.topic || '未分类' }}<em v-if="question.record_kind === 'grouped'"> · 组合题摘录</em><em v-if="question.pdf_pages"> · PDF 题 {{ question.pdf_pages.question }} / 答 {{ question.pdf_pages.answer }} / 对照 {{ question.pdf_pages.paired }} 页</em></small></span>
         <span class="source-badge" :class="`category-${question.source_category}`">{{ question.source_category_label }}</span>
