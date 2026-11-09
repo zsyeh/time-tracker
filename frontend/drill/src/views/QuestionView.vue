@@ -14,8 +14,10 @@ import { notifyPracticeTrendChanged } from '../lib/practiceTrend'
 import { emptyNextQuestionMessage, emptyPreviousQuestionMessage, nextQuestionTarget, previousQuestionTarget, type NextQuestionMode } from '../lib/questionNavigation'
 import { runtimeWorkspace, withWorkspacePrefix } from '../lib/runtimePath'
 import { buildClipboardPng, copyImagesToClipboard, downloadImageBlob, shareImageBlob } from '../lib/imageClipboard'
+import { useUiPreferences } from '../lib/uiPreferences'
 
 const props = defineProps<{ uuid: string }>()
+const { t } = useUiPreferences()
 const router = useRouter()
 const route = useRoute()
 const note = ref('')
@@ -1119,7 +1121,7 @@ onBeforeRouteLeave(() => {
     <p v-if="actionFeedback" class="action-feedback" role="status">✓ {{ actionFeedback }}</p>
     <p v-if="pageTurnCopyMessage" class="page-turn-copy-feedback" :class="{ error: pageTurnCopyFailed }" role="status">{{ pageTurnCopyMessage }}</p>
     <nav class="question-topbar" aria-label="题目导航">
-      <button class="question-return" type="button" @click="backToEntryPoint">← {{ route.query.from === 'core-heatmap' ? '五科核心热力图' : route.query.from === 'communication-selected' ? '通信严选' : route.query.from === 'digital-selected' ? '数电严选' : route.query.from === 'analog-selected' ? '模电严选' : route.query.from === 'signal-selected' ? '信号严选' : route.query.from === 'circuit-selected' ? '电路严选' : route.query.from === 'selected-heatmap' ? '严选题热力图' : route.query.from === 'heatmap' ? '热力图' : route.query.from === 'collection' ? '收藏题目' : route.query.from === 'insight' ? '学习洞察' : route.query.from === 'cockpit' ? '892 总览' : '题库' }}</button>
+      <button class="question-return" type="button" @click="backToEntryPoint">← {{ route.query.from === 'core-heatmap' ? '五科核心热力图' : route.query.from === 'communication-selected' ? '通信严选' : route.query.from === 'digital-selected' ? '数电严选' : route.query.from === 'analog-selected' ? '模电严选' : route.query.from === 'signal-selected' ? '信号严选' : route.query.from === 'circuit-selected' ? '电路严选' : route.query.from === 'selected-heatmap' ? '严选题热力图' : route.query.from === 'heatmap' ? '热力图' : route.query.from === 'collection' ? '收藏题目' : route.query.from === 'insight' ? t('insight') : route.query.from === 'cockpit' ? '892 总览' : '题库' }}</button>
       <div class="question-page-turner">
         <button type="button" :disabled="!topPreviousTarget" @click="goToPrevious">← {{ topPreviousLabel }}</button>
         <span v-if="loading">正在加载当前题</span>

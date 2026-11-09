@@ -660,7 +660,6 @@ button { color: inherit; }
 .feel-grid p { grid-column: 1/-1; margin: 7px 0; color: var(--text-tertiary); font-size: 9px; }
 .feel-grid footer { grid-column: 1/-1; padding-top: 8px; border-top: 1px solid var(--border-subtle); color: var(--text-tertiary); display: flex; justify-content: space-between; font-size: 8px; }
 .feel-grid footer b { color: var(--text-secondary); }
-.marker-overview { margin-bottom: 8px; padding: 14px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface); }
 .insight-filters { margin-bottom: 10px; padding: 10px; display: grid; grid-template-columns: repeat(5, minmax(120px, 1fr)); gap: 7px; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface); }
 .insight-filters label { min-width: 0; display: grid; gap: 4px; color: var(--text-tertiary); font-size: 8px; }
 .insight-filters .wide { grid-column: span 2; }
@@ -668,16 +667,6 @@ button { color: inherit; }
 .insight-filters .filter-actions { display: flex; align-items: end; gap: 5px; }
 .insight-filters button { min-height: 36px; padding: 0 11px; border: 1px solid var(--border-default); border-radius: var(--radius-sm); color: var(--text-secondary); background: var(--bg-sidebar); cursor: pointer; }
 .insight-filters button:first-child { color: var(--accent); border-color: color-mix(in srgb, var(--accent) 50%, var(--border-default)); }
-.marker-overview > header { display: flex; align-items: flex-end; justify-content: space-between; }
-.marker-overview h2 { margin: 2px 0 0; font-size: 15px; }
-.marker-overview > header > small { color: var(--text-tertiary); font-size: 8px; }
-.marker-overview > div { margin-top: 10px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
-.marker-overview > div button { min-width: 0; min-height: 54px; padding: 9px; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); color: var(--text-secondary); background: var(--bg-sidebar); display: grid; grid-template-columns: 1fr auto; gap: 4px; text-align: left; cursor: pointer; }
-.marker-overview > div button:hover:not(:disabled) { border-color: var(--border-default); }
-.marker-overview > div button:disabled { opacity: .4; cursor: default; }
-.marker-overview > div span { overflow: hidden; font-size: 9px; text-overflow: ellipsis; white-space: nowrap; }
-.marker-overview > div strong { color: var(--warning); font: 550 16px ui-monospace, monospace; }
-.marker-overview > div small { grid-column: 1/-1; color: var(--text-tertiary); font-size: 7px; }
 .insight-grid { overflow: hidden; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface); display: grid; grid-template-columns: 1fr 1fr; }
 .insight-grid > section { min-width: 0; border-left: 1px solid var(--border-subtle); }
 .insight-grid > section:first-child { border-left: 0; }
@@ -799,8 +788,6 @@ button { color: inherit; }
   .activity-calendar > header { align-items: flex-start; flex-direction: column; }
   .activity-calendar dl { width: 100%; justify-content: space-between; }
   .activity-calendar dl div { text-align: left; }
-  .marker-overview > header { align-items: flex-start; flex-direction: column; gap: 5px; }
-  .marker-overview > div { grid-template-columns: 1fr 1fr; }
   .insight-grid, .feel-grid { grid-template-columns: 1fr; }
   .insight-filters { grid-template-columns: 1fr 1fr; }
   .insight-filters .wide { grid-column: 1/-1; }

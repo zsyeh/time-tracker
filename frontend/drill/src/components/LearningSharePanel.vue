@@ -2,6 +2,8 @@
 import { computed, onMounted, ref } from 'vue'
 import { api, post, remove } from '../lib/api'
 import { runtimeWorkspace } from '../lib/runtimePath'
+import { useUiPreferences } from '../lib/uiPreferences'
+import { learningSharePrompt } from '../lib/learningSharePrompt'
 
 const props = defineProps<{ currentScope?: Record<string, string> }>()
 type ShareKind = 'heatmap' | 'daily' | 'weekly' | 'global'
@@ -19,9 +21,50 @@ const busy = ref(false)
 const error = ref('')
 const copied = ref('')
 const fallbackMarkdown = ref('')
-const scopeDescription = computed(() => kind.value === 'heatmap'
-  ? (range.value === 'current' ? JSON.stringify(props.currentScope || {}) : range.value)
-  : kind.value === 'daily' || kind.value === 'weekly' ? range.value : '全局')
+const { language } = useUiPreferences()
+const labels = computed(() => language.value === 'zh-CN' ? {
+  title: 'AI 分享 · 7 天', workspace: '工作区', access: '分享链接有效 7 天。获得链接的人可读取所选范围内的学习记录',
+  notesAccess: '及全部当前 Note', content: '内容', range: '范围', heatmap: '热力图与逐题记录', daily: '日报',
+  weekly: '周报', global: '全局历史总结', current: '当前筛选范围', all: '全局题库', selected: '数学严选题',
+  core: '五科核心严选', circuit: '电路严选', signal: '信号严选', analog: '模电严选', digital: '数电严选',
+  communication: '通信严选', today: '今天', yesterday: '昨天', custom: '指定日期', recent7: '最近 7 天',
+  previous7: '上一个 7 天', date: '日期', includeNotes: '包含当前 Note', create: '生成 7 天链接',
+  sharing: '将分享', expires: '到期时间', linkLabel: 'AI 学习数据分享链接', copied: '已复制',
+  copyLink: '复制链接', view: '查看内容', copyPrompt: '复制给 ChatGPT 的提示词',
+  copiedMarkdown: '已复制 Markdown', copyMarkdown: '复制 Markdown 全文', revokeNow: '立即撤销',
+  safariFallback: 'Safari 无法自动复制，请长按下面文本并选择“全选→复制”。', active: '有效分享',
+  browserOnly: '链接仅保存在创建它的浏览器。其他设备无法从服务器恢复明文链接，可撤销后重新生成。',
+  noteIncluded: '已包含', noteExcluded: '未包含', revoke: '撤销', copyFallback: '请复制以下内容',
+  markdownError: 'Markdown 读取失败',
+} : {
+  title: 'AI share · 7 days', workspace: 'Workspace', access: 'This link expires after 7 days. Anyone with it can read learning records in the selected scope',
+  notesAccess: ' and all current Notes', content: 'Content', range: 'Scope', heatmap: 'Heatmap and question records', daily: 'Daily report',
+  weekly: 'Weekly report', global: 'All-time summary', current: 'Current filters', all: 'Entire question bank', selected: 'Selected math questions',
+  core: 'Five-core selected set', circuit: 'Selected circuits', signal: 'Selected signals', analog: 'Selected analog', digital: 'Selected digital',
+  communication: 'Selected communications', today: 'Today', yesterday: 'Yesterday', custom: 'Specific date', recent7: 'Last 7 days',
+  previous7: 'Previous 7 days', date: 'Date', includeNotes: 'Include current Notes', create: 'Create 7-day link',
+  sharing: 'Sharing', expires: 'Expires', linkLabel: 'AI learning-data share link', copied: 'Copied',
+  copyLink: 'Copy link', view: 'View content', copyPrompt: 'Copy prompt for ChatGPT',
+  copiedMarkdown: 'Markdown copied', copyMarkdown: 'Copy full Markdown', revokeNow: 'Revoke now',
+  safariFallback: 'Safari could not copy automatically. Long-press the text below, then choose Select All → Copy.', active: 'Active shares',
+  browserOnly: 'Plaintext links are stored only in the browser that created them. On another device, revoke and create a new link.',
+  noteIncluded: 'included', noteExcluded: 'excluded', revoke: 'Revoke', copyFallback: 'Copy this content',
+  markdownError: 'Could not read Markdown',
+})
+const kindLabel = (value: ShareKind) => ({ heatmap: labels.value.heatmap, daily: labels.value.daily, weekly: labels.value.weekly, global: labels.value.global })[value]
+const scopeDescription = computed(() => {
+  if (kind.value === 'global') return labels.value.global
+  if (kind.value === 'heatmap' && range.value === 'current') return JSON.stringify(props.currentScope || {})
+  const descriptions: Record<string, string> = {
+    all: labels.value.all, selected: labels.value.selected, core_selected: labels.value.core,
+    circuit_selected: labels.value.circuit, signal_selected: labels.value.signal,
+    analog_selected: labels.value.analog, digital_selected: labels.value.digital,
+    communication_selected: labels.value.communication, today: labels.value.today,
+    yesterday: labels.value.yesterday, custom: date.value || labels.value.custom,
+    recent7: labels.value.recent7, previous7: labels.value.previous7,
+  }
+  return descriptions[range.value] || range.value
+})
 
 async function refresh() {
   try {
@@ -75,7 +118,7 @@ async function copy(value: string, label: string) {
     await navigator.clipboard.writeText(value)
     copied.value = label
   } catch {
-    window.prompt('请复制以下内容', value)
+    window.prompt(labels.value.copyFallback, value)
   }
 }
 
@@ -85,7 +128,7 @@ async function copyMarkdown() {
   error.value = ''
   try {
     const response = await fetch(created.value.url.replace(/\/index\.md$/, '/export.md'), { credentials: 'omit' })
-    if (!response.ok) throw new Error(`Markdown 读取失败（${response.status}）`)
+    if (!response.ok) throw new Error(`${labels.value.markdownError} (${response.status})`)
     const body = await response.text()
     try {
       await navigator.clipboard.writeText(body)
@@ -99,7 +142,7 @@ async function copyMarkdown() {
 }
 
 const prompt = computed(() => created.value
-  ? `请读取这个 ${runtimeWorkspace.toUpperCase()} 学习数据链接：${created.value.url}。沿着目录查看热力图、错误分类和重点题目，根据真实数据分析我的薄弱点，并推荐明天需要练习的 15 道题。不要编造题目数量或掌握情况。`
+  ? learningSharePrompt(runtimeWorkspace, created.value.url, language.value)
   : '')
 onMounted(() => {
   try { savedLinks.value = JSON.parse(localStorage.getItem(storageKey) || '{}') as Record<number, string> }
@@ -110,66 +153,71 @@ onMounted(() => {
 
 <template>
   <details class="learning-share-panel">
-    <summary>分享给 AI · 7 天只读链接</summary>
-    <p>工作区：<a href="https://drill.ehzsy.site/insight" :aria-current="runtimeWorkspace === 'drill' ? 'page' : undefined">Drill</a> ·
+    <summary>{{ labels.title }}</summary>
+    <p>{{ labels.workspace }}：<a href="https://drill.ehzsy.site/insight" :aria-current="runtimeWorkspace === 'drill' ? 'page' : undefined">Drill</a> ·
       <a href="https://ei.ehzsy.site/insight" :aria-current="runtimeWorkspace === 'ei' ? 'page' : undefined">EI</a></p>
-    <p>分享链接有效 7 天。获得链接的人可读取所选范围内的学习记录<span v-if="includeNotes">及全部当前 Note</span>。</p>
+    <p>{{ labels.access }}<span v-if="includeNotes">{{ labels.notesAccess }}</span>{{ language === 'zh-CN' ? '。' : '.' }}</p>
     <div class="learning-share-controls">
-      <label>内容
+      <label>{{ labels.content }}
         <select v-model="kind" @change="range = kind === 'heatmap' ? 'current' : kind === 'daily' ? 'today' : 'recent7'">
-          <option value="heatmap">热力图与逐题记录</option><option value="daily">日报</option>
-          <option value="weekly">周报</option><option value="global">全局历史总结</option>
+          <option value="heatmap">{{ labels.heatmap }}</option><option value="daily">{{ labels.daily }}</option>
+          <option value="weekly">{{ labels.weekly }}</option><option value="global">{{ labels.global }}</option>
         </select>
       </label>
-      <label v-if="kind !== 'global'">范围
+      <label v-if="kind !== 'global'">{{ labels.range }}
         <select v-model="range">
           <template v-if="kind === 'heatmap'">
-            <option value="current">当前筛选范围</option><option value="all">全局题库</option>
-            <option v-if="runtimeWorkspace === 'drill'" value="selected">数学严选题</option>
+            <option value="current">{{ labels.current }}</option><option value="all">{{ labels.all }}</option>
+            <option v-if="runtimeWorkspace === 'drill'" value="selected">{{ labels.selected }}</option>
             <template v-else>
-              <option value="core_selected">五科核心严选</option>
-              <option value="circuit_selected">电路严选</option><option value="signal_selected">信号严选</option>
-              <option value="analog_selected">模电严选</option><option value="digital_selected">数电严选</option>
-              <option value="communication_selected">通信严选</option>
+              <option value="core_selected">{{ labels.core }}</option>
+              <option value="circuit_selected">{{ labels.circuit }}</option><option value="signal_selected">{{ labels.signal }}</option>
+              <option value="analog_selected">{{ labels.analog }}</option><option value="digital_selected">{{ labels.digital }}</option>
+              <option value="communication_selected">{{ labels.communication }}</option>
             </template>
           </template>
-          <template v-else-if="kind === 'daily'"><option value="today">今天</option><option value="yesterday">昨天</option><option value="custom">指定日期</option></template>
-          <template v-else><option value="recent7">最近 7 天</option><option value="previous7">上一个 7 天</option></template>
+          <template v-else-if="kind === 'daily'"><option value="today">{{ labels.today }}</option><option value="yesterday">{{ labels.yesterday }}</option><option value="custom">{{ labels.custom }}</option></template>
+          <template v-else><option value="recent7">{{ labels.recent7 }}</option><option value="previous7">{{ labels.previous7 }}</option></template>
         </select>
       </label>
-      <label v-if="kind === 'daily' && range === 'custom'">日期<input v-model="date" type="date"></label>
-      <label class="note-choice"><input v-model="includeNotes" type="checkbox">包含当前 Note</label>
-      <button type="button" :disabled="busy || (kind === 'daily' && range === 'custom' && !date)" @click="create">生成 7 天链接</button>
+      <label v-if="kind === 'daily' && range === 'custom'">{{ labels.date }}<input v-model="date" type="date"></label>
+      <label class="note-choice"><input v-model="includeNotes" type="checkbox">{{ labels.includeNotes }}</label>
+      <button type="button" :disabled="busy || (kind === 'daily' && range === 'custom' && !date)" @click="create">{{ labels.create }}</button>
     </div>
-    <p class="scope">将分享：{{ scopeDescription }}</p>
+    <p class="scope">{{ labels.sharing }}：{{ scopeDescription }}</p>
     <p v-if="error" role="alert">{{ error }}</p>
     <div v-if="created" class="created-share">
-      <p>到期时间：{{ new Date(created.expires_at).toLocaleString('zh-CN') }}</p>
-      <input :value="created.url" readonly aria-label="AI 学习数据分享链接" @focus="($event.target as HTMLInputElement).select()">
+      <p>{{ labels.expires }}：{{ new Date(created.expires_at).toLocaleString(language) }}</p>
+      <input :value="created.url" readonly :aria-label="labels.linkLabel" @focus="($event.target as HTMLInputElement).select()">
       <div class="share-actions">
-        <button type="button" @click="copy(created.url, 'link')">{{ copied === 'link' ? '已复制' : '复制链接' }}</button>
-        <a :href="created.url" target="_blank" rel="noopener noreferrer">查看内容</a>
-        <button type="button" @click="copy(prompt, 'prompt')">{{ copied === 'prompt' ? '已复制' : '复制给 ChatGPT 的提示词' }}</button>
-        <button type="button" :disabled="busy" @click="copyMarkdown">{{ copied === 'markdown' ? '已复制 Markdown' : '复制 Markdown 全文' }}</button>
-        <button type="button" :disabled="busy" @click="revoke(created.id)">立即撤销</button>
+        <button type="button" @click="copy(created.url, 'link')">{{ copied === 'link' ? labels.copied : labels.copyLink }}</button>
+        <a :href="created.url" target="_blank" rel="noopener noreferrer">{{ labels.view }}</a>
+        <button type="button" @click="copy(prompt, 'prompt')">{{ copied === 'prompt' ? labels.copied : labels.copyPrompt }}</button>
+        <button type="button" :disabled="busy" @click="copyMarkdown">{{ copied === 'markdown' ? labels.copiedMarkdown : labels.copyMarkdown }}</button>
+        <button type="button" :disabled="busy" @click="revoke(created.id)">{{ labels.revokeNow }}</button>
       </div>
-      <label v-if="fallbackMarkdown">Safari 无法自动复制，请长按下面文本并选择“全选→复制”。
+      <label v-if="fallbackMarkdown">{{ labels.safariFallback }}
         <textarea :value="fallbackMarkdown" readonly rows="8" @focus="($event.target as HTMLTextAreaElement).select()" />
       </label>
     </div>
-    <details v-if="records.length"><summary>有效分享（{{ records.length }}）</summary>
-      <p>链接仅保存在创建它的浏览器。其他设备无法从服务器恢复明文链接，可撤销后重新生成。</p>
-      <ul><li v-for="item in records" :key="item.id">{{ item.kind }} · 到期 {{ new Date(item.expires_at).toLocaleString('zh-CN') }} · Note {{ item.include_notes ? '已包含' : '未包含' }}
-        <button v-if="savedLinks[item.id]" type="button" @click="copy(savedLinks[item.id], `record-${item.id}`)">复制链接</button>
-        <a v-if="savedLinks[item.id]" :href="savedLinks[item.id]" target="_blank" rel="noopener noreferrer">查看</a>
-        <button type="button" :disabled="busy" @click="revoke(item.id)">撤销</button></li></ul>
+    <details v-if="records.length"><summary>{{ labels.active }} ({{ records.length }})</summary>
+      <p>{{ labels.browserOnly }}</p>
+      <ul><li v-for="item in records" :key="item.id">{{ kindLabel(item.kind) }} · {{ labels.expires }} {{ new Date(item.expires_at).toLocaleString(language) }} · Note {{ item.include_notes ? labels.noteIncluded : labels.noteExcluded }}
+        <button v-if="savedLinks[item.id]" type="button" @click="copy(savedLinks[item.id], `record-${item.id}`)">{{ labels.copyLink }}</button>
+        <a v-if="savedLinks[item.id]" :href="savedLinks[item.id]" target="_blank" rel="noopener noreferrer">{{ labels.view }}</a>
+        <button type="button" :disabled="busy" @click="revoke(item.id)">{{ labels.revoke }}</button></li></ul>
     </details>
   </details>
 </template>
 
 <style scoped>
-.learning-share-panel { margin: 1rem 0; padding: 1rem; border: 1px solid var(--border-default); border-radius: var(--radius-lg); color: var(--text-primary); background: var(--bg-surface); }
-.learning-share-panel summary { cursor: pointer; font-weight: 700; min-height: 44px; }
+.learning-share-panel { box-sizing: border-box; width: clamp(190px, 25%, 310px); max-width: 100%; margin: 8px 0 12px; padding: 0 11px; border: 1px solid var(--border-default); border-radius: var(--radius-sm); color: var(--text-primary); background: var(--bg-surface); }
+.learning-share-panel[open] { width: 100%; padding: 11px 14px; }
+.learning-share-panel > summary { display: flex; align-items: center; gap: 7px; min-height: 42px; overflow: hidden; color: var(--text-primary); font-size: 11px; font-weight: 700; white-space: nowrap; cursor: pointer; list-style: none; }
+.learning-share-panel > summary::-webkit-details-marker { display: none; }
+.learning-share-panel > summary::before { content: '▸'; color: var(--accent); font-size: 13px; }
+.learning-share-panel[open] > summary::before { content: '▾'; }
+.learning-share-panel details summary { min-height: 40px; cursor: pointer; font-weight: 700; }
 .learning-share-panel p { color: var(--text-secondary); }
 .learning-share-panel a { color: var(--accent); }
 .learning-share-controls, .share-actions { display: flex; flex-wrap: wrap; gap: .7rem; align-items: end; }

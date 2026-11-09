@@ -1,4 +1,5 @@
 import { post } from './api'
+import { uiLanguage } from './uiPreferences'
 
 export interface ShareLinkResponse {
   share_url: string
@@ -32,7 +33,7 @@ export async function createAndCopyShare(endpoint: string) {
   try {
     await copyText(response.share_url)
   } catch {
-    window.prompt('复制分享链接', response.share_url)
+    window.prompt(uiLanguage.value === 'zh-CN' ? '复制分享链接' : 'Copy the share link', response.share_url)
   }
   return response
 }
