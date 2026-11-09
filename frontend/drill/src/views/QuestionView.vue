@@ -40,7 +40,7 @@ const errorOptions: Array<{ code: ErrorCode; label: string; group: string }> = [
 
 function navigationQuery() {
   const query = router.currentRoute.value.query
-  return Object.fromEntries(['document', 'topic', 'source_category', 'q', 'unattempted', 'marker', 'collection', 'bucket', 'tier', 'kind', 'material', 'combined', 'state', 'scope', 'course', 'mode', 'insight_return']
+  return Object.fromEntries(['document', 'topic', 'source_category', 'q', 'unattempted', 'marker', 'collection', 'bucket', 'tier', 'kind', 'material', 'combined', 'state', 'scope', 'course', 'mode', 'insight_return', 'insight_list', 'collection_page', 'from']
     .filter((key) => query[key] !== undefined && query[key] !== '')
     .map((key) => [key, String(query[key])]))
 }
@@ -96,7 +96,7 @@ function backToEntryPoint() {
     return
   }
   if (route.query.from === 'collection') {
-    void router.push(route.query.collection === 'review_later' ? '/review-later' : '/favorites')
+    void router.push({ path: route.query.collection === 'review_later' ? '/review-later' : '/favorites', query: { page: String(route.query.collection_page || '1') } })
     return
   }
   if (route.query.from === 'insight') {
@@ -119,10 +119,10 @@ const question = ref<QuestionDetail | null>(null)
 const navigationFrame = ref<{ uuid: string; previous: string | null; next: string | null }>({
   uuid: props.uuid, previous: null, next: null,
 })
-const navigationPrevious = computed(() => question.value?.previous_question_uuid
-  || (navigationFrame.value.uuid === props.uuid ? navigationFrame.value.previous : null))
-const navigationNext = computed(() => question.value?.sequential_next_question_uuid
-  || (navigationFrame.value.uuid === props.uuid ? navigationFrame.value.next : null))
+const navigationPrevious = computed(() => question.value ? question.value.previous_question_uuid
+  : navigationFrame.value.uuid === props.uuid ? navigationFrame.value.previous : null)
+const navigationNext = computed(() => question.value ? question.value.sequential_next_question_uuid
+  : navigationFrame.value.uuid === props.uuid ? navigationFrame.value.next : null)
 const topPreviousTarget = computed(() => question.value
   ? previousQuestionTarget(question.value, nextMode.value)
   : nextMode.value === 'sequential' ? navigationPrevious.value : null)

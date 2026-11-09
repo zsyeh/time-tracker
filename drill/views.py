@@ -1,4 +1,5 @@
 import datetime
+from urllib.parse import parse_qs, urlsplit
 
 from django.conf import settings
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
@@ -252,6 +253,85 @@ def navigation_with_latest_result(queryset, user):
         next_latest_result=Subquery(latest.values('result')[:1]),
         next_latest_at=Subquery(latest.values('created_at')[:1]),
     )
+
+
+def list_context_navigation(request, question):
+    source = request.query_params.get('from')
+    if source == 'collection':
+        field = {'favorite': 'is_favorite', 'review_later': 'review_later'}.get(
+            request.query_params.get('collection'),
+        )
+        if not field:
+            return None
+        ids = QuestionUserState.objects.filter(
+            user=request.user,
+            question__is_practiceable=True,
+            question__document__workspace=request_workspace(request),
+            **{field: True},
+        ).order_by('-updated_at', '-pk').values_list('question_id', flat=True)
+    elif source == 'insight':
+        return_path = urlsplit(request.query_params.get('insight_return', ''))
+        if return_path.path != '/insight' or return_path.netloc or return_path.scheme:
+            return None
+        params = {key: values[-1] for key, values in parse_qs(return_path.query).items()}
+        filtered = insight_filtered_querysets(request, params)
+        if isinstance(filtered, Response):
+            return None
+        attempts, notes, *_ = filtered
+        list_kind = request.query_params.get('insight_list')
+        if list_kind == 'attempts':
+            ids = attempts.values_list('question_id', flat=True)
+        elif list_kind == 'notes':
+            ids = notes.values_list('question_id', flat=True)
+        else:
+            return None
+    else:
+        return None
+
+    # The History attempts list can contain several submissions for one question.
+    # Keep its first visible occurrence so a page turn always changes question.
+    ordered_ids = list(dict.fromkeys(ids))
+    if question.pk not in ordered_ids:
+        return {key: None for key in (
+            'previous_question_uuid', 'sequential_next_question_uuid', 'next_question_uuid',
+            'next_overdue_review_uuid', 'next_review_uuid',
+            'previous_overdue_review_uuid', 'previous_review_uuid',
+        )}
+    latest = QuestionAttempt.objects.filter(
+        user=request.user, question_id=OuterRef('pk'),
+    ).order_by('-created_at', '-pk')
+    rows = {
+        pk: (str(uuid), result, attempted_at)
+        for pk, uuid, result, attempted_at in Question.objects.filter(
+            pk__in=ordered_ids, is_practiceable=True,
+            document__workspace=request_workspace(request),
+        ).annotate(
+            nav_result=Subquery(latest.values('result')[:1]),
+            nav_at=Subquery(latest.values('created_at')[:1]),
+        ).values_list('pk', 'uuid', 'nav_result', 'nav_at')
+    }
+    index = ordered_ids.index(question.pk)
+    cutoff = timezone.now() - datetime.timedelta(days=5)
+
+    def find(indices, predicate=lambda _row: True):
+        return next((rows[pk][0] for pk in indices if pk in rows and predicate(rows[pk])), None)
+
+    def is_review(row):
+        return row[1] == 'review' and (row[2] is None or row[2] > cutoff)
+
+    def is_overdue(row):
+        return row[1] == 'review' and row[2] is not None and row[2] <= cutoff
+
+    after = ordered_ids[index + 1:]
+    return {
+        'previous_question_uuid': find(reversed(ordered_ids[:index])),
+        'sequential_next_question_uuid': find(after),
+        'next_question_uuid': find(after, lambda row: row[1] not in {'done', 'correct'}),
+        'next_overdue_review_uuid': find(after, is_overdue),
+        'next_review_uuid': find(after, is_review),
+        'previous_overdue_review_uuid': find(reversed(ordered_ids[:index]), is_overdue),
+        'previous_review_uuid': find(reversed(ordered_ids[:index]), is_review),
+    }
 
 
 def unmastered_navigation(queryset, user):
@@ -859,6 +939,9 @@ class DrillQuestionDetailView(APIView):
                 for asset in question.assets.all() if asset.asset_type == 'question_crop'
             ],
         })
+        context_navigation = list_context_navigation(request, question)
+        if context_navigation is not None:
+            payload.update(context_navigation)
         from drill_sources.presentation import attach_source_context
         attach_source_context(payload, question, request)
         return Response(payload)
@@ -1477,7 +1560,7 @@ class DrillCollectionView(APIView):
             question__is_practiceable=True,
             question__document__workspace=request_workspace(request),
             **{field: True},
-        ).order_by('-updated_at')
+        ).order_by('-updated_at', '-pk')
         paginator = PageNumberPagination()
         paginator.page_size = 24
         state_page = paginator.paginate_queryset(states, request)
@@ -1560,107 +1643,11 @@ class DrillInsightView(APIView):
         }
 
     def get(self, request):
+        filtered = insight_filtered_querysets(request, request.query_params)
+        if isinstance(filtered, Response):
+            return filtered
+        recent_attempts, saved_notes, document_ids, course_document_ids = filtered
         workspace = request_workspace(request)
-        params = request.query_params
-        error_code = params.get('error', '').upper()
-        valid_errors = {code for code, _label in QuestionAttemptError.ERROR_CHOICES}
-        if error_code and error_code not in valid_errors:
-            return Response({'detail': 'Unknown diagnosis code.'}, status=400)
-
-        recent_attempts = QuestionAttempt.objects.filter(
-            user=request.user,
-            result__in=('done', 'correct', 'review'),
-            question__is_practiceable=True,
-            question__document__workspace=workspace,
-        ).select_related('question__document', 'question__similarity_topic').prefetch_related(
-            'error_tags',
-        )
-        saved_notes = QuestionUserState.objects.filter(
-            user=request.user,
-            question__is_practiceable=True,
-            question__document__workspace=workspace,
-        ).exclude(note='').select_related('question__document', 'question__similarity_topic').order_by('-updated_at')
-
-        document = params.get('document', '')
-        topic = params.get('topic', '')
-        query = params.get('q', '').strip()
-        state = params.get('state', '')
-        course = params.get('course', '')
-        has_note = params.get('has_note', '')
-        start = params.get('start', '')
-        end = params.get('end', '')
-        sort = params.get('sort', 'recent')
-        if state not in {'', 'mastered', 'review'} or has_note not in {'', '1', '0'} or sort not in {'recent', 'oldest'}:
-            return Response({'detail': 'Invalid Insight filter.'}, status=400)
-        try:
-            start_date = datetime.date.fromisoformat(start) if start else None
-            end_date = datetime.date.fromisoformat(end) if end else None
-        except ValueError:
-            return Response({'detail': 'Dates must use YYYY-MM-DD.'}, status=400)
-        if start_date and end_date and start_date > end_date:
-            return Response({'detail': 'Start date must not be after end date.'}, status=400)
-
-        document_ids = list(QuestionDocument.objects.filter(workspace=workspace).values_list('id', 'title', 'display_title'))
-        course_document_ids = {
-            code: [pk for pk, title, display in document_ids if course_for_title(display or title)[0] == code]
-            for code, _label, _needles in COURSES
-        }
-        if course:
-            if course not in course_document_ids:
-                return Response({'detail': 'Unknown course.'}, status=400)
-            recent_attempts = recent_attempts.filter(question__document_id__in=course_document_ids[course])
-            saved_notes = saved_notes.filter(question__document_id__in=course_document_ids[course])
-        if document:
-            recent_attempts = recent_attempts.filter(question__document_id=document)
-            saved_notes = saved_notes.filter(question__document_id=document)
-        if topic:
-            recent_attempts = recent_attempts.filter(question__similarity_topic_id=topic)
-            saved_notes = saved_notes.filter(question__similarity_topic_id=topic)
-        if error_code:
-            recent_attempts = recent_attempts.filter(error_tags__code=error_code)
-            saved_notes = saved_notes.filter(question__attempts__user=request.user, question__attempts__error_tags__code=error_code)
-        if query:
-            lookup = (
-                Q(question__display_label__icontains=query) |
-                Q(question__source_label__icontains=query) |
-                Q(question__document__title__icontains=query) |
-                Q(question__document__display_title__icontains=query) |
-                Q(question__similarity_topic__title__icontains=query)
-            )
-            recent_attempts = recent_attempts.filter(lookup)
-            saved_notes = saved_notes.filter(lookup | Q(note__icontains=query))
-        if has_note == '1':
-            recent_attempts = recent_attempts.filter(question__user_states__user=request.user).exclude(question__user_states__note='')
-        elif has_note == '0':
-            recent_attempts = recent_attempts.exclude(question__user_states__user=request.user, question__user_states__note__gt='')
-        if state == 'mastered':
-            recent_attempts = recent_attempts.filter(result__in=('done', 'correct'))
-        elif state == 'review':
-            recent_attempts = recent_attempts.filter(result='review')
-        if start_date:
-            recent_attempts = recent_attempts.filter(created_at__date__gte=start_date)
-            saved_notes = saved_notes.filter(updated_at__date__gte=start_date)
-        if end_date:
-            recent_attempts = recent_attempts.filter(created_at__date__lte=end_date)
-            saved_notes = saved_notes.filter(updated_at__date__lte=end_date)
-
-        latest_attempt = QuestionAttempt.objects.filter(
-            user=request.user, question_id=OuterRef('question_id'), result__in=('done', 'correct', 'review'),
-        ).order_by('-created_at', '-pk')
-        latest_primary_error = QuestionAttemptError.objects.filter(
-            attempt__user=request.user, attempt__question_id=OuterRef('question_id'), is_primary=True,
-        ).order_by('-attempt__created_at', '-attempt_id')
-        saved_notes = saved_notes.annotate(
-            latest_result=Subquery(latest_attempt.values('result')[:1]),
-            primary_error=Subquery(latest_primary_error.values('code')[:1]),
-        )
-        if state == 'mastered':
-            saved_notes = saved_notes.filter(latest_result__in=('done', 'correct'))
-        elif state == 'review':
-            saved_notes = saved_notes.filter(latest_result='review')
-        direction = '' if sort == 'oldest' else '-'
-        recent_attempts = recent_attempts.distinct().order_by(f'{direction}created_at', f'{direction}pk')
-        saved_notes = saved_notes.distinct().order_by(f'{direction}updated_at', f'{direction}pk')
 
         def question_identity(question):
             return {
@@ -1723,6 +1710,110 @@ class DrillInsightView(APIView):
             },
         })
 
+
+def insight_filtered_querysets(request, params):
+    workspace = request_workspace(request)
+    error_code = params.get('error', '').upper()
+    valid_errors = {code for code, _label in QuestionAttemptError.ERROR_CHOICES}
+    if error_code and error_code not in valid_errors:
+        return Response({'detail': 'Unknown diagnosis code.'}, status=400)
+
+    recent_attempts = QuestionAttempt.objects.filter(
+        user=request.user,
+        result__in=('done', 'correct', 'review'),
+        question__is_practiceable=True,
+        question__document__workspace=workspace,
+    ).select_related('question__document', 'question__similarity_topic').prefetch_related(
+        'error_tags',
+    )
+    saved_notes = QuestionUserState.objects.filter(
+        user=request.user,
+        question__is_practiceable=True,
+        question__document__workspace=workspace,
+    ).exclude(note='').select_related('question__document', 'question__similarity_topic').order_by('-updated_at')
+
+    document = params.get('document', '')
+    topic = params.get('topic', '')
+    query = params.get('q', '').strip()
+    state = params.get('state', '')
+    course = params.get('course', '')
+    has_note = params.get('has_note', '')
+    start = params.get('start', '')
+    end = params.get('end', '')
+    sort = params.get('sort', 'recent')
+    if state not in {'', 'mastered', 'review'} or has_note not in {'', '1', '0'} or sort not in {'recent', 'oldest'}:
+        return Response({'detail': 'Invalid Insight filter.'}, status=400)
+    try:
+        start_date = datetime.date.fromisoformat(start) if start else None
+        end_date = datetime.date.fromisoformat(end) if end else None
+    except ValueError:
+        return Response({'detail': 'Dates must use YYYY-MM-DD.'}, status=400)
+    if start_date and end_date and start_date > end_date:
+        return Response({'detail': 'Start date must not be after end date.'}, status=400)
+
+    document_ids = list(QuestionDocument.objects.filter(workspace=workspace).values_list('id', 'title', 'display_title'))
+    course_document_ids = {
+        code: [pk for pk, title, display in document_ids if course_for_title(display or title)[0] == code]
+        for code, _label, _needles in COURSES
+    }
+    if course:
+        if course not in course_document_ids:
+            return Response({'detail': 'Unknown course.'}, status=400)
+        recent_attempts = recent_attempts.filter(question__document_id__in=course_document_ids[course])
+        saved_notes = saved_notes.filter(question__document_id__in=course_document_ids[course])
+    if document:
+        recent_attempts = recent_attempts.filter(question__document_id=document)
+        saved_notes = saved_notes.filter(question__document_id=document)
+    if topic:
+        recent_attempts = recent_attempts.filter(question__similarity_topic_id=topic)
+        saved_notes = saved_notes.filter(question__similarity_topic_id=topic)
+    if error_code:
+        recent_attempts = recent_attempts.filter(error_tags__code=error_code)
+        saved_notes = saved_notes.filter(question__attempts__user=request.user, question__attempts__error_tags__code=error_code)
+    if query:
+        lookup = (
+            Q(question__display_label__icontains=query) |
+            Q(question__source_label__icontains=query) |
+            Q(question__document__title__icontains=query) |
+            Q(question__document__display_title__icontains=query) |
+            Q(question__similarity_topic__title__icontains=query)
+        )
+        recent_attempts = recent_attempts.filter(lookup)
+        saved_notes = saved_notes.filter(lookup | Q(note__icontains=query))
+    if has_note == '1':
+        recent_attempts = recent_attempts.filter(question__user_states__user=request.user).exclude(question__user_states__note='')
+    elif has_note == '0':
+        recent_attempts = recent_attempts.exclude(question__user_states__user=request.user, question__user_states__note__gt='')
+    if state == 'mastered':
+        recent_attempts = recent_attempts.filter(result__in=('done', 'correct'))
+    elif state == 'review':
+        recent_attempts = recent_attempts.filter(result='review')
+    if start_date:
+        recent_attempts = recent_attempts.filter(created_at__date__gte=start_date)
+        saved_notes = saved_notes.filter(updated_at__date__gte=start_date)
+    if end_date:
+        recent_attempts = recent_attempts.filter(created_at__date__lte=end_date)
+        saved_notes = saved_notes.filter(updated_at__date__lte=end_date)
+
+    latest_attempt = QuestionAttempt.objects.filter(
+        user=request.user, question_id=OuterRef('question_id'), result__in=('done', 'correct', 'review'),
+    ).order_by('-created_at', '-pk')
+    latest_primary_error = QuestionAttemptError.objects.filter(
+        attempt__user=request.user, attempt__question_id=OuterRef('question_id'), is_primary=True,
+    ).order_by('-attempt__created_at', '-attempt_id')
+    saved_notes = saved_notes.annotate(
+        latest_result=Subquery(latest_attempt.values('result')[:1]),
+        primary_error=Subquery(latest_primary_error.values('code')[:1]),
+    )
+    if state == 'mastered':
+        saved_notes = saved_notes.filter(latest_result__in=('done', 'correct'))
+    elif state == 'review':
+        saved_notes = saved_notes.filter(latest_result='review')
+    direction = '' if sort == 'oldest' else '-'
+    recent_attempts = recent_attempts.distinct().order_by(f'{direction}created_at', f'{direction}pk')
+    saved_notes = saved_notes.distinct().order_by(f'{direction}updated_at', f'{direction}pk')
+
+    return recent_attempts, saved_notes, document_ids, course_document_ids
 
 class DrillHeatmapView(APIView):
     def get(self, request):

@@ -1,15 +1,16 @@
 <script setup lang="ts">
 import { onMounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { api } from '../lib/api'
 import type { CollectionPayload } from '../types'
 
 const props = defineProps<{ kind: 'favorite' | 'review_later' }>()
 const router = useRouter()
+const route = useRoute()
 const data = ref<CollectionPayload | null>(null)
 const loading = ref(true)
 const error = ref('')
-const page = ref(1)
+const page = ref(Math.max(1, Number(route.query.page) || 1))
 
 const copy = () => props.kind === 'favorite'
   ? { eyebrow: 'SAVED COLLECTION', title: 'Favorites', description: 'Questions you starred for quick access.' }
@@ -28,7 +29,13 @@ async function load() {
 }
 
 function openQuestion(uuid: string) {
-  void router.push({ path: `/practice/${uuid}`, query: { from: 'collection', collection: props.kind } })
+  void router.push({ path: `/practice/${uuid}`, query: { from: 'collection', collection: props.kind, collection_page: String(page.value) } })
+}
+
+function changePage(nextPage: number) {
+  page.value = nextPage
+  void router.replace({ query: { page: nextPage > 1 ? String(nextPage) : undefined } })
+  void load()
 }
 
 watch(() => props.kind, () => { page.value = 1; void load() })
@@ -52,6 +59,6 @@ onMounted(load)
       </button>
       <div v-if="!data?.results.length" class="empty-state">{{ props.kind === 'favorite' ? 'No favorites yet. Star a question from Practice.' : 'Nothing is queued for next time.' }}</div>
     </div>
-    <footer v-if="data && (data.previous || data.next)" class="pager"><button :disabled="!data.previous" @click="page--; load()">← Previous</button><span>PAGE {{ page }}</span><button :disabled="!data.next" @click="page++; load()">Next →</button></footer>
+    <footer v-if="data && (data.previous || data.next)" class="pager"><button :disabled="!data.previous" @click="changePage(page - 1)">← Previous</button><span>PAGE {{ page }}</span><button :disabled="!data.next" @click="changePage(page + 1)">Next →</button></footer>
   </section>
 </template>

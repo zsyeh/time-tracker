@@ -812,6 +812,45 @@ class DrillApiTests(TestCase):
         self.assertEqual(insight['recent_questions']['results'][0]['uuid'], str(self.question.uuid))
         self.assertEqual(insight['recent_notes']['results'][0]['note'], 'Recent note')
 
+    def test_history_question_navigation_uses_visible_list_order_and_filters(self):
+        QuestionAttempt.objects.create(user=self.alice, question=self.question, result='review')
+        QuestionAttempt.objects.create(user=self.alice, question=self.similar, result='correct')
+        QuestionAttempt.objects.create(user=self.alice, question=self.question, result='review')
+        QuestionAttempt.objects.create(user=self.bob, question=self.unrelated, result='review')
+        QuestionUserState.objects.create(user=self.alice, question=self.question, note='first')
+        QuestionUserState.objects.create(user=self.alice, question=self.similar, note='second')
+        self.client.force_login(self.alice)
+
+        def detail(question, **params):
+            return self.client.get(f'/api/drill/questions/{question.uuid}/', params).json()
+
+        attempts = {'from': 'insight', 'insight_list': 'attempts', 'insight_return': '/insight'}
+        first = detail(self.question, **attempts)
+        self.assertEqual(first['sequential_next_question_uuid'], str(self.similar.uuid))
+        self.assertIsNone(first['previous_question_uuid'])
+        self.assertIsNone(first['next_review_uuid'])
+        self.assertEqual(detail(self.similar, **attempts)['previous_question_uuid'], str(self.question.uuid))
+
+        notes = {'from': 'insight', 'insight_list': 'notes', 'insight_return': '/insight'}
+        self.assertEqual(detail(self.similar, **notes)['sequential_next_question_uuid'], str(self.question.uuid))
+        filtered = {**attempts, 'insight_return': '/insight?state=mastered'}
+        self.assertIsNone(detail(self.similar, **filtered)['sequential_next_question_uuid'])
+        self.assertIsNone(detail(self.question, **filtered)['sequential_next_question_uuid'])
+
+    def test_collection_question_navigation_is_private_and_follows_saved_order(self):
+        QuestionUserState.objects.create(user=self.alice, question=self.question, is_favorite=True)
+        QuestionUserState.objects.create(user=self.alice, question=self.similar, is_favorite=True)
+        QuestionUserState.objects.create(user=self.bob, question=self.unrelated, is_favorite=True)
+        self.client.force_login(self.alice)
+        params = {'from': 'collection', 'collection': 'favorite'}
+        first = self.client.get(f'/api/drill/questions/{self.similar.uuid}/', params).json()
+        second = self.client.get(f'/api/drill/questions/{self.question.uuid}/', params).json()
+        self.assertEqual(first['sequential_next_question_uuid'], str(self.question.uuid))
+        self.assertEqual(second['previous_question_uuid'], str(self.similar.uuid))
+        self.assertIsNone(second['sequential_next_question_uuid'])
+        self.assertIsNone(second['next_review_uuid'])
+        self.assertIsNone(self.client.get(f'/api/drill/questions/{self.unrelated.uuid}/', params).json()['sequential_next_question_uuid'])
+
     def test_insight_filters_diagnosis_and_uses_only_canonical_note(self):
         old = QuestionAttempt.objects.create(
             user=self.alice, question=self.question, result='review', note='obsolete attempt note',
