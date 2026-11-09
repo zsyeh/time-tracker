@@ -36,3 +36,27 @@ create that marker in the current architecture.
    may mutate state in some configurations.
 4. Backups are restore inputs, never synchronization inputs for a live DB.
 5. Production migrations and service restarts require explicit authorization.
+
+## Final exam-format import (2026-11-10)
+
+The production exam-format table includes all 8,635 candidates, including 901
+unknown labels and 4,357 audit flags. Migrations 0032 and 0033 are additive;
+legacy question types and learning records are preserved. The full import,
+idempotence and rollback were rehearsed using an isolated PostgreSQL metadata
+fixture before the production dry-run and transactional import.
+
+The effective application image is configured in
+`/etc/systemd/system/time-tracker-ha-web.service.d/20-local-ports.conf`.
+During this deployment Snap-wrapped Docker client commands repeatedly stalled;
+the application launcher now uses `/usr/local/bin/time-tracker-docker`, a
+standalone client connected to the same Snap Docker daemon. The companion
+`25-native-client.conf` overrides only start-preparation and stop commands.
+Future image updates should continue to edit the image in `20-local-ports.conf`.
+The PostgreSQL container was not restarted.
+
+The production backup and classification rollback manifest are kept under
+`/var/snap/docker/common/time-tracker-ha/backups/examtypes-20261110/`.
+An offsite archive copy may replace the large raw dump after the NUC verifies
+its complete decompressed SHA-256; the classification rollback manifest stays
+on 47. Use the classification rollback for reverting labels without replacing
+subsequent learning records. See `docs/exam-type-classification.md` for commands.
