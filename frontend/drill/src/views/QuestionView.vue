@@ -4,8 +4,8 @@ import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from 'vu
 import { api, ApiError, post, remove } from '../lib/api'
 import { cachedNoteDraft, cachedQuestion, clearNoteDraft, fetchQuestion, patchQuestionState, prefetchQuestion, storeNoteDraft, warmQuestionMedia } from '../lib/workspace'
 import type { AttemptDiagnosis, ErrorCode, QuestionDetail, QuestionMarkerCode, QuestionSummary } from '../types'
-import ExamTypeBadge from '../components/ExamTypeBadge.vue'
-import { typeLabel, typeText } from '../lib/examTypes'
+import ExamTypeEditor from '../components/ExamTypeEditor.vue'
+import { typeText } from '../lib/examTypes'
 import MarkdownAnswer from '../components/MarkdownAnswer.vue'
 import SourcePaperViewer from '../components/SourcePaperViewer.vue'
 import OriginalAnswer from '../components/OriginalAnswer.vue'
@@ -1140,7 +1140,7 @@ onBeforeRouteLeave(() => {
     <div v-if="loading" class="question-skeleton">正在加载题目…</div>
     <template v-else-if="question">
       <header class="question-header">
-        <div><span class="eyebrow">{{ question.document }} · {{ String(question.question_order).padStart(4, '0') }}</span><h1>{{ question.display_label || `题目 ${question.question_order}` }}</h1><p>{{ question.breadcrumbs.map((item) => item.title).join(' / ') }}</p><div class="question-badges"><button type="button" class="exam-type-correction" :title="typeText('点击提交题型勘误', 'Report a format correction')" @click="erratumKind = 'metadata'; erratumDescription = typeText('题型勘误：当前为', 'Format correction: currently ') + typeLabel(question.question_type || 'unknown') + typeText('，建议改为：', '; suggested format: '); erratumOpen = true"><ExamTypeBadge :type="question.question_type" :group="question.type_group" /></button><span class="source-badge" :class="`category-${question.source_category}`">{{ question.source_category_label }}</span><span v-if="question.record_kind === 'grouped'" class="source-badge">组合题源节选</span></div><p v-if="question.pdf_pages" class="pdf-page-reference">PDF 绝对页码 · 题目册 {{ question.pdf_pages.question }} · 答案册 {{ question.pdf_pages.answer }} · 题答对照册 {{ question.pdf_pages.paired }}</p></div>
+        <div><span class="eyebrow">{{ question.document }} · {{ String(question.question_order).padStart(4, '0') }}</span><h1>{{ question.display_label || `题目 ${question.question_order}` }}</h1><p>{{ question.breadcrumbs.map((item) => item.title).join(' / ') }}</p><div class="question-badges"><ExamTypeEditor :key="question.uuid" :question="question" @saved="(patch) => { if (question) { Object.assign(question, patch); patchQuestionState(question.uuid, patch) } }" /><span class="source-badge" :class="`category-${question.source_category}`">{{ question.source_category_label }}</span><span v-if="question.record_kind === 'grouped'" class="source-badge">组合题源节选</span></div><p v-if="question.pdf_pages" class="pdf-page-reference">PDF 绝对页码 · 题目册 {{ question.pdf_pages.question }} · 答案册 {{ question.pdf_pages.answer }} · 题答对照册 {{ question.pdf_pages.paired }}</p></div>
         <div class="attempt-counter"><span>当前状态</span><strong class="state-name" :class="question.review_overdue ? 'text-overdue' : `text-${question.state}`">{{ question.review_overdue ? '复习已到期' : question.state === 'mastered' ? '已掌握' : question.state === 'review' ? '待复习' : '未开始' }}</strong><small>已记录 {{ question.attempt_count }} 次作答</small><small v-if="question.last_time_spent_seconds !== null" class="last-solving-time">上次用时 · {{ formatRecordedDuration(question.last_time_spent_seconds) }}</small></div>
       </header>
 
@@ -1289,7 +1289,6 @@ onBeforeRouteLeave(() => {
 </template>
 
 <style scoped>
-.exam-type-correction { padding:2px 4px; border:0; background:transparent; cursor:pointer; }
 .source-current-question { display: grid; gap: 7px; margin-bottom: 10px; padding: 12px; border: 1px solid #3975cb; border-radius: 8px; background: var(--bg-surface); }
 .source-current-question strong { font-size: 13px; }
 .source-current-question small { font-size: 11px; color: var(--text-secondary); }

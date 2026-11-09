@@ -303,6 +303,16 @@ class QuestionExamType(models.Model):
         indexes = [models.Index(fields=('source_system', 'question_type'), name='drill_examtype_scope_type_idx')]
 
 
+class QuestionExamTypeEdit(models.Model):
+    """Append-only before/after history for explicit human format corrections."""
+
+    question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='exam_type_edits')
+    actor = models.ForeignKey(settings.AUTH_USER_MODEL, null=True, on_delete=models.SET_NULL)
+    before = models.JSONField()
+    after = models.JSONField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+
 class QuestionRevision(models.Model):
     """Lightweight immutable snapshot used by persisted exam papers.
 

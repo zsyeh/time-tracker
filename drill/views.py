@@ -877,6 +877,7 @@ class DrillQuestionDetailView(APIView):
         payload['classification'] = ({
             'question_type': classification.question_type,
             'classification_version': classification.classification_version,
+            'updated_at': classification.updated_at.isoformat(),
             'classification_source': classification.classification_source,
             'model_id': classification.model_id,
             'review_required': classification.review_required,

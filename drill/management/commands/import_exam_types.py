@@ -1,6 +1,5 @@
 """Validate and transactionally import offline original exam-form labels."""
 
-import hashlib
 import json
 import os
 import re
@@ -12,7 +11,7 @@ from django.db import connection, transaction
 from django.db.models import Prefetch
 
 from drill.models import Question, QuestionAsset, QuestionExamType
-from drill.exam_types import audit_reasons
+from drill.exam_types import audit_reasons, digest_for_question
 
 
 ALLOWED = {
@@ -23,24 +22,6 @@ LEGACY = {'single_choice': 'choice', 'fill_blank': 'fill', 'solution': 'large'}
 FIELDS = ('source_system', 'question_type', 'subquestion_count', 'classification_source',
           'model_id', 'classification_version', 'content_hash', 'review_required',
           'reason', 'evidence_missing', 'review_reasons', 'batch_id')
-
-
-def digest_for_question(question):
-    assets=sorted(question.assets.all(),key=lambda a:(a.position,a.pk))
-    evidence={
-        'question_id':question.pk, 'source_system':question.document.workspace,
-        'source_label':question.source_label or '', 'display_label':question.display_label or '',
-        'prompt_text':question.prompt_text or '', 'latex_text':question.latex_text or '',
-        'document_title':question.document.title or '',
-        'topic_title':(question.similarity_topic.display_title or question.similarity_topic.title) if question.similarity_topic else '',
-        'legacy_type':question.question_type or '', 'legacy_source':question.question_type_source or '',
-        'legacy_human_verified':bool(question.question_type_human_verified),
-        'content_mode':question.content_mode or '',
-        'question_asset_count':sum(a.asset_type=='question_crop' for a in assets),
-        'question_asset_hashes':[a.sha256 for a in assets if a.asset_type=='question_crop'],
-    }
-    raw=json.dumps({'version':'exam-form-v1','evidence':evidence},ensure_ascii=False,sort_keys=True)
-    return hashlib.sha256(raw.encode()).hexdigest()
 
 
 class Command(BaseCommand):

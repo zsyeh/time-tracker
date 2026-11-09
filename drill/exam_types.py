@@ -1,5 +1,6 @@
 """Final answer formats and audit metadata. Review status never gates reads."""
-from collections import defaultdict
+import hashlib
+import json
 
 from django.db.models import Case, CharField, F, Value, When
 from django.db.models.functions import Coalesce
@@ -65,3 +66,23 @@ def audit_reasons(question, record):
     if record.get('review_required') and not reasons:
         reasons.append('record_requested_review')
     return list(dict.fromkeys([*reasons, *record.get('review_reasons', [])]))
+
+
+def digest_for_question(question):
+    assets = (question.assets.all() if 'assets' in getattr(question, '_prefetched_objects_cache', {})
+              else question.assets.only('pk', 'position', 'asset_type', 'sha256'))
+    assets = sorted(assets, key=lambda a: (a.position, a.pk))
+    evidence={
+        'question_id':question.pk, 'source_system':question.document.workspace,
+        'source_label':question.source_label or '', 'display_label':question.display_label or '',
+        'prompt_text':question.prompt_text or '', 'latex_text':question.latex_text or '',
+        'document_title':question.document.title or '',
+        'topic_title':(question.similarity_topic.display_title or question.similarity_topic.title) if question.similarity_topic else '',
+        'legacy_type':question.question_type or '', 'legacy_source':question.question_type_source or '',
+        'legacy_human_verified':bool(question.question_type_human_verified),
+        'content_mode':question.content_mode or '',
+        'question_asset_count':sum(a.asset_type=='question_crop' for a in assets),
+        'question_asset_hashes':[a.sha256 for a in assets if a.asset_type=='question_crop'],
+    }
+    raw=json.dumps({'version':'exam-form-v1','evidence':evidence},ensure_ascii=False,sort_keys=True)
+    return hashlib.sha256(raw.encode()).hexdigest()

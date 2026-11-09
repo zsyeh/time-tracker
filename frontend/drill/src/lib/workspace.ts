@@ -40,6 +40,9 @@ if (typeof window !== 'undefined') {
         for (const key of [...detailCache.keys()]) {
           if (key.startsWith(`${payload.uuid}?`)) detailCache.delete(key)
         }
+        for (const key of Object.keys(sessionStorage)) {
+          if (key.startsWith(`drill.question-detail.v2.${cacheScope}.${encodeURIComponent(payload.uuid + '?')}`)) sessionStorage.removeItem(key)
+        }
       }
       window.dispatchEvent(new CustomEvent('drill:question-state-changed', { detail: payload }))
     } catch { /* ignore malformed cross-tab events */ }
@@ -206,6 +209,11 @@ export function clearNoteDraft(uuid: string) {
 
 export function patchQuestionState(uuid: string, patch: Partial<QuestionDetail>) {
   invalidateDerivedCaches()
+  // Persisted query variants may not currently be in memory. Drop them before
+  // saving patched live entries so a later visit cannot restore the old format.
+  for (const key of Object.keys(sessionStorage)) {
+    if (key.startsWith(`drill.question-detail.v2.${cacheScope}.${encodeURIComponent(uuid + '?')}`)) sessionStorage.removeItem(key)
+  }
   for (const [key, entry] of detailCache) {
     if (!key.startsWith(`${uuid}?`)) continue
     const value = { ...entry.value, ...patch }
