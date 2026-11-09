@@ -167,7 +167,7 @@ const similarOpen = ref(false)
 const answerOpen = ref(false)
 const answerViewedThisRound = ref(false)
 const usedHintThisRound = ref(false)
-const diagnosisOpen = ref(false)
+const diagnosisOpen = ref(localStorage.getItem(`${runtimeWorkspace}.diagnosis-open.v1`) === 'true')
 const selectedErrors = ref<ErrorCode[]>([])
 const primaryError = ref<ErrorCode | null>(null)
 const knowledgeLevel = ref<'K0' | 'K1' | 'K2' | null>(null)
@@ -215,6 +215,7 @@ const reviewAutoNext = ref(localStorage.getItem('drill.review-auto-next.v1') ===
 const masteredAutoNext = ref(localStorage.getItem('drill.mastered-auto-next.v1') !== 'false')
 
 watch(nextMode, (value) => localStorage.setItem('drill.next-mode.v1', value))
+watch(diagnosisOpen, (value) => localStorage.setItem(`${runtimeWorkspace}.diagnosis-open.v1`, String(value)))
 watch(pageTurnCopyMode, (value) => localStorage.setItem(pageTurnCopyStorageKey, value))
 watch(reviewAutoNext, (value) => localStorage.setItem('drill.review-auto-next.v1', String(value)))
 watch(masteredAutoNext, (value) => localStorage.setItem('drill.mastered-auto-next.v1', String(value)))
@@ -585,7 +586,6 @@ async function load() {
   answerOpen.value = false
   answerViewedThisRound.value = false
   usedHintThisRound.value = false
-  diagnosisOpen.value = false
   diagnosisHydrating = true
   selectedErrors.value = []
   primaryError.value = null
@@ -821,6 +821,7 @@ function toggleAnswer() {
 
 async function loadAttemptHistory() {
   historyOpen.value = !historyOpen.value
+  if (historyOpen.value) diagnosisOpen.value = true
   if (!historyOpen.value || attemptHistory.value.length || historyLoading.value) return
   historyLoading.value = true
   const uuid = props.uuid
@@ -1209,7 +1210,7 @@ onBeforeRouteLeave(() => {
           <section class="diagnosis-panel">
             <header>
               <div><span>结构化诊断</span><b class="diagnosis-status" :class="diagnosisSaveState">{{ diagnosisSaveState === 'saving' ? '正在保存…' : diagnosisSaveState === 'saved' ? '已保存 ✓' : diagnosisSaveState === 'error' ? '保存失败' : diagnosisSaveState === 'draft' ? editingAttemptId ? '等待自动保存' : '将随作答保存' : '未填写' }}</b></div>
-              <div class="diagnosis-actions"><button type="button" @click="loadAttemptHistory">{{ historyOpen ? '收起完整历史' : '完整历史' }}</button><button type="button" @click="diagnosisOpen = !diagnosisOpen">{{ diagnosisOpen ? '收起诊断' : '填写诊断' }}</button></div>
+              <div class="diagnosis-actions"><button type="button" :aria-expanded="historyOpen" @click="loadAttemptHistory">{{ historyOpen ? '收起历史' : '完整历史' }}</button><button type="button" :aria-expanded="diagnosisOpen" @click="diagnosisOpen = !diagnosisOpen">{{ diagnosisOpen ? '收起诊断' : '填写诊断' }}</button></div>
             </header>
             <div v-if="diagnosisOpen" class="diagnosis-body">
             <div class="independence-flags">
@@ -1244,8 +1245,6 @@ onBeforeRouteLeave(() => {
               <details class="note-field" :open="noteOpen" @toggle="toggleNote"><summary><span>题目笔记 Note</span><small>{{ noteSaveState === 'saving' ? '保存中…' : noteSaveState === 'saved' ? '已保存' : noteSaveState === 'error' ? '保存失败' : noteSaveState === 'dirty' ? '未保存' : note ? '展开编辑' : '添加笔记' }}</small></summary><textarea v-model="note" maxlength="20000" placeholder="记录公式、错误原因、修正方法或下次检查点" @input="cacheNoteDraft" /><span class="note-controls"><small class="note-draft-hint">{{ noteSaveState === 'saving' ? '保存中…' : noteSaveState === 'saved' ? '已保存到服务器' : noteSaveState === 'error' ? '保存失败，本地草稿仍保留' : noteSaveState === 'dirty' ? '未保存' : '停止输入 5 秒后自动保存' }}</small><button type="button" class="save-note" :disabled="noteSaveState === 'saving'" @click="saveNote">{{ noteSaveState === 'saving' ? '保存中…' : noteSaveState === 'error' ? '重试保存' : '保存笔记' }}</button></span></details>
             </div>
             <div class="unified-answer-actions"><button class="correct primary-action" :class="{ selected: question.state === 'mastered' }" :disabled="saving" @click="record('correct')">{{ masteredAutoNext ? '掌握并下一题' : '标记已掌握' }}</button><button class="review" :class="{ selected: question.state === 'review' }" :disabled="saving" @click="record('review')">待复习{{ reviewAutoNext ? '并下一题' : '' }}</button><details class="secondary-actions"><summary>更多操作</summary><button :disabled="saving || !question.can_undo" @click="undo">撤销上次</button><button :disabled="saving || question.state === 'unattempted'" @click="record('reset')">重置本题状态</button></details></div>
-            <div class="next-mode-control"><label>前后翻题模式<select v-model="nextMode"><option value="sequential">顺序题</option><option value="overdue">红色到期复习题</option><option value="review">黄色近期复习题</option></select></label><label><input v-model="masteredAutoNext" type="checkbox"> 掌握后自动切题</label><label><input v-model="reviewAutoNext" type="checkbox"> 待复习后自动切题</label></div>
-            <div class="page-turn-copy-control" aria-label="翻题后自动复制"><label><input v-model="autoCopyLink" type="checkbox"> 翻题后自动复制分享链接</label><label><input v-model="autoCopyImage" type="checkbox"> 翻题后自动复制题图</label><small>前后翻题均生效；剪贴板一次只能保留一种内容，开启一个会关闭另一个。</small></div>
           </div>
           </section>
 
@@ -1268,6 +1267,17 @@ onBeforeRouteLeave(() => {
             <header><div><span>学习标记</span><small>独立于题目状态，可多选。</small></div><div><button type="button" :disabled="markerSaving" @click="saveMarkers(markerOptions.map((item) => item.code))">全选</button><button type="button" :disabled="markerSaving || !question.markers.length" @click="saveMarkers([])">清空</button></div></header>
             <div><button v-for="marker in markerOptions" :key="marker.code" type="button" :class="{ active: question.markers.includes(marker.code) }" :disabled="markerSaving" @click="toggleMarker(marker.code)">{{ marker.label }}</button></div>
           </section>
+
+          <section class="page-turn-settings" aria-label="翻题偏好">
+            <header><strong>翻题偏好</strong><label>前后翻题<select v-model="nextMode"><option value="sequential">顺序题</option><option value="overdue">红色到期复习题</option><option value="review">黄色近期复习题</option></select></label></header>
+            <div class="page-turn-settings-grid">
+              <label><input v-model="masteredAutoNext" type="checkbox">掌握后切题</label>
+              <label><input v-model="reviewAutoNext" type="checkbox">待复习后切题</label>
+              <label><input v-model="autoCopyLink" type="checkbox">翻题复制链接</label>
+              <label><input v-model="autoCopyImage" type="checkbox">翻题复制题图</label>
+            </div>
+            <small>复制选项二选一；前后翻题均生效。</small>
+          </section>
         </aside>
       </div>
     </template>
@@ -1284,10 +1294,20 @@ onBeforeRouteLeave(() => {
 .source-tracking-toolbar button { padding: 6px; cursor: pointer; background: var(--bg-sidebar); color: var(--text-primary); border: 1px solid var(--border-default); border-radius: 5px; }
 .question-canvas.source-canvas { overflow: visible; }
 .source-review-warning { padding: 12px; border: 1px solid #b6872a; border-radius: 8px; color: #b6872a; font-size: 13px; }
-.diagnosis-panel { display: grid; gap: 10px; margin-bottom: 12px; padding: 13px; border: 1px solid var(--border-default); border-radius: 10px; background: var(--bg-surface); }
+.diagnosis-panel { display: grid; gap: 10px; margin-bottom: 12px; padding: 11px 12px; border: 1px solid var(--border-default); border-radius: 10px; background: var(--bg-surface); }
 .answer-workflow { overflow: hidden; border: 1px solid var(--border-default); border-radius: 10px; background: var(--bg-surface); display: flex; flex-direction: column; }
 .answer-workflow .diagnosis-panel { margin: 0; border: 0; border-bottom: 1px solid var(--border-default); border-radius: 0; }
-.answer-workflow .answer-bar { order: -1; border: 0; border-bottom: 1px solid var(--border-default); border-radius: 0; }
+.answer-workflow .answer-bar { border: 0; border-radius: 0; }
+.page-turn-settings { display: grid; gap: 7px; margin-top: 10px; padding: 10px 11px; border: 1px solid var(--border-default); border-radius: 9px; background: var(--bg-surface); }
+.page-turn-settings > header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
+.page-turn-settings > header strong { color: var(--text-primary); font-size: 12px; }
+.page-turn-settings > header label { display: flex; align-items: center; gap: 6px; color: var(--text-secondary); font-size: 10px; white-space: nowrap; }
+.page-turn-settings select { max-width: 145px; min-height: 32px; padding: 4px 7px; border: 1px solid var(--border-default); border-radius: 6px; color: var(--text-primary); background: var(--bg-sidebar); font-size: 11px; }
+.page-turn-settings-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
+.page-turn-settings-grid label { display: flex; align-items: center; gap: 7px; min-width: 0; min-height: 36px; padding: 5px 7px; border: 1px solid var(--border-default); border-radius: 6px; color: var(--text-secondary); background: var(--bg-sidebar); font-size: 11px; line-height: 1.2; cursor: pointer; }
+.page-turn-settings-grid label:has(input:checked) { border-color: var(--accent); color: var(--text-primary); background: var(--accent-muted); }
+.page-turn-settings-grid input { flex: none; width: 15px; height: 15px; margin: 0; accent-color: var(--accent); }
+.page-turn-settings > small { color: var(--text-tertiary); font-size: 10px; line-height: 1.35; }
 .diagnosis-status { margin-top: 3px; color: var(--text-tertiary); font-size: 10px; font-weight: 600; }
 .diagnosis-status.draft, .diagnosis-status.saving { color: var(--warning); }
 .diagnosis-status.saved { color: var(--success); }
