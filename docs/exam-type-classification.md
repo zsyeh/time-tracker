@@ -28,27 +28,27 @@ and `~/learning-type-audit/.venv/bin/pip install 'openai>=2,<3'`.
 ```bash
 python3 scripts/exam_type_classification.py prepare \
   --input ~/learning-type-audit/questions.jsonl \
-  --output-dir ~/learning-type-audit --size 300
+  --output-dir ~/learning-type-audit/trial-v2 --size 300
 
 PY=~/learning-type-audit/.venv/bin/python
 $PY scripts/exam_type_classification.py run \
-  --input ~/learning-type-audit/validation_sample.jsonl \
-  --output-dir ~/learning-type-audit --effort none --limit 70 \
+  --input ~/learning-type-audit/trial-v2/validation_sample.jsonl \
+  --output-dir ~/learning-type-audit/trial-v2 --effort none --limit 70 \
   --concurrency 10 --force-ai
 $PY scripts/exam_type_classification.py run \
-  --input ~/learning-type-audit/validation_sample.jsonl \
-  --output-dir ~/learning-type-audit --effort low --limit 70 \
+  --input ~/learning-type-audit/trial-v2/validation_sample.jsonl \
+  --output-dir ~/learning-type-audit/trial-v2 --effort low --limit 70 \
   --concurrency 10 --force-ai
 $PY scripts/exam_type_classification.py followup \
-  --input ~/learning-type-audit/validation_sample.jsonl \
-  --output-dir ~/learning-type-audit --effort low --limit 4
+  --input ~/learning-type-audit/trial-v2/validation_sample.jsonl \
+  --output-dir ~/learning-type-audit/trial-v2 --effort low --limit 4
 $PY scripts/exam_type_classification.py report \
   --input ~/learning-type-audit/questions.jsonl \
-  --output-dir ~/learning-type-audit
+  --output-dir ~/learning-type-audit/trial-v2
 ```
 
-Watch progress with `tail -f ~/learning-type-audit/run-low.log` or
-`tail -f ~/learning-type-audit/run-low-image.log`. `validation_queue.csv`
+Watch progress with `tail -f ~/learning-type-audit/trial-v2/run-low.log` or
+`tail -f ~/learning-type-audit/trial-v2/run-low-image.log`. `validation_queue.csv`
 contains the 300-question human annotation queue. Fill `human_label`,
 `annotator` and `evidence` only after inspecting the original question, using
 `question_url` for image-only records. Existing verified labels remain marked

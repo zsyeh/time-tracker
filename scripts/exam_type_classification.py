@@ -118,10 +118,30 @@ def prepare(args):
     for row in others: groups[stratum(row)].append(row)
     for group in groups.values(): rng.shuffle(group)
     sample = verified[:]
+    selected = {row['question_id'] for row in sample}
+
+    def add_matching(predicate, quota):
+        candidates=[row for row in others if row['question_id'] not in selected and predicate(row)]
+        rng.shuffle(candidates)
+        for row in candidates[:min(quota,args.size-len(sample))]:
+            sample.append(row);selected.add(row['question_id'])
+
+    add_matching(lambda r:r['source_system']=='ei' and
+        ('判断' in (r.get('prompt_text') or '') or '对错' in (r.get('prompt_text') or '')),15)
+    add_matching(lambda r:r['source_system']=='ei' and
+        any(word in (r.get('prompt_text') or '') for word in ('简述','解释','比较')),15)
+    add_matching(lambda r:r['source_system']=='drill' and
+        any(word in (r.get('prompt_text') or '') for word in ('填空','____')),15)
+    add_matching(lambda r:not (r.get('prompt_text') or r.get('latex_text')) and bool(r.get('assets')),20)
+    for workspace in ('ei','drill'):
+        for legacy in ('single_choice','fill_blank','solution','unknown'):
+            add_matching(lambda r,w=workspace,t=legacy:r['source_system']==w and r.get('legacy_type')==t,15)
     while len(sample) < args.size and any(groups.values()):
         for name in sorted(groups):
             if len(sample) >= args.size: break
-            if groups[name]: sample.append(groups[name].pop())
+            while groups[name] and groups[name][-1]['question_id'] in selected:groups[name].pop()
+            if groups[name]:
+                row=groups[name].pop();sample.append(row);selected.add(row['question_id'])
     sample = sample[:args.size]
     out = Path(args.output_dir); out.mkdir(parents=True, exist_ok=True)
     with (out/'validation_queue.csv').open('w', encoding='utf-8', newline='') as target:
