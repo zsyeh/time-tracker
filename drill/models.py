@@ -276,6 +276,32 @@ class QuestionAsset(models.Model):
         return f'Asset {self.source_id} for {self.question_id}'
 
 
+class QuestionExamType(models.Model):
+    """Audited original answer-format label; independent of legacy paper types."""
+
+    TYPE_CHOICES = [
+        ('unknown', 'Unknown'), ('judgment', 'Judgment'), ('choice', 'Choice'),
+        ('fill', 'Fill'), ('short_answer', 'Short answer'), ('large', 'Large'),
+    ]
+    question = models.OneToOneField(Question, on_delete=models.CASCADE, related_name='exam_type')
+    source_system = models.CharField(max_length=8, choices=QuestionDocument.WORKSPACE_CHOICES)
+    question_type = models.CharField(max_length=16, choices=TYPE_CHOICES)
+    subquestion_count = models.PositiveSmallIntegerField(null=True, blank=True)
+    classification_source = models.CharField(max_length=24)
+    model_id = models.CharField(max_length=64, blank=True)
+    classification_version = models.CharField(max_length=40)
+    content_hash = models.CharField(max_length=64)
+    review_required = models.BooleanField(default=True, db_index=True)
+    reason = models.TextField(blank=True)
+    evidence_missing = models.TextField(blank=True)
+    batch_id = models.CharField(max_length=64, db_index=True)
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        indexes = [models.Index(fields=('source_system', 'question_type'), name='drill_examtype_scope_type_idx')]
+
+
 class QuestionRevision(models.Model):
     """Lightweight immutable snapshot used by persisted exam papers.
 
