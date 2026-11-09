@@ -3,7 +3,7 @@ import { circuitFilters, circuitPracticeQuery } from './circuitSelected'
 
 describe('circuit collection navigation', () => {
   it('preserves the same filters when opening and returning from a question', () => {
-    const q = { bucket: 'first_order', tier: 'core', state: 'review', combined: '1', kind: 'calculation' }
+    const q = { type_group: 'small', bucket: 'first_order', tier: 'core', state: 'review', combined: '1', kind: 'calculation' }
     const next = circuitPracticeQuery(q)
     expect(next).toMatchObject({ ...q, from: 'circuit-selected', collection: 'circuit_selected' })
     expect(circuitFilters(next)).toEqual(q)

@@ -292,6 +292,7 @@ class QuestionExamType(models.Model):
     classification_version = models.CharField(max_length=40)
     content_hash = models.CharField(max_length=64)
     review_required = models.BooleanField(default=True, db_index=True)
+    review_reasons = models.JSONField(default=list, blank=True)
     reason = models.TextField(blank=True)
     evidence_missing = models.TextField(blank=True)
     batch_id = models.CharField(max_length=64, db_index=True)

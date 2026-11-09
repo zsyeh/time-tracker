@@ -1,4 +1,8 @@
 export interface QuestionSummary {
+  question_type?: import('./lib/examTypes').ExamType
+  type_group?: string
+  legacy_question_type?: string
+  classification?: { question_type: string; classification_version: string; classification_source: string; model_id: string; review_required: boolean; review_reasons: string[]; reason: string } | null
   uuid: string
   document: string
   question_order: number

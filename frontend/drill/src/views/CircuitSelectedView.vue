@@ -3,12 +3,15 @@ import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api } from '../lib/api'
 import { circuitFilters, circuitPracticeQuery } from '../lib/circuitSelected'
+import ExamTypeControls from '../components/ExamTypeControls.vue'
+import ExamTypeBadge from '../components/ExamTypeBadge.vue'
+import { formatColours, type TypeStats } from '../lib/examTypes'
 import HeatmapProgress from '../components/HeatmapProgress.vue'
 
 type Progress = { total: number; attempted: number; mastered: number; unattempted: number }
-type Item = { uuid: string; label: string; book: string; bucket: string; tier: string; kind: string; state: 'mastered' | 'review' | 'unattempted'; ready: boolean; combined: boolean; question_mode: string; answer_mode: string; scope_note: string; has_open_erratum: boolean; pdf_pages: { question: number; answer: number; paired: number } | null; tags: string[]; reason: string[] }
+type Item = { question_type?: string; type_group?: string; uuid: string; label: string; book: string; bucket: string; tier: string; kind: string; state: 'mastered' | 'review' | 'unattempted'; ready: boolean; combined: boolean; question_mode: string; answer_mode: string; scope_note: string; has_open_erratum: boolean; pdf_pages: { question: number; answer: number; paired: number } | null; tags: string[]; reason: string[] }
 type Group = { key: string; title: string; rank: number; tier: string; focus: string; progress: Progress; questions: Item[] }
-type Payload = { title: string; basis: string; groups: Group[]; progress: Progress; ready_count: number; inventory_count: number; selected_count: number; review_count: number; excluded_count: number; review_items: { uuid: string; label: string; reason: string[] }[] }
+type Payload = { type_statistics?: TypeStats; title: string; basis: string; groups: Group[]; progress: Progress; ready_count: number; inventory_count: number; selected_count: number; review_count: number; excluded_count: number; review_items: { uuid: string; label: string; reason: string[] }[] }
 const route = useRoute()
 const router = useRouter()
 const data = ref<Payload | null>(null)
@@ -55,17 +58,18 @@ onMounted(() => {
 </script>
 
 <template>
-  <section class="page circuit-selected-page">
+  <section :class="{ 'exam-type-colours': formatColours }" class="page circuit-selected-page">
     <header class="page-header"><div><span class="eyebrow">892 · CIRCUIT SELECTED</span><h1>电路严选</h1><p>先练一阶换路、戴维南与相量，再补二阶、匹配和变压器。原题原记录，不重复建题。</p></div><button class="primary-action" :disabled="!data?.progress.total || loading" @click="start()">开始／继续刷题 →</button></header>
     <p class="circuit-notice">排序采用你的备考优先级，不代表命题概率。节点法是综合题工具；s 域交叉题单独选练。默认展示核心必练中的全部题目，不区分当前是否已有答案。</p>
     <section class="circuit-filters" aria-label="电路严选筛选">
       <label>训练层级<select :value="filters.tier || ''" @change="change('tier', ($event.target as HTMLSelectElement).value)"><option value="">全部层级</option><option v-for="(title, key) in labels" :key="key" :value="key">{{ title }}</option></select></label>
       <label>考点<select :value="filters.bucket || ''" @change="change('bucket', ($event.target as HTMLSelectElement).value)"><option value="">全部考点</option><option v-for="group in data?.groups || []" :key="group.key" :value="group.key">{{ group.rank }} · {{ group.title }}</option></select></label>
-      <label>题型<select :value="filters.kind || ''" @change="change('kind', ($event.target as HTMLSelectElement).value)"><option value="">计算＋概念</option><option value="calculation">计算／综合</option><option value="concept">概念／简答</option></select></label>
+      <label>训练侧重<select :value="filters.kind || ''" @change="change('kind', ($event.target as HTMLSelectElement).value)"><option value="">计算＋概念</option><option value="calculation">计算／综合</option><option value="concept">概念／简答</option></select></label>
       <label>掌握<select :value="filters.state || ''" @change="change('state', ($event.target as HTMLSelectElement).value)"><option value="">全部状态</option><option value="unattempted">未做</option><option value="review">待复习</option><option value="mastered">已掌握</option></select></label>
       <label>组合训练<select :value="filters.combined || ''" @change="change('combined', ($event.target as HTMLSelectElement).value)"><option value="">全部</option><option value="1">一阶＋戴维南</option></select></label>
       <button @click="router.replace({ path: '/circuit-selected', query: { all: '1' } })">查看全部匹配</button>
     </section>
+    <ExamTypeControls :model-value="filters.type_group || ''" :stats="data?.type_statistics" @update:model-value="change('type_group', $event)" @practice="router.push({ path: '/practice', query: { ...filters, collection: 'circuit_selected', from: 'circuit-selected', type_group: 'small' } })" />
     <p v-if="error" role="alert" class="error">{{ error }}</p>
     <p v-if="loading" role="status">正在读取原题与掌握记录…</p>
     <template v-if="data">
@@ -77,8 +81,8 @@ onMounted(() => {
         <header><div><small>{{ group.rank }} · {{ labels[group.tier] }}</small><h2>{{ group.title }}</h2><p>{{ group.focus }}</p></div><button @click="start(group)">刷这一组 →</button></header>
         <HeatmapProgress :total="group.progress.total" :attempted="group.progress.attempted" :mastered="group.progress.mastered" />
         <div class="circuit-question-grid" :class="{ compact: !showLabels }">
-          <button v-for="(question, index) in group.questions" :key="question.uuid" :class="[question.state, { selected: route.query.question === question.uuid }]" :data-circuit-question="question.uuid" :aria-label="`${question.label} · ${question.book} · ${question.state}`" :title="`${question.book}\n${question.label}\n${question.reason.join('；')}\n${question.question_mode} · ${question.answer_mode}`" @click="open(question)">
-            <strong>{{ showLabels ? question.label : index + 1 }}</strong>
+          <button v-for="(question, index) in group.questions" :key="question.uuid" :data-type-group="question.type_group" :class="[question.state, { selected: route.query.question === question.uuid }]" :data-circuit-question="question.uuid" :aria-label="`${question.label} · ${question.book} · ${question.state}`" :title="`${question.book}\n${question.label}\n${question.reason.join('；')}\n${question.question_mode} · ${question.answer_mode}`" @click="open(question)">
+            <ExamTypeBadge :type="question.question_type" :group="question.type_group" /><strong>{{ showLabels ? question.label : index + 1 }}</strong>
             <template v-if="showLabels"><small>{{ question.book }}</small><small v-if="question.pdf_pages">PDF 题 {{ question.pdf_pages.question }} · 答 {{ question.pdf_pages.answer }} · 对照 {{ question.pdf_pages.paired }} 页</small><span>{{ question.question_mode }} · {{ question.answer_mode }}</span><em v-if="question.combined">一阶＋戴维南</em><em v-if="question.kind === 'concept'">概念／简答</em><em v-if="question.has_open_erratum">有待处理勘误</em><em v-if="question.scope_note">原书部分超纲</em></template>
           </button>
         </div>

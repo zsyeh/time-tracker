@@ -12,6 +12,7 @@ from django.db import connection, transaction
 from django.db.models import Prefetch
 
 from drill.models import Question, QuestionAsset, QuestionExamType
+from drill.exam_types import audit_reasons
 
 
 ALLOWED = {
@@ -21,7 +22,7 @@ ALLOWED = {
 LEGACY = {'single_choice': 'choice', 'fill_blank': 'fill', 'solution': 'large'}
 FIELDS = ('source_system', 'question_type', 'subquestion_count', 'classification_source',
           'model_id', 'classification_version', 'content_hash', 'review_required',
-          'reason', 'evidence_missing', 'batch_id')
+          'reason', 'evidence_missing', 'review_reasons', 'batch_id')
 
 
 def digest_for_question(question):
@@ -51,8 +52,12 @@ class Command(BaseCommand):
         parser.add_argument('--batch-id',default='')
         parser.add_argument('--backup',type=Path)
         parser.add_argument('--rollback',type=Path)
+        parser.add_argument('--expected-workspace-count', action='append', default=[], metavar='WORKSPACE=COUNT')
 
+    @transaction.atomic
     def handle(self,*args,**options):
+        for key in ('input','backup','rollback'):
+            if options.get(key):options[key]=Path(options[key])
         if options['rollback']:
             self.rollback(options['rollback'])
             return
@@ -76,13 +81,27 @@ class Command(BaseCommand):
                 count=row.get('subquestion_count')
                 if count is not None and (not isinstance(count,int) or not 1<=count<=100):
                     raise CommandError(f'Invalid subquestion count on line {line_no}')
-                if row['question_type']=='unknown' and not row.get('review_required'):
-                    raise CommandError(f'Unknown type requires review on line {line_no}')
                 if not row.get('reason') or not row.get('classification_version'):
                     raise CommandError(f'Missing audit fields on line {line_no}')
+                reasons=row.get('review_reasons',[])
+                if not isinstance(reasons,list) or any(not isinstance(item,str) for item in reasons):
+                    raise CommandError(f'Invalid review reasons on line {line_no}')
+                if not isinstance(row.get('review_required'),bool):
+                    raise CommandError(f'Invalid review flag on line {line_no}')
                 rows.append(row)
         if not rows:raise CommandError('No import rows')
+        expected={}
+        for item in options['expected_workspace_count']:
+            try:
+                workspace,count=item.split('='); expected[workspace]=int(count)
+                if workspace not in ALLOWED or int(count)<0:raise ValueError
+            except ValueError as error:raise CommandError('Expected counts must be WORKSPACE=COUNT') from error
+        actual=dict(Counter(row['source_system'] for row in rows))
+        if expected and actual!=expected:
+            raise CommandError(f'Workspace count mismatch: expected {expected}, found {actual}')
         ids=[row['question_id'] for row in rows]
+        if options['apply']:
+            list(Question.objects.filter(pk__in=ids).order_by('pk').select_for_update().values_list('pk',flat=True))
         assets=QuestionAsset.objects.only('id','question_id','position','asset_type','sha256')
         for start in range(0,len(ids),200):
             chunk=Question.objects.filter(pk__in=ids[start:start+200]).select_related(
@@ -94,9 +113,8 @@ class Command(BaseCommand):
                     raise CommandError(f'Missing or cross-workspace question {row["question_id"]}')
                 if digest_for_question(question)!=row['content_hash']:
                     raise CommandError(f'Stale question content {row["question_id"]}; re-export before importing')
-                old=LEGACY.get(question.question_type)
-                if row['question_type']=='unknown' or (old and old!=row['question_type']) or not (question.prompt_text or question.latex_text):
-                    row['review_required']=True
+                row['review_reasons']=audit_reasons(question,row)
+                row['review_required']=bool(row['review_required'] or row['review_reasons'])
         table_exists=QuestionExamType._meta.db_table in connection.introspection.table_names()
         if options['apply'] and not table_exists:
             raise CommandError('Migration 0032_questionexamtype must be applied before --apply')
@@ -105,7 +123,9 @@ class Command(BaseCommand):
         summary={'mode':'apply' if options['apply'] else 'dry_run','rows':len(rows),
                  'new':len(rows)-len(existing),'updates':len(existing),
                  'table_exists':table_exists,
+                 'workspace_counts':actual,
                  'review_required':sum(bool(r['review_required']) for r in rows),
+                 'review_reasons':dict(Counter(reason for row in rows for reason in row['review_reasons'])),
                  'types':{f'{w}:{label}':count for (w,label),count in sorted(counts.items())}}
         if not options['apply']:
             self.stdout.write(json.dumps(summary,ensure_ascii=False));return
@@ -123,11 +143,23 @@ class Command(BaseCommand):
             target.flush();os.fsync(target.fileno())
         os.replace(temp,backup)
         with transaction.atomic():
-            for row in rows:
-                values={field:row.get(field,'') for field in FIELDS if field!='batch_id'}
-                values['model_id']=values['model_id'] or ''
-                values['batch_id']=options['batch_id']
-                QuestionExamType.objects.update_or_create(question_id=row['question_id'],defaults=values)
+            for start in range(0,len(rows),200):
+                objects=[]
+                for row in rows[start:start+200]:
+                    values={field:row.get(field,'') for field in FIELDS if field!='batch_id'}
+                    values['model_id']=values['model_id'] or ''
+                    values['batch_id']=options['batch_id']
+                    objects.append(QuestionExamType(question_id=row['question_id'],**values))
+                QuestionExamType.objects.bulk_create(objects,update_conflicts=True,
+                    unique_fields=['question'],update_fields=[*FIELDS,'updated_at'],batch_size=200)
+            saved={r.question_id:r for r in QuestionExamType.objects.filter(question_id__in=ids)}
+            if len(saved)!=len(rows) or any(
+                any(getattr(saved[row['question_id']],field)!=row.get(field,'')
+                    for field in FIELDS if field not in ('batch_id','model_id'))
+                or saved[row['question_id']].model_id!=(row.get('model_id') or '')
+                or saved[row['question_id']].batch_id!=options['batch_id'] for row in rows
+            ):
+                raise CommandError('Post-import integrity check failed; transaction rolled back')
         self.stdout.write(json.dumps({**summary,'backup':str(backup)},ensure_ascii=False))
 
     def rollback(self,path):
@@ -137,7 +169,8 @@ class Command(BaseCommand):
         batch_id=payload['batch_id']
         rows=payload['rows']
         ids=[row['question_id'] for row in rows]
-        current={r.question_id:r for r in QuestionExamType.objects.filter(question_id__in=ids)}
+        list(Question.objects.filter(pk__in=ids).order_by('pk').select_for_update().values_list('pk',flat=True))
+        current={r.question_id:r for r in QuestionExamType.objects.select_for_update().filter(question_id__in=ids)}
         if len(current)!=len(ids) or any(current[qid].batch_id!=batch_id for qid in ids):
             raise CommandError('Rows changed since this batch; rollback refused')
         with transaction.atomic():

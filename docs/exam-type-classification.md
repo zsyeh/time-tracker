@@ -4,6 +4,15 @@ This pipeline runs on the local NUC. It does not call an API from Django and
 does not overwrite `Question.question_type`, which remains in use by paper
 generation. `QuestionExamType` is an independent audited result table.
 
+The final classification is authoritative for practice, heatmaps, selected
+collections, learning shares and type statistics. All candidates are imported,
+including `unknown` and `review_required=true`. Audit flags and `review_reasons`
+never gate imports, reads or type filters. Unknown remains unknown; the legacy
+field is used only when no final classification record exists.
+
+Small questions mean choice, fill and judgment. Short answers have their own
+filter; large means a worked solution. Practice navigation retains these filters.
+
 ## Read-only snapshot
 
 The query in `scripts/exam_type_snapshot.sql` exports only question metadata,
@@ -104,7 +113,7 @@ claimed as exact billed cost.
 
 ## Database import — after a verified backup and migration approval
 
-Before applying migration `0032_questionexamtype`, create and verify a
+Before applying migrations `0032_questionexamtype` and `0033_questionexamtype_review_reasons`, create and verify a
 PostgreSQL backup and record the rollback procedure. Deploy the tested image,
 then run the migration only after explicit approval. The importer defaults to
 dry-run and verifies each question's current content hash and workspace. It
@@ -112,9 +121,11 @@ refuses stale records before any write. Applying requires an unused 0600
 rollback backup path and a batch ID. Each batch is one database transaction.
 
 ```bash
-python manage.py import_exam_types --input /path/import-candidates.jsonl
+python manage.py import_exam_types --input /path/import-candidates.jsonl \
+  --expected-workspace-count drill=5837 --expected-workspace-count ei=2798
 python manage.py import_exam_types --input /path/import-candidates.jsonl \
   --apply --batch-id exam_form_20261109_01 \
+  --expected-workspace-count drill=5837 --expected-workspace-count ei=2798 \
   --backup /secure/path/exam_form_20261109_01.rollback.json
 python manage.py import_exam_types \
   --rollback /secure/path/exam_form_20261109_01.rollback.json
@@ -123,3 +134,11 @@ python manage.py import_exam_types \
 Rollback refuses to run if any row has been changed by a later batch. No
 existing chapter, knowledge-point, difficulty, answer or legacy paper-type
 field is modified.
+
+Apply locks the affected question rows, checks all hashes and workspace totals,
+upserts every row in batches of 200 and verifies all stored classification and
+audit values before committing. A failure rolls back the entire import. The
+rollback JSON is private, written and fsynced before any classification write.
+`scripts/rehearse_exam_type_import.py` exercises dry-run, repeated full imports
+and both rollbacks against an empty, isolated PostgreSQL database populated
+from the production metadata snapshot (no image bytes or personal notes).

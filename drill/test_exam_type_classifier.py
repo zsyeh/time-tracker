@@ -82,6 +82,10 @@ class ExamTypeClassifierTests(SimpleTestCase):
                 for row in (first, second)
             ]
             (out / 'results-low.jsonl').write_text('\n'.join(json.dumps(r) for r in result_rows) + '\n')
+            (out / 'results-low-image.jsonl').write_text(json.dumps({**result_rows[0],
+                'question_type':'fill','usage':{'input_tokens':0,'cached_input_tokens':0,'output_tokens':0}})+'\n')
             report(SimpleNamespace(input=source, output_dir=out))
             data = json.loads((out / 'report.json').read_text())
             self.assertEqual(data['efforts']['low']['classified'], 1)
+            self.assertEqual(data['efforts']['low']['final_result']['total'], 1)
+            self.assertEqual(data['efforts']['low']['final_result']['by_workspace']['drill']['counts'], {'fill':1})

@@ -4,6 +4,7 @@ from django.http import Http404
 
 from .circuit_selected import aggregate_progress, filter_collection, manifest, material_annotations, review_manifest
 from .models import Question
+from .exam_types import filter_exam_type, type_group, type_statistics
 from .ei_selected_pdf_pages import pdf_pages_for
 from .views import question_progress, request_workspace
 from drill_sources.models import SourceQuestionAnchor
@@ -26,7 +27,7 @@ class CircuitSelectedView(APIView):
         data = self.selection_manifest()
         records = {q['uuid']: q for q in data['questions']}
         questions = question_progress(material_annotations(self.selection_queryset(
-            Question.objects.all(), request,
+            filter_exam_type(Question.objects.all(),request.query_params), request,
         )), request.user).select_related('document').order_by('document_id', 'question_order', 'pk')
         indexed = set(SourceQuestionAnchor.objects.filter(
             question__uuid__in=records,
@@ -38,6 +39,7 @@ class CircuitSelectedView(APIView):
                 continue
             ready = bool((q.cs_prompt or q.prompt_text) and (q.cs_answer or q.answer_markdown) and not q.cs_erratum)
             items.append({
+                'question_type': q.final_question_type, 'type_group': type_group(q.final_question_type),
                 'uuid': str(q.uuid), 'label': q.display_label or q.source_label,
                 'pdf_pages': pdf_pages_for(q),
                 'document_id': q.document_id, 'book': q.document.display_title or q.document.title,
@@ -57,6 +59,7 @@ class CircuitSelectedView(APIView):
             groups.append({**bucket, 'questions': rows, 'progress': aggregate_progress(rows)})
         review = self.selection_review()['records']
         return Response({
+            'type_statistics': type_statistics(items),
             'title': data['title'], 'basis': data['basis'], 'groups': groups,
             'progress': aggregate_progress(items), 'ready_count': sum(q['ready'] for q in items),
             'inventory_count': data['inventory_count'], 'selected_count': len(records),

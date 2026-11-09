@@ -24,6 +24,8 @@ function invalidateDerivedCaches() {
     if (
       key.startsWith(`drill.heatmap.v1.${cacheScope}.`) ||
       key.startsWith(`drill.question-list.v1.${cacheScope}.`)
+      || key.startsWith(`drill.heatmap.v2.${cacheScope}.`)
+      || key.startsWith(`drill.question-list.v2.${cacheScope}.`)
     ) sessionStorage.removeItem(key)
   }
 }
@@ -55,7 +57,8 @@ function readStored<T>(key: string, ttl: number): T | null {
 }
 
 function scopedKey(kind: string, key: string) {
-  return cacheScope ? `drill.${kind}.v1.${cacheScope}.${key}` : ''
+  const schema = ['question-list', 'question-detail', 'heatmap'].includes(kind) ? 'v2' : 'v1'
+  return cacheScope ? `drill.${kind}.${schema}.${cacheScope}.${key}` : ''
 }
 
 export function configureWorkspaceScope(scope: string) {

@@ -78,3 +78,33 @@ class ExamTypeImportTests(TestCase):
             with CaptureQueriesContext(connection) as queries:
                 call_command('import_exam_types', input=source, stdout=StringIO())
             self.assertFalse(any('"image_data"' in query['sql'] for query in queries))
+
+    def test_audit_flags_unknown_and_conflicting_types_are_imported_idempotently(self):
+        self.question.question_type='single_choice'
+        self.question.prompt_text=''
+        self.question.save(update_fields=['question_type','prompt_text'])
+        with TemporaryDirectory() as directory:
+            source=Path(directory)/'rows.jsonl'
+            for index,label in enumerate(('large','unknown'),1):
+                source.write_text(json.dumps({**self.record(),'question_type':label,'review_required':label!='unknown'})+'\n')
+                call_command('import_exam_types',input=source,apply=True,batch_id=f'test_all_{index}',
+                    backup=Path(directory)/f'backup{index}.json',expected_workspace_count=['ei=1'],stdout=StringIO())
+                self.assertEqual(QuestionExamType.objects.count(),1)
+                saved=QuestionExamType.objects.get(question=self.question)
+                self.assertEqual(saved.question_type,label)
+                self.assertTrue(saved.review_required)
+                self.assertIn('no_text_prompt',saved.review_reasons)
+                self.assertIn('legacy_type_conflict',saved.review_reasons)
+            call_command('import_exam_types',rollback=Path(directory)/'backup2.json',stdout=StringIO())
+            self.assertEqual(QuestionExamType.objects.get().question_type,'large')
+            self.question.refresh_from_db()
+            self.assertEqual(self.question.question_type,'single_choice')
+
+    def test_wrong_expected_totals_block_apply(self):
+        with TemporaryDirectory() as directory:
+            source=Path(directory)/'rows.jsonl'
+            source.write_text(json.dumps(self.record())+'\n')
+            with self.assertRaisesMessage(CommandError,'Workspace count mismatch'):
+                call_command('import_exam_types',input=source,apply=True,batch_id='bad_count_001',
+                    backup=Path(directory)/'backup.json',expected_workspace_count=['ei=2'],stdout=StringIO())
+            self.assertEqual(QuestionExamType.objects.count(),0)

@@ -5,6 +5,9 @@ import { api } from '../lib/api'
 import { cachedCatalog, cachedQuestionPage, fetchCatalog, prefetchQuestion, storeQuestionPage } from '../lib/workspace'
 import type { Catalog, Page, QuestionSummary } from '../types'
 import { useUiPreferences } from '../lib/uiPreferences'
+import ExamTypeControls from '../components/ExamTypeControls.vue'
+import ExamTypeBadge from '../components/ExamTypeBadge.vue'
+import { formatColours, type TypeStats } from '../lib/examTypes'
 import { runtimeWorkspace } from '../lib/runtimePath'
 
 const PracticeTrendPanel = defineAsyncComponent(() => import('../components/PracticeTrendPanel.vue'))
@@ -18,11 +21,12 @@ const catalog = ref<Catalog>({
   documents: [],
   topics: [],
 })
-const questions = ref<Page<QuestionSummary> | null>(null)
+const questions = ref<(Page<QuestionSummary> & { type_statistics?: TypeStats }) | null>(null)
 const loading = ref(true)
 const error = ref('')
 const documentId = ref('')
 const topicId = ref('')
+const typeGroup = ref('')
 const search = ref('')
 const sourceCategory = ref('')
 const unattempted = ref(false)
@@ -62,6 +66,12 @@ const localCandidates = computed(() => {
 
 function queryParams() {
   const params = new URLSearchParams({ page: String(page.value) })
+  if (route.query.collection) {
+    for (const key of ['collection', 'bucket', 'tier', 'kind', 'combined', 'state', 'material', 'course', 'from']) {
+      if (typeof route.query[key] === 'string' && route.query[key]) params.set(key, String(route.query[key]))
+    }
+  }
+  if (typeGroup.value) params.set('type_group', typeGroup.value)
   if (documentId.value) params.set('document', documentId.value)
   if (topicId.value) params.set('topic', topicId.value)
   if (search.value.trim().length >= 2) params.set('q', search.value.trim())
@@ -107,7 +117,7 @@ async function loadQuestions() {
 
 function persistState() {
   localStorage.setItem(stateKey, JSON.stringify({
-    documentId: documentId.value, topicId: topicId.value, sourceCategory: sourceCategory.value,
+    typeGroup: typeGroup.value, documentId: documentId.value, topicId: topicId.value, sourceCategory: sourceCategory.value,
     unattempted: unattempted.value, search: search.value, page: page.value,
     lastQuestionUuid: lastQuestionUuid.value, scrollY: window.scrollY, updatedAt: Date.now(),
   }))
@@ -116,6 +126,7 @@ function persistState() {
 function filtersChanged() {
   if (restoring) return
   page.value = 1
+  lastQuestionUuid.value = ''
   persistState()
   void loadQuestions()
 }
@@ -135,7 +146,7 @@ watch(documentId, () => {
   if (!topics.value.some((topic) => String(topic.id) === topicId.value)) topicId.value = ''
   filtersChanged()
 })
-watch([topicId, sourceCategory, unattempted, markerCode], filtersChanged)
+watch([typeGroup, topicId, sourceCategory, unattempted, markerCode], filtersChanged)
 watch(page, persistState)
 watch(search, persistState)
 
@@ -161,6 +172,7 @@ onMounted(async () => {
   try {
     const saved = JSON.parse(localStorage.getItem(stateKey) || 'null')
     if (saved && Date.now() - Number(saved.updatedAt || 0) < 1000 * 60 * 60 * 24 * 30) {
+      typeGroup.value = saved.typeGroup || ''
       documentId.value = saved.documentId || ''
       topicId.value = saved.topicId || ''
       sourceCategory.value = saved.sourceCategory || ''
@@ -168,6 +180,11 @@ onMounted(async () => {
       search.value = saved.search || ''
       page.value = Number(saved.page) || 1
       lastQuestionUuid.value = saved.lastQuestionUuid || ''
+    }
+    if (route.query.type_group !== undefined) {
+      typeGroup.value = String(route.query.type_group || '')
+      documentId.value = ''; topicId.value = ''; sourceCategory.value = ''; search.value = ''; page.value = 1
+      lastQuestionUuid.value = ''
     }
     if (route.query.document !== undefined) documentId.value = String(route.query.document || '')
     if (route.query.topic !== undefined) topicId.value = String(route.query.topic || '')
@@ -194,7 +211,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <section class="page practice-page">
+  <section :class="{ 'exam-type-colours': formatColours }" class="page practice-page">
     <header class="page-header">
       <div><span class="eyebrow">{{ isEi ? t('foundationBank') : t('questionIndex') }}</span><h1>{{ isEi ? t('electronicInformation') : t('questionBank') }}</h1><p>共 {{ catalog.summary.practiceable_count.toLocaleString() }} 道可练习题；另有 {{ catalog.summary.outline_count.toLocaleString() }} 条资料目录记录未作为题目展示。</p></div>
       <button v-if="lastQuestionUuid || questions?.results.length" class="primary-action" @pointerenter="prefetchQuestion(lastQuestionUuid || questions?.results[0]?.uuid || null, navigationQueryString())" @click="openQuestion(lastQuestionUuid || questions!.results[0].uuid)">{{ lastQuestionUuid ? t('resumeLast') : t('openNext') }} <b>→</b></button>
@@ -221,12 +238,13 @@ onUnmounted(() => {
       <div class="toggle-row"><button :class="{ active: unattempted }" @click="unattempted = !unattempted">仅看未作答</button></div>
     </div>
 
+    <ExamTypeControls v-model="typeGroup" :stats="questions?.type_statistics" @practice="typeGroup = 'small'" />
     <div class="result-meta"><span>{{ questions?.count ?? 0 }} 道题</span><span class="state-legend"><i class="status-unattempted" /> 未开始 <i class="status-mastered" /> 已掌握 <i class="status-review" /> 待复习 <i class="status-overdue" /> 已到期</span><span v-if="loading">正在加载…</span></div>
     <p v-if="error" class="error-state">{{ error }}</p>
     <div v-else class="question-list" :class="{ loading }">
-      <button v-for="question in questions?.results" :key="question.uuid" class="question-row" @pointerenter="prefetchQuestion(question.uuid, navigationQueryString())" @pointerdown="prefetchQuestion(question.uuid, navigationQueryString())" @click="openQuestion(question.uuid)">
+      <button v-for="question in questions?.results" :key="question.uuid" :data-type-group="question.type_group" class="question-row" @pointerenter="prefetchQuestion(question.uuid, navigationQueryString())" @pointerdown="prefetchQuestion(question.uuid, navigationQueryString())" @click="openQuestion(question.uuid)">
         <span class="question-index">{{ String(question.question_order).padStart(4, '0') }}</span>
-        <span class="question-copy"><strong>{{ question.display_label || `题目 ${question.question_order}` }}</strong><small>{{ question.document }} · {{ question.topic || '未分类' }}<em v-if="question.record_kind === 'grouped'"> · 组合题摘录</em><em v-if="question.pdf_pages"> · PDF 题 {{ question.pdf_pages.question }} / 答 {{ question.pdf_pages.answer }} / 对照 {{ question.pdf_pages.paired }} 页</em></small></span>
+        <span class="question-copy"><strong>{{ question.display_label || `题目 ${question.question_order}` }}</strong><small><ExamTypeBadge :type="question.question_type" :group="question.type_group" /> · {{ question.document }} · {{ question.topic || '未分类' }}<em v-if="question.record_kind === 'grouped'"> · 组合题摘录</em><em v-if="question.pdf_pages"> · PDF 题 {{ question.pdf_pages.question }} / 答 {{ question.pdf_pages.answer }} / 对照 {{ question.pdf_pages.paired }} 页</em></small></span>
         <span class="source-badge" :class="`category-${question.source_category}`">{{ question.source_category_label }}</span>
         <span class="attempt-mark" :class="question.review_overdue ? 'status-overdue' : `status-${question.state}`" :title="`${question.review_overdue ? 'overdue review' : question.state}; ${question.attempt_count} recorded attempts`">{{ question.attempt_count || '' }}</span>
         <b class="row-arrow">→</b>

@@ -503,6 +503,7 @@ def report(args):
             'api_requests':sum(r.get('usage') is not None for r in selected),
             'tokens':dict(usage),'estimated_usd':round(cost,6)}
         image_path=out/f'results-{effort}-image.jsonl'
+        image_rows=[]
         if image_path.exists():
             image_rows=[r for r in read_jsonl(image_path)
                         if (r['source_system'],r['question_id']) in by_id
@@ -516,6 +517,23 @@ def report(args):
                 'counts':dict(Counter(r['question_type'] for r in image_rows)),
                 'review_required':sum(needs_review(by_id[(r['source_system'],r['question_id'])],r) for r in image_rows),
                 'tokens':dict(image_usage),'estimated_usd':round(image_cost,6)}
+        merged={(r['source_system'],r['question_id']):r for r in selected}
+        merged.update({(r['source_system'],r['question_id']):r for r in image_rows})
+        result['efforts'][effort]['final_result']={
+            'total':len(merged),
+            'unknown':sum(r['question_type']=='unknown' for r in merged.values()),
+            'review_required':sum(r['review_required'] for r in merged.values()),
+            'estimated_usd_total':round(cost+(image_cost if image_rows else 0),6),
+            'by_workspace':{w:{
+                'counts':dict(Counter(r['question_type'] for (workspace,_),r in merged.items() if workspace==w)),
+                'trained_counts':dict(Counter(r['question_type'] for key,r in merged.items()
+                    if key[0]==w and by_id[key].get('has_training'))),
+                'review_required':sum(r['review_required'] for (workspace,_),r in merged.items() if workspace==w),
+                'judgment_records':sum(r['question_type']=='judgment' for (workspace,_),r in merged.items() if workspace==w),
+                'judgment_subquestions':sum(r.get('subquestion_count') or 0 for (workspace,_),r in merged.items()
+                    if workspace==w and r['question_type']=='judgment'),
+            } for w in ('drill','ei')},
+        }
         log=out/f'run-{effort}.log'
         if log.exists():result['efforts'][effort]['failed_requests_unmetered']=sum('batch_failed' in line for line in log.open(encoding='utf-8'))
     path=out/'report.json';path.write_text(json.dumps(result,ensure_ascii=False,indent=2))

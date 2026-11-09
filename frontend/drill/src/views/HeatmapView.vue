@@ -4,6 +4,9 @@ import { useRoute, useRouter } from 'vue-router'
 import { api } from '../lib/api'
 import { cachedHeatmap, storeHeatmap } from '../lib/workspace'
 import { useUiPreferences } from '../lib/uiPreferences'
+import ExamTypeControls from '../components/ExamTypeControls.vue'
+import ExamTypeBadge from '../components/ExamTypeBadge.vue'
+import { formatColours, type TypeStats } from '../lib/examTypes'
 import HeatmapProgress from '../components/HeatmapProgress.vue'
 import LearningSharePanel from '../components/LearningSharePanel.vue'
 
@@ -11,6 +14,8 @@ const props = withDefaults(defineProps<{ selectedOnly?: boolean; coreOnly?: bool
 const { t } = useUiPreferences()
 
 interface HeatmapQuestion {
+  question_type?: string
+  type_group?: string
   course?: string
   core_topic?: string
   source_indexed?: boolean
@@ -41,6 +46,7 @@ interface HeatmapTopic {
 }
 
 interface HeatmapPayload {
+  type_statistics?: TypeStats
   curation_total?: number
   quality_notice?: string
   courses?: { key: string; title: string; total: number; visible: number }[]
@@ -85,6 +91,7 @@ function formatDuration(seconds: number | null) {
 
 const router = useRouter()
 const route = useRoute()
+const typeGroup = ref(String(route.query.type_group || ''))
 const course = ref(String(route.query.course || ''))
 const material = ref(String(route.query.material || 'ready'))
 const data = ref<HeatmapPayload | null>(null)
@@ -98,7 +105,7 @@ const initialMode = ['topics', 'questions'].includes(String(route.query.mode))
   : 'questions'
 const scope = ref<'past_exam' | 'mock_exam' | 'all'>(initialScope)
 const shareScope = computed(() => ({
-  source_category: scope.value,
+  source_category: scope.value, type_group: typeGroup.value,
   ...(props.coreOnly ? { collection: 'core_selected', course: course.value, material: material.value }
     : props.selectedOnly ? { collection: 'selected' } : {}),
 }))
@@ -134,14 +141,14 @@ function previewQuestion(documentId: number, document: string, question: Heatmap
 function openTopic(documentId: number, topicId: number) {
   void router.push({
     path: '/practice',
-    query: { document: String(documentId), topic: String(topicId) },
+    query: { document: String(documentId), topic: String(topicId), type_group: typeGroup.value, ...(props.selectedOnly ? { collection: 'selected' } : {}) },
   })
 }
 
 function openQuestion(documentId: number, question: HeatmapQuestion) {
   if (props.coreOnly) {
     void router.push({ path: `/practice/${question.uuid}`, query: {
-      collection: 'core_selected', from: 'core-heatmap', scope: scope.value,
+      type_group: typeGroup.value, collection: 'core_selected', from: 'core-heatmap', scope: scope.value,
       course: course.value, material: material.value,
     } })
     return
@@ -152,6 +159,7 @@ function openQuestion(documentId: number, question: HeatmapQuestion) {
     scrollY: window.scrollY,
   }))
   const query: Record<string, string> = {
+    type_group: typeGroup.value, ...(props.selectedOnly ? { collection: 'selected' } : {}),
     document: String(documentId),
     from: props.selectedOnly ? 'selected-heatmap' : 'heatmap',
     heat_scope: scope.value,
@@ -186,6 +194,13 @@ async function restoreQuestionSelection(payload: HeatmapPayload) {
   }
 }
 
+function smallPractice() {
+  void router.push({ path: '/practice', query: {
+    type_group: 'small', ...(scope.value !== 'all' ? { source_category: scope.value } : {}),
+    ...(props.coreOnly ? { collection: 'core_selected', course: course.value, material: material.value } : props.selectedOnly ? { collection: 'selected' } : {}),
+  } })
+}
+
 async function load() {
   const sequence = ++loadSequence
   const requestedScope = scope.value
@@ -193,7 +208,7 @@ async function load() {
   const requestedSelectedOnly = props.selectedOnly
   const requestedCoreOnly = props.coreOnly
   const collection = props.coreOnly ? 'core_selected' : requestedSelectedOnly ? 'selected' : ''
-  const extra = props.coreOnly ? `&course=${encodeURIComponent(course.value)}&material=${encodeURIComponent(material.value)}` : ''
+  const extra = `&type_group=${encodeURIComponent(typeGroup.value)}` + (props.coreOnly ? `&course=${encodeURIComponent(course.value)}&material=${encodeURIComponent(material.value)}` : '')
   const cacheKey = `${collection || 'all'}:${requestedMode}:${requestedScope}:${extra}`
   const cached = cachedHeatmap<HeatmapPayload>(cacheKey)
   if (cached) {
@@ -239,11 +254,12 @@ watch(() => [props.selectedOnly, props.coreOnly], () => {
   }
   void load()
 })
+watch(typeGroup, () => { selectedTopic.value = null; selectedQuestion.value = null; void load() })
 onMounted(load)
 </script>
 
 <template>
-  <section class="page heatmap-page">
+  <section :class="{ 'exam-type-colours': formatColours }" class="page heatmap-page">
     <header class="page-header">
       <div><span class="eyebrow">{{ props.coreOnly ? '892 · CORE HEATMAP' : props.selectedOnly ? t('selectedHeatmap') : t('knowledgeMap') }}</span><h1>{{ props.coreOnly ? '五科核心题热力图' : props.selectedOnly ? t('selectedHeatmap') : t('coverageByBook') }}</h1><p>{{ props.coreOnly ? '五科核心题汇总，按来源书籍与考点练习；原题、原答案、原做题记录。' : props.selectedOnly ? 'Curated Da Guan questions, grouped by source book and knowledge topic.' : 'Every topic and question cell opens a preview before navigation.' }}</p></div>
       <div class="heat-controls">
@@ -252,6 +268,7 @@ onMounted(load)
         <div class="heat-legend"><i class="status-unattempted" /><span>NOT STARTED</span><i class="status-progress" /><span>IN PROGRESS</span><i class="status-mastered" /><span>MASTERED</span><i class="status-review" /><span>REVIEW</span><i class="status-overdue" /><span>OVERDUE</span></div>
       </div>
     </header>
+    <ExamTypeControls v-model="typeGroup" :stats="data?.type_statistics" @practice="smallPractice" />
     <LearningSharePanel :current-scope="shareScope" />
     <div v-if="props.coreOnly" class="core-controls">
       <label>学科<select v-model="course"><option value="">全部五科</option><option v-for="item in data?.courses || []" :key="item.key" :value="item.key">{{ item.title }} · 核心 {{ item.total }} 题</option></select></label>
@@ -313,19 +330,19 @@ onMounted(load)
           <button
             v-for="(item, index) in group.questions"
             :key="item.uuid"
-            :data-question-uuid="item.uuid"
+            :data-question-uuid="item.uuid" :data-type-group="item.type_group"
             :class="[item.review_overdue ? 'status-overdue' : `status-${item.state}`, { selected: selectedQuestion?.question.uuid === item.uuid }]"
             :aria-pressed="selectedQuestion?.question.uuid === item.uuid"
             :aria-label="`${item.label}; ${item.state}; ${item.attempt_count} attempts`"
             :title="`${item.label} · ${item.core_topic || item.topic} · ${item.state} · ${item.attempt_count} attempts`"
             @click="previewQuestion(group.document_id, group.document, item)"
-          ><span>{{ props.coreOnly ? index + 1 : item.year }}</span></button>
+          ><span class="exam-heat-dot" :class="`exam-dot-${item.type_group || 'unknown'}`" /><span>{{ props.coreOnly ? index + 1 : item.year }}</span></button>
         </div>
         <Transition name="topic-preview">
           <aside v-if="mode === 'questions' && selectedQuestion?.documentId === group.document_id" class="topic-preview-card question-preview-card">
             <div class="topic-preview-copy">
               <span>QUESTION PREVIEW · {{ selectedQuestion.document }}</span>
-              <h3>{{ selectedQuestion.question.label || `Question ${selectedQuestion.question.order}` }}</h3>
+              <ExamTypeBadge :type="selectedQuestion.question.question_type" :group="selectedQuestion.question.type_group" /><h3>{{ selectedQuestion.question.label || `Question ${selectedQuestion.question.order}` }}</h3>
               <p>{{ selectedQuestion.question.core_topic || selectedQuestion.question.topic || 'General' }}<template v-if="selectedQuestion.question.year"> · {{ selectedQuestion.question.year }}{{ selectedQuestion.question.variant ? ` ${selectedQuestion.question.variant}` : '' }}</template></p>
             </div>
             <dl>
@@ -345,6 +362,10 @@ onMounted(load)
 </template>
 
 <style scoped>
+.question-heatmap button { position:relative; }
+.exam-heat-dot { position:absolute; top:2px; right:2px; width:5px; height:5px; border-radius:50%; background:var(--text-secondary); }
+.exam-dot-small { background:var(--accent); }.exam-dot-large { background:var(--warning); }.exam-dot-short_answer { background:#a895da; }
+
 .core-controls { display:flex; flex-wrap:wrap; gap:12px; margin:16px 0; }
 .core-controls label { display:grid; gap:6px; min-width:0; max-width:100%; font-size:12px; }
 .core-controls select { min-width:0; max-width:100%; padding:10px; color:var(--text-primary); background:var(--bg-surface); border:1px solid var(--border-default); border-radius:var(--radius-sm); }

@@ -19,13 +19,14 @@ from django.views.decorators.http import require_http_methods
 from .models import (LearningShare, Question, QuestionAsset, QuestionAttempt,
                      QuestionDocument, QuestionReviewPlan, QuestionTopic, QuestionUserState)
 from .web_views import practice_site
+from .exam_types import GROUPS, TYPES, filter_exam_type, type_group
 
 SHANGHAI = ZoneInfo('Asia/Shanghai')
 VALID_RESULTS = {'done', 'correct', 'review'}
 PAGE_SIZE = 100
 SCOPE_KEYS = {'collection', 'course', 'material', 'bucket', 'tier', 'kind', 'combined',
               'source_category', 'document', 'topic', 'state', 'error', 'q',
-              'has_note', 'start', 'end'}
+              'has_note', 'start', 'end', 'type_group', 'exam_type'}
 COLLECTIONS = {'', 'selected', 'core_selected', 'circuit_selected', 'signal_selected',
                'analog_selected', 'digital_selected', 'communication_selected'}
 
@@ -141,7 +142,7 @@ def _scope_queryset(request, share):
             error_ids = set(QuestionAttempt.objects.filter(user=share.owner, error_tags__code=scope['error']).values_list('question_id', flat=True))
             ids &= error_ids
         queryset = queryset.filter(pk__in=ids)
-    return queryset.order_by('document_id', 'question_order', 'pk')
+    return filter_exam_type(queryset, scope).order_by('document_id', 'question_order', 'pk')
 
 
 def _state(result):
@@ -193,6 +194,7 @@ def _entry(question, grouped, notes, plans, base, *, detail=False):
         first.is_independent and first.outcome == 'correct')
     item = {
         'uuid': str(question.uuid), 'label': _label(question), 'question_order': question.question_order,
+        'question_type': question.final_question_type, 'type_group': type_group(question.final_question_type),
         'subject': question.subject, 'document_id': question.document_id,
         'document': question.document.display_title or question.document.title,
         'topic_id': question.similarity_topic_id, 'topic': _topic(question),
@@ -468,6 +470,8 @@ def manage_learning_shares(request):
             raise ValueError('This collection belongs to Drill.')
         if scope.get('source_category', 'all') not in ('all', 'past_exam', 'mock_exam'):
             raise ValueError('Invalid source category.')
+        if scope.get('type_group', '') not in ('', *GROUPS) or scope.get('exam_type', '') not in ('', *TYPES):
+            raise ValueError('Invalid final question type filter.')
         if scope.get('state', '') not in ('', 'mastered', 'review', 'unattempted'):
             raise ValueError('Invalid state.')
         if scope.get('error', '') not in ('', 'A', 'B1', 'B2', 'B3', 'C1', 'C2', 'C3', 'D'):

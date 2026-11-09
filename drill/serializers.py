@@ -6,9 +6,20 @@ from rest_framework import serializers
 from .models import ExamBlueprint, Question, QuestionAttempt, QuestionAttemptError, QuestionMarker
 from .ei_selected_pdf_pages import pdf_pages_for
 from .notes import MAX_QUESTION_NOTE_LENGTH
+from .exam_types import LEGACY, type_group
 
 
 class QuestionSummarySerializer(serializers.ModelSerializer):
+    question_type = serializers.SerializerMethodField()
+    type_group = serializers.SerializerMethodField()
+    legacy_question_type = serializers.CharField(source='question_type', read_only=True)
+
+    def get_question_type(self, obj):
+        return getattr(obj, 'final_question_type', LEGACY.get(obj.question_type, 'unknown'))
+
+    def get_type_group(self, obj):
+        return type_group(self.get_question_type(obj))
+
     document = serializers.SerializerMethodField()
     topic = serializers.SerializerMethodField()
     source_category_label = serializers.CharField(source='get_source_category_display', read_only=True)
@@ -58,6 +69,7 @@ class QuestionSummarySerializer(serializers.ModelSerializer):
             'record_kind', 'exam_year', 'exam_variant', 'attempt_count',
             'latest_result', 'state', 'can_undo',
             'is_favorite', 'review_later', 'saved_note', 'review_overdue', 'pdf_pages',
+            'question_type', 'type_group', 'legacy_question_type',
         )
 
 

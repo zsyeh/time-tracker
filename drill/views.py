@@ -4,8 +4,8 @@ from urllib.parse import parse_qs, urlsplit
 from django.conf import settings
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import transaction
-from django.db.models import Avg, Count, Exists, Max, OuterRef, Prefetch, Q, Subquery, Sum
-from django.db.models.functions import TruncDate
+from django.db.models import Case, CharField, Value, When, Avg, Count, Exists, Max, OuterRef, Prefetch, Q, Subquery, Sum
+from django.db.models.functions import Coalesce, TruncDate
 from django.http import Http404, HttpResponse, HttpResponseNotModified
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -15,6 +15,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .cleaning import SOURCE_LABELS
+from .exam_types import with_exam_type, filter_exam_type, type_group, type_statistics
 from .selected_collections import CODES as SELECTED_COLLECTIONS, filter_collection
 from .models import (
     DrillContentShare, ExamBlueprint, ExamPaper, ExamPaperItem, Question, QuestionAsset,
@@ -46,10 +47,11 @@ def request_workspace(request):
 
 
 def workspace_questions(request):
-    return Question.objects.filter(document__workspace=request_workspace(request))
+    return with_exam_type(Question.objects.filter(document__workspace=request_workspace(request)))
 
 
 def question_progress(queryset, user):
+    queryset = with_exam_type(queryset)
     latest = QuestionAttempt.objects.filter(
         user=user,
         question_id=OuterRef('pk'),
@@ -241,7 +243,7 @@ def navigation_queryset(question, request):
         )
     if marker in dict(QuestionMarker.MARKER_CHOICES):
         queryset = queryset.filter(markers__user=request.user, markers__code=marker)
-    return queryset.order_by('document_id', 'question_order', 'pk')
+    return filter_exam_type(queryset, request.query_params).order_by('document_id', 'question_order', 'pk')
 
 
 def navigation_with_latest_result(queryset, user):
@@ -358,7 +360,7 @@ def next_unmastered_question(question, request, navigation):
     # the next action useful at every topic and book boundary.
     fallback = workspace_questions(request).filter(is_practiceable=True).exclude(pk=question.pk)
     fallback = filter_collection(fallback, request) if request.query_params.get('collection') in SELECTED_COLLECTIONS else fallback.filter(source_category=question.source_category)
-    fallback = unmastered_navigation(fallback, request.user).order_by(
+    fallback = unmastered_navigation(filter_exam_type(fallback,request.query_params), request.user).order_by(
         'document_id', 'question_order', 'pk',
     )
     current_key = (question.document_id, question.question_order, question.pk)
@@ -379,6 +381,7 @@ def next_unmastered_question(question, request, navigation):
 def next_sequential_question(question, request):
     queryset = workspace_questions(request).filter(is_practiceable=True).exclude(pk=question.pk)
     queryset = filter_collection(queryset, request) if request.query_params.get('collection') in SELECTED_COLLECTIONS else queryset.filter(source_category=question.source_category)
+    queryset = filter_exam_type(queryset,request.query_params)
     queryset = queryset.order_by('document_id', 'question_order', 'pk')
     current_key = (question.document_id, question.question_order, question.pk)
     following = queryset.filter(
@@ -396,6 +399,7 @@ def next_review_question(question, request, *, overdue):
     cutoff = timezone.now() - datetime.timedelta(days=5)
     queryset = workspace_questions(request).filter(is_practiceable=True).exclude(pk=question.pk)
     queryset = filter_collection(queryset, request) if request.query_params.get('collection') in SELECTED_COLLECTIONS else queryset.filter(source_category=question.source_category)
+    queryset = filter_exam_type(queryset,request.query_params)
     queryset = queryset.annotate(
         review_result=Subquery(latest.values('result')[:1]),
         review_created_at=Subquery(latest.values('created_at')[:1]),
@@ -421,6 +425,7 @@ def previous_review_question(question, request, *, overdue):
     cutoff = timezone.now() - datetime.timedelta(days=5)
     queryset = workspace_questions(request).filter(is_practiceable=True).exclude(pk=question.pk)
     queryset = filter_collection(queryset, request) if request.query_params.get('collection') in SELECTED_COLLECTIONS else queryset.filter(source_category=question.source_category)
+    queryset = filter_exam_type(queryset,request.query_params)
     queryset = queryset.annotate(
         review_result=Subquery(latest.values('result')[:1]),
         review_created_at=Subquery(latest.values('created_at')[:1]),
@@ -542,7 +547,7 @@ class DrillCatalogView(APIView):
 
 class DrillQuestionListView(APIView):
     def get(self, request):
-        queryset = workspace_questions(request).select_related('document', 'similarity_topic')
+        queryset = filter_collection(workspace_questions(request),request).select_related('document', 'similarity_topic')
         if request.query_params.get('include_structure') != '1':
             queryset = queryset.filter(is_practiceable=True)
         document_id = request.query_params.get('document')
@@ -579,13 +584,15 @@ class DrillQuestionListView(APIView):
             )
         if marker in dict(QuestionMarker.MARKER_CHOICES):
             queryset = queryset.filter(markers__user=request.user, markers__code=marker)
-        queryset = question_progress(queryset, request.user).order_by(
+        queryset = question_progress(filter_exam_type(queryset, request.query_params), request.user).order_by(
             'document_id', 'question_order',
         )
         paginator = PageNumberPagination()
         paginator.page_size = 24
         page = paginator.paginate_queryset(queryset, request)
-        return paginator.get_paginated_response(QuestionSummarySerializer(page, many=True).data)
+        response = paginator.get_paginated_response(QuestionSummarySerializer(page, many=True).data)
+        response.data['type_statistics'] = type_statistics(queryset.values('pk','final_question_type','latest_result'))
+        return response
 
 
 class DrillPaperGenerateView(APIView):
@@ -866,6 +873,16 @@ class DrillQuestionDetailView(APIView):
             user=request.user, question=question,
         ).order_by('created_at', 'pk').values_list('code', flat=True))
         payload = summary_payload(question)
+        classification = getattr(question, 'exam_type', None)
+        payload['classification'] = ({
+            'question_type': classification.question_type,
+            'classification_version': classification.classification_version,
+            'classification_source': classification.classification_source,
+            'model_id': classification.model_id,
+            'review_required': classification.review_required,
+            'review_reasons': classification.review_reasons,
+            'reason': classification.reason,
+        } if classification else None)
         payload.update({
             'prompt_text': question.prompt_text,
             'latex_text': question.latex_text,
@@ -1074,12 +1091,16 @@ class EiCockpitView(APIView):
             user=request.user, question__document__workspace='ei',
             question__syllabus_scope__in=('in_scope', 'unclassified'),
             result__in=('done', 'correct', 'review'),
-        ).values('question__question_type').annotate(
+        ).annotate(final_type=Coalesce('question__exam_type__question_type',Case(
+            When(question__question_type='single_choice',then=Value('choice')),
+            When(question__question_type='fill_blank',then=Value('fill')),
+            When(question__question_type='solution',then=Value('large')),
+            default=Value('unknown'),output_field=CharField()))).values('final_type').annotate(
             count=Count('id'), correct=Count('id', filter=Q(result__in=('done', 'correct'))),
             average_time=Avg('time_spent_seconds'),
-        ).order_by('question__question_type')
+        ).order_by('final_type')
         type_stats = [{
-            'type': row['question__question_type'], 'count': row['count'],
+            'type': row['final_type'], 'count': row['count'],
             'accuracy': round(row['correct'] * 100 / row['count']) if row['count'] else None,
             'average_time_seconds': round(row['average_time']) if row['average_time'] is not None else None,
         } for row in type_rows]
@@ -1846,6 +1867,7 @@ class DrillHeatmapView(APIView):
             )
         if collection == 'core_selected':
             question_queryset = filter_collection(question_queryset, request)
+        question_queryset = filter_exam_type(question_queryset, request.query_params)
         questions = list(
             question_queryset.select_related('document', 'similarity_topic').only(
                 'id', 'uuid', 'document_id', 'document__title', 'document__display_title',
@@ -1866,8 +1888,7 @@ class DrillHeatmapView(APIView):
                 Q(question__document__relation_type='selected_question_book')
             )
         progress = {}
-        if collection == 'core_selected':
-            attempt_filters &= Q(question_id__in=[q.pk for q in questions])
+        attempt_filters &= Q(question_id__in=[q.pk for q in questions])
         filtered_attempts = QuestionAttempt.objects.filter(
             attempt_filters, user=request.user,
         )
@@ -1984,6 +2005,8 @@ class DrillHeatmapView(APIView):
                 current['_review_count'] += 1
             if mode == 'questions':
                 current['questions'].append({
+                    'question_type': question.final_question_type,
+                    'type_group': type_group(question.final_question_type),
                     'uuid': str(question.uuid),
                     'source_indexed': question.pk in source_indexed_ids,
                     'order': question.question_order,
@@ -2080,6 +2103,8 @@ class DrillHeatmapView(APIView):
                          'visible':sum(q['course']==key for q in visible)} for key,title,_module in COURSES]}
         return Response({
             **extra,
+            'type_statistics': type_statistics({'question_type':q.final_question_type,
+                'latest_result':progress.get(q.pk,{}).get('latest_result')} for q in questions),
             'mode': mode,
             'question_count': len(questions),
             'topic_count': len(unique_topic_ids),
