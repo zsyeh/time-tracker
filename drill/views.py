@@ -333,6 +333,31 @@ def next_review_question(question, request, *, overdue):
     return following or queryset.values_list('uuid', flat=True).first()
 
 
+def previous_review_question(question, request, *, overdue):
+    """Return the previous review question in the same workspace/source, wrapping once."""
+    latest = QuestionAttempt.objects.filter(
+        user=request.user, question_id=OuterRef('pk'),
+    ).order_by('-created_at', '-pk')
+    cutoff = timezone.now() - datetime.timedelta(days=5)
+    queryset = workspace_questions(request).filter(is_practiceable=True).exclude(pk=question.pk)
+    queryset = filter_collection(queryset, request) if request.query_params.get('collection') in SELECTED_COLLECTIONS else queryset.filter(source_category=question.source_category)
+    queryset = queryset.annotate(
+        review_result=Subquery(latest.values('result')[:1]),
+        review_created_at=Subquery(latest.values('created_at')[:1]),
+    ).filter(review_result='review')
+    queryset = queryset.filter(
+        review_created_at__lte=cutoff,
+    ) if overdue else queryset.filter(review_created_at__gt=cutoff)
+    queryset = queryset.order_by('-document_id', '-question_order', '-pk')
+    current_key = (question.document_id, question.question_order, question.pk)
+    preceding = queryset.filter(
+        Q(document_id__lt=current_key[0])
+        | Q(document_id=current_key[0], question_order__lt=current_key[1])
+        | Q(document_id=current_key[0], question_order=current_key[1], pk__lt=current_key[2])
+    ).values_list('uuid', flat=True).first()
+    return preceding or queryset.values_list('uuid', flat=True).first()
+
+
 class DrillCatalogView(APIView):
     def get(self, request):
         workspace = request_workspace(request)
@@ -783,6 +808,12 @@ class DrillQuestionDetailView(APIView):
             ),
             'next_review_uuid': (
                 str(value) if (value := next_review_question(question, request, overdue=False)) else None
+            ),
+            'previous_overdue_review_uuid': (
+                str(value) if (value := previous_review_question(question, request, overdue=True)) else None
+            ),
+            'previous_review_uuid': (
+                str(value) if (value := previous_review_question(question, request, overdue=False)) else None
             ),
             'review_overdue': bool(
                 latest and latest.result == 'review'

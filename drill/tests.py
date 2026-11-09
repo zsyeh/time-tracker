@@ -510,6 +510,12 @@ class DrillApiTests(TestCase):
         self.assertEqual(detail['sequential_next_question_uuid'], str(self.similar.uuid))
         self.assertEqual(detail['next_overdue_review_uuid'], str(self.similar.uuid))
         self.assertEqual(detail['next_review_uuid'], str(recent_review_question.uuid))
+        self.assertEqual(detail['previous_overdue_review_uuid'], str(self.similar.uuid))
+        self.assertEqual(detail['previous_review_uuid'], str(recent_review_question.uuid))
+
+        recent_detail = self.client.get(f'/api/drill/questions/{recent_review_question.uuid}/').json()
+        self.assertEqual(recent_detail['previous_overdue_review_uuid'], str(self.similar.uuid))
+        self.assertIsNone(recent_detail['previous_review_uuid'])
 
         overdue_detail = self.client.get(f'/api/drill/questions/{self.similar.uuid}/').json()
         self.assertTrue(overdue_detail['review_overdue'])

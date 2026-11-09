@@ -36,3 +36,27 @@ export async function createAndCopyShare(endpoint: string) {
   }
   return response
 }
+
+export async function createAndCopyShareOnGesture(endpoint: string | Promise<string>) {
+  const request = Promise.resolve(endpoint).then((path) => post<ShareLinkResponse>(path, {}))
+  let eagerCopy: Promise<boolean> | null = null
+  if (navigator.clipboard?.write && window.ClipboardItem) {
+    try {
+      // Start the ClipboardItem write during the page-turn button gesture.
+      // Safari can then wait for the authenticated share request to finish.
+      const urlBlob = request.then((response) => new Blob([response.share_url], { type: 'text/plain' }))
+      void urlBlob.catch(() => { /* Share creation may fail after the clipboard request starts. */ })
+      eagerCopy = navigator.clipboard.write([
+        new window.ClipboardItem({ 'text/plain': urlBlob }),
+      ]).then(() => true, () => false)
+    } catch { /* Fall back to text copying after the request. */ }
+  }
+  const response = await request
+  if (eagerCopy && await eagerCopy) return { response, copied: true }
+  try {
+    await copyText(response.share_url)
+    return { response, copied: true }
+  } catch {
+    return { response, copied: false }
+  }
+}

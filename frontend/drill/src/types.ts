@@ -46,6 +46,8 @@ export interface QuestionDetail extends QuestionSummary {
   document_author: string
   document_attribution: string
   previous_question_uuid: string | null
+  previous_overdue_review_uuid: string | null
+  previous_review_uuid: string | null
   next_question_uuid: string | null
   sequential_next_question_uuid: string | null
   next_overdue_review_uuid: string | null

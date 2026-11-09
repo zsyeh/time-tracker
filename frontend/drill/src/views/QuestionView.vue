@@ -9,10 +9,10 @@ import SourcePaperViewer from '../components/SourcePaperViewer.vue'
 import OriginalAnswer from '../components/OriginalAnswer.vue'
 import { sourcePracticeTarget } from '../lib/sourcePractice'
 import { circuitFilters } from '../lib/circuitSelected'
-import { createAndCopyShare } from '../lib/share'
+import { createAndCopyShare, createAndCopyShareOnGesture } from '../lib/share'
 import { notifyPracticeTrendChanged } from '../lib/practiceTrend'
-import { emptyNextQuestionMessage, nextQuestionTarget, type NextQuestionMode } from '../lib/questionNavigation'
-import { withWorkspacePrefix } from '../lib/runtimePath'
+import { emptyNextQuestionMessage, emptyPreviousQuestionMessage, nextQuestionTarget, previousQuestionTarget, type NextQuestionMode } from '../lib/questionNavigation'
+import { runtimeWorkspace, withWorkspacePrefix } from '../lib/runtimePath'
 import { buildClipboardPng, copyImagesToClipboard, downloadImageBlob, shareImageBlob } from '../lib/imageClipboard'
 
 const props = defineProps<{ uuid: string }>()
@@ -121,16 +121,23 @@ const navigationPrevious = computed(() => question.value?.previous_question_uuid
   || (navigationFrame.value.uuid === props.uuid ? navigationFrame.value.previous : null))
 const navigationNext = computed(() => question.value?.sequential_next_question_uuid
   || (navigationFrame.value.uuid === props.uuid ? navigationFrame.value.next : null))
+const topPreviousTarget = computed(() => question.value
+  ? previousQuestionTarget(question.value, nextMode.value)
+  : nextMode.value === 'sequential' ? navigationPrevious.value : null)
 const topNextTarget = computed(() => question.value
   ? nextQuestionTarget(question.value, nextMode.value)
-  : navigationNext.value)
+  : nextMode.value === 'sequential' ? navigationNext.value : null)
+const topPreviousLabel = computed(() => ({
+  sequential: '上一题', overdue: '上一道红色题', review: '上一道黄色题',
+})[nextMode.value])
 const topNextLabel = computed(() => question.value ? ({
   sequential: '下一题', overdue: '下一道到期题', review: '下一道待复习题',
 })[nextMode.value] : '下一题')
 const sourceViewer = ref<InstanceType<typeof SourcePaperViewer> | null>(null)
 
-function navigateToQuestion(uuid: string | null, direction: 'previous' | 'next') {
+function navigateToQuestion(uuid: string | null, direction: 'previous' | 'next', copyArmed = false) {
   if (!uuid) return
+  if (!copyArmed) startPageTurnCopy(Promise.resolve(uuid))
   const cached = cachedQuestion(uuid, navigationQueryString())
   navigationFrame.value = cached ? {
     uuid,
@@ -185,15 +192,81 @@ const erratumMessage = ref('')
 const shareState = ref<'idle' | 'sharing' | 'copied'>('idle')
 const imageCopyState = ref<'idle' | 'copying' | 'copied' | 'fallback'>('idle')
 const imageCopyMessage = ref('')
+const pageTurnCopyMessage = ref('')
+const pageTurnCopyFailed = ref(false)
 const clipboardImage = ref<Blob | null>(null)
 const actionFeedback = ref('')
 const nextMode = ref<NextQuestionMode>((localStorage.getItem('drill.next-mode.v1') as NextQuestionMode) || 'sequential')
+type PageTurnCopyMode = 'off' | 'link' | 'image'
+const pageTurnCopyStorageKey = `${runtimeWorkspace}.page-turn-copy.v1`
+const storedPageTurnCopyMode = localStorage.getItem(pageTurnCopyStorageKey)
+const pageTurnCopyMode = ref<PageTurnCopyMode>(
+  storedPageTurnCopyMode === 'link' || storedPageTurnCopyMode === 'image' ? storedPageTurnCopyMode : 'off',
+)
+const autoCopyLink = computed({
+  get: () => pageTurnCopyMode.value === 'link',
+  set: (enabled: boolean) => { pageTurnCopyMode.value = enabled ? 'link' : 'off' },
+})
+const autoCopyImage = computed({
+  get: () => pageTurnCopyMode.value === 'image',
+  set: (enabled: boolean) => { pageTurnCopyMode.value = enabled ? 'image' : 'off' },
+})
 const reviewAutoNext = ref(localStorage.getItem('drill.review-auto-next.v1') === 'true')
 const masteredAutoNext = ref(localStorage.getItem('drill.mastered-auto-next.v1') !== 'false')
 
 watch(nextMode, (value) => localStorage.setItem('drill.next-mode.v1', value))
+watch(pageTurnCopyMode, (value) => localStorage.setItem(pageTurnCopyStorageKey, value))
 watch(reviewAutoNext, (value) => localStorage.setItem('drill.review-auto-next.v1', String(value)))
 watch(masteredAutoNext, (value) => localStorage.setItem('drill.mastered-auto-next.v1', String(value)))
+
+let pageTurnCopySequence = 0
+let pageTurnCopyFeedbackTimer = 0
+
+watch(pageTurnCopyMessage, (message) => {
+  window.clearTimeout(pageTurnCopyFeedbackTimer)
+  if (message && !message.startsWith('正在')) {
+    pageTurnCopyFeedbackTimer = window.setTimeout(() => { pageTurnCopyMessage.value = '' },
+      pageTurnCopyFailed.value ? 8000 : 3500)
+  }
+})
+
+function startPageTurnCopy(target: Promise<string>): boolean {
+  const mode = pageTurnCopyMode.value
+  if (mode === 'off') return false
+  const sequence = ++pageTurnCopySequence
+  const query = navigationQueryString()
+  pageTurnCopyFailed.value = false
+  pageTurnCopyMessage.value = mode === 'link' ? '正在自动复制分享链接…' : '正在自动复制题图…'
+  if (mode === 'link') {
+    const endpoint = target.then((uuid) => `/api/drill/questions/${uuid}/share/`)
+    void createAndCopyShareOnGesture(endpoint).then(({ copied }) => {
+      if (sequence !== pageTurnCopySequence) return
+      pageTurnCopyFailed.value = !copied
+      pageTurnCopyMessage.value = copied
+        ? '当前题分享链接已自动复制 ✓'
+        : '浏览器阻止了自动复制；请点击上方「复制分享链接」重试。'
+    }).catch((reason) => {
+      if (sequence !== pageTurnCopySequence) return
+      pageTurnCopyFailed.value = true
+      pageTurnCopyMessage.value = `分享链接未复制：${(reason as Error).message}`
+    })
+  } else {
+    const urls = target.then((uuid) => fetchQuestion(uuid, query, true)).then((loaded) =>
+      questionAssets(loaded).map((asset) => withWorkspacePrefix(asset.url)))
+    void urls.catch(() => { /* Clipboard API may reject before awaiting URLs. */ })
+    void copyImagesToClipboard(urls).then((result) => {
+      if (sequence !== pageTurnCopySequence) return
+      pageTurnCopyMessage.value = result.combined
+        ? '当前题的多张题图已拼接并自动复制 ✓'
+        : '当前题题图已自动复制 ✓'
+    }).catch((reason) => {
+      if (sequence !== pageTurnCopySequence) return
+      pageTurnCopyFailed.value = true
+      pageTurnCopyMessage.value = `题图未自动复制：${(reason as Error).message} 请点击题图上方「复制题图」重试。`
+    })
+  }
+  return true
+}
 
 async function shareQuestion() {
   if (shareState.value === 'sharing') return
@@ -601,6 +674,19 @@ async function record(result: 'correct' | 'review' | 'reset') {
   const sequence = ++operationSequence
   saving.value = true
   const submittedNote = note.value
+  const willTurn = (result === 'correct' && masteredAutoNext.value)
+    || (result === 'review' && reviewAutoNext.value)
+  let pendingCopy: { resolve: (uuid: string) => void; reject: (reason: Error) => void } | null = null
+  let copyArmed = false
+  if (willTurn && pageTurnCopyMode.value !== 'off' && topNextTarget.value) {
+    const deferred = {} as { resolve: (uuid: string) => void; reject: (reason: Error) => void }
+    const target = new Promise<string>((resolve, reject) => {
+      deferred.resolve = resolve
+      deferred.reject = reject
+    })
+    pendingCopy = deferred
+    copyArmed = startPageTurnCopy(target)
+  }
   try {
     const timeSpentSeconds = result === 'correct' || result === 'review'
       ? recordedQuestionSeconds()
@@ -650,12 +736,17 @@ async function record(result: 'correct' | 'review' | 'reset') {
     } else {
       resetQuestionTimer()
     }
-    if ((result === 'correct' && masteredAutoNext.value) || (result === 'review' && reviewAutoNext.value)) {
-      await goToNext(nextMode.value)
+    if (willTurn) {
+      const target = question.value ? nextQuestionTarget(question.value, nextMode.value) : null
+      if (target) pendingCopy?.resolve(target)
+      else pendingCopy?.reject(new Error(emptyNextQuestionMessage(nextMode.value)))
+      pendingCopy = null
+      await goToNext(nextMode.value, copyArmed)
     }
   } catch (reason) {
     if (props.uuid === uuid && sequence === operationSequence) error.value = (reason as Error).message
   } finally {
+    pendingCopy?.reject(new Error('作答未完成，已取消自动复制。'))
     if (sequence === operationSequence) saving.value = false
   }
 }
@@ -935,7 +1026,16 @@ async function loadSimilar(kind: 'past_exam' | 'practice') {
   }
 }
 
-async function goToNext(kind: NextQuestionMode = 'sequential') {
+function goToPrevious() {
+  const target = topPreviousTarget.value
+  if (!target) {
+    error.value = emptyPreviousQuestionMessage(nextMode.value)
+    return
+  }
+  navigateToQuestion(target, 'previous')
+}
+
+async function goToNext(kind: NextQuestionMode = 'sequential', copyArmed = false) {
   if (nextLoading.value) return
   const uuid = props.uuid
   error.value = ''
@@ -950,7 +1050,7 @@ async function goToNext(kind: NextQuestionMode = 'sequential') {
   }
   nextLoading.value = true
   try {
-    navigateToQuestion(target, 'next')
+    navigateToQuestion(target, 'next', copyArmed)
   } catch (reason) {
     if (props.uuid === uuid) error.value = `无法进入下一题：${(reason as Error).message}`
   } finally {
@@ -999,6 +1099,7 @@ onUnmounted(() => {
   window.clearTimeout(noteSavedTimer)
   window.clearTimeout(diagnosisSaveTimer)
   window.clearTimeout(actionFeedbackTimer)
+  window.clearTimeout(pageTurnCopyFeedbackTimer)
   flushNoteDraft()
 })
 
@@ -1015,10 +1116,11 @@ onBeforeRouteLeave(() => {
 <template>
   <section class="page question-page">
     <p v-if="actionFeedback" class="action-feedback" role="status">✓ {{ actionFeedback }}</p>
+    <p v-if="pageTurnCopyMessage" class="page-turn-copy-feedback" :class="{ error: pageTurnCopyFailed }" role="status">{{ pageTurnCopyMessage }}</p>
     <nav class="question-topbar" aria-label="题目导航">
       <button class="question-return" type="button" @click="backToEntryPoint">← {{ route.query.from === 'core-heatmap' ? '五科核心热力图' : route.query.from === 'communication-selected' ? '通信严选' : route.query.from === 'digital-selected' ? '数电严选' : route.query.from === 'analog-selected' ? '模电严选' : route.query.from === 'signal-selected' ? '信号严选' : route.query.from === 'circuit-selected' ? '电路严选' : route.query.from === 'selected-heatmap' ? '严选题热力图' : route.query.from === 'heatmap' ? '热力图' : route.query.from === 'collection' ? '收藏题目' : route.query.from === 'insight' ? '学习洞察' : route.query.from === 'cockpit' ? '892 总览' : '题库' }}</button>
       <div class="question-page-turner">
-        <button type="button" :disabled="!navigationPrevious" @click="navigateToQuestion(navigationPrevious, 'previous')">← 上一题</button>
+        <button type="button" :disabled="!topPreviousTarget" @click="goToPrevious">← {{ topPreviousLabel }}</button>
         <span v-if="loading">正在加载当前题</span>
         <button class="next" type="button" :disabled="!topNextTarget || nextLoading" @click="goToNext(nextMode)">{{ nextLoading ? '切换中…' : `${topNextLabel} →` }}</button>
       </div>
@@ -1027,7 +1129,7 @@ onBeforeRouteLeave(() => {
       <span>{{ errorStatus === 404 ? '题目不存在 · 404' : errorStatus === 403 ? '无访问权限 · 403' : errorStatus === 409 ? '数据冲突 · 409' : errorStatus === 429 ? '请求过于频繁 · 429' : errorStatus && errorStatus >= 500 ? '服务器暂时不可用' : '网络请求失败' }}</span>
       <h1>{{ error }}</h1>
       <p>不会显示上一题来冒充当前题；已成功提交的作答不会因本页加载失败而丢失。</p>
-      <div><button type="button" @click="load">重试</button><button type="button" @click="backToEntryPoint">返回题库</button><button type="button" :disabled="!navigationPrevious" @click="navigateToQuestion(navigationPrevious, 'previous')">返回上一题</button></div>
+      <div><button type="button" @click="load">重试</button><button type="button" @click="backToEntryPoint">返回题库</button><button type="button" :disabled="!topPreviousTarget" @click="goToPrevious">返回{{ topPreviousLabel }}</button></div>
     </section>
     <p v-else-if="error" class="error-state">{{ error }}</p>
     <div v-if="loading" class="question-skeleton">正在加载题目…</div>
@@ -1142,7 +1244,8 @@ onBeforeRouteLeave(() => {
               <details class="note-field" :open="noteOpen" @toggle="toggleNote"><summary><span>题目笔记 Note</span><small>{{ noteSaveState === 'saving' ? '保存中…' : noteSaveState === 'saved' ? '已保存' : noteSaveState === 'error' ? '保存失败' : noteSaveState === 'dirty' ? '未保存' : note ? '展开编辑' : '添加笔记' }}</small></summary><textarea v-model="note" maxlength="20000" placeholder="记录公式、错误原因、修正方法或下次检查点" @input="cacheNoteDraft" /><span class="note-controls"><small class="note-draft-hint">{{ noteSaveState === 'saving' ? '保存中…' : noteSaveState === 'saved' ? '已保存到服务器' : noteSaveState === 'error' ? '保存失败，本地草稿仍保留' : noteSaveState === 'dirty' ? '未保存' : '停止输入 5 秒后自动保存' }}</small><button type="button" class="save-note" :disabled="noteSaveState === 'saving'" @click="saveNote">{{ noteSaveState === 'saving' ? '保存中…' : noteSaveState === 'error' ? '重试保存' : '保存笔记' }}</button></span></details>
             </div>
             <div class="unified-answer-actions"><button class="correct primary-action" :class="{ selected: question.state === 'mastered' }" :disabled="saving" @click="record('correct')">{{ masteredAutoNext ? '掌握并下一题' : '标记已掌握' }}</button><button class="review" :class="{ selected: question.state === 'review' }" :disabled="saving" @click="record('review')">待复习{{ reviewAutoNext ? '并下一题' : '' }}</button><details class="secondary-actions"><summary>更多操作</summary><button :disabled="saving || !question.can_undo" @click="undo">撤销上次</button><button :disabled="saving || question.state === 'unattempted'" @click="record('reset')">重置本题状态</button></details></div>
-            <div class="next-mode-control"><label>顶部下一题<select v-model="nextMode"><option value="sequential">顺序下一题</option><option value="overdue">红色到期复习</option><option value="review">黄色近期复习</option></select></label><label><input v-model="masteredAutoNext" type="checkbox"> 掌握后自动切题</label><label><input v-model="reviewAutoNext" type="checkbox"> 待复习后自动切题</label></div>
+            <div class="next-mode-control"><label>前后翻题模式<select v-model="nextMode"><option value="sequential">顺序题</option><option value="overdue">红色到期复习题</option><option value="review">黄色近期复习题</option></select></label><label><input v-model="masteredAutoNext" type="checkbox"> 掌握后自动切题</label><label><input v-model="reviewAutoNext" type="checkbox"> 待复习后自动切题</label></div>
+            <div class="page-turn-copy-control" aria-label="翻题后自动复制"><label><input v-model="autoCopyLink" type="checkbox"> 翻题后自动复制分享链接</label><label><input v-model="autoCopyImage" type="checkbox"> 翻题后自动复制题图</label><small>前后翻题均生效；剪贴板一次只能保留一种内容，开启一个会关闭另一个。</small></div>
           </div>
           </section>
 

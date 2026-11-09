@@ -68,16 +68,20 @@ export async function buildClipboardPng(urls: string[]): Promise<ClipboardImageR
   }
 }
 
-export async function copyImagesToClipboard(urls: string[]): Promise<ClipboardImageResult> {
+export async function copyImagesToClipboard(urls: string[] | Promise<string[]>): Promise<ClipboardImageResult> {
   const ClipboardItemConstructor = window.ClipboardItem
   if (!navigator.clipboard?.write || !ClipboardItemConstructor) {
     throw new Error('此浏览器不支持直接复制图片，请使用系统分享或下载。')
   }
   // Keep the Blob promise inside ClipboardItem. Safari uses this to retain the
   // original button activation while authenticated images are fetched.
-  const pngPromise = buildClipboardPng(urls).then((result) => result.blob)
-  await navigator.clipboard.write([new ClipboardItemConstructor({ 'image/png': pngPromise })])
-  return { blob: await pngPromise, combined: urls.length > 1 }
+  const pngPromise = Promise.resolve(urls).then(buildClipboardPng)
+  const blobPromise = pngPromise.then((result) => result.blob)
+  void blobPromise.catch(() => { /* The clipboard write may fail before media finishes loading. */ })
+  await navigator.clipboard.write([new ClipboardItemConstructor({
+    'image/png': blobPromise,
+  })])
+  return pngPromise
 }
 
 export async function shareImageBlob(blob: Blob, filename: string) {

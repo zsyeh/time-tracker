@@ -1,10 +1,13 @@
 import { describe, expect, it } from 'vitest'
-import { emptyNextQuestionMessage, nextQuestionTarget } from './questionNavigation'
+import { emptyNextQuestionMessage, emptyPreviousQuestionMessage, nextQuestionTarget, previousQuestionTarget } from './questionNavigation'
 
 const question = {
   sequential_next_question_uuid: 'sequential-uuid',
   next_overdue_review_uuid: 'overdue-uuid',
   next_review_uuid: 'review-uuid',
+  previous_question_uuid: 'previous-sequential-uuid',
+  previous_overdue_review_uuid: 'previous-overdue-uuid',
+  previous_review_uuid: 'previous-review-uuid',
 }
 
 describe('question navigation modes', () => {
@@ -16,9 +19,20 @@ describe('question navigation modes', () => {
     expect(nextQuestionTarget(question, mode)).toBe(expected)
   })
 
+  it.each([
+    ['sequential', 'previous-sequential-uuid'],
+    ['overdue', 'previous-overdue-uuid'],
+    ['review', 'previous-review-uuid'],
+  ] as const)('selects the previous %s target with the same mode', (mode, expected) => {
+    expect(previousQuestionTarget(question, mode)).toBe(expected)
+  })
+
   it('returns a specific recoverable empty-state message for every mode', () => {
     expect(emptyNextQuestionMessage('sequential')).toContain('下一题')
     expect(emptyNextQuestionMessage('overdue')).toContain('红色')
     expect(emptyNextQuestionMessage('review')).toContain('黄色')
+    expect(emptyPreviousQuestionMessage('sequential')).toContain('上一题')
+    expect(emptyPreviousQuestionMessage('overdue')).toContain('红色')
+    expect(emptyPreviousQuestionMessage('review')).toContain('黄色')
   })
 })

@@ -446,6 +446,12 @@ button { color: inherit; }
 .next-mode-control label { display: flex; align-items: center; gap: 7px; }
 .next-mode-control select { min-height: 36px; padding: 5px 8px; color: var(--text-primary); border: 1px solid var(--border-default); border-radius: 6px; background: var(--bg-sidebar); }
 .next-mode-control .compact-next { min-height: 36px; padding: 6px 10px; border: 1px solid var(--border-default); border-radius: 6px; color: var(--text-secondary); background: var(--bg-sidebar); cursor: pointer; }
+.page-turn-copy-control { display: flex; flex-wrap: wrap; align-items: center; gap: 9px 16px; padding: 11px 12px; border: 1px solid var(--border-default); border-radius: var(--radius-sm); background: var(--bg-sidebar); }
+.page-turn-copy-control label { display: inline-flex; align-items: center; gap: 7px; min-height: 36px; color: var(--text-primary); font-size: 12px; font-weight: 600; cursor: pointer; }
+.page-turn-copy-control input { width: 17px; height: 17px; accent-color: var(--accent); }
+.page-turn-copy-control small { flex-basis: 100%; color: var(--text-secondary); font-size: 11px; line-height: 1.5; }
+.page-turn-copy-feedback { position: fixed; top: calc(env(safe-area-inset-top) + 64px); left: 50%; z-index: 80; width: max-content; max-width: calc(100vw - 24px); margin: 0; padding: 10px 14px; transform: translateX(-50%); border: 1px solid var(--accent); border-radius: var(--radius-sm); color: var(--text-primary); background: var(--bg-elevated); box-shadow: 0 8px 24px rgba(0,0,0,.25); font-size: 12px; line-height: 1.5; text-align: center; }
+.page-turn-copy-feedback.error { border-color: var(--danger); }
 .diagnosis-body { display: grid; gap: 10px; }
 .answer-bar button.correct.selected { color: var(--success); border-color: var(--success); background: color-mix(in srgb, var(--success) 10%, var(--bg-sidebar)); }
 .answer-bar button.review.selected { color: var(--warning); border-color: var(--warning); background: color-mix(in srgb, var(--warning) 10%, var(--bg-sidebar)); }
