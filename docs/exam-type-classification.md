@@ -67,6 +67,12 @@ checks its SHA-256 locally, limits each image to 4 MB, and keeps at most
 asset metadata in chunks without loading `image_data`. Image-only decisions
 remain review-required even when the model returns a type.
 
+To compare GPT-6.1 Terra on the same validation sample, copy the sample and
+queue into a separate private output directory, then prefix the `run` and
+`report` commands with `EXAM_TYPE_MODEL=gpt-6.1-terra`. Keep `--effort low`
+for a direct comparison. Model IDs are checked before reusing cached AI
+results; the report estimates cost using each result's recorded model ID.
+
 ## Full run and incremental run — after approval and 300 human labels
 
 Use a new output directory for the production run so validation predictions

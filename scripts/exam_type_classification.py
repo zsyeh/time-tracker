@@ -24,7 +24,9 @@ from pathlib import Path
 
 
 VERSION = 'exam-form-v1'
-MODEL = 'gpt-6-luna'
+MODEL = os.environ.get('EXAM_TYPE_MODEL', 'gpt-6-luna')
+if MODEL not in ('gpt-6-luna', 'gpt-6.1-terra'):
+    raise RuntimeError('Unsupported EXAM_TYPE_MODEL')
 ALLOWED = {
     'drill': {'choice', 'fill', 'large', 'unknown'},
     'ei': {'judgment', 'choice', 'fill', 'short_answer', 'large', 'unknown'},
@@ -33,6 +35,14 @@ LEGACY = {'single_choice': 'choice', 'fill_blank': 'fill', 'solution': 'large'}
 INPUT_PRICE = 0.10 / 1_000_000
 CACHED_INPUT_PRICE = 0.01 / 1_000_000
 OUTPUT_PRICE = 0.50 / 1_000_000
+PRICES = {'gpt-6-luna': (0.10, 0.01, 0.50), 'gpt-6.1-terra': (1.00, 0.05, 5.00)}
+
+
+def usage_cost(usage, model_id):
+    input_price, cached_price, output_price = PRICES[model_id]
+    return ((usage['input_tokens']-usage['cached_input_tokens'])*input_price
+            +usage['cached_input_tokens']*cached_price
+            +usage['output_tokens']*output_price)/1_000_000
 HEADER_TYPE = re.compile(r'(?:^|[·|/\s])(?:题型[：:]\s*)?(判断题|选择题|单选题|多选题|填空题|简答题|解答题|计算题|证明题)(?:[·|/\s]|$)')
 HEADER_MAP = {'判断题': 'judgment', '选择题': 'choice', '单选题': 'choice', '多选题': 'choice',
               '填空题': 'fill', '简答题': 'short_answer', '解答题': 'large',
@@ -314,13 +324,13 @@ def followup(args):
     if not base_path.exists():raise RuntimeError('base classification cache is missing')
     base={r['question_id']:r for r in read_jsonl(base_path) if r['source_system'] in ALLOWED}
     cache_path=out/f'results-{args.effort}-image.jsonl'
-    cached={(r['question_id'],r['content_hash']) for r in read_jsonl(cache_path)} if cache_path.exists() else set()
+    cached={(r['question_id'],r['content_hash'],r.get('model_id')) for r in read_jsonl(cache_path)} if cache_path.exists() else set()
     candidates=[]
     for qid,row in rows.items():
         prior=base.get(qid)
-        if not prior or prior['content_hash']!=content_hash(row):continue
+        if not prior or prior['content_hash']!=content_hash(row) or prior.get('model_id') not in (None,MODEL):continue
         if prior['question_type']!='unknown' and not prior['review_required']:continue
-        if (qid,prior['content_hash']) in cached:continue
+        if (qid,prior['content_hash'],MODEL) in cached:continue
         if any(a['type']=='question_crop' for a in row.get('assets') or []):candidates.append(row)
     if args.limit:candidates=candidates[:args.limit]
     logging.info('start image followup candidates=%s effort=%s',len(candidates),args.effort)
@@ -380,7 +390,7 @@ def run(args):
     pending=[]; reused=0; rules=0
     for row in rows:
         key=(row['source_system'],row['question_id'],content_hash(row))
-        if key in cache: reused+=1;continue
+        if key in cache and (cache[key].get('model_id') in (None,MODEL)): reused+=1;continue
         decision=None if args.force_ai else rule_decision(row)
         if decision:
             label,reason=decision
@@ -469,7 +479,7 @@ def report(args):
             u=row.get('usage')
             if u:
                 usage.update(u)
-                cost+=(u['input_tokens']-u['cached_input_tokens'])*INPUT_PRICE+u['cached_input_tokens']*CACHED_INPUT_PRICE+u['output_tokens']*OUTPUT_PRICE
+                cost+=usage_cost(u,row.get('model_id') or 'gpt-6-luna')
         result['efforts'][effort]={'classified':len(selected),'by_workspace':{
             w:{'counts':dict(Counter(r['question_type'] for r in selected if r['source_system']==w)),
                'percent':{label:round(100*count/max(1,sum(r['source_system']==w for r in selected)),1)
@@ -501,7 +511,7 @@ def report(args):
             image_usage=Counter();image_cost=0
             for row in image_rows:
                 u=row.get('usage') or {};image_usage.update(u)
-                image_cost+=(u.get('input_tokens',0)-u.get('cached_input_tokens',0))*INPUT_PRICE+u.get('cached_input_tokens',0)*CACHED_INPUT_PRICE+u.get('output_tokens',0)*OUTPUT_PRICE
+                image_cost+=usage_cost(u,row.get('model_id') or 'gpt-6-luna')
             result['efforts'][effort]['image_followup']={'count':len(image_rows),
                 'counts':dict(Counter(r['question_type'] for r in image_rows)),
                 'review_required':sum(needs_review(by_id[(r['source_system'],r['question_id'])],r) for r in image_rows),
