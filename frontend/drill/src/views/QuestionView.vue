@@ -11,6 +11,7 @@ import { typeText } from '../lib/examTypes'
 import MarkdownAnswer from '../components/MarkdownAnswer.vue'
 import SourcePaperViewer from '../components/SourcePaperViewer.vue'
 import OriginalAnswer from '../components/OriginalAnswer.vue'
+import FullscreenReader from '../components/FullscreenReader.vue'
 import { sourcePracticeTarget } from '../lib/sourcePractice'
 import { circuitFilters } from '../lib/circuitSelected'
 import { createAndCopyShare, createAndCopyShareOnGesture } from '../lib/share'
@@ -1129,8 +1130,9 @@ onBeforeRouteLeave(() => {
             <strong>{{ question.display_label }}</strong>
             <button @click="sourceViewer?.scrollToCurrent()">{{ uiText("定位本题") }}</button>
           </nav>
-          <div v-if="questionAssets(question).length" class="asset-toolbar question-asset-toolbar">
-            <button class="copy-question-image" type="button" :disabled="imageCopyState === 'copying'" @click="copyQuestionImages">{{ imageCopyState === 'copying' ? uiText("正在复制…") : imageCopyState === 'copied' ? uiText("已复制题图 ✓") : uiText("复制题图") }}</button>
+          <div class="asset-toolbar question-asset-toolbar">
+            <FullscreenReader :key="question.uuid" :title="typeText('题目', 'Question') + ' · ' + question.display_label" :images="questionAssets(question).map(asset => ({ src: imageUrl(asset.url), width: asset.width, height: asset.height }))" :markdown="!questionAssets(question).length ? question.prompt_text : ''" />
+            <button v-if="questionAssets(question).length" class="copy-question-image" type="button" :disabled="imageCopyState === 'copying'" @click="copyQuestionImages">{{ imageCopyState === 'copying' ? uiText("正在复制…") : imageCopyState === 'copied' ? uiText("已复制题图 ✓") : uiText("复制题图") }}</button>
             <span v-if="imageCopyMessage" :class="{ error: imageCopyState === 'fallback' }">{{ uiText(imageCopyMessage) }}</span>
             <template v-if="imageCopyState === 'fallback'"><button type="button" @click="shareQuestionImage">{{ uiText("系统分享") }}</button><button type="button" @click="downloadQuestionImage">{{ uiText("下载 PNG") }}</button></template>
           </div>
@@ -1155,9 +1157,12 @@ onBeforeRouteLeave(() => {
           </section>
 
           <section v-if="(question.has_answer || question.answer_markdown) && !(question.original_source?.has_answer && question.answer_scope === 'source_paper')" class="official-answer">
+            <div class="answer-heading">
             <button class="answer-toggle" :aria-expanded="answerOpen" @click="toggleAnswer">
               <span>{{ answerOpen ? uiText("收起答案") : question.answer_scope === 'individual' ? uiText("查看本题答案与解析") : question.answer_scope === 'source_paper' ? uiText("原卷参考答案（尚未逐题切分）") : question.source_context ? uiText("整卷参考解析（按题号查阅）") : (question.has_answer ? uiText("查看答案") : uiText("查看 Agent 解析")) }}</span><b>{{ answerOpen ? '↑' : '↓' }}</b>
             </button>
+            <FullscreenReader :key="question.uuid" :title="typeText('答案', 'Answer') + ' · ' + question.display_label" :images="question.answer_assets.map(asset => ({ src: imageUrl(asset.url), width: asset.width, height: asset.height }))" :markdown="question.answer_markdown" @opened="answerViewedThisRound = true" />
+            </div>
             <div v-if="answerOpen" class="answer-canvas">
               <div v-if="question.answer_assets.length" class="asset-toolbar answer-asset-toolbar">
                 <button type="button" @click="downloadAssets('answer', question.answer_assets)">{{ uiText("保存答案图片") }}</button>
