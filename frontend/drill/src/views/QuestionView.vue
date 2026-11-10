@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { uiText } from '../lib/uiText'
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router'
 import { api, ApiError, post, remove } from '../lib/api'
 import { cachedNoteDraft, cachedQuestion, clearNoteDraft, fetchQuestion, patchQuestionState, prefetchQuestion, storeNoteDraft, warmQuestionMedia } from '../lib/workspace'
@@ -8,6 +8,7 @@ import type { AttemptDiagnosis, ErrorCode, QuestionDetail, QuestionSummary } fro
 import ExamTypeEditor from '../components/ExamTypeEditor.vue'
 import NoteVisibility from '../components/NoteVisibility.vue'
 import { typeText } from '../lib/examTypes'
+import type { ReaderPracticeAction, ReaderPracticeControls } from '../lib/readerPractice'
 import MarkdownAnswer from '../components/MarkdownAnswer.vue'
 import SourcePaperViewer from '../components/SourcePaperViewer.vue'
 import OriginalAnswer from '../components/OriginalAnswer.vue'
@@ -135,9 +136,30 @@ const topNextLabel = computed(() => question.value ? ({
   sequential: '下一题', overdue: '下一道到期题', review: '下一道待复习题',
 })[nextMode.value] : '下一题')
 const sourceViewer = ref<InstanceType<typeof SourcePaperViewer> | null>(null)
+const questionReader = ref<InstanceType<typeof FullscreenReader> | null>(null)
+const answerReader = ref<InstanceType<typeof FullscreenReader> | null>(null)
+const originalAnswerReader = ref<InstanceType<typeof OriginalAnswer> | null>(null)
+const pendingFullscreenTarget = ref<string | null>(null)
+function isReaderOpen() {
+  return Boolean(questionReader.value?.isOpen || answerReader.value?.isOpen || originalAnswerReader.value?.isFullscreenOpen)
+}
+async function readerAction(action: ReaderPracticeAction) {
+  if (saving.value || nextLoading.value) return
+  if (action === 'previous') goToPrevious()
+  else if (action === 'next') await goToNext(nextMode.value)
+  else if (action === 'mastered') await record('correct')
+  else if (action === 'review') await record('review')
+  else if (action === 'answer') {
+    if (answerReader.value?.isOpen || originalAnswerReader.value?.isFullscreenOpen) return
+    questionReader.value?.close()
+    if (answerReader.value) await answerReader.value.open()
+    else await originalAnswerReader.value?.openFullscreen()
+  }
+}
 
 function navigateToQuestion(uuid: string | null, direction: 'previous' | 'next', copyArmed = false) {
   if (!uuid) return
+  pendingFullscreenTarget.value = isReaderOpen() || (direction === 'next' && nextAutoFullscreen.value) ? uuid : null
   if (!copyArmed) startPageTurnCopy(Promise.resolve(uuid))
   const cached = cachedQuestion(uuid, navigationQueryString())
   navigationFrame.value = cached ? {
@@ -213,6 +235,17 @@ const autoCopyImage = computed({
 })
 const reviewAutoNext = ref(localStorage.getItem('drill.review-auto-next.v1') === 'true')
 const masteredAutoNext = ref(localStorage.getItem('drill.mastered-auto-next.v1') !== 'false')
+const nextAutoFullscreenKey = `${runtimeWorkspace}.next-auto-fullscreen.v1`
+const nextAutoFullscreen = ref(localStorage.getItem(nextAutoFullscreenKey) === 'true')
+watch(nextAutoFullscreen, value => localStorage.setItem(nextAutoFullscreenKey, String(value)))
+const readerControls = computed<ReaderPracticeControls>(() => ({
+  mode: nextMode.value,
+  canPrevious: Boolean(topPreviousTarget.value), canNext: Boolean(topNextTarget.value),
+  canAnswer: Boolean(question.value?.has_answer || question.value?.answer_markdown || question.value?.original_source?.has_answer),
+  busy: saving.value || nextLoading.value || loading.value,
+  masteredAutoNext: masteredAutoNext.value, reviewAutoNext: reviewAutoNext.value,
+  state: question.value?.state || 'unattempted', error: uiText(error.value), feedback: uiText(actionFeedback.value),
+}))
 
 watch(nextMode, (value) => localStorage.setItem('drill.next-mode.v1', value))
 watch(diagnosisOpen, (value) => localStorage.setItem(`${runtimeWorkspace}.diagnosis-open.v1`, String(value)))
@@ -607,6 +640,7 @@ async function load() {
     if (sequence !== loadSequence) return
     const individualUuid = sourcePracticeTarget(loadedQuestion, route.query.view)
     if (individualUuid) {
+      if (pendingFullscreenTarget.value === uuid) pendingFullscreenTarget.value = individualUuid
       await router.replace({ path: `/practice/${individualUuid}`, query: questionRouteQuery() })
       return
     }
@@ -621,6 +655,11 @@ async function load() {
     if (sequence === loadSequence) {
       loading.value = false
       if (loadController === controller) loadController = null
+      await nextTick()
+      if (question.value?.uuid === uuid && pendingFullscreenTarget.value === uuid && props.uuid === uuid) {
+        pendingFullscreenTarget.value = null
+        await questionReader.value?.open()
+      }
     }
   }
 }
@@ -1131,7 +1170,7 @@ onBeforeRouteLeave(() => {
             <button @click="sourceViewer?.scrollToCurrent()">{{ uiText("定位本题") }}</button>
           </nav>
           <div class="asset-toolbar question-asset-toolbar">
-            <FullscreenReader :key="question.uuid" :title="typeText('题目', 'Question') + ' · ' + question.display_label" :images="questionAssets(question).map(asset => ({ src: imageUrl(asset.url), width: asset.width, height: asset.height }))" :markdown="!questionAssets(question).length ? question.prompt_text : ''" />
+            <FullscreenReader ref="questionReader" :controls="readerControls" @action="readerAction" :key="question.uuid" :title="typeText('题目', 'Question') + ' · ' + question.display_label" :images="questionAssets(question).map(asset => ({ src: imageUrl(asset.url), width: asset.width, height: asset.height }))" :markdown="!questionAssets(question).length ? question.prompt_text : ''" />
             <button v-if="questionAssets(question).length" class="copy-question-image" type="button" :disabled="imageCopyState === 'copying'" @click="copyQuestionImages">{{ imageCopyState === 'copying' ? uiText("正在复制…") : imageCopyState === 'copied' ? uiText("已复制题图 ✓") : uiText("复制题图") }}</button>
             <span v-if="imageCopyMessage" :class="{ error: imageCopyState === 'fallback' }">{{ uiText(imageCopyMessage) }}</span>
             <template v-if="imageCopyState === 'fallback'"><button type="button" @click="shareQuestionImage">{{ uiText("系统分享") }}</button><button type="button" @click="downloadQuestionImage">{{ uiText("下载 PNG") }}</button></template>
@@ -1161,7 +1200,7 @@ onBeforeRouteLeave(() => {
             <button class="answer-toggle" :aria-expanded="answerOpen" @click="toggleAnswer">
               <span>{{ answerOpen ? uiText("收起答案") : question.answer_scope === 'individual' ? uiText("查看本题答案与解析") : question.answer_scope === 'source_paper' ? uiText("原卷参考答案（尚未逐题切分）") : question.source_context ? uiText("整卷参考解析（按题号查阅）") : (question.has_answer ? uiText("查看答案") : uiText("查看 Agent 解析")) }}</span><b>{{ answerOpen ? '↑' : '↓' }}</b>
             </button>
-            <FullscreenReader :key="question.uuid" :title="typeText('答案', 'Answer') + ' · ' + question.display_label" :images="question.answer_assets.map(asset => ({ src: imageUrl(asset.url), width: asset.width, height: asset.height }))" :markdown="question.answer_markdown" @opened="answerViewedThisRound = true" />
+            <FullscreenReader ref="answerReader" :controls="readerControls" @action="readerAction" :key="question.uuid" :title="typeText('答案', 'Answer') + ' · ' + question.display_label" :images="question.answer_assets.map(asset => ({ src: imageUrl(asset.url), width: asset.width, height: asset.height }))" :markdown="question.answer_markdown" @opened="answerViewedThisRound = true" />
             </div>
             <div v-if="answerOpen" class="answer-canvas">
               <div v-if="question.answer_assets.length" class="asset-toolbar answer-asset-toolbar">
@@ -1178,7 +1217,7 @@ onBeforeRouteLeave(() => {
             </div>
           </section>
           <p v-if="question.original_source?.has_answer && question.answer_scope === 'source_paper'" class="source-paper-help">{{ uiText("本题答案尚待逐题核对，请先查看完整版答案；不会将未确认的解析错配到本题。") }}</p>
-          <OriginalAnswer v-if="question.original_source?.has_answer" :key="question.original_source.uuid + question.uuid" :uuid="question.original_source.uuid" @opened="answerViewedThisRound = true" />
+          <OriginalAnswer ref="originalAnswerReader" :controls="readerControls" @action="readerAction" v-if="question.original_source?.has_answer" :key="question.original_source.uuid + question.uuid" :uuid="question.original_source.uuid" @opened="answerViewedThisRound = true" />
           <p v-else-if="question.original_source && !question.has_answer && !question.answer_markdown" class="source-paper-help">{{ uiText("原始资料未提供参考答案，暂不生成或猜测答案。") }}</p>
 
           <section v-if="question.source_context" class="source-current-question">
@@ -1251,6 +1290,7 @@ onBeforeRouteLeave(() => {
               <label><input v-model="reviewAutoNext" type="checkbox">{{ uiText("待复习后切题") }}</label>
               <label><input v-model="autoCopyLink" type="checkbox">{{ uiText("翻题复制链接") }}</label>
               <label><input v-model="autoCopyImage" type="checkbox">{{ uiText("翻题复制题图") }}</label>
+              <label class="auto-fullscreen-option"><input v-model="nextAutoFullscreen" type="checkbox">{{ typeText('下一题后自动全屏', 'Open next question full screen') }}</label>
             </div>
             <small>{{ uiText("复制选项二选一；前后翻题均生效。") }}</small>
           </section>
@@ -1282,6 +1322,7 @@ onBeforeRouteLeave(() => {
 .page-turn-settings-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
 .page-turn-settings-grid label { display: flex; align-items: center; gap: 7px; min-width: 0; min-height: 36px; padding: 5px 7px; border: 1px solid var(--border-default); border-radius: 6px; color: var(--text-secondary); background: var(--bg-sidebar); font-size: 11px; line-height: 1.2; cursor: pointer; }
 .page-turn-settings-grid label:has(input:checked) { border-color: var(--accent); color: var(--text-primary); background: var(--accent-muted); }
+.page-turn-settings-grid .auto-fullscreen-option { grid-column: 1 / -1; }
 .page-turn-settings-grid input { flex: none; width: 15px; height: 15px; margin: 0; accent-color: var(--accent); }
 .page-turn-settings > small { color: var(--text-tertiary); font-size: 10px; line-height: 1.35; }
 .diagnosis-status { margin-top: 3px; color: var(--text-tertiary); font-size: 10px; font-weight: 600; }

@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { computed, nextTick, onBeforeUnmount, ref } from 'vue'
 import MarkdownAnswer from './MarkdownAnswer.vue'
+import ReaderPracticeActions from './ReaderPracticeActions.vue'
+import type { ReaderPracticeAction, ReaderPracticeControls } from '../lib/readerPractice'
 import { typeText } from '../lib/examTypes'
 
 type Page = { src: string; width?: number; height?: number }
-const props = defineProps<{ title: string; images: Page[]; markdown?: string; prepare?: () => Promise<void> }>()
-const emit = defineEmits<{ opened: [] }>()
+const props = defineProps<{ title: string; images: Page[]; markdown?: string; prepare?: () => Promise<void>; controls?: ReaderPracticeControls }>()
+const emit = defineEmits<{ opened: []; closed: []; action: [action: ReaderPracticeAction] }>()
 const dialog = ref<HTMLDialogElement | null>(null)
 const scroller = ref<HTMLElement | null>(null)
 const opened = ref(false)
@@ -19,10 +21,14 @@ const label = computed(() => `${typeText('全屏阅读', 'Read full screen')} ·
 let previousOverflow: string | null = null
 let opener: HTMLElement | null = null
 function restore() {
+  const wasOpen = opened.value
   opened.value = false
   if (previousOverflow !== null) document.body.style.overflow = previousOverflow
   previousOverflow = null
-  if (opener?.isConnected) opener.focus({ preventScroll: true })
+  if (wasOpen) {
+    emit('closed')
+    if (opener?.isConnected) opener.focus({ preventScroll: true })
+  }
 }
 async function open() {
   if (opened.value) return
@@ -77,6 +83,7 @@ function src(item: Page, index: number) {
 }
 function retry(index: number) { retries.value[index] = (retries.value[index] || 0) + 1; failed.value[index] = false }
 onBeforeUnmount(() => { if (dialog.value?.open) dialog.value.close(); if (previousOverflow !== null) restore() })
+defineExpose({ open, close, isOpen: computed(() => opened.value) })
 </script>
 
 <template>
@@ -86,8 +93,9 @@ onBeforeUnmount(() => { if (dialog.value?.open) dialog.value.close(); if (previo
   <Teleport to="body">
     <dialog ref="dialog" class="fullscreen-reader" :aria-label="title" @close="restore" @keydown="keyboard">
       <template v-if="opened">
-        <header class="reader-toolbar">
+        <header class="reader-toolbar" :class="{ 'has-practice-controls': controls }">
           <strong>{{ title }}</strong>
+          <ReaderPracticeActions v-if="controls" :controls="controls" @action="emit('action', $event)" />
           <span v-if="images.length > 1" class="reader-count">{{ page }} / {{ images.length }}</span>
           <div class="reader-zoom">
             <button type="button" :aria-label="typeText('缩小', 'Zoom out')" :disabled="zoom <= 50" @click="setZoom(zoom - 25)">−</button>
@@ -96,6 +104,7 @@ onBeforeUnmount(() => { if (dialog.value?.open) dialog.value.close(); if (previo
           </div>
           <button type="button" class="reader-close" autofocus :aria-label="typeText('关闭全屏', 'Close full screen')" @click="close">✕</button>
         </header>
+        <p v-if="controls?.error || controls?.feedback" class="reader-feedback" :class="{ error: controls?.error }" :role="controls?.error ? 'alert' : 'status'">{{ controls?.error || controls?.feedback }}</p>
         <div ref="scroller" class="reader-scroll" tabindex="0" @scroll.passive="trackPage">
           <p v-if="loading" class="reader-hint" role="status">{{ typeText('正在加载…', 'Loading…') }}</p>
           <p v-if="loadError" class="reader-hint" role="alert">{{ loadError }} <button type="button" class="reader-load-retry" @click="loadContent">{{ typeText('重试', 'Retry') }}</button></p>
@@ -138,4 +147,13 @@ onBeforeUnmount(() => { if (dialog.value?.open) dialog.value.close(); if (previo
 .reader-markdown { max-width: none; margin: 0 auto; padding: 14px; }
 .reader-retry { width: 100%; min-height: 100px; border: 1px dashed var(--border-default); border-radius: 5px; color: var(--text-primary); background: var(--bg-surface); cursor: pointer; }
 @media (max-width: 500px) { .reader-toolbar { gap: 5px; } .reader-toolbar strong { font-size: 11px; } .reader-toolbar button { padding: 4px; } }
+.reader-feedback { flex: none; margin: 0; padding: 5px 12px; color: var(--success, #64b781); background: var(--bg-surface); font-size: 11px; }
+.reader-feedback.error { color: var(--danger, #e37179); }
+@media (max-width: 640px) {
+  .reader-toolbar.has-practice-controls { gap: 5px; }
+  .has-practice-controls > strong { display: none; }
+  .has-practice-controls .reader-zoom > button:first-child, .has-practice-controls .reader-zoom > button:last-child { display: none; }
+  .has-practice-controls .reader-zoom { margin-left: auto; }
+  .has-practice-controls .reader-close { min-width: 34px; }
+}
 </style>

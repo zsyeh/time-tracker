@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { uiText } from '../lib/uiText'
-import { ref } from 'vue'
+import { computed, ref } from 'vue'
+import type { ReaderPracticeAction, ReaderPracticeControls } from '../lib/readerPractice'
 import { api } from '../lib/api'
 import type { QuestionDetail } from '../types'
 import MarkdownAnswer from './MarkdownAnswer.vue'
@@ -8,8 +9,9 @@ import FullscreenReader from './FullscreenReader.vue'
 import { typeText } from '../lib/examTypes'
 import { withWorkspacePrefix } from '../lib/runtimePath'
 
-const props = defineProps<{ uuid: string }>()
-const emit = defineEmits<{ opened: [] }>()
+const props = defineProps<{ uuid: string; controls?: ReaderPracticeControls }>()
+const emit = defineEmits<{ opened: []; action: [action: ReaderPracticeAction] }>()
+const reader = ref<InstanceType<typeof FullscreenReader> | null>(null)
 const answer = ref<QuestionDetail | null>(null)
 const loading = ref(false)
 const error = ref('')
@@ -32,11 +34,12 @@ async function load(event: Event) {
   emit('opened')
   try { await ensureAnswer() } catch { /* The error is displayed beside the answer. */ }
 }
+defineExpose({ openFullscreen: () => reader.value?.open(), closeFullscreen: () => reader.value?.close(), isFullscreenOpen: computed(() => reader.value?.isOpen || false) })
 </script>
 
 <template>
   <details class="original-answer" @toggle="load">
-    <summary><span>{{ uiText("查看完整版答案（原始解析全部保留）") }}</span><FullscreenReader :title="typeText('完整答案', 'Complete answers')" :images="(answer?.answer_assets || []).map(asset => ({ src: withWorkspacePrefix(asset.url), width: asset.width, height: asset.height }))" :markdown="answer?.answer_markdown" :prepare="ensureAnswer" @opened="emit('opened')" /></summary>
+    <summary><span>{{ uiText("查看完整版答案（原始解析全部保留）") }}</span><FullscreenReader ref="reader" :controls="controls" @action="emit('action', $event)" :title="typeText('完整答案', 'Complete answers')" :images="(answer?.answer_assets || []).map(asset => ({ src: withWorkspacePrefix(asset.url), width: asset.width, height: asset.height }))" :markdown="answer?.answer_markdown" :prepare="ensureAnswer" @opened="emit('opened')" /></summary>
     <p v-if="loading" role="status">{{ uiText("正在加载完整版答案…") }}</p>
     <p v-if="error" role="alert">{{ uiText(error) }}</p>
     <div v-if="answer" class="original-answer-pages">

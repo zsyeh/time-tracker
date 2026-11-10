@@ -871,7 +871,7 @@ button { color: inherit; }
   .question-route .question-header h1 { margin: 2px 0; font-size: clamp(18px, 1.6vw, 24px); }
   .question-route .question-save-actions { margin-bottom: 6px; }
   .question-route .question-workbench {
-    flex: 1 1 0; min-height: 0; grid-template-columns: minmax(0, 1fr) clamp(180px, 19.2vw, 264px);
+    flex: 1 1 0; min-height: 0; grid-template-columns: minmax(0, 1fr) clamp(300px, 32vw, 440px);
     align-items: stretch; overflow: hidden;
   }
   .question-route .question-problem-pane { min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
@@ -932,6 +932,6 @@ button { color: inherit; }
   .question-route .question-control-pane .page-turn-settings select { min-width: 0; max-width: 65%; }
   .question-route .question-control-pane .error-picker button span { font-size: 9px; }
   .question-route .question-control-pane .answer-toggle { height: auto; min-height: 32px; padding: 5px; }
-  .question-route .question-control-pane .unified-answer-actions { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-  .question-route .question-control-pane .secondary-actions { grid-column: 1 / -1; }
+  .question-route .question-control-pane .unified-answer-actions { grid-template-columns: 1.35fr 1fr auto; }
+  .question-route .question-control-pane .secondary-actions { grid-column: auto; }
 }
