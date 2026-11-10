@@ -1,3 +1,4 @@
+import { learningUserId } from '../../../shared/foregroundTimer'
 function cookie(name: string): string {
   const item = document.cookie.split('; ').find((part) => part.startsWith(`${name}=`))
   return item ? decodeURIComponent(item.split('=').slice(1).join('=')) : ''
@@ -27,6 +28,7 @@ export async function api<T>(url: string, options: RequestInit = {}): Promise<T>
 async function requestJson<T>(url: string, options: RequestInit): Promise<T> {
   const headers = new Headers(options.headers)
   headers.set('Accept', 'application/json')
+  if (learningUserId && !url.split('?')[0]!.endsWith('/api/auth/session/')) headers.set('X-Learning-User-ID', learningUserId)
   if (options.body) headers.set('Content-Type', 'application/json')
   const csrf = cookie('csrftoken')
   if (csrf) headers.set('X-CSRFToken', csrf)

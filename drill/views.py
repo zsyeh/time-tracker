@@ -1310,6 +1310,9 @@ class DrillQuestionAttemptView(APIView):
                     'deduplicated': True,
                 })
         with transaction.atomic():
+            if serializer.validated_data.get('timing_protocol') == 2:
+                from .recovery import _lock
+                _lock(request.user)
             # Serialize submissions for this question before the second
             # idempotency check. This closes the double-click/network-retry
             # race on PostgreSQL without relying on a client-side flag.
@@ -1341,14 +1344,22 @@ class DrillQuestionAttemptView(APIView):
             started_at = user_state.active_timing_started_at if user_state else None
             timing_session = None
             timing_key = serializer.validated_data.get('timing_key')
+            recovered_timer = False
             if timing_key:
-                timing_session = QuestionTimingSession.objects.select_for_update().filter(
-                    user=request.user, question=question, client_key=timing_key,
-                    stopped_at__isnull=True,
-                ).first()
-                if timing_session:
-                    started_at = timing_session.starts_at
-            if result in {'correct', 'review'} and user_state and user_state.active_timing_started_at:
+                candidate = QuestionTimingSession.objects.filter(
+                    user=request.user, question=question, client_key=timing_key).first()
+                recovered_timer = bool(candidate and (candidate.recovery or {}).get('protocol') == 2)
+                if recovered_timer:
+                    if serializer.validated_data.get('timing_protocol') != 2:
+                        return Response({'detail': 'Protocol 2 owner/sequence required.'}, status=409)
+                    started_at = candidate.starts_at
+                else:
+                    timing_session = QuestionTimingSession.objects.select_for_update().filter(
+                        user=request.user, question=question, client_key=timing_key,
+                        stopped_at__isnull=True).first()
+                    if timing_session:
+                        started_at = timing_session.starts_at
+            if not recovered_timer and result in {'correct', 'review'} and user_state and user_state.active_timing_started_at:
                 server_elapsed = int((timezone.now() - user_state.active_timing_started_at).total_seconds())
                 time_spent_seconds = server_elapsed if 1 <= server_elapsed <= 43200 else None
             if timing_session:
@@ -1389,6 +1400,10 @@ class DrillQuestionAttemptView(APIView):
                 if note_conflict and note_was_submitted
                 else canonical_note
             )
+            if recovered_timer:
+                from .recovery import finish_timing
+                confirmed_seconds = finish_timing(request.user, question, timing_key, serializer.validated_data)
+                time_spent_seconds = confirmed_seconds if result in {'correct', 'review'} else None
             attempt = QuestionAttempt.objects.create(
                 user=request.user,
                 question=question,
@@ -1413,6 +1428,10 @@ class DrillQuestionAttemptView(APIView):
                 submission_key=submission_key,
                 created_at=now,
             )
+            if recovered_timer:
+                completed_timer = QuestionTimingSession.objects.get(user=request.user, question=question, client_key=timing_key)
+                completed_timer.recovery = {**completed_timer.recovery, 'attempt_id': attempt.pk, 'time_basis': 'foreground_v2'}
+                completed_timer.save(update_fields=['recovery'])
             primary_error = serializer.validated_data.get('primary_error')
             QuestionAttemptError.objects.bulk_create([
                 QuestionAttemptError(
@@ -1512,6 +1531,11 @@ class DrillQuestionTimingView(APIView):
         question = get_object_or_404(workspace_questions(request), uuid=question_uuid)
         now = timezone.now()
         timing_key = serializer.validated_data.get('timing_key')
+        if serializer.validated_data.get('protocol') == 2:
+            from .recovery import timing_request
+            return Response(timing_request(request.user, question, serializer.validated_data))
+        if serializer.validated_data['action'] not in ('begin', 'cancel'):
+            return Response({'detail': 'protocol=2 is required.'}, status=400)
         if timing_key:
             with transaction.atomic():
                 session = QuestionTimingSession.objects.select_for_update().filter(

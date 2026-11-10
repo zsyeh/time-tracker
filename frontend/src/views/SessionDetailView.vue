@@ -1,9 +1,10 @@
 <script setup lang="ts">
-import { onMounted, reactive, ref, watch } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { onMounted, onBeforeUnmount, reactive, ref, watch } from 'vue'
+import { useRoute, useRouter, onBeforeRouteUpdate, onBeforeRouteLeave } from 'vue-router'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { Back, CopyDocument, EditPen, Link, View } from '@element-plus/icons-vue'
 import { api, patch, post, remove } from '../lib/api'
+import { learningUserId, readLocal, writeLocal } from '../../shared/foregroundTimer'
 import type { ReviewTrend as ReviewTrendType, SessionShareStatus, StudySession } from '../types'
 import MarkdownPreview from '../components/MarkdownPreview.vue'
 import ReviewTrend from '../components/ReviewTrend.vue'
@@ -23,6 +24,15 @@ const editing = ref(false)
 const notFound = ref(false)
 const edit = reactive({ title: '', details: '' })
 
+let editDraftTimer = 0
+const editKey = () => `learning.article-draft.v2.${learningUserId}.${props.uuid}`
+function flushEditDraft() {
+  clearTimeout(editDraftTimer)
+  if (editing.value && learningUserId && session.value?.uuid === props.uuid) writeLocal(editKey(), { ...edit })
+}
+watch(edit, () => { if (editing.value) { clearTimeout(editDraftTimer); editDraftTimer = window.setTimeout(flushEditDraft, 500) } }, { deep: true })
+window.addEventListener('pagehide', flushEditDraft)
+onBeforeUnmount(() => { flushEditDraft(); window.removeEventListener('pagehide', flushEditDraft) })
 function backToSessions() {
   const requested = typeof route.query.returnTo === 'string' ? route.query.returnTo : '/sessions'
   const resolved = router.resolve(requested)
@@ -44,7 +54,9 @@ async function load() {
   try {
     const value = await api<StudySession>(`/api/sessions/${props.uuid}/`)
     session.value = value
-    Object.assign(edit, { title: value.title || '', details: value.details })
+    const draft = readLocal<typeof edit>(editKey())
+    Object.assign(edit, draft || { title: value.title || '', details: value.details })
+    editing.value = Boolean(draft)
     const requests: Array<Promise<unknown>> = [
       api<SessionShareStatus>(`/api/sessions/${props.uuid}/share/`).then((state) => { share.value = state }),
     ]
@@ -67,6 +79,8 @@ async function save() {
   try {
     session.value = await patch<StudySession>(`/api/sessions/${props.uuid}/`, edit)
     editing.value = false
+    clearTimeout(editDraftTimer)
+    try { localStorage.removeItem(editKey()) } catch { /* Storage unavailable. */ }
     ElMessage.success('Session updated')
   } catch (error) { ElMessage.error((error as Error).message) }
 }
@@ -99,6 +113,8 @@ async function revokeShare() {
   } catch (error) { if (error !== 'cancel') ElMessage.error((error as Error).message) }
 }
 
+onBeforeRouteUpdate(() => { flushEditDraft() })
+onBeforeRouteLeave(() => { flushEditDraft() })
 watch(() => props.uuid, load)
 onMounted(load)
 </script>

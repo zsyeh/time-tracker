@@ -116,6 +116,10 @@ class QuestionAttemptCreateSerializer(serializers.Serializer):
     submission_key = serializers.UUIDField(required=False, allow_null=True)
     state_version = serializers.IntegerField(min_value=1, required=False, allow_null=True)
     timing_key = serializers.UUIDField(required=False, allow_null=True)
+    timing_protocol = serializers.IntegerField(required=False, min_value=2, max_value=2)
+    timing_owner = serializers.UUIDField(required=False)
+    timing_sequence = serializers.IntegerField(required=False, min_value=0)
+    timing_elapsed_ms = serializers.IntegerField(required=False, min_value=0, max_value=43200000)
 
     def validate(self, attrs):
         if attrs.get('result') not in {'correct', 'review'}:
@@ -153,7 +157,14 @@ class QuestionUserStateSerializer(serializers.Serializer):
 
 
 class QuestionTimingSerializer(serializers.Serializer):
-    action = serializers.ChoiceField(choices=('begin', 'cancel'), default='begin')
+    action = serializers.ChoiceField(choices=('begin', 'cancel', 'claim', 'checkpoint', 'pause'), default='begin')
+    protocol = serializers.IntegerField(required=False, min_value=2, max_value=2)
+    owner = serializers.UUIDField(required=False)
+    sequence = serializers.IntegerField(required=False, min_value=0)
+    elapsed_ms = serializers.IntegerField(required=False, min_value=0, max_value=43200000)
+    countdown_ms = serializers.IntegerField(required=False, min_value=0, max_value=5000)
+    resume_owner = serializers.UUIDField(required=False)
+    base_elapsed_ms = serializers.IntegerField(required=False, min_value=0, max_value=43200000)
     timing_key = serializers.UUIDField(required=False, allow_null=True)
 
 

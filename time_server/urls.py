@@ -1,6 +1,7 @@
 from django.contrib import admin
 from django.urls import include, path, re_path
 from drill.learning_shares import public_learning_share
+from drill.recovery import LearningRecoveryView
 from allauth.account.views import signup_by_passkey
 from allauth.mfa.webauthn.views import signup_webauthn
 
@@ -56,6 +57,7 @@ from drill.web_views import (
 
 
 urlpatterns = [
+    path('api/learning/recovery/', LearningRecoveryView.as_view(), name='learning_recovery'),
     path('share/learning/<str:token>/', public_learning_share, name='learning_share_index'),
     path('share/learning/<str:token>/<path:resource>', public_learning_share, name='learning_share_resource'),
     path(

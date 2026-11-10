@@ -648,11 +648,12 @@ class LearningShare(models.Model):
 
 
 class QuestionTimingSession(models.Model):
-    """One server-authoritative timer per browser tab and question."""
+    """Legacy tab timers and recoverable foreground question rounds."""
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='+')
     question = models.ForeignKey(Question, on_delete=models.CASCADE, related_name='timing_sessions')
     client_key = models.UUIDField()
+    recovery = models.JSONField(default=dict, blank=True, null=True)
     starts_at = models.DateTimeField()
     stopped_at = models.DateTimeField(null=True, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -1146,3 +1147,13 @@ class DrillLoginHandoff(models.Model):
             expires_at=now + datetime.timedelta(seconds=lifetime_seconds),
         )
         return handoff, raw_token
+
+
+class LearningRecoveryState(models.Model):
+    """Resume locations and the one foreground practice lease; never statistics."""
+    user = models.OneToOneField(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='learning_recovery')
+    locations = models.JSONField(default=dict, blank=True)
+    last_workspace = models.CharField(max_length=16, blank=True)
+    version = models.PositiveIntegerField(default=0)
+    active_timer = models.ForeignKey(QuestionTimingSession, null=True, blank=True, on_delete=models.SET_NULL, related_name='+')
+    updated_at = models.DateTimeField(auto_now=True)

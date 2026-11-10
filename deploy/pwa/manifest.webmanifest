@@ -2,7 +2,7 @@
   "id": "/",
   "name": "eh",
   "short_name": "Study",
-  "start_url": "/",
+  "start_url": "/?pwa_launch=1",
   "scope": "/",
   "display": "standalone",
   "background_color": "#ffffff",

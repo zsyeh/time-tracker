@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive, ref, watch, onBeforeUnmount } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { api, post } from '../lib/api'
+import { learningUserId, readLocal, writeLocal } from '../../shared/foregroundTimer'
 import type { CompletionOptions, EfficiencyGrade, StudySession, Subject, TaskPreset, TaskShortcut } from '../types'
 import MarkdownPreview from './MarkdownPreview.vue'
 import { useUiPreferences } from '../lib/uiPreferences'
@@ -17,6 +18,24 @@ const form = reactive({
   tag_ids: [] as number[],
   efficiency_grade: 'A' as EfficiencyGrade,
 })
+let finishDraftTimer = 0
+let draftLoaded = false
+const finishDraftKey = () => `learning.finish-draft.v2.${learningUserId}.${props.session?.id || ''}`
+function flushFinishDraft() {
+  clearTimeout(finishDraftTimer)
+  if (props.session && learningUserId) writeLocal(finishDraftKey(), form)
+}
+watch(() => props.session?.id, (_id, previous) => {
+  clearTimeout(finishDraftTimer)
+  if (previous && learningUserId) writeLocal(`learning.finish-draft.v2.${learningUserId}.${previous}`, form)
+  const saved = readLocal<typeof form>(finishDraftKey())
+  draftLoaded = Boolean(saved)
+  Object.assign(form, saved || { title: '', details: '', tag_ids: [], efficiency_grade: 'A' })
+}, { immediate: true })
+watch(form, () => { clearTimeout(finishDraftTimer); finishDraftTimer = window.setTimeout(flushFinishDraft, 500) }, { deep: true })
+const draftBoundary = () => flushFinishDraft()
+window.addEventListener('pagehide', draftBoundary)
+onBeforeUnmount(() => { flushFinishDraft(); window.removeEventListener('pagehide', draftBoundary) })
 const efficiencyGrades: Array<{ grade: EfficiencyGrade; coefficient: string }> = [
   { grade: 'A', coefficient: '1.00' },
   { grade: 'B', coefficient: '0.95' },
@@ -132,8 +151,10 @@ async function prepareFinish() {
       // let the server make the authoritative duration decision on submit.
     } finally { saving.value = false }
   }
-  form.tag_ids = props.session.tags.map((tag) => tag.id)
-  form.efficiency_grade = 'A'
+  if (!draftLoaded) {
+    form.tag_ids = props.session.tags.map((tag) => tag.id)
+    form.efficiency_grade = 'A'
+  }
   finishOpen.value = true
   void loadCompletionOptions()
 }

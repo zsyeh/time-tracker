@@ -1,18 +1,23 @@
 <script setup lang="ts">
 import { computed, defineAsyncComponent, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import AppSidebar from './components/navigation/AppSidebar.vue'
 import { api, post } from './lib/api'
+import { startLearningRecovery } from '../shared/learningRecovery'
 import { mathVisualizationEnabled } from './lib/featureFlags'
 import type { Overview } from './types'
 import type { FormulaLaunchRequest } from './math-visualizer/core/formulaRouter'
 
 const MathLabView = defineAsyncComponent(() => import('./views/MathLabView.vue'))
 const route = useRoute()
+const recoveryRouter = useRouter()
+let stopRecovery: (() => void) | undefined
+let recoveryStarted = false
 const overview = ref<Overview | null>(null)
 const loading = ref(false)
 const username = ref('')
+const identityReady = ref(false)
 function readSidebarCollapsed() {
   try { return localStorage.getItem('learning-os.sidebar.collapsed') === 'true' }
   catch { return false }
@@ -30,11 +35,16 @@ async function load() {
   try {
     const [data, auth] = await Promise.all([
       api<Overview>('/api/dashboard/overview/?days=180'),
-      api<{ user: { username: string } }>('/api/auth/session/'),
+      api<{ user: { username: string; id?: number } }>('/api/auth/session/'),
     ])
     overview.value = data
     mathVisualizationEnabled.value = Boolean(data.features?.math_visualization)
     username.value = auth.user.username
+    if (!recoveryStarted) {
+      recoveryStarted = true
+      stopRecovery = await startLearningRecovery(auth.user.id ?? auth.user.username, 'timer', recoveryRouter, api)
+    }
+    identityReady.value = true
   } catch (error) { ElMessage.error((error as Error).message) } finally { loading.value = false }
 }
 
@@ -77,6 +87,7 @@ watch(sidebarCollapsed, (value) => {
 
 onMounted(() => window.addEventListener('learning-os-open-math-lab', openMathLab))
 onBeforeUnmount(() => {
+  stopRecovery?.()
   window.removeEventListener('learning-os-open-math-lab', openMathLab)
   if (mathLabDialog.value?.open) mathLabDialog.value.close()
 })
@@ -90,7 +101,7 @@ onBeforeUnmount(() => {
   <div v-else class="app-shell" :class="{ 'sidebar-collapsed': sidebarCollapsed }">
     <AppSidebar v-model:collapsed="sidebarCollapsed" :username="username" @logout="logout" />
     <main class="main-content" v-loading.fullscreen.lock="loading">
-      <RouterView v-slot="{ Component }">
+      <RouterView v-if="identityReady" v-slot="{ Component }">
         <component v-if="route.name === 'today' || route.name === 'trends'" :is="Component" :overview="overview" @changed="load" />
         <component v-else-if="route.name === 'settings'" :is="Component" @changed="load" />
         <component v-else :is="Component" />

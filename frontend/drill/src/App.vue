@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { uiText } from './lib/uiText'
-import { onMounted, ref, watch } from 'vue'
+import { startLearningRecovery } from '../../shared/learningRecovery'
+import { useRouter } from 'vue-router'
+import { onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { api, post } from './lib/api'
 import { configureWorkspaceScope } from './lib/workspace'
@@ -9,6 +11,8 @@ import { useUiPreferences, type UiLanguage } from './lib/uiPreferences'
 import { runtimeWorkspace } from './lib/runtimePath'
 
 const route = useRoute()
+const recoveryRouter = useRouter()
+let stopRecovery: (() => void) | undefined
 const username = ref('')
 const progress = ref<Progress | null>(null)
 const sidebarOpen = ref(false)
@@ -31,9 +35,10 @@ const { language, scheme, setLanguage, setScheme, t } = useUiPreferences()
 document.title = isEi ? 'EI · 892 Practice' : 'Drill · Question Practice'
 
 async function loadIdentity() {
-  const auth = await api<{ user: { username: string } }>('/api/auth/session/')
+  const auth = await api<{ user: { username: string; id?: number } }>('/api/auth/session/')
   configureWorkspaceScope(auth.user.username)
   username.value = auth.user.username
+  stopRecovery = await startLearningRecovery(auth.user.id ?? auth.user.username, runtimeWorkspace, recoveryRouter, api)
   identityReady.value = true
   progress.value = await api<Progress>('/api/drill/progress/')
 }
@@ -57,6 +62,7 @@ watch(() => route.fullPath, () => {
 onMounted(() => {
   void loadIdentity()
 })
+onUnmounted(() => stopRecovery?.())
 </script>
 
 <template>

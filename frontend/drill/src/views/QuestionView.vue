@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { uiText } from '../lib/uiText'
+import { ForegroundTimer, learningUserId, readLocal, writeLocal } from '../../../shared/foregroundTimer'
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router'
 import { api, ApiError, post, remove } from '../lib/api'
@@ -453,14 +454,11 @@ let diagnosisSaveSequence = 0
 let diagnosisHydrating = false
 let actionFeedbackTimer = 0
 let noteDraftDirty = false
-let questionOpenedAt = performance.now()
 let questionTimerInterval = 0
-let timingServerNow = 0
-let timingStartsAt = 0
-let timingSyncedAt = 0
-let timingSyncPromise: Promise<void> | null = null
-let timingSyncSequence = 0
-let timingClientKey = crypto.randomUUID()
+let practiceTimer: ForegroundTimer | null = null
+let roundDraftReady = false
+let draftRoundKey = ''
+const timerSyncStatus = ref('syncing')
 const timingCountdown = ref(5)
 const timingElapsedSeconds = ref(0)
 const timingFinalized = ref(false)
@@ -498,68 +496,58 @@ const formattedQuestionTime = computed(() => {
 })
 
 function updateQuestionTimer() {
-  if (timingFinalized.value) return
-  const now = timingServerNow
-    ? timingServerNow + performance.now() - timingSyncedAt
-    : performance.now()
-  const startsAt = timingStartsAt || questionOpenedAt + 5000
-  const elapsedMilliseconds = now - startsAt
-  timingCountdown.value = Math.max(0, Math.ceil(-elapsedMilliseconds / 1000))
-  timingElapsedSeconds.value = elapsedMilliseconds > 0
-    ? Math.ceil(elapsedMilliseconds / 1000)
-    : 0
+  practiceTimer?.tick()
 }
-
+function renderTimer() {
+  if (!practiceTimer) return
+  if (roundDraftReady && draftRoundKey !== practiceTimer.state.key) restoreRoundDraft()
+  timingCountdown.value = Math.ceil(practiceTimer.state.countdownMs / 1000)
+  timingElapsedSeconds.value = Math.ceil(practiceTimer.state.elapsedMs / 1000)
+  timingFinalized.value = practiceTimer.state.finalized
+  timerSyncStatus.value = practiceTimer.status
+}
 function resetQuestionTimer() {
   window.clearInterval(questionTimerInterval)
-  questionOpenedAt = performance.now()
-  timingServerNow = 0
-  timingStartsAt = 0
-  timingSyncedAt = 0
-  timingCountdown.value = 5
-  timingElapsedSeconds.value = 0
-  timingFinalized.value = false
+  if (practiceTimer) void practiceTimer.dispose()
+  roundDraftReady = false
+  practiceTimer = new ForegroundTimer(learningUserId, runtimeWorkspace, props.uuid, api, renderTimer)
+  renderTimer()
   questionTimerInterval = window.setInterval(updateQuestionTimer, 500)
 }
-
-interface TimingResponse {
-  server_now: string
-  starts_at: string | null
-}
-
 function syncQuestionTimer(uuid: string) {
-  const sequence = ++timingSyncSequence
-  const request = post<TimingResponse>(`/api/drill/questions/${uuid}/timing/`, {
-    action: 'begin', timing_key: timingClientKey,
-  })
-    .then((response) => {
-      if (props.uuid !== uuid || !response.starts_at) return
-      timingServerNow = new Date(response.server_now).getTime()
-      timingStartsAt = new Date(response.starts_at).getTime()
-      timingSyncedAt = performance.now()
-      updateQuestionTimer()
-    })
-    .catch((reason) => {
-      if (props.uuid === uuid) error.value = (reason as Error).message
-    })
-    .finally(() => {
-      if (timingSyncSequence === sequence) timingSyncPromise = null
-    })
-  timingSyncPromise = request
-  return request
+  if (practiceTimer?.uuid === uuid) return practiceTimer.activate()
+  return Promise.resolve()
 }
-
-async function cancelQuestionTimer(uuid: string) {
-  if (timingFinalized.value) return
-  try {
-    if (timingSyncPromise) await timingSyncPromise
-    await post<TimingResponse>(`/api/drill/questions/${uuid}/timing/`, {
-      action: 'cancel', timing_key: timingClientKey,
-    })
-  } catch {
-    // A cleanup failure must not trap the user on the current route.
-  }
+function persistRoundDraft() {
+  if (!practiceTimer || !roundDraftReady || draftRoundKey !== practiceTimer.state.key || diagnosisHydrating || editingAttemptId.value || practiceTimer.state.finalized) return
+  writeLocal(practiceTimer.storageKey + '.draft', { key: practiceTimer.state.key,
+    knowledge: knowledgeLevel.value, method: methodLevel.value, execution: executionLevel.value,
+    errors: selectedErrors.value, primary: primaryError.value,
+    hint: usedHintThisRound.value, answer: answerViewedThisRound.value })
 }
+function restoreRoundDraft() {
+  if (!practiceTimer) return
+  const d = readLocal<{key: string; knowledge: typeof knowledgeLevel.value; method: typeof methodLevel.value;
+    execution: typeof executionLevel.value; errors: typeof selectedErrors.value; primary: typeof primaryError.value; hint: boolean; answer: boolean}>(practiceTimer.storageKey + '.draft')
+  const valid = d?.key === practiceTimer.state.key ? d : null
+  diagnosisHydrating = true
+  knowledgeLevel.value = valid?.knowledge ?? null; methodLevel.value = valid?.method ?? null; executionLevel.value = valid?.execution ?? null
+  selectedErrors.value = valid?.errors || []; primaryError.value = valid?.primary ?? null
+  usedHintThisRound.value = valid?.hint === true; answerViewedThisRound.value = valid?.answer === true
+  diagnosisHydrating = false
+  draftRoundKey = practiceTimer.state.key
+  roundDraftReady = true
+}
+watch([knowledgeLevel, methodLevel, executionLevel, selectedErrors, primaryError, usedHintThisRound, answerViewedThisRound], persistRoundDraft, { deep: true, flush: 'sync' })
+function persistLearningBoundary() {
+  flushNoteDraft(); persistRoundDraft()
+  void practiceTimer?.pause()
+}
+function learningVisibility() {
+  if (document.visibilityState === 'hidden') persistLearningBoundary()
+  else void practiceTimer?.activate()
+}
+function learningOnline() { void practiceTimer?.activate() }
 
 function recordedQuestionSeconds() {
   updateQuestionTimer()
@@ -668,6 +656,7 @@ async function load() {
   error.value = ''
   errorStatus.value = null
   similarOpen.value = false
+  diagnosisHydrating = true
   answerOpen.value = false
   answerViewedThisRound.value = false
   usedHintThisRound.value = false
@@ -679,13 +668,14 @@ async function load() {
   executionLevel.value = null
   diagnosisHydrating = false
   diagnosisSaveState.value = 'idle'
-  pendingSubmissionKey.value = null
+  pendingSubmissionKey.value = practiceTimer?.state.submissionKey || null
   historyOpen.value = false
   attemptHistory.value = []
   editingAttemptId.value = null
   similar.value = []
   similarTopic.value = ''
   similarKind.value = ''
+  restoreRoundDraft()
   similarCounts.value = { past_exam: 0, practice: 0 }
   try {
     const direct = pendingFullscreenTarget.value === uuid
@@ -706,6 +696,7 @@ async function load() {
     }
     rejectedReaderCache.delete(uuid)
     useQuestion(loadedQuestion)
+    restoreRoundDraft()
     if (pendingFullscreenTarget.value === uuid) showReaderDocument(loadedQuestion)
     else if (isReaderOpen() && readerDocument.value.uuid === uuid && readerKind.value !== 'original') showReaderDocument(loadedQuestion, readerKind.value)
     schedulePrefetch(loadedQuestion)
@@ -797,15 +788,17 @@ async function record(result: 'correct' | 'review' | 'reset') {
     copyArmed = startPageTurnCopy(target)
   }
   try {
+    await practiceTimer?.sync('checkpoint')
+    const timingSnapshot = practiceTimer?.snapshot() || {}
     const timeSpentSeconds = result === 'correct' || result === 'review'
       ? recordedQuestionSeconds()
       : null
-    if (!pendingSubmissionKey.value) pendingSubmissionKey.value = crypto.randomUUID()
+    if (!pendingSubmissionKey.value) pendingSubmissionKey.value = practiceTimer?.submissionKey() || crypto.randomUUID()
     const response = await post<StateResponse>(`/api/drill/questions/${uuid}/attempts/`, {
       result,
       note: note.value,
       state_version: question.value?.state_version || undefined,
-      timing_key: timingClientKey,
+      ...timingSnapshot,
       submission_key: pendingSubmissionKey.value,
       ...(result === 'correct' || result === 'review' ? {
         is_independent: !usedHintThisRound.value && !answerViewedThisRound.value,
@@ -840,10 +833,14 @@ async function record(result: 'correct' | 'review' | 'reset') {
       error.value = '作答已保存，但笔记在另一标签页被更新；本地草稿已保留，请确认后再保存。'
     }
     if (result === 'correct' || result === 'review') {
+      practiceTimer?.finish()
       timingFinalized.value = true
       window.clearInterval(questionTimerInterval)
     } else {
+      practiceTimer?.finish()
       resetQuestionTimer()
+      if (practiceTimer) { draftRoundKey = practiceTimer.state.key; roundDraftReady = true; persistRoundDraft() }
+      void syncQuestionTimer(props.uuid)
     }
     if (willTurn) {
       const target = question.value ? nextQuestionTarget(question.value, nextMode.value) : null
@@ -853,6 +850,7 @@ async function record(result: 'correct' | 'review' | 'reset') {
       await goToNext(nextMode.value, copyArmed)
     }
   } catch (reason) {
+    practiceTimer?.resumeAfterFailure()
     if (props.uuid === uuid && sequence === operationSequence) error.value = (reason as Error).message
   } finally {
     pendingCopy?.reject(new Error('作答未完成，已取消自动复制。'))
@@ -1156,9 +1154,9 @@ watch(() => props.uuid, (_uuid, previousUuid) => {
   diagnosisSaveState.value = 'idle'
   window.clearTimeout(noteAutoSaveTimer)
   window.clearTimeout(noteSavedTimer)
+  persistRoundDraft()
   flushNoteDraft(previousUuid)
   noteSaveState.value = 'idle'
-  timingClientKey = crypto.randomUUID()
   resetQuestionTimer()
   void syncQuestionTimer(_uuid)
   void load()
@@ -1167,17 +1165,26 @@ watch(() => props.uuid, (_uuid, previousUuid) => {
 function refreshAfterPageRestore(event: PageTransitionEvent) {
   if (!event.persisted) return
   operationSequence += 1
+  void practiceTimer?.activate()
   void load()
 }
 
 onMounted(() => {
   window.addEventListener('pageshow', refreshAfterPageRestore)
+  document.addEventListener('visibilitychange', learningVisibility)
+  window.addEventListener('pagehide', persistLearningBoundary)
+  window.addEventListener('online', learningOnline)
   resetQuestionTimer()
   void syncQuestionTimer(props.uuid)
   void load()
 })
 onUnmounted(() => {
   window.removeEventListener('pageshow', refreshAfterPageRestore)
+  document.removeEventListener('visibilitychange', learningVisibility)
+  window.removeEventListener('pagehide', persistLearningBoundary)
+  window.removeEventListener('online', learningOnline)
+  persistRoundDraft()
+  void practiceTimer?.dispose()
   loadController?.abort()
   window.clearInterval(questionTimerInterval)
   window.clearTimeout(noteAutoSaveTimer)
@@ -1191,10 +1198,10 @@ onUnmounted(() => {
 onBeforeRouteUpdate((to) => {
   // Persist cleanup in parallel. Waiting for this POST made every prefetched
   // Next transition feel like a network navigation.
-  if (String(to.params.uuid || '') !== props.uuid) void cancelQuestionTimer(props.uuid)
+  if (String(to.params.uuid || '') !== props.uuid) { flushNoteDraft(); persistRoundDraft() }
 })
 onBeforeRouteLeave(() => {
-  void cancelQuestionTimer(props.uuid)
+  flushNoteDraft(); persistRoundDraft()
 })
 </script>
 
@@ -1330,7 +1337,7 @@ onBeforeRouteLeave(() => {
           </section>
           <div class="answer-bar">
             <div>
-              <div class="question-timer" :class="{ active: !timingCountdown && !timingFinalized, saved: timingFinalized }"><span>{{ timingFinalized ? uiText("计时已保存") : timingCountdown ? uiText("计时准备") : uiText("本题用时") }}</span><strong>{{ timingFinalized || !timingCountdown ? formattedQuestionTime : `${timingCountdown} ${typeText('秒后开始', 'seconds until start')}` }}</strong></div>
+              <small v-if="timerSyncStatus === 'offline' || timerSyncStatus === 'conflict'" class="note-draft-hint">{{ timerSyncStatus === 'conflict' ? typeText('计时同步冲突；本地进度已保留', 'Timing sync conflict; local progress retained') : typeText('离线计时已保存在本机', 'Offline timing saved on this device') }}</small><div class="question-timer" :class="{ active: !timingCountdown && !timingFinalized, saved: timingFinalized }"><span>{{ timingFinalized ? uiText("计时已保存") : timingCountdown ? uiText("计时准备") : uiText("本题用时") }}</span><strong>{{ timingFinalized || !timingCountdown ? formattedQuestionTime : `${timingCountdown} ${typeText('秒后开始', 'seconds until start')}` }}</strong></div>
               <NoteVisibility :note="note" :question-key="props.uuid">
               <p v-if="note && !noteOpen" class="note-preview" role="button" tabindex="0" @click="noteOpen = true" @keydown.enter="noteOpen = true">{{ note }}</p>
               <details class="note-field" :open="noteOpen" @toggle="toggleNote"><summary><span>{{ uiText("题目笔记 Note") }}</span><small>{{ noteSaveState === 'saving' ? uiText("保存中…") : noteSaveState === 'saved' ? uiText("已保存") : noteSaveState === 'error' ? uiText("保存失败") : noteSaveState === 'dirty' ? uiText("未保存") : note ? uiText("展开编辑") : uiText("添加笔记") }}</small></summary><textarea v-model="note" maxlength="20000" :placeholder="uiText('记录公式、错误原因、修正方法或下次检查点')" @input="cacheNoteDraft" /><span class="note-controls"><small class="note-draft-hint">{{ noteSaveState === 'saving' ? uiText("保存中…") : noteSaveState === 'saved' ? uiText("已保存到服务器") : noteSaveState === 'error' ? uiText("保存失败，本地草稿仍保留") : noteSaveState === 'dirty' ? uiText("未保存") : uiText("停止输入 5 秒后自动保存") }}</small><button type="button" class="save-note" :disabled="noteSaveState === 'saving'" @click="saveNote">{{ noteSaveState === 'saving' ? uiText("保存中…") : noteSaveState === 'error' ? uiText("重试保存") : uiText("保存笔记") }}</button></span></details>
