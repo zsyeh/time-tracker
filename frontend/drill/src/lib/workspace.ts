@@ -147,6 +147,19 @@ export function fetchQuestion(uuid: string, query = '', force = false, signal?: 
   return request
 }
 
+// Share an in-flight prefetch without cancelling it when this particular view leaves.
+// Completed cached data is displayed immediately, then revalidated through this request.
+export function fetchNavigationQuestion(uuid: string, query = '', signal?: AbortSignal): Promise<QuestionDetail> {
+  if (signal?.aborted) return Promise.reject(new DOMException('Navigation cancelled', 'AbortError'))
+  const request = fetchQuestion(uuid, query, true)
+  if (!signal) return request
+  return new Promise((resolve, reject) => {
+    const abort = () => reject(new DOMException('Navigation cancelled', 'AbortError'))
+    signal.addEventListener('abort', abort, { once: true })
+    request.then(resolve, reject).finally(() => signal.removeEventListener('abort', abort))
+  })
+}
+
 export function warmQuestionMedia(question: QuestionDetail) {
   // Keep both sides of the exercise in the browser's long-lived HTTP cache.
   // QuestionAsset responses are immutable for a year, so this turns the extra

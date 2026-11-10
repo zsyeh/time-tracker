@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, expect, it, vi } from 'vitest'
-import { createApp, nextTick, type App } from 'vue'
+import { createApp, h, nextTick, reactive, type App } from 'vue'
 import FullscreenReader from './FullscreenReader.vue'
 import { uiLanguage } from '../lib/uiPreferences'
 let app: App | undefined
@@ -57,4 +57,23 @@ it('allows a failed lazy load to retry while the close control remains usable', 
   dialog.querySelector<HTMLButtonElement>('.reader-load-retry')!.click(); await flush()
   expect(prepare).toHaveBeenCalledTimes(2)
   expect(dialog.querySelector('[role="alert"]')).toBeNull()
+})
+
+it('replaces content inside the same open dialog without reopening or unlocking the page', async () => {
+  const props = reactive({ title: 'First', contentKey: 'q1', images: [{ src: '/first', width: 600, height: 900 }] })
+  host = document.createElement('div'); document.body.append(host)
+  app = createApp({ render: () => h(FullscreenReader, props) }); app.mount(host); await flush()
+  const dialog = document.querySelector<HTMLDialogElement>('.fullscreen-reader')!
+  const show = vi.fn(function (this: HTMLDialogElement) { this.open = true })
+  const close = vi.fn(function (this: HTMLDialogElement) { this.open = false })
+  dialog.showModal = show; dialog.close = close
+  host.querySelector('button')!.click(); await flush()
+  props.title = 'Second'; props.contentKey = 'q2'; props.images = [{ src: '/second', width: 600, height: 900 }]; await flush()
+  expect(document.querySelector('.fullscreen-reader')).toBe(dialog)
+  expect(dialog.open).toBe(true)
+  expect(dialog.getAttribute('aria-label')).toBe('Second')
+  expect(dialog.querySelector('img')!.getAttribute('src')).toBe('/second')
+  expect(show).toHaveBeenCalledTimes(1)
+  expect(close).not.toHaveBeenCalled()
+  expect(document.body.style.overflow).toBe('hidden')
 })

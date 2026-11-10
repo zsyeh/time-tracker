@@ -1,13 +1,13 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeUnmount, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import MarkdownAnswer from './MarkdownAnswer.vue'
 import ReaderPracticeActions from './ReaderPracticeActions.vue'
 import type { ReaderPracticeAction, ReaderPracticeControls } from '../lib/readerPractice'
 import { typeText } from '../lib/examTypes'
 
 type Page = { src: string; width?: number; height?: number }
-const props = defineProps<{ title: string; images: Page[]; markdown?: string; prepare?: () => Promise<void>; controls?: ReaderPracticeControls }>()
-const emit = defineEmits<{ opened: []; closed: []; action: [action: ReaderPracticeAction] }>()
+const props = defineProps<{ title: string; images: Page[]; markdown?: string; prepare?: () => Promise<void>; controls?: ReaderPracticeControls; hideTrigger?: boolean; contentKey?: string; pending?: boolean; syncing?: boolean; retryable?: boolean }>()
+const emit = defineEmits<{ opened: []; closed: []; action: [action: ReaderPracticeAction]; retry: [] }>()
 const dialog = ref<HTMLDialogElement | null>(null)
 const scroller = ref<HTMLElement | null>(null)
 const opened = ref(false)
@@ -20,7 +20,14 @@ const retries = ref<Record<number, number>>({})
 const label = computed(() => `${typeText('全屏阅读', 'Read full screen')} · ${props.title}`)
 let previousOverflow: string | null = null
 let opener: HTMLElement | null = null
+let loadSequence = 0
+watch(() => props.contentKey, () => {
+  loadSequence += 1
+  page.value = 1; failed.value = {}; retries.value = {}; loadError.value = ''; loading.value = false
+  if (scroller.value) { scroller.value.scrollTop = 0; scroller.value.scrollLeft = 0 }
+}, { flush: 'post' })
 function restore() {
+  loadSequence += 1
   const wasOpen = opened.value
   opened.value = false
   if (previousOverflow !== null) document.body.style.overflow = previousOverflow
@@ -31,7 +38,7 @@ function restore() {
   }
 }
 async function open() {
-  if (opened.value) return
+  if (opened.value) { await nextTick(); await loadContent(); return }
   opener = document.activeElement as HTMLElement | null
   zoom.value = 100; page.value = 1; failed.value = {}; retries.value = {}
   opened.value = true
@@ -45,8 +52,11 @@ async function open() {
 }
 async function loadContent() {
   if (!props.prepare) return
+  const sequence = ++loadSequence
   loading.value = true; loadError.value = ''
-  try { await props.prepare() } catch (reason) { loadError.value = reason instanceof Error ? reason.message : typeText('加载失败', 'Failed to load') } finally { loading.value = false }
+  try { await props.prepare() } catch (reason) {
+    if (sequence === loadSequence) loadError.value = reason instanceof Error ? reason.message : typeText('加载失败', 'Failed to load')
+  } finally { if (sequence === loadSequence) loading.value = false }
 }
 function close() { dialog.value?.close(); restore() }
 async function setZoom(value: number) {
@@ -87,7 +97,7 @@ defineExpose({ open, close, isOpen: computed(() => opened.value) })
 </script>
 
 <template>
-  <button type="button" class="fullscreen-trigger" :title="label" :aria-label="label" @click.stop="open">
+  <button v-if="!hideTrigger" type="button" class="fullscreen-trigger" :title="label" :aria-label="label" @click.stop="open">
     <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M7 3H3v4m10-4h4v4M3 13v4h4m10-4v4h-4" /></svg>
   </button>
   <Teleport to="body">
@@ -105,12 +115,13 @@ defineExpose({ open, close, isOpen: computed(() => opened.value) })
           <button type="button" class="reader-close" autofocus :aria-label="typeText('关闭全屏', 'Close full screen')" @click="close">✕</button>
         </header>
         <p v-if="controls?.error || controls?.feedback" class="reader-feedback" :class="{ error: controls?.error }" :role="controls?.error ? 'alert' : 'status'">{{ controls?.error || controls?.feedback }}</p>
-        <div ref="scroller" class="reader-scroll" tabindex="0" @scroll.passive="trackPage">
-          <p v-if="loading" class="reader-hint" role="status">{{ typeText('正在加载…', 'Loading…') }}</p>
+        <div ref="scroller" class="reader-scroll" tabindex="0" :aria-busy="pending || syncing || loading" @scroll.passive="trackPage">
+          <p v-if="pending || loading || syncing" class="reader-hint" role="status">{{ syncing ? typeText('正在同步最新掌握状态…', 'Updating progress…') : typeText('正在加载…', 'Loading…') }}</p>
           <p v-if="loadError" class="reader-hint" role="alert">{{ loadError }} <button type="button" class="reader-load-retry" @click="loadContent">{{ typeText('重试', 'Retry') }}</button></p>
           <p v-if="images.length > 1" class="reader-hint">{{ typeText('多页内容，向下滑动继续查看', 'Multiple pages · scroll down to continue') }}</p>
-          <p v-if="!loading && !loadError && !images.length && !markdown" class="reader-hint">{{ typeText('暂无可显示内容', 'No content available') }}</p>
-          <div class="reader-document" :style="{ width: `${zoom}%`, maxWidth: `${12 * zoom}px` }">
+          <p v-if="!pending && !loading && !loadError && !retryable && !images.length && !markdown" class="reader-hint">{{ typeText('暂无可显示内容', 'No content available') }}</p>
+          <button v-if="retryable" type="button" class="reader-retry" @click="emit('retry')">{{ typeText('重新加载此题', 'Reload question') }}</button>
+          <div v-show="!pending" class="reader-document" :style="{ width: `${zoom}%`, maxWidth: `${12 * zoom}px` }">
             <figure v-for="(item, index) in images" :key="index" :data-reader-page="index + 1">
               <img v-if="!failed[index]" :src="src(item, index)" :width="item.width" :height="item.height" :alt="`${title} · ${index + 1}`" :loading="index === 0 ? 'eager' : 'lazy'" decoding="async" @error="failed[index] = true" @dblclick="setZoom(zoom === 100 ? 175 : 100)" />
               <button v-else type="button" class="reader-retry" @click="retry(index)">{{ typeText('图片加载失败，点击重试', 'Image failed to load · retry') }}</button>

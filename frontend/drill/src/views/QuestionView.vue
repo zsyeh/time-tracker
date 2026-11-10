@@ -3,7 +3,7 @@ import { uiText } from '../lib/uiText'
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router'
 import { api, ApiError, post, remove } from '../lib/api'
-import { cachedNoteDraft, cachedQuestion, clearNoteDraft, fetchQuestion, patchQuestionState, prefetchQuestion, storeNoteDraft, warmQuestionMedia } from '../lib/workspace'
+import { cachedNoteDraft, cachedQuestion, clearNoteDraft, fetchNavigationQuestion, fetchQuestion, patchQuestionState, prefetchQuestion, storeNoteDraft, warmQuestionMedia } from '../lib/workspace'
 import type { AttemptDiagnosis, ErrorCode, QuestionDetail, QuestionSummary } from '../types'
 import ExamTypeEditor from '../components/ExamTypeEditor.vue'
 import NoteVisibility from '../components/NoteVisibility.vue'
@@ -137,29 +137,78 @@ const topNextLabel = computed(() => question.value ? ({
 })[nextMode.value] : '下一题')
 const sourceViewer = ref<InstanceType<typeof SourcePaperViewer> | null>(null)
 const questionReader = ref<InstanceType<typeof FullscreenReader> | null>(null)
-const answerReader = ref<InstanceType<typeof FullscreenReader> | null>(null)
 const originalAnswerReader = ref<InstanceType<typeof OriginalAnswer> | null>(null)
 const pendingFullscreenTarget = ref<string | null>(null)
-function isReaderOpen() {
-  return Boolean(questionReader.value?.isOpen || answerReader.value?.isOpen || originalAnswerReader.value?.isFullscreenOpen)
+type ReaderKind = 'question' | 'answer' | 'original'
+const readerKind = ref<ReaderKind>('question')
+const readerNavigating = ref(false)
+const readerPreparing = ref(false)
+const rejectedReaderCache = new Set<string>()
+let readerSequence = 0
+const readerDocument = ref<{ uuid: string; key: string; title: string; images: Array<{ src: string; width: number; height: number }>; markdown: string }>({ uuid: '', key: '', title: '', images: [], markdown: '' })
+function isReaderOpen() { return Boolean(questionReader.value?.isOpen) }
+function showReaderDocument(value: QuestionDetail, kind: ReaderKind = 'question', original?: QuestionDetail) {
+  readerKind.value = kind
+  const source = original || value
+  const assets = kind === 'question' ? questionAssets(source) : source.answer_assets
+  readerDocument.value = {
+    uuid: value.uuid, key: `${value.uuid}:${kind}`,
+    title: (kind === 'question' ? typeText('题目', 'Question') : kind === 'original' ? typeText('完整答案', 'Complete answers') : typeText('答案', 'Answer')) + ' · ' + value.display_label,
+    images: assets.map(asset => ({ src: imageUrl(asset.url), width: asset.width, height: asset.height })),
+    markdown: kind === 'question' ? (!assets.length ? source.prompt_text : '') : source.answer_markdown || '',
+  }
+}
+async function prepareReader() {
+  if (readerKind.value !== 'original') return
+  const sequence = readerSequence
+  const current = question.value
+  const source = originalAnswerReader.value
+  if (!current || !source) return
+  readerPreparing.value = true
+  try {
+    const original = await source.readFullscreenAnswer()
+    if (sequence === readerSequence && question.value?.uuid === current.uuid) showReaderDocument(current, 'original', original)
+  } finally { if (sequence === readerSequence) readerPreparing.value = false }
+}
+async function openReader(kind: ReaderKind) {
+  if (!question.value) return
+  readerSequence += 1
+  const current = question.value
+  if (kind === 'original') {
+    readerKind.value = kind
+    readerDocument.value = { uuid: current.uuid, key: `${current.uuid}:original`, title: typeText('完整答案', 'Complete answers') + ' · ' + current.display_label, images: [], markdown: '' }
+  } else showReaderDocument(current, kind)
+  if (kind !== 'question') answerViewedThisRound.value = true
+  await nextTick()
+  await questionReader.value?.open()
+}
+function readerClosed() {
+  readerSequence += 1
+  readerPreparing.value = false
+  readerNavigating.value = false
+  pendingFullscreenTarget.value = null
 }
 async function readerAction(action: ReaderPracticeAction) {
-  if (saving.value || nextLoading.value) return
+  if (readerControls.value.busy) return
   if (action === 'previous') goToPrevious()
   else if (action === 'next') await goToNext(nextMode.value)
   else if (action === 'mastered') await record('correct')
   else if (action === 'review') await record('review')
-  else if (action === 'answer') {
-    if (answerReader.value?.isOpen || originalAnswerReader.value?.isFullscreenOpen) return
-    questionReader.value?.close()
-    if (answerReader.value) await answerReader.value.open()
-    else await originalAnswerReader.value?.openFullscreen()
+  else if (action === 'answer' && readerKind.value === 'question') {
+    const original = question.value?.original_source?.has_answer && (question.value.answer_scope === 'source_paper' || (!question.value.has_answer && !question.value.answer_markdown))
+    await openReader(original ? 'original' : 'answer')
   }
 }
 
 function navigateToQuestion(uuid: string | null, direction: 'previous' | 'next', copyArmed = false) {
   if (!uuid) return
   pendingFullscreenTarget.value = isReaderOpen() || (direction === 'next' && nextAutoFullscreen.value) ? uuid : null
+  if (pendingFullscreenTarget.value) {
+    readerSequence += 1
+    readerNavigating.value = true
+    readerKind.value = 'question'
+    readerDocument.value = { uuid: '', key: `loading:${uuid}`, title: typeText('正在加载题目…', 'Loading question…'), images: [], markdown: '' }
+  }
   if (!copyArmed) startPageTurnCopy(Promise.resolve(uuid))
   const cached = cachedQuestion(uuid, navigationQueryString())
   navigationFrame.value = cached ? {
@@ -242,7 +291,7 @@ const readerControls = computed<ReaderPracticeControls>(() => ({
   mode: nextMode.value,
   canPrevious: Boolean(topPreviousTarget.value), canNext: Boolean(topNextTarget.value),
   canAnswer: Boolean(question.value?.has_answer || question.value?.answer_markdown || question.value?.original_source?.has_answer),
-  busy: saving.value || nextLoading.value || loading.value,
+  busy: saving.value || nextLoading.value || loading.value || readerNavigating.value || readerPreparing.value || !question.value,
   masteredAutoNext: masteredAutoNext.value, reviewAutoNext: reviewAutoNext.value,
   state: question.value?.state || 'unattempted', error: uiText(error.value), feedback: uiText(actionFeedback.value),
 }))
@@ -609,7 +658,8 @@ async function load() {
   const sequence = ++loadSequence
   const uuid = props.uuid
   const query = navigationQueryString()
-  const cached = cachedQuestion(props.uuid, query)
+  const cached = rejectedReaderCache.has(uuid) ? null : cachedQuestion(props.uuid, query)
+  if (pendingFullscreenTarget.value === uuid) readerNavigating.value = true
   loading.value = !cached
   if (cached) useQuestion(cached)
   else question.value = null
@@ -636,7 +686,15 @@ async function load() {
   similarKind.value = ''
   similarCounts.value = { past_exam: 0, practice: 0 }
   try {
-    const loadedQuestion = await fetchQuestion(uuid, query, Boolean(cached), controller.signal)
+    const direct = pendingFullscreenTarget.value === uuid
+    const request = direct ? fetchNavigationQuestion(uuid, query, controller.signal) : fetchQuestion(uuid, query, Boolean(cached), controller.signal)
+    void request.catch(() => { /* The awaited request below handles errors, including aborted navigation. */ })
+    if (direct && cached) {
+      showReaderDocument(cached)
+      await nextTick()
+      if (sequence === loadSequence && pendingFullscreenTarget.value === uuid && !isReaderOpen()) await questionReader.value?.open()
+    }
+    const loadedQuestion = await request
     if (sequence !== loadSequence) return
     const individualUuid = sourcePracticeTarget(loadedQuestion, route.query.view)
     if (individualUuid) {
@@ -644,21 +702,31 @@ async function load() {
       await router.replace({ path: `/practice/${individualUuid}`, query: questionRouteQuery() })
       return
     }
+    rejectedReaderCache.delete(uuid)
     useQuestion(loadedQuestion)
+    if (pendingFullscreenTarget.value === uuid) showReaderDocument(loadedQuestion)
+    else if (isReaderOpen() && readerDocument.value.uuid === uuid && readerKind.value !== 'original') showReaderDocument(loadedQuestion, readerKind.value)
     schedulePrefetch(loadedQuestion)
   } catch (reason) {
     if (sequence !== loadSequence || (reason as Error).name === 'AbortError') return
     error.value = (reason as Error).message
     errorStatus.value = reason instanceof ApiError ? reason.status : 0
-    if (sequence === loadSequence) question.value = null
+    if (sequence === loadSequence) {
+      rejectedReaderCache.add(uuid)
+      question.value = null
+      if (pendingFullscreenTarget.value === uuid || (isReaderOpen() && readerDocument.value.uuid === uuid)) {
+        readerDocument.value = { uuid: '', key: `error:${uuid}`, title: typeText('题目暂不可用', 'Question unavailable'), images: [], markdown: '' }
+      }
+    }
   } finally {
     if (sequence === loadSequence) {
       loading.value = false
+      readerNavigating.value = false
       if (loadController === controller) loadController = null
       await nextTick()
       if (question.value?.uuid === uuid && pendingFullscreenTarget.value === uuid && props.uuid === uuid) {
         pendingFullscreenTarget.value = null
-        await questionReader.value?.open()
+        if (!isReaderOpen()) await questionReader.value?.open()
       }
     }
   }
@@ -1130,6 +1198,7 @@ onBeforeRouteLeave(() => {
 
 <template>
   <section class="page question-page">
+    <FullscreenReader ref="questionReader" hide-trigger :controls="readerControls" :content-key="readerDocument.key" :title="readerDocument.title" :images="readerDocument.images" :markdown="readerDocument.markdown" :prepare="prepareReader" :pending="readerNavigating && readerDocument.uuid !== props.uuid" :syncing="readerNavigating && readerDocument.uuid === props.uuid" :retryable="!question && !!error && pendingFullscreenTarget === props.uuid" @retry="load" @action="readerAction" @closed="readerClosed" />
     <p v-if="actionFeedback" class="action-feedback" role="status">✓ {{ uiText(actionFeedback) }}</p>
     <p v-if="pageTurnCopyMessage" class="page-turn-copy-feedback" :class="{ error: pageTurnCopyFailed }" role="status">{{ uiText(pageTurnCopyMessage) }}</p>
     <nav class="question-topbar" :aria-label="uiText('题目导航')">
@@ -1170,7 +1239,7 @@ onBeforeRouteLeave(() => {
             <button @click="sourceViewer?.scrollToCurrent()">{{ uiText("定位本题") }}</button>
           </nav>
           <div class="asset-toolbar question-asset-toolbar">
-            <FullscreenReader ref="questionReader" :controls="readerControls" @action="readerAction" :key="question.uuid" :title="typeText('题目', 'Question') + ' · ' + question.display_label" :images="questionAssets(question).map(asset => ({ src: imageUrl(asset.url), width: asset.width, height: asset.height }))" :markdown="!questionAssets(question).length ? question.prompt_text : ''" />
+            <button type="button" class="fullscreen-trigger inline-fullscreen-trigger" :title="typeText('题目全屏', 'Question full screen')" :aria-label="typeText('题目全屏', 'Question full screen')" @click="openReader('question')"><svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M7 3H3v4m10-4h4v4M3 13v4h4m10-4v4h-4" /></svg></button>
             <button v-if="questionAssets(question).length" class="copy-question-image" type="button" :disabled="imageCopyState === 'copying'" @click="copyQuestionImages">{{ imageCopyState === 'copying' ? uiText("正在复制…") : imageCopyState === 'copied' ? uiText("已复制题图 ✓") : uiText("复制题图") }}</button>
             <span v-if="imageCopyMessage" :class="{ error: imageCopyState === 'fallback' }">{{ uiText(imageCopyMessage) }}</span>
             <template v-if="imageCopyState === 'fallback'"><button type="button" @click="shareQuestionImage">{{ uiText("系统分享") }}</button><button type="button" @click="downloadQuestionImage">{{ uiText("下载 PNG") }}</button></template>
@@ -1200,7 +1269,7 @@ onBeforeRouteLeave(() => {
             <button class="answer-toggle" :aria-expanded="answerOpen" @click="toggleAnswer">
               <span>{{ answerOpen ? uiText("收起答案") : question.answer_scope === 'individual' ? uiText("查看本题答案与解析") : question.answer_scope === 'source_paper' ? uiText("原卷参考答案（尚未逐题切分）") : question.source_context ? uiText("整卷参考解析（按题号查阅）") : (question.has_answer ? uiText("查看答案") : uiText("查看 Agent 解析")) }}</span><b>{{ answerOpen ? '↑' : '↓' }}</b>
             </button>
-            <FullscreenReader ref="answerReader" :controls="readerControls" @action="readerAction" :key="question.uuid" :title="typeText('答案', 'Answer') + ' · ' + question.display_label" :images="question.answer_assets.map(asset => ({ src: imageUrl(asset.url), width: asset.width, height: asset.height }))" :markdown="question.answer_markdown" @opened="answerViewedThisRound = true" />
+            <button type="button" class="fullscreen-trigger inline-fullscreen-trigger" :title="typeText('答案全屏', 'Answer full screen')" :aria-label="typeText('答案全屏', 'Answer full screen')" @click="openReader('answer')"><svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M7 3H3v4m10-4h4v4M3 13v4h4m10-4v4h-4" /></svg></button>
             </div>
             <div v-if="answerOpen" class="answer-canvas">
               <div v-if="question.answer_assets.length" class="asset-toolbar answer-asset-toolbar">
@@ -1217,7 +1286,7 @@ onBeforeRouteLeave(() => {
             </div>
           </section>
           <p v-if="question.original_source?.has_answer && question.answer_scope === 'source_paper'" class="source-paper-help">{{ uiText("本题答案尚待逐题核对，请先查看完整版答案；不会将未确认的解析错配到本题。") }}</p>
-          <OriginalAnswer ref="originalAnswerReader" :controls="readerControls" @action="readerAction" v-if="question.original_source?.has_answer" :key="question.original_source.uuid + question.uuid" :uuid="question.original_source.uuid" @opened="answerViewedThisRound = true" />
+          <OriginalAnswer ref="originalAnswerReader" delegate-fullscreen @fullscreen="openReader('original')" :controls="readerControls" @action="readerAction" v-if="question.original_source?.has_answer" :key="question.original_source.uuid + question.uuid" :uuid="question.original_source.uuid" @opened="answerViewedThisRound = true" />
           <p v-else-if="question.original_source && !question.has_answer && !question.answer_markdown" class="source-paper-help">{{ uiText("原始资料未提供参考答案，暂不生成或猜测答案。") }}</p>
 
           <section v-if="question.source_context" class="source-current-question">

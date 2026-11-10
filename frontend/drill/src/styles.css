@@ -935,3 +935,5 @@ button { color: inherit; }
   .question-route .question-control-pane .unified-answer-actions { grid-template-columns: 1.35fr 1fr auto; }
   .question-route .question-control-pane .secondary-actions { grid-column: auto; }
 }
+.inline-fullscreen-trigger { flex: none; display: inline-grid; place-items: center; width: 28px; min-height: 28px; padding: 4px; border: 1px solid var(--border-default); border-radius: 5px; color: var(--text-secondary); background: var(--bg-sidebar); cursor: pointer; }
+.inline-fullscreen-trigger:hover { color: var(--accent); border-color: var(--accent); }
