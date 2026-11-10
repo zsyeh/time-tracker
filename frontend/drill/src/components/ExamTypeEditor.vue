@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { uiText } from '../lib/uiText'
 import { computed, ref } from 'vue'
 import { api } from '../lib/api'
 import { runtimeWorkspace } from '../lib/runtimePath'
@@ -57,7 +58,7 @@ async function save(label: string) {
         :aria-pressed="selected === item" :disabled="busy || !!error" @click="save(item)">{{ typeLabel(item) }}</button>
       <button type="button" :disabled="busy" :aria-label="typeText('关闭', 'Close')" @click="open = false">×</button>
       <small v-if="busy" role="status">{{ typeText('处理中…', 'Working…') }}</small>
-      <small v-if="error" role="alert">{{ error }}</small>
+      <small v-if="error" role="alert">{{ uiText(error) }}</small>
     </span>
   </span>
 </template>

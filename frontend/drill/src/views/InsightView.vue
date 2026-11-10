@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { uiText } from '../lib/uiText'
 import { computed, nextTick, onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api } from '../lib/api'
@@ -138,7 +139,7 @@ onMounted(async () => {
       <label>{{ labels.sort }}<select v-model="filters.sort"><option value="recent">{{ labels.recent }}</option><option value="oldest">{{ labels.oldest }}</option></select></label>
       <div class="filter-actions"><button type="submit">{{ labels.apply }}</button><button type="button" @click="resetFilters">{{ labels.clear }}</button></div>
     </form>
-    <p v-if="error" class="error-state">{{ error }}</p>
+    <p v-if="error" class="error-state">{{ uiText(error) }}</p>
     <div v-else-if="loading" class="question-skeleton">{{ labels.loading }}</div>
     <template v-else-if="data">
       <div class="insight-grid">

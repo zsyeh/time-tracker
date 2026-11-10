@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { uiText } from '../lib/uiText'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '../lib/api'
@@ -67,18 +68,18 @@ onUnmounted(() => window.clearInterval(timer))
 
 <template>
   <section class="page paper-exam-page">
-    <header v-if="paper" class="paper-exam-header"><RouterLink to="/papers">← Papers</RouterLink><div class="paper-exam-title"><strong>{{ paper.title }}</strong><small>{{ index + 1 }} / {{ paper.items.length }}</small></div><div class="paper-exam-actions"><button type="button" :disabled="shareState === 'sharing'" @click="sharePaper">{{ shareState === 'sharing' ? 'Creating…' : shareState === 'copied' ? 'Link copied ✓' : 'Share + answers' }}</button><span>{{ remaining }} min left</span></div></header>
-    <p v-if="error" class="error-state">{{ error }}</p>
+    <header v-if="paper" class="paper-exam-header"><RouterLink to="/papers">← Papers</RouterLink><div class="paper-exam-title"><strong>{{ paper.title }}</strong><small>{{ index + 1 }} / {{ paper.items.length }}</small></div><div class="paper-exam-actions"><button type="button" :disabled="shareState === 'sharing'" @click="sharePaper">{{ shareState === 'sharing' ? 'Creating…' : shareState === 'copied' ? uiText("Link copied ✓") : 'Share + answers' }}</button><span>{{ remaining }} min left</span></div></header>
+    <p v-if="error" class="error-state">{{ uiText(error) }}</p>
     <template v-if="paper && item">
       <div class="paper-question-shell">
-        <header><span>Question {{ item.position }}</span><span>{{ item.question.question_type.replace('_', ' ') }} · {{ item.score }} pts</span></header>
+        <header><span>{{ uiText("Question") }} {{ item.position }}</span><span>{{ item.question.question_type.replace('_', ' ') }} · {{ item.score }} pts</span></header>
         <PaperQuestionContent :question="item.question" />
         <label class="paper-answer-field"><span>Your answer / working</span><textarea v-model="item.user_answer" rows="8" placeholder="Write your answer or working notes here…" @blur="save()" /></label>
       </div>
       <footer class="paper-exam-footer">
-        <button type="button" :disabled="index === 0" @click="index--">← Previous</button>
+        <button type="button" :disabled="index === 0" @click="index--">{{ uiText("← Previous") }}</button>
         <div class="paper-position-dots"><button v-for="(entry, itemIndex) in paper.items" :key="entry.position" :class="{ active: itemIndex === index, answered: entry.user_answer || entry.result !== 'unanswered' }" :aria-label="`Question ${entry.position}`" @click="index = itemIndex" /></div>
-        <button v-if="index < paper.items.length - 1" type="button" @click="save(); index++">Next →</button>
+        <button v-if="index < paper.items.length - 1" type="button" @click="save(); index++">{{ uiText("Next →") }}</button>
         <button v-else class="primary-action" type="button" @click="complete">Finish</button>
       </footer>
     </template>

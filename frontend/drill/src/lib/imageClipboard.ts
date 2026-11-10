@@ -1,3 +1,4 @@
+import { uiText } from './uiText'
 export type ClipboardImageResult = { blob: Blob; combined: boolean }
 
 export function fittedCanvasSize(
@@ -30,13 +31,13 @@ async function decodeBlob(blob: Blob): Promise<ImageBitmap> {
 
 function canvasBlob(canvas: HTMLCanvasElement): Promise<Blob> {
   return new Promise((resolve, reject) => canvas.toBlob(
-    (blob) => blob ? resolve(blob) : reject(new Error('浏览器无法生成 PNG 图片。')),
+    (blob) => blob ? resolve(blob) : reject(new Error(uiText("浏览器无法生成 PNG 图片。"))),
     'image/png',
   ))
 }
 
 export async function buildClipboardPng(urls: string[]): Promise<ClipboardImageResult> {
-  if (!urls.length) throw new Error('当前题目没有可复制的题图。')
+  if (!urls.length) throw new Error(uiText("当前题目没有可复制的题图。"))
   const blobs = await Promise.all(urls.map(async (url) => {
     const response = await fetch(url, { credentials: 'same-origin' })
     if (!response.ok) throw new Error(`题图读取失败（HTTP ${response.status}）。`)
@@ -52,7 +53,7 @@ export async function buildClipboardPng(urls: string[]): Promise<ClipboardImageR
     canvas.width = size.width
     canvas.height = size.height
     const context = canvas.getContext('2d')
-    if (!context) throw new Error('浏览器无法创建题图画布。')
+    if (!context) throw new Error(uiText("浏览器无法创建题图画布。"))
     context.fillStyle = '#ffffff'
     context.fillRect(0, 0, canvas.width, canvas.height)
     let y = 0
@@ -71,7 +72,7 @@ export async function buildClipboardPng(urls: string[]): Promise<ClipboardImageR
 export async function copyImagesToClipboard(urls: string[] | Promise<string[]>): Promise<ClipboardImageResult> {
   const ClipboardItemConstructor = window.ClipboardItem
   if (!navigator.clipboard?.write || !ClipboardItemConstructor) {
-    throw new Error('此浏览器不支持直接复制图片，请使用系统分享或下载。')
+    throw new Error(uiText("此浏览器不支持直接复制图片，请使用系统分享或下载。"))
   }
   // Keep the Blob promise inside ClipboardItem. Safari uses this to retain the
   // original button activation while authenticated images are fetched.
@@ -87,9 +88,9 @@ export async function copyImagesToClipboard(urls: string[] | Promise<string[]>):
 export async function shareImageBlob(blob: Blob, filename: string) {
   const file = new File([blob], filename, { type: 'image/png' })
   if (!navigator.share || (navigator.canShare && !navigator.canShare({ files: [file] }))) {
-    throw new Error('此浏览器不支持图片系统分享，请下载后使用。')
+    throw new Error(uiText("此浏览器不支持图片系统分享，请下载后使用。"))
   }
-  await navigator.share({ files: [file], title: '题目图片' })
+  await navigator.share({ files: [file], title: uiText("题目图片") })
 }
 
 export function downloadImageBlob(blob: Blob, filename: string) {

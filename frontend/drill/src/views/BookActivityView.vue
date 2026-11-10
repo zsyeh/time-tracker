@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { uiText } from '../lib/uiText'
 import { onMounted, ref } from 'vue'
 import ActivityCalendar from '../components/ActivityCalendar.vue'
 import { api } from '../lib/api'
@@ -37,7 +38,7 @@ onMounted(load)
       <div><span class="eyebrow">{{ t('bookActivity') }}</span><h1>{{ t('bookCheckins') }}</h1><p>Each book has its own July 20–December 19 calendar. Reset events are excluded.</p></div>
       <div class="activity-legend"><span>LESS</span><i v-for="level in 9" :key="level" :class="`activity-level-${level - 1}`" /><span>MORE</span></div>
     </header>
-    <p v-if="error" class="error-state">{{ error }}</p>
+    <p v-if="error" class="error-state">{{ uiText(error) }}</p>
     <div v-else-if="loading" class="question-skeleton activity-skeleton">BUILDING BOOK CALENDARS…</div>
     <div v-else-if="activity" class="book-activity-list">
       <ActivityCalendar

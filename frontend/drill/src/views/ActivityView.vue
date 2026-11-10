@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { uiText } from '../lib/uiText'
 import { onMounted, ref } from 'vue'
 import ActivityCalendar from '../components/ActivityCalendar.vue'
 import { api } from '../lib/api'
@@ -37,12 +38,12 @@ onMounted(load)
       <div><span class="eyebrow">{{ t('dailyPractice') }}</span><h1>{{ t('practiceActivity') }}</h1><p>Daily volume from July 20 through December 19. Reset events are excluded.</p></div>
       <div class="activity-legend"><span>LESS</span><i v-for="level in 9" :key="level" :class="`activity-level-${level - 1}`" /><span>MORE</span></div>
     </header>
-    <p v-if="error" class="error-state">{{ error }}</p>
+    <p v-if="error" class="error-state">{{ uiText(error) }}</p>
     <div v-else-if="loading" class="question-skeleton activity-skeleton">BUILDING ACTIVITY…</div>
     <template v-else-if="activity">
       <ActivityCalendar
         eyebrow="ALL BOOKS"
-        title="All practice"
+        :title="uiText('All practice')"
         :total-attempts="activity.overall.total_attempts"
         :active-days="activity.overall.active_days"
         :max-daily-count="activity.overall.max_daily_count"

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { uiText } from '../lib/uiText'
 import PdfPageStatusPanel from '../components/PdfPageStatusPanel.vue'
 </script>
 
@@ -7,13 +8,13 @@ import PdfPageStatusPanel from '../components/PdfPageStatusPanel.vue'
     <header class="page-header">
       <div>
         <span class="eyebrow">EI SELECTED QUESTIONS</span>
-        <h1>严选题 PDF 页码记录</h1>
-        <p>仅适用于五科严选题。标准题库不参与匹配，也不能通过此入口批量记录。</p>
+        <h1>{{ uiText("严选题 PDF 页码记录") }}</h1>
+        <p>{{ uiText("仅适用于五科严选题。标准题库不参与匹配，也不能通过此入口批量记录。") }}</p>
       </div>
     </header>
     <aside class="selected-only-note">
-      <strong>严选题专用</strong>
-      <span>请选择科目，并分别输入题目册与题答对照册的页码。系统将使用严选清单 UUID 和内容指纹双重核验。</span>
+      <strong>{{ uiText("严选题专用") }}</strong>
+      <span>{{ uiText("请选择科目，并分别输入题目册与题答对照册的页码。系统将使用严选清单 UUID 和内容指纹双重核验。") }}</span>
     </aside>
     <PdfPageStatusPanel />
   </section>

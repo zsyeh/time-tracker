@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { uiText } from '../lib/uiText'
 import { onMounted, ref } from 'vue'
 import { api } from '../lib/api'
 import type { ExamPaperSummary } from '../types'
@@ -28,7 +29,7 @@ onMounted(async () => {
       <div><span class="eyebrow">MATH II</span><h1>Paper history</h1><p>Every generated paper keeps its question set and order.</p></div>
       <RouterLink class="primary-action" to="/papers/new">New paper <b>→</b></RouterLink>
     </header>
-    <p v-if="error" class="error-state">{{ error }}</p>
+    <p v-if="error" class="error-state">{{ uiText(error) }}</p>
     <div class="paper-history-list">
       <article v-for="paper in papers" :key="paper.uuid" class="paper-history-row">
         <span class="paper-mode">{{ paper.mode }}</span>

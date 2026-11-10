@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { uiText } from '../lib/uiText'
 import { computed, onMounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api, post } from '../lib/api'
@@ -113,90 +114,90 @@ onMounted(load)
   <section class="page formula-review-page">
     <header class="page-header">
       <div>
-        <span class="eyebrow">892 · DAILY FORMULA LOOP · {{ data?.track_title || '公式复习' }}</span>
-        <h1>{{ data?.title || '892 信号与系统｜每日公式复习' }}</h1>
-        <p v-if="data">四天循环第 {{ data.cycle_day }} 天 · 约 {{ data.duration_minutes }} 分钟 · 固定公式库 {{ data.formula_count }} {{ data.track === 'four' ? '条' : '组' }}</p>
+        <span class="eyebrow">892 · DAILY FORMULA LOOP · {{ data?.track_title || uiText("公式复习") }}</span>
+        <h1>{{ data?.title || uiText("892 信号与系统｜每日公式复习") }}</h1>
+        <p v-if="data">{{ uiText("四天循环第") }} {{ data.cycle_day }} {{ uiText("天 · 约") }} {{ data.duration_minutes }} {{ uiText("分钟 · 固定公式库") }} {{ data.formula_count }} {{ data.track === 'four' ? uiText("条") : uiText("组") }}</p>
       </div>
-      <RouterLink class="selected-link" :to="data?.return_route || '/signal-selected'">回到{{ data?.topic || '信号' }}严选 →</RouterLink>
+      <RouterLink class="selected-link" :to="data?.return_route || '/signal-selected'">{{ uiText("回到") }}{{ data?.topic || uiText("信号") }}{{ uiText("严选 →") }}</RouterLink>
     </header>
 
-    <nav class="track-switch" aria-label="公式复习循环">
-      <button :class="{ active: track === 'signal' }" @click="switchTrack('signal')"><strong>信号与系统</strong><small>独立四日循环</small></button>
-      <button :class="{ active: track === 'four' }" @click="switchTrack('four')"><strong>其他四科</strong><small>电路 · 模电 · 数电 · 通信</small></button>
+    <nav class="track-switch" :aria-label="uiText('公式复习循环')">
+      <button :class="{ active: track === 'signal' }" @click="switchTrack('signal')"><strong>{{ uiText("信号与系统") }}</strong><small>{{ uiText("独立四日循环") }}</small></button>
+      <button :class="{ active: track === 'four' }" @click="switchTrack('four')"><strong>{{ uiText("其他四科") }}</strong><small>{{ uiText("电路 · 模电 · 数电 · 通信") }}</small></button>
     </nav>
 
-    <p v-if="error" role="alert" class="error">{{ error }}</p>
-    <p v-if="loading" role="status">正在生成今日训练…</p>
+    <p v-if="error" role="alert" class="error">{{ uiText(error) }}</p>
+    <p v-if="loading" role="status">{{ uiText("正在生成今日训练…") }}</p>
 
     <template v-if="data">
       <section class="today-overview">
-        <div><small>今日专题</small><strong>{{ data.topic }}</strong></div>
+        <div><small>{{ uiText("今日专题") }}</small><strong>{{ data.topic }}</strong></div>
         <div><small>闭卷进度</small><strong>{{ completedCount }} / 5</strong></div>
-        <div><small>应用题</small><strong>{{ data.applications.length }} 道{{ data.topic }}严选原题</strong></div>
-        <div v-if="data.formula_counts" class="formula-counts"><small>完整四科底稿</small><strong>电路 {{ data.formula_counts.circuit }} · 模电 {{ data.formula_counts.analog }} · 数电 {{ data.formula_counts.digital }} · 通信 {{ data.formula_counts.communication }}</strong></div>
+        <div><small>{{ uiText("应用题") }}</small><strong>{{ data.applications.length }} {{ uiText("道") }}{{ data.topic }}严选原题</strong></div>
+        <div v-if="data.formula_counts" class="formula-counts"><small>{{ uiText("完整四科底稿") }}</small><strong>{{ uiText("电路") }} {{ data.formula_counts.circuit }} {{ uiText("· 模电") }} {{ data.formula_counts.analog }} {{ uiText("· 数电") }} {{ data.formula_counts.digital }} {{ uiText("· 通信") }} {{ data.formula_counts.communication }}</strong></div>
         <p>{{ data.answer_policy }}</p>
       </section>
 
       <section class="review-block recall-block">
         <header>
-          <div><span>01 · 5 分钟</span><h2>闭卷默写</h2><p>一次只做一道。先写答案，再揭示公式并自评。</p></div>
+          <div><span>{{ uiText("01 · 5 分钟") }}</span><h2>{{ uiText("闭卷默写") }}</h2><p>{{ uiText("一次只做一道。先写答案，再揭示公式并自评。") }}</p></div>
           <strong>{{ recallIndex + 1 }} / {{ data.recall.length }}</strong>
         </header>
-        <nav class="recall-tabs" aria-label="闭卷默写题目">
+        <nav class="recall-tabs" :aria-label="uiText('闭卷默写题目')">
           <button v-for="(item, index) in data.recall" :key="item.key" :class="{ active: index === recallIndex, graded: item.mastery?.last_reviewed_on === data.date }" @click="recallIndex = index">{{ index + 1 }}</button>
         </nav>
         <article v-if="current" class="recall-card">
-          <small>{{ current.section }} · {{ current.tags.includes('fourier') ? '傅里叶必查' : '今日专题' }}</small>
+          <small>{{ current.section }} · {{ current.tags.includes('fourier') ? uiText("傅里叶必查") : uiText("今日专题") }}</small>
           <h3>{{ current.title }}</h3>
-          <p>请默写完整公式，并在脑中说明适用条件。</p>
-          <textarea v-model="drafts[current.key]" rows="5" :aria-label="`${current.title} 默写答案`" placeholder="在这里默写；也可以在纸上完成后直接揭示答案。" />
-          <button v-if="!revealed[current.key]" class="reveal-button" @click="reveal(current)">揭示答案</button>
+          <p>{{ uiText("请默写完整公式，并在脑中说明适用条件。") }}</p>
+          <textarea v-model="drafts[current.key]" rows="5" :aria-label="`${current.title} 默写答案`" :placeholder="uiText('在这里默写；也可以在纸上完成后直接揭示答案。')" />
+          <button v-if="!revealed[current.key]" class="reveal-button" @click="reveal(current)">{{ uiText("揭示答案") }}</button>
           <div v-else class="revealed-answer">
             <MarkdownAnswer :source="formulaMarkdown(current)" />
-            <dl><div><dt>适用条件</dt><dd>{{ current.condition }}</dd></div><div><dt>易错点</dt><dd>{{ current.pitfall }}</dd></div></dl>
+            <dl><div><dt>{{ uiText("适用条件") }}</dt><dd>{{ current.condition }}</dd></div><div><dt>{{ uiText("易错点") }}</dt><dd>{{ current.pitfall }}</dd></div></dl>
             <div class="grade-actions">
-              <span>本次掌握：</span>
-              <button :disabled="saving === current.key" @click="grade(current, 'A')"><b>A</b> 熟练</button>
-              <button :disabled="saving === current.key" @click="grade(current, 'B')"><b>B</b> 基本会</button>
-              <button :disabled="saving === current.key" @click="grade(current, 'C')"><b>C</b> 答错／遗忘</button>
+              <span>{{ uiText("本次掌握：") }}</span>
+              <button :disabled="saving === current.key" @click="grade(current, 'A')"><b>A</b> {{ uiText("熟练") }}</button>
+              <button :disabled="saving === current.key" @click="grade(current, 'B')"><b>B</b> {{ uiText("基本会") }}</button>
+              <button :disabled="saving === current.key" @click="grade(current, 'C')"><b>C</b> {{ uiText("答错／遗忘") }}</button>
             </div>
           </div>
         </article>
       </section>
 
       <section class="review-block">
-        <header><div><span>02 · 5 分钟</span><h2>核心公式复习</h2><p>完整公式、条件、原理和典型误判点。</p></div></header>
+        <header><div><span>{{ uiText("02 · 5 分钟") }}</span><h2>{{ uiText("核心公式复习") }}</h2><p>{{ uiText("完整公式、条件、原理和典型误判点。") }}</p></div></header>
         <div class="core-grid">
           <details v-for="(item, index) in data.core" :key="item.key" :open="index === 0">
             <summary><span>{{ String(index + 1).padStart(2, '0') }}</span><strong>{{ item.title }}</strong><em v-if="item.mastery">{{ item.mastery.grade }}</em></summary>
             <MarkdownAnswer :source="formulaMarkdown(item)" />
             <dl>
-              <div><dt>适用条件</dt><dd>{{ item.condition }}</dd></div>
-              <div><dt>原理</dt><dd>{{ item.principle }}</dd></div>
-              <div><dt>误判点</dt><dd>{{ item.pitfall }}</dd></div>
+              <div><dt>{{ uiText("适用条件") }}</dt><dd>{{ item.condition }}</dd></div>
+              <div><dt>{{ uiText("原理") }}</dt><dd>{{ item.principle }}</dd></div>
+              <div><dt>{{ uiText("误判点") }}</dt><dd>{{ item.pitfall }}</dd></div>
             </dl>
           </details>
         </div>
       </section>
 
       <section class="review-block">
-        <header><div><span>03 · 8–10 分钟</span><h2>892 应用计算</h2><p>直接复用今日科目严选中的原题、答案和你的历史记录，不重复建题。</p></div></header>
+        <header><div><span>{{ uiText("03 · 8–10 分钟") }}</span><h2>{{ uiText("892 应用计算") }}</h2><p>{{ uiText("直接复用今日科目严选中的原题、答案和你的历史记录，不重复建题。") }}</p></div></header>
         <div class="application-grid">
           <RouterLink v-for="item in data.applications" :key="item.uuid" :to="item.route" class="application-card">
-            <div><span>{{ item.kind }}</span><em :class="item.state">{{ item.state === 'mastered' ? '已掌握' : item.state === 'review' ? '待复习' : '未做' }}</em></div>
+            <div><span>{{ item.kind }}</span><em :class="item.state">{{ item.state === 'mastered' ? uiText("已掌握") : item.state === 'review' ? uiText("待复习") : uiText("未做") }}</em></div>
             <h3>{{ item.label }}</h3>
             <p>{{ item.book }}</p>
             <small>{{ item.reason.join('；') }}</small>
-            <b>进入原题作答 →</b>
+            <b>{{ uiText("进入原题作答 →") }}</b>
           </RouterLink>
         </div>
       </section>
 
       <section class="review-block error-review">
-        <header><div><span>04 · 2 分钟</span><h2>错误复习</h2><p v-if="!data.has_history">目前没有公式历史数据，按规则使用默认薄弱项，不虚构掌握状态。</p><p v-else>优先安排到期的 B/C 类公式。</p></div></header>
+        <header><div><span>{{ uiText("04 · 2 分钟") }}</span><h2>{{ uiText("错误复习") }}</h2><p v-if="!data.has_history">{{ uiText("目前没有公式历史数据，按规则使用默认薄弱项，不虚构掌握状态。") }}</p><p v-else>{{ uiText("优先安排到期的 B/C 类公式。") }}</p></div></header>
         <div class="mistake-grid">
-          <article><h3>今日 3 个易错点</h3><ol><li v-for="item in data.mistakes" :key="item">{{ item }}</li></ol></article>
-          <article><h3>针对性公式</h3><ul><li v-for="item in data.weak_review" :key="item.key"><strong>{{ item.title }}</strong><span v-if="item.mastery">{{ item.mastery.grade }} · 下次 {{ item.mastery.next_review_on || '待安排' }}</span><span v-else>默认检查项 · 尚无历史评级</span></li></ul></article>
+          <article><h3>{{ uiText("今日 3 个易错点") }}</h3><ol><li v-for="item in data.mistakes" :key="item">{{ item }}</li></ol></article>
+          <article><h3>{{ uiText("针对性公式") }}</h3><ul><li v-for="item in data.weak_review" :key="item.key"><strong>{{ item.title }}</strong><span v-if="item.mastery">{{ item.mastery.grade }} {{ uiText("· 下次") }} {{ item.mastery.next_review_on || uiText("待安排") }}</span><span v-else>{{ uiText("默认检查项 · 尚无历史评级") }}</span></li></ul></article>
         </div>
       </section>
     </template>

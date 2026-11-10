@@ -1,10 +1,12 @@
 <script setup lang="ts">
+import { uiText } from '../lib/uiText'
 import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router'
 import { api, ApiError, post, remove } from '../lib/api'
 import { cachedNoteDraft, cachedQuestion, clearNoteDraft, fetchQuestion, patchQuestionState, prefetchQuestion, storeNoteDraft, warmQuestionMedia } from '../lib/workspace'
 import type { AttemptDiagnosis, ErrorCode, QuestionDetail, QuestionMarkerCode, QuestionSummary } from '../types'
 import ExamTypeEditor from '../components/ExamTypeEditor.vue'
+import NoteVisibility from '../components/NoteVisibility.vue'
 import { typeText } from '../lib/examTypes'
 import MarkdownAnswer from '../components/MarkdownAnswer.vue'
 import SourcePaperViewer from '../components/SourcePaperViewer.vue'
@@ -1120,62 +1122,62 @@ onBeforeRouteLeave(() => {
 
 <template>
   <section class="page question-page">
-    <p v-if="actionFeedback" class="action-feedback" role="status">✓ {{ actionFeedback }}</p>
-    <p v-if="pageTurnCopyMessage" class="page-turn-copy-feedback" :class="{ error: pageTurnCopyFailed }" role="status">{{ pageTurnCopyMessage }}</p>
-    <nav class="question-topbar" aria-label="题目导航">
-      <button class="question-return" type="button" @click="backToEntryPoint">← {{ route.query.from === 'core-heatmap' ? '五科核心热力图' : route.query.from === 'communication-selected' ? '通信严选' : route.query.from === 'digital-selected' ? '数电严选' : route.query.from === 'analog-selected' ? '模电严选' : route.query.from === 'signal-selected' ? '信号严选' : route.query.from === 'circuit-selected' ? '电路严选' : route.query.from === 'selected-heatmap' ? '严选题热力图' : route.query.from === 'heatmap' ? '热力图' : route.query.from === 'collection' ? '收藏题目' : route.query.from === 'insight' ? t('insight') : route.query.from === 'cockpit' ? '892 总览' : '题库' }}</button>
+    <p v-if="actionFeedback" class="action-feedback" role="status">✓ {{ uiText(actionFeedback) }}</p>
+    <p v-if="pageTurnCopyMessage" class="page-turn-copy-feedback" :class="{ error: pageTurnCopyFailed }" role="status">{{ uiText(pageTurnCopyMessage) }}</p>
+    <nav class="question-topbar" :aria-label="uiText('题目导航')">
+      <button class="question-return" type="button" @click="backToEntryPoint">← {{ route.query.from === 'core-heatmap' ? uiText("五科核心热力图") : route.query.from === 'communication-selected' ? uiText("通信严选") : route.query.from === 'digital-selected' ? uiText("数电严选") : route.query.from === 'analog-selected' ? uiText("模电严选") : route.query.from === 'signal-selected' ? uiText("信号严选") : route.query.from === 'circuit-selected' ? uiText("电路严选") : route.query.from === 'selected-heatmap' ? uiText("严选题热力图") : route.query.from === 'heatmap' ? uiText("热力图") : route.query.from === 'collection' ? uiText("收藏题目") : route.query.from === 'insight' ? t('insight') : route.query.from === 'cockpit' ? uiText("892 总览") : uiText("题库") }}</button>
       <div class="question-page-turner">
-        <button type="button" :disabled="!topPreviousTarget" @click="goToPrevious">← {{ topPreviousLabel }}</button>
-        <span v-if="loading">正在加载当前题</span>
-        <button class="next" type="button" :disabled="!topNextTarget || nextLoading" @click="goToNext(nextMode)">{{ nextLoading ? '切换中…' : `${topNextLabel} →` }}</button>
+        <button type="button" :disabled="!topPreviousTarget" @click="goToPrevious">← {{ uiText(topPreviousLabel) }}</button>
+        <span v-if="loading">{{ uiText("正在加载当前题") }}</span>
+        <button class="next" type="button" :disabled="!topNextTarget || nextLoading" @click="goToNext(nextMode)">{{ nextLoading ? uiText("切换中…") : `${uiText(topNextLabel)} →` }}</button>
       </div>
     </nav>
     <section v-if="error && !question" class="question-load-error" role="alert">
-      <span>{{ errorStatus === 404 ? '题目不存在 · 404' : errorStatus === 403 ? '无访问权限 · 403' : errorStatus === 409 ? '数据冲突 · 409' : errorStatus === 429 ? '请求过于频繁 · 429' : errorStatus && errorStatus >= 500 ? '服务器暂时不可用' : '网络请求失败' }}</span>
-      <h1>{{ error }}</h1>
-      <p>不会显示上一题来冒充当前题；已成功提交的作答不会因本页加载失败而丢失。</p>
-      <div><button type="button" @click="load">重试</button><button type="button" @click="backToEntryPoint">返回题库</button><button type="button" :disabled="!topPreviousTarget" @click="goToPrevious">返回{{ topPreviousLabel }}</button></div>
+      <span>{{ errorStatus === 404 ? uiText("题目不存在 · 404") : errorStatus === 403 ? uiText("无访问权限 · 403") : errorStatus === 409 ? uiText("数据冲突 · 409") : errorStatus === 429 ? uiText("请求过于频繁 · 429") : errorStatus && errorStatus >= 500 ? uiText("服务器暂时不可用") : uiText("网络请求失败") }}</span>
+      <h1>{{ uiText(error) }}</h1>
+      <p>{{ uiText("不会显示上一题来冒充当前题；已成功提交的作答不会因本页加载失败而丢失。") }}</p>
+      <div><button type="button" @click="load">{{ uiText("重试") }}</button><button type="button" @click="backToEntryPoint">{{ uiText("返回题库") }}</button><button type="button" :disabled="!topPreviousTarget" @click="goToPrevious">{{ uiText("返回") }}{{ uiText(topPreviousLabel) }}</button></div>
     </section>
-    <p v-else-if="error" class="error-state">{{ error }}</p>
-    <div v-if="loading" class="question-skeleton">正在加载题目…</div>
+    <p v-else-if="error" class="error-state">{{ uiText(error) }}</p>
+    <div v-if="loading" class="question-skeleton">{{ uiText("正在加载题目…") }}</div>
     <template v-else-if="question">
       <header class="question-header">
-        <div><span class="eyebrow">{{ question.document }} · {{ String(question.question_order).padStart(4, '0') }}</span><h1>{{ question.display_label || `题目 ${question.question_order}` }}</h1><p>{{ question.breadcrumbs.map((item) => item.title).join(' / ') }}</p><div class="question-badges"><ExamTypeEditor :key="question.uuid" :question="question" @saved="(patch) => { if (question) { Object.assign(question, patch); patchQuestionState(question.uuid, patch) } }" /><span class="source-badge" :class="`category-${question.source_category}`">{{ question.source_category_label }}</span><span v-if="question.record_kind === 'grouped'" class="source-badge">组合题源节选</span></div><p v-if="question.pdf_pages" class="pdf-page-reference">PDF 绝对页码 · 题目册 {{ question.pdf_pages.question }} · 答案册 {{ question.pdf_pages.answer }} · 题答对照册 {{ question.pdf_pages.paired }}</p></div>
-        <div class="attempt-counter"><span>当前状态</span><strong class="state-name" :class="question.review_overdue ? 'text-overdue' : `text-${question.state}`">{{ question.review_overdue ? '复习已到期' : question.state === 'mastered' ? '已掌握' : question.state === 'review' ? '待复习' : '未开始' }}</strong><small>已记录 {{ question.attempt_count }} 次作答</small><small v-if="question.last_time_spent_seconds !== null" class="last-solving-time">上次用时 · {{ formatRecordedDuration(question.last_time_spent_seconds) }}</small></div>
+        <div><span class="eyebrow">{{ question.document }} · {{ String(question.question_order).padStart(4, '0') }}</span><h1>{{ question.display_label || `${typeText('题目', 'Question')} ${question.question_order}` }}</h1><p>{{ question.breadcrumbs.map((item) => item.title).join(' / ') }}</p><div class="question-badges"><ExamTypeEditor :key="question.uuid" :question="question" @saved="(patch) => { if (question) { Object.assign(question, patch); patchQuestionState(question.uuid, patch) } }" /><span class="source-badge" :class="`category-${question.source_category}`">{{ question.source_category_label }}</span><span v-if="question.record_kind === 'grouped'" class="source-badge">{{ uiText("组合题源节选") }}</span></div><p v-if="question.pdf_pages" class="pdf-page-reference">{{ uiText("PDF 绝对页码 · 题目册") }} {{ question.pdf_pages.question }} {{ uiText("· 答案册") }} {{ question.pdf_pages.answer }} {{ uiText("· 题答对照册") }} {{ question.pdf_pages.paired }}</p></div>
+        <div class="attempt-counter"><span>{{ uiText("当前状态") }}</span><strong class="state-name" :class="question.review_overdue ? 'text-overdue' : `text-${question.state}`">{{ question.review_overdue ? uiText("复习已到期") : question.state === 'mastered' ? uiText("已掌握") : question.state === 'review' ? uiText("待复习") : uiText("未开始") }}</strong><small>{{ uiText("已记录") }} {{ question.attempt_count }} {{ uiText("次作答") }}</small><small v-if="question.last_time_spent_seconds !== null" class="last-solving-time">{{ uiText("上次用时 ·") }} {{ formatRecordedDuration(question.last_time_spent_seconds) }}</small></div>
       </header>
 
-      <div class="question-save-actions" aria-label="题目工具">
-        <button type="button" :class="{ active: question.is_favorite }" :disabled="stateSaving" @click="saveUserState({ is_favorite: !question.is_favorite })"><b>{{ question.is_favorite ? '★' : '☆' }}</b>{{ question.is_favorite ? '已收藏' : '收藏' }}</button>
-        <button type="button" :disabled="shareState === 'sharing'" @click="shareQuestion"><b>↗</b>{{ shareState === 'sharing' ? '正在生成…' : shareState === 'copied' ? '链接已复制 ✓' : '复制分享链接' }}</button>
-        <button type="button" :class="{ active: question.review_later }" :disabled="stateSaving" @click="saveUserState({ review_later: !question.review_later })"><b>↻</b>{{ question.review_later ? '已加入下次复习' : '加入下次复习' }}</button>
-        <button type="button" :class="{ active: erratumOpen }" @click="erratumOpen = !erratumOpen"><b>!</b>提交勘误</button>
+      <div class="question-save-actions" :aria-label="uiText('题目工具')">
+        <button type="button" :class="{ active: question.is_favorite }" :disabled="stateSaving" @click="saveUserState({ is_favorite: !question.is_favorite })"><b>{{ question.is_favorite ? '★' : '☆' }}</b>{{ question.is_favorite ? uiText("已收藏") : uiText("收藏") }}</button>
+        <button type="button" :disabled="shareState === 'sharing'" @click="shareQuestion"><b>↗</b>{{ shareState === 'sharing' ? uiText("正在生成…") : shareState === 'copied' ? uiText("链接已复制 ✓") : uiText("复制分享链接") }}</button>
+        <button type="button" :class="{ active: question.review_later }" :disabled="stateSaving" @click="saveUserState({ review_later: !question.review_later })"><b>↻</b>{{ question.review_later ? uiText("已加入下次复习") : uiText("加入下次复习") }}</button>
+        <button type="button" :class="{ active: erratumOpen }" @click="erratumOpen = !erratumOpen"><b>!</b>{{ uiText("提交勘误") }}</button>
       </div>
 
       <section v-if="erratumOpen" class="erratum-compose">
-        <header><div><strong>提交勘误</strong><small>同一工作区的用户都可以看到。</small></div><RouterLink to="/errata">查看全部勘误 →</RouterLink></header>
-        <div><select v-model="erratumKind" aria-label="勘误类型"><option value="crop">图片或裁切</option><option value="question">题目内容</option><option value="answer">答案或解析</option><option value="formula">公式显示</option><option value="metadata">标签或知识点</option><option value="other">其他</option></select><textarea v-model="erratumDescription" maxlength="4000" placeholder="说明错误内容；如已知，也请写出正确内容。" /></div>
-        <footer><span :class="{ error: erratumMessage && !erratumMessage.startsWith('勘误已提交') }">{{ erratumMessage }}</span><button type="button" :disabled="erratumSaving || !erratumDescription.trim()" @click="submitErratum">{{ erratumSaving ? '正在提交…' : '提交勘误' }}</button></footer>
+        <header><div><strong>{{ uiText("提交勘误") }}</strong><small>{{ uiText("同一工作区的用户都可以看到。") }}</small></div><RouterLink to="/errata">{{ uiText("查看全部勘误 →") }}</RouterLink></header>
+        <div><select v-model="erratumKind" :aria-label="uiText('勘误类型')"><option value="crop">{{ uiText("图片或裁切") }}</option><option value="question">{{ uiText("题目内容") }}</option><option value="answer">{{ uiText("答案或解析") }}</option><option value="formula">{{ uiText("公式显示") }}</option><option value="metadata">{{ uiText("标签或知识点") }}</option><option value="other">{{ uiText("其他") }}</option></select><textarea v-model="erratumDescription" maxlength="4000" :placeholder="uiText('说明错误内容；如已知，也请写出正确内容。')" /></div>
+        <footer><span :class="{ error: erratumMessage && !erratumMessage.startsWith('勘误已提交') }">{{ uiText(erratumMessage) }}</span><button type="button" :disabled="erratumSaving || !erratumDescription.trim()" @click="submitErratum">{{ erratumSaving ? uiText("正在提交…") : uiText("提交勘误") }}</button></footer>
       </section>
 
       <div class="question-workbench">
         <div class="question-problem-pane">
           <p v-if="question.source_review_warning" role="note" class="source-review-warning">{{ question.source_review_warning }}</p>
-          <p v-if="question.original_source" class="source-original-link"><RouterLink :to="{ path: `/practice/${question.original_source.uuid}`, query: { ...questionRouteQuery(), view: 'original' } }">查看完整原卷／原页（原始题图已保留） ↗</RouterLink></p>
-          <nav v-if="question.source_context" class="source-tracking-toolbar" aria-label="当前小题掌握情况">
+          <p v-if="question.original_source" class="source-original-link"><RouterLink :to="{ path: `/practice/${question.original_source.uuid}`, query: { ...questionRouteQuery(), view: 'original' } }">{{ uiText("查看完整原卷／原页（原始题图已保留） ↗") }}</RouterLink></p>
+          <nav v-if="question.source_context" class="source-tracking-toolbar" :aria-label="uiText('当前小题掌握情况')">
             <strong>{{ question.display_label }}</strong>
-            <button @click="sourceViewer?.scrollToCurrent()">定位本题</button>
+            <button @click="sourceViewer?.scrollToCurrent()">{{ uiText("定位本题") }}</button>
           </nav>
           <div v-if="questionAssets(question).length" class="asset-toolbar question-asset-toolbar">
-            <button class="copy-question-image" type="button" :disabled="imageCopyState === 'copying'" @click="copyQuestionImages">{{ imageCopyState === 'copying' ? '正在复制…' : imageCopyState === 'copied' ? '已复制题图 ✓' : '复制题图' }}</button>
-            <span v-if="imageCopyMessage" :class="{ error: imageCopyState === 'fallback' }">{{ imageCopyMessage }}</span>
-            <template v-if="imageCopyState === 'fallback'"><button type="button" @click="shareQuestionImage">系统分享</button><button type="button" @click="downloadQuestionImage">下载 PNG</button></template>
+            <button class="copy-question-image" type="button" :disabled="imageCopyState === 'copying'" @click="copyQuestionImages">{{ imageCopyState === 'copying' ? uiText("正在复制…") : imageCopyState === 'copied' ? uiText("已复制题图 ✓") : uiText("复制题图") }}</button>
+            <span v-if="imageCopyMessage" :class="{ error: imageCopyState === 'fallback' }">{{ uiText(imageCopyMessage) }}</span>
+            <template v-if="imageCopyState === 'fallback'"><button type="button" @click="shareQuestionImage">{{ uiText("系统分享") }}</button><button type="button" @click="downloadQuestionImage">{{ uiText("下载 PNG") }}</button></template>
           </div>
           <article class="question-canvas" :class="{ 'source-canvas': question.source_context, 'individual-source-canvas': question.original_source }">
             <SourcePaperViewer v-if="question.source_context" ref="sourceViewer" :question="question" @select="selectSourceQuestion" />
             <template v-else>
               <template v-for="asset in questionAssets(question)" :key="asset.id">
-                <img v-show="!failedImages[asset.url]" :src="imageUrl(asset.url)" :width="asset.width" :height="asset.height" alt="题目内容" loading="eager" decoding="async" @error="markImageFailed(asset.url)" />
-                <div v-if="failedImages[asset.url]" class="asset-load-error" role="alert"><span>题目图片加载失败</span><button type="button" @click="retryImage(asset.url)">重新加载图片</button></div>
+                <img v-show="!failedImages[asset.url]" :src="imageUrl(asset.url)" :width="asset.width" :height="asset.height" :alt="uiText('题目内容')" loading="eager" decoding="async" @error="markImageFailed(asset.url)" />
+                <div v-if="failedImages[asset.url]" class="asset-load-error" role="alert"><span>{{ uiText("题目图片加载失败") }}</span><button type="button" @click="retryImage(asset.url)">{{ uiText("重新加载图片") }}</button></div>
               </template>
             </template>
             <MarkdownAnswer v-if="!questionAssets(question).length" class="question-markdown" :source="question.prompt_text" />
@@ -1183,104 +1185,106 @@ onBeforeRouteLeave(() => {
 
           <section v-if="(question.has_answer || question.answer_markdown) && !(question.original_source?.has_answer && question.answer_scope === 'source_paper')" class="official-answer">
             <button class="answer-toggle" :aria-expanded="answerOpen" @click="toggleAnswer">
-              <span>{{ answerOpen ? '收起答案' : question.answer_scope === 'individual' ? '查看本题答案与解析' : question.answer_scope === 'source_paper' ? '原卷参考答案（尚未逐题切分）' : question.source_context ? '整卷参考解析（按题号查阅）' : (question.has_answer ? '查看答案' : '查看 Agent 解析') }}</span><b>{{ answerOpen ? '↑' : '↓' }}</b>
+              <span>{{ answerOpen ? uiText("收起答案") : question.answer_scope === 'individual' ? uiText("查看本题答案与解析") : question.answer_scope === 'source_paper' ? uiText("原卷参考答案（尚未逐题切分）") : question.source_context ? uiText("整卷参考解析（按题号查阅）") : (question.has_answer ? uiText("查看答案") : uiText("查看 Agent 解析")) }}</span><b>{{ answerOpen ? '↑' : '↓' }}</b>
             </button>
             <div v-if="answerOpen" class="answer-canvas">
               <div v-if="question.answer_assets.length" class="asset-toolbar answer-asset-toolbar">
-                <button type="button" @click="downloadAssets('answer', question.answer_assets)">保存答案图片</button>
+                <button type="button" @click="downloadAssets('answer', question.answer_assets)">{{ uiText("保存答案图片") }}</button>
               </div>
               <template v-for="asset in question.answer_assets" :key="asset.id">
-                <img v-show="!failedImages[asset.url]" :src="imageUrl(asset.url)" :width="asset.width" :height="asset.height" alt="参考答案" loading="lazy" decoding="async" @error="markImageFailed(asset.url)" />
-                <div v-if="failedImages[asset.url]" class="asset-load-error" role="alert"><span>答案图片加载失败</span><button type="button" @click="retryImage(asset.url)">重新加载图片</button></div>
+                <img v-show="!failedImages[asset.url]" :src="imageUrl(asset.url)" :width="asset.width" :height="asset.height" :alt="uiText('参考答案')" loading="lazy" decoding="async" @error="markImageFailed(asset.url)" />
+                <div v-if="failedImages[asset.url]" class="asset-load-error" role="alert"><span>{{ uiText("答案图片加载失败") }}</span><button type="button" @click="retryImage(asset.url)">{{ uiText("重新加载图片") }}</button></div>
               </template>
               <div v-if="question.answer_markdown" class="agent-answer-block">
-                <header><strong>{{ question.answer_source === 'provided-reference' ? '参考答案' : 'AGENT 解析' }}</strong><span>{{ question.answer_source || 'agent' }} · {{ question.answer_confidence === null ? '未评级' : `置信度 ${Math.round(question.answer_confidence * 100)}%` }}</span></header>
+                <header><strong>{{ question.answer_source === 'provided-reference' ? uiText("参考答案") : uiText("AGENT 解析") }}</strong><span>{{ question.answer_source || 'agent' }} · {{ question.answer_confidence === null ? uiText("未评级") : `${typeText('置信度', 'Confidence')} ${Math.round(question.answer_confidence * 100)}%` }}</span></header>
                 <MarkdownAnswer :source="question.answer_markdown" />
               </div>
             </div>
           </section>
-          <p v-if="question.original_source?.has_answer && question.answer_scope === 'source_paper'" class="source-paper-help">本题答案尚待逐题核对，请先查看完整版答案；不会将未确认的解析错配到本题。</p>
+          <p v-if="question.original_source?.has_answer && question.answer_scope === 'source_paper'" class="source-paper-help">{{ uiText("本题答案尚待逐题核对，请先查看完整版答案；不会将未确认的解析错配到本题。") }}</p>
           <OriginalAnswer v-if="question.original_source?.has_answer" :key="question.original_source.uuid + question.uuid" :uuid="question.original_source.uuid" @opened="answerViewedThisRound = true" />
-          <p v-else-if="question.original_source && !question.has_answer && !question.answer_markdown" class="source-paper-help">原始资料未提供参考答案，暂不生成或猜测答案。</p>
+          <p v-else-if="question.original_source && !question.has_answer && !question.answer_markdown" class="source-paper-help">{{ uiText("原始资料未提供参考答案，暂不生成或猜测答案。") }}</p>
         </div>
 
         <aside class="question-control-pane">
           <section v-if="question.source_context" class="source-current-question">
-            <strong>当前记录：{{ question.display_label }}</strong>
-            <small>下方掌握 / 待复习 / 笔记仅保存到这一题。</small>
-            <button type="button" @click="sourceViewer?.scrollToCurrent()">返回本题图中位置 ↗</button>
+            <strong>{{ uiText("当前记录：") }}{{ question.display_label }}</strong>
+            <small>{{ uiText("下方掌握 / 待复习 / 笔记仅保存到这一题。") }}</small>
+            <button type="button" @click="sourceViewer?.scrollToCurrent()">{{ uiText("返回本题图中位置 ↗") }}</button>
           </section>
           <section class="answer-workflow">
           <section class="diagnosis-panel">
             <header>
-              <div><span>结构化诊断</span><b class="diagnosis-status" :class="diagnosisSaveState">{{ diagnosisSaveState === 'saving' ? '正在保存…' : diagnosisSaveState === 'saved' ? '已保存 ✓' : diagnosisSaveState === 'error' ? '保存失败' : diagnosisSaveState === 'draft' ? editingAttemptId ? '等待自动保存' : '将随作答保存' : '未填写' }}</b></div>
-              <div class="diagnosis-actions"><button type="button" :aria-expanded="historyOpen" @click="loadAttemptHistory">{{ historyOpen ? '收起历史' : '完整历史' }}</button><button type="button" :aria-expanded="diagnosisOpen" @click="diagnosisOpen = !diagnosisOpen">{{ diagnosisOpen ? '收起诊断' : '填写诊断' }}</button></div>
+              <div><span>{{ uiText("结构化诊断") }}</span><b class="diagnosis-status" :class="diagnosisSaveState">{{ diagnosisSaveState === 'saving' ? uiText("正在保存…") : diagnosisSaveState === 'saved' ? uiText("已保存 ✓") : diagnosisSaveState === 'error' ? uiText("保存失败") : diagnosisSaveState === 'draft' ? editingAttemptId ? uiText("等待自动保存") : uiText("将随作答保存") : uiText("未填写") }}</b></div>
+              <div class="diagnosis-actions"><button type="button" :aria-expanded="historyOpen" @click="loadAttemptHistory">{{ historyOpen ? uiText("收起历史") : uiText("完整历史") }}</button><button type="button" :aria-expanded="diagnosisOpen" @click="diagnosisOpen = !diagnosisOpen">{{ diagnosisOpen ? uiText("收起诊断") : uiText("填写诊断") }}</button></div>
             </header>
             <div v-if="diagnosisOpen" class="diagnosis-body">
             <div class="independence-flags">
-              <button type="button" :class="{ active: usedHintThisRound }" @click="toggleUsedHint">{{ usedHintThisRound ? '已使用提示' : '未使用提示' }}</button>
-              <span :class="{ compromised: usedHintThisRound || answerViewedThisRound }">{{ usedHintThisRound || answerViewedThisRound ? '本轮不计为独立作答' : '当前可计为独立作答' }}</span>
+              <button type="button" :class="{ active: usedHintThisRound }" @click="toggleUsedHint">{{ usedHintThisRound ? uiText("已使用提示") : uiText("未使用提示") }}</button>
+              <span :class="{ compromised: usedHintThisRound || answerViewedThisRound }">{{ usedHintThisRound || answerViewedThisRound ? uiText("本轮不计为独立作答") : uiText("当前可计为独立作答") }}</span>
             </div>
-            <button v-if="route.query.mode === 'method'" class="method-note-link" type="button" @click="noteOpen = true">把调用的知识点和第一个关系式写入“题目笔记”</button>
+            <button v-if="route.query.mode === 'method'" class="method-note-link" type="button" @click="noteOpen = true">{{ uiText("把调用的知识点和第一个关系式写入“题目笔记”") }}</button>
             <div class="error-picker">
               <button v-for="item in errorOptions" :key="item.code" type="button" :class="{ active: selectedErrors.includes(item.code), primary: primaryError === item.code }" @click="toggleError(item.code)">
-                <b>{{ item.code }}</b><span>{{ item.label }}</span>
+                <b>{{ item.code }}</b><span>{{ uiText(item.label) }}</span>
               </button>
             </div>
-            <p v-if="selectedErrors.length" class="primary-help">主要原因：<select v-model="primaryError"><option v-for="code in selectedErrors" :key="code" :value="code">{{ code }} · {{ errorOptions.find((item) => item.code === code)?.label }}</option></select></p>
+            <p v-if="selectedErrors.length" class="primary-help">{{ uiText("主要原因：") }}<select v-model="primaryError"><option v-for="code in selectedErrors" :key="code" :value="code">{{ code }} · {{ uiText(errorOptions.find((item) => item.code === code)?.label || '') }}</option></select></p>
             <div class="diagnosis-advanced">
-              <label>知识提取<select v-model="knowledgeLevel"><option :value="null">未知</option><option value="K0">K0 不知道</option><option value="K1">K1 回忆不完整</option><option value="K2">K2 准确提取</option></select></label>
-              <label>方法启动<select v-model="methodLevel"><option :value="null">未知</option><option value="M0">M0 无法开始</option><option value="M1">M1 需要提示</option><option value="M2">M2 自主确定路径</option></select></label>
-              <label>执行验证<select v-model="executionLevel"><option :value="null">未知</option><option value="E0">E0 无法完成</option><option value="E1">E1 完成但有误</option><option value="E2">E2 正确并验证</option></select></label>
+              <label>{{ uiText("知识提取") }}<select v-model="knowledgeLevel"><option :value="null">{{ uiText("未知") }}</option><option value="K0">{{ uiText("K0 不知道") }}</option><option value="K1">{{ uiText("K1 回忆不完整") }}</option><option value="K2">{{ uiText("K2 准确提取") }}</option></select></label>
+              <label>{{ uiText("方法启动") }}<select v-model="methodLevel"><option :value="null">{{ uiText("未知") }}</option><option value="M0">{{ uiText("M0 无法开始") }}</option><option value="M1">{{ uiText("M1 需要提示") }}</option><option value="M2">{{ uiText("M2 自主确定路径") }}</option></select></label>
+              <label>{{ uiText("执行验证") }}<select v-model="executionLevel"><option :value="null">{{ uiText("未知") }}</option><option value="E0">{{ uiText("E0 无法完成") }}</option><option value="E1">{{ uiText("E1 完成但有误") }}</option><option value="E2">{{ uiText("E2 正确并验证") }}</option></select></label>
             </div>
             <div v-if="historyOpen" class="attempt-history">
-              <p v-if="historyLoading">正在加载历史…</p>
-              <p v-else-if="attemptHistory.length">共 {{ attemptHistory.length }} 条作答记录；点击任意记录可查看并自动保存修订。</p>
-              <button v-for="attempt in attemptHistory" :key="attempt.id" type="button" @click="editDiagnosis(attempt)"><span><b>第 {{ attempt.attempt_round || '?' }} 轮 · {{ attempt.training_stage }}</b><small>{{ new Date(attempt.created_at).toLocaleString() }}</small></span><span><b>{{ attempt.outcome }}</b><small>{{ attempt.primary_error || '未诊断' }} · {{ attempt.is_independent === null ? '独立性未知' : attempt.is_independent ? '独立' : '非独立' }}</small></span></button>
-              <p v-if="!historyLoading && !attemptHistory.length">暂无作答记录。</p>
+              <p v-if="historyLoading">{{ uiText("正在加载历史…") }}</p>
+              <p v-else-if="attemptHistory.length">{{ uiText("共") }} {{ attemptHistory.length }} {{ uiText("条作答记录；点击任意记录可查看并自动保存修订。") }}</p>
+              <button v-for="attempt in attemptHistory" :key="attempt.id" type="button" @click="editDiagnosis(attempt)"><span><b>{{ uiText("第") }} {{ attempt.attempt_round || '?' }} {{ uiText("轮 ·") }} {{ attempt.training_stage }}</b><small>{{ new Date(attempt.created_at).toLocaleString() }}</small></span><span><b>{{ attempt.outcome }}</b><small>{{ attempt.primary_error || uiText("未诊断") }} · {{ attempt.is_independent === null ? uiText("独立性未知") : attempt.is_independent ? uiText("独立") : uiText("非独立") }}</small></span></button>
+              <p v-if="!historyLoading && !attemptHistory.length">{{ uiText("暂无作答记录。") }}</p>
             </div>
-            <footer v-if="question.review_plan"><span>闭环：{{ question.review_plan.checkpoint }}</span><small>{{ question.review_plan.status === 'active' && question.review_plan.next_review_at ? `下次 ${new Date(question.review_plan.next_review_at).toLocaleString()}` : '已完成或暂停' }}</small></footer>
+            <footer v-if="question.review_plan"><span>{{ uiText("闭环：") }}{{ question.review_plan.checkpoint }}</span><small>{{ question.review_plan.status === 'active' && question.review_plan.next_review_at ? `${typeText('下次', 'Next review')} ${new Date(question.review_plan.next_review_at).toLocaleString()}` : uiText("已完成或暂停") }}</small></footer>
             </div>
           </section>
           <div class="answer-bar">
             <div>
-              <div class="question-timer" :class="{ active: !timingCountdown && !timingFinalized, saved: timingFinalized }"><span>{{ timingFinalized ? '计时已保存' : timingCountdown ? '计时准备' : '本题用时' }}</span><strong>{{ timingFinalized || !timingCountdown ? formattedQuestionTime : `${timingCountdown} 秒后开始` }}</strong></div>
+              <div class="question-timer" :class="{ active: !timingCountdown && !timingFinalized, saved: timingFinalized }"><span>{{ timingFinalized ? uiText("计时已保存") : timingCountdown ? uiText("计时准备") : uiText("本题用时") }}</span><strong>{{ timingFinalized || !timingCountdown ? formattedQuestionTime : `${timingCountdown} ${typeText('秒后开始', 'seconds until start')}` }}</strong></div>
+              <NoteVisibility :note="note" :question-key="props.uuid">
               <p v-if="note && !noteOpen" class="note-preview" role="button" tabindex="0" @click="noteOpen = true" @keydown.enter="noteOpen = true">{{ note }}</p>
-              <details class="note-field" :open="noteOpen" @toggle="toggleNote"><summary><span>题目笔记 Note</span><small>{{ noteSaveState === 'saving' ? '保存中…' : noteSaveState === 'saved' ? '已保存' : noteSaveState === 'error' ? '保存失败' : noteSaveState === 'dirty' ? '未保存' : note ? '展开编辑' : '添加笔记' }}</small></summary><textarea v-model="note" maxlength="20000" placeholder="记录公式、错误原因、修正方法或下次检查点" @input="cacheNoteDraft" /><span class="note-controls"><small class="note-draft-hint">{{ noteSaveState === 'saving' ? '保存中…' : noteSaveState === 'saved' ? '已保存到服务器' : noteSaveState === 'error' ? '保存失败，本地草稿仍保留' : noteSaveState === 'dirty' ? '未保存' : '停止输入 5 秒后自动保存' }}</small><button type="button" class="save-note" :disabled="noteSaveState === 'saving'" @click="saveNote">{{ noteSaveState === 'saving' ? '保存中…' : noteSaveState === 'error' ? '重试保存' : '保存笔记' }}</button></span></details>
+              <details class="note-field" :open="noteOpen" @toggle="toggleNote"><summary><span>{{ uiText("题目笔记 Note") }}</span><small>{{ noteSaveState === 'saving' ? uiText("保存中…") : noteSaveState === 'saved' ? uiText("已保存") : noteSaveState === 'error' ? uiText("保存失败") : noteSaveState === 'dirty' ? uiText("未保存") : note ? uiText("展开编辑") : uiText("添加笔记") }}</small></summary><textarea v-model="note" maxlength="20000" :placeholder="uiText('记录公式、错误原因、修正方法或下次检查点')" @input="cacheNoteDraft" /><span class="note-controls"><small class="note-draft-hint">{{ noteSaveState === 'saving' ? uiText("保存中…") : noteSaveState === 'saved' ? uiText("已保存到服务器") : noteSaveState === 'error' ? uiText("保存失败，本地草稿仍保留") : noteSaveState === 'dirty' ? uiText("未保存") : uiText("停止输入 5 秒后自动保存") }}</small><button type="button" class="save-note" :disabled="noteSaveState === 'saving'" @click="saveNote">{{ noteSaveState === 'saving' ? uiText("保存中…") : noteSaveState === 'error' ? uiText("重试保存") : uiText("保存笔记") }}</button></span></details>
+              </NoteVisibility>
             </div>
-            <div class="unified-answer-actions"><button class="correct primary-action" :class="{ selected: question.state === 'mastered' }" :disabled="saving" @click="record('correct')">{{ masteredAutoNext ? '掌握并下一题' : '标记已掌握' }}</button><button class="review" :class="{ selected: question.state === 'review' }" :disabled="saving" @click="record('review')">待复习{{ reviewAutoNext ? '并下一题' : '' }}</button><details class="secondary-actions"><summary>更多操作</summary><button :disabled="saving || !question.can_undo" @click="undo">撤销上次</button><button :disabled="saving || question.state === 'unattempted'" @click="record('reset')">重置本题状态</button></details></div>
+            <div class="unified-answer-actions"><button class="correct primary-action" :class="{ selected: question.state === 'mastered' }" :disabled="saving" @click="record('correct')">{{ masteredAutoNext ? uiText("掌握并下一题") : uiText("标记已掌握") }}</button><button class="review" :class="{ selected: question.state === 'review' }" :disabled="saving" @click="record('review')">{{ uiText("待复习") }}{{ reviewAutoNext ? uiText("并下一题") : '' }}</button><details class="secondary-actions"><summary>{{ uiText("更多操作") }}</summary><button :disabled="saving || !question.can_undo" @click="undo">{{ uiText("撤销上次") }}</button><button :disabled="saving || question.state === 'unattempted'" @click="record('reset')">{{ uiText("重置本题状态") }}</button></details></div>
           </div>
           </section>
 
-          <details v-if="question.source_label && question.source_label !== question.display_label" class="raw-provenance"><summary>查看原始导入标签</summary><code>{{ question.source_label }}</code></details>
+          <details v-if="question.source_label && question.source_label !== question.display_label" class="raw-provenance"><summary>{{ uiText("查看原始导入标签") }}</summary><code>{{ question.source_label }}</code></details>
 
-          <button class="similar-trigger" @click="showSimilar"><span>练习相似题</span><small>同一已索引知识点</small><b>{{ similarOpen ? '↓' : '→' }}</b></button>
+          <button class="similar-trigger" @click="showSimilar"><span>{{ uiText("练习相似题") }}</span><small>{{ uiText("同一已索引知识点") }}</small><b>{{ similarOpen ? '↓' : '→' }}</b></button>
           <section v-if="similarOpen" class="similar-panel">
-            <header><span>相似题组</span><strong>{{ similarTopic || '暂无索引知识点' }}</strong></header>
+            <header><span>{{ uiText("相似题组") }}</span><strong>{{ similarTopic || uiText("暂无索引知识点") }}</strong></header>
             <div class="similar-kind-picker">
-              <button :class="{ selected: similarKind === 'past_exam' }" :disabled="!similarCounts.past_exam" @click="loadSimilar('past_exam')"><span>正式历年题</span><strong>{{ similarCounts.past_exam }}</strong><small>已核验考试来源</small></button>
-              <button :class="{ selected: similarKind === 'practice' }" :disabled="!similarCounts.practice" @click="loadSimilar('practice')"><span>模拟／练习题</span><strong>{{ similarCounts.practice }}</strong><small>题册、模拟卷和其他练习</small></button>
+              <button :class="{ selected: similarKind === 'past_exam' }" :disabled="!similarCounts.past_exam" @click="loadSimilar('past_exam')"><span>{{ uiText("正式历年题") }}</span><strong>{{ similarCounts.past_exam }}</strong><small>{{ uiText("已核验考试来源") }}</small></button>
+              <button :class="{ selected: similarKind === 'practice' }" :disabled="!similarCounts.practice" @click="loadSimilar('practice')"><span>{{ uiText("模拟／练习题") }}</span><strong>{{ similarCounts.practice }}</strong><small>{{ uiText("题册、模拟卷和其他练习") }}</small></button>
             </div>
-            <p v-if="!similarKind">请选择要练习的题源类型。</p>
-            <p v-else-if="similarLoading">正在加载相似题…</p>
-            <button v-for="item in similar" :key="item.uuid" @click="router.push({ path: `/practice/${item.uuid}`, query: questionRouteQuery() })"><span>{{ item.display_label || `题目 ${item.question_order}` }}</span><small>{{ item.document }} · {{ item.state }} · {{ item.attempt_count }} 次作答</small><b>→</b></button>
-            <p v-if="similarKind && !similarLoading && !similar.length">该知识点下暂无此题源类型的题目。</p>
+            <p v-if="!similarKind">{{ uiText("请选择要练习的题源类型。") }}</p>
+            <p v-else-if="similarLoading">{{ uiText("正在加载相似题…") }}</p>
+            <button v-for="item in similar" :key="item.uuid" @click="router.push({ path: `/practice/${item.uuid}`, query: questionRouteQuery() })"><span>{{ item.display_label || `题目 ${item.question_order}` }}</span><small>{{ item.document }} · {{ item.state }} · {{ item.attempt_count }} {{ uiText("次作答") }}</small><b>→</b></button>
+            <p v-if="similarKind && !similarLoading && !similar.length">{{ uiText("该知识点下暂无此题源类型的题目。") }}</p>
           </section>
 
           <section class="learning-markers">
-            <header><div><span>学习标记</span><small>独立于题目状态，可多选。</small></div><div><button type="button" :disabled="markerSaving" @click="saveMarkers(markerOptions.map((item) => item.code))">全选</button><button type="button" :disabled="markerSaving || !question.markers.length" @click="saveMarkers([])">清空</button></div></header>
+            <header><div><span>{{ uiText("学习标记") }}</span><small>{{ uiText("独立于题目状态，可多选。") }}</small></div><div><button type="button" :disabled="markerSaving" @click="saveMarkers(markerOptions.map((item) => item.code))">{{ uiText("全选") }}</button><button type="button" :disabled="markerSaving || !question.markers.length" @click="saveMarkers([])">{{ uiText("清空") }}</button></div></header>
             <div><button v-for="marker in markerOptions" :key="marker.code" type="button" :class="{ active: question.markers.includes(marker.code) }" :disabled="markerSaving" @click="toggleMarker(marker.code)">{{ marker.label }}</button></div>
           </section>
 
-          <section class="page-turn-settings" aria-label="翻题偏好">
-            <header><strong>翻题偏好</strong><label>前后翻题<select v-model="nextMode"><option value="sequential">顺序题</option><option value="overdue">红色到期复习题</option><option value="review">黄色近期复习题</option></select></label></header>
+          <section class="page-turn-settings" :aria-label="uiText('翻题偏好')">
+            <header><strong>{{ uiText("翻题偏好") }}</strong><label>{{ uiText("前后翻题") }}<select v-model="nextMode"><option value="sequential">{{ uiText("顺序题") }}</option><option value="overdue">{{ uiText("红色到期复习题") }}</option><option value="review">{{ uiText("黄色近期复习题") }}</option></select></label></header>
             <div class="page-turn-settings-grid">
-              <label><input v-model="masteredAutoNext" type="checkbox">掌握后切题</label>
-              <label><input v-model="reviewAutoNext" type="checkbox">待复习后切题</label>
-              <label><input v-model="autoCopyLink" type="checkbox">翻题复制链接</label>
-              <label><input v-model="autoCopyImage" type="checkbox">翻题复制题图</label>
+              <label><input v-model="masteredAutoNext" type="checkbox">{{ uiText("掌握后切题") }}</label>
+              <label><input v-model="reviewAutoNext" type="checkbox">{{ uiText("待复习后切题") }}</label>
+              <label><input v-model="autoCopyLink" type="checkbox">{{ uiText("翻题复制链接") }}</label>
+              <label><input v-model="autoCopyImage" type="checkbox">{{ uiText("翻题复制题图") }}</label>
             </div>
-            <small>复制选项二选一；前后翻题均生效。</small>
+            <small>{{ uiText("复制选项二选一；前后翻题均生效。") }}</small>
           </section>
         </aside>
       </div>

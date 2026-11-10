@@ -12,7 +12,7 @@ import { useUiPreferences } from '../../lib/uiPreferences'
 const props = defineProps<{ username: string; collapsed: boolean }>()
 const emit = defineEmits<{ 'update:collapsed': [value: boolean]; logout: [] }>()
 const route = useRoute()
-const { t } = useUiPreferences()
+const { t, language } = useUiPreferences()
 const mobileOpen = ref(false)
 const activeSection = computed(() => route.name === 'session-detail' ? 'sessions' : route.name)
 const activeSubject = computed(() => String(route.query.subject || ''))
@@ -29,7 +29,7 @@ onBeforeUnmount(() => document.body.classList.remove('navigation-drawer-open'))
 
   <aside id="app-sidebar" class="sidebar" :class="{ 'mobile-open': mobileOpen }" @keydown.esc="mobileOpen = false">
     <div class="sidebar-topline"><WorkspaceSwitcher /><button type="button" class="mobile-sidebar-close" aria-label="Close navigation" @click="mobileOpen = false">×</button></div>
-    <nav class="workspace-quick-links" aria-label="切换学习空间">
+    <nav class="workspace-quick-links" :aria-label="language === 'zh-CN' ? '切换学习空间' : 'Switch workspace'">
       <a href="https://47.95.10.128/today" aria-current="page">Timer</a>
       <a href="https://47.95.10.128/drill/practice">Drill</a>
       <a href="https://47.95.10.128/ei/practice">EI</a>

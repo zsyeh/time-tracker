@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { uiText } from '../lib/uiText'
 import { computed, onMounted, ref, watch } from 'vue'
 import { api, post } from '../lib/api'
 import { notifyPracticeTrendChanged } from '../lib/practiceTrend'
@@ -138,77 +139,74 @@ onMounted(loadConfig)
     <header>
       <div>
         <span class="kicker">PDF PAGE STATUS</span>
-        <h2 id="pdf-page-status-title">按 PDF 页码批量记录</h2>
-        <p>题目册与题答对照册页码分别输入。先预览匹配，再追加 Mastered / Need to review；不会覆盖历史记录。</p>
+        <h2 id="pdf-page-status-title">{{ uiText("按 PDF 页码批量记录") }}</h2>
+        <p>{{ uiText("题目册与题答对照册页码分别输入。先预览匹配，再追加 Mastered / Need to review；不会覆盖历史记录。") }}</p>
       </div>
-      <span class="safe-badge">先预览 · 后写入</span>
+      <span class="safe-badge">{{ uiText("先预览 · 后写入") }}</span>
     </header>
 
     <div class="page-status-form">
       <label>
-        <span>科目</span>
+        <span>{{ uiText("科目") }}</span>
         <select v-model="course" :disabled="loading">
           <option v-for="item in courses" :key="item.code" :value="item.code">{{ item.label }}</option>
         </select>
       </label>
       <label>
-        <span>题目册页码</span>
-        <input v-model="questionPages" :disabled="loading" inputmode="numeric" placeholder="例如 12, 15-18" />
+        <span>{{ uiText("题目册页码") }}</span>
+        <input v-model="questionPages" :disabled="loading" inputmode="numeric" :placeholder="uiText('例如 12, 15-18')" />
         <small v-if="selectedCourse">已映射页码至 P{{ selectedCourse.question_max_page }}</small>
       </label>
       <label>
-        <span>题答对照册页码</span>
-        <input v-model="pairedPages" :disabled="loading" inputmode="numeric" placeholder="例如 20, 23-26" />
+        <span>{{ uiText("题答对照册页码") }}</span>
+        <input v-model="pairedPages" :disabled="loading" inputmode="numeric" :placeholder="uiText('例如 20, 23-26')" />
         <small v-if="selectedCourse">已映射页码至 P{{ selectedCourse.paired_max_page }}</small>
       </label>
       <fieldset>
-        <legend>记录为</legend>
-        <label><input v-model="result" type="radio" value="correct" :disabled="loading" /> Mastered</label>
+        <legend>{{ uiText("记录为") }}</legend>
+        <label><input v-model="result" type="radio" value="correct" :disabled="loading" /> {{ uiText("Mastered") }}</label>
         <label><input v-model="result" type="radio" value="review" :disabled="loading" /> Need to review</label>
       </fieldset>
       <div class="form-actions">
         <button class="preview-button" type="button" :disabled="loading || !course" @click="run('preview')">
-          {{ loading ? '处理中…' : '预览匹配' }}
+          {{ loading ? '处理中…' : uiText("预览匹配") }}
         </button>
         <button class="direct-submit-button" type="button" :disabled="loading || !course || (!questionPages.trim() && !pairedPages.trim())" @click="run('apply')">
-          直接提交
-        </button>
+{{ uiText("直接提交") }} </button>
       </div>
     </div>
 
     <details class="page-diagnosis">
-      <summary><span>本批次能力诊断</span><small>无需单独提交，将和掌握状态一起保存</small></summary>
-      <div class="independence-row"><label><input v-model="usedHint" type="checkbox" /> 使用过提示</label><label><input v-model="viewedAnswer" type="checkbox" /> 查看过答案</label><b>{{ usedHint || viewedAnswer ? '非独立作答' : '独立作答' }}</b></div>
-      <div v-if="result === 'review'" class="page-error-picker"><button v-for="item in errorOptions" :key="item.code" type="button" :class="{ active: selectedErrors.includes(item.code) }" @click="toggleError(item.code)"><b>{{ item.code }}</b>{{ item.label }}</button></div>
-      <label v-if="result === 'review' && selectedErrors.length" class="primary-error">主要原因<select v-model="primaryError"><option v-for="code in selectedErrors" :key="code" :value="code">{{ code }} · {{ errorOptions.find((item) => item.code === code)?.label }}</option></select></label>
-      <div class="page-levels"><label>知识提取<select v-model="knowledgeLevel"><option :value="null">未知</option><option value="K0">K0 不知道</option><option value="K1">K1 回忆不完整</option><option value="K2">K2 准确提取</option></select></label><label>方法启动<select v-model="methodLevel"><option :value="null">未知</option><option value="M0">M0 无法开始</option><option value="M1">M1 需要提示</option><option value="M2">M2 自主确定路径</option></select></label><label>执行验证<select v-model="executionLevel"><option :value="null">未知</option><option value="E0">E0 无法完成</option><option value="E1">E1 完成但有误</option><option value="E2">E2 正确并验证</option></select></label></div>
-      <label class="batch-note">题目笔记 Note<textarea v-model="note" maxlength="20000" placeholder="可选：本批次匹配到的每道题都会追加这段 Note；不会覆盖已有笔记。" /></label>
+      <summary><span>{{ uiText("本批次能力诊断") }}</span><small>{{ uiText("无需单独提交，将和掌握状态一起保存") }}</small></summary>
+      <div class="independence-row"><label><input v-model="usedHint" type="checkbox" /> {{ uiText("使用过提示") }}</label><label><input v-model="viewedAnswer" type="checkbox" /> {{ uiText("查看过答案") }}</label><b>{{ usedHint || viewedAnswer ? uiText("非独立作答") : uiText("独立作答") }}</b></div>
+      <div v-if="result === 'review'" class="page-error-picker"><button v-for="item in errorOptions" :key="item.code" type="button" :class="{ active: selectedErrors.includes(item.code) }" @click="toggleError(item.code)"><b>{{ item.code }}</b>{{ uiText(item.label) }}</button></div>
+      <label v-if="result === 'review' && selectedErrors.length" class="primary-error">{{ uiText("主要原因") }}<select v-model="primaryError"><option v-for="code in selectedErrors" :key="code" :value="code">{{ code }} · {{ errorOptions.find((item) => item.code === code)?.label }}</option></select></label>
+      <div class="page-levels"><label>{{ uiText("知识提取") }}<select v-model="knowledgeLevel"><option :value="null">{{ uiText("未知") }}</option><option value="K0">{{ uiText("K0 不知道") }}</option><option value="K1">{{ uiText("K1 回忆不完整") }}</option><option value="K2">{{ uiText("K2 准确提取") }}</option></select></label><label>{{ uiText("方法启动") }}<select v-model="methodLevel"><option :value="null">{{ uiText("未知") }}</option><option value="M0">{{ uiText("M0 无法开始") }}</option><option value="M1">{{ uiText("M1 需要提示") }}</option><option value="M2">{{ uiText("M2 自主确定路径") }}</option></select></label><label>{{ uiText("执行验证") }}<select v-model="executionLevel"><option :value="null">{{ uiText("未知") }}</option><option value="E0">{{ uiText("E0 无法完成") }}</option><option value="E1">{{ uiText("E1 完成但有误") }}</option><option value="E2">{{ uiText("E2 正确并验证") }}</option></select></label></div>
+      <label class="batch-note">{{ uiText("题目笔记 Note") }}<textarea v-model="note" maxlength="20000" :placeholder="uiText('可选：本批次匹配到的每道题都会追加这段 Note；不会覆盖已有笔记。')" /></label>
     </details>
 
-    <p v-if="error" class="page-status-error" role="alert">{{ error }}</p>
+    <p v-if="error" class="page-status-error" role="alert">{{ uiText(error) }}</p>
     <p v-if="message" class="page-status-success" role="status">{{ message }}</p>
 
     <div v-if="preview" class="preview-result">
       <div class="preview-summary">
-        <div><small>匹配题目</small><strong>{{ preview.matched_count }}</strong></div>
-        <div><small>将记录为</small><strong>{{ preview.result === 'correct' ? 'Mastered' : 'Need to review' }}</strong></div>
-        <div><small>未匹配页</small><strong>{{ preview.unmatched_question_pages.length + preview.unmatched_paired_pages.length }}</strong></div>
+        <div><small>{{ uiText("匹配题目") }}</small><strong>{{ preview.matched_count }}</strong></div>
+        <div><small>{{ uiText("将记录为") }}</small><strong>{{ preview.result === 'correct' ? uiText("Mastered") : 'Need to review' }}</strong></div>
+        <div><small>{{ uiText("未匹配页") }}</small><strong>{{ preview.unmatched_question_pages.length + preview.unmatched_paired_pages.length }}</strong></div>
       </div>
       <p v-if="preview.unmatched_question_pages.length || preview.unmatched_paired_pages.length" class="unmatched-warning">
-        未匹配，不会写入：
-        <span v-if="preview.unmatched_question_pages.length">题目册 P{{ preview.unmatched_question_pages.join(', ') }}</span>
-        <span v-if="preview.unmatched_paired_pages.length">题答对照册 P{{ preview.unmatched_paired_pages.join(', ') }}</span>
+{{ uiText("未匹配，不会写入：") }} <span v-if="preview.unmatched_question_pages.length">{{ uiText("题目册 P") }}{{ preview.unmatched_question_pages.join(', ') }}</span>
+        <span v-if="preview.unmatched_paired_pages.length">{{ uiText("题答对照册 P") }}{{ preview.unmatched_paired_pages.join(', ') }}</span>
       </p>
-      <p v-if="preview.stale_mapping_count" class="unmatched-warning">另有 {{ preview.stale_mapping_count }} 道题因题库指纹变化被安全跳过。</p>
+      <p v-if="preview.stale_mapping_count" class="unmatched-warning">{{ uiText("另有") }} {{ preview.stale_mapping_count }} {{ uiText("道题因题库指纹变化被安全跳过。") }}</p>
       <ol v-if="preview.questions.length" class="match-list">
         <li v-for="item in preview.questions" :key="item.uuid">
           <span><strong>{{ item.label }}</strong><small>{{ item.book }}</small></span>
-          <span class="match-actions"><b>{{ matchLabel(item) }}</b><RouterLink :to="item.route">进入题目 →</RouterLink></span>
+          <span class="match-actions"><b>{{ matchLabel(item) }}</b><RouterLink :to="item.route">{{ uiText("进入题目 →") }}</RouterLink></span>
         </li>
       </ol>
       <button v-if="preview.action === 'preview' && preview.matched_count" class="apply-button" type="button" :disabled="loading" @click="run('apply')">
-        确认追加 {{ preview.matched_count }} 道记录
-      </button>
+{{ uiText("确认追加") }} {{ preview.matched_count }} {{ uiText("道记录") }} </button>
     </div>
   </section>
 </template>

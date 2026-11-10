@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { uiText } from '../lib/uiText'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { api } from '../lib/api'
@@ -31,7 +32,7 @@ onMounted(async () => {
 <template>
   <section class="page feel-page">
     <header class="page-header"><div><span class="eyebrow">{{ t('practiceRecency') }}</span><h1>{{ t('bookFeel') }}</h1><p>Today is 0. Each inactive day subtracts one point.</p></div></header>
-    <p v-if="error" class="error-state">{{ error }}</p>
+    <p v-if="error" class="error-state">{{ uiText(error) }}</p>
     <div v-else-if="loading" class="question-skeleton">CALCULATING BOOK FEEL…</div>
     <div v-else class="feel-grid">
       <button v-for="book in books" :key="book.document_id" @click="router.push({ path: '/practice', query: { document: String(book.document_id) } })">

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { uiText } from './lib/uiText'
 import { onMounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { api, post } from './lib/api'
@@ -69,24 +70,24 @@ onMounted(() => {
       <RouterLink class="wordmark" to="/practice" aria-label="Drill home">
         <img :src="workspaceIcon" alt="" aria-hidden="true" /><strong>{{ isEi ? '892 LAB' : 'DRILL' }}</strong><small>{{ isEi ? 'ELECTRONIC INFORMATION' : 'QUESTION PRACTICE' }}</small>
       </RouterLink>
-      <nav class="workspace-links" aria-label="切换学习空间">
+      <nav class="workspace-links" :aria-label="uiText('切换学习空间')">
         <a href="https://47.95.10.128/today">Timer</a>
         <a href="https://47.95.10.128/drill/practice" :aria-current="!isEi ? 'page' : undefined">Drill</a>
         <a href="https://47.95.10.128/ei/practice" :aria-current="isEi ? 'page' : undefined">EI</a>
       </nav>
       <nav>
-        <RouterLink to="/diagnostics" :class="{ active: route.name === 'diagnostics' || route.name === 'diagnostic-queue' }"><span>解题能力</span></RouterLink>
+        <RouterLink to="/diagnostics" :class="{ active: route.name === 'diagnostics' || route.name === 'diagnostic-queue' }"><span>{{ uiText("解题能力") }}</span></RouterLink>
         <RouterLink v-if="isEi" to="/cockpit" :class="{ active: route.name === 'cockpit' }">
-          <span>892 总览</span>
+          <span>{{ uiText("892 总览") }}</span>
         </RouterLink>
-        <RouterLink v-if="isEi" to="/circuit-selected" :class="{ active: route.name === 'circuit-selected' || (route.name === 'question' && route.query.collection === 'circuit_selected') }"><span>电路严选</span></RouterLink>
-        <RouterLink v-if="isEi" to="/signal-selected" :class="{ active: route.name === 'signal-selected' || (route.name === 'question' && route.query.collection === 'signal_selected') }"><span>信号严选</span></RouterLink>
-        <RouterLink v-if="isEi" to="/signal-formulas" :class="{ active: route.name === 'signal-formulas' }"><span>892 每日公式</span></RouterLink>
-        <RouterLink v-if="isEi" to="/analog-selected" :class="{ active: route.name === 'analog-selected' || (route.name === 'question' && route.query.collection === 'analog_selected') }"><span>模电严选</span></RouterLink>
-        <RouterLink v-if="isEi" to="/digital-selected" :class="{ active: route.name === 'digital-selected' || (route.name === 'question' && route.query.collection === 'digital_selected') }"><span>数电严选</span></RouterLink>
-        <RouterLink v-if="isEi" to="/communication-selected" :class="{ active: route.name === 'communication-selected' || (route.name === 'question' && route.query.collection === 'communication_selected') }"><span>通信严选</span></RouterLink>
-        <RouterLink v-if="isEi" to="/selected-pdf-pages" :class="{ active: route.name === 'selected-pdf-pages' }"><span>严选题 PDF 页码记录</span></RouterLink>
-        <RouterLink v-if="isEi" to="/core-heatmap" :class="{ active: route.name === 'core-heatmap' || (route.name === 'question' && route.query.collection === 'core_selected') }"><span>五科核心热力图</span></RouterLink>
+        <RouterLink v-if="isEi" to="/circuit-selected" :class="{ active: route.name === 'circuit-selected' || (route.name === 'question' && route.query.collection === 'circuit_selected') }"><span>{{ uiText("电路严选") }}</span></RouterLink>
+        <RouterLink v-if="isEi" to="/signal-selected" :class="{ active: route.name === 'signal-selected' || (route.name === 'question' && route.query.collection === 'signal_selected') }"><span>{{ uiText("信号严选") }}</span></RouterLink>
+        <RouterLink v-if="isEi" to="/signal-formulas" :class="{ active: route.name === 'signal-formulas' }"><span>{{ uiText("892 每日公式") }}</span></RouterLink>
+        <RouterLink v-if="isEi" to="/analog-selected" :class="{ active: route.name === 'analog-selected' || (route.name === 'question' && route.query.collection === 'analog_selected') }"><span>{{ uiText("模电严选") }}</span></RouterLink>
+        <RouterLink v-if="isEi" to="/digital-selected" :class="{ active: route.name === 'digital-selected' || (route.name === 'question' && route.query.collection === 'digital_selected') }"><span>{{ uiText("数电严选") }}</span></RouterLink>
+        <RouterLink v-if="isEi" to="/communication-selected" :class="{ active: route.name === 'communication-selected' || (route.name === 'question' && route.query.collection === 'communication_selected') }"><span>{{ uiText("通信严选") }}</span></RouterLink>
+        <RouterLink v-if="isEi" to="/selected-pdf-pages" :class="{ active: route.name === 'selected-pdf-pages' }"><span>{{ uiText("严选题 PDF 页码记录") }}</span></RouterLink>
+        <RouterLink v-if="isEi" to="/core-heatmap" :class="{ active: route.name === 'core-heatmap' || (route.name === 'question' && route.query.collection === 'core_selected') }"><span>{{ uiText("五科核心热力图") }}</span></RouterLink>
         <RouterLink to="/practice" :class="{ active: route.name === 'practice' || route.name === 'question' }">
           <span>{{ t('practice') }}</span>
         </RouterLink>
@@ -118,7 +119,7 @@ onMounted(() => {
           <span>{{ t('insight') }}</span>
         </RouterLink>
         <RouterLink to="/errata" :class="{ active: route.name === 'errata' }">
-          <span>勘误</span>
+          <span>{{ uiText("勘误") }}</span>
         </RouterLink>
       </nav>
       <div v-if="progress" class="sidebar-progress">

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { uiText } from '../lib/uiText'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { api, post } from '../lib/api'
@@ -44,14 +45,14 @@ onMounted(async () => {
     <div class="blueprint-grid">
       <button v-for="blueprint in blueprints" :key="blueprint.code" type="button" :class="{ selected: selected === blueprint.code }" @click="selected = blueprint.code">
         <span>{{ blueprint.mode }}</span><h2>{{ blueprint.title }}</h2>
-        <p>{{ blueprint.duration_minutes }} min · {{ blueprint.total_score }} points · {{ blueprint.question_count }} questions</p>
+        <p>{{ blueprint.duration_minutes }} min · {{ blueprint.total_score }} points · {{ blueprint.question_count }} {{ uiText("questions") }}</p>
         <ul><li v-for="section in blueprint.sections" :key="`${blueprint.code}-${section.title}`">{{ section.question_count }} {{ section.question_type.replace('_', ' ') }}</li></ul>
       </button>
     </div>
     <div class="paper-generate-bar">
       <label><input v-model="includeMastered" type="checkbox" /> Allow mastered questions</label>
-      <button class="primary-action" type="button" :disabled="loading || !selected" @click="generate">{{ loading ? 'Generating…' : 'Generate and start' }} <b>→</b></button>
+      <button class="primary-action" type="button" :disabled="loading || !selected" @click="generate">{{ loading ? uiText("Generating…") : 'Generate and start' }} <b>→</b></button>
     </div>
-    <p v-if="error" class="error-state">{{ error }}</p>
+    <p v-if="error" class="error-state">{{ uiText(error) }}</p>
   </section>
 </template>

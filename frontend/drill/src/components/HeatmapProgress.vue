@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { uiText } from '../lib/uiText'
 import { computed } from 'vue'
 import { heatmapProgress } from '../lib/heatmapProgress'
 
@@ -7,12 +8,12 @@ const progress = computed(() => heatmapProgress(props.total, props.attempted, pr
 </script>
 
 <template>
-  <dl class="heatmap-progress" aria-label="题目掌握统计">
-    <div data-progress="attempted"><dt>已做</dt><dd>{{ progress.attempted }}</dd></div>
-    <div data-progress="unattempted"><dt>未做</dt><dd>{{ progress.unattempted }}</dd></div>
-    <div data-progress="mastered"><dt>已掌握</dt><dd>{{ progress.mastered }}</dd></div>
-    <div data-progress="attempted-rate" title="已掌握题数 ÷ 已做题数"><dt>已做掌握率</dt><dd>{{ progress.attemptedMasterRate }}</dd><small>{{ mastered }} / {{ attempted }}</small></div>
-    <div data-progress="total-rate" title="已掌握题数 ÷ 当前范围总题数"><dt>总掌握率</dt><dd>{{ progress.totalMasterRate }}</dd><small>{{ mastered }} / {{ total }}</small></div>
+  <dl class="heatmap-progress" :aria-label="uiText('题目掌握统计')">
+    <div data-progress="attempted"><dt>{{ uiText("已做") }}</dt><dd>{{ progress.attempted }}</dd></div>
+    <div data-progress="unattempted"><dt>{{ uiText("未做") }}</dt><dd>{{ progress.unattempted }}</dd></div>
+    <div data-progress="mastered"><dt>{{ uiText("已掌握") }}</dt><dd>{{ progress.mastered }}</dd></div>
+    <div data-progress="attempted-rate" :title="uiText('已掌握题数 ÷ 已做题数')"><dt>{{ uiText("已做掌握率") }}</dt><dd>{{ progress.attemptedMasterRate }}</dd><small>{{ mastered }} / {{ attempted }}</small></div>
+    <div data-progress="total-rate" :title="uiText('已掌握题数 ÷ 当前范围总题数')"><dt>{{ uiText("总掌握率") }}</dt><dd>{{ progress.totalMasterRate }}</dd><small>{{ mastered }} / {{ total }}</small></div>
   </dl>
 </template>
 

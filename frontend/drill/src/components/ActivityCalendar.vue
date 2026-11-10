@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { uiText } from '../lib/uiText'
 import { computed } from 'vue'
 
 interface ActivityDay {
@@ -41,7 +42,7 @@ const startOffset = computed(() => {
           v-for="day in days"
           :key="day.date"
           :class="[`activity-level-${day.level}`, { future: day.is_future }]"
-          :title="`${day.date} · ${day.count} ${day.count === 1 ? 'question' : 'questions'}`"
+          :title="`${day.date} · ${day.count} ${day.count === 1 ? 'question' : uiText('questions')}`"
           :aria-label="`${day.date}: ${day.count} questions`"
         />
       </div>

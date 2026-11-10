@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { uiText } from '../lib/uiText'
 import { computed, onMounted, ref } from 'vue'
 import { api, post, remove } from '../lib/api'
 import { runtimeWorkspace } from '../lib/runtimePath'
@@ -185,7 +186,7 @@ onMounted(() => {
       <button type="button" :disabled="busy || (kind === 'daily' && range === 'custom' && !date)" @click="create">{{ labels.create }}</button>
     </div>
     <p class="scope">{{ labels.sharing }}：{{ scopeDescription }}</p>
-    <p v-if="error" role="alert">{{ error }}</p>
+    <p v-if="error" role="alert">{{ uiText(error) }}</p>
     <div v-if="created" class="created-share">
       <p>{{ labels.expires }}：{{ new Date(created.expires_at).toLocaleString(language) }}</p>
       <input :value="created.url" readonly :aria-label="labels.linkLabel" @focus="($event.target as HTMLInputElement).select()">

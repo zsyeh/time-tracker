@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { uiText } from '../lib/uiText'
 import { computed, nextTick, ref, watch } from 'vue'
 import type { QuestionDetail } from '../types'
 import { withWorkspacePrefix } from '../lib/runtimePath'
@@ -26,15 +27,15 @@ defineExpose({ scrollToCurrent })
 
 <template>
   <div ref="root" class="source-paper-viewer">
-    <nav v-if="!question.source_context?.anchor" class="source-question-index" aria-label="原卷逐题练习入口">
-      <strong>逐题练习 · {{ question.source_context?.individual_question_count || 0 }} / {{ anchors.length }} 题已切分</strong>
-      <div><button v-for="anchor in anchors" :key="anchor.uuid" type="button" :data-individual-question="anchor.uuid" @click="emit('select', anchor.uuid)">{{ anchor.label }} · {{ anchor.individual_available ? '单题' : '原页' }}</button></div>
+    <nav v-if="!question.source_context?.anchor" class="source-question-index" :aria-label="uiText('原卷逐题练习入口')">
+      <strong>{{ uiText("逐题练习 ·") }} {{ question.source_context?.individual_question_count || 0 }} / {{ anchors.length }} {{ uiText("题已切分") }}</strong>
+      <div><button v-for="anchor in anchors" :key="anchor.uuid" type="button" :data-individual-question="anchor.uuid" @click="emit('select', anchor.uuid)">{{ anchor.label }} · {{ anchor.individual_available ? uiText("单题") : uiText("原页") }}</button></div>
     </nav>
-    <p class="source-paper-help">原图完整显示 · 点击左侧题号切换当前小题，掌握情况逐题保存。</p>
-    <p v-if="question.source_context?.anchor" class="source-paper-help">本题切分边界尚待核对，暂保留完整原卷，避免遗漏题图。</p>
-    <p v-if="question.source_context?.index_complete === false" class="source-paper-help">本卷部分扫描题号尚待补全，原卷所有页面仍完整保留。</p>
+    <p class="source-paper-help">{{ uiText("原图完整显示 · 点击左侧题号切换当前小题，掌握情况逐题保存。") }}</p>
+    <p v-if="question.source_context?.anchor" class="source-paper-help">{{ uiText("本题切分边界尚待核对，暂保留完整原卷，避免遗漏题图。") }}</p>
+    <p v-if="question.source_context?.index_complete === false" class="source-paper-help">{{ uiText("本卷部分扫描题号尚待补全，原卷所有页面仍完整保留。") }}</p>
     <figure v-for="asset in assets" :key="asset.id" class="source-paper-page" :style="{ aspectRatio: `${asset.width} / ${asset.height}` }" :data-source-asset="asset.id">
-      <img :src="withWorkspacePrefix(asset.url)" :width="asset.width" :height="asset.height" alt="完整原卷页面" loading="eager" decoding="async" />
+      <img :src="withWorkspacePrefix(asset.url)" :width="asset.width" :height="asset.height" :alt="uiText('完整原卷页面')" loading="eager" decoding="async" />
       <button v-for="anchor in anchors.filter((item) => item.asset_id === asset.id)" :key="anchor.uuid"
         type="button" class="source-question-pin" :class="[`source-state-${anchor.state}`, { current: anchor.uuid === question.uuid }]"
         :style="{ top: `${anchor.y * 100}%` }" :data-source-question="anchor.uuid"

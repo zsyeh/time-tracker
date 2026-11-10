@@ -1,5 +1,7 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
+import { uiText } from '../lib/uiText'
+import { uiLanguage } from '../lib/uiPreferences'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRouter } from 'vue-router'
 import * as echarts from 'echarts/core'
 import { BarChart, LineChart } from 'echarts/charts'
@@ -25,7 +27,7 @@ let chart: ECharts | null = null
 let activityChart: ECharts | null = null
 let resizeObserver: ResizeObserver | null = null
 const isEi = runtimeWorkspace === 'ei'
-const title = computed(() => isEi ? 'EI 专业课 · 解题能力' : 'Drill 数学 · 解题能力')
+const title = computed(() => isEi ? uiText("EI 专业课 · 解题能力") : uiText("Drill 数学 · 解题能力"))
 
 function percentage(value: number | null) { return value === null ? '—' : `${value}%` }
 function dailyRate(correct: number, sample: number) { return sample ? Math.round(correct * 1000 / sample) / 10 : null }
@@ -38,20 +40,20 @@ function option(): EChartsCoreOption {
   return {
     animationDuration: 220,
     grid: { left: 38, right: 16, top: 42, bottom: 30 },
-    legend: { top: 3, textStyle: { color: text, fontSize: 10 }, data: ['首次独立正确率', '二次独立正确率'] },
+    legend: { top: 3, textStyle: { color: text, fontSize: 10 }, data: [uiText("首次独立正确率"), uiText("二次独立正确率")] },
     tooltip: {
       trigger: 'axis', confine: true,
       formatter(raw: unknown) {
         const rows = raw as Array<{ dataIndex: number; marker: string; seriesName: string; value: number | null }>
         const point = payload.trend[rows[0]?.dataIndex || 0]
-        return [`<strong>${point.date}</strong>`, ...rows.map(row => `${row.marker}${row.seriesName}：${row.value === null ? '无样本' : `${row.value}%`}`), `首次样本：${point.first_sample}`, `二次样本：${point.second_sample}`].join('<br>')
+        return [`<strong>${point.date}</strong>`, ...rows.map(row => `${row.marker}${row.seriesName}：${row.value === null ? uiText("无样本") : `${row.value}%`}`), `${uiText("首次样本")}：${point.first_sample}`, `${uiText("二次样本")}：${point.second_sample}`].join('<br>')
       },
     },
     xAxis: { type: 'category', data: payload.trend.map(row => row.date.slice(5)), axisLine: { lineStyle: { color: border } }, axisLabel: { color: text, fontSize: 9 } },
     yAxis: { type: 'value', min: 0, max: 100, axisLabel: { color: text, formatter: '{value}%' }, splitLine: { lineStyle: { color: border, type: 'dashed' } } },
     series: [
-      { name: '首次独立正确率', type: 'line', connectNulls: false, smooth: .25, data: payload.trend.map(row => dailyRate(row.first_independent_correct, row.first_sample)), lineStyle: { width: 2, color: '#15c878' }, itemStyle: { color: '#15c878' } },
-      { name: '二次独立正确率', type: 'line', connectNulls: false, smooth: .25, data: payload.trend.map(row => dailyRate(row.second_independent_correct, row.second_sample)), lineStyle: { width: 2, color: '#e4b938' }, itemStyle: { color: '#e4b938' } },
+      { name: uiText("首次独立正确率"), type: 'line', connectNulls: false, smooth: .25, data: payload.trend.map(row => dailyRate(row.first_independent_correct, row.first_sample)), lineStyle: { width: 2, color: '#15c878' }, itemStyle: { color: '#15c878' } },
+      { name: uiText("二次独立正确率"), type: 'line', connectNulls: false, smooth: .25, data: payload.trend.map(row => dailyRate(row.second_independent_correct, row.second_sample)), lineStyle: { width: 2, color: '#e4b938' }, itemStyle: { color: '#e4b938' } },
     ],
   }
 }
@@ -63,7 +65,7 @@ function activityOption(): EChartsCoreOption {
   return {
     animationDuration: 220,
     grid: { left: 38, right: 14, top: 40, bottom: 38 },
-    legend: { top: 3, textStyle: { color: text, fontSize: 10 }, data: ['每日去重题数', '提交次数'] },
+    legend: { top: 3, textStyle: { color: text, fontSize: 10 }, data: [uiText("每日去重题数"), uiText("提交次数")] },
     tooltip: {
       trigger: 'axis', confine: true,
       formatter(raw: unknown) {
@@ -72,16 +74,16 @@ function activityOption(): EChartsCoreOption {
         return [
           `<strong>${point.date}</strong>`,
           ...rows.map(row => `${row.marker}${row.seriesName}：${row.value}`),
-          `新题：${point.new_questions}　复习：${point.review_questions}`,
-          `有诊断证据：${point.diagnosed_questions}　历史未知：${point.legacy_unknown_questions}`,
+          `${uiText("新题")}：${point.new_questions}　${uiText("复习")}：${point.review_questions}`,
+          `${uiText("有诊断证据")}：${point.diagnosed_questions}　${uiText("历史未知")}：${point.legacy_unknown_questions}`,
         ].join('<br>')
       },
     },
     xAxis: { type: 'category', data: payload.activity.map(row => row.date.slice(5)), axisLine: { lineStyle: { color: border } }, axisLabel: { color: text, fontSize: 9, hideOverlap: true } },
     yAxis: { type: 'value', minInterval: 1, axisLabel: { color: text }, splitLine: { lineStyle: { color: border, type: 'dashed' } } },
     series: [
-      { name: '每日去重题数', type: 'bar', barMaxWidth: 18, data: payload.activity.map(row => row.daily_unique_questions), itemStyle: { color: '#2f9ee5', borderRadius: [3, 3, 0, 0] } },
-      { name: '提交次数', type: 'line', smooth: .2, data: payload.activity.map(row => row.submissions), lineStyle: { width: 2, color: '#e4b938' }, itemStyle: { color: '#e4b938' } },
+      { name: uiText("每日去重题数"), type: 'bar', barMaxWidth: 18, data: payload.activity.map(row => row.daily_unique_questions), itemStyle: { color: '#2f9ee5', borderRadius: [3, 3, 0, 0] } },
+      { name: uiText("提交次数"), type: 'line', smooth: .2, data: payload.activity.map(row => row.submissions), lineStyle: { width: 2, color: '#e4b938' }, itemStyle: { color: '#e4b938' } },
     ],
   }
 }
@@ -123,63 +125,65 @@ onMounted(() => {
   if (activityChartElement.value) resizeObserver.observe(activityChartElement.value)
 })
 onUnmounted(() => { resizeObserver?.disconnect(); chart?.dispose(); activityChart?.dispose() })
+
+watch(uiLanguage, () => { void renderChart() })
 </script>
 
 <template>
   <section class="page diagnostic-page">
     <header class="page-header diagnostic-header">
-      <div><span class="eyebrow">ABILITY DIAGNOSIS</span><h1>{{ title }}</h1><p>区分“做过”与“能够独立做对”；所有比例均显示真实样本量。</p></div>
-      <div class="range"><button v-for="value in [7,14,30]" :key="value" :class="{ active: days === value && !customStart }" @click="setDays(value)">{{ value }}天</button><label>自定<input v-model="customStart" type="date" /><input v-model="customEnd" type="date" /><button @click="applyCustomRange">应用</button></label></div>
+      <div><span class="eyebrow">ABILITY DIAGNOSIS</span><h1>{{ title }}</h1><p>{{ uiText("区分“做过”与“能够独立做对”；所有比例均显示真实样本量。") }}</p></div>
+      <div class="range"><button v-for="value in [7,14,30]" :key="value" :class="{ active: days === value && !customStart }" @click="setDays(value)">{{ value }}{{ uiText("天") }}</button><label>{{ uiText("自定") }}<input v-model="customStart" type="date" /><input v-model="customEnd" type="date" /><button @click="applyCustomRange">{{ uiText("应用") }}</button></label></div>
     </header>
-    <p v-if="error" class="error-state">{{ error }}</p>
-    <div v-if="loading && !data" class="question-skeleton">正在计算诊断指标…</div>
+    <p v-if="error" class="error-state">{{ uiText(error) }}</p>
+    <div v-if="loading && !data" class="question-skeleton">{{ uiText("正在计算诊断指标…") }}</div>
     <template v-else-if="data">
       <section class="today-strip">
-        <article><span>今日新题</span><strong>{{ data.today.new_questions }}</strong><small>首次有效作答</small></article>
-        <article><span>今日复习</span><strong>{{ data.today.review_questions }}</strong><small>重做 / 巩固</small></article>
-        <article><span>今日首次独立</span><strong>{{ data.today.first_independent_correct }}/{{ data.today.first_sample }}</strong><small>正确 / 样本</small></article>
-        <button @click="openDue"><span>当前到期复习</span><strong>{{ data.due_count }}</strong><small>进入闭环队列 →</small></button>
+        <article><span>{{ uiText("今日新题") }}</span><strong>{{ data.today.new_questions }}</strong><small>{{ uiText("首次有效作答") }}</small></article>
+        <article><span>{{ uiText("今日复习") }}</span><strong>{{ data.today.review_questions }}</strong><small>{{ uiText("重做 / 巩固") }}</small></article>
+        <article><span>{{ uiText("今日首次独立") }}</span><strong>{{ data.today.first_independent_correct }}/{{ data.today.first_sample }}</strong><small>{{ uiText("正确 / 样本") }}</small></article>
+        <button @click="openDue"><span>{{ uiText("当前到期复习") }}</span><strong>{{ data.due_count }}</strong><small>{{ uiText("进入闭环队列 →") }}</small></button>
       </section>
 
       <section class="ability-board activity-board">
-        <header><h2>刷题活动</h2><span>包含功能上线前的真实历史记录</span></header>
+        <header><h2>{{ uiText("刷题活动") }}</h2><span>{{ uiText("包含功能上线前的真实历史记录") }}</span></header>
         <div class="activity-summary">
-          <article><small>本周期每日去重合计</small><strong>{{ data.period_activity.daily_unique_questions }}</strong><span>同题跨日分别计入</span></article>
-          <article><small>本周期提交次数</small><strong>{{ data.period_activity.submissions }}</strong><span>保留重复提交</span></article>
-          <article><small>不同题目</small><strong>{{ data.period_activity.unique_questions }}</strong><span>周期内按题去重</span></article>
-          <article><small>历史诊断未知</small><strong>{{ data.period_activity.legacy_unknown_attempts }}</strong><span>计入题量，不推断独立性</span></article>
+          <article><small>{{ uiText("本周期每日去重合计") }}</small><strong>{{ data.period_activity.daily_unique_questions }}</strong><span>{{ uiText("同题跨日分别计入") }}</span></article>
+          <article><small>{{ uiText("本周期提交次数") }}</small><strong>{{ data.period_activity.submissions }}</strong><span>{{ uiText("保留重复提交") }}</span></article>
+          <article><small>{{ uiText("不同题目") }}</small><strong>{{ data.period_activity.unique_questions }}</strong><span>{{ uiText("周期内按题去重") }}</span></article>
+          <article><small>{{ uiText("历史诊断未知") }}</small><strong>{{ data.period_activity.legacy_unknown_attempts }}</strong><span>{{ uiText("计入题量，不推断独立性") }}</span></article>
         </div>
-        <div ref="activityChartElement" class="activity-chart" role="img" aria-label="每日去重刷题量与提交次数" />
-        <p class="activity-note">蓝柱是每天完成的不同题目数；黄线是保存成功的提交次数。旧记录会显示题量，但不会被冒充为“独立正确”。</p>
+        <div ref="activityChartElement" class="activity-chart" role="img" :aria-label="uiText('每日去重刷题量与提交次数')" />
+        <p class="activity-note">{{ uiText("蓝柱是每天完成的不同题目数；黄线是保存成功的提交次数。旧记录会显示题量，但不会被冒充为“独立正确”。") }}</p>
       </section>
 
       <section class="ability-board">
-        <header><h2>解题能力看板</h2><span>{{ data.range.start }} — {{ data.range.end }}</span></header>
+        <header><h2>{{ uiText("解题能力看板") }}</h2><span>{{ data.range.start }} — {{ data.range.end }}</span></header>
         <div class="metric-grid">
-          <article><small>首次独立正确率</small><strong>{{ percentage(data.metrics.first_independent_accuracy.value) }}</strong><span>{{ data.metrics.first_independent_accuracy.numerator }}/{{ data.metrics.first_independent_accuracy.sample }} 题</span></article>
-          <article><small>二次独立正确率</small><strong>{{ percentage(data.metrics.second_independent_accuracy.value) }}</strong><span>{{ data.metrics.second_independent_accuracy.numerator }}/{{ data.metrics.second_independent_accuracy.sample }} 题</span></article>
-          <button @click="openErrors(['B2','B3'])"><small>方法启动失败率</small><strong>{{ percentage(data.metrics.method_start_failure_rate.value) }}</strong><span>诊断样本 {{ data.metrics.method_start_failure_rate.sample }} · 查看题目 →</span></button>
-          <article><small>错误复发率</small><strong>{{ percentage(data.metrics.error_recurrence_rate.value) }}</strong><span>可比较题目 {{ data.metrics.error_recurrence_rate.sample }}</span></article>
+          <article><small>{{ uiText("首次独立正确率") }}</small><strong>{{ percentage(data.metrics.first_independent_accuracy.value) }}</strong><span>{{ data.metrics.first_independent_accuracy.numerator }}/{{ data.metrics.first_independent_accuracy.sample }} {{ uiText("题") }}</span></article>
+          <article><small>{{ uiText("二次独立正确率") }}</small><strong>{{ percentage(data.metrics.second_independent_accuracy.value) }}</strong><span>{{ data.metrics.second_independent_accuracy.numerator }}/{{ data.metrics.second_independent_accuracy.sample }} {{ uiText("题") }}</span></article>
+          <button @click="openErrors(['B2','B3'])"><small>{{ uiText("方法启动失败率") }}</small><strong>{{ percentage(data.metrics.method_start_failure_rate.value) }}</strong><span>{{ uiText("诊断样本") }} {{ data.metrics.method_start_failure_rate.sample }} {{ uiText("· 查看题目 →") }}</span></button>
+          <article><small>{{ uiText("错误复发率") }}</small><strong>{{ percentage(data.metrics.error_recurrence_rate.value) }}</strong><span>{{ uiText("可比较题目") }} {{ data.metrics.error_recurrence_rate.sample }}</span></article>
         </div>
-        <h3>最近 7 天独立正确率趋势</h3>
-        <div ref="chartElement" class="ability-chart" role="img" aria-label="首次与二次独立正确率趋势图" />
+        <h3>{{ uiText("最近 7 天独立正确率趋势") }}</h3>
+        <div ref="chartElement" class="ability-chart" role="img" :aria-label="uiText('首次与二次独立正确率趋势图')" />
       </section>
 
       <div class="diagnostic-grid">
         <section class="error-distribution">
-          <header><div><span class="eyebrow">ERROR PROFILE</span><h2>错误分布</h2></div><small>只统计有明确主错误的作答</small></header>
+          <header><div><span class="eyebrow">ERROR PROFILE</span><h2>{{ uiText("错误分布") }}</h2></div><small>{{ uiText("只统计有明确主错误的作答") }}</small></header>
           <button v-for="row in data.error_distribution" :key="row.code" :disabled="!row.count" @click="openErrors([row.code])"><b>{{ row.code }}</b><span><i :style="{ width: `${Math.min(100, row.count * 10)}%` }" /></span><strong>{{ row.count }}</strong></button>
         </section>
         <section class="course-table">
-          <header><div><span class="eyebrow">SUBJECTS / BOOKS</span><h2>{{ isEi ? '五大学科能力对比' : '题册能力对比' }}</h2></div></header>
-          <div class="course-row heading"><span>学科 / 题册</span><span>首次独立</span><span>方法失败</span><span>重做通过</span></div>
+          <header><div><span class="eyebrow">SUBJECTS / BOOKS</span><h2>{{ isEi ? uiText("五大学科能力对比") : uiText("题册能力对比") }}</h2></div></header>
+          <div class="course-row heading"><span>{{ uiText("学科 / 题册") }}</span><span>{{ uiText("首次独立") }}</span><span>{{ uiText("方法失败") }}</span><span>{{ uiText("重做通过") }}</span></div>
           <div v-for="course in data.courses" :key="course.code" class="course-row"><strong>{{ course.label }}</strong><span>{{ percentage(course.first_independent_accuracy) }}<small>n={{ course.first_sample }}</small></span><span>{{ percentage(course.method_failure_rate) }}</span><span>{{ percentage(course.redo_pass_rate) }}<small>n={{ course.redo_sample }}</small></span></div>
-          <p v-if="!data.courses.length">当前周期还没有带诊断信息的有效作答。</p>
+          <p v-if="!data.courses.length">{{ uiText("当前周期还没有带诊断信息的有效作答。") }}</p>
         </section>
       </div>
       <div class="diagnostic-grid secondary-analysis">
-        <section class="course-table"><header><div><span class="eyebrow">REPEATED ERRORS</span><h2>反复出错最多的知识点</h2></div></header><div v-for="row in data.repeated_topics" :key="row.topic" class="topic-analysis-row"><strong>{{ row.topic }}</strong><span>{{ row.diagnosed_errors }} 次明确错误</span></div><p v-if="!data.repeated_topics.length">暂无明确错误标签。</p></section>
-        <section class="course-table"><header><div><span class="eyebrow">7D VS PREVIOUS 7D</span><h2>近期改善 / 恶化</h2></div></header><div v-for="row in data.topic_trends" :key="row.topic" class="topic-analysis-row"><strong>{{ row.topic }}</strong><span :class="row.change >= 0 ? 'improved' : 'worsened'">{{ row.change > 0 ? '+' : '' }}{{ row.change }}%</span><small>{{ row.previous_rate }}% (n={{ row.previous_sample }}) → {{ row.current_rate }}% (n={{ row.current_sample }})</small></div><p v-if="!data.topic_trends.length">两个比较窗口尚无足够显式独立作答样本。</p></section>
+        <section class="course-table"><header><div><span class="eyebrow">REPEATED ERRORS</span><h2>{{ uiText("反复出错最多的知识点") }}</h2></div></header><div v-for="row in data.repeated_topics" :key="row.topic" class="topic-analysis-row"><strong>{{ row.topic }}</strong><span>{{ row.diagnosed_errors }} {{ uiText("次明确错误") }}</span></div><p v-if="!data.repeated_topics.length">{{ uiText("暂无明确错误标签。") }}</p></section>
+        <section class="course-table"><header><div><span class="eyebrow">7D VS PREVIOUS 7D</span><h2>{{ uiText("近期改善 / 恶化") }}</h2></div></header><div v-for="row in data.topic_trends" :key="row.topic" class="topic-analysis-row"><strong>{{ row.topic }}</strong><span :class="row.change >= 0 ? 'improved' : 'worsened'">{{ row.change > 0 ? '+' : '' }}{{ row.change }}%</span><small>{{ row.previous_rate }}% (n={{ row.previous_sample }}) → {{ row.current_rate }}% (n={{ row.current_sample }})</small></div><p v-if="!data.topic_trends.length">{{ uiText("两个比较窗口尚无足够显式独立作答样本。") }}</p></section>
       </div>
       <p class="diagnostic-notice">{{ data.notice }}</p>
     </template>

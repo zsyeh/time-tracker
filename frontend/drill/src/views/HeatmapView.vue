@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { uiText } from '../lib/uiText'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api } from '../lib/api'
@@ -261,21 +262,21 @@ onMounted(load)
 <template>
   <section :class="{ 'exam-type-colours': formatColours }" class="page heatmap-page">
     <header class="page-header">
-      <div><span class="eyebrow">{{ props.coreOnly ? '892 · CORE HEATMAP' : props.selectedOnly ? t('selectedHeatmap') : t('knowledgeMap') }}</span><h1>{{ props.coreOnly ? '五科核心题热力图' : props.selectedOnly ? t('selectedHeatmap') : t('coverageByBook') }}</h1><p>{{ props.coreOnly ? '五科核心题汇总，按来源书籍与考点练习；原题、原答案、原做题记录。' : props.selectedOnly ? 'Curated Da Guan questions, grouped by source book and knowledge topic.' : 'Every topic and question cell opens a preview before navigation.' }}</p></div>
+      <div><span class="eyebrow">{{ props.coreOnly ? '892 · CORE HEATMAP' : props.selectedOnly ? t('selectedHeatmap') : t('knowledgeMap') }}</span><h1>{{ props.coreOnly ? uiText("五科核心题热力图") : props.selectedOnly ? t('selectedHeatmap') : t('coverageByBook') }}</h1><p>{{ props.coreOnly ? uiText("五科核心题汇总，按来源书籍与考点练习；原题、原答案、原做题记录。") : props.selectedOnly ? 'Curated Da Guan questions, grouped by source book and knowledge topic.' : 'Every topic and question cell opens a preview before navigation.' }}</p></div>
       <div class="heat-controls">
         <div v-if="!props.selectedOnly" class="heat-mode"><button :class="{ active: mode === 'topics' }" @click="mode = 'topics'">Topics</button><button :class="{ active: mode === 'questions' }" @click="mode = 'questions'">Questions</button></div>
-        <div class="heat-scope"><button :class="{ active: scope === 'all' }" @click="scope = 'all'">All</button><button :class="{ active: scope === 'past_exam' }" @click="scope = 'past_exam'">Past exams</button><button :class="{ active: scope === 'mock_exam' }" @click="scope = 'mock_exam'">Mock exams</button></div>
+        <div class="heat-scope"><button :class="{ active: scope === 'all' }" @click="scope = 'all'">{{ uiText("All") }}</button><button :class="{ active: scope === 'past_exam' }" @click="scope = 'past_exam'">Past exams</button><button :class="{ active: scope === 'mock_exam' }" @click="scope = 'mock_exam'">Mock exams</button></div>
         <div class="heat-legend"><i class="status-unattempted" /><span>NOT STARTED</span><i class="status-progress" /><span>IN PROGRESS</span><i class="status-mastered" /><span>MASTERED</span><i class="status-review" /><span>REVIEW</span><i class="status-overdue" /><span>OVERDUE</span></div>
       </div>
     </header>
     <ExamTypeControls v-model="typeGroup" :stats="data?.type_statistics" @practice="smallPractice" />
     <LearningSharePanel :current-scope="shareScope" />
     <div v-if="props.coreOnly" class="core-controls">
-      <label>学科<select v-model="course"><option value="">全部五科</option><option v-for="item in data?.courses || []" :key="item.key" :value="item.key">{{ item.title }} · 核心 {{ item.total }} 题</option></select></label>
-      <label>资料<select v-model="material"><option value="ready">题答已具备，且无未处理勘误</option><option value="all">全部核心（含待补资料）</option></select></label>
-      <p>{{ data?.quality_notice }} <template v-if="data?.curation_total">核心清单共 {{ data.curation_total }} 题，当前显示 {{ data.question_count }} 题。</template></p>
+      <label>{{ uiText("学科") }}<select v-model="course"><option value="">{{ uiText("全部五科") }}</option><option v-for="item in data?.courses || []" :key="item.key" :value="item.key">{{ item.title }} {{ uiText("· 核心") }} {{ item.total }} {{ uiText("题") }}</option></select></label>
+      <label>{{ uiText("资料") }}<select v-model="material"><option value="ready">{{ uiText("题答已具备，且无未处理勘误") }}</option><option value="all">{{ uiText("全部核心（含待补资料）") }}</option></select></label>
+      <p>{{ data?.quality_notice }} <template v-if="data?.curation_total">{{ uiText("核心清单共") }} {{ data.curation_total }} {{ uiText("题，当前显示") }} {{ data.question_count }} {{ uiText("题。") }}</template></p>
     </div>
-    <p v-if="error" class="error-state">{{ error }}</p>
+    <p v-if="error" class="error-state">{{ uiText(error) }}</p>
     <div v-else-if="loading" class="question-skeleton">BUILDING HEATMAP…</div>
     <template v-else-if="data">
       <HeatmapProgress :total="data.question_count" :attempted="data.statistics.attempted_question_count" :mastered="data.statistics.mastered_question_count" />
@@ -343,7 +344,7 @@ onMounted(load)
             <div class="topic-preview-copy">
               <span>QUESTION PREVIEW · {{ selectedQuestion.document }}</span>
               <ExamTypeBadge :type="selectedQuestion.question.question_type" :group="selectedQuestion.question.type_group" /><h3>{{ selectedQuestion.question.label || `Question ${selectedQuestion.question.order}` }}</h3>
-              <p>{{ selectedQuestion.question.core_topic || selectedQuestion.question.topic || 'General' }}<template v-if="selectedQuestion.question.year"> · {{ selectedQuestion.question.year }}{{ selectedQuestion.question.variant ? ` ${selectedQuestion.question.variant}` : '' }}</template></p>
+              <p>{{ selectedQuestion.question.core_topic || selectedQuestion.question.topic || uiText("General") }}<template v-if="selectedQuestion.question.year"> · {{ selectedQuestion.question.year }}{{ selectedQuestion.question.variant ? ` ${selectedQuestion.question.variant}` : '' }}</template></p>
             </div>
             <dl>
               <div><dt>STATE</dt><dd>{{ selectedQuestion.question.review_overdue ? 'OVERDUE REVIEW' : selectedQuestion.question.state === 'mastered' ? 'MASTERED' : selectedQuestion.question.state === 'review' ? 'REVIEW' : 'NOT STARTED' }}</dd></div>

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { uiText } from '../lib/uiText'
 import { ref } from 'vue'
 import { api } from '../lib/api'
 import type { QuestionDetail } from '../types'
@@ -28,11 +29,11 @@ async function load(event: Event) {
 
 <template>
   <details class="original-answer" @toggle="load">
-    <summary>查看完整版答案（原始解析全部保留）</summary>
-    <p v-if="loading" role="status">正在加载完整版答案…</p>
-    <p v-if="error" role="alert">{{ error }}</p>
+    <summary>{{ uiText("查看完整版答案（原始解析全部保留）") }}</summary>
+    <p v-if="loading" role="status">{{ uiText("正在加载完整版答案…") }}</p>
+    <p v-if="error" role="alert">{{ uiText(error) }}</p>
     <div v-if="answer" class="original-answer-pages">
-      <img v-for="asset in answer.answer_assets" :key="asset.id" :src="withWorkspacePrefix(asset.url)" :width="asset.width" :height="asset.height" alt="完整版答案页面" loading="lazy" decoding="async" />
+      <img v-for="asset in answer.answer_assets" :key="asset.id" :src="withWorkspacePrefix(asset.url)" :width="asset.width" :height="asset.height" :alt="uiText('完整版答案页面')" loading="lazy" decoding="async" />
       <MarkdownAnswer v-if="answer.answer_markdown" :source="answer.answer_markdown" />
     </div>
   </details>
