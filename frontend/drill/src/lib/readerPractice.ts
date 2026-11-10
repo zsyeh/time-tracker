@@ -4,6 +4,7 @@ export interface ReaderPracticeControls {
   mode: NextQuestionMode
   canPrevious: boolean
   canNext: boolean
+  answerActive?: boolean
   canAnswer: boolean
   busy: boolean
   masteredAutoNext: boolean

@@ -194,7 +194,11 @@ async function readerAction(action: ReaderPracticeAction) {
   else if (action === 'next') await goToNext(nextMode.value)
   else if (action === 'mastered') await record('correct')
   else if (action === 'review') await record('review')
-  else if (action === 'answer' && readerKind.value === 'question') {
+  else if (action === 'answer') {
+    if (readerKind.value !== 'question') {
+      await openReader('question')
+      return
+    }
     const original = question.value?.original_source?.has_answer && (question.value.answer_scope === 'source_paper' || (!question.value.has_answer && !question.value.answer_markdown))
     await openReader(original ? 'original' : 'answer')
   }
@@ -202,7 +206,7 @@ async function readerAction(action: ReaderPracticeAction) {
 
 function navigateToQuestion(uuid: string | null, direction: 'previous' | 'next', copyArmed = false) {
   if (!uuid) return
-  pendingFullscreenTarget.value = isReaderOpen() || (direction === 'next' && nextAutoFullscreen.value) ? uuid : null
+  pendingFullscreenTarget.value = isReaderOpen() ? uuid : null
   if (pendingFullscreenTarget.value) {
     readerSequence += 1
     readerNavigating.value = true
@@ -284,12 +288,10 @@ const autoCopyImage = computed({
 })
 const reviewAutoNext = ref(localStorage.getItem('drill.review-auto-next.v1') === 'true')
 const masteredAutoNext = ref(localStorage.getItem('drill.mastered-auto-next.v1') !== 'false')
-const nextAutoFullscreenKey = `${runtimeWorkspace}.next-auto-fullscreen.v1`
-const nextAutoFullscreen = ref(localStorage.getItem(nextAutoFullscreenKey) === 'true')
-watch(nextAutoFullscreen, value => localStorage.setItem(nextAutoFullscreenKey, String(value)))
 const readerControls = computed<ReaderPracticeControls>(() => ({
   mode: nextMode.value,
   canPrevious: Boolean(topPreviousTarget.value), canNext: Boolean(topNextTarget.value),
+  answerActive: readerKind.value !== 'question',
   canAnswer: Boolean(question.value?.has_answer || question.value?.answer_markdown || question.value?.original_source?.has_answer),
   busy: saving.value || nextLoading.value || loading.value || readerNavigating.value || readerPreparing.value || !question.value,
   masteredAutoNext: masteredAutoNext.value, reviewAutoNext: reviewAutoNext.value,
@@ -1359,7 +1361,6 @@ onBeforeRouteLeave(() => {
               <label><input v-model="reviewAutoNext" type="checkbox">{{ uiText("待复习后切题") }}</label>
               <label><input v-model="autoCopyLink" type="checkbox">{{ uiText("翻题复制链接") }}</label>
               <label><input v-model="autoCopyImage" type="checkbox">{{ uiText("翻题复制题图") }}</label>
-              <label class="auto-fullscreen-option"><input v-model="nextAutoFullscreen" type="checkbox">{{ typeText('下一题后自动全屏', 'Open next question full screen') }}</label>
             </div>
             <small>{{ uiText("复制选项二选一；前后翻题均生效。") }}</small>
           </section>
@@ -1391,7 +1392,6 @@ onBeforeRouteLeave(() => {
 .page-turn-settings-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
 .page-turn-settings-grid label { display: flex; align-items: center; gap: 7px; min-width: 0; min-height: 36px; padding: 5px 7px; border: 1px solid var(--border-default); border-radius: 6px; color: var(--text-secondary); background: var(--bg-sidebar); font-size: 11px; line-height: 1.2; cursor: pointer; }
 .page-turn-settings-grid label:has(input:checked) { border-color: var(--accent); color: var(--text-primary); background: var(--accent-muted); }
-.page-turn-settings-grid .auto-fullscreen-option { grid-column: 1 / -1; }
 .page-turn-settings-grid input { flex: none; width: 15px; height: 15px; margin: 0; accent-color: var(--accent); }
 .page-turn-settings > small { color: var(--text-tertiary); font-size: 10px; line-height: 1.35; }
 .diagnosis-status { margin-top: 3px; color: var(--text-tertiary); font-size: 10px; font-weight: 600; }

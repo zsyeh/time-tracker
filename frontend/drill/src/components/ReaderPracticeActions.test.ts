@@ -43,3 +43,18 @@ it('updates route colors, labels and automatic-jump markers from the live page p
   expect(mastered.querySelectorAll('path')).toHaveLength(1)
   expect(mastered.getAttribute('title')).toBe('Mastered')
 })
+
+it('announces the answer toggle state and keeps both directions available', async () => {
+  const { controls, action } = await mount()
+  const button = host.querySelector<HTMLButtonElement>('[data-action=answer]')!
+  expect(button.getAttribute('aria-pressed')).toBe('false')
+  expect(button.getAttribute('aria-label')).toBe('Show answer')
+  button.click()
+  controls.answerActive = true; await nextTick()
+  expect(button.getAttribute('aria-pressed')).toBe('true')
+  expect(button.getAttribute('aria-label')).toBe('Back to question')
+  button.click()
+  expect(action.mock.calls).toEqual([['answer'], ['answer']])
+  uiLanguage.value = 'zh-CN'; await nextTick()
+  expect(button.getAttribute('aria-label')).toBe('返回题目')
+})
