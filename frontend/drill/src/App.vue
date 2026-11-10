@@ -60,7 +60,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="drill-shell" :class="{ 'drawer-open': sidebarOpen, 'sidebar-collapsed': sidebarCollapsed, 'ei-workspace': isEi }">
+  <div class="drill-shell" :class="{ 'drawer-open': sidebarOpen, 'sidebar-collapsed': sidebarCollapsed, 'ei-workspace': isEi, 'question-route': route.name === 'question' }">
     <button class="drawer-toggle" type="button" aria-label="Open navigation" aria-controls="drill-navigation" :aria-expanded="sidebarOpen" @click="sidebarOpen = true"><span /><span /><span /></button>
     <button class="sidebar-expand" type="button" aria-label="Show sidebar" title="Show sidebar" @click="setSidebarCollapsed(false)"><span /><span /><span /></button>
     <button v-if="sidebarOpen" class="drawer-backdrop" type="button" aria-label="Close navigation" @click="sidebarOpen = false" />

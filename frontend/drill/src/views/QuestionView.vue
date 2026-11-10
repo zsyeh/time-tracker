@@ -4,7 +4,7 @@ import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router'
 import { api, ApiError, post, remove } from '../lib/api'
 import { cachedNoteDraft, cachedQuestion, clearNoteDraft, fetchQuestion, patchQuestionState, prefetchQuestion, storeNoteDraft, warmQuestionMedia } from '../lib/workspace'
-import type { AttemptDiagnosis, ErrorCode, QuestionDetail, QuestionMarkerCode, QuestionSummary } from '../types'
+import type { AttemptDiagnosis, ErrorCode, QuestionDetail, QuestionSummary } from '../types'
 import ExamTypeEditor from '../components/ExamTypeEditor.vue'
 import NoteVisibility from '../components/NoteVisibility.vue'
 import { typeText } from '../lib/examTypes'
@@ -25,12 +25,6 @@ const { t } = useUiPreferences()
 const router = useRouter()
 const route = useRoute()
 const note = ref('')
-const markerOptions: Array<{ code: QuestionMarkerCode; label: string }> = [
-  { code: 'overconfident', label: '过度自信' },
-  { code: 'concept_gap', label: '概念缺口' },
-  { code: 'rusty', label: '生疏' },
-  { code: 'forgotten', label: '遗忘' },
-]
 const errorOptions: Array<{ code: ErrorCode; label: string; group: string }> = [
   { code: 'A', label: '知识断层', group: 'A' },
   { code: 'B1', label: '想不起来', group: 'B' },
@@ -188,7 +182,6 @@ const diagnosisSaveState = ref<'idle' | 'draft' | 'saving' | 'saved' | 'error'>(
 const stateSaving = ref(false)
 const noteSaveState = ref<'idle' | 'dirty' | 'saving' | 'saved' | 'error'>('idle')
 const noteOpen = ref(false)
-const markerSaving = ref(false)
 const nextLoading = ref(false)
 const erratumOpen = ref(false)
 const erratumKind = ref('crop')
@@ -941,22 +934,6 @@ async function saveNote() {
   }
 }
 
-async function saveMarkers(codes: QuestionMarkerCode[]) {
-  if (!question.value) return
-  const uuid = props.uuid
-  markerSaving.value = true
-  try {
-    const response = await post<{ markers: QuestionMarkerCode[] }>(`/api/drill/questions/${uuid}/markers/`, { codes })
-    patchQuestionState(uuid, { markers: response.markers })
-    if (props.uuid !== uuid || !question.value || question.value.uuid !== uuid) return
-    question.value.markers = response.markers
-  } catch (reason) {
-    if (props.uuid === uuid) error.value = (reason as Error).message
-  } finally {
-    if (props.uuid === uuid) markerSaving.value = false
-  }
-}
-
 async function submitErratum() {
   const description = erratumDescription.value.trim()
   if (!description || erratumSaving.value) return
@@ -973,14 +950,6 @@ async function submitErratum() {
   } finally {
     if (props.uuid === uuid) erratumSaving.value = false
   }
-}
-
-function toggleMarker(code: QuestionMarkerCode) {
-  if (!question.value) return
-  const active = question.value.markers.includes(code)
-  void saveMarkers(active
-    ? question.value.markers.filter((item) => item !== code)
-    : [...question.value.markers, code])
 }
 
 async function undo() {
@@ -1070,7 +1039,6 @@ watch(() => props.uuid, (_uuid, previousUuid) => {
   operationSequence += 1
   saving.value = false
   stateSaving.value = false
-  markerSaving.value = false
   similarLoading.value = false
   nextLoading.value = false
   window.clearTimeout(diagnosisSaveTimer)
@@ -1153,12 +1121,6 @@ onBeforeRouteLeave(() => {
         <button type="button" :class="{ active: erratumOpen }" @click="erratumOpen = !erratumOpen"><b>!</b>{{ uiText("提交勘误") }}</button>
       </div>
 
-      <section v-if="erratumOpen" class="erratum-compose">
-        <header><div><strong>{{ uiText("提交勘误") }}</strong><small>{{ uiText("同一工作区的用户都可以看到。") }}</small></div><RouterLink to="/errata">{{ uiText("查看全部勘误 →") }}</RouterLink></header>
-        <div><select v-model="erratumKind" :aria-label="uiText('勘误类型')"><option value="crop">{{ uiText("图片或裁切") }}</option><option value="question">{{ uiText("题目内容") }}</option><option value="answer">{{ uiText("答案或解析") }}</option><option value="formula">{{ uiText("公式显示") }}</option><option value="metadata">{{ uiText("标签或知识点") }}</option><option value="other">{{ uiText("其他") }}</option></select><textarea v-model="erratumDescription" maxlength="4000" :placeholder="uiText('说明错误内容；如已知，也请写出正确内容。')" /></div>
-        <footer><span :class="{ error: erratumMessage && !erratumMessage.startsWith('勘误已提交') }">{{ uiText(erratumMessage) }}</span><button type="button" :disabled="erratumSaving || !erratumDescription.trim()" @click="submitErratum">{{ erratumSaving ? uiText("正在提交…") : uiText("提交勘误") }}</button></footer>
-      </section>
-
       <div class="question-workbench">
         <div class="question-problem-pane">
           <p v-if="question.source_review_warning" role="note" class="source-review-warning">{{ question.source_review_warning }}</p>
@@ -1172,7 +1134,7 @@ onBeforeRouteLeave(() => {
             <span v-if="imageCopyMessage" :class="{ error: imageCopyState === 'fallback' }">{{ uiText(imageCopyMessage) }}</span>
             <template v-if="imageCopyState === 'fallback'"><button type="button" @click="shareQuestionImage">{{ uiText("系统分享") }}</button><button type="button" @click="downloadQuestionImage">{{ uiText("下载 PNG") }}</button></template>
           </div>
-          <article class="question-canvas" :class="{ 'source-canvas': question.source_context, 'individual-source-canvas': question.original_source }">
+          <article class="question-canvas" :class="{ 'source-canvas': question.source_context, 'individual-source-canvas': question.original_source, 'fit-question-images': !question.source_context && questionAssets(question).length > 0 }">
             <SourcePaperViewer v-if="question.source_context" ref="sourceViewer" :question="question" @select="selectSourceQuestion" />
             <template v-else>
               <template v-for="asset in questionAssets(question)" :key="asset.id">
@@ -1182,6 +1144,15 @@ onBeforeRouteLeave(() => {
             </template>
             <MarkdownAnswer v-if="!questionAssets(question).length" class="question-markdown" :source="question.prompt_text" />
           </article>
+
+        </div>
+
+        <aside class="question-control-pane" tabindex="0" :aria-label="typeText('作答与笔记', 'Answers and notes')">
+          <section v-if="erratumOpen" class="erratum-compose">
+            <header><div><strong>{{ uiText("提交勘误") }}</strong><small>{{ uiText("同一工作区的用户都可以看到。") }}</small></div><RouterLink to="/errata">{{ uiText("查看全部勘误 →") }}</RouterLink></header>
+            <div><select v-model="erratumKind" :aria-label="uiText('勘误类型')"><option value="crop">{{ uiText("图片或裁切") }}</option><option value="question">{{ uiText("题目内容") }}</option><option value="answer">{{ uiText("答案或解析") }}</option><option value="formula">{{ uiText("公式显示") }}</option><option value="metadata">{{ uiText("标签或知识点") }}</option><option value="other">{{ uiText("其他") }}</option></select><textarea v-model="erratumDescription" maxlength="4000" :placeholder="uiText('说明错误内容；如已知，也请写出正确内容。')" /></div>
+            <footer><span :class="{ error: erratumMessage && !erratumMessage.startsWith('勘误已提交') }">{{ uiText(erratumMessage) }}</span><button type="button" :disabled="erratumSaving || !erratumDescription.trim()" @click="submitErratum">{{ erratumSaving ? uiText("正在提交…") : uiText("提交勘误") }}</button></footer>
+          </section>
 
           <section v-if="(question.has_answer || question.answer_markdown) && !(question.original_source?.has_answer && question.answer_scope === 'source_paper')" class="official-answer">
             <button class="answer-toggle" :aria-expanded="answerOpen" @click="toggleAnswer">
@@ -1204,9 +1175,7 @@ onBeforeRouteLeave(() => {
           <p v-if="question.original_source?.has_answer && question.answer_scope === 'source_paper'" class="source-paper-help">{{ uiText("本题答案尚待逐题核对，请先查看完整版答案；不会将未确认的解析错配到本题。") }}</p>
           <OriginalAnswer v-if="question.original_source?.has_answer" :key="question.original_source.uuid + question.uuid" :uuid="question.original_source.uuid" @opened="answerViewedThisRound = true" />
           <p v-else-if="question.original_source && !question.has_answer && !question.answer_markdown" class="source-paper-help">{{ uiText("原始资料未提供参考答案，暂不生成或猜测答案。") }}</p>
-        </div>
 
-        <aside class="question-control-pane">
           <section v-if="question.source_context" class="source-current-question">
             <strong>{{ uiText("当前记录：") }}{{ question.display_label }}</strong>
             <small>{{ uiText("下方掌握 / 待复习 / 笔记仅保存到这一题。") }}</small>
@@ -1256,7 +1225,6 @@ onBeforeRouteLeave(() => {
           </div>
           </section>
 
-          <details v-if="question.source_label && question.source_label !== question.display_label" class="raw-provenance"><summary>{{ uiText("查看原始导入标签") }}</summary><code>{{ question.source_label }}</code></details>
 
           <button class="similar-trigger" @click="showSimilar"><span>{{ uiText("练习相似题") }}</span><small>{{ uiText("同一已索引知识点") }}</small><b>{{ similarOpen ? '↓' : '→' }}</b></button>
           <section v-if="similarOpen" class="similar-panel">
@@ -1269,11 +1237,6 @@ onBeforeRouteLeave(() => {
             <p v-else-if="similarLoading">{{ uiText("正在加载相似题…") }}</p>
             <button v-for="item in similar" :key="item.uuid" @click="router.push({ path: `/practice/${item.uuid}`, query: questionRouteQuery() })"><span>{{ item.display_label || `题目 ${item.question_order}` }}</span><small>{{ item.document }} · {{ item.state }} · {{ item.attempt_count }} {{ uiText("次作答") }}</small><b>→</b></button>
             <p v-if="similarKind && !similarLoading && !similar.length">{{ uiText("该知识点下暂无此题源类型的题目。") }}</p>
-          </section>
-
-          <section class="learning-markers">
-            <header><div><span>{{ uiText("学习标记") }}</span><small>{{ uiText("独立于题目状态，可多选。") }}</small></div><div><button type="button" :disabled="markerSaving" @click="saveMarkers(markerOptions.map((item) => item.code))">{{ uiText("全选") }}</button><button type="button" :disabled="markerSaving || !question.markers.length" @click="saveMarkers([])">{{ uiText("清空") }}</button></div></header>
-            <div><button v-for="marker in markerOptions" :key="marker.code" type="button" :class="{ active: question.markers.includes(marker.code) }" :disabled="markerSaving" @click="toggleMarker(marker.code)">{{ marker.label }}</button></div>
           </section>
 
           <section class="page-turn-settings" :aria-label="uiText('翻题偏好')">
@@ -1361,4 +1324,26 @@ onBeforeRouteLeave(() => {
 .attempt-history p { margin: 4px 0; color: var(--text-secondary); font-size: 10px; }
 @media (max-width: 720px) { .diagnosis-advanced { grid-template-columns: 1fr; } .diagnosis-advanced .correction-field { grid-column: auto; } }
 @media (max-width: 900px) { .action-feedback { bottom: calc(env(safe-area-inset-bottom) + 78px); max-width: calc(100vw - 24px); white-space: normal; text-align: center; } }
+/* Compact diagnosis: two rows of error codes, without changing selection or autosave. */
+.diagnosis-panel { gap: 5px; padding: 6px; }
+.diagnosis-panel > header { align-items: center; gap: 5px; }
+.diagnosis-panel > header > div:first-child { display: flex; flex-wrap: wrap; align-items: center; gap: 3px 6px; min-width: 0; }
+.diagnosis-panel > header span { font-size: 11px; line-height: 1.2; }
+.diagnosis-status { margin-top: 0; font-size: 9px; }
+.diagnosis-panel > header button { min-height: 28px; padding: 3px 5px; font-size: 10px; border-radius: 5px; }
+.diagnosis-actions { flex-shrink: 0; gap: 3px; }
+.diagnosis-body { gap: 5px; }
+.independence-flags { gap: 4px; }
+.independence-flags button { min-height: 28px; padding: 3px 5px; font-size: 10px; }
+.independence-flags span { font-size: 10px; line-height: 1.25; }
+.error-picker { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
+.error-picker button { min-width: 0; min-height: 40px; padding: 3px 2px; gap: 2px; flex-direction: column; justify-content: center; text-align: center; border-radius: 5px; }
+.error-picker button b { min-width: 0; font-size: 10px; line-height: 1.1; }
+.error-picker button span { font-size: 10px; line-height: 1.15; overflow-wrap: anywhere; }
+.diagnosis-advanced { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+.diagnosis-advanced label { min-width: 0; gap: 2px; font-size: 9px; }
+.diagnosis-advanced select { width: 100%; min-height: 28px; padding: 3px 1px; font-size: 10px; }
+.primary-help { font-size: 10px; }
+.primary-help select { max-width: 75%; min-height: 28px; padding: 2px; }
+.diagnosis-body > footer { display: flex; flex-wrap: wrap; gap: 4px; font-size: 10px; }
 </style>

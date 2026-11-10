@@ -852,3 +852,71 @@ button { color: inherit; }
 .route-error-page p,.question-load-error p{color:var(--text-secondary);line-height:1.7}
 .route-error-page>div,.question-load-error>div{display:flex;flex-wrap:wrap;gap:10px;margin-top:24px}
 .route-error-page button,.route-error-page a,.question-load-error button{min-height:44px;padding:10px 16px;border:1px solid var(--border-default);border-radius:8px;color:var(--text-primary);background:var(--bg-sidebar);cursor:pointer;text-decoration:none}
+
+/* Large landscape question workspace: the viewport stays still while controls scroll. */
+@media (min-width: 1000px) and (min-height: 500px) and (orientation: landscape) {
+  html:has(.drill-shell.question-route), body:has(.drill-shell.question-route) {
+    height: 100%; overflow: hidden; overscroll-behavior: none;
+  }
+  .drill-shell.question-route { height: 100vh; height: 100dvh; min-height: 0; overflow: hidden; }
+  .question-route > main { height: 100%; min-height: 0; overflow: hidden; }
+  .question-route .drill-sidebar { height: 100vh; height: 100dvh; min-height: 0; }
+  .question-route .question-page.page {
+    height: 100%; min-height: 0; padding: 8px 0 max(8px, env(safe-area-inset-bottom));
+    display: flex; flex-direction: column; overflow: hidden;
+  }
+  .question-route .question-page > * { flex-shrink: 0; }
+  .question-route .question-topbar { position: relative; top: auto; margin-top: 0; min-height: 42px; padding: 3px 0; }
+  .question-route .question-header { margin-bottom: 6px; padding: 4px 0; }
+  .question-route .question-header h1 { margin: 2px 0; font-size: clamp(18px, 1.6vw, 24px); }
+  .question-route .question-save-actions { margin-bottom: 6px; }
+  .question-route .question-workbench {
+    flex: 1 1 0; min-height: 0; grid-template-columns: minmax(0, 1fr) clamp(300px, 32vw, 440px);
+    align-items: stretch; overflow: hidden;
+  }
+  .question-route .question-problem-pane { min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+  .question-route .question-problem-pane > :not(.question-canvas) { flex-shrink: 0; }
+  .question-route .question-canvas {
+    flex: 1 1 0; min-height: 0; padding: 12px; overflow: auto; overscroll-behavior: contain;
+  }
+  .question-route .question-canvas.fit-question-images { display: flex; flex-direction: column; gap: 8px; overflow: hidden; }
+  .question-route .fit-question-images > img { flex: 1 1 0; min-height: 0; width: 100%; height: 100%; max-height: 100%; object-fit: contain; }
+  .question-route .question-control-pane {
+    position: static; height: 100%; min-height: 0; max-height: none; overflow-y: auto; overflow-x: hidden;
+    padding: 0 5px 12px 0; overscroll-behavior-y: contain; -webkit-overflow-scrolling: touch;
+    scrollbar-gutter: stable; touch-action: pan-y pinch-zoom;
+  }
+  .question-route .question-control-pane:focus-visible { outline: 1px solid var(--accent); outline-offset: -1px; }
+  .question-route .question-control-pane > .official-answer { margin-top: 0; margin-bottom: 8px; }
+  .question-route .unified-answer-actions { position: static; }
+}
+
+/* Controls must never acquire a horizontal scroll surface, including long notes/formulas. */
+.question-control-pane { overflow-x: clip; overflow-wrap: anywhere; }
+.question-control-pane > *, .question-control-pane :is(input, textarea, select, pre, table) { min-width: 0; max-width: 100%; }
+.question-control-pane :is(input, textarea, select) { box-sizing: border-box; }
+.question-control-pane pre { white-space: pre-wrap; overflow-wrap: anywhere; }
+.question-control-pane table { width: 100%; table-layout: fixed; }
+.question-control-pane .erratum-compose > div { grid-template-columns: repeat(auto-fit, minmax(min(100%, 110px), 1fr)); }
+@media (min-width: 1000px) and (min-height: 500px) and (orientation: landscape) {
+  .question-route .question-control-pane { overflow-x: hidden; }
+}
+
+@media (min-width: 1000px) and (min-height: 500px) and (orientation: landscape) {
+  .question-route .question-header { align-items: center; gap: 10px; padding: 4px 0; margin-bottom: 4px; }
+  .question-route .question-header > div:first-child { flex: 1; display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 2px 8px; }
+  .question-route .question-header .eyebrow { display: none; }
+  .question-route .question-header h1 { grid-column: 1; margin: 0; overflow: hidden; font-size: 16px; line-height: 1.25; text-overflow: ellipsis; white-space: nowrap; }
+  .question-route .question-header p { grid-column: 1; font-size: 10px; line-height: 1.2; }
+  .question-route .question-badges { grid-column: 2; grid-row: 1 / 3; margin: 0; gap: 4px; }
+  .question-route .attempt-counter { min-width: 0; padding-left: 8px; display: grid; grid-template-columns: auto auto; align-items: center; column-gap: 8px; }
+  .question-route .attempt-counter > span { display: none; }
+  .question-route .attempt-counter strong { grid-column: 1; grid-row: 1 / 3; margin: 0; font-size: 11px; }
+  .question-route .attempt-counter small { grid-column: 2; margin: 0; font-size: 8px; line-height: 1.4; }
+  .question-route .question-save-actions { gap: 4px; margin-bottom: 5px; }
+  .question-route .question-save-actions button { min-height: 28px; padding: 0 7px; font-size: 10px; }
+}
+@media (min-width: 1000px) and (min-height: 500px) and (orientation: landscape) {
+  /* Legacy full-paper views and long text retain access inside the canvas. */
+  .question-route .question-problem-pane .question-canvas.source-canvas { overflow: auto; }
+}
