@@ -8,6 +8,7 @@ function testRouter() {
 
 describe('application route resources', () => {
   it.each([
+    ['/', 'today'],
     ['/today', 'today'],
     ['/trends', 'trends'],
     ['/sessions', 'sessions'],
@@ -20,8 +21,11 @@ describe('application route resources', () => {
     expect(router.resolve(path).name).toBe(name)
   })
 
-  it('redirects the legacy root to Today', () => {
-    expect(routes.find((route) => route.path === '/')?.redirect).toBe('/today')
+  it('serves Today at root without redirecting and retains the /today alias', () => {
+    const root = routes.find((route) => route.path === '/')
+    expect(root?.redirect).toBeUndefined()
+    expect(root?.alias).toBe('/today')
+    expect(testRouter().resolve('/?active=123').fullPath).toBe('/?active=123')
   })
 
   it('marks only the public share route as anonymous', () => {

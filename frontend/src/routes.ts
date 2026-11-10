@@ -1,8 +1,7 @@
 import type { RouteRecordRaw } from 'vue-router'
 
 export const routes: RouteRecordRaw[] = [
-  { path: '/', redirect: '/today' },
-  { path: '/today', name: 'today', component: () => import('./views/TodayView.vue') },
+  { path: '/', alias: '/today', name: 'today', component: () => import('./views/TodayView.vue') },
   { path: '/trends', name: 'trends', component: () => import('./views/TrendsView.vue') },
   { path: '/sessions', name: 'sessions', component: () => import('./views/HistoryView.vue') },
   {
