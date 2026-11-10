@@ -138,9 +138,15 @@ defineExpose({ open, close, isOpen: computed(() => opened.value) })
 <style scoped>
 .fullscreen-trigger { flex: none; display: inline-grid; place-items: center; width: 28px; min-height: 28px; padding: 4px; border: 1px solid var(--border-default); border-radius: 5px; color: var(--text-secondary); background: var(--bg-sidebar); cursor: pointer; }
 .fullscreen-trigger:hover { color: var(--accent); border-color: var(--accent); }
-.fullscreen-reader { position: fixed; inset: 0; width: 100%; max-width: none; height: 100vh; height: 100dvh; max-height: none; margin: 0; padding: 0; border: 0; color: var(--text-primary); background: var(--bg-main); overflow: hidden; }
+.fullscreen-reader { position: fixed; inset: 0; width: 100%; max-width: none; height: 100vh; height: 100dvh; max-height: none; margin: 0; padding: 0; border: 0; color: var(--text-primary); background: transparent; overflow: hidden; }
 .fullscreen-reader[open] { display: flex; flex-direction: column; }
-.fullscreen-reader::backdrop { background: #000b; }
+/* The native modal top layer keeps this backdrop below all reader content.
+   Keep the dialog transparent so the frosted page remains visible around images. */
+.fullscreen-reader::backdrop {
+  background: rgba(0, 0, 0, 0.55);
+  -webkit-backdrop-filter: blur(6px);
+  backdrop-filter: blur(6px);
+}
 .reader-toolbar { flex: none; display: flex; align-items: center; gap: 10px; min-height: 48px; padding: max(6px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) 6px max(10px, env(safe-area-inset-left)); border-bottom: 1px solid var(--border-default); background: var(--bg-surface); }
 .reader-toolbar strong { min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
 .reader-count { flex: none; color: var(--text-secondary); font-size: 11px; font-variant-numeric: tabular-nums; }
