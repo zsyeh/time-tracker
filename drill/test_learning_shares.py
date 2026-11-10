@@ -1,3 +1,4 @@
+import base64
 import datetime as dt
 import hashlib
 import io
@@ -81,7 +82,12 @@ class LearningShareTests(TestCase):
         self.assertEqual(accelerated.content, b'')
         self.assertEqual(self.public(item['assets'][0]['url'].replace(self.asset.sha256, '0' * 64)).status_code, 404)
         self.assertEqual(self.public(data['url'].replace('index.md', f'assets/{self.asset.pk}/{self.asset.sha256}'), host='ei.ehzsy.site').status_code, 404)
-        self.assertEqual(self.public(data['url'].replace('index.md', '')).status_code, 200)
+        html = self.public(data['url'].replace('index.md', ''))
+        self.assertContains(html, '* { touch-action: manipulation; }')
+        css = html.content.decode().split('<style>', 1)[1].split('</style>', 1)[0]
+        digest = base64.b64encode(hashlib.sha256(css.encode()).digest()).decode()
+        self.assertIn(f"style-src 'sha256-{digest}'", html['Content-Security-Policy'])
+        self.assertIn("default-src 'none'", html['Content-Security-Policy'])
         exported = self.public(data['url'].replace('index.md', 'export.md')).content.decode()
         self.assertIn('private current note', exported)
         self.assertNotIn('another user note', exported)

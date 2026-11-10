@@ -36,6 +36,8 @@ it('opens a modal with ordered pages, locks background scrolling and restores it
 it('supports zoom, image retry, live language changes and cleanup during navigation', async () => {
   const { dialog } = await mount()
   host.querySelector('button')!.click(); await flush()
+  dialog.querySelector('img')!.dispatchEvent(new MouseEvent('dblclick', { bubbles: true })); await flush()
+  expect(dialog.querySelector<HTMLElement>('.reader-document')!.style.width).toBe('100%')
   dialog.querySelector<HTMLButtonElement>('[aria-label="Zoom in"]')!.click(); await flush()
   expect(dialog.querySelector<HTMLElement>('.reader-document')!.style.width).toBe('125%')
   dialog.querySelector('img')!.dispatchEvent(new Event('error')); await flush()

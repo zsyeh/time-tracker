@@ -1,4 +1,5 @@
 """Read-only, expiring Drill/EI learning exports. A token never grants writes."""
+import base64
 import datetime as dt
 import hashlib
 import json
@@ -13,6 +14,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Q
 from django.http import Http404, HttpResponse, HttpResponseNotAllowed, HttpResponseNotModified, JsonResponse
 from django.shortcuts import get_object_or_404
+from django.template.loader import render_to_string
 from django.utils import timezone
 from django.views.decorators.http import require_http_methods
 
@@ -526,12 +528,18 @@ def public_learning_share(request, token, resource=''):
     if resource == '':
         links = ''.join(f'<li><a href="{escape(url, quote=True)}">{escape(name)}</a></li>'
                         for name, url in resources.items())
+        touch_style = render_to_string('includes/touch_style.html')
+        css = touch_style.split('<style>', 1)[1].split('</style>', 1)[0]
+        style_hash = base64.b64encode(hashlib.sha256(css.encode()).digest()).decode()
         html = (f'<!doctype html><html lang="zh-CN"><meta charset="utf-8">'
+                f'<meta name="viewport" content="width=device-width,initial-scale=1">{touch_style}'
                 f'<meta name="robots" content="noindex,nofollow"><title>AI 学习数据分享</title>'
                 f'<h1>{escape(share.workspace.upper())} AI 学习数据分享</h1>'
                 f'<p>到期：{escape(share.expires_at.isoformat())}。此链接只允许读取所选学习数据。</p>'
                 f'<p>从 index.md 开始，再按目录逐层阅读。</p><ul>{links}</ul></html>')
-        return _headers(HttpResponse(html, content_type='text/html; charset=utf-8'))
+        response = _headers(HttpResponse(html, content_type='text/html; charset=utf-8'))
+        response['Content-Security-Policy'] += f"; style-src 'sha256-{style_hash}'"
+        return response
     if resource in ('', 'index.md', 'manifest.json'):
         items, books = _directory(request, share, token)
         subjects = _subjects(items, books, share.workspace, base)

@@ -123,7 +123,7 @@ defineExpose({ open, close, isOpen: computed(() => opened.value) })
           <button v-if="retryable" type="button" class="reader-retry" @click="emit('retry')">{{ typeText('重新加载此题', 'Reload question') }}</button>
           <div v-show="!pending" class="reader-document" :style="{ width: `${zoom}%`, maxWidth: `${12 * zoom}px` }">
             <figure v-for="(item, index) in images" :key="index" :data-reader-page="index + 1">
-              <img v-if="!failed[index]" :src="src(item, index)" :width="item.width" :height="item.height" :alt="`${title} · ${index + 1}`" :loading="index === 0 ? 'eager' : 'lazy'" decoding="async" @error="failed[index] = true" @dblclick="setZoom(zoom === 100 ? 175 : 100)" />
+              <img v-if="!failed[index]" :src="src(item, index)" :width="item.width" :height="item.height" :alt="`${title} · ${index + 1}`" :loading="index === 0 ? 'eager' : 'lazy'" decoding="async" @error="failed[index] = true" />
               <button v-else type="button" class="reader-retry" @click="retry(index)">{{ typeText('图片加载失败，点击重试', 'Image failed to load · retry') }}</button>
               <figcaption v-if="images.length > 1">{{ index + 1 }} / {{ images.length }}</figcaption>
             </figure>
