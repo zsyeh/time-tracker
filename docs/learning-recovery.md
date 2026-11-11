@@ -89,3 +89,6 @@ Manifest 的 id/scope 仍为 `/`，start_url 改为 `/?pwa_launch=1`。只有统
 另保留既有完整全库备份。磁盘整理时，它被无损压缩为 `backups/examtypes-20261110/pre-examtypes.dump.gz`；47 上压缩副本、本机异地完整副本的解压内容 SHA-256 均与原始全库文件一致。原始未压缩文件与更早的 11 月 5 日恢复点已经清理。恢复完整备份时需先解开 gzip 外层，再交给 pg_restore；不能用旧全库覆盖上线后新增的学习记录。当前功能的回滚仍使用保留的恢复元数据导出及反向迁移流程。
 
 运维日志已限制占用：journald 上限 256MB；FRPS nohup 日志每小时检查 16MB 阈值，保留 3 份压缩归档。未删除业务数据、当前镜像或最近回滚镜像。实际 iPadOS 的锁屏、系统回收与 standalone 行为仍需实机验收。
+
+
+后续计时冲突兼容性补丁已部署为 `fc16557` / `time-tracker-ha:20261111-timer-conflict-fc16557`，数据库仍为0035；包含明确同步结果、安全重连、显式无计时保存和待确认Attempt的幂等恢复，详见 [计时冲突恢复](timer-conflict-recovery.md)。不需要重做本文件描述的历史迁移。

@@ -8,9 +8,11 @@
 
 ### 2026-11-11 基线补充
 
-最近一次已验证生产业务版本为 `ab234ed`，镜像 `time-tracker-ha:20261111-performance-trends-ab234ed-r2`，`drill` 迁移仍为 `0035_learning_recovery`；此前学习恢复版本为 `ab6040f` / `time-tracker-ha:20261111-learning-recovery`。GitHub 的 `master` 与功能分支已同步到后续文档提交 `7d5b312`。恢复机制及授权、备份范围、回滚限制见 [`docs/learning-recovery.md`](docs/learning-recovery.md)。较早的 11 月 5 日 dump 已清理，现有完整备份为 `backups/examtypes-20261110/pre-examtypes.dump.gz`，并有已验证的 NUC 异地副本；恢复时先解开 gzip 外层。以下 11 月 5 日表格与发布记录保留作历史参考，不能用其中的旧镜像、迁移号或 dump 路径推断当前状态。单一业务写入和数据保护约束继续有效。
+最近一次已验证生产业务版本为 `fc16557`，镜像 `time-tracker-ha:20261111-timer-conflict-fc16557`，`drill` 迁移仍为 `0035_learning_recovery`；此前学习恢复版本为 `ab6040f` / `time-tracker-ha:20261111-learning-recovery`。GitHub 的 `master` 与功能分支在本轮发布后从NUC同步；以远端提交及部署记录为准。恢复机制及授权、备份范围、回滚限制见 [`docs/learning-recovery.md`](docs/learning-recovery.md)。较早的 11 月 5 日 dump 已清理，现有完整备份为 `backups/examtypes-20261110/pre-examtypes.dump.gz`，并有已验证的 NUC 异地副本；恢复时先解开 gzip 外层。以下 11 月 5 日表格与发布记录保留作历史参考，不能用其中的旧镜像、迁移号或 dump 路径推断当前状态。单一业务写入和数据保护约束继续有效。
 
-本轮性能优化及严选趋势改造已于2026-11-11经用户授权部署；没有数据库迁移或Nginx配置变更。后续生产操作仍须另行授权。 实测数据、独立提交及追加的严选题净新增预测和横竖屏修复见 [短期性能与可靠性报告](docs/short-term-performance.md)。
+本轮性能优化、严选趋势、未做题导航及计时冲突修复已于2026-11-11经用户授权部署；没有数据库迁移或Nginx配置变更。后续生产操作仍须另行授权。 实测数据、独立提交及追加的严选题净新增预测和横竖屏修复见 [短期性能与可靠性报告](docs/short-term-performance.md)。
+
+计时冲突的安全恢复、显式无计时保存和幂等重试见 [计时冲突修复记录](docs/timer-conflict-recovery.md)。
 
 ### 当前版本与服务入口
 

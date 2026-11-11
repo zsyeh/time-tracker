@@ -202,3 +202,6 @@ python3 /var/snap/docker/common/time-tracker-ha/backups/performance-20261111/pro
 ```
 
 重新发布时不要省略collectstatic及静态资源校验。运行中的镜像保留既有启动参数，不自动运行迁移。GitHub尚未推送；这次只执行了用户授权的生产部署及本地文档更新。
+
+
+后续未做题双向导航新增普通范围的两个LIMIT 1查询，严选集合复用已有行数据、额外查询为0；对应查询数有独立回归测试。前文性能表是当时独立优化版本的测量，不代表加入新导航功能后的全部接口查询数。计时冲突后续修复与验证见 [计时冲突恢复](timer-conflict-recovery.md)。
