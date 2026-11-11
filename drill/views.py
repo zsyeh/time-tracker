@@ -50,25 +50,29 @@ def workspace_questions(request):
     return with_exam_type(Question.objects.filter(document__workspace=request_workspace(request)))
 
 
-def question_progress(queryset, user):
+def question_progress(queryset, user, *, include_latest=True):
     queryset = with_exam_type(queryset)
     latest = QuestionAttempt.objects.filter(
         user=user,
         question_id=OuterRef('pk'),
     ).order_by('-created_at', '-pk')
     user_state = QuestionUserState.objects.filter(user=user, question_id=OuterRef('pk'))
-    return queryset.annotate(
+    queryset = queryset.annotate(
         attempt_count=Count(
             'attempts',
             filter=Q(attempts__user=user, attempts__result__in=('done', 'correct', 'review')),
         ),
         state_change_count=Count('attempts', filter=Q(attempts__user=user)),
-        latest_result=Subquery(latest.values('result')[:1]),
-        latest_attempted_at=Subquery(latest.values('created_at')[:1]),
         is_favorite=Exists(user_state.filter(is_favorite=True)),
         review_later=Exists(user_state.filter(review_later=True)),
         saved_note=Subquery(user_state.values('note')[:1]),
     )
+    if include_latest:
+        queryset = queryset.annotate(
+            latest_result=Subquery(latest.values('result')[:1]),
+            latest_attempted_at=Subquery(latest.values('created_at')[:1]),
+        )
+    return queryset
 
 
 def summary_payload(question):
@@ -253,7 +257,6 @@ def navigation_with_latest_result(queryset, user):
     ).order_by('-created_at', '-pk')
     return queryset.annotate(
         next_latest_result=Subquery(latest.values('result')[:1]),
-        next_latest_at=Subquery(latest.values('created_at')[:1]),
     )
 
 
@@ -342,6 +345,58 @@ def unmastered_navigation(queryset, user):
         Q(next_latest_result__isnull=True)
         | Q(next_latest_result__in=('review', 'reset')),
     )
+
+
+def navigation_position(question, *, following):
+    """Compare the existing document/order/pk navigation key without materializing rows."""
+    lookup = 'gt' if following else 'lt'
+    return (
+        Q(**{f'document_id__{lookup}': question.document_id})
+        | Q(document_id=question.document_id, **{f'question_order__{lookup}': question.question_order})
+        | Q(document_id=question.document_id, question_order=question.question_order,
+            **{f'pk__{lookup}': question.pk})
+    )
+
+
+def ordinary_question_navigation(question, request):
+    scope = navigation_queryset(question, request)
+    if request.query_params.get('collection') in SELECTED_COLLECTIONS:
+        # Selected manifests produce complex filters. Repeated range lookups were
+        # slower in PostgreSQL benchmarks, so retain one bulk scope query here.
+        rows = list(navigation_with_latest_result(scope, request.user).values_list(
+            'pk', 'uuid', 'next_latest_result',
+        ))
+        position = next((i for i, row in enumerate(rows) if row[0] == question.pk), -1)
+        previous = rows[position - 1][1] if position > 0 else None
+        following = next_unmastered_question(question, request, rows)
+    else:
+        contains_current = scope.filter(pk=question.pk).exists()
+        previous = None
+        if contains_current:
+            previous = scope.filter(navigation_position(question, following=False)).order_by(
+                '-document_id', '-question_order', '-pk',
+            ).values_list('uuid', flat=True).first()
+            scope = scope.filter(navigation_position(question, following=True))
+        # The unattempted scope already restricts the same latest result to null/reset.
+        # Avoid repeating that correlated subquery a second time.
+        eligible = scope if request.query_params.get('unattempted') == '1' else unmastered_navigation(scope, request.user)
+        candidate = eligible.values_list('uuid', flat=True).first()
+        # Passing an empty list skips the already exhausted local scope while
+        # retaining the established cross-document/source fallback and wrap rules.
+        following = candidate or next_unmastered_question(question, request, [])
+    overdue = next_review_question(question, request, overdue=True)
+    review = next_review_question(question, request, overdue=False)
+    # Each forward lookup already wraps through the entire same eligible pool.
+    # If it found nothing, the reverse lookup cannot find a row either.
+    return {
+        'previous_question_uuid': str(previous) if previous else None,
+        'next_question_uuid': str(following) if following else None,
+        'sequential_next_question_uuid': next_sequential_question(question, request),
+        'next_overdue_review_uuid': overdue,
+        'next_review_uuid': review,
+        'previous_overdue_review_uuid': previous_review_question(question, request, overdue=True) if overdue else None,
+        'previous_review_uuid': previous_review_question(question, request, overdue=False) if review else None,
+    }
 
 
 def next_unmastered_question(question, request, navigation):
@@ -841,29 +896,34 @@ class DrillQuestionDetailView(APIView):
         question = get_object_or_404(
             question_progress(
                 workspace_questions(request).select_related(
-                    'document', 'topic', 'similarity_topic',
+                    'document', 'topic', 'similarity_topic', 'exam_type',
                 ).prefetch_related(Prefetch('assets', queryset=assets)),
-                request.user,
+                request.user, include_latest=False,
             ),
             uuid=question_uuid,
         )
-        navigation = list(
-            navigation_with_latest_result(
-                navigation_queryset(question, request), request.user,
-            ).values_list('pk', 'uuid', 'next_latest_result', 'next_latest_at')
-        )
-        position = next((index for index, item in enumerate(navigation) if item[0] == question.pk), -1)
-        previous_question_uuid = navigation[position - 1][1] if position > 0 else None
-        next_question_uuid = next_unmastered_question(question, request, navigation)
+        # Validate format parameters even when list-context navigation overrides them.
+        # This preserves the existing 400 response without evaluating unused queries.
+        filter_exam_type(Question.objects.none(), request.query_params)
+        context_navigation = list_context_navigation(request, question)
+        navigation = (context_navigation if context_navigation is not None
+                      else ordinary_question_navigation(question, request))
         latest = QuestionAttempt.objects.filter(
             user=request.user, question=question,
         ).order_by('-created_at', '-pk').first()
-        last_timed = QuestionAttempt.objects.filter(
-            user=request.user,
-            question=question,
-            result__in=('done', 'correct', 'review'),
-            time_spent_seconds__isnull=False,
-        ).order_by('-created_at', '-pk').first()
+        # The full latest Attempt is already needed for diagnosis/confidence.
+        # Reuse it rather than evaluating two identical scalar subqueries.
+        question.latest_result = latest.result if latest else None
+        question.latest_attempted_at = latest.created_at if latest else None
+        last_timed = latest
+        if latest and (latest.result not in ('done', 'correct', 'review')
+                       or latest.time_spent_seconds is None):
+            last_timed = QuestionAttempt.objects.filter(
+                user=request.user,
+                question=question,
+                result__in=('done', 'correct', 'review'),
+                time_spent_seconds__isnull=False,
+            ).order_by('-created_at', '-pk').first()
         user_state = QuestionUserState.objects.filter(
             user=request.user, question=question,
         ).first()
@@ -898,29 +958,12 @@ class DrillQuestionDetailView(APIView):
             'note': user_state.note if user_state else (latest.note if latest else ''),
             'state_version': user_state.version if user_state else 0,
             'markers': marker_codes,
-            'next_question_uuid': str(next_question_uuid) if next_question_uuid else None,
-            'sequential_next_question_uuid': (
-                str(value) if (value := next_sequential_question(question, request)) else None
-            ),
-            'next_overdue_review_uuid': (
-                str(value) if (value := next_review_question(question, request, overdue=True)) else None
-            ),
-            'next_review_uuid': (
-                str(value) if (value := next_review_question(question, request, overdue=False)) else None
-            ),
-            'previous_overdue_review_uuid': (
-                str(value) if (value := previous_review_question(question, request, overdue=True)) else None
-            ),
-            'previous_review_uuid': (
-                str(value) if (value := previous_review_question(question, request, overdue=False)) else None
-            ),
             'review_overdue': bool(
                 latest and latest.result == 'review'
                 and latest.created_at <= timezone.now() - datetime.timedelta(days=5)
             ),
             'latest_diagnosis': attempt_payload(latest) if latest else None,
             'review_plan': review_plan_payload(review_plan),
-            'previous_question_uuid': str(previous_question_uuid) if previous_question_uuid else None,
             'breadcrumbs': topic_breadcrumbs(question.topic),
             'question_assets': [
                 {
@@ -958,9 +1001,8 @@ class DrillQuestionDetailView(APIView):
                 for asset in question.assets.all() if asset.asset_type == 'question_crop'
             ],
         })
-        context_navigation = list_context_navigation(request, question)
-        if context_navigation is not None:
-            payload.update(context_navigation)
+        payload.update({key: str(value) if value is not None else None
+                        for key, value in navigation.items()})
         from drill_sources.presentation import attach_source_context
         attach_source_context(payload, question, request)
         return Response(payload)
