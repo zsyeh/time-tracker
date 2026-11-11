@@ -197,6 +197,45 @@ export function fetchNavigationQuestion(uuid: string, query = '', signal?: Abort
   })
 }
 
+const warmedMedia = new Set<string>()
+const pendingMedia = new Set<string>()
+const mediaQueue: string[] = []
+let activeMedia = 0
+function drainMediaQueue() {
+  while (activeMedia < 4 && mediaQueue.length) {
+    const url = mediaQueue.shift()!
+    activeMedia += 1
+    const image = new Image()
+    let completed = false
+    let timeout = 0
+    const finish = (loaded: boolean) => {
+      if (completed) return
+      completed = true
+      window.clearTimeout(timeout)
+      image.onload = image.onerror = null
+      pendingMedia.delete(url)
+      if (loaded) {
+        warmedMedia.add(url)
+        if (warmedMedia.size > 256) warmedMedia.delete(warmedMedia.values().next().value!)
+      }
+      activeMedia -= 1
+      drainMediaQueue()
+    }
+    image.onload = () => finish(true)
+    image.onerror = () => finish(false)
+    image.decoding = 'async'
+    image.fetchPriority = 'low'
+    image.referrerPolicy = 'same-origin'
+    timeout = window.setTimeout(() => {
+      // A stalled speculative request must not hold every preload slot forever.
+      // Stop this Image request and leave the URL eligible for a later retry.
+      image.removeAttribute('src')
+      finish(false)
+    }, 15000)
+    image.src = url
+  }
+}
+
 export function warmQuestionMedia(question: QuestionDetail) {
   // Keep both sides of the exercise in the browser's long-lived HTTP cache.
   // QuestionAsset responses are immutable for a year, so this turns the extra
@@ -206,13 +245,13 @@ export function warmQuestionMedia(question: QuestionDetail) {
     ...questionAssets.map((asset) => asset.url),
     ...(question.answer_assets || []).map((asset) => asset.url),
   ])
-  for (const url of urls) {
-    const image = new Image()
-    image.decoding = 'async'
-    image.fetchPriority = 'low'
-    image.referrerPolicy = 'same-origin'
-    image.src = withWorkspacePrefix(url)
+  for (const assetUrl of urls) {
+    const url = withWorkspacePrefix(assetUrl)
+    if (pendingMedia.has(url) || warmedMedia.has(url)) continue
+    pendingMedia.add(url)
+    mediaQueue.push(url)
   }
+  drainMediaQueue()
 }
 
 export async function prefetchQuestion(uuid: string | null, query = '') {
