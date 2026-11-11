@@ -1,6 +1,6 @@
 # Timer / Drill / EI 短期性能与可靠性优化
 
-日期：2026-11-11。**仅代码修改、本地测试与本地提交；未部署，未修改生产数据库、配置或服务。**
+日期：2026-11-11。开发与本地验证完成后，已按用户后续明确授权部署到47；发布结果及回滚方式见文末。
 
 ## 测量口径
 
@@ -88,7 +88,7 @@ EXPLAIN 使用了既有 document、source_category 和 Attempt question 索引�
 
 本地原始证据：`/home/eh/performance-audit-20261111/`，包括 comparison.json、navigation-explain.json、media-browser-results.json、django-verified.log、frontend-verified.log；私有响应快照不入Git。
 
-尚未验证：生产硬件/公网端到端延迟、真实iPadOS Safari/PWA的资源调度与系统冻结、真实生产缓存命中分布。首次使用新workspace cache key会冷缓存；旧Note草稿保持兼容。未授权生产发布，因此目前线上行为不变。
+尚未验证：生产硬件/公网端到端延迟、真实iPadOS Safari/PWA的资源调度与系统冻结、真实生产缓存命中分布。首次使用新workspace cache key会冷缓存；旧Note草稿保持兼容。本地审计阶段未执行生产发布；后续授权发布见文末。
 
 ## 复现
 
@@ -116,7 +116,7 @@ collection值必须使用当前题库实际值；可由页面请求参数取得�
 - `ffa8b68`：图片304/HEAD元数据读取与并发更新安全。
 - 最后一个文档/基准命令提交记录本报告和复现工具。
 
-本次没有推送GitHub或发布生产；生产仍运行之前版本。
+开发交付时没有推送GitHub或发布生产；后续授权发布见文末。
 
 ## 增量：严选题目标、净新增预测与趋势布局
 
@@ -165,3 +165,40 @@ Drill 不再使用固定690题目标。目标集合复用现有 `selected_collec
 - 证据可查看本机 `/home/eh/performance-audit-20261111/django-trend-final.log`、`trend-goals-final.log`、`frontend-trend-final.log`、`trend-comparison.json`、`trend-browser-results.json`。真实设备安全区、系统冻结和生产当前数据尚未验证；没有执行生产部署、迁移、重启或配置修改。
 
 趋势独立提交：`1eb3cdf`（动态严选目标与净新增预测）、`0108b9f`（进度交互与响应式图表）。回滚可先分别revert这两个提交，原缓存、作答、详情查询及图片优化不受影响。上线仍需另行授权，正常构建并按既有发布流程切换镜像；本轮没有数据库迁移。
+
+
+## 2026-11-11 授权生产部署
+
+用户后续明确要求部署。最终应用代码revision为 `ab234ed`，镜像为 `time-tracker-ha:20261111-performance-trends-ab234ed-r2`；旧镜像 `time-tracker-ha:20261111-learning-recovery` 保留用于回滚。仅将既有 `20-local-ports.conf` 的应用镜像更新并重启应用；PostgreSQL、密钥、Session设置、认证和Nginx代理配置保持原样。
+
+发布前核对运行镜像与本地基线ID一致，容器源代码无热修改；`check`、`migrate --plan`、`makemigrations --check --dry-run`通过，没有待执行迁移。新镜像在NUC构建，不在47编译；运行期间未发生OOM，发布后约610MB可用内存、11GB可用磁盘。
+
+备份位于47的 `/var/snap/docker/common/time-tracker-ha/backups/performance-20261111/`：当前业务记录dump（排除大型QuestionAsset二进制表数据）、当前资产元数据、原service drop-in、校验文件及部署/回滚脚本。dump已通过gzip及pg_restore目录检查；业务dump和资产元数据有NUC私有副本。既有完整资产备份继续保留。本次没有修改业务记录或数据库schema，回滚不需要恢复旧数据库覆盖后续作答。
+
+### 静态资源发布修正
+
+第一次发布发现新JS返回404，已实际回滚旧镜像。原因是复用的生产基础镜像没有自动collectstatic入口，初次派生包包含前端dist但未更新staticfiles。修正包在构建阶段明确运行collectstatic；本地HTTP验证新JS/CSS的200和SHA-256，并在生产切换前校验全部166个收集后的前端资源。最终包重新发布后，通过公网逐项比对主JS/CSS与本地构建哈希。已删除失败镜像和47上的临时传输归档，保留最终镜像、旧回滚镜像与业务备份。未通过修改代理或访问控制掩盖资源缺失。
+
+### 真实生产验收
+
+部署前19项、部署后26项公网HTTP检查通过，包括Timer/Drill/EI域名、IP同源API、统一Manifest、前端资源哈希、题目详情、题图GET/HEAD/ETag304。部署前创建的同一个短期测试Session在切换后仍通过认证；验证结束只撤销该测试Session，不清理其他用户Session。Nginx配置检查通过，但没有改动或重载代理配置。未在生产创建测试Attempt或改写Note。
+
+| 严选范围 | 总数 | 已做 | 掌握 | 待复习 | 未做 | 11月21日前每日需净新增 |
+|---|---:|---:|---:|---:|---:|---:|
+| 小题 |619|345|259|86|274|25|
+| 大题 |344|157|83|74|187|17|
+| 合计 |963|502|342|160|461|42|
+
+上表为此次生产HTTP验收时的实时结果；与同一用户的严选热力图一致，不是硬编码。后续继续作答会自动更新。EI保留307道原计划，未将数学目标套用到EI。
+
+本机部署证据位于 `/home/eh/performance-deploy-20261111/`，包含preflight-r2.log、static-smoke-r2.log、deploy-r2.log、public-before.json、public-after.json和cleanup.log。真实iPadOS Safari/PWA仍需用户刷新后确认横竖屏与系统生命周期表现。
+
+### 回滚
+
+在47运行以下已实际使用过的脚本可恢复旧应用镜像，不触碰数据库和后续学习记录：
+
+```sh
+python3 /var/snap/docker/common/time-tracker-ha/backups/performance-20261111/production.py rollback
+```
+
+重新发布时不要省略collectstatic及静态资源校验。运行中的镜像保留既有启动参数，不自动运行迁移。GitHub尚未推送；这次只执行了用户授权的生产部署及本地文档更新。
