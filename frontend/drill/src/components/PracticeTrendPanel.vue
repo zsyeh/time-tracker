@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { typeText } from '../lib/examTypes'
 import { uiText } from '../lib/uiText'
 import { uiLanguage } from '../lib/uiPreferences'
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
@@ -13,32 +14,78 @@ import { runtimeWorkspace } from '../lib/runtimePath'
 
 echarts.use([BarChart, LineChart, GridComponent, LegendComponent, TooltipComponent, CanvasRenderer])
 
-type Scenario = { label:string; average:number; projected_added:number; projected_total:number; projected_toward_goal:number; shortfall:number; on_track:boolean }
+type Scenario = { label:string; average:number|null; projected_added:number|null; projected_total:number|null; projected_toward_goal:number|null; shortfall:number|null; on_track:boolean|null; window_days?:number; available_history_days?:number; history_sufficient?:boolean; status?:'ready'|'insufficient_history'|'no_positive_rate'|'past_deadline'|'complete'|'empty_scope'; estimated_completion_date?:string|null }
+type Coverage = {total:number;covered:number;mastered:number;review:number;remaining:number;required_daily?:number|null}
+type Goal = Coverage & {metric:string;status?:'active'|'empty_scope';type_breakdown:{small:Coverage;large:Coverage;unknown:Coverage}}
 type TrendPayload = {
   workspace:'drill'|'ei'; project_label:string; timezone:string; today:string; range_days:number; allowed_ranges:number[]
   daily_target:number; target_options:{minimum:number;standard:number;sprint:number}; question_target:number; available_questions:number
   points:Array<{date:string;count:number;submissions:number;moving_average_7:number;target:number;is_today:boolean;is_complete_day:boolean}>
   period:{submissions:number;different_questions:number;daily_unique_total:number}
-  summary:{today:number;today_submissions:number;last7:number;average7:number;last14:number;average14:number;previous7:number;growth_percent:number|null;last30:number;streak:number;target_days_last7:number;completed_distinct:number;remaining:number}
+  goal?:Goal
+  summary:{today_net_coverage?:number;today_new_coverage?:number;today_removed_coverage?:number;today:number;today_submissions:number;last7:number;average7:number;last14:number;average14:number;previous7:number;growth_percent:number|null;last30:number;streak:number;target_days_last7:number;completed_distinct:number;remaining:number}
   comparison_windows:{last7:{start:string;end:string};previous7:{start:string;end:string};excludes_today:boolean}
-  prediction:{deadline:string;days_remaining_including_today:number;remaining_determinable:boolean;remaining:number;required_daily:number|null;scenarios:Scenario[];notice:string}
+  prediction:{original_deadline?:string;forecast_basis?:string;deadline_passed?:boolean;deadline:string;days_remaining_including_today:number;remaining_determinable:boolean;remaining:number;required_daily:number|null;scenarios:Scenario[];notice:string}
 }
 
 const isEi = runtimeWorkspace === 'ei'
 const workspaceHint = isEi ? 'ei' : 'drill'
-const settingsKey = `practice.trend.settings.v1.${workspaceHint}`
-const rangeDays = ref(30), dailyTarget = ref(isEi ? 11 : 24), deadline = ref('2026-11-22')
+const settingsKey = `practice.trend.settings.v2.${workspaceHint}`
+const legacySettingsKey = `practice.trend.settings.v1.${workspaceHint}`
+const displayedTypes:Array<'small'|'large'>=isEi?[]:['small','large']
+const rangeDays = ref(30), dailyTarget = ref(isEi ? 11 : 24), deadline = ref('2026-11-21')
 const customTarget = ref(dailyTarget.value), data = ref<TrendPayload|null>(null)
 const loading = ref(true), refreshing = ref(false), error = ref(''), chartElement = ref<HTMLElement|null>(null)
 let chart:ECharts|null=null, resizeObserver:ResizeObserver|null=null, schemeObserver:MutationObserver|null=null, channel:BroadcastChannel|null=null
-let refreshTimer=0, loadSequence=0
+let refreshTimer=0, loadSequence=0, resizeFrame=0
+let observedElement:HTMLElement|null=null
+let mounted=false
 
 const growthText=computed(()=>{const value=data.value?.summary.growth_percent;return value===null||value===undefined?uiText("无可比基线"):`${value>0?'+':''}${value}%`})
 const growthClass=computed(()=>{const value=data.value?.summary.growth_percent;return value===null||value===undefined?'':value>0?'positive':value<0?'negative':''})
 const targetProgress=computed(()=>data.value?Math.min(100,Math.round(data.value.summary.today*100/Math.max(1,data.value.daily_target))):0)
 
-function loadSettings(){try{const saved=JSON.parse(localStorage.getItem(settingsKey)||'null');if(saved&&Number(saved.target)>=1&&Number(saved.target)<=500)dailyTarget.value=Number(saved.target);if(saved&&/^\d{4}-\d{2}-\d{2}$/.test(String(saved.deadline||'')))deadline.value=saved.deadline;customTarget.value=dailyTarget.value}catch{/* defaults */}}
-function persistSettings(){localStorage.setItem(settingsKey,JSON.stringify({target:dailyTarget.value,deadline:deadline.value}))}
+const goal=computed(()=>data.value?.goal)
+const coverageDenominator=computed(()=>isEi?data.value?.available_questions:goal.value?.total)
+const coveragePercent=computed(()=>goal.value&&coverageDenominator.value?Math.round(goal.value.covered*1000/coverageDenominator.value)/10:0)
+const masteryPercent=computed(()=>goal.value&&coverageDenominator.value?Math.round(goal.value.mastered*1000/coverageDenominator.value)/10:0)
+const pastDeadline=computed(()=>Boolean(data.value&&(data.value.prediction.deadline_passed||data.value.prediction.days_remaining_including_today<=0)))
+const primaryScenario=computed(()=>data.value?.prediction.scenarios[0])
+const emptyScope=computed(()=>goal.value?.status==='empty_scope'||goal.value?.total===0)
+const dailyNeed=computed(()=>pastDeadline.value||emptyScope.value?null:data.value?.prediction.required_daily??null)
+function typeNeed(kind:'small'|'large'){
+  const group=goal.value?.type_breakdown[kind],days=data.value?.prediction.days_remaining_including_today||0
+  if(!group||days<=0||emptyScope.value)return null
+  return group.required_daily!==undefined?group.required_daily:Math.ceil(group.remaining/days)
+}
+function signed(value:number|undefined){return value===undefined?typeText('未知','Unknown'):`${value>0?'+':''}${value}`}
+function scenarioTitle(scenario:Scenario){
+  if(scenario.window_days===7)return typeText('近7完整日净新增','Net new · last 7 full days')
+  if(scenario.window_days===14)return typeText('近14完整日净新增','Net new · last 14 full days')
+  return uiText(scenario.label)
+}
+function scenarioStatus(scenario:Scenario){
+  if(scenario.status==='empty_scope')return typeText('所选范围暂无题目，无法预测','No questions in this scope; forecast unavailable')
+  if(scenario.status==='complete')return isEi?typeText('已完成计划题量','Planned question target reached'):typeText('已完成覆盖目标','Coverage goal reached')
+  if(scenario.status==='past_deadline')return typeText('目标日期已过','Deadline passed')
+  if(scenario.status==='insufficient_history'||scenario.history_sufficient===false)return typeText('历史不足，预测仅供参考','Limited history; forecast is provisional')
+  if(scenario.status==='no_positive_rate')return typeText('暂无正向净新增速度，无法推算日期','No positive net rate; completion date unknown')
+  return scenario.on_track?typeText('预计可按期完成','On track to finish'):typeText('当前速度不足以按期完成','Not on track at this pace')
+}
+
+function loadSettings(){
+  try{
+    const current=localStorage.getItem(settingsKey)
+    const saved=JSON.parse(current||localStorage.getItem(legacySettingsKey)||'null')
+    if(saved&&Number(saved.target)>=1&&Number(saved.target)<=500)dailyTarget.value=Number(saved.target)
+    if(saved&&/^\d{4}-\d{2}-\d{2}$/.test(String(saved.deadline||''))){
+      deadline.value=!current&&saved.deadline==='2026-11-22'?'2026-11-21':saved.deadline
+    }
+    customTarget.value=dailyTarget.value
+  }catch{/* defaults */}
+}
+
+function persistSettings(){try{localStorage.setItem(settingsKey,JSON.stringify({target:dailyTarget.value,deadline:deadline.value}))}catch{/* optional local preference cache */}}
 function css(name:string,fallback:string){return getComputedStyle(document.documentElement).getPropertyValue(name).trim()||fallback}
 
 function chartOption():EChartsCoreOption{
@@ -46,41 +93,107 @@ function chartOption():EChartsCoreOption{
   return {animationDuration:260,textStyle:{fontFamily:'Inter, PingFang SC, sans-serif'},grid:{left:42,right:16,top:44,bottom:34},legend:{top:3,left:0,itemWidth:13,itemHeight:7,textStyle:{color:text,fontSize:10},data:[uiText("每日题量"),uiText("7天移动平均"),uiText("目标线")]},tooltip:{trigger:'axis',confine:true,backgroundColor:surface,borderColor:border,textStyle:{color:primary,fontSize:11},formatter(params:unknown){const list=params as Array<{axisValue:string;seriesName:string;value:number;marker:string;dataIndex:number}>,index=list[0]?.dataIndex??0,point=payload.points[index];if(!point)return'';return [`<strong>${point.date}${point.is_today?uiText(" · 今天（进行中）"):''}</strong>`,...list.map(item=>`${item.marker}${item.seriesName}：${item.value}`),`${uiText("提交次数")}：${point.submissions}`].join('<br>')}},xAxis:{type:'category',data:payload.points.map(point=>point.date.slice(5)),axisLine:{lineStyle:{color:border}},axisTick:{show:false},axisLabel:{color:(_value:string,index:number)=>payload.points[index]?.is_today?todayColor:text,fontSize:9,hideOverlap:true}},yAxis:{type:'value',min:0,minInterval:1,axisLabel:{color:text,fontSize:9},axisLine:{show:false},axisTick:{show:false},splitLine:{lineStyle:{color:border,type:'dashed',opacity:.75}}},series:[{name:uiText("每日题量"),type:'bar',barMaxWidth:22,data:payload.points.map(point=>({value:point.count,itemStyle:{color:point.is_today?todayColor:accent,borderRadius:[3,3,0,0],opacity:point.is_today?1:.82}}))},{name:uiText("7天移动平均"),type:'line',smooth:.28,symbol:'circle',symbolSize:4,data:payload.points.map(point=>point.moving_average_7),lineStyle:{color:average,width:2},itemStyle:{color:average}},{name:uiText("目标线"),type:'line',symbol:'none',silent:true,data:payload.points.map(()=>payload.daily_target),lineStyle:{color:'#20c972',width:1.5,type:'dashed'}}]}
 }
 
-async function renderChart(){if(!data.value)return;await nextTick();if(!chartElement.value)return;chart||=echarts.init(chartElement.value);chart.setOption(chartOption(),true)}
+function resizeChart(){
+  if(resizeFrame)window.cancelAnimationFrame(resizeFrame)
+  resizeFrame=window.requestAnimationFrame(()=>{resizeFrame=0;if(mounted)chart?.resize()})
+}
+function observeChartElement(){
+  const element=chartElement.value
+  if(observedElement===element)return
+  if(observedElement)resizeObserver?.unobserve(observedElement)
+  chart?.dispose();chart=null
+  observedElement=element
+  if(element)resizeObserver?.observe(element)
+}
+async function renderChart(){
+  if(!data.value)return
+  await nextTick()
+  if(!mounted||!chartElement.value)return
+  observeChartElement()
+  chart||=echarts.init(chartElement.value)
+  chart.setOption(chartOption(),true)
+  resizeChart()
+}
 async function load(silent=false){const sequence=++loadSequence;if(silent)refreshing.value=true;else loading.value=true;error.value='';try{const params=new URLSearchParams({days:String(rangeDays.value),target:String(dailyTarget.value),deadline:deadline.value}),payload=await api<TrendPayload>(`/api/drill/practice-trends/?${params}`);if(sequence!==loadSequence)return;data.value=payload;dailyTarget.value=payload.daily_target;customTarget.value=payload.daily_target;await renderChart()}catch(reason){if(sequence===loadSequence)error.value=(reason as Error).message}finally{if(sequence===loadSequence){loading.value=false;refreshing.value=false}}}
 function setRange(value:number){if(rangeDays.value===value)return;rangeDays.value=value;void load()}
 function setTarget(value:number){dailyTarget.value=value;customTarget.value=value;persistSettings();void load(true)}
 function applyCustomTarget(){setTarget(Math.max(1,Math.min(500,Math.round(Number(customTarget.value)||dailyTarget.value))))}
 function changeDeadline(){persistSettings();void load(true)}
 function externalRefresh(){void load(true)}
-function storageChanged(event:StorageEvent){if(event.key===practiceTrendStoragePulse)externalRefresh();if(event.key===settingsKey){loadSettings();externalRefresh()}}
+function storageChanged(event:StorageEvent){if(event.key===practiceTrendStoragePulse)externalRefresh();if(event.key===settingsKey||event.key===legacySettingsKey){loadSettings();externalRefresh()}}
 function visibilityChanged(){if(document.visibilityState==='visible')externalRefresh()}
 
-onMounted(()=>{loadSettings();void load();resizeObserver=new ResizeObserver(()=>chart?.resize());if(chartElement.value)resizeObserver.observe(chartElement.value);schemeObserver=new MutationObserver(()=>void renderChart());schemeObserver.observe(document.documentElement,{attributes:true,attributeFilter:['data-color-scheme']});window.addEventListener(practiceTrendEvent,externalRefresh);window.addEventListener('storage',storageChanged);window.addEventListener('focus',externalRefresh);document.addEventListener('visibilitychange',visibilityChanged);if('BroadcastChannel'in window){channel=new BroadcastChannel(practiceTrendChannel);channel.onmessage=externalRefresh}refreshTimer=window.setInterval(()=>{if(document.visibilityState==='visible')externalRefresh()},120_000)})
-onUnmounted(()=>{window.clearInterval(refreshTimer);resizeObserver?.disconnect();schemeObserver?.disconnect();channel?.close();chart?.dispose();window.removeEventListener(practiceTrendEvent,externalRefresh);window.removeEventListener('storage',storageChanged);window.removeEventListener('focus',externalRefresh);document.removeEventListener('visibilitychange',visibilityChanged)})
+onMounted(()=>{
+  mounted=true
+  if(typeof ResizeObserver!=='undefined')resizeObserver=new ResizeObserver(resizeChart)
+  loadSettings();void load()
+  schemeObserver=new MutationObserver(()=>void renderChart())
+  schemeObserver.observe(document.documentElement,{attributes:true,attributeFilter:['data-color-scheme']})
+  window.addEventListener(practiceTrendEvent,externalRefresh)
+  window.addEventListener('storage',storageChanged)
+  window.addEventListener('focus',externalRefresh)
+  window.addEventListener('resize',resizeChart)
+  window.addEventListener('orientationchange',resizeChart)
+  window.addEventListener('pageshow',resizeChart)
+  window.visualViewport?.addEventListener('resize',resizeChart)
+  document.addEventListener('visibilitychange',visibilityChanged)
+  if('BroadcastChannel'in window){channel=new BroadcastChannel(practiceTrendChannel);channel.onmessage=externalRefresh}
+  refreshTimer=window.setInterval(()=>{if(document.visibilityState==='visible')externalRefresh()},120_000)
+})
+onUnmounted(()=>{
+  mounted=false;loadSequence+=1
+  window.clearInterval(refreshTimer);window.cancelAnimationFrame(resizeFrame)
+  resizeObserver?.disconnect();schemeObserver?.disconnect();channel?.close();chart?.dispose()
+  window.removeEventListener(practiceTrendEvent,externalRefresh)
+  window.removeEventListener('storage',storageChanged)
+  window.removeEventListener('focus',externalRefresh)
+  window.removeEventListener('resize',resizeChart)
+  window.removeEventListener('orientationchange',resizeChart)
+  window.removeEventListener('pageshow',resizeChart)
+  window.visualViewport?.removeEventListener('resize',resizeChart)
+  document.removeEventListener('visibilitychange',visibilityChanged)
+})
+watch(chartElement,()=>{observeChartElement();void renderChart()},{flush:'post'})
 
 watch(uiLanguage, () => { void renderChart() })
 </script>
 
 <template>
   <section class="practice-trend" aria-labelledby="practice-trend-title">
-    <header class="trend-header"><div><span class="eyebrow">REAL-TIME PRACTICE</span><h2 id="practice-trend-title">{{ uiText("刷题趋势 ·") }} {{ data?.project_label || (isEi ? uiText("EI 专业课") : uiText("Drill 数学")) }}</h2><p>{{ uiText("每日不同题目去重；今天为进行中数据。") }}</p></div><div class="range-switch" :aria-label="uiText('趋势日期范围')"><button v-for="days in [7,14,30,50,90]" :key="days" :class="{active:rangeDays===days}" @click="setRange(days)">{{ days }}{{ uiText("天") }}</button></div></header>
+    <header class="trend-header">
+      <div><span class="eyebrow">REAL-TIME PRACTICE</span><h2 id="practice-trend-title">{{ uiText("刷题趋势 ·") }} {{ data?.project_label || (isEi ? uiText("EI 专业课") : uiText("Drill 数学")) }}</h2><p>{{ typeText('覆盖按当前最新状态；每日题量包含重做，不等于净新增。','Coverage uses current latest states. Daily workload includes repeats and differs from net new coverage.') }}</p></div>
+      <div class="range-switch" :aria-label="uiText('趋势日期范围')"><button v-for="days in [7,14,30,50,90]" :key="days" :class="{active:rangeDays===days}" @click="setRange(days)">{{ days }}{{ uiText("天") }}</button></div>
+    </header>
     <p v-if="error" class="trend-error" role="alert">{{ uiText(error) }} <button @click="load()">{{ uiText("重试") }}</button></p><div v-if="loading&&!data" class="trend-loading">{{ uiText("正在计算历史趋势…") }}</div>
     <template v-else-if="data">
-      <div class="trend-cards">
-        <article><small>{{ uiText("今日完成 · 进行中") }}</small><strong>{{ data.summary.today }}<em>{{ uiText("道") }}</em></strong><span>{{ data.summary.today_submissions }} {{ uiText("次提交") }}</span></article><article><small>{{ uiText("今日目标进度") }}</small><strong>{{ data.summary.today }}<em>/{{ data.daily_target }}</em></strong><i><b :style="{width:`${targetProgress}%`}" /></i></article><article><small>{{ uiText("最近7个完整日") }}</small><strong>{{ data.summary.last7 }}<em>{{ uiText("道") }}</em></strong><span>{{ uiText("日均") }} {{ data.summary.average7 }}</span></article><article><small>{{ uiText("相比前7个完整日") }}</small><strong :class="growthClass">{{ growthText }}</strong><span>{{ data.summary.previous7 }} → {{ data.summary.last7 }} {{ uiText("道") }}</span></article><article><small>{{ uiText("最近30天") }}</small><strong>{{ data.summary.last30 }}<em>{{ uiText("道") }}</em></strong><span>{{ uiText("含今天") }}</span></article><article><small>{{ uiText("连续活跃") }}</small><strong>{{ data.summary.streak }}<em>{{ uiText("天") }}</em></strong><span>{{ uiText("近7日达标") }} {{ data.summary.target_days_last7 }} {{ uiText("天") }}</span></article><article><small>{{ uiText("当前不同题完成") }}</small><strong>{{ data.summary.completed_distinct }}<em>/{{ data.question_target }}</em></strong><span>{{ uiText("按每题最新状态") }}</span></article><article><small>{{ uiText("距离题库目标") }}</small><strong>{{ data.summary.remaining }}<em>{{ uiText("道") }}</em></strong><span>{{ uiText("可用题目") }} {{ data.available_questions }}</span></article>
+      <div class="trend-cards primary-cards" :class="{'ei-plan':isEi}">
+        <article><small>{{ isEi?typeText('已做 / 计划题量','Practiced / planned questions'):typeText('严选覆盖 / 总题量','Selected covered / total') }}</small><strong>{{ goal?.covered ?? data.summary.completed_distinct }}<em>/ {{ goal?.total ?? data.question_target }}</em></strong><span v-if="goal">{{ isEi?typeText('全题库覆盖率','Full-bank coverage'):typeText('覆盖率','Coverage') }} {{ coveragePercent }}% · {{ typeText('掌握率','Mastery') }} {{ masteryPercent }}%</span><span v-if="goal">{{ typeText('掌握','Mastered') }} {{ goal.mastered }} · {{ typeText('待复习','Review') }} {{ goal.review }}</span><span v-else>{{ uiText('按每题最新状态') }}</span></article>
+        <article><small>{{ isEi?typeText('计划剩余','Remaining to plan'):typeText('尚未覆盖','Not covered yet') }}</small><strong>{{ goal?.remaining ?? data.summary.remaining }}<em>{{ uiText('道') }}</em></strong><span>{{ isEi?typeText('原计划独立保留，不代表已覆盖全部题库','Original plan retained; reaching it does not mean full-bank coverage'):typeText('已做 = 掌握 + 待复习；覆盖不等于掌握','Covered = mastered + review; coverage differs from mastery') }}</span></article>
+        <article v-for="kind in displayedTypes" :key="kind"><small>{{ kind==='small'?typeText('小题覆盖 / 总数','Small questions · covered / total'):typeText('大题覆盖 / 总数','Large questions · covered / total') }}</small><strong>{{ goal?.type_breakdown[kind]?.covered ?? '—' }}<em>/ {{ goal?.type_breakdown[kind]?.total ?? '—' }}</em></strong><span>{{ typeText('剩余','Remaining') }} {{ goal?.type_breakdown[kind]?.remaining ?? '—' }} · {{ typeText('每日需新增','Net new / day needed') }} {{ typeNeed(kind) ?? '—' }}</span><span v-if="goal">{{ typeText('掌握','Mastered') }} {{ goal.type_breakdown[kind].mastered }} · {{ typeText('待复习','Review') }} {{ goal.type_breakdown[kind].review }}</span></article>
+        <article><small>{{ typeText('全题库今日工作量 / 每日目标','Today’s workload / daily target (all questions)') }}</small><strong>{{ data.summary.today }}<em>/ {{ data.daily_target }}</em></strong><i><b :style="{width:`${targetProgress}%`}" /></i><span>{{ typeText('今日净新增覆盖','Today’s net new coverage') }} {{ signed(data.summary.today_net_coverage) }}</span></article>
+        <article><small>{{ typeText('按期完成所需每日净新增','Net new per day needed') }}</small><strong>{{ dailyNeed ?? '—' }}<em v-if="dailyNeed!==null">{{ uiText('道') }}</em></strong><span v-if="pastDeadline" class="behind">{{ typeText('已逾期，请调整目标日期','Deadline passed; choose a new date') }}</span><span v-else>{{ data.prediction.deadline }} · {{ typeText('含今天还剩','Days left including today:') }} {{ data.prediction.days_remaining_including_today }}</span></article>
       </div>
-      <div class="trend-controls"><div><span>{{ uiText("每日目标") }}</span><button :class="{active:dailyTarget===data.target_options.minimum}" @click="setTarget(data.target_options.minimum)">{{ uiText("保底") }} {{ data.target_options.minimum }}</button><button :class="{active:dailyTarget===data.target_options.standard}" @click="setTarget(data.target_options.standard)">{{ uiText("标准") }} {{ data.target_options.standard }}</button><button :class="{active:dailyTarget===data.target_options.sprint}" @click="setTarget(data.target_options.sprint)">{{ uiText("冲刺") }} {{ data.target_options.sprint }}</button><label>{{ uiText("自定") }} <input v-model.number="customTarget" type="number" min="1" max="500" @change="applyCustomTarget"></label></div><label class="deadline-control"><span>{{ uiText("目标截止日") }}</span><input v-model="deadline" type="date" @change="changeDeadline"></label><span v-if="refreshing" class="refreshing">{{ uiText("同步中…") }}</span></div>
-      <div ref="chartElement" class="trend-chart" role="img" :aria-label="`${data.range_days}天每日刷题量、7天移动平均和每日目标趋势图`" /><footer class="chart-footnote"><span>{{ uiText("周期内按日累计") }} {{ data.period.daily_unique_total }} {{ uiText("道") }}</span><span>{{ data.period.submissions }} {{ uiText("次有效提交") }}</span><span>{{ data.period.different_questions }} {{ uiText("道不同题目") }}</span></footer>
-      <section class="prediction-panel"><header><div><span class="eyebrow">FORECAST · {{ data.prediction.deadline }}</span><h3>{{ uiText("进度预测") }}</h3></div><strong v-if="data.prediction.remaining===0" class="on-track">{{ uiText("题库目标已达到") }}</strong><strong v-else :class="data.prediction.required_daily!==null&&data.summary.average7>=data.prediction.required_daily?'on-track':'behind'">{{ uiText("需每天至少") }} {{ data.prediction.required_daily??uiText("无法确定") }} {{ uiText("道") }}</strong></header><div class="prediction-grid"><article v-for="scenario in data.prediction.scenarios" :key="scenario.label"><small>{{ scenario.label }}</small><strong>{{ scenario.projected_toward_goal }}<em>/{{ data.question_target }}</em></strong><span v-if="scenario.shortfall">{{ uiText("预计还差") }} {{ scenario.shortfall }} {{ uiText("道") }}</span><span v-else>{{ uiText("预计可达到目标") }}</span><b :class="scenario.on_track?'on-track':'behind'">{{ scenario.on_track?uiText("速度达标"):uiText("速度不足") }}</b></article></div><p>{{ data.prediction.notice }} {{ uiText("速度均使用不含今天的完整自然日；剩余") }} {{ data.prediction.days_remaining_including_today }} {{ uiText("天（含今天）。") }}</p></section>
+      <div class="trend-controls">
+        <div><span>{{ uiText("每日目标") }}</span><button :class="{active:dailyTarget===data.target_options.minimum}" @click="setTarget(data.target_options.minimum)">{{ uiText("保底") }} {{ data.target_options.minimum }}</button><button :class="{active:dailyTarget===data.target_options.standard}" @click="setTarget(data.target_options.standard)">{{ uiText("标准") }} {{ data.target_options.standard }}</button><button :class="{active:dailyTarget===data.target_options.sprint}" @click="setTarget(data.target_options.sprint)">{{ uiText("冲刺") }} {{ data.target_options.sprint }}</button><label>{{ uiText("自定") }} <input v-model.number="customTarget" type="number" min="1" max="500" @change="applyCustomTarget"></label></div>
+        <div class="deadline-control"><span>{{ typeText('争取完成日 · 北京时间23:59','Target date · 23:59 Beijing time') }}</span><button :class="{active:deadline==='2026-11-21'}" @click="deadline='2026-11-21';changeDeadline()">11/21</button><button :class="{active:deadline==='2026-11-22'}" @click="deadline='2026-11-22';changeDeadline()">{{ typeText('原定','Original') }} 11/22</button><input v-model="deadline" :aria-label="uiText('目标截止日')" type="date" @change="changeDeadline"></div><span v-if="refreshing" class="refreshing">{{ uiText("同步中…") }}</span>
+      </div>
+      <section class="prediction-panel">
+        <header><div><span class="eyebrow">FORECAST · {{ data.prediction.deadline }}</span><h3>{{ typeText('能否按期完成？','Will I finish on time?') }}</h3></div><strong v-if="emptyScope">{{ typeText('所选范围暂无题目，请检查筛选范围','No questions in this scope; check the selected scope') }}</strong><strong v-else-if="data.prediction.remaining===0" class="on-track">{{ isEi?typeText('计划题量目标已完成','Planned question target reached'):typeText('覆盖目标已完成','Coverage goal reached') }}</strong><strong v-else-if="pastDeadline" class="behind">{{ typeText('目标日期已过','Deadline passed') }}</strong><strong v-else-if="primaryScenario" :class="primaryScenario.on_track===true?'on-track':primaryScenario.on_track===false?'behind':''">{{ scenarioStatus(primaryScenario) }}</strong></header>
+        <div v-if="primaryScenario&&data.prediction.remaining>0" class="forecast-answer"><span>{{ typeText('预计完成日期','Estimated completion') }} <b>{{ primaryScenario.estimated_completion_date ?? typeText('暂无法确定','Unknown') }}</b></span><span>{{ typeText('截止日预计还差','Expected shortfall by deadline') }} <b>{{ primaryScenario.shortfall ?? '—' }} {{ uiText('道') }}</b></span></div>
+        <div class="prediction-grid"><article v-for="scenario in data.prediction.scenarios" :key="scenario.label"><small>{{ scenarioTitle(scenario) }}</small><strong>{{ scenario.average ?? '—' }}<em>{{ typeText('净新增 / 日','net new / day') }}</em></strong><span>{{ scenarioStatus(scenario) }}</span><span>{{ typeText('完成日期','Finish date') }} {{ scenario.estimated_completion_date ?? '—' }} · {{ typeText('还差','Shortfall') }} {{ scenario.shortfall ?? '—' }}</span><small v-if="scenario.available_history_days!==undefined&&scenario.window_days">{{ typeText('可用历史','Available history') }} {{ scenario.available_history_days }}/{{ scenario.window_days }} {{ uiText('天') }}</small></article></div>
+        <p>{{ data.prediction.notice==='按现有速度估算，不构成完成承诺。'?typeText('按现有速度估算，不构成完成承诺。','Estimates use recent pace and do not guarantee completion.'):uiText(data.prediction.notice) }} {{ typeText('历史速度排除今天；今日工作量不等同净新增。预测不是完成保证。','Historical rates exclude today. Workload differs from net new coverage; forecasts are not guarantees.') }}</p>
+      </section>
+      <div ref="chartElement" class="trend-chart" role="img" :aria-label="typeText(`${data.range_days}天每日刷题量、7天移动平均和每日目标趋势图`,`${data.range_days}-day daily workload, 7-day moving average and daily target chart`)" />
+      <footer class="chart-footnote"><span>{{ uiText("周期内按日累计") }} {{ data.period.daily_unique_total }} {{ uiText("道") }}</span><span>{{ data.period.submissions }} {{ uiText("次有效提交") }}</span><span>{{ data.period.different_questions }} {{ uiText("道不同题目") }}</span></footer>
+      <details class="secondary-metrics"><summary>{{ typeText('更多统计 · 历史工作量与活跃情况','More statistics · historical workload and activity') }}</summary><div class="trend-cards"><article><small>{{ uiText("最近7个完整日") }}</small><strong>{{ data.summary.last7 }}</strong><span>{{ uiText("日均") }} {{ data.summary.average7 }}</span></article><article><small>{{ typeText('最近14个完整日','Last 14 complete days') }}</small><strong>{{ data.summary.last14 }}</strong><span>{{ uiText('日均') }} {{ data.summary.average14 }}</span></article><article><small>{{ uiText("相比前7个完整日") }}</small><strong :class="growthClass">{{ growthText }}</strong><span>{{ data.summary.previous7 }} → {{ data.summary.last7 }}</span></article><article><small>{{ uiText("最近30天") }}</small><strong>{{ data.summary.last30 }}</strong><span>{{ uiText("含今天") }}</span></article><article><small>{{ uiText("连续活跃") }}</small><strong>{{ data.summary.streak }}<em>{{ uiText('天') }}</em></strong><span>{{ uiText("近7日达标") }} {{ data.summary.target_days_last7 }}</span></article><article><small>{{ typeText('今日提交次数','Today’s submissions') }}</small><strong>{{ data.summary.today_submissions }}</strong><span>{{ typeText('包含重做；不等于覆盖新增','Includes repeats; differs from new coverage') }}</span></article></div></details>
     </template>
   </section>
 </template>
 
 <style scoped>
-.practice-trend{margin:0 0 18px;padding:18px;border:1px solid var(--border-subtle);border-radius:var(--radius-lg);background:var(--bg-surface)}.trend-header{display:flex;align-items:end;justify-content:space-between;gap:18px}.trend-header h2{margin:4px 0 2px;font-size:20px;letter-spacing:-.025em}.trend-header p{margin:0;color:var(--text-tertiary);font-size:10px}.range-switch{padding:2px;border:1px solid var(--border-subtle);border-radius:var(--radius-sm);background:var(--bg-sidebar);display:flex}.range-switch button{min-width:44px;height:29px;padding:0 8px;border:0;border-radius:3px;color:var(--text-tertiary);background:transparent;font-size:9px;cursor:pointer}.range-switch button.active{color:var(--text-primary);background:var(--bg-surface-active)}
-.trend-cards{margin-top:14px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:7px}.trend-cards article{min-height:82px;padding:11px;border:1px solid var(--border-subtle);border-radius:var(--radius-sm);background:var(--bg-sidebar);display:grid;align-content:start;gap:4px}.trend-cards small,.trend-cards span{color:var(--text-tertiary);font-size:8px}.trend-cards strong{font:620 22px ui-monospace,monospace;line-height:1.15}.trend-cards strong em{margin-left:3px;color:var(--text-tertiary);font-size:10px;font-style:normal}.trend-cards i{height:3px;margin-top:5px;border-radius:2px;background:var(--border-subtle)}.trend-cards i b{max-width:100%;height:100%;border-radius:inherit;background:var(--accent);display:block}.positive,.on-track{color:var(--success)!important}.negative,.behind{color:var(--danger)!important}
-.trend-controls{margin-top:9px;padding:8px 9px;border:1px solid var(--border-subtle);border-radius:var(--radius-sm);display:flex;align-items:center;gap:8px}.trend-controls>div{display:flex;align-items:center;gap:5px;flex-wrap:wrap}.trend-controls span,.trend-controls label span{color:var(--text-tertiary);font-size:8px}.trend-controls button{height:26px;padding:0 8px;border:1px solid var(--border-default);border-radius:4px;color:var(--text-tertiary);background:var(--bg-sidebar);font-size:8px;cursor:pointer}.trend-controls button.active{color:var(--accent);border-color:color-mix(in srgb,var(--accent) 55%,var(--border-default));background:var(--accent-muted)}.trend-controls label{color:var(--text-tertiary);font-size:8px}.trend-controls input{height:26px;padding:0 6px;border:1px solid var(--border-default);border-radius:4px;color:var(--text-secondary);background:var(--bg-sidebar);font-size:9px}.trend-controls label input[type=number]{width:54px;margin-left:4px}.deadline-control{margin-left:auto;display:flex;align-items:center;gap:6px}.refreshing{flex:none}
-.trend-chart{width:100%;height:330px;margin-top:8px;touch-action:pan-y}.chart-footnote{padding:7px 3px 0;border-top:1px solid var(--border-subtle);color:var(--text-tertiary);display:flex;gap:16px;font-size:8px}.prediction-panel{margin-top:13px;padding-top:13px;border-top:1px solid var(--border-subtle)}.prediction-panel>header{display:flex;align-items:end;justify-content:space-between;gap:16px}.prediction-panel h3{margin:3px 0 0;font-size:15px}.prediction-panel>header>strong{font-size:11px}.prediction-grid{margin-top:9px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.prediction-grid article{padding:10px;border:1px solid var(--border-subtle);border-radius:var(--radius-sm);display:grid;grid-template:auto auto/1fr auto;gap:3px 8px}.prediction-grid small,.prediction-grid span{color:var(--text-tertiary);font-size:8px}.prediction-grid strong{font:600 17px ui-monospace,monospace}.prediction-grid strong em{color:var(--text-tertiary);font-size:9px;font-style:normal}.prediction-grid b{grid-column:2;grid-row:1/3;align-self:center;font-size:9px}.prediction-panel>p{margin:9px 0 0;color:var(--text-tertiary);font-size:8px}.trend-loading{min-height:180px;color:var(--text-tertiary);display:grid;place-items:center;font-size:10px}.trend-error{padding:10px;color:var(--danger);font-size:10px}.trend-error button{border:0;color:var(--text-primary);background:transparent;text-decoration:underline;cursor:pointer}
-@media(max-width:820px){.trend-header{align-items:start;flex-direction:column}.range-switch{width:100%}.range-switch button{flex:1;min-width:0}.trend-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.trend-controls{align-items:stretch;flex-direction:column}.deadline-control{margin-left:0}.trend-chart{height:285px;margin-left:-8px;width:calc(100% + 16px)}.chart-footnote{flex-wrap:wrap;gap:5px 12px}.prediction-grid{grid-template-columns:1fr}}@media(max-width:430px){.practice-trend{padding:13px}.trend-cards article{min-height:76px}.trend-cards strong{font-size:19px}.trend-chart{height:260px}.prediction-panel>header{align-items:start;flex-direction:column;gap:5px}}
+.practice-trend{box-sizing:border-box;min-width:0;max-width:100%;margin:0 0 18px;padding:18px;border:1px solid var(--border-subtle);border-radius:var(--radius-lg);background:var(--bg-surface)}.practice-trend *{box-sizing:border-box;min-width:0}.trend-header{display:flex;align-items:end;justify-content:space-between;gap:18px}.trend-header>div:first-child{flex:1}.trend-header h2{margin:4px 0 2px;font-size:20px;letter-spacing:-.025em}.trend-header p{margin:0;color:var(--text-tertiary);font-size:10px;overflow-wrap:anywhere}.range-switch{padding:2px;border:1px solid var(--border-subtle);border-radius:var(--radius-sm);background:var(--bg-sidebar);display:flex;flex:none}.range-switch button{min-width:36px;height:29px;padding:0 7px;border:0;border-radius:3px;color:var(--text-tertiary);background:transparent;font-size:10px;cursor:pointer}.range-switch button.active{color:var(--text-primary);background:var(--bg-surface-active)}
+.trend-cards{margin-top:12px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}.primary-cards.ei-plan{grid-template-columns:repeat(2,minmax(0,1fr))}.trend-cards article{padding:11px;border:1px solid var(--border-subtle);border-radius:var(--radius-sm);background:var(--bg-sidebar);display:grid;align-content:start;gap:5px;overflow-wrap:anywhere}.trend-cards small,.trend-cards span{color:var(--text-tertiary);font-size:10px}.trend-cards strong{font:620 24px ui-monospace,monospace;line-height:1.15;overflow-wrap:anywhere}.trend-cards strong em{margin-left:3px;color:var(--text-tertiary);font-size:11px;font-style:normal}.trend-cards i{height:3px;margin:2px 0;border-radius:2px;background:var(--border-subtle)}.trend-cards i b{max-width:100%;height:100%;border-radius:inherit;background:var(--accent);display:block}.positive,.on-track{color:var(--success)!important}.negative,.behind{color:var(--danger)!important}
+.trend-controls{margin-top:9px;padding:8px;border:1px solid var(--border-subtle);border-radius:var(--radius-sm);display:flex;align-items:center;flex-wrap:wrap;gap:10px}.trend-controls>div{display:flex;align-items:center;gap:5px;flex-wrap:wrap}.trend-controls span,.trend-controls label{color:var(--text-tertiary);font-size:10px}.trend-controls button{min-height:28px;padding:0 7px;border:1px solid var(--border-default);border-radius:4px;color:var(--text-tertiary);background:var(--bg-sidebar);font-size:10px;cursor:pointer}.trend-controls button.active{color:var(--accent);border-color:var(--accent);background:var(--accent-muted)}.trend-controls input{max-width:100%;height:28px;padding:0 5px;border:1px solid var(--border-default);border-radius:4px;color:var(--text-secondary);background:var(--bg-sidebar);font-size:11px}.trend-controls label input[type=number]{width:54px;margin-left:4px}.deadline-control{margin-left:auto}.refreshing{flex:none}
+.trend-chart{min-width:0;max-width:100%;width:100%;height:300px;margin-top:14px;touch-action:pan-y;overflow:hidden}.chart-footnote{padding:7px 0 0;border-top:1px solid var(--border-subtle);color:var(--text-tertiary);display:flex;flex-wrap:wrap;gap:5px 14px;font-size:10px;overflow-wrap:anywhere}.prediction-panel{margin-top:13px;padding-top:13px;border-top:1px solid var(--border-subtle)}.prediction-panel>header{display:flex;align-items:end;justify-content:space-between;flex-wrap:wrap;gap:8px 16px}.prediction-panel h3{margin:3px 0 0;font-size:15px}.prediction-panel>header>strong{font-size:12px;overflow-wrap:anywhere}.forecast-answer{margin-top:8px;display:flex;flex-wrap:wrap;gap:6px 20px;font-size:12px;color:var(--text-secondary)}.forecast-answer b{color:var(--text-primary);font-variant-numeric:tabular-nums}.prediction-grid{margin-top:9px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}.prediction-grid article{padding:10px;border:1px solid var(--border-subtle);border-radius:var(--radius-sm);display:grid;align-content:start;gap:5px;overflow-wrap:anywhere}.prediction-grid small,.prediction-grid span{color:var(--text-tertiary);font-size:10px}.prediction-grid strong{font:600 18px ui-monospace,monospace}.prediction-grid strong em{margin-left:5px;color:var(--text-tertiary);font-size:10px;font-style:normal}.prediction-panel>p{margin:9px 0 0;color:var(--text-tertiary);font-size:10px;overflow-wrap:anywhere}.trend-loading{min-height:180px;color:var(--text-tertiary);display:grid;place-items:center;font-size:11px}.trend-error{padding:10px;color:var(--danger);font-size:11px;overflow-wrap:anywhere}.trend-error button{border:0;color:var(--text-primary);background:transparent;text-decoration:underline;cursor:pointer}.secondary-metrics{margin-top:14px;color:var(--text-secondary);font-size:11px}.secondary-metrics summary{cursor:pointer;padding:6px 0}.secondary-metrics .trend-cards strong{font-size:20px}
+@media(max-width:820px){.trend-header{align-items:start;flex-direction:column;gap:10px}.range-switch{width:100%}.range-switch button{flex:1;min-width:0}.trend-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.deadline-control{margin-left:0}.trend-chart{height:285px}.prediction-grid{grid-template-columns:1fr}.forecast-answer{flex-direction:column}}@media(max-width:430px){.practice-trend{padding:12px}.trend-header h2{font-size:18px}.primary-cards.ei-plan{grid-template-columns:repeat(2,minmax(0,1fr))}.trend-cards article{padding:9px}.trend-cards strong{font-size:21px}.trend-chart{height:260px}.prediction-panel>header{align-items:start;flex-direction:column;gap:5px}.trend-controls{gap:8px}.trend-controls .deadline-control>span{flex-basis:100%}}
 </style>
