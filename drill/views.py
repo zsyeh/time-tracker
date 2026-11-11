@@ -5,10 +5,11 @@ from django.conf import settings
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import transaction
 from django.db.models import Case, CharField, Value, When, Avg, Count, Exists, Max, OuterRef, Prefetch, Q, Subquery, Sum
-from django.db.models.functions import Coalesce, TruncDate
+from django.db.models.functions import Coalesce, Length, TruncDate
 from django.http import Http404, HttpResponse, HttpResponseNotModified
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from django.utils.http import parse_etags
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.response import Response
@@ -2325,17 +2326,34 @@ class DrillProgressView(APIView):
 
 
 class DrillAssetView(APIView):
+    def head(self, request, asset_id):
+        return self.get(request, asset_id)
+
     def get(self, request, asset_id):
-        asset = get_object_or_404(
-            QuestionAsset.objects.filter(
-                question__document__workspace=request_workspace(request),
-            ).only('image_data', 'mime_type', 'sha256'),
-            pk=asset_id,
+        assets = QuestionAsset.objects.filter(
+            question__document__workspace=request_workspace(request),
         )
+        # Ordinary image loads retain one query. Conditional requests and HEAD
+        # read only metadata first, avoiding transfer of PostgreSQL bytea/TOAST
+        # data when no response body is needed. Authorization precedes ETag use.
+        metadata_only = request.method == 'HEAD' or bool(request.headers.get('If-None-Match'))
+        fields = ('mime_type', 'sha256') if metadata_only else ('image_data', 'mime_type', 'sha256')
+        if request.method == 'HEAD':
+            assets = assets.annotate(image_length=Length('image_data'))
+        asset = get_object_or_404(assets.only(*fields), pk=asset_id)
         etag = f'"{asset.sha256}"'
-        if request.headers.get('If-None-Match') == etag:
+        candidates = parse_etags(request.headers.get('If-None-Match', ''))
+        if '*' in candidates or etag in [value.removeprefix('W/') for value in candidates]:
             response = HttpResponseNotModified()
+        elif request.method == 'HEAD':
+            response = HttpResponse(content_type=asset.mime_type)
+            response['Content-Length'] = str(asset.image_length)
         else:
+            if metadata_only:
+                # Revalidate workspace and fetch bytes and their version together:
+                # a re-render or reassignment can happen after the metadata query.
+                asset = get_object_or_404(assets.only('image_data', 'mime_type', 'sha256'), pk=asset_id)
+                etag = f'"{asset.sha256}"'
             response = HttpResponse(bytes(asset.image_data), content_type=asset.mime_type)
         response['ETag'] = etag
         response['Cache-Control'] = 'private, max-age=31536000, immutable'
