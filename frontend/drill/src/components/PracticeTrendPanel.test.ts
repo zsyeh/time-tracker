@@ -38,6 +38,8 @@ it('shows dynamic goal, small/large remaining and distinct workload versus net n
   const primary=host.querySelector('.primary-cards')!.textContent!
   expect(primary).toContain('333');expect(primary).toContain('777');expect(primary).toContain('240');expect(primary).toContain('204')
   expect(primary).toContain('Today’s workload');expect(primary).toContain('Today’s net new coverage');expect(primary).toContain('+3')
+  expect(primary).toContain('Workload remaining today 6')
+  expect(host.textContent).toContain('Goal overview');expect(host.textContent).toContain('Daily practice trend')
   expect(host.textContent).toContain('2026-12-03');expect(host.textContent).toContain('227')
   expect(host.querySelector<HTMLDetailsElement>('.secondary-metrics')!.open).toBe(false)
   expect(vi.mocked(api).mock.calls[0]![0]).toContain('deadline=2026-11-21')

@@ -19,7 +19,7 @@ let host: HTMLDivElement
 const payload = () => ({
   marker_stats: [],
   recent_questions: { count: 21, page: 2, page_size: 10, total_pages: 3, previous_page: 1, next_page: 3, results: [
-    { uuid: 'attempt-1', label: 'Question 17', document: 'Book A', topic: 'Chapter 2', result: 'review', created_at: '2026-11-11T08:15:00Z', diagnoses: ['K1'] },
+    { attempt_id: 1, uuid: 'attempt-1', label: 'Question 17', document: 'Book A', topic: 'Chapter 2', result: 'review', created_at: '2026-11-11T08:15:00Z', diagnoses: ['K1'], note_excerpt: 'Check the basis first' },
   ] },
   recent_notes: { count: 12, page: 1, page_size: 10, total_pages: 2, previous_page: null, next_page: 2, results: [
     { uuid: 'note-1', label: 'Question 29', document: 'Book B', topic: 'Chapter 3', note: 'Repeated note '.repeat(10), updated_at: '2026-11-10T06:00:00Z', result: 'review', primary_error: 'K2' },
@@ -49,12 +49,27 @@ it('keeps advanced filters available while showing the main search and status fi
   await mount()
   expect(host.querySelector('.filter-primary')?.textContent).toContain('Keyword')
   expect(host.querySelector('.filter-primary')?.textContent).toContain('Question status')
+  expect(host.querySelectorAll('.filter-primary input[type="date"]')).toHaveLength(2)
   expect(host.querySelector('#insight-advanced-filters')).toBeNull()
   host.querySelector<HTMLButtonElement>('.filter-more')!.click()
   await nextTick()
   expect(host.querySelectorAll('#insight-advanced-filters select')).toHaveLength(6)
+  expect(host.querySelector('#insight-advanced-filters input[type="date"]')).toBeNull()
   expect(host.textContent).toContain('Repeated note')
   expect(host.textContent).toContain('K1')
+  expect(host.querySelector('.record-note')?.textContent).toContain('Check the basis first')
+})
+
+it('keeps the date range in the applied URL and retains both page cursors', async () => {
+  navigation.query = { q: 'old query', start: '2026-11-01', end: '2026-11-11', questions_page: '2', notes_page: '2' }
+  await mount()
+  expect(host.querySelectorAll('.filter-primary input[type="date"]')).toHaveLength(2)
+  expect(host.querySelector('#insight-advanced-filters')).toBeNull()
+  const target = vi.mocked(api).mock.calls.at(-1)![0]
+  expect(target).toContain('start=2026-11-01')
+  expect(target).toContain('end=2026-11-11')
+  expect(target).toContain('questions_page=2')
+  expect(target).toContain('notes_page=2')
 })
 
 it('keeps independent pages and returns to the applied query and saved list', async () => {

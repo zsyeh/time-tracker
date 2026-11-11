@@ -820,6 +820,9 @@ class DrillApiTests(TestCase):
         QuestionUserState.objects.create(user=self.alice, question=self.question, note='first')
         QuestionUserState.objects.create(user=self.alice, question=self.similar, note='second')
         self.client.force_login(self.alice)
+        history_rows = self.client.get('/api/drill/insight/').json()['recent_questions']['results']
+        self.assertEqual(len(history_rows), 3)
+        self.assertEqual(len({row['attempt_id'] for row in history_rows}), 3)
 
         def detail(question, **params):
             return self.client.get(f'/api/drill/questions/{question.uuid}/', params).json()
@@ -868,6 +871,8 @@ class DrillApiTests(TestCase):
         payload = self.client.get('/api/drill/insight/?error=B2&has_note=1').json()
         self.assertEqual(payload['recent_questions']['count'], 1)
         self.assertEqual(payload['recent_questions']['results'][0]['diagnoses'], ['B2'])
+        self.assertEqual(payload['recent_questions']['results'][0]['attempt_id'], old.pk)
+        self.assertEqual(payload['recent_questions']['results'][0]['note_excerpt'], 'latest canonical Note')
         self.assertEqual(payload['recent_notes']['count'], 1)
         self.assertEqual(payload['recent_notes']['results'][0]['note'], 'latest canonical Note')
         self.assertEqual(payload['recent_notes']['results'][0]['primary_error'], 'B2')

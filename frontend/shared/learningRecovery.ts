@@ -9,7 +9,7 @@ export function safeResumePath(path: string) {
   const url = new URL(path, location.origin)
   if (url.hash || [...url.searchParams.keys()].some(k => /token|password|secret|csrf|key|pwa_launch/i.test(k))) return false
   return /^\/(?:today|trends|sessions(?:\/[0-9a-f-]{36})?|issues|settings)?$/.test(url.pathname)
-    || /^\/(drill|ei)\/(?:practice(?:\/[0-9a-f-]{36})?|activity|book-activity|heatmap|selected-heatmap|core-heatmap|insight|favorites|review-later|diagnostics|diagnostic-queue|cockpit|circuit-selected|signal-selected|signal-formulas|analog-selected|digital-selected|communication-selected|papers|errata|feel)$/.test(url.pathname)
+    || /^\/(drill|ei)\/(?:practice(?:\/[0-9a-f-]{36})?|progress|activity|book-activity|heatmap|selected-heatmap|core-heatmap|insight|favorites|review-later|diagnostics|diagnostic-queue|cockpit|circuit-selected|signal-selected|signal-formulas|analog-selected|digital-selected|communication-selected|papers|errata|feel)$/.test(url.pathname)
 }
 export function isRecoveryLaunch() { return launch && (matchMedia('(display-mode: standalone)').matches || (navigator as Navigator & { standalone?: boolean }).standalone === true) }
 export async function startLearningRecovery(user: string | number, workspace: string, router: Router, request: Request) {

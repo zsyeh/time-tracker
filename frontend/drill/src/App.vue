@@ -29,7 +29,7 @@ const moreToolsActive = computed(() => {
       ['circuit_selected', 'signal_selected', 'analog_selected', 'digital_selected', 'communication_selected'].includes(collection)
   }
   return name.startsWith('paper') || [
-    'practice', 'activity', 'book-activity', 'heatmap', 'favorites', 'review-later', 'feel', 'errata',
+    'practice', 'activity', 'book-activity', 'heatmap', 'diagnostics', 'diagnostic-queue', 'favorites', 'review-later', 'feel', 'errata',
     'circuit-selected', 'signal-selected', 'signal-formulas', 'analog-selected',
     'digital-selected', 'communication-selected', 'selected-pdf-pages',
   ].includes(name)
@@ -169,7 +169,7 @@ onUnmounted(() => {
         </RouterLink>
         <RouterLink v-if="isEi" to="/core-heatmap" :class="{ active: route.name === 'core-heatmap' || (route.name === 'question' && route.query.from === 'core-heatmap') }"><span>{{ uiText("五科核心热力图") }}</span></RouterLink>
         <RouterLink to="/insight" :class="{ active: route.name === 'insight' || (route.name === 'question' && route.query.from === 'insight') }"><span>{{ t('insight') }}</span></RouterLink>
-        <RouterLink to="/diagnostics" :class="{ active: route.name === 'diagnostics' || route.name === 'diagnostic-queue' || (route.name === 'question' && route.query.from === 'diagnostics') }"><span>{{ uiText("解题能力") }}</span></RouterLink>
+        <RouterLink to="/progress" :class="{ active: route.name === 'progress' }"><span>{{ uiText('学习进度') }}</span></RouterLink>
       </nav>
       <div class="more-tools-group">
         <button ref="moreToolsTrigger" class="more-tools-trigger" :class="{ active: moreToolsActive || moreToolsOpen }" type="button" aria-controls="more-tools-panel" :aria-expanded="moreToolsOpen" @click="toggleMoreTools">
@@ -182,6 +182,7 @@ onUnmounted(() => {
         <RouterLink to="/practice" :class="{ active: route.name === 'practice' || (route.name === 'question' && !route.query.from) }">
           <span>{{ t('practice') }}</span>
         </RouterLink>
+        <RouterLink to="/diagnostics" :class="{ active: route.name === 'diagnostics' || route.name === 'diagnostic-queue' || (route.name === 'question' && route.query.from === 'diagnostics') }"><span>{{ uiText('解题能力') }}</span></RouterLink>
         <RouterLink v-if="isEi" to="/circuit-selected" :class="{ active: route.name === 'circuit-selected' || (route.name === 'question' && route.query.collection === 'circuit_selected') }"><span>{{ uiText("电路严选") }}</span></RouterLink>
         <RouterLink v-if="isEi" to="/signal-selected" :class="{ active: route.name === 'signal-selected' || (route.name === 'question' && route.query.collection === 'signal_selected') }"><span>{{ uiText("信号严选") }}</span></RouterLink>
         <RouterLink v-if="isEi" to="/signal-formulas" :class="{ active: route.name === 'signal-formulas' }"><span>{{ uiText("892 每日公式") }}</span></RouterLink>

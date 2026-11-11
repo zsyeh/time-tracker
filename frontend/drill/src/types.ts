@@ -253,6 +253,7 @@ export interface InsightPayload {
     count: number
   }>
   recent_questions: InsightPage<{
+    attempt_id: number
     uuid: string
     label: string
     document: string
@@ -260,6 +261,7 @@ export interface InsightPayload {
     result: 'done' | 'correct' | 'review'
     created_at: string
     diagnoses: ErrorCode[]
+    note_excerpt: string
   }>
   recent_notes: InsightPage<{
     uuid: string

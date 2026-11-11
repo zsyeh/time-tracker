@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { uiText } from '../lib/uiText'
-import { computed, defineAsyncComponent, onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api } from '../lib/api'
 import { cachedCatalog, cachedQuestionPage, fetchCatalog, prefetchQuestion, storeQuestionPage } from '../lib/workspace'
@@ -8,10 +8,8 @@ import type { Catalog, Page, QuestionSummary } from '../types'
 import { useUiPreferences } from '../lib/uiPreferences'
 import ExamTypeControls from '../components/ExamTypeControls.vue'
 import ExamTypeBadge from '../components/ExamTypeBadge.vue'
-import { formatColours, type TypeStats } from '../lib/examTypes'
+import { formatColours, typeText, type TypeStats } from '../lib/examTypes'
 import { runtimeWorkspace } from '../lib/runtimePath'
-
-const PracticeTrendPanel = defineAsyncComponent(() => import('../components/PracticeTrendPanel.vue'))
 
 const router = useRouter()
 const { t } = useUiPreferences()
@@ -218,7 +216,7 @@ onUnmounted(() => {
       <button v-if="lastQuestionUuid || questions?.results.length" class="primary-action" :disabled="loading" @pointerenter="prefetchQuestion(lastQuestionUuid || questions?.results[0]?.uuid || null, navigationQueryString())" @click="openQuestion(lastQuestionUuid || questions!.results[0].uuid)">{{ lastQuestionUuid ? t('resumeLast') : t('openNext') }} <b>→</b></button>
     </header>
 
-    <PracticeTrendPanel />
+    <RouterLink class="practice-progress-link" to="/progress">{{ typeText('查看学习进度', 'View learning progress') }} <span aria-hidden="true">→</span></RouterLink>
 
     <aside v-if="!isEi" class="collection-credit"><strong>{{ uiText("感谢 CXY") }}</strong><span>{{ uiText("题库源资料由 Bilibili 创作者 cxy（澄潇宇）收集整理；可确认时会另行标注 PDF 作者。") }}</span></aside>
     <aside v-else class="collection-credit"><strong>892 · EI</strong><span>{{ uiText("已从用户提供的 Markdown 题库导入基础例题与简答题，公式按原始 LaTeX 渲染。") }}</span></aside>
@@ -255,3 +253,9 @@ onUnmounted(() => {
     <footer v-if="questions && (questions.previous || questions.next)" class="pager"><button :disabled="!questions.previous" @click="page--; loadQuestions()">{{ uiText("← 上一页") }}</button><span>{{ uiText("第") }} {{ page }} {{ uiText("页") }}</span><button :disabled="!questions.next" @click="page++; loadQuestions()">{{ uiText("下一页 →") }}</button></footer>
   </section>
 </template>
+
+<style scoped>
+.practice-progress-link { display:inline-flex; align-items:center; gap:8px; min-height:40px; margin:0 0 16px; color:var(--accent); font-size:14px; font-weight:600; text-decoration:none; }
+.practice-progress-link:hover { text-decoration:underline; }
+.practice-progress-link:focus-visible { outline:2px solid var(--accent); outline-offset:3px; border-radius:var(--radius-sm); }
+</style>

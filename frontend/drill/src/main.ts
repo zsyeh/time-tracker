@@ -23,6 +23,7 @@ import DigitalSelectedView from './views/DigitalSelectedView.vue'
 import CommunicationSelectedView from './views/CommunicationSelectedView.vue'
 import PdfPageStatusView from './views/PdfPageStatusView.vue'
 import DiagnosticDashboardView from './views/DiagnosticDashboardView.vue'
+import ProgressView from './views/ProgressView.vue'
 import DiagnosticQueueView from './views/DiagnosticQueueView.vue'
 import NotFoundView from './views/NotFoundView.vue'
 import { initializeUiPreferences } from './lib/uiPreferences'
@@ -34,6 +35,7 @@ const router = createRouter({
   routes: [
     { path: '/', redirect: '/practice' },
     { path: '/practice', name: 'practice', component: PracticeView },
+    { path: '/progress', name: 'progress', component: ProgressView },
     { path: '/practice/:uuid', name: 'question', component: QuestionView, props: true },
     { path: '/diagnostics', name: 'diagnostics', component: DiagnosticDashboardView },
     { path: '/diagnostic-queue', name: 'diagnostic-queue', component: DiagnosticQueueView },

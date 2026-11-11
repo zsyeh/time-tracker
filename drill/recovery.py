@@ -250,7 +250,7 @@ def valid_location(workspace, path, user=None):
     route = p.path.removeprefix(prefix) if p.path.startswith(prefix+'/') else p.path
     if re.fullmatch(r'/practice/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', route):
         return Question.objects.filter(uuid=route.split('/')[-1], document__workspace=workspace).exists()
-    return bool(re.fullmatch(r'/(?:practice|activity|book-activity|heatmap|selected-heatmap|core-heatmap|insight|favorites|review-later|diagnostics|diagnostic-queue|cockpit|circuit-selected|signal-selected|signal-formulas|analog-selected|digital-selected|communication-selected|papers|errata|feel)', route))
+    return bool(re.fullmatch(r'/(?:practice|progress|activity|book-activity|heatmap|selected-heatmap|core-heatmap|insight|favorites|review-later|diagnostics|diagnostic-queue|cockpit|circuit-selected|signal-selected|signal-formulas|analog-selected|digital-selected|communication-selected|papers|errata|feel)', route))
 
 class LearningRecoveryView(APIView):
     def finalize_response(self, request, response, *args, **kwargs):

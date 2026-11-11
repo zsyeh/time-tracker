@@ -11,6 +11,8 @@ import type { ECharts, EChartsCoreOption } from 'echarts/core'
 import { api } from '../lib/api'
 import type { DiagnosticDashboard, ErrorCode } from '../types'
 import { runtimeWorkspace } from '../lib/runtimePath'
+import { chartPalette, chartVisuals } from '../lib/chartTheme'
+import { typeText } from '../lib/examTypes'
 
 echarts.use([BarChart, LineChart, GridComponent, LegendComponent, TooltipComponent, CanvasRenderer])
 
@@ -34,20 +36,14 @@ const title = computed(() => isEi ? uiText("EI 专业课 · 解题能力") : uiT
 
 function percentage(value: number | null) { return value === null ? '—' : `${value}%` }
 function dailyRate(correct: number, sample: number) { return sample ? Math.round(correct * 1000 / sample) / 10 : null }
-function css(name: string, fallback: string) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback }
 
 function option(): EChartsCoreOption {
   const payload = data.value!
-  const text = css('--text-secondary', '#a1a8b3')
-  const border = css('--border-subtle', '#2b3038')
-  const surface = css('--bg-elevated', '#20242b')
-  const primary = css('--text-primary', '#e5e9ef')
-  const mastered = css('--mastered', '#55b88a')
-  const review = css('--review', '#d5a44f')
+  const palette = chartPalette()
+  const { text, border, surface, primary, mastered, review } = palette
   return {
-    animationDuration: 220,
+    ...chartVisuals(palette),
     grid: { left: 38, right: 16, top: 42, bottom: 30 },
-    textStyle: { fontFamily: 'Inter, PingFang SC, sans-serif' },
     legend: { top: 3, textStyle: { color: text, fontSize: 12 }, data: [uiText("首次独立正确率"), uiText("二次独立正确率")] },
     tooltip: {
       trigger: 'axis', confine: true, backgroundColor: surface, borderColor: border, textStyle: { color: primary, fontSize: 12 },
@@ -68,16 +64,11 @@ function option(): EChartsCoreOption {
 
 function activityOption(): EChartsCoreOption {
   const payload = data.value!
-  const text = css('--text-secondary', '#a1a8b3')
-  const border = css('--border-subtle', '#2b3038')
-  const surface = css('--bg-elevated', '#20242b')
-  const primary = css('--text-primary', '#e5e9ef')
-  const accent = css('--accent', '#6ba6ff')
-  const review = css('--review', '#d5a44f')
+  const palette = chartPalette()
+  const { text, border, surface, primary, accent, review } = palette
   return {
-    animationDuration: 220,
+    ...chartVisuals(palette),
     grid: { left: 38, right: 14, top: 40, bottom: 38 },
-    textStyle: { fontFamily: 'Inter, PingFang SC, sans-serif' },
     legend: { top: 3, textStyle: { color: text, fontSize: 12 }, data: [uiText("每日去重题数"), uiText("提交次数")] },
     tooltip: {
       trigger: 'axis', confine: true, backgroundColor: surface, borderColor: border, textStyle: { color: primary, fontSize: 12 },
@@ -176,6 +167,7 @@ watch(uiLanguage, () => { void renderChart() })
       <div><span class="eyebrow">ABILITY DIAGNOSIS</span><h1>{{ title }}</h1><p>{{ uiText("区分“做过”与“能够独立做对”；所有比例均显示真实样本量。") }}</p></div>
       <div class="range"><button v-for="value in [7,14,30]" :key="value" :class="{ active: days === value && !customStart }" @click="setDays(value)">{{ value }}{{ uiText("天") }}</button><label>{{ uiText("自定") }}<input v-model="customStart" type="date" /><input v-model="customEnd" type="date" /><button @click="applyCustomRange">{{ uiText("应用") }}</button></label></div>
     </header>
+    <RouterLink class="diagnostic-progress-link" to="/progress">{{ typeText('查看学习进度', 'View learning progress') }} <span aria-hidden="true">→</span></RouterLink>
     <p v-if="error" class="error-state">{{ uiText(error) }}</p>
     <div v-if="loading && !data" class="question-skeleton">{{ uiText("正在计算诊断指标…") }}</div>
     <template v-else-if="data">
@@ -236,6 +228,9 @@ watch(uiLanguage, () => { void renderChart() })
 .diagnostic-header { display:flex; align-items:end; justify-content:space-between; gap:24px; }
 .diagnostic-header h1 { margin:4px 0; font-size:25px; line-height:1.2; }
 .diagnostic-header p { margin:0; color:var(--text-secondary); font-size:13px; }
+.diagnostic-progress-link { display:inline-flex; align-items:center; gap:8px; min-height:40px; margin:-8px 0 12px; color:var(--accent); font-size:14px; font-weight:600; text-decoration:none; }
+.diagnostic-progress-link:hover { text-decoration:underline; }
+.diagnostic-progress-link:focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:var(--radius-sm); }
 .diagnostic-page .eyebrow { color:var(--text-tertiary); font-size:12px; font-weight:650; letter-spacing:.05em; }
 .range { display:flex; align-items:center; flex-wrap:wrap; gap:4px; padding:4px; border:1px solid var(--border-subtle); border-radius:var(--radius-md); }
 .range>button { min-width:44px; min-height:40px; padding:0 10px; border:0; border-radius:var(--radius-sm); color:var(--text-secondary); background:transparent; font-size:13px; cursor:pointer; }
@@ -250,7 +245,7 @@ watch(uiLanguage, () => { void renderChart() })
 .today-strip span,.today-strip small { color:var(--text-secondary); font-size:12px; }
 .today-strip strong { font-size:30px; line-height:1.15; font-weight:650; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
 .today-strip button strong { color:var(--review); }
-.ability-board { min-width:0; padding:24px; border:1px solid var(--border-subtle); border-radius:var(--radius-lg); background:var(--bg-surface); }
+.ability-board { min-width:0; padding:24px; border-radius:var(--radius-lg); background:var(--bg-surface); }
 .ability-board>header { display:flex; align-items:baseline; justify-content:space-between; gap:12px; }
 .ability-board h2,.diagnostic-grid h2 { margin:0; font-size:17px; line-height:1.35; }
 .ability-board>header span { color:var(--text-secondary); font-size:12px; font-variant-numeric:tabular-nums; }

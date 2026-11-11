@@ -1816,6 +1816,11 @@ class DrillInsightView(APIView):
         note_page, note_pagination = self.paginate(
             saved_notes, request.query_params.get('notes_page', 1),
         )
+        attempt_rows = list(question_page.object_list)
+        note_by_question = dict(QuestionUserState.objects.filter(
+            user=request.user,
+            question_id__in={item.question_id for item in attempt_rows},
+        ).values_list('question_id', 'note'))
 
         marker_counts = {
             row['code']: row['count']
@@ -1832,11 +1837,13 @@ class DrillInsightView(APIView):
                 'results': [
                 {
                     **question_identity(item.question),
+                    'attempt_id': item.pk,
                     'result': item.result,
                     'created_at': item.created_at,
                     'diagnoses': [tag.code for tag in item.error_tags.all()],
+                    'note_excerpt': (note_by_question.get(item.question_id) or '')[:160],
                 }
-                for item in question_page.object_list
+                for item in attempt_rows
                 ],
             },
             'recent_notes': {

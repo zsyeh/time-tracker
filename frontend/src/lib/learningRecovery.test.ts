@@ -54,6 +54,11 @@ it('does not revive deleted questions or loop through authentication URLs',async
   expect(module.safeResumePath('//evil.test')).toBe(false)
   expect(module.safeResumePath('/?token=private')).toBe(false)
 })
+it('accepts progress deep links in both learning workspaces',async()=>{
+  const {module}=await setup(false)
+  expect(module.safeResumePath('/drill/progress?days=30')).toBe(true)
+  expect(module.safeResumePath('/ei/progress')).toBe(true)
+})
 it('a different account does not read the previous account local position',async()=>{
   const {module,router}=await setup(true)
   localStorage.setItem('learning.locations.v2.1',JSON.stringify({...state,dirty:true}))

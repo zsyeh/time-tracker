@@ -155,6 +155,7 @@ urlpatterns = [
     ),
     path('share/<str:raw_token>', public_spa_view, name='spa_public_share'),
     path('practice', drill_spa_view, name='drill_practice'),
+    path('progress', drill_spa_view, name='drill_progress_page'),
     path('practice/<uuid:question_uuid>', drill_spa_view, name='drill_question'),
     path('activity', drill_spa_view, name='drill_activity_page'),
     path('book-activity', drill_spa_view, name='drill_book_activity_page'),

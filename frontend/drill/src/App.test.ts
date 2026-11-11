@@ -55,7 +55,7 @@ it('keeps EI entry points and all EI tools available without a Drill heatmap hom
   host.querySelector<HTMLButtonElement>('.more-tools-trigger')!.click()
   await settle()
   const panel = document.querySelector<HTMLElement>('#more-tools-panel')!
-  expect(panel.querySelectorAll('a')).toHaveLength(16)
+  expect(panel.querySelectorAll('a')).toHaveLength(17)
   expect(panel.textContent).toContain('Selected circuits')
   expect(panel.textContent).toContain('Selected PDF page log')
 })
@@ -69,7 +69,7 @@ it('opens all secondary links in a scrollable popover and closes on Escape', asy
   await settle()
   const panel = document.querySelector<HTMLElement>('#more-tools-panel')!
   expect(trigger.getAttribute('aria-expanded')).toBe('true')
-  expect(panel.querySelectorAll('a')).toHaveLength(9)
+  expect(panel.querySelectorAll('a')).toHaveLength(10)
   expect(panel.textContent).toContain('Favorites')
   expect(panel.textContent).toContain('Corrections')
   expect(panel.style.maxHeight).not.toBe('')
@@ -77,6 +77,19 @@ it('opens all secondary links in a scrollable popover and closes on Escape', asy
   await settle()
   expect(document.querySelector('#more-tools-panel')).toBeNull()
   expect(document.activeElement).toBe(trigger)
+})
+
+it('keeps progress in primary navigation and diagnostics in secondary navigation', async () => {
+  await mount()
+  expect(host.querySelector('.primary-navigation a[href="/progress"]')).not.toBeNull()
+  expect(host.querySelector('.primary-navigation a[href="/diagnostics"]')).toBeNull()
+  host.querySelector<HTMLButtonElement>('.more-tools-trigger')!.click()
+  await settle()
+  expect(document.querySelector('#more-tools-panel a[href="/diagnostics"]')).not.toBeNull()
+  route.name = 'progress'
+  route.fullPath = '/progress'
+  await settle()
+  expect(host.querySelector('.primary-navigation a[href="/progress"]')?.classList.contains('active')).toBe(true)
 })
 
 it('keeps the current secondary destination marked and closes on route change or outside click', async () => {

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { uiText } from '../lib/uiText'
-import { computed, nextTick, onMounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api } from '../lib/api'
 import { cachedHeatmap, storeHeatmap } from '../lib/workspace'
@@ -104,6 +104,15 @@ const shareScope = computed(() => ({
 const mode = ref<'topics' | 'questions'>(props.selectedOnly ? 'questions' : initialMode)
 let pendingQuestionUuid = String(route.query.question || '')
 const returnStateKey = computed(() => `drill.heatmap.return.v2.${props.coreOnly ? 'core' : props.selectedOnly ? 'selected' : 'all'}`)
+type QuickState = 'all' | 'unattempted' | 'review' | 'mastered' | 'overdue'
+const quickState = ref<QuickState>('all')
+const hasOverdue = computed(() => data.value?.groups.some(group => group.questions.some(question => question.review_overdue)) ?? false)
+const locateMessage = ref('')
+let locateTimer = 0
+try {
+  const saved = JSON.parse(sessionStorage.getItem(returnStateKey.value) || 'null')
+  if (pendingQuestionUuid && saved?.questionUuid === pendingQuestionUuid && ['all', 'unattempted', 'review', 'mastered', 'overdue'].includes(saved.quickState)) quickState.value = saved.quickState
+} catch { /* Return state is optional. */ }
 const selectedTopic = ref<{
   documentId: number
   document: string
@@ -141,7 +150,7 @@ function openQuestion(documentId: number, question: HeatmapQuestion) {
   try {
     sessionStorage.setItem(returnStateKey.value, JSON.stringify({
       scope: scope.value, typeGroup: typeGroup.value, course: course.value,
-      material: material.value, questionUuid: question.uuid, scrollY: window.scrollY,
+      material: material.value, quickState: quickState.value, questionUuid: question.uuid, scrollY: window.scrollY,
     }))
   } catch {
     // Private browsing may disallow storage; the return route still selects the question.
@@ -166,11 +175,17 @@ function openQuestion(documentId: number, question: HeatmapQuestion) {
 
 async function restoreQuestionSelection(payload: HeatmapPayload) {
   if (mode.value !== 'questions' || !pendingQuestionUuid) return
+  const restoringUuid = pendingQuestionUuid
+  const restoringSequence = loadSequence
   for (const group of payload.groups) {
-    const question = group.questions.find((item) => item.uuid === pendingQuestionUuid)
+    const question = group.questions.find((item) => item.uuid === restoringUuid)
     if (!question) continue
     selectedQuestion.value = { documentId: group.document_id, document: group.document, question }
     await nextTick()
+    if (typeof window.requestAnimationFrame === 'function') {
+      await new Promise<void>((resolve) => window.requestAnimationFrame(() => resolve()))
+    }
+    if (restoringSequence !== loadSequence || pendingQuestionUuid !== restoringUuid || String(route.query.question || '') !== restoringUuid) return
     let restoredScroll = false
     try {
       const saved = JSON.parse(sessionStorage.getItem(returnStateKey.value) || 'null')
@@ -189,6 +204,32 @@ async function restoreQuestionSelection(payload: HeatmapPayload) {
     pendingQuestionUuid = ''
     return
   }
+}
+
+function matchesQuickState(question: HeatmapQuestion) {
+  if (quickState.value === 'all') return true
+  if (quickState.value === 'overdue') return question.review_overdue
+  return question.state === quickState.value
+}
+
+function locateNextUnattempted() {
+  const ordered = data.value?.groups.flatMap(group => group.questions.map(question => ({ group, question }))) || []
+  const currentIndex = ordered.findIndex(({ question }) => question.uuid === selectedQuestion.value?.question.uuid)
+  const afterCurrent = ordered.slice(currentIndex + 1).find(({ question }) => question.state === 'unattempted' && matchesQuickState(question))
+  const target = afterCurrent || ordered.find(({ question }) => question.state === 'unattempted' && matchesQuickState(question))
+  window.clearTimeout(locateTimer)
+  if (!target) {
+    locateMessage.value = uiText('当前筛选范围没有未做题')
+    locateTimer = window.setTimeout(() => { locateMessage.value = '' }, 3000)
+    return
+  }
+  selectedTopic.value = null
+  selectedQuestion.value = { documentId: target.group.document_id, document: target.group.document, question: target.question }
+  void nextTick(() => {
+    document.querySelector(`[data-question-uuid="${target.question.uuid}"]`)?.scrollIntoView({ block: 'center', behavior: 'smooth' })
+  })
+  locateMessage.value = uiText('已定位下一道未做题')
+  locateTimer = window.setTimeout(() => { locateMessage.value = '' }, 3000)
 }
 
 function smallPractice() {
@@ -210,7 +251,6 @@ async function load() {
   const cached = cachedHeatmap<HeatmapPayload>(cacheKey)
   if (cached) {
     data.value = cached
-    void restoreQuestionSelection(cached)
   }
   loading.value = !cached
   error.value = ''
@@ -219,11 +259,13 @@ async function load() {
     if (sequence !== loadSequence || scope.value !== requestedScope || mode.value !== requestedMode || props.selectedOnly !== requestedSelectedOnly || props.coreOnly !== requestedCoreOnly) return
     data.value = value
     storeHeatmap(cacheKey, value)
-    void restoreQuestionSelection(value)
   } catch (reason) {
     error.value = (reason as Error).message
   } finally {
-    if (sequence === loadSequence && scope.value === requestedScope && mode.value === requestedMode && props.selectedOnly === requestedSelectedOnly) loading.value = false
+    if (sequence === loadSequence && scope.value === requestedScope && mode.value === requestedMode && props.selectedOnly === requestedSelectedOnly) {
+      loading.value = false
+      if (data.value) void restoreQuestionSelection(data.value)
+    }
   }
 }
 
@@ -253,6 +295,7 @@ watch(() => [props.selectedOnly, props.coreOnly], () => {
 })
 watch(typeGroup, () => { selectedTopic.value = null; selectedQuestion.value = null; void load() })
 onMounted(load)
+onUnmounted(() => { loadSequence += 1; window.clearTimeout(locateTimer) })
 </script>
 
 <template>
@@ -272,13 +315,20 @@ onMounted(load)
       <p>{{ data?.quality_notice }} <template v-if="data?.curation_total">{{ uiText("核心清单共") }} {{ data.curation_total }} {{ uiText("题，当前显示") }} {{ data.question_count }} {{ uiText("题。") }}</template></p>
     </div>
     <p v-if="error" class="error-state">{{ uiText(error) }}</p>
-    <div v-else-if="loading" class="question-skeleton">BUILDING HEATMAP…</div>
+    <div v-else-if="loading" class="question-skeleton">{{ uiText('正在加载热力图…') }}</div>
     <template v-else-if="data">
-      <div class="heatmap-overview" aria-label="当前范围进度"><strong>{{ data.question_count }}</strong><span>题</span><span>已做 <b>{{ data.statistics.attempted_question_count }}</b></span><span>已掌握 <b>{{ data.statistics.mastered_question_count }}</b></span><span>待复习 <b>{{ data.statistics.review_question_count }}</b></span></div>
+      <div class="heatmap-overview" aria-label="当前范围进度"><strong>{{ data.question_count }}</strong><span>{{ uiText('题') }}</span><span>{{ uiText('已做') }} <b>{{ data.statistics.attempted_question_count }}</b></span><span>{{ uiText('已掌握') }} <b>{{ data.statistics.mastered_question_count }}</b></span></div>
+      <div v-if="mode === 'questions'" class="heatmap-actions">
+        <div class="heatmap-state-filters" role="group" :aria-label="uiText('按题目状态高亮')">
+          <button v-for="state in (['all', 'unattempted', 'review', 'mastered', 'overdue'] as const)" v-show="state !== 'overdue' || hasOverdue" :key="state" type="button" :class="{ active: quickState === state }" :aria-pressed="quickState === state" @click="quickState = state">{{ state === 'all' ? uiText('全部') : state === 'unattempted' ? uiText('未做') : state === 'review' ? uiText('待复习') : state === 'mastered' ? uiText('已掌握') : uiText('逾期') }}</button>
+        </div>
+        <button type="button" class="heatmap-next" @click="locateNextUnattempted">{{ uiText('定位下一道未做题') }} <span aria-hidden="true">→</span></button>
+      </div>
+      <p v-if="locateMessage" class="heatmap-locate-message" role="status">{{ locateMessage }}</p>
       <section v-for="group in data.groups" :key="group.document_id" class="heatmap-group">
         <header class="heatmap-book-header">
           <div class="heatmap-book-title"><h2>{{ group.document }}</h2><small>{{ mode === 'topics' ? `${group.topics.length} 个考点` : `${group.questions.length} 题` }}</small></div>
-          <div class="heatmap-book-stats"><strong>{{ group.statistics.coverage_percent }}%</strong><span>已做 {{ group.statistics.attempted_question_count }} · 已掌握 {{ group.statistics.mastered_question_count }} · 待复习 {{ group.statistics.review_question_count }}</span></div>
+          <div class="heatmap-book-stats"><strong>{{ group.statistics.coverage_percent }}%</strong><span>{{ uiText('已覆盖') }} {{ group.statistics.attempted_question_count }} {{ uiText('题') }}</span></div>
         </header>
         <div v-if="mode === 'topics'" class="topic-heatmap">
           <button
@@ -294,18 +344,18 @@ onMounted(load)
         <Transition name="topic-preview">
           <aside v-if="mode === 'topics' && selectedTopic?.documentId === group.document_id" class="topic-preview-card">
             <div class="topic-preview-copy">
-              <span>TOPIC PREVIEW · {{ selectedTopic.document }}</span>
+              <span>{{ uiText('考点预览') }} · {{ selectedTopic.document }}</span>
               <h3>{{ selectedTopic.topic.topic }}</h3>
               <p>{{ selectedTopic.topic.path }}</p>
             </div>
             <dl>
-              <div><dt>COVERED</dt><dd>{{ selectedTopic.topic.attempted_question_count }} / {{ selectedTopic.topic.question_count }}</dd></div>
-              <div><dt>ATTEMPTS</dt><dd>{{ selectedTopic.topic.attempt_count }}</dd></div>
-              <div><dt>REVIEW</dt><dd>{{ selectedTopic.topic.review_question_count }}</dd></div>
+              <div><dt>{{ uiText('已覆盖') }}</dt><dd>{{ selectedTopic.topic.attempted_question_count }} / {{ selectedTopic.topic.question_count }}</dd></div>
+              <div><dt>{{ uiText('作答次数') }}</dt><dd>{{ selectedTopic.topic.attempt_count }}</dd></div>
+              <div><dt>{{ uiText('待复习') }}</dt><dd>{{ selectedTopic.topic.review_question_count }}</dd></div>
             </dl>
             <div class="topic-preview-actions">
-              <button type="button" class="topic-preview-close" @click="selectedTopic = null">Close</button>
-              <button type="button" class="topic-preview-open" @click="openTopic(selectedTopic.documentId, selectedTopic.topic.topic_id)">Practice this topic <b>→</b></button>
+              <button type="button" class="topic-preview-close" @click="selectedTopic = null">{{ uiText('关闭') }}</button>
+              <button type="button" class="topic-preview-open" @click="openTopic(selectedTopic.documentId, selectedTopic.topic.topic_id)">{{ uiText('练习此考点') }} <b>→</b></button>
             </div>
           </aside>
         </Transition>
@@ -314,7 +364,7 @@ onMounted(load)
             v-for="(item, index) in group.questions"
             :key="item.uuid"
             :data-question-uuid="item.uuid" :data-type-group="item.type_group"
-            :class="[item.review_overdue ? 'status-overdue' : `status-${item.state}`, { selected: selectedQuestion?.question.uuid === item.uuid }]"
+            :class="[item.review_overdue ? 'status-overdue' : `status-${item.state}`, { selected: selectedQuestion?.question.uuid === item.uuid, dimmed: !matchesQuickState(item) }]"
             :aria-pressed="selectedQuestion?.question.uuid === item.uuid"
             :aria-label="`${item.label}; ${item.state}; ${item.attempt_count} attempts`"
             :title="`${item.label} · ${item.core_topic || item.topic} · ${item.state} · ${item.attempt_count} attempts`"
@@ -324,18 +374,18 @@ onMounted(load)
         <Transition name="topic-preview">
           <aside v-if="mode === 'questions' && selectedQuestion?.documentId === group.document_id" class="topic-preview-card question-preview-card">
             <div class="topic-preview-copy">
-              <span>QUESTION PREVIEW · {{ selectedQuestion.document }}</span>
+              <span>{{ uiText('题目预览') }} · {{ selectedQuestion.document }}</span>
               <ExamTypeBadge :type="selectedQuestion.question.question_type" :group="selectedQuestion.question.type_group" /><h3>{{ selectedQuestion.question.label || `Question ${selectedQuestion.question.order}` }}</h3>
               <p>{{ selectedQuestion.question.core_topic || selectedQuestion.question.topic || uiText("General") }}<template v-if="selectedQuestion.question.year"> · {{ selectedQuestion.question.year }}{{ selectedQuestion.question.variant ? ` ${selectedQuestion.question.variant}` : '' }}</template></p>
             </div>
             <dl>
-              <div><dt>STATE</dt><dd>{{ selectedQuestion.question.review_overdue ? 'OVERDUE REVIEW' : selectedQuestion.question.state === 'mastered' ? 'MASTERED' : selectedQuestion.question.state === 'review' ? 'REVIEW' : 'NOT STARTED' }}</dd></div>
-              <div><dt>ATTEMPTS</dt><dd>{{ selectedQuestion.question.attempt_count }}</dd></div>
-              <div><dt>INDEX</dt><dd>{{ String(selectedQuestion.question.order).padStart(4, '0') }}</dd></div>
+              <div><dt>{{ uiText('状态') }}</dt><dd>{{ selectedQuestion.question.review_overdue ? uiText('逾期') : selectedQuestion.question.state === 'mastered' ? uiText('已掌握') : selectedQuestion.question.state === 'review' ? uiText('待复习') : uiText('未做') }}</dd></div>
+              <div><dt>{{ uiText('作答次数') }}</dt><dd>{{ selectedQuestion.question.attempt_count }}</dd></div>
+              <div><dt>{{ uiText('序号') }}</dt><dd>{{ String(selectedQuestion.question.order).padStart(4, '0') }}</dd></div>
             </dl>
             <div class="topic-preview-actions">
-              <button type="button" class="topic-preview-close" @click="selectedQuestion = null">Close</button>
-              <button type="button" class="topic-preview-open" @click="openQuestion(selectedQuestion.documentId, selectedQuestion.question)">Open question <b>→</b></button>
+              <button type="button" class="topic-preview-close" @click="selectedQuestion = null">{{ uiText('关闭') }}</button>
+              <button type="button" class="topic-preview-open" @click="openQuestion(selectedQuestion.documentId, selectedQuestion.question)">{{ uiText('打开题目') }} <b>→</b></button>
             </div>
           </aside>
         </Transition>
@@ -364,6 +414,13 @@ onMounted(load)
 .heatmap-overview strong { color: var(--text-primary); font-size: 24px; font-weight: 650; line-height: 1; }
 .heatmap-overview span:nth-of-type(n+2) { margin-left: 8px; }
 .heatmap-overview b { color: var(--text-primary); font-weight: 600; }
+.heatmap-actions { margin: 8px 0 16px; display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
+.heatmap-state-filters { display: flex; flex-wrap: wrap; gap: 4px; }
+.heatmap-state-filters button, .heatmap-next { min-height: 40px; padding: 0 12px; border: 1px solid transparent; border-radius: var(--radius-sm); color: var(--text-secondary); background: transparent; font-size: 13px; cursor: pointer; }
+.heatmap-state-filters button:hover, .heatmap-next:hover { color: var(--text-primary); background: var(--bg-surface-hover); }
+.heatmap-state-filters button.active { border-color: var(--border-default); color: var(--text-primary); background: var(--bg-elevated); }
+.heatmap-next { border-color: var(--border-default); color: var(--accent); }
+.heatmap-locate-message { margin: -8px 0 12px; color: var(--text-secondary); font-size: 13px; }
 .heatmap-group { margin-top: 8px; padding: 16px; border: 1px solid var(--border-subtle); border-radius: 10px; background: var(--bg-surface); }
 .heatmap-group > header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 12px; }
 .heatmap-group h2 { margin: 0; font-size: 17px; line-height: 1.35; font-weight: 650; }
@@ -372,12 +429,14 @@ onMounted(load)
 .heatmap-book-stats { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; color: var(--text-secondary); font-size: 12px; }
 .heatmap-book-stats strong { color: var(--text-primary); font-size: 16px; }
 .topic-heatmap { display: grid; grid-template-columns: repeat(auto-fill, 26px); gap: 5px; }
-.question-heatmap { display: grid; grid-template-columns: repeat(auto-fill, 24px); gap: 5px; }
+.question-heatmap { display: grid; grid-template-columns: repeat(auto-fill, 28px); gap: 4px; }
 .topic-heatmap button, .question-heatmap button { position: relative; width: 26px; height: 26px; padding: 0; border: 1px solid var(--border-default); border-radius: 4px; background: var(--bg-elevated); cursor: pointer; touch-action: manipulation; }
-.question-heatmap button { width: 24px; height: 24px; }
+.question-heatmap button { width: 28px; height: 28px; }
+.topic-heatmap button:active, .question-heatmap button:active { border-color: var(--accent); background: var(--bg-surface-active); }
 .topic-heatmap button span, .question-heatmap button span { display: none; }
 .topic-heatmap button:hover, .question-heatmap button:hover { border-color: var(--text-secondary); z-index: 1; }
 .topic-heatmap button.selected, .question-heatmap button.selected { outline: 2px solid var(--accent); outline-offset: 2px; z-index: 1; }
+.question-heatmap button.dimmed:not(.selected) { opacity: .3; }
 .topic-heatmap button:focus-visible, .question-heatmap button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .topic-heatmap .intensity-1 { background: #23372c !important; }
 .topic-heatmap .intensity-2 { background: #28503a !important; }
