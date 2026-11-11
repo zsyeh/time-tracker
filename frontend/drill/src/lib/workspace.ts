@@ -2,31 +2,46 @@ import { api } from './api'
 import { withWorkspacePrefix } from './runtimePath'
 import type { Catalog, Page, QuestionDetail, QuestionSummary } from '../types'
 
-const catalogKey = 'drill.taxonomy.v1'
+const catalogKey = 'drill.taxonomy.v2'
 const catalogTtl = 7 * 24 * 60 * 60 * 1000
 const listTtl = 5 * 60 * 1000
 const detailTtl = 24 * 60 * 60 * 1000
 const detailLimit = 120
 
 let cacheScope = ''
+let noteCacheScope = ''
+let scopeVersion = 0
 let memoryCatalog: Catalog | null = null
+let catalogSavedAt = 0
 const listCache = new Map<string, { value: Page<QuestionSummary>; savedAt: number }>()
 const detailCache = new Map<string, { value: QuestionDetail; savedAt: number }>()
 const detailInflight = new Map<string, Promise<QuestionDetail>>()
 const heatmapCache = new Map<string, { value: unknown; savedAt: number }>()
 const stateEventKey = 'drill.question-state-event.v1'
 
+// Browser storage is an optional cache, never part of an API transaction.
+function persist(storage: 'sessionStorage' | 'localStorage', key: string, value: unknown): boolean {
+  try { window[storage].setItem(key, JSON.stringify(value)); return true } catch { return false }
+}
+function removeStored(storage: 'sessionStorage' | 'localStorage', key: string) {
+  try { window[storage].removeItem(key) } catch { /* storage may be unavailable */ }
+}
+function sessionKeys(): string[] {
+  try { return Object.keys(sessionStorage) } catch { return [] }
+}
+const noteDraftMemory = new Map<string, { value: string | null; savedAt: number }>()
+
 function invalidateDerivedCaches() {
   listCache.clear()
   heatmapCache.clear()
   if (!cacheScope) return
-  for (const key of Object.keys(sessionStorage)) {
+  for (const key of sessionKeys()) {
     if (
       key.startsWith(`drill.heatmap.v1.${cacheScope}.`) ||
       key.startsWith(`drill.question-list.v1.${cacheScope}.`)
       || key.startsWith(`drill.heatmap.v2.${cacheScope}.`)
       || key.startsWith(`drill.question-list.v2.${cacheScope}.`)
-    ) sessionStorage.removeItem(key)
+    ) removeStored('sessionStorage', key)
   }
 }
 
@@ -40,8 +55,8 @@ if (typeof window !== 'undefined') {
         for (const key of [...detailCache.keys()]) {
           if (key.startsWith(`${payload.uuid}?`)) detailCache.delete(key)
         }
-        for (const key of Object.keys(sessionStorage)) {
-          if (key.startsWith(`drill.question-detail.v2.${cacheScope}.${encodeURIComponent(payload.uuid + '?')}`)) sessionStorage.removeItem(key)
+        for (const key of sessionKeys()) {
+          if (key.startsWith(`drill.question-detail.v2.${cacheScope}.${encodeURIComponent(payload.uuid + '?')}`)) removeStored('sessionStorage', key)
         }
       }
       window.dispatchEvent(new CustomEvent('drill:question-state-changed', { detail: payload }))
@@ -50,30 +65,45 @@ if (typeof window !== 'undefined') {
 }
 
 function readStored<T>(key: string, ttl: number): T | null {
-  try {
-    const stored = JSON.parse(sessionStorage.getItem(key) || localStorage.getItem(key) || 'null')
-    if (!stored || Date.now() - Number(stored.savedAt) > ttl) return null
-    return stored.value as T
-  } catch {
-    return null
+  for (const storage of ['sessionStorage', 'localStorage'] as const) {
+    try {
+      const stored = JSON.parse(window[storage].getItem(key) || 'null')
+      if (stored && Date.now() - Number(stored.savedAt) <= ttl) return stored.value as T
+    } catch { /* unavailable or corrupt cache; try the other store */ }
   }
+  return null
 }
 
 function scopedKey(kind: string, key: string) {
   const schema = ['question-list', 'question-detail', 'heatmap'].includes(kind) ? 'v2' : 'v1'
-  return cacheScope ? `drill.${kind}.${schema}.${cacheScope}.${key}` : ''
+  const scope = kind === 'note-draft' ? noteCacheScope : cacheScope
+  return scope ? `drill.${kind}.${schema}.${scope}.${key}` : ''
 }
 
-export function configureWorkspaceScope(scope: string) {
-  cacheScope = encodeURIComponent(scope)
+export function configureWorkspaceScope(scope: string, noteScope = scope) {
+  // Question UUIDs are globally unique. Keep the original username+UUID Note
+  // namespace so existing unsynced drafts survive the cache isolation upgrade.
+  noteCacheScope = encodeURIComponent(noteScope)
+  const nextScope = encodeURIComponent(scope)
+  if (nextScope === cacheScope) return
+  cacheScope = nextScope
+  scopeVersion += 1
+  memoryCatalog = null
+  catalogSavedAt = 0
+  listCache.clear()
+  detailCache.clear()
+  heatmapCache.clear()
+  detailInflight.clear()
 }
 
 export function cachedCatalog(): Catalog | null {
-  if (memoryCatalog) return memoryCatalog
+  if (memoryCatalog && Date.now() - catalogSavedAt <= catalogTtl) return memoryCatalog
+  if (!cacheScope) return null
   try {
-    const stored = JSON.parse(localStorage.getItem(catalogKey) || 'null')
+    const stored = JSON.parse(localStorage.getItem(`${catalogKey}.${cacheScope}`) || 'null')
     if (stored && Date.now() - Number(stored.savedAt) <= catalogTtl) {
       memoryCatalog = stored.value
+      catalogSavedAt = Number(stored.savedAt)
       return memoryCatalog
     }
   } catch { /* ignore corrupt browser cache */ }
@@ -85,9 +115,14 @@ export async function fetchCatalog(force = false): Promise<Catalog> {
     const cached = cachedCatalog()
     if (cached) return cached
   }
+  const requestScope = cacheScope
+  const requestVersion = scopeVersion
   const value = await api<Catalog>('/api/drill/catalog/')
-  memoryCatalog = value
-  localStorage.setItem(catalogKey, JSON.stringify({ savedAt: Date.now(), value }))
+  if (requestScope === cacheScope && requestVersion === scopeVersion) {
+    memoryCatalog = value
+    catalogSavedAt = Date.now()
+    if (requestScope) persist('localStorage', `${catalogKey}.${requestScope}`, { savedAt: catalogSavedAt, value })
+  }
   return value
 }
 
@@ -102,7 +137,7 @@ export function storeQuestionPage(key: string, value: Page<QuestionSummary>) {
   const entry = { savedAt: Date.now(), value }
   listCache.set(key, entry)
   const storageKey = scopedKey('question-list', key)
-  if (storageKey) sessionStorage.setItem(storageKey, JSON.stringify(entry))
+  if (storageKey) persist('sessionStorage', storageKey, entry)
 }
 
 function detailKey(uuid: string, query = '') {
@@ -125,7 +160,7 @@ export function storeQuestion(uuid: string, query: string, value: QuestionDetail
   detailCache.set(key, entry)
   while (detailCache.size > detailLimit) detailCache.delete(detailCache.keys().next().value as string)
   const storageKey = scopedKey('question-detail', encodeURIComponent(key))
-  if (storageKey) sessionStorage.setItem(storageKey, JSON.stringify(entry))
+  if (storageKey) persist('sessionStorage', storageKey, entry)
 }
 
 export function fetchQuestion(uuid: string, query = '', force = false, signal?: AbortSignal): Promise<QuestionDetail> {
@@ -137,12 +172,14 @@ export function fetchQuestion(uuid: string, query = '', force = false, signal?: 
   const existing = signal ? null : detailInflight.get(key)
   if (existing) return existing
   const suffix = query ? `?${query}` : ''
+  const requestScope = cacheScope
+  const requestVersion = scopeVersion
   const request = api<QuestionDetail>(`/api/drill/questions/${uuid}/${suffix}`, signal ? { signal } : {})
     .then((value) => {
-      storeQuestion(uuid, query, value)
+      if (requestScope === cacheScope && requestVersion === scopeVersion) storeQuestion(uuid, query, value)
       return value
     })
-    .finally(() => { if (!signal) detailInflight.delete(key) })
+    .finally(() => { if (!signal && detailInflight.get(key) === request) detailInflight.delete(key) })
   if (!signal) detailInflight.set(key, request)
   return request
 }
@@ -198,34 +235,39 @@ export function storeHeatmap<T>(scope: string, value: T) {
   const entry = { value, savedAt: Date.now() }
   heatmapCache.set(scope, entry)
   const storageKey = scopedKey('heatmap', scope)
-  if (storageKey) sessionStorage.setItem(storageKey, JSON.stringify(entry))
+  if (storageKey) persist('sessionStorage', storageKey, entry)
 }
 
 export function cachedNoteDraft(uuid: string): string | null {
   const storageKey = scopedKey('note-draft', uuid)
   if (!storageKey) return null
-  return readStored<string>(storageKey, 3 * 24 * 60 * 60 * 1000)
+  const memory = noteDraftMemory.get(storageKey)
+  const ttl = 3 * 24 * 60 * 60 * 1000
+  if (memory && Date.now() - memory.savedAt <= ttl) return memory.value
+  return readStored<string>(storageKey, ttl)
 }
 
 export function storeNoteDraft(uuid: string, value: string) {
   const storageKey = scopedKey('note-draft', uuid)
-  if (!storageKey) return
-  localStorage.setItem(storageKey, JSON.stringify({ value, savedAt: Date.now() }))
+  if (!storageKey) return false
+  noteDraftMemory.set(storageKey, { value, savedAt: Date.now() })
+  return persist('localStorage', storageKey, { value, savedAt: Date.now() })
 }
 
 export function clearNoteDraft(uuid: string) {
   const storageKey = scopedKey('note-draft', uuid)
   if (!storageKey) return
-  localStorage.removeItem(storageKey)
-  sessionStorage.removeItem(storageKey)
+  noteDraftMemory.set(storageKey, { value: null, savedAt: Date.now() })
+  removeStored('localStorage', storageKey)
+  removeStored('sessionStorage', storageKey)
 }
 
 export function patchQuestionState(uuid: string, patch: Partial<QuestionDetail>) {
   invalidateDerivedCaches()
   // Persisted query variants may not currently be in memory. Drop them before
   // saving patched live entries so a later visit cannot restore the old format.
-  for (const key of Object.keys(sessionStorage)) {
-    if (key.startsWith(`drill.question-detail.v2.${cacheScope}.${encodeURIComponent(uuid + '?')}`)) sessionStorage.removeItem(key)
+  for (const key of sessionKeys()) {
+    if (key.startsWith(`drill.question-detail.v2.${cacheScope}.${encodeURIComponent(uuid + '?')}`)) removeStored('sessionStorage', key)
   }
   for (const [key, entry] of detailCache) {
     if (!key.startsWith(`${uuid}?`)) continue
@@ -235,6 +277,6 @@ export function patchQuestionState(uuid: string, patch: Partial<QuestionDetail>)
   // A storage event wakes other tabs. The custom event lets the current tab's
   // list/heatmap widgets refresh from the same database-backed API contract.
   const payload = { uuid, savedAt: Date.now() }
-  localStorage.setItem(stateEventKey, JSON.stringify(payload))
+  persist('localStorage', stateEventKey, payload)
   window.dispatchEvent(new CustomEvent('drill:question-state-changed', { detail: payload }))
 }

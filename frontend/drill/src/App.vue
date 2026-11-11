@@ -36,7 +36,7 @@ document.title = isEi ? 'EI · 892 Practice' : 'Drill · Question Practice'
 
 async function loadIdentity() {
   const auth = await api<{ user: { username: string; id?: number } }>('/api/auth/session/')
-  configureWorkspaceScope(auth.user.username)
+  configureWorkspaceScope(`${runtimeWorkspace}:${auth.user.username}`, auth.user.username)
   username.value = auth.user.username
   stopRecovery = await startLearningRecovery(auth.user.id ?? auth.user.username, runtimeWorkspace, recoveryRouter, api)
   identityReady.value = true

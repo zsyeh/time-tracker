@@ -16,10 +16,15 @@ export class ApiError extends Error {
 export async function api<T>(url: string, options: RequestInit = {}): Promise<T> {
   const method = (options.method || 'GET').toUpperCase()
   if (method === 'GET' && !options.signal) {
-    const existing = inflightGets.get(url)
+    // A prior account's GET must never satisfy a new account's request after
+    // the workspace cache has changed scope. Keep normal same-user coalescing.
+    const key = `${runtimeWorkspace}:${learningUserId}:${withWorkspacePrefix(url)}`
+    const existing = inflightGets.get(key)
     if (existing) return existing as Promise<T>
-    const request = requestJson<T>(url, options).finally(() => inflightGets.delete(url))
-    inflightGets.set(url, request)
+    const request = requestJson<T>(url, options).finally(() => {
+      if (inflightGets.get(key) === request) inflightGets.delete(key)
+    })
+    inflightGets.set(key, request)
     return request
   }
   return requestJson<T>(url, options)

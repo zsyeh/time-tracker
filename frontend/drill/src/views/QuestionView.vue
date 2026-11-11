@@ -225,7 +225,7 @@ function navigateToQuestion(uuid: string | null, direction: 'previous' | 'next',
     previous: direction === 'next' ? props.uuid : null,
     next: direction === 'previous' ? props.uuid : null,
   }
-  void router.push({ path: `/practice/${uuid}`, query: questionRouteQuery() })
+  return router.push({ path: `/practice/${uuid}`, query: questionRouteQuery() })
 }
 
 function selectSourceQuestion(uuid: string) {
@@ -585,6 +585,15 @@ function useQuestion(loadedQuestion: QuestionDetail) {
   }
 }
 
+function persistNoteDraft(uuid: string, value: string) {
+  const persisted = storeNoteDraft(uuid, value)
+  if (!persisted && props.uuid === uuid) {
+    noteSaveState.value = 'error'
+    error.value = typeText('浏览器无法保存笔记草稿；请保存到服务器，关闭页面可能丢失未保存内容。', 'Browser could not persist the note draft. Save it to the server before closing this page.')
+  }
+  return persisted
+}
+
 function cacheNoteDraft() {
   window.clearTimeout(noteDraftTimer)
   window.clearTimeout(noteAutoSaveTimer)
@@ -594,8 +603,7 @@ function cacheNoteDraft() {
   const uuid = props.uuid
   const value = note.value
   noteDraftTimer = window.setTimeout(() => {
-    storeNoteDraft(uuid, value)
-    noteDraftDirty = false
+    noteDraftDirty = !persistNoteDraft(uuid, value)
   }, 300)
   noteAutoSaveTimer = window.setTimeout(() => {
     if (props.uuid === uuid && note.value === value) void saveNote()
@@ -605,8 +613,7 @@ function cacheNoteDraft() {
 function flushNoteDraft(uuid = props.uuid) {
   if (!noteDraftDirty) return
   window.clearTimeout(noteDraftTimer)
-  storeNoteDraft(uuid, note.value)
-  noteDraftDirty = false
+  noteDraftDirty = !persistNoteDraft(uuid, note.value)
 }
 
 function discardNoteDraft(uuid = props.uuid) {
@@ -744,33 +751,35 @@ interface StateResponse {
 }
 
 function applyState(response: StateResponse, uuid = props.uuid) {
-  patchQuestionState(uuid, response)
-  if (props.uuid !== uuid || !question.value || question.value.uuid !== uuid) return
-  question.value.attempt_count = response.attempt_count
-  question.value.latest_result = response.latest_result
-  question.value.state = response.state
-  const sourcePin = question.value.source_context?.anchors.find((item) => item.uuid === question.value?.uuid)
-  if (sourcePin) sourcePin.state = response.state
-  question.value.can_undo = response.can_undo
-  question.value.confidence = response.confidence
-  question.value.note = response.note
-  question.value.state_version = response.state_version
-  question.value.saved_note = response.note || ''
-  question.value.is_favorite = response.is_favorite
-  question.value.review_later = response.review_later
-  question.value.review_overdue = response.review_overdue
-  question.value.last_time_spent_seconds = response.last_time_spent_seconds
-  question.value.last_timed_at = response.last_timed_at
-  if (response.latest_diagnosis !== undefined) question.value.latest_diagnosis = response.latest_diagnosis
-  if (response.review_plan !== undefined) question.value.review_plan = response.review_plan
-  note.value = response.note || ''
+  // Render the authoritative response before optional cache/invalidation work.
+  if (props.uuid === uuid && question.value?.uuid === uuid) {
+    question.value.attempt_count = response.attempt_count
+    question.value.latest_result = response.latest_result
+    question.value.state = response.state
+    const sourcePin = question.value.source_context?.anchors.find((item) => item.uuid === question.value?.uuid)
+    if (sourcePin) sourcePin.state = response.state
+    question.value.can_undo = response.can_undo
+    question.value.confidence = response.confidence
+    question.value.note = response.note
+    question.value.state_version = response.state_version
+    question.value.saved_note = response.note || ''
+    question.value.is_favorite = response.is_favorite
+    question.value.review_later = response.review_later
+    question.value.review_overdue = response.review_overdue
+    question.value.last_time_spent_seconds = response.last_time_spent_seconds
+    question.value.last_timed_at = response.last_timed_at
+    if (response.latest_diagnosis !== undefined) question.value.latest_diagnosis = response.latest_diagnosis
+    if (response.review_plan !== undefined) question.value.review_plan = response.review_plan
+    note.value = response.note || ''
+  }
+  try { patchQuestionState(uuid, response) } catch { /* cache cannot undo server state */ }
 }
-
 async function record(result: 'correct' | 'review' | 'reset') {
   if (saving.value || !question.value) return
   window.clearTimeout(diagnosisSaveTimer)
   diagnosisSaveSequence += 1
   const uuid = props.uuid
+  const roundTimer = practiceTimer
   const sequence = ++operationSequence
   saving.value = true
   const submittedNote = note.value
@@ -778,6 +787,7 @@ async function record(result: 'correct' | 'review' | 'reset') {
     || (result === 'review' && reviewAutoNext.value)
   let pendingCopy: { resolve: (uuid: string) => void; reject: (reason: Error) => void } | null = null
   let copyArmed = false
+  let attemptSaved = false
   if (willTurn && pageTurnCopyMode.value !== 'off' && topNextTarget.value) {
     const deferred = {} as { resolve: (uuid: string) => void; reject: (reason: Error) => void }
     const target = new Promise<string>((resolve, reject) => {
@@ -788,12 +798,13 @@ async function record(result: 'correct' | 'review' | 'reset') {
     copyArmed = startPageTurnCopy(target)
   }
   try {
-    await practiceTimer?.sync('checkpoint')
-    const timingSnapshot = practiceTimer?.snapshot() || {}
+    await roundTimer?.sync('checkpoint')
+    if (props.uuid !== uuid || sequence !== operationSequence) return
+    const timingSnapshot = roundTimer?.snapshot() || {}
     const timeSpentSeconds = result === 'correct' || result === 'review'
       ? recordedQuestionSeconds()
       : null
-    if (!pendingSubmissionKey.value) pendingSubmissionKey.value = practiceTimer?.submissionKey() || crypto.randomUUID()
+    if (!pendingSubmissionKey.value) pendingSubmissionKey.value = roundTimer?.submissionKey() || crypto.randomUUID()
     const response = await post<StateResponse>(`/api/drill/questions/${uuid}/attempts/`, {
       result,
       note: note.value,
@@ -813,11 +824,19 @@ async function record(result: 'correct' | 'review' | 'reset') {
       } : {}),
       ...(timeSpentSeconds === null ? {} : { time_spent_seconds: timeSpentSeconds }),
     })
+    // The POST is the commit boundary; cache, refresh and navigation are optional
+    // follow-up work and must never turn this acknowledged attempt into a failure.
+    attemptSaved = true
+    roundTimer?.finish()
     if (sequence !== operationSequence) return
+    if (result === 'correct' || result === 'review') {
+      timingFinalized.value = true
+      window.clearInterval(questionTimerInterval)
+    }
     pendingSubmissionKey.value = null
     if (!response.note_conflict) discardNoteDraft(uuid)
     applyState(response, uuid)
-    notifyPracticeTrendChanged()
+    try { notifyPracticeTrendChanged() } catch { /* statistics refresh cannot undo a saved attempt */ }
     if (props.uuid !== uuid) return
     editingAttemptId.value = null
     diagnosisSaveState.value = result === 'correct' || result === 'review' ? 'saved' : 'idle'
@@ -829,15 +848,10 @@ async function record(result: 'correct' | 'review' | 'reset') {
     noteSaveState.value = response.note_conflict ? 'error' : 'idle'
     if (response.note_conflict) {
       note.value = submittedNote
-      storeNoteDraft(uuid, submittedNote)
-      error.value = '作答已保存，但笔记在另一标签页被更新；本地草稿已保留，请确认后再保存。'
+      const draftPersisted = persistNoteDraft(uuid, submittedNote)
+      if (draftPersisted) error.value = '作答已保存，但笔记在另一标签页被更新；本地草稿已保留，请确认后再保存。'
     }
-    if (result === 'correct' || result === 'review') {
-      practiceTimer?.finish()
-      timingFinalized.value = true
-      window.clearInterval(questionTimerInterval)
-    } else {
-      practiceTimer?.finish()
+    if (result === 'reset') {
       resetQuestionTimer()
       if (practiceTimer) { draftRoundKey = practiceTimer.state.key; roundDraftReady = true; persistRoundDraft() }
       void syncQuestionTimer(props.uuid)
@@ -850,8 +864,12 @@ async function record(result: 'correct' | 'review' | 'reset') {
       await goToNext(nextMode.value, copyArmed)
     }
   } catch (reason) {
-    practiceTimer?.resumeAfterFailure()
-    if (props.uuid === uuid && sequence === operationSequence) error.value = (reason as Error).message
+    if (!attemptSaved) roundTimer?.resumeAfterFailure()
+    if (props.uuid === uuid && sequence === operationSequence) {
+      error.value = attemptSaved
+        ? typeText(`作答已保存，后续操作未完成：${(reason as Error).message}`, `Answer saved; follow-up action failed: ${(reason as Error).message}`)
+        : (reason as Error).message
+    }
   } finally {
     pendingCopy?.reject(new Error('作答未完成，已取消自动复制。'))
     if (sequence === operationSequence) saving.value = false
@@ -1033,7 +1051,7 @@ async function saveNote() {
   } catch (reason) {
     if (props.uuid !== uuid) return
     noteSaveState.value = 'error'
-    storeNoteDraft(uuid, value)
+    persistNoteDraft(uuid, value)
     if (reason instanceof ApiError && reason.status === 409) {
       const serverVersion = Number(reason.body.version || 0)
       if (serverVersion && question.value) question.value.state_version = serverVersion
@@ -1116,7 +1134,7 @@ function goToPrevious() {
     error.value = emptyPreviousQuestionMessage(nextMode.value)
     return
   }
-  navigateToQuestion(target, 'previous')
+  void navigateToQuestion(target, 'previous')?.catch((reason: Error) => { error.value = reason.message; readerNavigating.value = false })
 }
 
 async function goToNext(kind: NextQuestionMode = 'sequential', copyArmed = false) {
@@ -1134,8 +1152,9 @@ async function goToNext(kind: NextQuestionMode = 'sequential', copyArmed = false
   }
   nextLoading.value = true
   try {
-    navigateToQuestion(target, 'next', copyArmed)
+    await navigateToQuestion(target, 'next', copyArmed)
   } catch (reason) {
+    readerNavigating.value = false
     if (props.uuid === uuid) error.value = `无法进入下一题：${(reason as Error).message}`
   } finally {
     if (props.uuid === uuid) nextLoading.value = false
@@ -1340,7 +1359,7 @@ onBeforeRouteLeave(() => {
               <small v-if="timerSyncStatus === 'offline' || timerSyncStatus === 'conflict'" class="note-draft-hint">{{ timerSyncStatus === 'conflict' ? typeText('计时同步冲突；本地进度已保留', 'Timing sync conflict; local progress retained') : typeText('离线计时已保存在本机', 'Offline timing saved on this device') }}</small><div class="question-timer" :class="{ active: !timingCountdown && !timingFinalized, saved: timingFinalized }"><span>{{ timingFinalized ? uiText("计时已保存") : timingCountdown ? uiText("计时准备") : uiText("本题用时") }}</span><strong>{{ timingFinalized || !timingCountdown ? formattedQuestionTime : `${timingCountdown} ${typeText('秒后开始', 'seconds until start')}` }}</strong></div>
               <NoteVisibility :note="note" :question-key="props.uuid">
               <p v-if="note && !noteOpen" class="note-preview" role="button" tabindex="0" @click="noteOpen = true" @keydown.enter="noteOpen = true">{{ note }}</p>
-              <details class="note-field" :open="noteOpen" @toggle="toggleNote"><summary><span>{{ uiText("题目笔记 Note") }}</span><small>{{ noteSaveState === 'saving' ? uiText("保存中…") : noteSaveState === 'saved' ? uiText("已保存") : noteSaveState === 'error' ? uiText("保存失败") : noteSaveState === 'dirty' ? uiText("未保存") : note ? uiText("展开编辑") : uiText("添加笔记") }}</small></summary><textarea v-model="note" maxlength="20000" :placeholder="uiText('记录公式、错误原因、修正方法或下次检查点')" @input="cacheNoteDraft" /><span class="note-controls"><small class="note-draft-hint">{{ noteSaveState === 'saving' ? uiText("保存中…") : noteSaveState === 'saved' ? uiText("已保存到服务器") : noteSaveState === 'error' ? uiText("保存失败，本地草稿仍保留") : noteSaveState === 'dirty' ? uiText("未保存") : uiText("停止输入 5 秒后自动保存") }}</small><button type="button" class="save-note" :disabled="noteSaveState === 'saving'" @click="saveNote">{{ noteSaveState === 'saving' ? uiText("保存中…") : noteSaveState === 'error' ? uiText("重试保存") : uiText("保存笔记") }}</button></span></details>
+              <details class="note-field" :open="noteOpen" @toggle="toggleNote"><summary><span>{{ uiText("题目笔记 Note") }}</span><small>{{ noteSaveState === 'saving' ? uiText("保存中…") : noteSaveState === 'saved' ? uiText("已保存") : noteSaveState === 'error' ? uiText("保存失败") : noteSaveState === 'dirty' ? uiText("未保存") : note ? uiText("展开编辑") : uiText("添加笔记") }}</small></summary><textarea v-model="note" maxlength="20000" :placeholder="uiText('记录公式、错误原因、修正方法或下次检查点')" @input="cacheNoteDraft" /><span class="note-controls"><small class="note-draft-hint">{{ noteSaveState === 'saving' ? uiText("保存中…") : noteSaveState === 'saved' ? uiText("已保存到服务器") : noteSaveState === 'error' ? typeText('保存失败，请重试；离开页面前确认已保存。', 'Save failed. Retry and confirm it is saved before leaving this page.') : noteSaveState === 'dirty' ? uiText("未保存") : uiText("停止输入 5 秒后自动保存") }}</small><button type="button" class="save-note" :disabled="noteSaveState === 'saving'" @click="saveNote">{{ noteSaveState === 'saving' ? uiText("保存中…") : noteSaveState === 'error' ? uiText("重试保存") : uiText("保存笔记") }}</button></span></details>
               </NoteVisibility>
             </div>
             <div class="unified-answer-actions"><button class="correct primary-action" :class="{ selected: question.state === 'mastered' }" :disabled="saving" @click="record('correct')">{{ masteredAutoNext ? uiText("掌握并下一题") : uiText("标记已掌握") }}</button><button class="review" :class="{ selected: question.state === 'review' }" :disabled="saving" @click="record('review')">{{ uiText("待复习") }}{{ reviewAutoNext ? uiText("并下一题") : '' }}</button><details class="secondary-actions"><summary>{{ uiText("更多操作") }}</summary><button :disabled="saving || !question.can_undo" @click="undo">{{ uiText("撤销上次") }}</button><button :disabled="saving || question.state === 'unattempted'" @click="record('reset')">{{ uiText("重置本题状态") }}</button></details></div>
