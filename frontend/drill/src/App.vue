@@ -111,16 +111,16 @@ onUnmounted(() => stopRecovery?.())
         <RouterLink to="/book-activity" :class="{ active: route.name === 'book-activity' }">
           <span>{{ t('bookActivity') }}</span>
         </RouterLink>
-        <RouterLink to="/heatmap" :class="{ active: route.name === 'heatmap' }">
+        <RouterLink to="/heatmap" :class="{ active: route.name === 'heatmap' || (route.name === 'question' && route.query.from === 'heatmap') }">
           <span>{{ t('knowledge') }}</span>
         </RouterLink>
         <RouterLink to="/papers" :class="{ active: String(route.name || '').startsWith('paper') }">
           <span>{{ t('buildPaper') }}</span>
         </RouterLink>
-        <RouterLink to="/favorites" :class="{ active: route.name === 'favorites' }">
+        <RouterLink to="/favorites" :class="{ active: route.name === 'favorites' || (route.name === 'question' && route.query.from === 'collection' && route.query.collection === 'favorite') }">
           <span>{{ t('favorites') }}</span>
         </RouterLink>
-        <RouterLink to="/review-later" :class="{ active: route.name === 'review-later' }">
+        <RouterLink to="/review-later" :class="{ active: route.name === 'review-later' || (route.name === 'question' && route.query.from === 'collection' && route.query.collection === 'review_later') }">
           <span>{{ t('nextTime') }}</span>
         </RouterLink>
         <RouterLink to="/feel" :class="{ active: route.name === 'feel' }">
