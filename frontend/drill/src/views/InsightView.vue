@@ -186,32 +186,38 @@ onMounted(async () => {
 .filter-clear { justify-self: start; }
 .insight-tabs { display: none; }
 .insight-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); overflow: hidden; border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface); }
-.insight-grid > section { display: flex; flex-direction: column; min-width: 0; border-top: 0; border-left: 1px solid var(--border-subtle); }
+.insight-grid > section { display: flex; flex-direction: column; min-width: 0; border-left: 1px solid var(--border-subtle); }
 .insight-grid > section:first-child { border-left: 0; }
-.insight-grid > section > header { height: auto; min-height: 48px; padding: 12px 16px; border-bottom: 1px solid var(--border-subtle); color: var(--text-primary); font-size: 17px; font-weight: 600; }
+.insight-grid > section.is-loading { opacity: .58; pointer-events: none; }
+.insight-grid > section > header { display: flex; align-items: center; justify-content: space-between; min-height: 48px; padding: 12px 16px; border-bottom: 1px solid var(--border-subtle); color: var(--text-primary); font-size: 17px; font-weight: 600; }
 .insight-grid > section > header strong { color: var(--text-secondary); font-size: 13px; font-variant-numeric: tabular-nums; }
 .insight-list { flex: 1; }
-.insight-list > button { min-height: 72px; padding: 12px 16px; gap: 12px; align-items: center; }
+.insight-list > button { display: flex; align-items: center; justify-content: space-between; width: 100%; min-height: 72px; padding: 12px 16px; gap: 12px; border: 0; border-bottom: 1px solid var(--border-subtle); color: var(--text-primary); background: transparent; text-align: left; cursor: pointer; }
+.insight-list > button:hover { background: var(--bg-surface-hover); }
 .insight-list > button:focus-visible, .note-list button:focus-visible, .insight-tabs button:focus-visible { outline: 2px solid var(--accent); outline-offset: -2px; }
-.insight-list > button > .record-main { min-width: 0; gap: 4px; }
-.insight-list > button > .record-meta { flex: none; align-items: end; gap: 6px; text-align: right; }
-.insight-list strong { color: var(--text-primary); font-size: 14px; font-weight: 600; line-height: 1.35; }
+.insight-list > button > .record-main { display: grid; min-width: 0; gap: 4px; }
+.insight-list > button > .record-meta { display: grid; flex: none; align-items: end; gap: 6px; text-align: right; }
+.insight-list strong { display: block; overflow: hidden; color: var(--text-primary); font-size: 14px; font-weight: 600; line-height: 1.35; text-overflow: ellipsis; white-space: nowrap; }
 .insight-list small, .insight-list time { color: var(--text-secondary); font-size: 12px; line-height: 1.35; font-variant-numeric: tabular-nums; }
 .insight-list .record-diagnosis { color: var(--text-secondary); }
-.insight-list em { font-size: 12px; font-weight: 600; }
-.insight-list > p { padding: 24px 16px; color: var(--text-secondary); font-size: 14px; }
-.insight-pagination { min-height: 54px; padding: 8px 16px; }
-.insight-pagination button { min-height: 38px; padding: 0 12px; font-size: 13px; }
-.insight-pagination span { color: var(--text-secondary); font-size: 12px; }
-.note-list > article { padding: 12px 16px; }
-.note-list > article > header { align-items: center; gap: 12px; }
-.note-list > article > header button { min-width: 0; gap: 4px; }
+.insight-list em { font-size: 12px; font-style: normal; font-weight: 600; }
+.insight-list > p { margin: 0; padding: 24px 16px; color: var(--text-secondary); font-size: 14px; }
+.insight-pagination { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 54px; padding: 8px 16px; border-top: 1px solid var(--border-subtle); }
+.insight-pagination button { min-height: 38px; padding: 0 12px; border: 1px solid var(--border-default); border-radius: var(--radius-sm); color: var(--text-secondary); background: transparent; font: inherit; font-size: 13px; cursor: pointer; }
+.insight-pagination button:hover:not(:disabled) { color: var(--text-primary); background: var(--bg-surface-hover); }
+.insight-pagination button:disabled { opacity: .4; cursor: default; }
+.insight-pagination span { color: var(--text-secondary); font-size: 12px; font-variant-numeric: tabular-nums; }
+.note-list > article { padding: 12px 16px; border-bottom: 1px solid var(--border-subtle); }
+.note-list > article > header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.note-list > article > header button { display: grid; min-width: 0; gap: 4px; padding: 0; border: 0; color: var(--text-primary); background: transparent; text-align: left; cursor: pointer; }
 .note-list > article > header button:hover strong { color: var(--accent); }
-.note-list > article > header time { color: var(--text-secondary); text-align: right; }
-.note-list > article > p { max-height: 4.5em; margin: 8px 0; color: var(--text-primary); font-size: 14px; line-height: 1.5; }
-.note-list > article > footer { flex-wrap: wrap; justify-content: flex-start; gap: 8px; color: var(--text-secondary); font-size: 12px; }
+.note-list > article > header time { flex: none; color: var(--text-secondary); text-align: right; }
+.note-list > article > p { overflow: hidden; max-height: 4.5em; margin: 8px 0; color: var(--text-primary); font-size: 14px; line-height: 1.5; white-space: pre-wrap; }
+.note-list > article > p.expanded { max-height: none; }
+.note-list > article > footer { display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-start; gap: 8px; color: var(--text-secondary); font-size: 12px; }
 .note-list > article > footer span { margin-right: auto; }
-.note-list > article > footer button { min-height: 32px; padding: 4px 8px; font-size: 12px; }
+.note-list > article > footer button { min-height: 32px; padding: 4px 8px; border: 1px solid var(--border-default); border-radius: var(--radius-sm); color: var(--text-secondary); background: var(--bg-elevated); font: inherit; font-size: 12px; cursor: pointer; }
+.note-list > article > footer button:hover { color: var(--text-primary); border-color: var(--border-strong); }
 @media (max-width: 900px) {
   .filter-advanced { grid-template-columns: repeat(3, minmax(0, 1fr)); }
 }
