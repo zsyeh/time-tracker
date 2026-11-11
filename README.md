@@ -10,7 +10,7 @@
 
 最近一次已验证生产业务版本为 `ab6040f`，镜像 `time-tracker-ha:20261111-learning-recovery`，`drill` 迁移为 `0035_learning_recovery`；GitHub 的 `master` 与功能分支已同步到后续文档提交 `7d5b312`。恢复机制及授权、备份范围、回滚限制见 [`docs/learning-recovery.md`](docs/learning-recovery.md)。较早的 11 月 5 日 dump 已清理，现有完整备份为 `backups/examtypes-20261110/pre-examtypes.dump.gz`，并有已验证的 NUC 异地副本；恢复时先解开 gzip 外层。以下 11 月 5 日表格与发布记录保留作历史参考，不能用其中的旧镜像、迁移号或 dump 路径推断当前状态。单一业务写入和数据保护约束继续有效。
 
-本轮性能优化仅涉及代码和本地隔离测试，尚未部署；不得执行生产迁移、服务重启或配置变更。
+本轮性能优化仅涉及代码和本地隔离测试，尚未部署；不得执行生产迁移、服务重启或配置变更。 实测数据、独立提交及追加的严选题净新增预测和横竖屏修复见 [短期性能与可靠性报告](docs/short-term-performance.md)。
 
 ### 当前版本与服务入口
 
