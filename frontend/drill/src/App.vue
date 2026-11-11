@@ -2,7 +2,7 @@
 import { uiText } from './lib/uiText'
 import { startLearningRecovery } from '../../shared/learningRecovery'
 import { useRouter } from 'vue-router'
-import { onMounted, onUnmounted, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { api, post } from './lib/api'
 import { configureWorkspaceScope } from './lib/workspace'
@@ -16,6 +16,24 @@ let stopRecovery: (() => void) | undefined
 const username = ref('')
 const progress = ref<Progress | null>(null)
 const sidebarOpen = ref(false)
+const moreToolsOpen = ref(false)
+const moreToolsTrigger = ref<HTMLButtonElement | null>(null)
+const moreToolsPanel = ref<HTMLElement | null>(null)
+const moreToolsStyle = ref<Record<string, string>>({})
+const moreToolsActive = computed(() => {
+  const name = String(route.name || '')
+  if (name === 'question') {
+    const from = String(route.query.from || '')
+    const collection = String(route.query.collection || '')
+    return !from || from === 'heatmap' || from === 'collection' ||
+      ['circuit_selected', 'signal_selected', 'analog_selected', 'digital_selected', 'communication_selected'].includes(collection)
+  }
+  return name.startsWith('paper') || [
+    'practice', 'activity', 'book-activity', 'heatmap', 'favorites', 'review-later', 'feel', 'errata',
+    'circuit-selected', 'signal-selected', 'signal-formulas', 'analog-selected',
+    'digital-selected', 'communication-selected', 'selected-pdf-pages',
+  ].includes(name)
+})
 const identityReady = ref(false)
 const sidebarStateKey = 'drill.sidebar.collapsed.v1'
 const storedSidebarState = (() => {
@@ -49,6 +67,7 @@ async function logout() {
 }
 
 function setSidebarCollapsed(value: boolean) {
+  moreToolsOpen.value = false
   sidebarCollapsed.value = value
   hasSidebarPreference.value = true
   try { localStorage.setItem(sidebarStateKey, String(value)) } catch { /* Keep the in-memory preference. */ }
@@ -56,13 +75,72 @@ function setSidebarCollapsed(value: boolean) {
 
 watch(() => route.fullPath, () => {
   sidebarOpen.value = false
+  moreToolsOpen.value = false
   if (!hasSidebarPreference.value) sidebarCollapsed.value = route.name === 'question'
 })
 
+function positionMoreTools() {
+  if (!moreToolsOpen.value || !moreToolsTrigger.value) return
+  const anchor = moreToolsTrigger.value.getBoundingClientRect()
+  const viewportWidth = document.documentElement.clientWidth || window.innerWidth
+  const viewportHeight = window.visualViewport?.height ?? window.innerHeight
+  const width = Math.min(272, viewportWidth - 24)
+  const desktop = viewportWidth > 900
+  const left = desktop
+    ? Math.min(anchor.right + 8, viewportWidth - width - 12)
+    : Math.max(12, Math.min(anchor.left, viewportWidth - width - 12))
+  const roomBelow = viewportHeight - anchor.bottom - 20
+  const top = desktop
+    ? Math.max(12, Math.min(anchor.top, viewportHeight - 300))
+    : roomBelow >= 240 ? anchor.bottom + 8 : 12
+  const maxHeight = !desktop && roomBelow < 240
+    ? Math.max(180, anchor.top - 24)
+    : Math.max(180, Math.min(520, viewportHeight - top - 12))
+  moreToolsStyle.value = {
+    left: `${left}px`,
+    top: `${top}px`,
+    width: `${width}px`,
+    maxHeight: `${maxHeight}px`,
+  }
+}
+
+async function toggleMoreTools() {
+  moreToolsOpen.value = !moreToolsOpen.value
+  if (moreToolsOpen.value) {
+    await nextTick()
+    positionMoreTools()
+    const firstLink = moreToolsPanel.value?.querySelector<HTMLAnchorElement>('a.active') ||
+      moreToolsPanel.value?.querySelector<HTMLAnchorElement>('a')
+    firstLink?.focus()
+  }
+}
+
+function closeMoreToolsOnOutside(event: PointerEvent) {
+  const target = event.target
+  if (target instanceof Node && (moreToolsTrigger.value?.contains(target) || moreToolsPanel.value?.contains(target))) return
+  moreToolsOpen.value = false
+}
+
+function closeMoreToolsOnEscape(event: KeyboardEvent) {
+  if (event.key !== 'Escape' || !moreToolsOpen.value) return
+  moreToolsOpen.value = false
+  moreToolsTrigger.value?.focus()
+}
+
 onMounted(() => {
   void loadIdentity()
+  document.addEventListener('pointerdown', closeMoreToolsOnOutside)
+  document.addEventListener('keydown', closeMoreToolsOnEscape)
+  window.addEventListener('resize', positionMoreTools)
+  window.visualViewport?.addEventListener('resize', positionMoreTools)
 })
-onUnmounted(() => stopRecovery?.())
+onUnmounted(() => {
+  stopRecovery?.()
+  document.removeEventListener('pointerdown', closeMoreToolsOnOutside)
+  document.removeEventListener('keydown', closeMoreToolsOnEscape)
+  window.removeEventListener('resize', positionMoreTools)
+  window.visualViewport?.removeEventListener('resize', positionMoreTools)
+})
 </script>
 
 <template>
@@ -93,8 +171,14 @@ onUnmounted(() => stopRecovery?.())
         <RouterLink to="/insight" :class="{ active: route.name === 'insight' || (route.name === 'question' && route.query.from === 'insight') }"><span>{{ t('insight') }}</span></RouterLink>
         <RouterLink to="/diagnostics" :class="{ active: route.name === 'diagnostics' || route.name === 'diagnostic-queue' || (route.name === 'question' && route.query.from === 'diagnostics') }"><span>{{ uiText("解题能力") }}</span></RouterLink>
       </nav>
-      <nav class="secondary-navigation" :aria-label="uiText('更多工具')">
-        <span class="navigation-heading">{{ uiText('更多工具') }}</span>
+      <div class="more-tools-group">
+        <button ref="moreToolsTrigger" class="more-tools-trigger" :class="{ active: moreToolsActive || moreToolsOpen }" type="button" aria-controls="more-tools-panel" :aria-expanded="moreToolsOpen" @click="toggleMoreTools">
+          <span class="more-tools-trigger-icon" aria-hidden="true">•••</span><span>{{ uiText('更多工具') }}</span><span class="more-tools-chevron" aria-hidden="true">⌄</span>
+        </button>
+      </div>
+      <Teleport to="body">
+      <nav v-if="moreToolsOpen" id="more-tools-panel" ref="moreToolsPanel" class="more-tools-panel" :class="{ 'ei-workspace': isEi }" :style="moreToolsStyle" :aria-label="uiText('更多工具')">
+        <span class="more-tools-panel-heading">{{ uiText('更多工具') }}</span>
         <RouterLink to="/practice" :class="{ active: route.name === 'practice' || (route.name === 'question' && !route.query.from) }">
           <span>{{ t('practice') }}</span>
         </RouterLink>
@@ -130,6 +214,7 @@ onUnmounted(() => stopRecovery?.())
           <span>{{ uiText("勘误") }}</span>
         </RouterLink>
       </nav>
+      </Teleport>
       <div v-if="progress" class="sidebar-progress">
         <span>{{ t('coverage') }}</span>
         <strong>{{ progress.attempted_questions }}<small>/ {{ progress.question_count }}</small></strong>
