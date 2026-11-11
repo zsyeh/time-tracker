@@ -8,7 +8,6 @@ import { useUiPreferences } from '../lib/uiPreferences'
 import ExamTypeControls from '../components/ExamTypeControls.vue'
 import ExamTypeBadge from '../components/ExamTypeBadge.vue'
 import { formatColours, type TypeStats } from '../lib/examTypes'
-import HeatmapProgress from '../components/HeatmapProgress.vue'
 import LearningSharePanel from '../components/LearningSharePanel.vue'
 
 const props = withDefaults(defineProps<{ selectedOnly?: boolean; coreOnly?: boolean }>(), { selectedOnly: false, coreOnly: false })
@@ -82,14 +81,6 @@ interface HeatmapPayload {
   }>
 }
 
-function formatDuration(seconds: number | null) {
-  if (seconds === null) return '—'
-  const minutes = Math.floor(seconds / 60)
-  const remainder = seconds % 60
-  if (minutes >= 60) return `${Math.floor(minutes / 60)}h ${minutes % 60}m`
-  return minutes ? `${minutes}m ${remainder}s` : `${remainder}s`
-}
-
 const router = useRouter()
 const route = useRoute()
 const typeGroup = ref(String(route.query.type_group || ''))
@@ -112,7 +103,7 @@ const shareScope = computed(() => ({
 }))
 const mode = ref<'topics' | 'questions'>(props.selectedOnly ? 'questions' : initialMode)
 let pendingQuestionUuid = String(route.query.question || '')
-const returnStateKey = 'drill.heatmap.return.v1'
+const returnStateKey = computed(() => `drill.heatmap.return.v2.${props.coreOnly ? 'core' : props.selectedOnly ? 'selected' : 'all'}`)
 const selectedTopic = ref<{
   documentId: number
   document: string
@@ -147,6 +138,14 @@ function openTopic(documentId: number, topicId: number) {
 }
 
 function openQuestion(documentId: number, question: HeatmapQuestion) {
+  try {
+    sessionStorage.setItem(returnStateKey.value, JSON.stringify({
+      scope: scope.value, typeGroup: typeGroup.value, course: course.value,
+      material: material.value, questionUuid: question.uuid, scrollY: window.scrollY,
+    }))
+  } catch {
+    // Private browsing may disallow storage; the return route still selects the question.
+  }
   if (props.coreOnly) {
     void router.push({ path: `/practice/${question.uuid}`, query: {
       type_group: typeGroup.value, collection: 'core_selected', from: 'core-heatmap', scope: scope.value,
@@ -154,11 +153,6 @@ function openQuestion(documentId: number, question: HeatmapQuestion) {
     } })
     return
   }
-  sessionStorage.setItem(returnStateKey, JSON.stringify({
-    scope: scope.value,
-    questionUuid: question.uuid,
-    scrollY: window.scrollY,
-  }))
   const query: Record<string, string> = {
     type_group: typeGroup.value, ...(props.selectedOnly ? { collection: 'selected' } : {}),
     document: String(documentId),
@@ -179,8 +173,10 @@ async function restoreQuestionSelection(payload: HeatmapPayload) {
     await nextTick()
     let restoredScroll = false
     try {
-      const saved = JSON.parse(sessionStorage.getItem(returnStateKey) || 'null')
-      if (saved?.scope === scope.value && saved?.questionUuid === question.uuid) {
+      const saved = JSON.parse(sessionStorage.getItem(returnStateKey.value) || 'null')
+      if (saved?.scope === scope.value && saved?.typeGroup === typeGroup.value
+        && saved?.course === course.value && saved?.material === material.value
+        && saved?.questionUuid === question.uuid) {
         window.scrollTo({ top: Number(saved.scrollY) || 0, behavior: 'auto' })
         restoredScroll = true
       }
@@ -262,15 +258,14 @@ onMounted(load)
 <template>
   <section :class="{ 'exam-type-colours': formatColours }" class="page heatmap-page">
     <header class="page-header">
-      <div><span class="eyebrow">{{ props.coreOnly ? '892 · CORE HEATMAP' : props.selectedOnly ? t('selectedHeatmap') : t('knowledgeMap') }}</span><h1>{{ props.coreOnly ? uiText("五科核心题热力图") : props.selectedOnly ? t('selectedHeatmap') : t('coverageByBook') }}</h1><p>{{ props.coreOnly ? uiText("五科核心题汇总，按来源书籍与考点练习；原题、原答案、原做题记录。") : props.selectedOnly ? 'Curated Da Guan questions, grouped by source book and knowledge topic.' : 'Every topic and question cell opens a preview before navigation.' }}</p></div>
+      <div><h1>{{ props.coreOnly ? uiText("五科核心题热力图") : props.selectedOnly ? t('selectedHeatmap') : t('coverageByBook') }}</h1><p>{{ uiText('按题册浏览，选择题目继续练习。') }}</p></div>
       <div class="heat-controls">
         <div v-if="!props.selectedOnly" class="heat-mode"><button :class="{ active: mode === 'topics' }" @click="mode = 'topics'">Topics</button><button :class="{ active: mode === 'questions' }" @click="mode = 'questions'">Questions</button></div>
         <div class="heat-scope"><button :class="{ active: scope === 'all' }" @click="scope = 'all'">{{ uiText("All") }}</button><button :class="{ active: scope === 'past_exam' }" @click="scope = 'past_exam'">Past exams</button><button :class="{ active: scope === 'mock_exam' }" @click="scope = 'mock_exam'">Mock exams</button></div>
-        <div class="heat-legend"><i class="status-unattempted" /><span>NOT STARTED</span><i class="status-progress" /><span>IN PROGRESS</span><i class="status-mastered" /><span>MASTERED</span><i class="status-review" /><span>REVIEW</span><i class="status-overdue" /><span>OVERDUE</span></div>
+        <div class="heat-legend" aria-label="题目状态图例"><i class="status-unattempted" /><span>未做</span><i class="status-progress" /><span>进行中</span><i class="status-mastered" /><span>已掌握</span><i class="status-review" /><span>待复习</span><i class="status-overdue" /><span>已到期</span></div>
       </div>
     </header>
-    <ExamTypeControls v-model="typeGroup" :stats="data?.type_statistics" @practice="smallPractice" />
-    <LearningSharePanel :current-scope="shareScope" />
+    <ExamTypeControls v-model="typeGroup" @practice="smallPractice" />
     <div v-if="props.coreOnly" class="core-controls">
       <label>{{ uiText("学科") }}<select v-model="course"><option value="">{{ uiText("全部五科") }}</option><option v-for="item in data?.courses || []" :key="item.key" :value="item.key">{{ item.title }} {{ uiText("· 核心") }} {{ item.total }} {{ uiText("题") }}</option></select></label>
       <label>{{ uiText("资料") }}<select v-model="material"><option value="ready">{{ uiText("题答已具备，且无未处理勘误") }}</option><option value="all">{{ uiText("全部核心（含待补资料）") }}</option></select></label>
@@ -279,24 +274,11 @@ onMounted(load)
     <p v-if="error" class="error-state">{{ uiText(error) }}</p>
     <div v-else-if="loading" class="question-skeleton">BUILDING HEATMAP…</div>
     <template v-else-if="data">
-      <HeatmapProgress :total="data.question_count" :attempted="data.statistics.attempted_question_count" :mastered="data.statistics.mastered_question_count" />
-      <section class="heatmap-summary">
-        <div class="heatmap-summary-lead"><strong>{{ mode === 'topics' ? data.topic_count : data.question_count }}</strong><span>{{ mode === 'topics' ? 'visible topics' : 'visible questions' }}</span></div>
-        <dl>
-          <div><dt>AVG. TIME</dt><dd>{{ formatDuration(data.statistics.average_time_seconds) }}</dd><small>{{ data.statistics.timed_attempt_count }} timed attempts</small></div>
-          <div><dt>MASTER AVG.</dt><dd>{{ formatDuration(data.statistics.mastered_average_time_seconds) }}</dd><small>Mastered submissions</small></div>
-          <div><dt>REVIEW AVG.</dt><dd>{{ formatDuration(data.statistics.review_average_time_seconds) }}</dd><small>{{ data.statistics.review_question_count }} currently in review</small></div>
-        </dl>
-      </section>
+      <div class="heatmap-overview" aria-label="当前范围进度"><strong>{{ data.question_count }}</strong><span>题</span><span>已做 <b>{{ data.statistics.attempted_question_count }}</b></span><span>已掌握 <b>{{ data.statistics.mastered_question_count }}</b></span><span>待复习 <b>{{ data.statistics.review_question_count }}</b></span></div>
       <section v-for="group in data.groups" :key="group.document_id" class="heatmap-group">
         <header class="heatmap-book-header">
-          <div class="heatmap-book-title"><span>BOOK</span><h2>{{ group.document }}</h2><small>{{ mode === 'topics' ? `${group.topics.length} topics` : `${group.questions.length} questions` }}</small></div>
-          <dl class="heatmap-book-stats">
-            <div><dt>COVERAGE</dt><dd>{{ group.statistics.coverage_percent }}%</dd><small>{{ group.statistics.attempted_question_count }} attempted</small></div>
-            <div><dt>AVG. TIME</dt><dd>{{ formatDuration(group.statistics.average_time_seconds) }}</dd><small>{{ group.statistics.timed_attempt_count }} timed</small></div>
-            <div><dt>MASTER AVG.</dt><dd>{{ formatDuration(group.statistics.mastered_average_time_seconds) }}</dd><small>{{ group.statistics.review_question_count }} review</small></div>
-          </dl>
-          <HeatmapProgress :total="mode === 'questions' ? group.questions.length : group.topics.reduce((total, topic) => total + topic.question_count, 0)" :attempted="group.statistics.attempted_question_count" :mastered="group.statistics.mastered_question_count" />
+          <div class="heatmap-book-title"><h2>{{ group.document }}</h2><small>{{ mode === 'topics' ? `${group.topics.length} 个考点` : `${group.questions.length} 题` }}</small></div>
+          <div class="heatmap-book-stats"><strong>{{ group.statistics.coverage_percent }}%</strong><span>已做 {{ group.statistics.attempted_question_count }} · 已掌握 {{ group.statistics.mastered_question_count }} · 待复习 {{ group.statistics.review_question_count }}</span></div>
         </header>
         <div v-if="mode === 'topics'" class="topic-heatmap">
           <button
@@ -304,7 +286,7 @@ onMounted(load)
             :key="item.topic_id"
             :class="[`status-${item.state}`, `intensity-${item.intensity}`, { selected: selectedTopic?.topic.topic_id === item.topic_id }]"
             :aria-pressed="selectedTopic?.topic.topic_id === item.topic_id"
-            :aria-label="`${item.path}; ${item.coverage_percent}% covered; ${item.attempt_count} attempts`"
+            :aria-label="`${item.path}; ${item.state}; ${item.coverage_percent}% covered; ${item.attempt_count} attempts`"
             :title="`${item.path} · ${item.attempted_question_count}/${item.question_count} covered · ${item.attempt_count} attempts${item.review_question_count ? ` · ${item.review_question_count} review` : ''}`"
             @click="previewTopic(group.document_id, group.document, item)"
           ><span>{{ item.topic }}</span></button>
@@ -358,11 +340,52 @@ onMounted(load)
           </aside>
         </Transition>
       </section>
+      <LearningSharePanel :current-scope="shareScope" />
     </template>
   </section>
 </template>
 
 <style scoped>
+.heatmap-page { font-variant-numeric: tabular-nums; }
+.heatmap-page .page-header { margin-bottom: 8px; align-items: flex-start; }
+.heatmap-page .page-header h1 { margin: 0; font-size: 24px; line-height: 1.25; font-weight: 650; }
+.heatmap-page .page-header p { margin: 4px 0 0; color: var(--text-secondary); font-size: 13px; }
+.heat-controls { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 8px; }
+.heat-mode, .heat-scope { padding: 3px; border: 1px solid var(--border-subtle); border-radius: 8px; background: var(--bg-surface); }
+.heat-mode button, .heat-scope button { min-height: 36px; padding: 0 12px; border-radius: 6px; font-size: 12px; }
+.heat-mode button.active, .heat-scope button.active { color: var(--text-primary); background: var(--bg-elevated); }
+.heat-legend { gap: 5px; font-size: 12px; }
+.heat-legend i:not(:first-child) { margin-left: 8px; }
+.heatmap-page :deep(.exam-type-controls) { margin: 8px 0 16px; }
+.heatmap-page :deep(.exam-type-toolbar small) { display: none; }
+.heatmap-page :deep(.exam-type-toolbar select), .heatmap-page :deep(.exam-small-entry) { min-height: 40px; }
+.heatmap-overview { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin: 0 0 8px; color: var(--text-secondary); font-size: 13px; }
+.heatmap-overview strong { color: var(--text-primary); font-size: 24px; font-weight: 650; line-height: 1; }
+.heatmap-overview span:nth-of-type(n+2) { margin-left: 8px; }
+.heatmap-overview b { color: var(--text-primary); font-weight: 600; }
+.heatmap-group { margin-top: 8px; padding: 16px; border: 1px solid var(--border-subtle); border-radius: 10px; background: var(--bg-surface); }
+.heatmap-group > header { margin-bottom: 12px; gap: 12px; }
+.heatmap-group h2 { margin: 0; font-size: 17px; line-height: 1.35; font-weight: 650; }
+.heatmap-book-title { min-width: 0; }
+.heatmap-book-title small { margin-top: 4px; color: var(--text-secondary); font-size: 12px; }
+.heatmap-book-stats { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; color: var(--text-secondary); font-size: 12px; }
+.heatmap-book-stats strong { color: var(--text-primary); font-size: 16px; }
+.topic-heatmap { grid-template-columns: repeat(auto-fill, 26px); gap: 5px; }
+.question-heatmap { grid-template-columns: repeat(auto-fill, 24px); gap: 5px; }
+.topic-heatmap button, .question-heatmap button { width: 26px; height: 26px; border-radius: 4px; touch-action: manipulation; }
+.question-heatmap button { width: 24px; height: 24px; }
+.topic-heatmap button.selected, .question-heatmap button.selected { outline: 2px solid var(--accent); outline-offset: 2px; z-index: 1; }
+.topic-heatmap button:focus-visible, .question-heatmap button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.topic-preview-card { padding: 16px; background: var(--bg-elevated); gap: 16px; }
+.topic-preview-copy > span, .topic-preview-card dt { font-size: 12px; }
+.topic-preview-copy h3 { font-size: 16px; }
+.topic-preview-copy p { color: var(--text-secondary); font-size: 13px; }
+.topic-preview-card dd { color: var(--text-primary); font-size: 14px; font-variant-numeric: tabular-nums; }
+.topic-preview-actions button { min-height: 40px; padding: 0 12px; font-size: 13px; }
+.core-controls { margin: 8px 0 16px; }
+.core-controls label { font-size: 13px; color: var(--text-secondary); }
+.core-controls select { min-height: 40px; }
+.core-controls p { margin: 0; font-size: 12px; }
 .question-heatmap button { position:relative; }
 .exam-heat-dot { position:absolute; top:2px; right:2px; width:5px; height:5px; border-radius:50%; background:var(--text-secondary); }
 .exam-dot-small { background:var(--accent); }.exam-dot-large { background:var(--warning); }.exam-dot-short_answer { background:#a895da; }
@@ -371,4 +394,16 @@ onMounted(load)
 .core-controls label { display:grid; gap:6px; min-width:0; max-width:100%; font-size:12px; }
 .core-controls select { min-width:0; max-width:100%; padding:10px; color:var(--text-primary); background:var(--bg-surface); border:1px solid var(--border-default); border-radius:var(--radius-sm); }
 .core-controls p { flex-basis:100%; color:var(--text-secondary); line-height:1.7; }
+@media (max-width: 900px) {
+  .heatmap-group > header { align-items: flex-start; }
+  .heatmap-book-stats { width: auto; }
+}
+@media (max-width: 700px) {
+  .heat-controls { justify-content: flex-start; }
+  .heat-legend { display: flex; flex-wrap: wrap; }
+  .heatmap-group { padding: 12px; }
+  .heatmap-book-stats { display: flex; }
+  .topic-preview-card { grid-template-columns: 1fr; }
+  .heatmap-page .page-header { padding-left: 52px; }
+}
 </style>
