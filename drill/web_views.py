@@ -165,6 +165,7 @@ def _safe_drill_target(value, site='drill'):
     allowed = path in {
         '/', '/practice', '/activity', '/book-activity', '/heatmap', '/selected-heatmap', '/paper', '/papers', '/favorites', '/review-later',
         '/feel', '/insight', '/errata', '/cockpit', '/circuit-selected', '/signal-selected', '/signal-formulas', '/analog-selected', '/digital-selected', '/communication-selected', '/core-heatmap',
+        '/diagnostics', '/diagnostic-queue', '/selected-pdf-pages',
     } or path.startswith('/practice/') or path.startswith('/papers/')
     if not allowed:
         return '/practice'
