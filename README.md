@@ -6,6 +6,12 @@
 
 > 本节记录 2026-11-05 的真实生产状态和本轮长期对话形成的强制约束。若仓库中的旧文档、脚本名称、systemd 描述或历史 HA 配置与本节冲突，以本节为准。不得根据文件名中的 `standby`、`promoted` 或旧故障切换脚本推断当前角色。
 
+### 2026-11-11 基线补充
+
+最近一次已验证生产业务版本为 `ab6040f`，镜像 `time-tracker-ha:20261111-learning-recovery`，`drill` 迁移为 `0035_learning_recovery`；GitHub 的 `master` 与功能分支已同步到后续文档提交 `7d5b312`。恢复机制及授权、备份范围、回滚限制见 [`docs/learning-recovery.md`](docs/learning-recovery.md)。较早的 11 月 5 日 dump 已清理，现有完整备份为 `backups/examtypes-20261110/pre-examtypes.dump.gz`，并有已验证的 NUC 异地副本；恢复时先解开 gzip 外层。以下 11 月 5 日表格与发布记录保留作历史参考，不能用其中的旧镜像、迁移号或 dump 路径推断当前状态。单一业务写入和数据保护约束继续有效。
+
+本轮性能优化仅涉及代码和本地隔离测试，尚未部署；不得执行生产迁移、服务重启或配置变更。
+
 ### 当前版本与服务入口
 
 | 项目 | 当前事实 |

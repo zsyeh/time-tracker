@@ -1,0 +1,119 @@
+# Timer / Drill / EI 短期性能与可靠性优化
+
+日期：2026-11-11。**仅代码修改、本地测试与本地提交；未部署，未修改生产数据库、配置或服务。**
+
+## 测量口径
+
+基线为 `7d5b312` 的业务代码（与已部署 `ab6040f` 一致，差别仅文档）。使用已有备份在隔离 PostgreSQL 15 恢复 9,281 条 Question 记录及真实业务分布；含非练习记录。23,712 条图片元数据用于还原关系，图片字节为空占位；图片读取成本另用 1 MiB 合成图片验证。用户 Note、完整响应、数据库备份和原始 SQL 不提交 Git。
+
+两轮交替执行 before→after，每场景每轮 1 次预热、6 次采样，表中为两轮合计12次采样的中位数。固定业务时间以便逐字段比较；12种场景的完整 JSON 响应在两轮均与基线完全一致。handler 时间包含视图、数据库往返和 JSON 序列化；使用已认证 RequestFactory，**不包括 Session 中间件、TLS、公网、Nginx 或浏览器渲染时间**。SQL 时间来自 Django 查询计时，精度为毫秒。基准运行时不并行构建或测试，使用相同数据库设置和硬件；这些是本机微基准，不能当作生产提速承诺。
+
+## SQL 与导航结果
+
+| 场景 | SQL 次数：前 → 后 | handler 中位耗时 ms：前 → 后 | SQL 中位耗时 ms：前 → 后 |
+|---|---:|---:|---:|
+| drill_book | 19 → 19 | 107.10 → 99.04 | 66.00 → 54.50 |
+| drill_unattempted | 19 → 19 | 108.89 → 94.78 | 64.00 → 56.50 |
+| drill_large | 21 → 18 | 117.76 → 98.40 | 72.00 → 56.00 |
+| drill_selected | 17 → 15 | 81.42 → 74.26 | 37.50 → 35.50 |
+| drill_history | 24 → 14 | 108.89 → 49.03 | 50.00 → 19.00 |
+| drill_favorites | 21 → 14 | 77.01 → 32.89 | 33.00 → 9.50 |
+| ei_book | 26 → 24 | 86.57 → 70.48 | 41.00 → 30.00 |
+| ei_unattempted | 26 → 24 | 96.40 → 75.16 | 51.00 → 35.50 |
+| ei_large | 26 → 23 | 88.94 → 72.85 | 44.00 → 33.00 |
+| ei_selected | 16 → 14 | 127.29 → 125.93 | 52.00 → 55.50 |
+| ei_history | 20 → 12 | 88.20 → 52.18 | 37.50 → 18.00 |
+| ei_favorites | 21 → 12 | 83.93 → 32.31 | 37.00 → 10.50 |
+
+普通题库导航由完整结果集改为按 `(document_id, question_order, pk)` 的范围查询，返回 `LIMIT 1`；基线 EXPLAIN 中普通 Drill/EI 当前题集分别返回603/695行。现在每个邻居查询最多返回1行，减少 Python 物化；并不声称数据库底层扫描全部消失。
+
+严选集合保留一次批量读取。试验中范围查询令 EI 严选从130.96ms退化到145.14ms，已撤回该路径；最终 EI 严选耗时变化很小，不能宣称显著提速。保留集合过滤模块和清单原样，未新建清单。
+
+主要成本和修复：
+
+- 历史/收藏原先先计算整套普通导航，再被列表导航覆盖；现在直接使用列表顺序，省去被丢弃的 SQL。
+- 详情主查询重复计算 latest result/date，之后又查询完整最新 Attempt；详情复用完整 Attempt，列表/热力图仍默认保留原注解。
+- `next_latest_at` 普通导航从未使用，移除该相关子查询。
+- 最新 Attempt 已有有效耗时时复用；无 Attempt 时省略历史耗时查询；Reset/最新无耗时仍回查原有历史。
+- unattempted 题集已筛选最新状态，不再重复同一筛选。
+- 前向复习查询包含完整环绕；若其结果为空，对同一池的反向复习必为空，省掉重复反查。非空仍使用原 next/previous review 查询及5天边界。
+- 题型关系随详情主查询读取，避免单独查询。
+
+EXPLAIN 使用了既有 document、source_category 和 Attempt question 索引。没有新增索引或迁移，没有改变跨题册、环绕、排序、workspace、严选来源、历史/收藏列表或格式参数400响应。
+
+## 缓存与作答可靠性
+
+- 浏览器存储读取、写入、删除、枚举均按可选缓存处理。QuotaExceededError/SecurityError 不再令成功的 API 请求 reject；内存缓存、TTL、预加载和跨标签页失效机制保留。
+- 缓存按 workspace+username 隔离；切换 scope 清理共享内存/inflight，迟到响应不能写入新 scope。catalog 同样隔离并遵守原7天 TTL。底层实际 GET 合并键包含 workspace 和已知用户ID，避免新账号共享旧账号正在执行的 HTTP 请求。
+- **Note 草稿保持原 username+全局唯一 Question UUID 键**，旧未同步草稿无需迁移。存储失败保留当前页内存内容并明确中英文提示；不保证刷新/关闭后仍能恢复失败写入的草稿。
+- Attempt POST 确认是提交成功边界。成功后结束捕获的原计时轮次，不会因切题误结束新题计时。`applyState` 先更新权威 UI 状态，再尽力更新缓存；统计或导航失败不能变成“作答提交失败”，也不能恢复已结束计时。
+- 原 submission_key 重试去重、Note version/409、Mastered/Review/Reset/Undo/诊断/TopicMastery 后端语义不变；PWA恢复与 Timer TimeLog 统计未改。
+
+## 图片读取与真实预加载实验
+
+| 请求 | 原实现 | 修改后 |
+|---|---|---|
+| 普通 GET | 1次SQL，读取图片字节 | 保持1次SQL、相同字节和缓存头 |
+| GET ETag命中304 | 1次SQL，仍读取1 MiB测试图片 | 1次元数据SQL，不引用 image_data、不传图片字节到Django |
+| HEAD | 1次SQL，读取图片字节 | 1次元数据SQL；数据库 length(bytea) 返回长度，Content-Length正确，不传图片字节到Django |
+| GET ETag过期 | 1次SQL，读取图片字节 | 2次SQL：元数据+重新鉴权的完整读取；这是明确的代价 |
+
+第二次读取同时获取 bytes/SHA/MIME 并重查 workspace，防止两次查询之间重渲染出现旧ETag配新字节或归属变化越权。权限始终先于304判断。UUID、资产引用、分享链接、清晰度和 private/immutable 策略不变。
+
+预加载同URL合并，最多4个并发，成功URL缓存上限256；失败可重试，15秒停滞超时释放槽。真实 Chromium + 本机 HTTP/1.1 服务，8张图片连续预热两次：
+
+| 指标 | 前 | 后 |
+|---|---:|---:|
+| 实际HTTP请求数 |8|8|
+| 实际峰值并发请求 |6|4|
+| Image对象创建数 |16|8|
+
+第三次预热浏览器缓存均未增加HTTP请求；原创建对象累计24，新为8。**没有声称网络请求数减半**。收益是削减冗余调度和控制并发，保留浏览器缓存优势。
+
+## 修改文件
+
+- `frontend/drill/src/lib/{workspace,api}.ts`、`App.vue`：可选缓存、scope和HTTP请求合并隔离。
+- `frontend/drill/src/views/QuestionView.vue`：提交边界、状态应用顺序、Note草稿反馈、等待导航结果。
+- `drill/views.py`：详情/导航查询复用、有界读取、图片条件请求与HEAD。
+- `drill/test_navigation_queries.py`, `drill/test_asset_delivery.py`：导航等价及权限、查询边界、重渲染并发回归。
+- 前端 `workspaceReliability`, `workspaceScope`, `apiIsolation`, `workspaceMedia`, `QuestionRecord` 测试。
+- `drill/management/commands/benchmark_drill_detail.py`：可复用的只读本地基准命令，不输出响应正文或用户笔记。
+- `README.md`：补正生产基线日期，避免把旧镜像/备份路径当作当前版本。
+
+## 验证及环境限制
+
+最终 Django 全套486项通过（隔离PostgreSQL）；首次导航用例的重复题序违反既有唯一约束，已修正为有效fixture。测试容器补齐Git/systemd工具、collectstatic、pg_stat_statements后再运行；仅测试进程使用PGOPTIONS关闭JIT，避免小fixture大量参考查询的编译开销，**性能基准仍使用相同默认JIT设置**。没有为通过测试修改生产配置或无关业务模块。
+
+最终前端35个测试文件、136项Vitest全部通过，Timer/Drill vue-tsc及两套Vite生产构建全部通过。已有大chunk警告保留，未借机拆包重构。`makemigrations --check --dry-run` 无变更。
+
+本地原始证据：`/home/eh/performance-audit-20261111/`，包括 comparison.json、navigation-explain.json、media-browser-results.json、django-verified.log、frontend-verified.log；私有响应快照不入Git。
+
+尚未验证：生产硬件/公网端到端延迟、真实iPadOS Safari/PWA的资源调度与系统冻结、真实生产缓存命中分布。首次使用新workspace cache key会冷缓存；旧Note草稿保持兼容。未授权生产发布，因此目前线上行为不变。
+
+## 复现
+
+使用**隔离测试数据库**及其中有效用户/题目，按照README准备Python依赖、静态文件和测试工具：
+
+```sh
+python manage.py benchmark_drill_detail --user-id <local-user-id> --question-uuid <uuid> --workspace drill --samples 12 --explain
+python manage.py benchmark_drill_detail --user-id <local-user-id> --question-uuid <uuid> --workspace ei --query-json '{"collection":"core_selected"}' --samples 12
+python manage.py test --noinput
+cd frontend
+npm test -- --maxWorkers=2
+npm run typecheck
+npm run build
+npm run build:drill
+```
+
+collection值必须使用当前题库实际值；可由页面请求参数取得，不根据上例猜测清单名称。回滚代码可按独立提交逐项revert，无数据库迁移或数据回滚步骤。
+
+
+## 独立本地提交
+
+- `d65c995`：缓存失败隔离、账号/workspace隔离、Note草稿兼容、作答确认边界。
+- `043ff6a`：合并并限制图片预加载，处理失败/停滞。
+- `df2e06f`：详情/导航查询复用，保留严选批量路径。
+- `ffa8b68`：图片304/HEAD元数据读取与并发更新安全。
+- 最后一个文档/基准命令提交记录本报告和复现工具。
+
+本次没有推送GitHub或发布生产；生产仍运行之前版本。
