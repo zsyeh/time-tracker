@@ -26,6 +26,9 @@ const activityChartElement = ref<HTMLElement | null>(null)
 let chart: ECharts | null = null
 let activityChart: ECharts | null = null
 let resizeObserver: ResizeObserver | null = null
+let schemeObserver: MutationObserver | null = null
+let resizeFrame = 0
+let mounted = false
 const isEi = runtimeWorkspace === 'ei'
 const title = computed(() => isEi ? uiText("EI 专业课 · 解题能力") : uiText("Drill 数学 · 解题能力"))
 
@@ -35,39 +38,49 @@ function css(name: string, fallback: string) { return getComputedStyle(document.
 
 function option(): EChartsCoreOption {
   const payload = data.value!
-  const text = css('--text-tertiary', '#888')
-  const border = css('--border-subtle', '#333')
+  const text = css('--text-secondary', '#a1a8b3')
+  const border = css('--border-subtle', '#2b3038')
+  const surface = css('--bg-elevated', '#20242b')
+  const primary = css('--text-primary', '#e5e9ef')
+  const mastered = css('--mastered', '#55b88a')
+  const review = css('--review', '#d5a44f')
   return {
     animationDuration: 220,
     grid: { left: 38, right: 16, top: 42, bottom: 30 },
-    legend: { top: 3, textStyle: { color: text, fontSize: 10 }, data: [uiText("首次独立正确率"), uiText("二次独立正确率")] },
+    textStyle: { fontFamily: 'Inter, PingFang SC, sans-serif' },
+    legend: { top: 3, textStyle: { color: text, fontSize: 12 }, data: [uiText("首次独立正确率"), uiText("二次独立正确率")] },
     tooltip: {
-      trigger: 'axis', confine: true,
+      trigger: 'axis', confine: true, backgroundColor: surface, borderColor: border, textStyle: { color: primary, fontSize: 12 },
       formatter(raw: unknown) {
         const rows = raw as Array<{ dataIndex: number; marker: string; seriesName: string; value: number | null }>
         const point = payload.trend[rows[0]?.dataIndex || 0]
         return [`<strong>${point.date}</strong>`, ...rows.map(row => `${row.marker}${row.seriesName}：${row.value === null ? uiText("无样本") : `${row.value}%`}`), `${uiText("首次样本")}：${point.first_sample}`, `${uiText("二次样本")}：${point.second_sample}`].join('<br>')
       },
     },
-    xAxis: { type: 'category', data: payload.trend.map(row => row.date.slice(5)), axisLine: { lineStyle: { color: border } }, axisLabel: { color: text, fontSize: 9 } },
-    yAxis: { type: 'value', min: 0, max: 100, axisLabel: { color: text, formatter: '{value}%' }, splitLine: { lineStyle: { color: border, type: 'dashed' } } },
+    xAxis: { type: 'category', data: payload.trend.map(row => row.date.slice(5)), axisLine: { lineStyle: { color: border } }, axisLabel: { color: text, fontSize: 11, hideOverlap: true } },
+    yAxis: { type: 'value', min: 0, max: 100, axisLabel: { color: text, fontSize: 11, formatter: '{value}%' }, splitLine: { lineStyle: { color: border, type: 'dashed' } } },
     series: [
-      { name: uiText("首次独立正确率"), type: 'line', connectNulls: false, smooth: .25, data: payload.trend.map(row => dailyRate(row.first_independent_correct, row.first_sample)), lineStyle: { width: 2, color: '#15c878' }, itemStyle: { color: '#15c878' } },
-      { name: uiText("二次独立正确率"), type: 'line', connectNulls: false, smooth: .25, data: payload.trend.map(row => dailyRate(row.second_independent_correct, row.second_sample)), lineStyle: { width: 2, color: '#e4b938' }, itemStyle: { color: '#e4b938' } },
+      { name: uiText("首次独立正确率"), type: 'line', connectNulls: false, smooth: .25, data: payload.trend.map(row => dailyRate(row.first_independent_correct, row.first_sample)), lineStyle: { width: 2, color: mastered }, itemStyle: { color: mastered } },
+      { name: uiText("二次独立正确率"), type: 'line', connectNulls: false, smooth: .25, data: payload.trend.map(row => dailyRate(row.second_independent_correct, row.second_sample)), lineStyle: { width: 2, color: review }, itemStyle: { color: review } },
     ],
   }
 }
 
 function activityOption(): EChartsCoreOption {
   const payload = data.value!
-  const text = css('--text-tertiary', '#888')
-  const border = css('--border-subtle', '#333')
+  const text = css('--text-secondary', '#a1a8b3')
+  const border = css('--border-subtle', '#2b3038')
+  const surface = css('--bg-elevated', '#20242b')
+  const primary = css('--text-primary', '#e5e9ef')
+  const accent = css('--accent', '#6ba6ff')
+  const review = css('--review', '#d5a44f')
   return {
     animationDuration: 220,
     grid: { left: 38, right: 14, top: 40, bottom: 38 },
-    legend: { top: 3, textStyle: { color: text, fontSize: 10 }, data: [uiText("每日去重题数"), uiText("提交次数")] },
+    textStyle: { fontFamily: 'Inter, PingFang SC, sans-serif' },
+    legend: { top: 3, textStyle: { color: text, fontSize: 12 }, data: [uiText("每日去重题数"), uiText("提交次数")] },
     tooltip: {
-      trigger: 'axis', confine: true,
+      trigger: 'axis', confine: true, backgroundColor: surface, borderColor: border, textStyle: { color: primary, fontSize: 12 },
       formatter(raw: unknown) {
         const rows = raw as Array<{ dataIndex: number; marker: string; seriesName: string; value: number }>
         const point = payload.activity[rows[0]?.dataIndex || 0]
@@ -79,11 +92,11 @@ function activityOption(): EChartsCoreOption {
         ].join('<br>')
       },
     },
-    xAxis: { type: 'category', data: payload.activity.map(row => row.date.slice(5)), axisLine: { lineStyle: { color: border } }, axisLabel: { color: text, fontSize: 9, hideOverlap: true } },
-    yAxis: { type: 'value', minInterval: 1, axisLabel: { color: text }, splitLine: { lineStyle: { color: border, type: 'dashed' } } },
+    xAxis: { type: 'category', data: payload.activity.map(row => row.date.slice(5)), axisLine: { lineStyle: { color: border } }, axisLabel: { color: text, fontSize: 11, hideOverlap: true } },
+    yAxis: { type: 'value', minInterval: 1, axisLabel: { color: text, fontSize: 11 }, splitLine: { lineStyle: { color: border, type: 'dashed' } } },
     series: [
-      { name: uiText("每日去重题数"), type: 'bar', barMaxWidth: 18, data: payload.activity.map(row => row.daily_unique_questions), itemStyle: { color: '#2f9ee5', borderRadius: [3, 3, 0, 0] } },
-      { name: uiText("提交次数"), type: 'line', smooth: .2, data: payload.activity.map(row => row.submissions), lineStyle: { width: 2, color: '#e4b938' }, itemStyle: { color: '#e4b938' } },
+      { name: uiText("每日去重题数"), type: 'bar', barMaxWidth: 18, data: payload.activity.map(row => row.daily_unique_questions), itemStyle: { color: accent, borderRadius: [3, 3, 0, 0] } },
+      { name: uiText("提交次数"), type: 'line', smooth: .2, data: payload.activity.map(row => row.submissions), lineStyle: { width: 2, color: review }, itemStyle: { color: review } },
     ],
   }
 }
@@ -117,14 +130,42 @@ function setDays(value: number) { days.value = value; customStart.value = ''; cu
 function applyCustomRange() { if (customStart.value && customEnd.value) void load() }
 function openErrors(codes: ErrorCode[]) { void router.push({ path: '/diagnostic-queue', query: { error: codes.join(',') } }) }
 function openDue() { void router.push({ path: '/diagnostic-queue', query: { queue: 'due' } }) }
+function resizeCharts() {
+  if (resizeFrame) window.cancelAnimationFrame(resizeFrame)
+  resizeFrame = window.requestAnimationFrame(() => {
+    resizeFrame = 0
+    if (mounted) { chart?.resize(); activityChart?.resize() }
+  })
+}
 
 onMounted(() => {
+  mounted = true
   void load()
-  resizeObserver = new ResizeObserver(() => { chart?.resize(); activityChart?.resize() })
-  if (chartElement.value) resizeObserver.observe(chartElement.value)
-  if (activityChartElement.value) resizeObserver.observe(activityChartElement.value)
+  if (typeof ResizeObserver !== 'undefined') resizeObserver = new ResizeObserver(resizeCharts)
+  if (chartElement.value) resizeObserver?.observe(chartElement.value)
+  if (activityChartElement.value) resizeObserver?.observe(activityChartElement.value)
+  schemeObserver = new MutationObserver(() => { void renderChart() })
+  schemeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-color-scheme'] })
+  window.addEventListener('resize', resizeCharts)
+  window.addEventListener('orientationchange', resizeCharts)
+  window.addEventListener('pageshow', resizeCharts)
+  window.visualViewport?.addEventListener('resize', resizeCharts)
 })
-onUnmounted(() => { resizeObserver?.disconnect(); chart?.dispose(); activityChart?.dispose() })
+onUnmounted(() => {
+  mounted = false
+  window.cancelAnimationFrame(resizeFrame)
+  resizeObserver?.disconnect(); schemeObserver?.disconnect(); chart?.dispose(); activityChart?.dispose()
+  window.removeEventListener('resize', resizeCharts)
+  window.removeEventListener('orientationchange', resizeCharts)
+  window.removeEventListener('pageshow', resizeCharts)
+  window.visualViewport?.removeEventListener('resize', resizeCharts)
+})
+
+watch([chartElement, activityChartElement], () => {
+  if (chartElement.value) resizeObserver?.observe(chartElement.value)
+  if (activityChartElement.value) resizeObserver?.observe(activityChartElement.value)
+  resizeCharts()
+}, { flush: 'post' })
 
 watch(uiLanguage, () => { void renderChart() })
 </script>
@@ -191,7 +232,65 @@ watch(uiLanguage, () => { void renderChart() })
 </template>
 
 <style scoped>
-.diagnostic-header{display:flex;align-items:end;justify-content:space-between;gap:16px}.diagnostic-header h1{margin:5px 0}.diagnostic-header p{margin:0;color:var(--text-tertiary);font-size:11px}.range{display:flex;align-items:center;padding:3px;border:1px solid var(--border-subtle);border-radius:7px}.range button{padding:7px 12px;border:0;border-radius:5px;color:var(--text-tertiary);background:transparent;cursor:pointer}.range button.active{color:var(--text-primary);background:var(--bg-surface-active)}.range label{display:flex;align-items:center;gap:4px;margin-left:3px;color:var(--text-tertiary);font-size:8px}.range input{width:118px;padding:5px;border:1px solid var(--border-subtle);border-radius:4px;color:var(--text-primary);background:var(--bg-sidebar);font-size:8px}.today-strip{margin:16px 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.today-strip article,.today-strip button{padding:13px;border:1px solid var(--border-subtle);border-radius:9px;color:var(--text-primary);background:var(--bg-surface);text-align:left;display:grid;gap:4px}.today-strip button{cursor:pointer}.today-strip span,.today-strip small{color:var(--text-tertiary);font-size:9px}.today-strip strong{font:650 24px ui-monospace,monospace}.ability-board{padding:16px;border:1px solid var(--border-subtle);border-radius:12px;background:var(--bg-surface)}.ability-board>header{display:flex;justify-content:space-between}.ability-board h2,.diagnostic-grid h2{margin:0;font-size:17px}.ability-board>header span{color:var(--text-tertiary);font-size:9px}.metric-grid{margin-top:12px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.metric-grid article,.metric-grid button{min-height:96px;padding:13px;border:1px solid var(--border-subtle);border-radius:9px;color:var(--text-primary);background:var(--bg-sidebar);text-align:left;display:grid;gap:5px}.metric-grid button{cursor:pointer}.metric-grid small,.metric-grid span{color:var(--text-tertiary);font-size:10px}.metric-grid strong{font:650 27px ui-monospace,monospace}.ability-board h3{margin:16px 0 0;font-size:12px}.ability-chart{height:310px;width:100%;touch-action:pan-y}.diagnostic-grid{margin-top:12px;display:grid;grid-template-columns:minmax(260px,.8fr) minmax(420px,1.4fr);gap:12px}.error-distribution,.course-table{padding:15px;border:1px solid var(--border-subtle);border-radius:12px;background:var(--bg-surface)}.error-distribution>header,.course-table>header{display:flex;justify-content:space-between;align-items:end;margin-bottom:12px}.error-distribution>header small{color:var(--text-tertiary);font-size:8px}.error-distribution>button{width:100%;display:grid;grid-template-columns:30px 1fr 30px;align-items:center;gap:8px;padding:7px 0;border:0;color:var(--text-primary);background:transparent;text-align:left;cursor:pointer}.error-distribution>button:disabled{cursor:default;opacity:.45}.error-distribution>button span{height:5px;border-radius:4px;background:var(--border-subtle);overflow:hidden}.error-distribution>button i{display:block;height:100%;min-width:2px;background:#e0b238}.error-distribution>button strong{text-align:right}.course-row{display:grid;grid-template-columns:1.5fr repeat(3,1fr);align-items:center;gap:8px;padding:9px 3px;border-top:1px solid var(--border-subtle);font-size:10px}.course-row.heading{border:0;color:var(--text-tertiary);font-size:8px}.course-row>span{display:grid;gap:2px}.course-row small{color:var(--text-tertiary);font-size:8px}.course-table>p,.diagnostic-notice{color:var(--text-tertiary);font-size:9px}.diagnostic-notice{margin:10px 2px}.eyebrow{font-size:8px;color:var(--text-tertiary)}.secondary-analysis{grid-template-columns:repeat(2,minmax(0,1fr))}.topic-analysis-row{display:grid;grid-template-columns:1fr auto;gap:3px 10px;padding:9px 2px;border-top:1px solid var(--border-subtle);font-size:10px}.topic-analysis-row small{grid-column:1/-1;color:var(--text-tertiary);font-size:8px}.topic-analysis-row .improved{color:var(--success)}.topic-analysis-row .worsened{color:var(--danger)}
-.activity-board{margin-bottom:12px}.activity-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px}.activity-summary article{display:grid;gap:4px;padding:11px;border:1px solid var(--border-subtle);border-radius:8px;background:var(--bg-sidebar)}.activity-summary small,.activity-summary span,.activity-note{color:var(--text-tertiary);font-size:9px}.activity-summary strong{font:650 22px ui-monospace,monospace}.activity-chart{width:100%;height:260px;touch-action:pan-y}.activity-note{margin:0}
-@media(max-width:800px){.diagnostic-header{align-items:start;flex-direction:column}.range{width:100%;flex-wrap:wrap}.range>button{flex:1}.range label{width:100%;margin-top:3px}.range input{flex:1;min-width:0}.today-strip,.activity-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.diagnostic-grid,.secondary-analysis{grid-template-columns:1fr}.ability-chart{height:270px}.activity-chart{height:240px}.course-row{grid-template-columns:1.4fr repeat(3,.8fr)}}@media(max-width:430px){.metric-grid{grid-template-columns:1fr}.course-row{font-size:9px;gap:4px}.today-strip strong{font-size:20px}}
+.diagnostic-page { min-width:0; }
+.diagnostic-header { display:flex; align-items:end; justify-content:space-between; gap:24px; }
+.diagnostic-header h1 { margin:4px 0; font-size:25px; line-height:1.2; }
+.diagnostic-header p { margin:0; color:var(--text-secondary); font-size:13px; }
+.diagnostic-page .eyebrow { color:var(--text-tertiary); font-size:12px; font-weight:650; letter-spacing:.05em; }
+.range { display:flex; align-items:center; flex-wrap:wrap; gap:4px; padding:4px; border:1px solid var(--border-subtle); border-radius:var(--radius-md); }
+.range>button { min-width:44px; min-height:40px; padding:0 10px; border:0; border-radius:var(--radius-sm); color:var(--text-secondary); background:transparent; font-size:13px; cursor:pointer; }
+.range>button.active { color:var(--accent); background:var(--accent-muted); font-weight:650; }
+.range label { display:flex; align-items:center; flex-wrap:wrap; gap:4px; margin-left:4px; color:var(--text-secondary); font-size:12px; }
+.range input { min-width:0; width:128px; min-height:40px; padding:0 8px; border:1px solid var(--border-default); border-radius:var(--radius-sm); color:var(--text-primary); background:var(--bg-elevated); font-size:12px; }
+.range label button { min-height:40px; padding:0 12px; border:1px solid var(--border-default); border-radius:var(--radius-sm); color:var(--text-primary); background:var(--bg-elevated); font-size:12px; cursor:pointer; }
+.today-strip { margin:24px 0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; }
+.today-strip article,.today-strip button { min-width:0; min-height:112px; padding:16px; border:0; border-radius:var(--radius-md); color:var(--text-primary); background:var(--bg-surface); text-align:left; display:grid; align-content:start; gap:4px; }
+.today-strip button { cursor:pointer; }
+.today-strip button:hover,.metric-grid button:hover { background:var(--bg-surface-hover); }
+.today-strip span,.today-strip small { color:var(--text-secondary); font-size:12px; }
+.today-strip strong { font-size:30px; line-height:1.15; font-weight:650; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
+.today-strip button strong { color:var(--review); }
+.ability-board { min-width:0; padding:24px; border:1px solid var(--border-subtle); border-radius:var(--radius-lg); background:var(--bg-surface); }
+.ability-board>header { display:flex; align-items:baseline; justify-content:space-between; gap:12px; }
+.ability-board h2,.diagnostic-grid h2 { margin:0; font-size:17px; line-height:1.35; }
+.ability-board>header span { color:var(--text-secondary); font-size:12px; font-variant-numeric:tabular-nums; }
+.metric-grid { margin-top:16px; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; }
+.metric-grid article,.metric-grid button { min-width:0; min-height:112px; padding:16px; border:0; border-radius:var(--radius-md); color:var(--text-primary); background:var(--bg-elevated); text-align:left; display:grid; align-content:start; gap:6px; }
+.metric-grid button { cursor:pointer; }
+.metric-grid small,.metric-grid span { color:var(--text-secondary); font-size:12px; line-height:1.4; }
+.metric-grid strong { font-size:30px; line-height:1.15; font-weight:650; font-variant-numeric:tabular-nums; }
+.ability-board h3 { margin:24px 0 0; font-size:15px; }
+.ability-chart { height:310px; width:100%; min-width:0; touch-action:pan-y; }
+.diagnostic-grid { margin-top:16px; display:grid; grid-template-columns:minmax(260px,.8fr) minmax(420px,1.4fr); gap:16px; }
+.error-distribution,.course-table { min-width:0; padding:20px; border:1px solid var(--border-subtle); border-radius:var(--radius-lg); background:var(--bg-surface); }
+.error-distribution>header,.course-table>header { display:flex; justify-content:space-between; align-items:end; gap:8px; margin-bottom:16px; }
+.error-distribution>header small { color:var(--text-secondary); font-size:12px; }
+.error-distribution>button { width:100%; min-height:42px; display:grid; grid-template-columns:34px 1fr 34px; align-items:center; gap:8px; padding:8px 0; border:0; border-top:1px solid var(--border-subtle); color:var(--text-primary); background:transparent; text-align:left; cursor:pointer; font-size:13px; }
+.error-distribution>button:hover:not(:disabled) { color:var(--accent); }
+.error-distribution>button:disabled { cursor:default; opacity:.45; }
+.error-distribution>button span { height:5px; border-radius:4px; background:var(--border-default); overflow:hidden; }
+.error-distribution>button i { display:block; height:100%; min-width:2px; background:var(--review); }
+.error-distribution>button strong { text-align:right; font-variant-numeric:tabular-nums; }
+.course-row { display:grid; grid-template-columns:1.5fr repeat(3,1fr); align-items:center; gap:8px; padding:12px 3px; border-top:1px solid var(--border-subtle); font-size:13px; font-variant-numeric:tabular-nums; }
+.course-row.heading { border:0; color:var(--text-secondary); font-size:12px; }
+.course-row>span { display:grid; gap:2px; }
+.course-row small { color:var(--text-secondary); font-size:12px; }
+.course-table>p,.diagnostic-notice { color:var(--text-secondary); font-size:12px; }
+.diagnostic-notice { margin:12px 2px; }
+.secondary-analysis { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.topic-analysis-row { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:4px 12px; padding:12px 2px; border-top:1px solid var(--border-subtle); font-size:13px; }
+.topic-analysis-row small { grid-column:1/-1; color:var(--text-secondary); font-size:12px; }
+.topic-analysis-row .improved { color:var(--mastered); }
+.topic-analysis-row .worsened { color:var(--danger); }
+.activity-board { margin-bottom:16px; }
+.activity-summary { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; margin-top:16px; }
+.activity-summary article { min-width:0; display:grid; align-content:start; gap:4px; padding:16px; border-radius:var(--radius-md); background:var(--bg-elevated); }
+.activity-summary small,.activity-summary span,.activity-note { color:var(--text-secondary); font-size:12px; line-height:1.4; }
+.activity-summary strong { font-size:25px; font-weight:650; font-variant-numeric:tabular-nums; }
+.activity-chart { width:100%; min-width:0; height:270px; touch-action:pan-y; }
+.activity-note { margin:0; }
+.diagnostic-page button:focus-visible,.diagnostic-page input:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
+@media(max-width:1100px) { .diagnostic-header { align-items:start; flex-direction:column; } .metric-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+@media(max-width:800px) { .range { width:100%; } .range>button { flex:1; } .range label { width:100%; margin:4px 0 0; } .range input { flex:1; } .today-strip,.activity-summary { grid-template-columns:repeat(2,minmax(0,1fr)); } .diagnostic-grid,.secondary-analysis { grid-template-columns:1fr; } .ability-chart { height:280px; } .activity-chart { height:245px; } }
+@media(max-width:430px) { .today-strip article,.today-strip button,.activity-summary article,.metric-grid article,.metric-grid button { padding:12px; } .today-strip strong,.metric-grid strong { font-size:25px; } .ability-board,.error-distribution,.course-table { padding:16px; } .course-row { grid-template-columns:1.4fr repeat(3,.8fr); gap:4px; font-size:12px; } .course-row.heading { font-size:11px; } .range label { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); } .range label input { width:100%; } }
 </style>
