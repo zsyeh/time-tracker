@@ -49,7 +49,7 @@ function apply() {
   document.documentElement.dataset.colorScheme = uiScheme.value
   document.documentElement.lang = uiLanguage.value
   document.documentElement.style.colorScheme = uiScheme.value
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', uiScheme.value === 'light' ? '#f7f7f8' : '#101012')
+  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', uiScheme.value === 'light' ? '#f7f7f8' : '#101216')
 }
 export function initializeUiPreferences() { apply() }
 export function useUiPreferences() {

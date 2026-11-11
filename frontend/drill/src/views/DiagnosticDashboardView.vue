@@ -26,6 +26,7 @@ const activityChartElement = ref<HTMLElement | null>(null)
 let chart: ECharts | null = null
 let activityChart: ECharts | null = null
 let resizeObserver: ResizeObserver | null = null
+let resizeFrame = 0
 const isEi = runtimeWorkspace === 'ei'
 const title = computed(() => isEi ? uiText("EI 专业课 · 解题能力") : uiText("Drill 数学 · 解题能力"))
 
@@ -35,12 +36,12 @@ function css(name: string, fallback: string) { return getComputedStyle(document.
 
 function option(): EChartsCoreOption {
   const payload = data.value!
-  const text = css('--text-tertiary', '#888')
-  const border = css('--border-subtle', '#333')
+  const text = css('--text-secondary', '#a3a3ab')
+  const border = css('--border-subtle', '#242429')
   return {
     animationDuration: 220,
     grid: { left: 38, right: 16, top: 42, bottom: 30 },
-    legend: { top: 3, textStyle: { color: text, fontSize: 10 }, data: [uiText("首次独立正确率"), uiText("二次独立正确率")] },
+    legend: { top: 3, textStyle: { color: text, fontSize: 12 }, data: [uiText("首次独立正确率"), uiText("二次独立正确率")] },
     tooltip: {
       trigger: 'axis', confine: true,
       formatter(raw: unknown) {
@@ -49,19 +50,19 @@ function option(): EChartsCoreOption {
         return [`<strong>${point.date}</strong>`, ...rows.map(row => `${row.marker}${row.seriesName}：${row.value === null ? uiText("无样本") : `${row.value}%`}`), `${uiText("首次样本")}：${point.first_sample}`, `${uiText("二次样本")}：${point.second_sample}`].join('<br>')
       },
     },
-    xAxis: { type: 'category', data: payload.trend.map(row => row.date.slice(5)), axisLine: { lineStyle: { color: border } }, axisLabel: { color: text, fontSize: 9 } },
-    yAxis: { type: 'value', min: 0, max: 100, axisLabel: { color: text, formatter: '{value}%' }, splitLine: { lineStyle: { color: border, type: 'dashed' } } },
+    xAxis: { type: 'category', data: payload.trend.map(row => row.date.slice(5)), axisLine: { lineStyle: { color: border } }, axisLabel: { color: text, fontSize: 11, hideOverlap: true } },
+    yAxis: { type: 'value', min: 0, max: 100, axisLabel: { color: text, fontSize: 11, formatter: '{value}%' }, splitLine: { lineStyle: { color: border, type: 'dashed' } } },
     series: [
-      { name: uiText("首次独立正确率"), type: 'line', connectNulls: false, smooth: .25, data: payload.trend.map(row => dailyRate(row.first_independent_correct, row.first_sample)), lineStyle: { width: 2, color: '#15c878' }, itemStyle: { color: '#15c878' } },
-      { name: uiText("二次独立正确率"), type: 'line', connectNulls: false, smooth: .25, data: payload.trend.map(row => dailyRate(row.second_independent_correct, row.second_sample)), lineStyle: { width: 2, color: '#e4b938' }, itemStyle: { color: '#e4b938' } },
+      { name: uiText("首次独立正确率"), type: 'line', connectNulls: false, smooth: .25, data: payload.trend.map(row => dailyRate(row.first_independent_correct, row.first_sample)), lineStyle: { width: 2, color: css('--accent', '#55b88a') }, itemStyle: { color: css('--accent', '#55b88a') } },
+      { name: uiText("二次独立正确率"), type: 'line', connectNulls: false, smooth: .25, data: payload.trend.map(row => dailyRate(row.second_independent_correct, row.second_sample)), lineStyle: { width: 2, color: css('--warning', '#d5a44f') }, itemStyle: { color: css('--warning', '#d5a44f') } },
     ],
   }
 }
 
 function activityOption(): EChartsCoreOption {
   const payload = data.value!
-  const text = css('--text-tertiary', '#888')
-  const border = css('--border-subtle', '#333')
+  const text = css('--text-secondary', '#a3a3ab')
+  const border = css('--border-subtle', '#242429')
   return {
     animationDuration: 220,
     grid: { left: 38, right: 14, top: 40, bottom: 38 },
@@ -79,11 +80,11 @@ function activityOption(): EChartsCoreOption {
         ].join('<br>')
       },
     },
-    xAxis: { type: 'category', data: payload.activity.map(row => row.date.slice(5)), axisLine: { lineStyle: { color: border } }, axisLabel: { color: text, fontSize: 9, hideOverlap: true } },
-    yAxis: { type: 'value', minInterval: 1, axisLabel: { color: text }, splitLine: { lineStyle: { color: border, type: 'dashed' } } },
+    xAxis: { type: 'category', data: payload.activity.map(row => row.date.slice(5)), axisLine: { lineStyle: { color: border } }, axisLabel: { color: text, fontSize: 11, hideOverlap: true } },
+    yAxis: { type: 'value', minInterval: 1, axisLabel: { color: text, fontSize: 11 }, splitLine: { lineStyle: { color: border, type: 'dashed' } } },
     series: [
-      { name: uiText("每日去重题数"), type: 'bar', barMaxWidth: 18, data: payload.activity.map(row => row.daily_unique_questions), itemStyle: { color: '#2f9ee5', borderRadius: [3, 3, 0, 0] } },
-      { name: uiText("提交次数"), type: 'line', smooth: .2, data: payload.activity.map(row => row.submissions), lineStyle: { width: 2, color: '#e4b938' }, itemStyle: { color: '#e4b938' } },
+      { name: uiText("每日去重题数"), type: 'bar', barMaxWidth: 18, data: payload.activity.map(row => row.daily_unique_questions), itemStyle: { color: css('--accent', '#6ba6ff'), borderRadius: [3, 3, 0, 0] } },
+      { name: uiText("提交次数"), type: 'line', smooth: .2, data: payload.activity.map(row => row.submissions), lineStyle: { width: 2, color: css('--warning', '#d5a44f') }, itemStyle: { color: css('--warning', '#d5a44f') } },
     ],
   }
 }
@@ -97,6 +98,22 @@ async function renderChart() {
     activityChart ||= echarts.init(activityChartElement.value)
     activityChart.setOption(activityOption(), true)
   }
+  scheduleResize()
+}
+
+function scheduleResize() {
+  if (resizeFrame) window.cancelAnimationFrame(resizeFrame)
+  resizeFrame = window.requestAnimationFrame(() => {
+    resizeFrame = 0
+    chart?.resize()
+    activityChart?.resize()
+  })
+}
+
+function observeChartElements() {
+  if (!resizeObserver) return
+  if (chartElement.value) resizeObserver.observe(chartElement.value)
+  if (activityChartElement.value) resizeObserver.observe(activityChartElement.value)
 }
 
 async function load() {
@@ -119,12 +136,24 @@ function openErrors(codes: ErrorCode[]) { void router.push({ path: '/diagnostic-
 function openDue() { void router.push({ path: '/diagnostic-queue', query: { queue: 'due' } }) }
 
 onMounted(() => {
-  void load()
   resizeObserver = new ResizeObserver(() => { chart?.resize(); activityChart?.resize() })
-  if (chartElement.value) resizeObserver.observe(chartElement.value)
-  if (activityChartElement.value) resizeObserver.observe(activityChartElement.value)
+  void load()
+  void nextTick(observeChartElements)
+  window.addEventListener('resize', scheduleResize)
+  window.addEventListener('orientationchange', scheduleResize)
+  window.addEventListener('pageshow', scheduleResize)
+  window.visualViewport?.addEventListener('resize', scheduleResize)
 })
-onUnmounted(() => { resizeObserver?.disconnect(); chart?.dispose(); activityChart?.dispose() })
+onUnmounted(() => {
+  resizeObserver?.disconnect(); chart?.dispose(); activityChart?.dispose()
+  window.cancelAnimationFrame(resizeFrame)
+  window.removeEventListener('resize', scheduleResize)
+  window.removeEventListener('orientationchange', scheduleResize)
+  window.removeEventListener('pageshow', scheduleResize)
+  window.visualViewport?.removeEventListener('resize', scheduleResize)
+})
+
+watch([chartElement, activityChartElement], observeChartElements, { flush: 'post' })
 
 watch(uiLanguage, () => { void renderChart() })
 </script>
@@ -191,7 +220,59 @@ watch(uiLanguage, () => { void renderChart() })
 </template>
 
 <style scoped>
-.diagnostic-header{display:flex;align-items:end;justify-content:space-between;gap:16px}.diagnostic-header h1{margin:5px 0}.diagnostic-header p{margin:0;color:var(--text-tertiary);font-size:11px}.range{display:flex;align-items:center;padding:3px;border:1px solid var(--border-subtle);border-radius:7px}.range button{padding:7px 12px;border:0;border-radius:5px;color:var(--text-tertiary);background:transparent;cursor:pointer}.range button.active{color:var(--text-primary);background:var(--bg-surface-active)}.range label{display:flex;align-items:center;gap:4px;margin-left:3px;color:var(--text-tertiary);font-size:8px}.range input{width:118px;padding:5px;border:1px solid var(--border-subtle);border-radius:4px;color:var(--text-primary);background:var(--bg-sidebar);font-size:8px}.today-strip{margin:16px 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}.today-strip article,.today-strip button{padding:13px;border:1px solid var(--border-subtle);border-radius:9px;color:var(--text-primary);background:var(--bg-surface);text-align:left;display:grid;gap:4px}.today-strip button{cursor:pointer}.today-strip span,.today-strip small{color:var(--text-tertiary);font-size:9px}.today-strip strong{font:650 24px ui-monospace,monospace}.ability-board{padding:16px;border:1px solid var(--border-subtle);border-radius:12px;background:var(--bg-surface)}.ability-board>header{display:flex;justify-content:space-between}.ability-board h2,.diagnostic-grid h2{margin:0;font-size:17px}.ability-board>header span{color:var(--text-tertiary);font-size:9px}.metric-grid{margin-top:12px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.metric-grid article,.metric-grid button{min-height:96px;padding:13px;border:1px solid var(--border-subtle);border-radius:9px;color:var(--text-primary);background:var(--bg-sidebar);text-align:left;display:grid;gap:5px}.metric-grid button{cursor:pointer}.metric-grid small,.metric-grid span{color:var(--text-tertiary);font-size:10px}.metric-grid strong{font:650 27px ui-monospace,monospace}.ability-board h3{margin:16px 0 0;font-size:12px}.ability-chart{height:310px;width:100%;touch-action:pan-y}.diagnostic-grid{margin-top:12px;display:grid;grid-template-columns:minmax(260px,.8fr) minmax(420px,1.4fr);gap:12px}.error-distribution,.course-table{padding:15px;border:1px solid var(--border-subtle);border-radius:12px;background:var(--bg-surface)}.error-distribution>header,.course-table>header{display:flex;justify-content:space-between;align-items:end;margin-bottom:12px}.error-distribution>header small{color:var(--text-tertiary);font-size:8px}.error-distribution>button{width:100%;display:grid;grid-template-columns:30px 1fr 30px;align-items:center;gap:8px;padding:7px 0;border:0;color:var(--text-primary);background:transparent;text-align:left;cursor:pointer}.error-distribution>button:disabled{cursor:default;opacity:.45}.error-distribution>button span{height:5px;border-radius:4px;background:var(--border-subtle);overflow:hidden}.error-distribution>button i{display:block;height:100%;min-width:2px;background:#e0b238}.error-distribution>button strong{text-align:right}.course-row{display:grid;grid-template-columns:1.5fr repeat(3,1fr);align-items:center;gap:8px;padding:9px 3px;border-top:1px solid var(--border-subtle);font-size:10px}.course-row.heading{border:0;color:var(--text-tertiary);font-size:8px}.course-row>span{display:grid;gap:2px}.course-row small{color:var(--text-tertiary);font-size:8px}.course-table>p,.diagnostic-notice{color:var(--text-tertiary);font-size:9px}.diagnostic-notice{margin:10px 2px}.eyebrow{font-size:8px;color:var(--text-tertiary)}.secondary-analysis{grid-template-columns:repeat(2,minmax(0,1fr))}.topic-analysis-row{display:grid;grid-template-columns:1fr auto;gap:3px 10px;padding:9px 2px;border-top:1px solid var(--border-subtle);font-size:10px}.topic-analysis-row small{grid-column:1/-1;color:var(--text-tertiary);font-size:8px}.topic-analysis-row .improved{color:var(--success)}.topic-analysis-row .worsened{color:var(--danger)}
-.activity-board{margin-bottom:12px}.activity-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:12px}.activity-summary article{display:grid;gap:4px;padding:11px;border:1px solid var(--border-subtle);border-radius:8px;background:var(--bg-sidebar)}.activity-summary small,.activity-summary span,.activity-note{color:var(--text-tertiary);font-size:9px}.activity-summary strong{font:650 22px ui-monospace,monospace}.activity-chart{width:100%;height:260px;touch-action:pan-y}.activity-note{margin:0}
-@media(max-width:800px){.diagnostic-header{align-items:start;flex-direction:column}.range{width:100%;flex-wrap:wrap}.range>button{flex:1}.range label{width:100%;margin-top:3px}.range input{flex:1;min-width:0}.today-strip,.activity-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.diagnostic-grid,.secondary-analysis{grid-template-columns:1fr}.ability-chart{height:270px}.activity-chart{height:240px}.course-row{grid-template-columns:1.4fr repeat(3,.8fr)}}@media(max-width:430px){.metric-grid{grid-template-columns:1fr}.course-row{font-size:9px;gap:4px}.today-strip strong{font-size:20px}}
+.diagnostic-page{min-width:0}
+.diagnostic-header{display:flex;align-items:end;justify-content:space-between;gap:24px}
+.diagnostic-header h1{margin:6px 0;font-size:26px;line-height:1.2;letter-spacing:-.025em}
+.diagnostic-header p{margin:0;color:var(--text-secondary);font-size:14px;line-height:1.5}
+.eyebrow{font-size:11px;letter-spacing:.08em;color:var(--text-tertiary)}
+.range{display:flex;align-items:center;gap:3px;padding:3px;border:1px solid var(--border-subtle);border-radius:var(--radius-sm);background:var(--bg-sidebar)}
+.range button{min-height:40px;padding:0 13px;border:0;border-radius:5px;color:var(--text-secondary);background:transparent;font-size:13px;cursor:pointer}
+.range button.active{color:var(--text-primary);background:var(--bg-surface-active)}
+.range label{display:flex;align-items:center;gap:6px;margin-left:4px;color:var(--text-secondary);font-size:13px}
+.range input{width:132px;min-height:40px;padding:0 8px;border:1px solid var(--border-subtle);border-radius:5px;color:var(--text-primary);background:var(--bg-surface);font-size:13px}
+.today-strip{margin:20px 0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.today-strip article,.today-strip button{min-width:0;padding:16px;border:1px solid var(--border-subtle);border-radius:var(--radius-sm);color:var(--text-primary);background:var(--bg-surface);text-align:left;display:grid;align-content:start;gap:7px}
+.today-strip button{cursor:pointer;transition:border-color .15s ease}.today-strip button:hover{border-color:var(--accent)}
+.today-strip span,.today-strip small{color:var(--text-secondary);font-size:13px;line-height:1.4}
+.today-strip strong{font:650 30px/1.1 ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.ability-board{min-width:0;margin-top:16px;padding:18px 0;border-top:1px solid var(--border-subtle)}
+.ability-board>header{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+.ability-board h2,.diagnostic-grid h2{margin:0;font-size:18px;line-height:1.35}
+.ability-board>header span{color:var(--text-secondary);font-size:13px;font-variant-numeric:tabular-nums}
+.metric-grid{margin-top:14px;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.metric-grid article,.metric-grid button{min-width:0;min-height:108px;padding:15px;border:1px solid var(--border-subtle);border-radius:var(--radius-sm);color:var(--text-primary);background:var(--bg-surface);text-align:left;display:grid;align-content:start;gap:8px}
+.metric-grid button{cursor:pointer;transition:border-color .15s ease}.metric-grid button:hover{border-color:var(--accent)}
+.metric-grid small,.metric-grid span{color:var(--text-secondary);font-size:13px;line-height:1.4}
+.metric-grid strong{font:650 30px/1.1 ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.ability-board h3{margin:22px 0 4px;font-size:15px}
+.ability-chart{display:block;min-width:0;width:100%;height:310px;touch-action:pan-y;overflow:hidden}
+.diagnostic-grid{min-width:0;margin-top:16px;display:grid;grid-template-columns:minmax(260px,.8fr) minmax(0,1.4fr);gap:24px}
+.error-distribution,.course-table{min-width:0;padding:16px 0;border-top:1px solid var(--border-subtle);background:transparent}
+.error-distribution>header,.course-table>header{display:flex;justify-content:space-between;align-items:end;gap:12px;margin-bottom:14px}
+.error-distribution>header small{color:var(--text-secondary);font-size:12px}
+.error-distribution>button{width:100%;min-height:42px;display:grid;grid-template-columns:36px minmax(0,1fr) 40px;align-items:center;gap:12px;padding:7px 4px;border:0;border-bottom:1px solid var(--border-subtle);color:var(--text-primary);background:transparent;text-align:left;cursor:pointer}
+.error-distribution>button:disabled{cursor:default;opacity:.5}
+.error-distribution>button b,.error-distribution>button strong{font-size:14px;font-variant-numeric:tabular-nums}
+.error-distribution>button span{height:6px;border-radius:4px;background:var(--bg-elevated);overflow:hidden}
+.error-distribution>button i{display:block;height:100%;min-width:2px;background:var(--warning);border-radius:inherit}
+.error-distribution>button strong{text-align:right}
+.course-row{min-width:0;display:grid;grid-template-columns:minmax(140px,1.5fr) repeat(3,minmax(0,1fr));align-items:center;gap:12px;padding:11px 4px;border-top:1px solid var(--border-subtle);font-size:13px}
+.course-row.heading{border:0;color:var(--text-secondary);font-size:12px}
+.course-row>span{display:grid;gap:4px}.course-row small{color:var(--text-tertiary);font-size:12px}
+.course-table>p,.diagnostic-notice{color:var(--text-secondary);font-size:13px;line-height:1.5}
+.secondary-analysis{grid-template-columns:repeat(2,minmax(0,1fr))}
+.topic-analysis-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 14px;padding:12px 4px;border-top:1px solid var(--border-subtle);font-size:14px}
+.topic-analysis-row small{grid-column:1/-1;color:var(--text-secondary);font-size:12px;font-variant-numeric:tabular-nums}
+.topic-analysis-row .improved{color:var(--success)}.topic-analysis-row .worsened{color:var(--danger)}
+.diagnostic-notice{margin:16px 0}
+.activity-board{margin-bottom:4px}
+.activity-summary{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:14px}
+.activity-summary article{min-width:0;display:grid;align-content:start;gap:7px;padding:14px;border-left:2px solid var(--border-default);background:transparent}
+.activity-summary small,.activity-summary span,.activity-note{color:var(--text-secondary);font-size:13px;line-height:1.45}
+.activity-summary strong{font:650 27px/1.1 ui-monospace,monospace;font-variant-numeric:tabular-nums}
+.activity-chart{display:block;min-width:0;width:100%;height:270px;touch-action:pan-y;overflow:hidden}
+.activity-note{margin:4px 0 0}
+@media(max-width:1100px){.diagnostic-header{align-items:start;flex-direction:column}.range{width:100%;flex-wrap:wrap}.range>button{flex:1}.range label{width:100%;margin:4px 0 0}.range input{flex:1;min-width:0}.today-strip,.activity-summary{grid-template-columns:repeat(2,minmax(0,1fr))}.metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.diagnostic-grid,.secondary-analysis{grid-template-columns:1fr;gap:12px}.ability-chart{height:280px}.activity-chart{height:250px}.course-row{grid-template-columns:minmax(130px,1.3fr) repeat(3,minmax(0,.8fr))}}
+@media(max-width:600px){.diagnostic-header h1{font-size:23px}.diagnostic-header p{font-size:13px}.today-strip,.activity-summary{gap:8px}.today-strip article,.today-strip button{padding:12px}.today-strip strong{font-size:25px}.ability-board{padding:16px 0}.ability-board>header{align-items:start;flex-direction:column;gap:5px}.metric-grid{gap:8px}.metric-grid article,.metric-grid button{min-height:100px;padding:12px}.metric-grid strong{font-size:25px}.course-row{grid-template-columns:minmax(105px,1.15fr) repeat(3,minmax(0,.8fr));gap:5px;padding:10px 2px;font-size:12px}.course-row.heading{font-size:11px}.course-row small{font-size:11px}.error-distribution>header{align-items:start;flex-direction:column}.ability-chart{height:265px}.activity-chart{height:235px}}
+@media(max-width:380px){.today-strip,.activity-summary,.metric-grid{grid-template-columns:1fr}.range label{flex-wrap:wrap}.range input{width:calc(50% - 4px);flex:1 1 40%}.course-row{grid-template-columns:minmax(90px,1.1fr) repeat(3,minmax(0,.75fr));font-size:11px}.course-row.heading{font-size:10px}}
 </style>
