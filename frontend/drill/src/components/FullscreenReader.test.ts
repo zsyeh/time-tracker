@@ -79,3 +79,23 @@ it('replaces content inside the same open dialog without reopening or unlocking 
   expect(close).not.toHaveBeenCalled()
   expect(document.body.style.overflow).toBe('hidden')
 })
+it('exposes recovery actions inside the open modal without changing ordinary toolbar controls',async()=>{
+  host=document.createElement('div');document.body.append(host)
+  const reconnect=vi.fn(),skip=vi.fn()
+  const issue=reactive({visible:false})
+  app=createApp({render:()=>h(FullscreenReader,{title:'Question',images:[{src:'/first',width:600,height:900}]},{recovery:()=>issue.visible?h('div',{class:'test-recovery'},[
+    h('button',{onClick:reconnect},'Reconnect timer'),h('button',{onClick:skip},'Save without duration'),
+  ]):null})})
+  app.mount(host);await flush()
+  const dialog=document.querySelector<HTMLDialogElement>('.fullscreen-reader')!
+  dialog.showModal=function(){this.open=true};dialog.close=function(){this.open=false;this.dispatchEvent(new Event('close'))}
+  host.querySelector('button')!.click();await flush()
+  expect(dialog.querySelector('.test-recovery')).toBeNull()
+  const ordinaryButtons=dialog.querySelectorAll('.reader-toolbar button').length
+  issue.visible=true;await flush()
+  const buttons=dialog.querySelectorAll<HTMLButtonElement>('.test-recovery button')
+  expect(buttons).toHaveLength(2);buttons[0]!.click();buttons[1]!.click()
+  expect(reconnect).toHaveBeenCalledOnce();expect(skip).toHaveBeenCalledOnce()
+  expect(dialog.open).toBe(true)
+  expect(dialog.querySelectorAll('.reader-toolbar button')).toHaveLength(ordinaryButtons)
+})

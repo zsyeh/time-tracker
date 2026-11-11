@@ -302,6 +302,7 @@ def list_context_navigation(request, question):
             'previous_question_uuid', 'sequential_next_question_uuid', 'next_question_uuid',
             'next_overdue_review_uuid', 'next_review_uuid',
             'previous_overdue_review_uuid', 'previous_review_uuid',
+            'next_unattempted_question_uuid', 'previous_unattempted_question_uuid',
         )}
     latest = QuestionAttempt.objects.filter(
         user=request.user, question_id=OuterRef('pk'),
@@ -335,6 +336,8 @@ def list_context_navigation(request, question):
         'next_question_uuid': find(after, lambda row: row[1] not in {'done', 'correct'}),
         'next_overdue_review_uuid': find(after, is_overdue),
         'next_review_uuid': find(after, is_review),
+        'next_unattempted_question_uuid': find([*after, *ordered_ids[:index]], lambda row: row[1] in (None, 'reset')),
+        'previous_unattempted_question_uuid': find([*reversed(ordered_ids[:index]), *reversed(after)], lambda row: row[1] in (None, 'reset')),
         'previous_overdue_review_uuid': find(reversed(ordered_ids[:index]), is_overdue),
         'previous_review_uuid': find(reversed(ordered_ids[:index]), is_review),
     }
@@ -359,8 +362,46 @@ def navigation_position(question, *, following):
     )
 
 
+def unattempted_question_navigation(question, request, rows=None):
+    """Use the existing unattempted state (no attempt or latest reset), in scope.
+
+    Selected scopes already materialize their ordered latest states; reuse them.
+    Ordinary scopes use two bounded lookups, wrapping only within the same filters.
+    """
+    if rows is not None:
+        position = next((i for i, row in enumerate(rows) if row[0] == question.pk), -1)
+        candidates = [row for row in rows if row[0] != question.pk and row[2] in (None, 'reset')]
+        if position < 0:
+            following = candidates[0][1] if candidates else None
+            previous = candidates[-1][1] if candidates else None
+        else:
+            after = [row for row in rows[position + 1:] if row[0] != question.pk and row[2] in (None, 'reset')]
+            before = [row for row in rows[:position] if row[0] != question.pk and row[2] in (None, 'reset')]
+            following = (after or before or [[None, None]])[0][1]
+            previous = (before or after or [[None, None]])[-1][1]
+    else:
+        scope = navigation_queryset(question, request).exclude(pk=question.pk)
+        if request.query_params.get('unattempted') != '1':
+            scope = navigation_with_latest_result(scope, request.user).filter(
+                Q(next_latest_result__isnull=True) | Q(next_latest_result='reset'),
+            )
+        following = scope.order_by(
+            Case(When(navigation_position(question, following=True), then=Value(0)), default=Value(1)),
+            'document_id', 'question_order', 'pk',
+        ).values_list('uuid', flat=True).first()
+        previous = scope.order_by(
+            Case(When(navigation_position(question, following=False), then=Value(0)), default=Value(1)),
+            '-document_id', '-question_order', '-pk',
+        ).values_list('uuid', flat=True).first()
+    return {
+        'next_unattempted_question_uuid': str(following) if following else None,
+        'previous_unattempted_question_uuid': str(previous) if previous else None,
+    }
+
+
 def ordinary_question_navigation(question, request):
     scope = navigation_queryset(question, request)
+    rows = None
     if request.query_params.get('collection') in SELECTED_COLLECTIONS:
         # Selected manifests produce complex filters. Repeated range lookups were
         # slower in PostgreSQL benchmarks, so retain one bulk scope query here.
@@ -397,6 +438,7 @@ def ordinary_question_navigation(question, request):
         'next_review_uuid': review,
         'previous_overdue_review_uuid': previous_review_question(question, request, overdue=True) if overdue else None,
         'previous_review_uuid': previous_review_question(question, request, overdue=False) if review else None,
+        **unattempted_question_navigation(question, request, rows),
     }
 
 
@@ -1370,6 +1412,13 @@ class DrillQuestionAttemptView(APIView):
                         **self._payload(request.user, question),
                         'deduplicated': True,
                     })
+            from .recovery import validate_attempt_timing, timing_conflict, _lock
+            validate_attempt_timing(serializer.validated_data)
+            timing_omitted = serializer.validated_data.get('timing_omit', False)
+            if serializer.validated_data.get('timing_protocol') != 2 and QuestionTimingSession.objects.filter(
+                user=request.user, question=question, recovery__protocol=2, recovery__finalized=False,
+            ).exists():
+                raise timing_conflict('timing_protocol_mismatch')
             user_state = QuestionUserState.objects.select_for_update().filter(
                 user=request.user, question=question,
             ).first()
@@ -1388,13 +1437,16 @@ class DrillQuestionAttemptView(APIView):
             timing_session = None
             timing_key = serializer.validated_data.get('timing_key')
             recovered_timer = False
-            if timing_key:
+            if timing_key and not timing_omitted:
                 candidate = QuestionTimingSession.objects.filter(
                     user=request.user, question=question, client_key=timing_key).first()
                 recovered_timer = bool(candidate and (candidate.recovery or {}).get('protocol') == 2)
+                if serializer.validated_data.get('timing_protocol') == 2 and not recovered_timer:
+                    raise timing_conflict('timing_round_missing', state=_lock(request.user),
+                                          owner=serializer.validated_data.get('timing_owner'))
                 if recovered_timer:
                     if serializer.validated_data.get('timing_protocol') != 2:
-                        return Response({'detail': 'Protocol 2 owner/sequence required.'}, status=409)
+                        raise timing_conflict('timing_protocol_mismatch', candidate)
                     started_at = candidate.starts_at
                 else:
                     timing_session = QuestionTimingSession.objects.select_for_update().filter(
@@ -1402,7 +1454,7 @@ class DrillQuestionAttemptView(APIView):
                         stopped_at__isnull=True).first()
                     if timing_session:
                         started_at = timing_session.starts_at
-            if not recovered_timer and result in {'correct', 'review'} and user_state and user_state.active_timing_started_at:
+            if not timing_omitted and not recovered_timer and result in {'correct', 'review'} and user_state and user_state.active_timing_started_at:
                 server_elapsed = int((timezone.now() - user_state.active_timing_started_at).total_seconds())
                 time_spent_seconds = server_elapsed if 1 <= server_elapsed <= 43200 else None
             if timing_session:
@@ -1412,7 +1464,7 @@ class DrillQuestionAttemptView(APIView):
                 timing_session.stopped_at = timezone.now()
                 timing_session.save(update_fields=['stopped_at'])
             state_update_fields = []
-            if user_state and user_state.active_timing_started_at:
+            if not timing_omitted and user_state and user_state.active_timing_started_at:
                 user_state.active_timing_started_at = None
                 state_update_fields.append('active_timing_started_at')
             canonical_note = user_state.note if user_state else ''
@@ -1443,6 +1495,12 @@ class DrillQuestionAttemptView(APIView):
                 if note_conflict and note_was_submitted
                 else canonical_note
             )
+            omitted_timer = None
+            if timing_omitted:
+                from .recovery import omit_timing
+                omitted_timer = omit_timing(request.user, question, timing_key,
+                    serializer.validated_data['timing_owner'], submission_key)
+                time_spent_seconds, started_at = None, None
             if recovered_timer:
                 from .recovery import finish_timing
                 confirmed_seconds = finish_timing(request.user, question, timing_key, serializer.validated_data)
@@ -1471,6 +1529,9 @@ class DrillQuestionAttemptView(APIView):
                 submission_key=submission_key,
                 created_at=now,
             )
+            if omitted_timer:
+                omitted_timer.recovery = {**omitted_timer.recovery, 'attempt_id': attempt.pk}
+                omitted_timer.save(update_fields=['recovery'])
             if recovered_timer:
                 completed_timer = QuestionTimingSession.objects.get(user=request.user, question=question, client_key=timing_key)
                 completed_timer.recovery = {**completed_timer.recovery, 'attempt_id': attempt.pk, 'time_basis': 'foreground_v2'}

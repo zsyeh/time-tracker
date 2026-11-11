@@ -49,6 +49,8 @@ export interface QuestionDetail extends QuestionSummary {
   formula_source: 'tex' | 'original_pdf_crop'
   document_author: string
   document_attribution: string
+  next_unattempted_question_uuid?: string | null
+  previous_unattempted_question_uuid?: string | null
   previous_question_uuid: string | null
   previous_overdue_review_uuid: string | null
   previous_review_uuid: string | null

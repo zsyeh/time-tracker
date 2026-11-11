@@ -14,5 +14,5 @@ export interface ReaderPracticeControls {
   feedback: string
 }
 export function readerDestinationColour(mode: NextQuestionMode, base: string) {
-  return mode === 'overdue' ? 'var(--danger, #e37179)' : mode === 'review' ? 'var(--warning, #d4a857)' : base
+  return mode === 'unattempted' ? 'var(--text-tertiary, #a1a1aa)' : mode === 'overdue' ? 'var(--danger, #e37179)' : mode === 'review' ? 'var(--warning, #d4a857)' : base
 }

@@ -58,3 +58,20 @@ it('announces the answer toggle state and keeps both directions available', asyn
   uiLanguage.value = 'zh-CN'; await nextTick()
   expect(button.getAttribute('aria-label')).toBe('返回题目')
 })
+
+it('shows grey unattempted arrows and disables exhausted destinations without emitting navigation', async () => {
+  const { controls, action } = await mount()
+  controls.mode = 'unattempted'; controls.reviewAutoNext = true; await nextTick()
+  for (const name of ['previous', 'next', 'mastered', 'review']) {
+    const button = host.querySelector<HTMLButtonElement>(`[data-action=${name}]`)!
+    expect(button.getAttribute('title')).toContain('unattempted')
+    expect(button.querySelectorAll('path')[1]!.getAttribute('stroke')).toContain('--text-tertiary')
+  }
+  controls.canPrevious = false; controls.canNext = false; await nextTick()
+  const previous = host.querySelector<HTMLButtonElement>('[data-action=previous]')!
+  const next = host.querySelector<HTMLButtonElement>('[data-action=next]')!
+  expect(previous.disabled).toBe(true); expect(next.disabled).toBe(true)
+  previous.click(); next.click(); expect(action).not.toHaveBeenCalled()
+  uiLanguage.value = 'zh-CN'; await nextTick()
+  expect(next.getAttribute('aria-label')).toContain('未做题')
+})

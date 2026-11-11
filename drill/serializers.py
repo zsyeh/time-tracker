@@ -117,6 +117,7 @@ class QuestionAttemptCreateSerializer(serializers.Serializer):
     state_version = serializers.IntegerField(min_value=1, required=False, allow_null=True)
     timing_key = serializers.UUIDField(required=False, allow_null=True)
     timing_protocol = serializers.IntegerField(required=False, min_value=2, max_value=2)
+    timing_omit = serializers.BooleanField(required=False, default=False)
     timing_owner = serializers.UUIDField(required=False)
     timing_sequence = serializers.IntegerField(required=False, min_value=0)
     timing_elapsed_ms = serializers.IntegerField(required=False, min_value=0, max_value=43200000)

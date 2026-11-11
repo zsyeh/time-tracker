@@ -7,7 +7,7 @@ const emit = defineEmits<{ action: [action: ReaderPracticeAction] }>()
 const grey = 'var(--text-secondary)'
 const green = 'var(--success, #64b781)'
 const yellow = 'var(--warning, #d4a857)'
-const destination = computed(() => props.controls.mode === 'overdue' ? typeText('红色到期题', 'red overdue questions') : props.controls.mode === 'review' ? typeText('黄色复习题', 'yellow review questions') : typeText('顺序题', 'sequential questions'))
+const destination = computed(() => props.controls.mode === 'unattempted' ? typeText('未做题', 'unattempted questions') : props.controls.mode === 'overdue' ? typeText('红色到期题', 'red overdue questions') : props.controls.mode === 'review' ? typeText('黄色复习题', 'yellow review questions') : typeText('顺序题', 'sequential questions'))
 const navColour = computed(() => readerDestinationColour(props.controls.mode, grey))
 const masterColour = computed(() => readerDestinationColour(props.controls.mode, green))
 const reviewColour = computed(() => props.controls.mode === 'review' ? 'color-mix(in srgb, var(--warning, #d4a857) 58%, white)' : readerDestinationColour(props.controls.mode, yellow))

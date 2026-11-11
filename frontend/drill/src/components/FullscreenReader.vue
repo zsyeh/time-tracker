@@ -115,6 +115,7 @@ defineExpose({ open, close, isOpen: computed(() => opened.value) })
           <button type="button" class="reader-close" autofocus :aria-label="typeText('关闭全屏', 'Close full screen')" @click="close">✕</button>
         </header>
         <p v-if="controls?.error || controls?.feedback" class="reader-feedback" :class="{ error: controls?.error }" :role="controls?.error ? 'alert' : 'status'">{{ controls?.error || controls?.feedback }}</p>
+        <slot name="recovery" />
         <div ref="scroller" class="reader-scroll" tabindex="0" :aria-busy="pending || syncing || loading" @scroll.passive="trackPage">
           <p v-if="pending || loading || syncing" class="reader-hint" role="status">{{ syncing ? typeText('正在同步最新掌握状态…', 'Updating progress…') : typeText('正在加载…', 'Loading…') }}</p>
           <p v-if="loadError" class="reader-hint" role="alert">{{ loadError }} <button type="button" class="reader-load-retry" @click="loadContent">{{ typeText('重试', 'Retry') }}</button></p>

@@ -86,15 +86,16 @@ class RecoveryTests(TestCase):
         self.assertEqual(synced.status_code,200,synced.content)
         self.assertEqual(synced.json()['elapsed_ms'],30000)
 
-    def test_same_device_crash_proof_can_resume_without_waiting_for_expiry(self):
+    def test_shared_snapshot_cannot_steal_live_lease_from_another_document(self):
         self.call();self.tick(20);self.call('checkpoint',2,20000)
         owner=str(uuid.uuid4())
         r=self.client.post(f'/api/drill/questions/{self.q.uuid}/timing/',
             {'protocol':2,'action':'claim','owner':owner,'timing_key':self.key,'sequence':3,
              'resume_owner':self.owner,'base_elapsed_ms':20000},content_type='application/json')
-        self.assertEqual(r.status_code,200,r.content)
-        self.assertTrue(r.json()['local_base_valid'])
-        self.assertEqual(self.call('checkpoint',4,20000).status_code,409)
+        self.assertEqual(r.status_code,409,r.content)
+        self.assertEqual(r.json()['reason'], 'owner_mismatch')
+        self.assertIs(r.json()['can_reclaim'], False)
+        self.assertEqual(self.call('checkpoint',4,20000).status_code,200)
 
     def test_stale_pause_cannot_stop_reclaimed_round(self):
         self.call();self.tick(10);self.call('pause',2,10000);self.call('claim',3,10000)
@@ -131,6 +132,114 @@ class RecoveryTests(TestCase):
     def test_new_write_endpoint_requires_csrf(self):
         client=Client(enforce_csrf_checks=True);client.force_login(self.user)
         self.assertEqual(client.put('/api/learning/recovery/',{'workspace':'timer','version':0,'location':{'path':'/'}},content_type='application/json').status_code,403)
+
+    def submit_data(self, **changes):
+        data = {'result': 'correct', 'timing_protocol': 2, 'timing_key': self.key,
+                'timing_owner': self.owner, 'timing_sequence': 3, 'timing_elapsed_ms': 10000,
+                'submission_key': str(uuid.uuid4())}
+        data.update(changes)
+        return data
+
+    def post_attempt_data(self, data, question=None):
+        return self.client.post(f'/api/drill/questions/{(question or self.q).uuid}/attempts/',
+                                data, content_type='application/json')
+
+    def test_owner_conflict_is_diagnostic_and_rolls_back_note_and_attempt(self):
+        from .models import QuestionUserState
+        state = QuestionUserState.objects.create(user=self.user, question=self.q, note='saved')
+        self.call(); self.tick(10)
+        with self.assertLogs('drill.recovery', level='WARNING') as logs:
+            response = self.post_attempt_data(self.submit_data(timing_owner=str(uuid.uuid4()),
+                                        note='not saved', state_version=state.version))
+        self.assertIn('reason=owner_mismatch', logs.output[0])
+        for private in (self.owner, self.key, 'not saved'):
+            self.assertNotIn(private, ' '.join(logs.output))
+        self.assertEqual(response.status_code, 409, response.content)
+        self.assertEqual(response.json()['reason'], 'owner_mismatch')
+        self.assertIs(response.json()['can_reclaim'], False)
+        self.assertIsInstance(response.json()['lease_retry_after'], int)
+        state.refresh_from_db()
+        self.assertEqual(state.note, 'saved')
+        self.assertFalse(QuestionAttempt.objects.exists())
+        self.assertNotIn(self.owner, response.content.decode())
+
+    def test_expired_lease_can_be_safely_claimed_once_before_attempt(self):
+        self.call(); self.tick(46)
+        response = self.post_attempt_data(self.submit_data())
+        self.assertEqual(response.status_code, 409)
+        self.assertEqual(response.json()['reason'], 'lease_expired')
+        self.assertIs(response.json()['can_reclaim'], True)
+        self.assertEqual(self.call('claim', 3).status_code, 200)
+        response = self.post_attempt_data(self.submit_data(timing_sequence=4))
+        self.assertEqual(response.status_code, 201, response.content)
+
+    def test_stale_sequence_and_stale_owner_do_not_finalize_or_acknowledge(self):
+        self.call(); self.tick(10); self.call('checkpoint', 3, 10000)
+        stale = self.post_attempt_data(self.submit_data(timing_sequence=2))
+        self.assertEqual(stale.status_code, 409)
+        self.assertEqual(stale.json()['reason'], 'stale_sequence')
+        self.assertFalse(QuestionAttempt.objects.exists())
+        foreign = self.call('checkpoint', 1, 0, owner=str(uuid.uuid4()))
+        self.assertEqual(foreign.status_code, 409)
+        self.assertEqual(foreign.json()['reason'], 'owner_mismatch')
+        timer = QuestionTimingSession.objects.get(client_key=self.key)
+        self.assertFalse(timer.recovery['finalized'])
+
+    def test_other_question_lease_reports_active_mismatch_without_modification(self):
+        self.call(); self.call(q=self.q2, key=str(uuid.uuid4()))
+        active = LearningRecoveryState.objects.get(user=self.user).active_timer_id
+        response = self.post_attempt_data(self.submit_data())
+        self.assertEqual(response.status_code, 409)
+        self.assertEqual(response.json()['reason'], 'active_timer_mismatch')
+        self.assertEqual(LearningRecoveryState.objects.get(user=self.user).active_timer_id, active)
+
+    def test_timing_fields_cannot_be_removed_to_bypass_validation(self):
+        self.call()
+        data = self.submit_data()
+        for field in ('timing_key', 'timing_owner', 'timing_sequence', 'timing_elapsed_ms', 'submission_key'):
+            stripped = dict(data); stripped.pop(field)
+            response = self.post_attempt_data(stripped)
+            self.assertEqual(response.status_code, 400, (field, response.content))
+        stripped = {'result': 'correct', 'submission_key': str(uuid.uuid4()), 'time_spent_seconds': 999}
+        response = self.post_attempt_data(stripped)
+        self.assertEqual(response.status_code, 409)
+        self.assertEqual(response.json()['reason'], 'timing_protocol_mismatch')
+        self.assertFalse(QuestionAttempt.objects.exists())
+
+    def test_explicit_omission_of_never_claimed_round_is_audited_and_idempotent(self):
+        self.call(q=self.q2, key=str(uuid.uuid4()), owner=str(uuid.uuid4()))
+        active = LearningRecoveryState.objects.get(user=self.user).active_timer_id
+        data = self.submit_data(timing_omit=True)
+        first = self.post_attempt_data(data)
+        self.assertEqual(first.status_code, 201, first.content)
+        self.assertIsNone(first.json()['time_spent_seconds'])
+        self.assertIsNone(QuestionAttempt.objects.get().started_at)
+        timer = QuestionTimingSession.objects.get(user=self.user, question=self.q, client_key=self.key)
+        self.assertEqual(timer.recovery['time_basis'], 'explicitly_omitted')
+        self.assertEqual(timer.recovery['attempt_id'], QuestionAttempt.objects.get().pk)
+        self.assertEqual(LearningRecoveryState.objects.get(user=self.user).active_timer_id, active)
+        self.assertEqual(self.post_attempt_data(data).status_code, 200)
+        self.assertEqual(QuestionAttempt.objects.count(), 1)
+
+    def test_explicit_omission_cannot_modify_another_documents_round(self):
+        self.call()
+        timer = QuestionTimingSession.objects.get(client_key=self.key)
+        before = dict(timer.recovery)
+        response = self.post_attempt_data(self.submit_data(timing_omit=True, timing_owner=str(uuid.uuid4())))
+        self.assertEqual(response.status_code, 201, response.content)
+        self.assertIsNone(response.json()['time_spent_seconds'])
+        timer.refresh_from_db()
+        self.assertEqual(timer.recovery, before)
+        self.assertEqual(LearningRecoveryState.objects.get(user=self.user).active_timer_id, timer.pk)
+
+    def test_omission_rejects_forged_duration_or_foreign_question_key(self):
+        self.call(q=self.q2)
+        response = self.post_attempt_data(self.submit_data(timing_omit=True))
+        self.assertEqual(response.status_code, 409)
+        self.assertEqual(response.json()['reason'], 'timing_round_mismatch')
+        duration = self.post_attempt_data(self.submit_data(timing_omit=True, time_spent_seconds=100))
+        self.assertEqual(duration.status_code, 400)
+        self.assertFalse(QuestionAttempt.objects.exists())
 
 from concurrent.futures import ThreadPoolExecutor
 from django.db import close_old_connections, connections

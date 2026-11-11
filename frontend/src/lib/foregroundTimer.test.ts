@@ -81,3 +81,73 @@ it('sends the previous pause before the next question claim',async()=>{
   expect(calls.slice(0,2)).toEqual(['pause','claim'])
   await next.pause()
 })
+it('returns explicit conflict and never claims a genuinely live other owner during submission preparation',async()=>{
+  const t=timer();await t.activate();await advance(t,15000)
+  calls=[]
+  const request=vi.fn().mockRejectedValue(Object.assign(new Error('lease'),{status:409,body:{reason:'owner_mismatch',can_reclaim:false,lease_live:true,owner_matches:false,lease_retry_after:45}}))
+  ;(t as unknown as {request:typeof request}).request=request
+  const before=t.state.elapsedMs
+  const result=await t.prepareSubmission()
+  expect(result).toMatchObject({status:'conflict',issue:{reason:'owner_mismatch',can_reclaim:false,lease_live:true}})
+  expect(request).toHaveBeenCalledOnce()
+  expect(t.state.elapsedMs).toBe(before)
+  expect(t.state.claimed).toBe(false)
+})
+it('reclaims only once for a recoverable stale active round, then uses a fresh checkpoint owner/sequence',async()=>{
+  const t=timer();await t.activate()
+  const send=request
+  const reconnect=vi.fn().mockRejectedValueOnce(Object.assign(new Error('stale'),{status:409,body:{reason:'active_timer_mismatch',can_reclaim:true,active_matches:false,lease_live:false}}))
+    .mockImplementationOnce(send)
+  ;(t as unknown as {request:typeof reconnect}).request=reconnect
+  const result=await t.prepareSubmission()
+  expect(result.status).toBe('success')
+  expect(reconnect).toHaveBeenCalledTimes(2)
+  expect(reconnect.mock.calls.map(call=>JSON.parse(String(call[1].body)).action)).toEqual(['checkpoint','claim'])
+  expect(t.snapshot().timing_sequence).toBeGreaterThan(server.sequence)
+})
+it('does not loop or override a real lease if the single safe reclaim also conflicts',async()=>{
+  const t=timer();await t.activate()
+  const reconnect=vi.fn().mockRejectedValueOnce(Object.assign(new Error('stale'),{status:409,body:{reason:'lease_expired',can_reclaim:true}}))
+    .mockRejectedValueOnce(Object.assign(new Error('other owner'),{status:409,body:{reason:'owner_mismatch',can_reclaim:false,lease_live:true}}))
+  ;(t as unknown as {request:typeof reconnect}).request=reconnect
+  expect((await t.prepareSubmission()).status).toBe('conflict')
+  expect(reconnect).toHaveBeenCalledTimes(2)
+})
+it('preserves a finalized-but-unacknowledged prepared Attempt through reload for backend deduplication',async()=>{
+  const t=timer();await t.activate()
+  const key=t.submissionKey()
+  t.rememberAttempt({result:'review',submission_key:key,note:'draft',...t.snapshot()})
+  server.finalized=true
+  await t.activate()
+  expect(t.state.finalized).toBe(true)
+  const restored=timer()
+  expect(restored.state.key).toBe(t.state.key)
+  expect(restored.state.submissionKey).toBe(key)
+  expect(restored.state.pendingAttempt).toMatchObject({result:'review',submission_key:key,note:'draft'})
+  restored.finish()
+  expect(timer().state.key).not.toBe(t.state.key)
+})
+it('manual reconnect starts a fresh safe round for a completed timer and migrates its visible diagnosis draft',async()=>{
+  const t=timer();await t.activate();await advance(t,15000)
+  const oldKey=t.state.key
+  localStorage.setItem(t.storageKey+'.draft',JSON.stringify({key:oldKey,knowledge:2,errors:['B1'],answer:true}))
+  server.finalized=true
+  const reconnect=vi.fn(async<T>(_url:string,options?:RequestInit)=>{
+    const data=JSON.parse(String(options?.body))
+    if(data.timing_key===oldKey)return {...server,finalized:true} as T
+    return {protocol:2,timing_key:data.timing_key,elapsed_ms:0,countdown_ms:5000,sequence:data.sequence,owner:data.owner,finalized:false,local_base_valid:true} as T
+  })
+  ;(t as unknown as {request:typeof reconnect}).request=reconnect
+  const result=await t.reconnect()
+  expect(result).toEqual({status:'success',finalized:false})
+  expect(t.state.key).not.toBe(oldKey)
+  expect(t.state.elapsedMs).toBe(0)
+  expect(JSON.parse(localStorage.getItem(t.storageKey+'.previous')!).key).toBe(oldKey)
+  expect(JSON.parse(localStorage.getItem(t.storageKey+'.draft')!)).toMatchObject({key:t.state.key,knowledge:2,errors:['B1'],answer:true})
+  expect(reconnect).toHaveBeenCalledTimes(2)
+})
+it('does not reuse the cloned sessionStorage owner identity',async()=>{
+  sessionStorage.setItem('learning.window.v2','cloned-other-window-owner')
+  const t=timer();await t.activate()
+  expect(t.state.owner).not.toBe('cloned-other-window-owner')
+})

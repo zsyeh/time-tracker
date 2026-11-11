@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { uiText } from '../lib/uiText'
-import { ForegroundTimer, learningUserId, readLocal, writeLocal } from '../../../shared/foregroundTimer'
+import { ForegroundTimer, learningUserId, readLocal, writeLocal, type TimingSyncResult } from '../../../shared/foregroundTimer'
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router'
 import { api, ApiError, post, remove } from '../lib/api'
@@ -131,10 +131,10 @@ const topNextTarget = computed(() => question.value
   ? nextQuestionTarget(question.value, nextMode.value)
   : nextMode.value === 'sequential' ? navigationNext.value : null)
 const topPreviousLabel = computed(() => ({
-  sequential: '上一题', overdue: '上一道红色题', review: '上一道黄色题',
+  sequential: '上一题', overdue: '上一道红色题', review: '上一道黄色题', unattempted: '上一道未做题',
 })[nextMode.value])
 const topNextLabel = computed(() => question.value ? ({
-  sequential: '下一题', overdue: '下一道到期题', review: '下一道待复习题',
+  sequential: '下一题', overdue: '下一道到期题', review: '下一道待复习题', unattempted: '下一道未做题',
 })[nextMode.value] : '下一题')
 const sourceViewer = ref<InstanceType<typeof SourcePaperViewer> | null>(null)
 const questionReader = ref<InstanceType<typeof FullscreenReader> | null>(null)
@@ -299,7 +299,14 @@ const readerControls = computed<ReaderPracticeControls>(() => ({
   state: question.value?.state || 'unattempted', error: uiText(error.value), feedback: uiText(actionFeedback.value),
 }))
 
-watch(nextMode, (value) => localStorage.setItem('drill.next-mode.v1', value))
+watch(nextMode, (value) => {
+  try{localStorage.setItem('drill.next-mode.v1',value)}catch{/* optional preference cache */}
+  if(value==='unattempted'&&question.value){
+    const query=navigationQueryString()
+    void prefetchQuestion(question.value.next_unattempted_question_uuid||null,query)
+    void prefetchQuestion(question.value.previous_unattempted_question_uuid||null,query)
+  }
+})
 watch(diagnosisOpen, (value) => localStorage.setItem(`${runtimeWorkspace}.diagnosis-open.v1`, String(value)))
 watch(pageTurnCopyMode, (value) => localStorage.setItem(pageTurnCopyStorageKey, value))
 watch(reviewAutoNext, (value) => localStorage.setItem('drill.review-auto-next.v1', String(value)))
@@ -459,9 +466,14 @@ let practiceTimer: ForegroundTimer | null = null
 let roundDraftReady = false
 let draftRoundKey = ''
 const timerSyncStatus = ref('syncing')
+const timingRecoveryResult = ref<'correct'|'review'|'reset'|null>(null)
+const pendingAttemptResult = ref<'correct'|'review'|'reset'|null>(null)
+const timerReconnecting = ref(false)
+const timingIssueReason = ref('')
 const timingCountdown = ref(5)
 const timingElapsedSeconds = ref(0)
 const timingFinalized = ref(false)
+const timingOmitted = ref(false)
 const failedImages = ref<Record<string, boolean>>({})
 const imageRetryTokens = ref<Record<string, number>>({})
 
@@ -505,8 +517,12 @@ function renderTimer() {
   timingElapsedSeconds.value = Math.ceil(practiceTimer.state.elapsedMs / 1000)
   timingFinalized.value = practiceTimer.state.finalized
   timerSyncStatus.value = practiceTimer.status
+  timingIssueReason.value = practiceTimer.issue?.reason || ''
+  const pendingResult = practiceTimer.state.pendingAttempt?.result
+  pendingAttemptResult.value = pendingResult === 'correct' || pendingResult === 'review' || pendingResult === 'reset' ? pendingResult : null
 }
 function resetQuestionTimer() {
+  timingOmitted.value=false
   window.clearInterval(questionTimerInterval)
   if (practiceTimer) void practiceTimer.dispose()
   roundDraftReady = false
@@ -528,8 +544,8 @@ function persistRoundDraft() {
 function restoreRoundDraft() {
   if (!practiceTimer) return
   const d = readLocal<{key: string; knowledge: typeof knowledgeLevel.value; method: typeof methodLevel.value;
-    execution: typeof executionLevel.value; errors: typeof selectedErrors.value; primary: typeof primaryError.value; hint: boolean; answer: boolean}>(practiceTimer.storageKey + '.draft')
-  const valid = d?.key === practiceTimer.state.key ? d : null
+    execution: typeof executionLevel.value; errors: typeof selectedErrors.value; primary: typeof primaryError.value; hint: boolean; answer: boolean; pending_edits?: boolean}>(practiceTimer.storageKey + '.draft')
+  const valid = d?.key === practiceTimer.state.key || d?.pending_edits === true ? d : null
   diagnosisHydrating = true
   knowledgeLevel.value = valid?.knowledge ?? null; methodLevel.value = valid?.method ?? null; executionLevel.value = valid?.execution ?? null
   selectedErrors.value = valid?.errors || []; primaryError.value = valid?.primary ?? null
@@ -537,6 +553,7 @@ function restoreRoundDraft() {
   diagnosisHydrating = false
   draftRoundKey = practiceTimer.state.key
   roundDraftReady = true
+  if(d?.pending_edits)persistRoundDraft()
 }
 watch([knowledgeLevel, methodLevel, executionLevel, selectedErrors, primaryError, usedHintThisRound, answerViewedThisRound], persistRoundDraft, { deep: true, flush: 'sync' })
 function persistLearningBoundary() {
@@ -548,6 +565,31 @@ function learningVisibility() {
   else void practiceTimer?.activate()
 }
 function learningOnline() { void practiceTimer?.activate() }
+
+function timerFailureMessage(sync: TimingSyncResult) {
+  if(sync.status==='success')return ''
+  return sync.issue.reason==='owner_mismatch'||sync.issue.reason==='ownership_conflict'
+    ? typeText('另一学习窗口仍在使用计时。请先暂停该窗口，再重新连接；也可明确选择不记录本次用时保存作答。','Another study window owns the timer. Pause it and reconnect, or explicitly save this answer without duration.')
+    : typeText('计时尚未连接，作答未提交；本地笔记、诊断和计时仍保留。请重新连接，或选择不记录本次用时保存。','Timing is not connected; the answer was not submitted. Notes, diagnosis and local timing are retained. Reconnect, or save without duration.')
+}
+async function reconnectQuestionTimer() {
+  if(timerReconnecting.value||saving.value||!practiceTimer)return
+  const timer=practiceTimer
+  timerReconnecting.value=true
+  try{
+    // Preserve the visible form even when the server has already finalized the
+    // old round; reconnect may create a new key without changing these choices.
+    writeLocal(timer.storageKey+'.draft',{key:timer.state.key,knowledge:knowledgeLevel.value,method:methodLevel.value,
+      execution:executionLevel.value,errors:selectedErrors.value,primary:primaryError.value,hint:usedHintThisRound.value,answer:answerViewedThisRound.value})
+    const result=await timer.reconnect()
+    if(practiceTimer!==timer)return
+    error.value=timerFailureMessage(result)
+    if(result.status==='success'){
+      timingRecoveryResult.value=null
+      if(timer.state.pendingAttempt)error.value=typeText('上次作答尚待确认，请点击“重试上次作答”；不会重复计入。','The previous submission still needs confirmation. Retry it; it will not be counted twice.')
+    }
+  }finally{timerReconnecting.value=false}
+}
 
 function recordedQuestionSeconds() {
   updateQuestionTimer()
@@ -646,6 +688,10 @@ function schedulePrefetch(loadedQuestion: QuestionDetail) {
   void prefetchQuestion(loadedQuestion.previous_question_uuid, query)
   void prefetchQuestion(loadedQuestion.next_overdue_review_uuid, query)
   void prefetchQuestion(loadedQuestion.next_review_uuid, query)
+  if (nextMode.value === 'unattempted') {
+    void prefetchQuestion(loadedQuestion.next_unattempted_question_uuid ?? null, query)
+    void prefetchQuestion(loadedQuestion.previous_unattempted_question_uuid ?? null, query)
+  }
 }
 
 async function load() {
@@ -774,7 +820,7 @@ function applyState(response: StateResponse, uuid = props.uuid) {
   }
   try { patchQuestionState(uuid, response) } catch { /* cache cannot undo server state */ }
 }
-async function record(result: 'correct' | 'review' | 'reset') {
+async function record(result: 'correct' | 'review' | 'reset', omitTiming = false) {
   if (saving.value || !question.value) return
   window.clearTimeout(diagnosisSaveTimer)
   diagnosisSaveSequence += 1
@@ -798,14 +844,25 @@ async function record(result: 'correct' | 'review' | 'reset') {
     copyArmed = startPageTurnCopy(target)
   }
   try {
-    await roundTimer?.sync('checkpoint')
-    if (props.uuid !== uuid || sequence !== operationSequence) return
-    const timingSnapshot = roundTimer?.snapshot() || {}
-    const timeSpentSeconds = result === 'correct' || result === 'review'
-      ? recordedQuestionSeconds()
-      : null
-    if (!pendingSubmissionKey.value) pendingSubmissionKey.value = roundTimer?.submissionKey() || crypto.randomUUID()
-    const response = await post<StateResponse>(`/api/drill/questions/${uuid}/attempts/`, {
+    const pendingBody=roundTimer?.state.pendingAttempt
+    if(pendingBody&&pendingBody.result!==result){
+      error.value=typeText('上次作答结果尚未确认，请先点击“重试上次作答”。','The previous answer is not confirmed. Retry the previous submission first.')
+      return
+    }
+    if(!pendingBody&&!omitTiming&&roundTimer){
+      const ready=await roundTimer.prepareSubmission()
+      if(props.uuid!==uuid||sequence!==operationSequence)return
+      if(ready.status!=='success'||(ready.finalized&&!pendingSubmissionKey.value&&!roundTimer.state.submissionKey)){
+        timingRecoveryResult.value=result
+        error.value=ready.status==='success'?typeText('本轮计时已结束，请重新连接或选择不记录本次用时保存。','This timing round has ended. Reconnect or save without duration.'):timerFailureMessage(ready)
+        return
+      }
+    }
+    if(props.uuid!==uuid||sequence!==operationSequence)return
+    const timingSnapshot=pendingBody||roundTimer?.snapshot()||{}
+    const timeSpentSeconds=!omitTiming&&(result==='correct'||result==='review')?recordedQuestionSeconds():null
+    if(!pendingSubmissionKey.value)pendingSubmissionKey.value=String(pendingBody?.submission_key||roundTimer?.submissionKey()||crypto.randomUUID())
+    const body:Record<string,unknown>=pendingBody?{...pendingBody}:{
       result,
       note: note.value,
       state_version: question.value?.state_version || undefined,
@@ -823,18 +880,39 @@ async function record(result: 'correct' | 'review' | 'reset') {
         primary_error: result === 'review' ? primaryError.value : null,
       } : {}),
       ...(timeSpentSeconds === null ? {} : { time_spent_seconds: timeSpentSeconds }),
-    })
+    }
+    if(omitTiming){
+      if(!pendingBody&&(roundTimer?.state.finalized||roundTimer?.issue?.reason==='timing_finalized'))body.timing_key=crypto.randomUUID()
+      body.timing_protocol=2;body.timing_omit=true
+      delete body.time_spent_seconds
+      delete body.started_at
+    }
+    const diagnosisBaseline=pendingBody||{knowledge_level:knowledgeLevel.value,method_level:methodLevel.value,execution_level:executionLevel.value,
+      used_hint:usedHintThisRound.value,viewed_answer:answerViewedThisRound.value,error_codes:[...selectedErrors.value],primary_error:primaryError.value}
+    roundTimer?.rememberAttempt(body)
+    const response=await post<StateResponse>(`/api/drill/questions/${uuid}/attempts/`,body)
     // The POST is the commit boundary; cache, refresh and navigation are optional
     // follow-up work and must never turn this acknowledged attempt into a failure.
     attemptSaved = true
+    const noteToPreserve=props.uuid===uuid&&note.value!==String(body.note??'')?note.value:null
+    const newerDiagnosis=props.uuid===uuid&&(result==='correct'||result==='review')&&(
+      knowledgeLevel.value!==diagnosisBaseline.knowledge_level||methodLevel.value!==diagnosisBaseline.method_level||executionLevel.value!==diagnosisBaseline.execution_level||
+      usedHintThisRound.value!==diagnosisBaseline.used_hint||answerViewedThisRound.value!==diagnosisBaseline.viewed_answer||
+      JSON.stringify(selectedErrors.value)!==JSON.stringify(diagnosisBaseline.error_codes||[])||primaryError.value!==diagnosisBaseline.primary_error)
+    if(newerDiagnosis&&roundTimer)writeLocal(roundTimer.storageKey+'.draft',{key:roundTimer.state.key,pending_edits:true,
+      knowledge:knowledgeLevel.value,method:methodLevel.value,execution:executionLevel.value,errors:selectedErrors.value,primary:primaryError.value,
+      hint:usedHintThisRound.value,answer:answerViewedThisRound.value})
+    if(omitTiming)roundTimer?.archiveOmittedRound()
     roundTimer?.finish()
     if (sequence !== operationSequence) return
+    timingRecoveryResult.value=null
+    timingOmitted.value=omitTiming&&response.last_time_spent_seconds==null
     if (result === 'correct' || result === 'review') {
       timingFinalized.value = true
       window.clearInterval(questionTimerInterval)
     }
     pendingSubmissionKey.value = null
-    if (!response.note_conflict) discardNoteDraft(uuid)
+    if (!response.note_conflict&&noteToPreserve===null) discardNoteDraft(uuid)
     applyState(response, uuid)
     try { notifyPracticeTrendChanged() } catch { /* statistics refresh cannot undo a saved attempt */ }
     if (props.uuid !== uuid) return
@@ -846,9 +924,13 @@ async function record(result: 'correct' | 'review' | 'reset') {
       actionFeedbackTimer = window.setTimeout(() => { actionFeedback.value = '' }, 1800)
     }
     noteSaveState.value = response.note_conflict ? 'error' : 'idle'
+    if(noteToPreserve!==null){note.value=noteToPreserve;cacheNoteDraft()}
+    if(noteToPreserve!==null||newerDiagnosis){
+      error.value=typeText('上次作答已确认；之后编辑的笔记或诊断仍保留为草稿，尚未包含在该次作答中。','Previous answer confirmed. Later note or diagnosis edits are retained as drafts and were not included in that submission.')
+    }
     if (response.note_conflict) {
-      note.value = submittedNote
-      const draftPersisted = persistNoteDraft(uuid, submittedNote)
+      note.value = noteToPreserve??submittedNote
+      const draftPersisted = persistNoteDraft(uuid, note.value)
       if (draftPersisted) error.value = '作答已保存，但笔记在另一标签页被更新；本地草稿已保留，请确认后再保存。'
     }
     if (result === 'reset') {
@@ -864,11 +946,20 @@ async function record(result: 'correct' | 'review' | 'reset') {
       await goToNext(nextMode.value, copyArmed)
     }
   } catch (reason) {
-    if (!attemptSaved) roundTimer?.resumeAfterFailure()
+    if (!attemptSaved) {
+      if(reason instanceof ApiError&&reason.status>=400&&reason.status<500){
+        roundTimer?.clearPreparedAttempt()
+        if(reason.status===409&&typeof reason.body.reason==='string'){
+          timingRecoveryResult.value=result
+          roundTimer?.recordFailure(reason)
+        }
+      }
+      roundTimer?.resumeAfterFailure()
+    }
     if (props.uuid === uuid && sequence === operationSequence) {
       error.value = attemptSaved
         ? typeText(`作答已保存，后续操作未完成：${(reason as Error).message}`, `Answer saved; follow-up action failed: ${(reason as Error).message}`)
-        : (reason as Error).message
+        : timingRecoveryResult.value&&roundTimer?.issue?timerFailureMessage({status:'conflict',issue:roundTimer.issue}):(reason as Error).message
     }
   } finally {
     pendingCopy?.reject(new Error('作答未完成，已取消自动复制。'))
@@ -1165,6 +1256,8 @@ watch(() => props.uuid, (_uuid, previousUuid) => {
   loadController?.abort()
   operationSequence += 1
   saving.value = false
+  timingRecoveryResult.value=null
+  pendingAttemptResult.value=null
   stateSaving.value = false
   similarLoading.value = false
   nextLoading.value = false
@@ -1226,7 +1319,16 @@ onBeforeRouteLeave(() => {
 
 <template>
   <section class="page question-page">
-    <FullscreenReader ref="questionReader" hide-trigger :controls="readerControls" :content-key="readerDocument.key" :title="readerDocument.title" :images="readerDocument.images" :markdown="readerDocument.markdown" :prepare="prepareReader" :pending="readerNavigating && readerDocument.uuid !== props.uuid" :syncing="readerNavigating && readerDocument.uuid === props.uuid" :retryable="!question && !!error && pendingFullscreenTarget === props.uuid" @retry="load" @action="readerAction" @closed="readerClosed" />
+    <FullscreenReader ref="questionReader" hide-trigger :controls="readerControls" :content-key="readerDocument.key" :title="readerDocument.title" :images="readerDocument.images" :markdown="readerDocument.markdown" :prepare="prepareReader" :pending="readerNavigating && readerDocument.uuid !== props.uuid" :syncing="readerNavigating && readerDocument.uuid === props.uuid" :retryable="!question && !!error && pendingFullscreenTarget === props.uuid" @retry="load" @action="readerAction" @closed="readerClosed">
+      <template #recovery>
+        <div v-if="timerSyncStatus==='offline'||timerSyncStatus==='conflict'||timingRecoveryResult||pendingAttemptResult" class="timing-recovery in-reader" role="status">
+                <button type="button" :disabled="saving||timerReconnecting" @click="reconnectQuestionTimer">{{ timerReconnecting?typeText('连接中…','Connecting…'):typeText('重新连接计时','Reconnect timer') }}</button>
+                <button v-if="pendingAttemptResult" type="button" :disabled="saving" @click="record(pendingAttemptResult)">{{ typeText('重试上次作答','Retry previous submission') }}</button>
+                <button v-if="timingRecoveryResult" type="button" :disabled="saving||timerReconnecting" @click="record(timingRecoveryResult,true)">{{ typeText('不记录本次用时，保存作答','Save answer without duration') }}</button>
+                <small v-if="timingIssueReason">{{ typeText('计时状态','Timing status') }}: {{ timingIssueReason }}</small>
+              </div>
+      </template>
+    </FullscreenReader>
     <p v-if="actionFeedback" class="action-feedback" role="status">✓ {{ uiText(actionFeedback) }}</p>
     <p v-if="pageTurnCopyMessage" class="page-turn-copy-feedback" :class="{ error: pageTurnCopyFailed }" role="status">{{ uiText(pageTurnCopyMessage) }}</p>
     <nav class="question-topbar" :aria-label="uiText('题目导航')">
@@ -1356,7 +1458,13 @@ onBeforeRouteLeave(() => {
           </section>
           <div class="answer-bar">
             <div>
-              <small v-if="timerSyncStatus === 'offline' || timerSyncStatus === 'conflict'" class="note-draft-hint">{{ timerSyncStatus === 'conflict' ? typeText('计时同步冲突；本地进度已保留', 'Timing sync conflict; local progress retained') : typeText('离线计时已保存在本机', 'Offline timing saved on this device') }}</small><div class="question-timer" :class="{ active: !timingCountdown && !timingFinalized, saved: timingFinalized }"><span>{{ timingFinalized ? uiText("计时已保存") : timingCountdown ? uiText("计时准备") : uiText("本题用时") }}</span><strong>{{ timingFinalized || !timingCountdown ? formattedQuestionTime : `${timingCountdown} ${typeText('秒后开始', 'seconds until start')}` }}</strong></div>
+              <div v-if="timerSyncStatus==='offline'||timerSyncStatus==='conflict'||timingRecoveryResult||pendingAttemptResult" class="timing-recovery" role="status">
+                <button type="button" :disabled="saving||timerReconnecting" @click="reconnectQuestionTimer">{{ timerReconnecting?typeText('连接中…','Connecting…'):typeText('重新连接计时','Reconnect timer') }}</button>
+                <button v-if="pendingAttemptResult" type="button" :disabled="saving" @click="record(pendingAttemptResult)">{{ typeText('重试上次作答','Retry previous submission') }}</button>
+                <button v-if="timingRecoveryResult" type="button" :disabled="saving||timerReconnecting" @click="record(timingRecoveryResult,true)">{{ typeText('不记录本次用时，保存作答','Save answer without duration') }}</button>
+                <small v-if="timingIssueReason">{{ typeText('计时状态','Timing status') }}: {{ timingIssueReason }}</small>
+              </div>
+              <small v-if="timerSyncStatus === 'offline' || timerSyncStatus === 'conflict'" class="note-draft-hint">{{ timerSyncStatus === 'conflict' ? typeText('计时同步冲突；本地进度已保留', 'Timing sync conflict; local progress retained') : typeText('离线计时已保存在本机', 'Offline timing saved on this device') }}</small><div class="question-timer" :class="{ active: !timingCountdown && !timingFinalized, saved: timingFinalized }"><span>{{ timingOmitted ? typeText("本次未记录用时","Duration omitted") : timingFinalized ? uiText("计时已保存") : timingCountdown ? uiText("计时准备") : uiText("本题用时") }}</span><strong>{{ timingOmitted ? '—' : timingFinalized || !timingCountdown ? formattedQuestionTime : `${timingCountdown} ${typeText('秒后开始', 'seconds until start')}` }}</strong></div>
               <NoteVisibility :note="note" :question-key="props.uuid">
               <p v-if="note && !noteOpen" class="note-preview" role="button" tabindex="0" @click="noteOpen = true" @keydown.enter="noteOpen = true">{{ note }}</p>
               <details class="note-field" :open="noteOpen" @toggle="toggleNote"><summary><span>{{ uiText("题目笔记 Note") }}</span><small>{{ noteSaveState === 'saving' ? uiText("保存中…") : noteSaveState === 'saved' ? uiText("已保存") : noteSaveState === 'error' ? uiText("保存失败") : noteSaveState === 'dirty' ? uiText("未保存") : note ? uiText("展开编辑") : uiText("添加笔记") }}</small></summary><textarea v-model="note" maxlength="20000" :placeholder="uiText('记录公式、错误原因、修正方法或下次检查点')" @input="cacheNoteDraft" /><span class="note-controls"><small class="note-draft-hint">{{ noteSaveState === 'saving' ? uiText("保存中…") : noteSaveState === 'saved' ? uiText("已保存到服务器") : noteSaveState === 'error' ? typeText('保存失败，请重试；离开页面前确认已保存。', 'Save failed. Retry and confirm it is saved before leaving this page.') : noteSaveState === 'dirty' ? uiText("未保存") : uiText("停止输入 5 秒后自动保存") }}</small><button type="button" class="save-note" :disabled="noteSaveState === 'saving'" @click="saveNote">{{ noteSaveState === 'saving' ? uiText("保存中…") : noteSaveState === 'error' ? uiText("重试保存") : uiText("保存笔记") }}</button></span></details>
@@ -1381,7 +1489,7 @@ onBeforeRouteLeave(() => {
           </section>
 
           <section class="page-turn-settings" :aria-label="uiText('翻题偏好')">
-            <header><strong>{{ uiText("翻题偏好") }}</strong><label>{{ uiText("前后翻题") }}<select v-model="nextMode"><option value="sequential">{{ uiText("顺序题") }}</option><option value="overdue">{{ uiText("红色到期复习题") }}</option><option value="review">{{ uiText("黄色近期复习题") }}</option></select></label></header>
+            <header><strong>{{ uiText("翻题偏好") }}</strong><label>{{ uiText("前后翻题") }}<select v-model="nextMode"><option value="sequential">{{ uiText("顺序题") }}</option><option value="overdue">{{ uiText("红色到期复习题") }}</option><option value="review">{{ uiText("黄色近期复习题") }}</option><option value="unattempted">{{ uiText("未做题") }}</option></select></label></header>
             <div class="page-turn-settings-grid">
               <label><input v-model="masteredAutoNext" type="checkbox">{{ uiText("掌握后切题") }}</label>
               <label><input v-model="reviewAutoNext" type="checkbox">{{ uiText("待复习后切题") }}</label>
@@ -1397,6 +1505,7 @@ onBeforeRouteLeave(() => {
 </template>
 
 <style scoped>
+.timing-recovery{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:4px 0 7px;font-size:10px}.timing-recovery button{padding:4px 7px;border:1px solid var(--border-default);border-radius:4px;background:var(--bg-sidebar);color:var(--text-secondary);font-size:10px}.timing-recovery.in-reader{flex:none;margin:0;padding:6px max(10px,env(safe-area-inset-right)) 6px max(10px,env(safe-area-inset-left));background:var(--bg-surface);border-bottom:1px solid var(--border-default)}.timing-recovery small{color:var(--text-tertiary);overflow-wrap:anywhere}
 .source-current-question { display: grid; gap: 7px; margin-bottom: 10px; padding: 12px; border: 1px solid #3975cb; border-radius: 8px; background: var(--bg-surface); }
 .source-current-question strong { font-size: 13px; }
 .source-current-question small { font-size: 11px; color: var(--text-secondary); }

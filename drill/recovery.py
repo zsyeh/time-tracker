@@ -1,6 +1,7 @@
 """Opt-in foreground timing on the existing timer model; no attempt creation."""
 import datetime as dt
 import math
+import logging
 import re
 from urllib.parse import parse_qsl, urlsplit
 from django.db import transaction
@@ -13,10 +14,39 @@ from .models import LearningRecoveryState, Question, QuestionTimingSession
 
 LEASE_SECONDS = 45
 MAX_MS = 43200000
+logger = logging.getLogger(__name__)
+TIMING_CONFLICT_REASONS = frozenset(('owner_mismatch', 'lease_expired', 'stale_sequence',
+    'active_timer_mismatch', 'timing_round_missing', 'timing_round_mismatch',
+    'timing_protocol_mismatch', 'timing_finalized'))
 
 class RecoveryConflict(APIException):
     status_code = 409
     default_detail = 'Another foreground window owns this timer. Local progress is retained.'
+
+def timing_conflict(reason, timer=None, *, state=None, owner=None):
+    """Stable, non-sensitive diagnostics; never log tokens, owners or study text."""
+    reason = reason if reason in TIMING_CONFLICT_REASONS else 'timing_conflict'
+    active = state.active_timer if state else timer
+    retry_after = 0
+    if active:
+        try:
+            lease = dt.datetime.fromisoformat((active.recovery or {}).get('lease_until', ''))
+            retry_after = max(math.ceil((lease - timezone.now()).total_seconds()), 0)
+        except (ValueError, TypeError):
+            pass
+    live = bool(active and _live(active, timezone.now()))
+    owner_matches = bool(active and (active.recovery or {}).get('owner') == str(owner))
+    can_reclaim = bool(state is not None and (not live or owner_matches))
+    logger.warning('question_timing_conflict reason=%s', reason)
+    error = RecoveryConflict({'detail': RecoveryConflict.default_detail, 'reason': reason})
+    # APIException normally casts every primitive to ErrorDetail(str); retain
+    # actual booleans so 'False' cannot become truthy in browser recovery logic.
+    error.detail.update(lease_retry_after=retry_after, lease_live=live,
+                        owner_matches=owner_matches,
+                        active_matches=bool(active and timer and active.pk == timer.pk),
+                        can_reclaim=can_reclaim)
+    return error
+
 
 def _lock(user):
     # Serialize the initial creation as well as every later lease/location change.
@@ -39,9 +69,9 @@ def payload(timer, now):
 def _checkpoint(timer, data, now):
     r = dict(timer.recovery)
     if r.get('finalized'):
-        raise RecoveryConflict('This timing round was already submitted. Reload current progress.')
+        raise timing_conflict('timing_finalized', timer)
     if r.get('owner') != str(data.get('owner')):
-        raise RecoveryConflict()
+        raise timing_conflict('owner_mismatch', timer)
     seq = data.get('sequence', 0)
     # Absolute cumulative snapshots, never additive deltas. Retries/out-of-order
     # requests do not renew a lease or change duration.
@@ -74,19 +104,18 @@ def timing_request(user, question, data):
             if timer and (timer.recovery or {}).get('finalized'):
                 return payload(timer, now)
             active = state.active_timer
-            same_device_resume = bool(timer and active and active.pk == timer.pk
-                and str(timer.client_key) == str(data['timing_key'])
-                and active.recovery.get('owner') == str(data.get('resume_owner'))
-                and active.recovery.get('elapsed_ms', 0) == data.get('base_elapsed_ms'))
-            if active and _live(active, now) and active.recovery.get('owner') != str(data['owner']) and not same_device_resume:
-                raise RecoveryConflict()
+            # Shared browser storage is not proof that an older document died.
+            # Never transfer a still-live lease to a different document owner.
+            if active and _live(active, now) and active.recovery.get('owner') != str(data['owner']):
+                raise timing_conflict('owner_mismatch' if active.pk == getattr(timer, 'pk', None) else 'active_timer_mismatch', timer,
+                                      state=state, owner=data['owner'])
             if timer is None:
                 timer = QuestionTimingSession.objects.create(user=user, question=question,
                     client_key=data['timing_key'], starts_at=now+dt.timedelta(seconds=5),
                     recovery={'protocol': 2, 'elapsed_ms': 0, 'countdown_ms': 5000,
                               'sequence': 0, 'finalized': False})
             if not (timer.recovery or {}).get('protocol') == 2:
-                raise RecoveryConflict('Legacy timing round cannot be converted implicitly.')
+                raise timing_conflict('timing_protocol_mismatch', timer)
             r = dict(timer.recovery)
             previous_owner = r.get('owner')
             local_base_valid = previous_owner in (None, str(data['owner'])) or (
@@ -102,13 +131,15 @@ def timing_request(user, question, data):
             state.save(update_fields=['active_timer'])
         elif action in ('checkpoint', 'pause'):
             if timer is None:
-                raise RecoveryConflict('Claim this round before checkpointing.')
+                raise timing_conflict('timing_round_missing', state=state, owner=data['owner'])
+            if (timer.recovery or {}).get('owner') != str(data.get('owner')):
+                raise timing_conflict('owner_mismatch', timer, state=state, owner=data['owner'])
             if state.active_timer_id != timer.pk:
                 # Duplicate pause is harmless; late snapshots may not overwrite
                 # a newly claimed device/question's ownership.
-                if data.get('sequence', 0) <= timer.recovery.get('sequence', 0):
-                    return payload(timer, now)
-                raise RecoveryConflict()
+                if action == 'pause' and data.get('sequence', 0) <= timer.recovery.get('sequence', 0):
+                    return {**payload(timer, now), 'active_matches': False}
+                raise timing_conflict('active_timer_mismatch', timer, state=state, owner=data['owner'])
             if data.get('sequence', 0) <= timer.recovery.get('sequence', 0):
                 return payload(timer, now)
             _checkpoint(timer, data, now)
@@ -122,13 +153,75 @@ def timing_request(user, question, data):
         timer.save(update_fields=['recovery', 'stopped_at'])
         return {**payload(timer, now), **({'local_base_valid': local_base_valid} if action == 'claim' else {})}
 
+def validate_attempt_timing(data):
+    """Protocol 2 may not silently fall through to unverified legacy duration."""
+    if data.get('timing_protocol') != 2:
+        if data.get('timing_omit'):
+            raise ValidationError({'timing_omit': 'Protocol 2 is required to explicitly omit timing.'})
+        return
+    if data.get('timing_omit') and data.get('time_spent_seconds') is not None:
+        raise ValidationError({'time_spent_seconds': 'Explicitly omitted timing must not include a duration.'})
+    required = ['timing_key', 'timing_owner', 'submission_key']
+    if not data.get('timing_omit'):
+        required += ['timing_sequence', 'timing_elapsed_ms']
+    missing = [field for field in required if field not in data or data[field] is None]
+    if missing:
+        raise ValidationError({field: 'Required for protocol 2 submission.' for field in missing})
+
+
+def omit_timing(user, question, key, owner, submission_key):
+    """Record explicit omission without changing another document's live timer."""
+    now = timezone.now()
+    state = _lock(user)
+    timer = QuestionTimingSession.objects.select_for_update().filter(
+        user=user, question=question, client_key=key).first()
+    if timer is None and QuestionTimingSession.objects.filter(client_key=key).exists():
+        raise timing_conflict('timing_round_mismatch', state=state, owner=owner)
+    recovery = dict(timer.recovery or {}) if timer else {}
+    if timer and recovery.get('protocol') != 2:
+        raise timing_conflict('timing_protocol_mismatch', timer)
+    if recovery.get('finalized'):
+        raise timing_conflict('timing_finalized', timer)
+    if timer is None or recovery.get('owner') != str(owner):
+        # Keep an audit link in the existing timer metadata. A foreign-owner
+        # round remains untouched, including its active pointer and lease.
+        audit_key = submission_key if timer else key
+        if QuestionTimingSession.objects.filter(user=user, question=question, client_key=audit_key).exists():
+            raise timing_conflict('timing_round_mismatch', state=state, owner=owner)
+        return QuestionTimingSession.objects.create(user=user, question=question, client_key=audit_key,
+            starts_at=now, stopped_at=now, recovery={'protocol': 2, 'finalized': True,
+                'owner': str(owner), 'elapsed_ms': 0, 'sequence': 0,
+                'requested_timing_key': str(key), 'time_basis': 'explicitly_omitted',
+                'lease_until': now.isoformat()})
+    recovery.update(finalized=True, lease_until=now.isoformat(), time_basis='explicitly_omitted')
+    timer.recovery, timer.stopped_at = recovery, now
+    timer.save(update_fields=['recovery', 'stopped_at'])
+    if state.active_timer_id == timer.pk:
+        state.active_timer = None
+        state.save(update_fields=['active_timer'])
+    return timer
+
+
 def finish_timing(user, question, key, data):
     """Called inside existing attempt transaction/idempotency lock."""
     now = timezone.now()
     state = _lock(user)
-    timer = QuestionTimingSession.objects.select_for_update().get(user=user, question=question, client_key=key)
-    if state.active_timer_id != timer.pk or not _live(timer, now):
-        raise RecoveryConflict()
+    timer = QuestionTimingSession.objects.select_for_update().filter(user=user, question=question, client_key=key).first()
+    if timer is None:
+        raise timing_conflict('timing_round_missing', state=state, owner=data.get('timing_owner'))
+    r = timer.recovery or {}
+    if r.get('protocol') != 2:
+        raise timing_conflict('timing_protocol_mismatch', timer, state=state, owner=data.get('timing_owner'))
+    if r.get('finalized'):
+        raise timing_conflict('timing_finalized', timer, state=state, owner=data.get('timing_owner'))
+    if r.get('owner') != str(data.get('timing_owner')):
+        raise timing_conflict('owner_mismatch', timer, state=state, owner=data.get('timing_owner'))
+    if state.active_timer_id != timer.pk:
+        raise timing_conflict('active_timer_mismatch', timer, state=state, owner=data.get('timing_owner'))
+    if not _live(timer, now):
+        raise timing_conflict('lease_expired', timer, state=state, owner=data.get('timing_owner'))
+    if data.get('timing_sequence', 0) < r.get('sequence', 0):
+        raise timing_conflict('stale_sequence', timer, state=state, owner=data.get('timing_owner'))
     _checkpoint(timer, {'owner': data.get('timing_owner'), 'sequence': data.get('timing_sequence', 0),
                         'elapsed_ms': data.get('timing_elapsed_ms', 0)}, now)
     timer.recovery.update(finalized=True, lease_until=now.isoformat())

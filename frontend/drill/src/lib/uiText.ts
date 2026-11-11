@@ -2,6 +2,10 @@ import { uiLanguage } from './uiPreferences'
 
 // Only authored interface text belongs here. Question content and notes stay verbatim.
 export const interfaceEnglish: Record<string, string> = {
+  "未做题": "Unattempted questions",
+  "上一道未做题": "Previous unattempted question",
+  "下一道未做题": "Next unattempted question",
+  "当前筛选范围中没有其他未做题。": "No other unattempted questions in the current filters.",
   "题目笔记 Note": "Question notes",
   "保存中…": "Saving…",
   "已保存": "Saved",
