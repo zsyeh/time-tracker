@@ -351,10 +351,11 @@ onMounted(load)
 .heatmap-page .page-header h1 { margin: 0; font-size: 24px; line-height: 1.25; font-weight: 650; }
 .heatmap-page .page-header p { margin: 4px 0 0; color: var(--text-secondary); font-size: 13px; }
 .heat-controls { display: flex; flex-wrap: wrap; justify-content: flex-end; align-items: center; gap: 8px; }
-.heat-mode, .heat-scope { padding: 3px; border: 1px solid var(--border-subtle); border-radius: 8px; background: var(--bg-surface); }
-.heat-mode button, .heat-scope button { min-height: 36px; padding: 0 12px; border-radius: 6px; font-size: 12px; }
+.heat-mode, .heat-scope { display: flex; padding: 3px; border: 1px solid var(--border-subtle); border-radius: 8px; background: var(--bg-surface); }
+.heat-mode button, .heat-scope button { min-height: 36px; padding: 0 12px; border: 0; border-radius: 6px; color: var(--text-secondary); background: transparent; font-size: 12px; cursor: pointer; }
 .heat-mode button.active, .heat-scope button.active { color: var(--text-primary); background: var(--bg-elevated); }
-.heat-legend { gap: 5px; font-size: 12px; }
+.heat-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; color: var(--text-secondary); font-size: 12px; }
+.heat-legend i { display: block; width: 10px; height: 10px; border: 1px solid var(--border-default); border-radius: 2px; }
 .heat-legend i:not(:first-child) { margin-left: 8px; }
 .heatmap-page :deep(.exam-type-controls) { margin: 8px 0 16px; }
 .heatmap-page :deep(.exam-type-toolbar small) { display: none; }
@@ -364,46 +365,58 @@ onMounted(load)
 .heatmap-overview span:nth-of-type(n+2) { margin-left: 8px; }
 .heatmap-overview b { color: var(--text-primary); font-weight: 600; }
 .heatmap-group { margin-top: 8px; padding: 16px; border: 1px solid var(--border-subtle); border-radius: 10px; background: var(--bg-surface); }
-.heatmap-group > header { margin-bottom: 12px; gap: 12px; }
+.heatmap-group > header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; margin-bottom: 12px; gap: 12px; }
 .heatmap-group h2 { margin: 0; font-size: 17px; line-height: 1.35; font-weight: 650; }
 .heatmap-book-title { min-width: 0; }
 .heatmap-book-title small { margin-top: 4px; color: var(--text-secondary); font-size: 12px; }
 .heatmap-book-stats { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; color: var(--text-secondary); font-size: 12px; }
 .heatmap-book-stats strong { color: var(--text-primary); font-size: 16px; }
-.topic-heatmap { grid-template-columns: repeat(auto-fill, 26px); gap: 5px; }
-.question-heatmap { grid-template-columns: repeat(auto-fill, 24px); gap: 5px; }
-.topic-heatmap button, .question-heatmap button { width: 26px; height: 26px; border-radius: 4px; touch-action: manipulation; }
+.topic-heatmap { display: grid; grid-template-columns: repeat(auto-fill, 26px); gap: 5px; }
+.question-heatmap { display: grid; grid-template-columns: repeat(auto-fill, 24px); gap: 5px; }
+.topic-heatmap button, .question-heatmap button { position: relative; width: 26px; height: 26px; padding: 0; border: 1px solid var(--border-default); border-radius: 4px; background: var(--bg-elevated); cursor: pointer; touch-action: manipulation; }
 .question-heatmap button { width: 24px; height: 24px; }
+.topic-heatmap button span, .question-heatmap button span { display: none; }
+.topic-heatmap button:hover, .question-heatmap button:hover { border-color: var(--text-secondary); z-index: 1; }
 .topic-heatmap button.selected, .question-heatmap button.selected { outline: 2px solid var(--accent); outline-offset: 2px; z-index: 1; }
 .topic-heatmap button:focus-visible, .question-heatmap button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.topic-preview-card { padding: 16px; background: var(--bg-elevated); gap: 16px; }
-.topic-preview-copy > span, .topic-preview-card dt { font-size: 12px; }
-.topic-preview-copy h3 { font-size: 16px; }
-.topic-preview-copy p { color: var(--text-secondary); font-size: 13px; }
-.topic-preview-card dd { color: var(--text-primary); font-size: 14px; font-variant-numeric: tabular-nums; }
-.topic-preview-actions button { min-height: 40px; padding: 0 12px; font-size: 13px; }
-.core-controls { margin: 8px 0 16px; }
-.core-controls label { font-size: 13px; color: var(--text-secondary); }
-.core-controls select { min-height: 40px; }
-.core-controls p { margin: 0; font-size: 12px; }
-.question-heatmap button { position:relative; }
+.topic-heatmap .intensity-1 { background: #23372c !important; }
+.topic-heatmap .intensity-2 { background: #28503a !important; }
+.topic-heatmap .intensity-3 { background: #326d48 !important; }
+.topic-heatmap .intensity-4 { background: #43895c !important; }
+:global([data-color-scheme="light"]) .topic-heatmap .intensity-1 { border-color: #a8cfb6 !important; background: #e1f2e7 !important; }
+:global([data-color-scheme="light"]) .topic-heatmap .intensity-2 { border-color: #7ebd95 !important; background: #c8e8d3 !important; }
+:global([data-color-scheme="light"]) .topic-heatmap .intensity-3 { border-color: #54a875 !important; background: #9fd8b3 !important; }
+:global([data-color-scheme="light"]) .topic-heatmap .intensity-4 { border-color: #2f8554 !important; background: #70bf8d !important; }
+.topic-preview-card { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; margin-top: 10px; padding: 16px; border: 1px solid var(--border-default); border-radius: var(--radius-md); background: var(--bg-elevated); gap: 16px; }
+.topic-preview-copy { min-width: 0; }
+.topic-preview-copy > span, .topic-preview-card dt { color: var(--text-secondary); font-size: 12px; }
+.topic-preview-copy h3 { margin: 4px 0; overflow: hidden; font-size: 16px; text-overflow: ellipsis; white-space: nowrap; }
+.topic-preview-copy p { margin: 0; overflow: hidden; color: var(--text-secondary); font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.topic-preview-card dl { display: flex; margin: 0; gap: 16px; }
+.topic-preview-card dd { margin: 4px 0 0; color: var(--text-primary); font-size: 14px; font-variant-numeric: tabular-nums; }
+.topic-preview-actions { display: flex; gap: 8px; }
+.topic-preview-actions button { min-height: 40px; padding: 0 12px; border: 1px solid var(--border-default); border-radius: var(--radius-sm); color: var(--text-secondary); background: var(--bg-surface); font-size: 13px; cursor: pointer; }
+.topic-preview-actions .topic-preview-open { border-color: var(--accent); color: var(--text-primary); background: var(--accent-muted); }
+.topic-preview-enter-active, .topic-preview-leave-active { transition: opacity 140ms ease-out; }
+.topic-preview-enter-from, .topic-preview-leave-to { opacity: 0; }
 .exam-heat-dot { position:absolute; top:2px; right:2px; width:5px; height:5px; border-radius:50%; background:var(--text-secondary); }
 .exam-dot-small { background:var(--accent); }.exam-dot-large { background:var(--warning); }.exam-dot-short_answer { background:#a895da; }
 
-.core-controls { display:flex; flex-wrap:wrap; gap:12px; margin:16px 0; }
-.core-controls label { display:grid; gap:6px; min-width:0; max-width:100%; font-size:12px; }
-.core-controls select { min-width:0; max-width:100%; padding:10px; color:var(--text-primary); background:var(--bg-surface); border:1px solid var(--border-default); border-radius:var(--radius-sm); }
-.core-controls p { flex-basis:100%; color:var(--text-secondary); line-height:1.7; }
+.core-controls { display: flex; flex-wrap: wrap; margin: 8px 0 16px; gap: 12px; }
+.core-controls label { display: grid; min-width: 0; max-width: 100%; gap: 6px; color: var(--text-secondary); font-size: 13px; }
+.core-controls select { min-height: 40px; min-width: 0; max-width: 100%; padding: 8px 10px; border: 1px solid var(--border-default); border-radius: var(--radius-sm); color: var(--text-primary); background: var(--bg-surface); }
+.core-controls p { flex-basis: 100%; margin: 0; color: var(--text-secondary); font-size: 12px; line-height: 1.6; }
 @media (max-width: 900px) {
   .heatmap-group > header { align-items: flex-start; }
-  .heatmap-book-stats { width: auto; }
+  .topic-preview-card { grid-template-columns: minmax(0, 1fr) auto; }
+  .topic-preview-actions { grid-column: 1 / -1; justify-content: flex-end; }
 }
 @media (max-width: 700px) {
   .heat-controls { justify-content: flex-start; }
   .heat-legend { display: flex; flex-wrap: wrap; }
   .heatmap-group { padding: 12px; }
-  .heatmap-book-stats { display: flex; }
   .topic-preview-card { grid-template-columns: 1fr; }
+  .topic-preview-card dl { justify-content: space-between; }
   .heatmap-page .page-header { padding-left: 52px; }
 }
 </style>
