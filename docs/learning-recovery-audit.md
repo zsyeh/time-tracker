@@ -1,5 +1,7 @@
 # Learning recovery audit (2026-11-11)
 
+This records the pre-change architecture. Production deployment was subsequently authorized and completed on 2026-11-11; see `learning-recovery.md` for release status, backup scope and verification results.
+
 Production is the single writer at 47; IP HTTPS / + /drill/ + /ei/ share one origin and root-scoped auth cookies. Nginx rewrites workspace prefixes to the existing single Django/Gunicorn process. RainYun is an edge only. Current production image before this work: 20261111-reader-glass, c30cb6b3. No deployment/proxy changes are needed for source development.
 
 QuestionView currently generates a new crypto timing key at mount and on each question change, POSTs begin, and cancels on route leave. The timer is driven by server starts_at + performance.now, but has no visibility pause/checkpoints. Refresh creates another QuestionTimingSession with a fresh five-second delay. Submission overrides client duration with server wall time. QuestionAttempt.time_spent_seconds feeds drill timing/trends/reports; this is NOT merely a UI counter. Older history (048aec4, dcd0308, e87ed80) introduced persistent start timestamps and attempt-duration aggregation; later tab-scoped keys lost reload recovery. Notes already have user-scoped local drafts, five-second server autosave and state_version conflict checks. Submission keys already deduplicate atomically, with Question row locking. Reuse these.

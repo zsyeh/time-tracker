@@ -2,7 +2,7 @@
 
 ## 状态与上线边界
 
-本次实现需要可逆的 `drill.0035_learning_recovery` 迁移。**未在 47 生产环境执行迁移、重启或部署新前端。** 不应只上线前端：新前端使用计时协议 2，需要对应后端与迁移。实际审计见 `learning-recovery-audit.md`。
+已于 2026-11-11 经用户授权部署到 47，业务代码提交为 `ab6040f`，镜像为 `time-tracker-ha:20261111-learning-recovery`，生产已执行可逆迁移 `drill.0035_learning_recovery`。两个前端与后端一同发布，统一 Manifest 已更新。新前端使用计时协议 2，后续发布仍须确保对应后端与 schema 就绪。改造前审计见 `learning-recovery-audit.md`。
 
 ### 保留的旧机制
 
@@ -59,7 +59,7 @@ Manifest 的 id/scope 仍为 `/`，start_url 改为 `/?pwa_launch=1`。只有统
 
 本次日志位于 `/home/eh/learning-recovery-audit/`。实际浏览器测试使用隔离本地 Django 和数据库，HTTP 请求按生产路径规则转发，不修改生产学习数据。Safari 的原生冻结/锁屏/主屏幕窗口行为不能由 Chromium 的合成事件证明。
 
-## 上线与回滚（需要单独授权生产迁移）
+## 上线与回滚流程（生产迁移需要明确授权）
 
 1. 核对 47 当前镜像/提交、迁移计划、内存/磁盘；保留旧镜像和 service drop-in。RainYun 不迁移、不启用数据库。
 2. 在 47 以现有数据库用户对 time_tracker 执行权限受限的完整 `pg_dump -Fc`；校验 SHA-256、`pg_restore --list`，在本机或备用机器实际恢复演练并核对表数/关键计数。不得在内存紧张的 47 再开一个测试 PostgreSQL。保留既有备份。
@@ -78,4 +78,14 @@ Manifest 的 id/scope 仍为 `/`，start_url 改为 `/?pwa_launch=1`。只有统
 - 隔离 PostgreSQL 全套 64 项测试通过，覆盖既有 Drill API/热力图/统计与新增恢复逻辑；最后又重跑了 19 项恢复/迁移测试及账号过期兼容测试。
 - 模型/迁移检查：No changes detected。可逆迁移演练保留旧作答 37 秒耗时，并验证旧客户端省略 recovery 列仍能插入。
 - 本地真实 Django + 浏览器：前台等待 65 秒（含原有 5 秒准备）、连续刷新 5 次后计时约 62 秒；Note 和答案使用状态恢复；合成隐藏事件暂停；18 秒断网恢复；Drill/EI/Timer 切换；Home 保持首页；带标记的冷启动恢复；提交 201 响应丢失后刷新重试返回去重 200。
-- 生产只读复核：仍为 `time-tracker-ha:20261111-reader-glass`、健康，实际 drill 迁移为 0034；生产计时表仍是原有七个字段。未执行新迁移、未重启生产应用、未替换生产 Manifest。
+- 发布前只读复核：旧镜像为 `time-tracker-ha:20261111-reader-glass`，迁移为 0034。发布后新镜像健康、未发生 OOM，迁移为 0035；历史作答、原计时字段和 Timer 记录的整表指纹在暂停写入的迁移窗口前后保持一致。
+- 生产发布验证：原登录会话跨发布保持有效；三个公网域名的 HTML/JS/CSS 与本机构建匹配；统一 IP 的三个路径及域名恢复接口均通过认证隔离与 private/no-store 检查；Manifest 的启动标记、scope 和 Content-Type 正确；Nginx 配置检查通过。仅重启 Web，PostgreSQL 和 RainYun 代理未重启或修改。
+
+
+## 实际备份及磁盘整理说明
+
+本次迁移前完成了全部业务记录及结构备份，单独导出完整题图元数据；在隔离 PostgreSQL 实际恢复并通过外键校验，演练 0035→0034→0035。演练中的题图二进制是空占位，因此这份业务备份不能独立恢复图片字节。跨境全库导出因速度和 DDL 锁影响而停止，未完成导出没有当作有效备份。
+
+另保留既有完整全库备份。磁盘整理时，它被无损压缩为 `backups/examtypes-20261110/pre-examtypes.dump.gz`；47 上压缩副本、本机异地完整副本的解压内容 SHA-256 均与原始全库文件一致。原始未压缩文件与更早的 11 月 5 日恢复点已经清理。恢复完整备份时需先解开 gzip 外层，再交给 pg_restore；不能用旧全库覆盖上线后新增的学习记录。当前功能的回滚仍使用保留的恢复元数据导出及反向迁移流程。
+
+运维日志已限制占用：journald 上限 256MB；FRPS nohup 日志每小时检查 16MB 阈值，保留 3 份压缩归档。未删除业务数据、当前镜像或最近回滚镜像。实际 iPadOS 的锁屏、系统回收与 standalone 行为仍需实机验收。
