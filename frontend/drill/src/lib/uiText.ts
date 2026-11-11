@@ -2,6 +2,8 @@ import { uiLanguage } from './uiPreferences'
 
 // Only authored interface text belongs here. Question content and notes stay verbatim.
 export const interfaceEnglish: Record<string, string> = {
+  "常用页面": "Frequent pages",
+  "更多工具": "More tools",
   "未做题": "Unattempted questions",
   "上一道未做题": "Previous unattempted question",
   "下一道未做题": "Next unattempted question",

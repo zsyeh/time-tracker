@@ -81,10 +81,22 @@ onUnmounted(() => stopRecovery?.())
         <a href="https://47.95.10.128/drill/practice" :aria-current="!isEi ? 'page' : undefined">Drill</a>
         <a href="https://47.95.10.128/ei/practice" :aria-current="isEi ? 'page' : undefined">EI</a>
       </nav>
-      <nav>
-        <RouterLink to="/diagnostics" :class="{ active: route.name === 'diagnostics' || route.name === 'diagnostic-queue' }"><span>{{ uiText("解题能力") }}</span></RouterLink>
-        <RouterLink v-if="isEi" to="/cockpit" :class="{ active: route.name === 'cockpit' }">
+      <nav class="primary-navigation" :aria-label="uiText('常用页面')">
+        <span class="navigation-heading">{{ uiText('常用页面') }}</span>
+        <RouterLink v-if="!isEi" to="/selected-heatmap" :class="{ active: route.name === 'selected-heatmap' || (route.name === 'question' && route.query.from === 'selected-heatmap') }">
+          <span>{{ t('selectedHeatmap') }}</span>
+        </RouterLink>
+        <RouterLink v-if="isEi" to="/cockpit" :class="{ active: route.name === 'cockpit' || (route.name === 'question' && route.query.from === 'cockpit') }">
           <span>{{ uiText("892 总览") }}</span>
+        </RouterLink>
+        <RouterLink v-if="isEi" to="/core-heatmap" :class="{ active: route.name === 'core-heatmap' || (route.name === 'question' && route.query.from === 'core-heatmap') }"><span>{{ uiText("五科核心热力图") }}</span></RouterLink>
+        <RouterLink to="/insight" :class="{ active: route.name === 'insight' || (route.name === 'question' && route.query.from === 'insight') }"><span>{{ t('insight') }}</span></RouterLink>
+        <RouterLink to="/diagnostics" :class="{ active: route.name === 'diagnostics' || route.name === 'diagnostic-queue' || (route.name === 'question' && route.query.from === 'diagnostics') }"><span>{{ uiText("解题能力") }}</span></RouterLink>
+      </nav>
+      <nav class="secondary-navigation" :aria-label="uiText('更多工具')">
+        <span class="navigation-heading">{{ uiText('更多工具') }}</span>
+        <RouterLink to="/practice" :class="{ active: route.name === 'practice' || (route.name === 'question' && !route.query.from) }">
+          <span>{{ t('practice') }}</span>
         </RouterLink>
         <RouterLink v-if="isEi" to="/circuit-selected" :class="{ active: route.name === 'circuit-selected' || (route.name === 'question' && route.query.collection === 'circuit_selected') }"><span>{{ uiText("电路严选") }}</span></RouterLink>
         <RouterLink v-if="isEi" to="/signal-selected" :class="{ active: route.name === 'signal-selected' || (route.name === 'question' && route.query.collection === 'signal_selected') }"><span>{{ uiText("信号严选") }}</span></RouterLink>
@@ -93,10 +105,6 @@ onUnmounted(() => stopRecovery?.())
         <RouterLink v-if="isEi" to="/digital-selected" :class="{ active: route.name === 'digital-selected' || (route.name === 'question' && route.query.collection === 'digital_selected') }"><span>{{ uiText("数电严选") }}</span></RouterLink>
         <RouterLink v-if="isEi" to="/communication-selected" :class="{ active: route.name === 'communication-selected' || (route.name === 'question' && route.query.collection === 'communication_selected') }"><span>{{ uiText("通信严选") }}</span></RouterLink>
         <RouterLink v-if="isEi" to="/selected-pdf-pages" :class="{ active: route.name === 'selected-pdf-pages' }"><span>{{ uiText("严选题 PDF 页码记录") }}</span></RouterLink>
-        <RouterLink v-if="isEi" to="/core-heatmap" :class="{ active: route.name === 'core-heatmap' || (route.name === 'question' && route.query.collection === 'core_selected') }"><span>{{ uiText("五科核心热力图") }}</span></RouterLink>
-        <RouterLink to="/practice" :class="{ active: route.name === 'practice' || route.name === 'question' }">
-          <span>{{ t('practice') }}</span>
-        </RouterLink>
         <RouterLink to="/activity" :class="{ active: route.name === 'activity' }">
           <span>{{ t('activity') }}</span>
         </RouterLink>
@@ -105,9 +113,6 @@ onUnmounted(() => stopRecovery?.())
         </RouterLink>
         <RouterLink to="/heatmap" :class="{ active: route.name === 'heatmap' }">
           <span>{{ t('knowledge') }}</span>
-        </RouterLink>
-        <RouterLink v-if="!isEi" to="/selected-heatmap" :class="{ active: route.name === 'selected-heatmap' }">
-          <span>{{ t('selectedHeatmap') }}</span>
         </RouterLink>
         <RouterLink to="/papers" :class="{ active: String(route.name || '').startsWith('paper') }">
           <span>{{ t('buildPaper') }}</span>
@@ -120,9 +125,6 @@ onUnmounted(() => stopRecovery?.())
         </RouterLink>
         <RouterLink to="/feel" :class="{ active: route.name === 'feel' }">
           <span>{{ t('bookFeel') }}</span>
-        </RouterLink>
-        <RouterLink to="/insight" :class="{ active: route.name === 'insight' }">
-          <span>{{ t('insight') }}</span>
         </RouterLink>
         <RouterLink to="/errata" :class="{ active: route.name === 'errata' }">
           <span>{{ uiText("勘误") }}</span>
