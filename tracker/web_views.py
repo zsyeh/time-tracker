@@ -1,3 +1,4 @@
+from tracker.preference_bootstrap import inject_preferences_bootstrap
 from functools import lru_cache
 
 from django.conf import settings
@@ -41,7 +42,7 @@ def spa_view(request, **_route):
     html = _frontend_html()
     if not html:
         return render(request, 'frontend_missing.html', status=503)
-    response = HttpResponse(html)
+    response = HttpResponse(inject_preferences_bootstrap(html, request.user))
     response['Cache-Control'] = 'private, no-store'
     return response
 
@@ -58,7 +59,7 @@ def public_spa_view(request, **_route):
     html = _frontend_html()
     if not html:
         return render(request, 'frontend_missing.html', status=503)
-    response = HttpResponse(html)
+    response = HttpResponse(inject_preferences_bootstrap(html, None))
     response['Cache-Control'] = 'no-store, max-age=0'
     response['X-Robots-Tag'] = 'noindex, nofollow, noarchive'
     response['Referrer-Policy'] = 'no-referrer'
