@@ -1613,13 +1613,13 @@ onBeforeRouteLeave(() => {
 .question-canvas.source-canvas { overflow: visible; }
 .source-review-warning { padding: 12px; border-inline-start: 2px solid var(--warning); color: var(--warning); font-size: 14px; }
 .answer-workflow { display: flex; flex-direction: column; min-width: 0; background: var(--bg-surface); }
-.diagnosis-panel { display: grid; gap: 12px; margin: 0; padding: 12px; border: 0; border-bottom: 1px solid var(--border-subtle); background: transparent; }
+.diagnosis-panel { display: grid; gap: 4px; margin: 0; padding: 8px 12px; border: 0; border-bottom: 1px solid var(--border-subtle); background: transparent; }
 .answer-workflow .answer-bar { border: 0; border-radius: 0; }
 .answer-submit-bar { position: sticky; bottom: 0; z-index: 10; flex: none; padding: 8px 12px; background: var(--bg-surface); }
 .answer-submit-bar :deep(.practice-action-toolbar) { margin-top: 0; }
 .diagnosis-panel > header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
-.diagnosis-panel > header > div:first-child { display: grid; gap: 4px; }
-.diagnosis-panel > header span { font-size: 16px; font-weight: 650; color: var(--text-primary); }
+.diagnosis-panel > header > div:first-child { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 8px; }
+.diagnosis-panel > header span { font-size: 14px; font-weight: 650; color: var(--text-primary); }
 .diagnosis-status { color: var(--text-secondary); font-size: 12px; font-weight: 500; }
 .diagnosis-status.draft, .diagnosis-status.saving { color: var(--warning); }
 .diagnosis-status.saved { color: var(--success); }
@@ -1627,7 +1627,7 @@ onBeforeRouteLeave(() => {
 .diagnosis-actions { display: flex; align-items: center; gap: 4px; margin-left: auto; }
 .diagnosis-actions button, .independence-flags button, .method-note-link { min-height: 36px; padding: 8px; border: 0; border-radius: 6px; color: var(--text-secondary); background: transparent; font-size: 13px; cursor: pointer; }
 .diagnosis-actions button:hover, .independence-flags button:hover, .method-note-link:hover { background: var(--surface-hover, var(--bg-sidebar)); }
-.diagnosis-body { display: grid; gap: 8px; min-width: 0; }
+.diagnosis-body { display: grid; gap: 4px; min-width: 0; }
 .independence-flags { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 .independence-flags button.active { color: var(--text-primary); background: var(--surface-selected, var(--bg-surface-active)); }
 .independence-flags span { font-size: 12px; color: var(--success); }
@@ -1635,7 +1635,7 @@ onBeforeRouteLeave(() => {
 .primary-help { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0; font-size: 13px; color: var(--text-secondary); }
 .primary-help select, .diagnosis-advanced select, .page-turn-settings select { min-width: 0; max-width: 100%; min-height: 36px; padding: 4px 8px; border: 1px solid var(--border-default); border-radius: 6px; color: var(--text-primary); background: var(--bg-surface); font-size: 14px; }
 .diagnosis-advanced { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
-.diagnosis-advanced label { display: grid; gap: 8px; min-width: 0; font-size: 12px; color: var(--text-secondary); }
+.diagnosis-advanced label { display: grid; gap: 4px; min-width: 0; font-size: 12px; color: var(--text-secondary); }
 .diagnosis-advanced select { width: 100%; }
 .diagnosis-body > footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; padding-top: 8px; color: var(--text-secondary); border-top: 1px solid var(--border-subtle); font-size: 12px; }
 .diagnosis-body > footer small { font-size: 12px; }
@@ -1670,6 +1670,6 @@ onBeforeRouteLeave(() => {
 .note-field summary { border: 0; background: transparent; }
 .note-field summary small, .note-controls small { font-size: 12px; }
 @media (pointer: coarse) { .diagnosis-actions button, .independence-flags button, .method-note-link, .primary-help select, .diagnosis-advanced select, .page-turn-settings select, .timing-recovery button, .save-note { min-height: 44px; } }
-@media (max-width: 480px) { .diagnosis-advanced { grid-template-columns: 1fr; } .page-turn-settings-grid { grid-template-columns: 1fr; } }
+@media (max-width: 480px) { .diagnosis-advanced label { gap: 4px; } .page-turn-settings-grid { grid-template-columns: 1fr; } }
 @media (pointer: coarse) { .note-field textarea, .diagnosis-body select, .erratum-compose textarea, .erratum-compose select { font-size: 16px; } }
 </style>

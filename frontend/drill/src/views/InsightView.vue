@@ -241,10 +241,6 @@ onUnmounted(() => {
         <label class="wide">{{ labels.keyword }}<input v-model="filters.q" type="search" :placeholder="labels.keywordPlaceholder" @compositionstart="compositionStarted" @compositionend="compositionEnded"></label>
         <label>{{ labels.state }}<select v-model="filters.state"><option value="">{{ labels.allStates }}</option><option value="mastered">{{ labels.mastered }}</option><option value="review">{{ labels.review }}</option></select></label>
         <label class="filter-sort">{{ labels.sort }}<select v-model="filters.sort"><option value="recent">{{ labels.recent }}</option><option value="oldest">{{ labels.oldest }}</option></select></label>
-        <div class="filter-dates">
-          <label>{{ labels.start }}<input v-model="filters.start" type="date"></label>
-          <label>{{ labels.end }}<input v-model="filters.end" type="date"></label>
-        </div>
         <details class="filter-dates-mobile" :open="mobileDatesOpen" @toggle="mobileDatesOpen = ($event.target as HTMLDetailsElement).open">
           <summary>{{ labels.dateRange }}<span v-if="dateSummary">{{ dateSummary }}</span></summary>
           <div class="filter-dates-fields">
@@ -285,12 +281,17 @@ onUnmounted(() => {
 
 .insight-page { container-type: inline-size; color: var(--text-primary); }
 .insight-filters { display: block; margin: 0 0 24px; padding: 0; background: transparent; border: 0; }
-.filter-primary { display: grid; grid-template-columns: minmax(180px, 1fr) minmax(132px, 160px) minmax(132px, 152px) auto auto; align-items: end; gap: 12px; }
-.filter-dates { grid-column: 1 / 3; max-width: 420px; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; min-width: 0; }
-.filter-dates-mobile { display: none; }
+.filter-primary { display: grid; grid-template-columns: minmax(160px, 1fr) minmax(120px, 148px) minmax(120px, 148px) auto auto; align-items: end; gap: 8px; }
+.filter-dates-mobile { display: block; order: 1; grid-column: 1 / -1; min-width: 0; }
+.filter-dates-mobile summary { display:flex; align-items:center; gap:8px; min-height:44px; color:var(--text-secondary); font-size:13px; cursor:pointer; list-style:none; }
+.filter-dates-mobile summary::-webkit-details-marker { display:none; }
+.filter-dates-mobile summary::before { content:""; width:6px; height:6px; flex:none; border-right:1.5px solid currentColor; border-bottom:1.5px solid currentColor; transform:rotate(-45deg); }
+.filter-dates-mobile[open] summary::before { transform:rotate(45deg); }
+.filter-dates-mobile summary span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.filter-dates-fields { display:grid; grid-template-columns:repeat(2,minmax(0,140px)); gap:8px; }
 .insight-filters label { display: grid; gap: 4px; min-width: 0; color: var(--text-secondary); font-size: 12px; line-height: 1.35; }
-.insight-filters input, .insight-filters select { width: 100%; min-width: 0; min-height: 44px; padding: 8px 12px; border: 1px solid var(--border-control); border-radius: var(--radius-sm); color: var(--text-primary); background: var(--bg-elevated); font: inherit; font-size: 14px; }
-.insight-filters button { min-height: 44px; padding: 0 12px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+.insight-filters input, .insight-filters select { box-sizing: border-box; max-width:100%; width: 100%; min-width: 0; min-height: 44px; padding: 4px 8px; border: 1px solid var(--border-control); border-radius: var(--radius-sm); color: var(--text-primary); background: var(--bg-elevated); font: inherit; font-size: 14px; }
+.insight-filters button { white-space: nowrap; min-height: 44px; padding: 0 12px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
 .insight-filters input:focus-visible, .insight-filters select:focus-visible, .insight-filters button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .filter-submit { border: 0; border-radius: var(--radius-sm); color: var(--accent-on-solid); background: var(--accent-solid); }
 .filter-more, .filter-clear { border: 0; border-radius: var(--radius-sm); color: var(--text-secondary); background: transparent; }
@@ -361,7 +362,7 @@ onUnmounted(() => {
   .filter-dates-mobile[open] summary::before { transform: rotate(45deg); }
   .filter-dates-mobile summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
   .filter-dates-mobile summary span { overflow: hidden; color: var(--text-primary); font-variant-numeric: tabular-nums; font-weight: 400; text-overflow: ellipsis; white-space: nowrap; }
-  .filter-dates-fields { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; padding-top: 8px; }
+  .filter-dates-fields { display: grid; grid-template-columns: minmax(0, 1fr); gap: 8px; padding-top: 4px; }
   .filter-advanced { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .insight-list > button { padding: 12px 0; }
   .insight-grid > section > header { padding-inline: 0; }

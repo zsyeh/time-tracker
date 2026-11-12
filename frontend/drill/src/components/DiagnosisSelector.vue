@@ -55,10 +55,12 @@ legend { margin-bottom: 4px; padding: 0 8px; color: var(--text-secondary); font-
 fieldset:disabled .diagnosis-selection-row { cursor: default; opacity: .55; }
 .compact .diagnosis-selection-groups { gap: 4px; }
 .compact fieldset { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
-.compact legend { margin-bottom: 4px; }
-.compact .diagnosis-selection-row { gap: 4px; padding-inline: 4px; }
+.compact legend { margin-bottom: 0; font-size: 12px; }
+.compact .diagnosis-selection-row { gap: 4px; padding: 2px 4px; }
 .compact .diagnosis-code { width: 20px; }
 .diagnosis-code.primary { font-weight: 750; color: var(--text-primary); }
+@container (min-width: 360px) { .compact fieldset { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+@container (min-width: 600px) { .compact fieldset { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
 @container (max-width: 279px) { .compact fieldset { grid-template-columns: minmax(0, 1fr); } }
 @container (min-width: 600px) { .diagnosis-selection-groups { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; } }
 </style>

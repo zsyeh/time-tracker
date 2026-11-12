@@ -6,7 +6,7 @@ import type { PreviewAnchor, PreviewItem } from '../../lib/listContext'
 import type { PreviewImagePipeline } from '../../lib/preview/imagePipeline'
 import { estimatePreviewHeight, previewRange, rememberBounded } from '../../lib/preview/layout'
 const props = defineProps<{ count: number; version: string; revision: number; getItem: (index: number) => PreviewItem | undefined; pipeline: PreviewImagePipeline; paperSnapshot?: boolean }>()
-const emit = defineEmits<{ range: [first: number, last: number]; anchor: [anchor: PreviewAnchor]; open: [item: PreviewItem]; zoom: [item: PreviewItem] }>()
+const emit = defineEmits<{ range: [first: number, last: number, visible: number]; anchor: [anchor: PreviewAnchor]; open: [item: PreviewItem]; zoom: [item: PreviewItem] }>()
 const scroller = ref<HTMLElement | null>(null), viewportHeight = ref(600), width = ref(600), backward = ref(false)
 const identities = new Map<number,string>(), heights = new Map<string,number>()
 // Numeric positioning only (4 bytes/index), not question metadata or identities.
@@ -96,7 +96,11 @@ watch(() => [props.version, props.count], ([version], [oldVersion]) => {
 watch(() => props.revision, rememberAnchor, { flush:'post' })
 watch(() => rows.value.map(row => row.index).join(','), () => {
  const list = rows.value
- if (list.length) emit('range', list[0]!.index, list[list.length - 1]!.index)
+ if (list.length) {
+  const offset = scroller.value?.scrollTop ?? 0
+  const visible = list.find(row => row.end > offset + 1)?.index ?? list[0]!.index
+  emit('range', list[0]!.index, list[list.length - 1]!.index, visible)
+ }
  rememberAnchor()
 }, { flush:'post' })
 onMounted(() => {

@@ -71,8 +71,8 @@ watch(() => props.open, async (open) => {
 header, footer { display:flex; align-items:center; justify-content:space-between; padding:12px 16px; flex:none; }
 header { border-bottom:1px solid var(--border-subtle); } header h2 { margin:0; font-size:16px; } footer { border-top:1px solid var(--border-subtle); }
 .filter-fields { overflow:auto; overscroll-behavior:contain; padding:4px 16px; }
-.filter-fields > label { display:flex; flex-direction:column; gap:8px; padding:12px 0; font-size:13px; } select { width:100%; min-height:40px; background:var(--surface-subtle); border:1px solid var(--border-control); border-radius:6px; padding:8px; color:var(--text-primary); font:inherit; }
-.filter-fields > .check-row { flex-direction:row; align-items:center; justify-content:space-between; min-height:44px; } input[type=checkbox] { width:18px; height:18px; accent-color:var(--accent-solid); }
+.filter-fields > label { display:grid; grid-template-columns:104px minmax(0,1fr); align-items:center; gap:8px; padding:4px 0; min-height:44px; font-size:13px; } select { min-width:0; max-width:100%; width:100%; min-height:44px; background:var(--surface-subtle); border:1px solid var(--border-control); border-radius:6px; padding:8px; color:var(--text-primary); font:inherit; }
+.filter-fields > .check-row { display:flex; flex-direction:row; align-items:center; justify-content:space-between; min-height:44px; } input[type=checkbox] { width:18px; height:18px; accent-color:var(--accent-solid); }
 .plain-action { border:0; background:transparent; color:var(--accent-ink); min-height:44px; padding:8px; font:inherit; cursor:pointer; } .filter-scope, footer small { font-size:12px; color:var(--text-secondary); }
 @media (max-width:767px) { .practice-filters { top:auto !important; left:0 !important; bottom:0; width:100%; max-height:calc(100dvh - env(safe-area-inset-top) - 16px); border-radius:12px 12px 0 0; border-bottom:0; } footer { padding-bottom:max(12px, env(safe-area-inset-bottom)); } }
 @media(pointer:coarse) { select { font-size:16px; } }

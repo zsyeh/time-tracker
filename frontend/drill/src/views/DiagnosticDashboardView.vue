@@ -230,18 +230,18 @@ watch(uiLanguage, () => { void renderChart() })
 
 <style scoped>
 .diagnostic-page { min-width:0; }
-.diagnostic-header { display:flex; align-items:end; justify-content:space-between; gap:24px; }
+.diagnostic-header { display:flex; align-items:end; justify-content:space-between; flex-wrap:wrap; gap:12px; }
 .diagnostic-header h1 { margin:4px 0; font-size:25px; line-height:1.2; }
 .diagnostic-header p { margin:0; color:var(--text-secondary); font-size:13px; }
 .diagnostic-progress-link { display:inline-flex; align-items:center; gap:8px; min-height:40px; margin:-8px 0 12px; color:var(--accent); font-size:14px; font-weight:600; text-decoration:none; }
 .diagnostic-progress-link:hover { text-decoration:underline; }
 .diagnostic-progress-link:focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:var(--radius-sm); }
 .diagnostic-page .eyebrow { color:var(--text-tertiary); font-size:12px; font-weight:650; letter-spacing:.05em; }
-.range { display:flex; align-items:center; flex-wrap:wrap; gap:4px; padding:4px; border:0; border-radius:var(--radius-md); }
-.range>button { min-width:44px; min-height:44px; padding:0 10px; border:0; border-radius:var(--radius-sm); color:var(--text-secondary); background:transparent; font-size:13px; cursor:pointer; }
+.range { max-width:100%; min-width:0; display:flex; align-items:center; flex-wrap:wrap; gap:4px; padding:4px; border:0; border-radius:var(--radius-md); }
+.range>button { min-width:44px; min-height:44px; padding:0 10px; border:0; border-radius:var(--radius-sm); color:var(--text-secondary); background:transparent; font-size:13px; white-space:nowrap; cursor:pointer; }
 .range>button.active { color:var(--text-primary); background:var(--surface-selected); font-weight:650; }
 .range label { display:flex; align-items:center; flex-wrap:wrap; gap:4px; margin-left:4px; color:var(--text-secondary); font-size:12px; }
-.range input { min-width:0; width:128px; min-height:44px; padding:0 8px; border:1px solid var(--border-default); border-radius:var(--radius-sm); color:var(--text-primary); background:var(--bg-elevated); font-size:16px; }
+.range input { box-sizing:border-box; flex:0 0 140px; min-width:0; max-width:100%; width:140px; min-height:44px; padding:0 8px; border:1px solid var(--border-default); border-radius:var(--radius-sm); color:var(--text-primary); background:var(--bg-elevated); font-size:16px; }
 .range label button { min-height:44px; padding:0 12px; border:1px solid var(--border-default); border-radius:var(--radius-sm); color:var(--text-primary); background:var(--bg-elevated); font-size:13px; cursor:pointer; }
 .today-strip { margin:24px 0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; }
 .today-strip article,.today-strip button { min-width:0; min-height:112px; padding:16px; border:0; border-radius:var(--radius-md); color:var(--text-primary); background:var(--bg-surface); text-align:left; display:grid; align-content:start; gap:4px; }
@@ -291,7 +291,7 @@ watch(uiLanguage, () => { void renderChart() })
 .activity-note { margin:0; }
 .diagnostic-page button:focus-visible,.diagnostic-page input:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
 @media(max-width:1100px) { .diagnostic-header { align-items:start; flex-direction:column; } .metric-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .diagnostic-grid,.secondary-analysis { grid-template-columns:minmax(0,1fr); } }
-@media(max-width:800px) { .range { width:100%; } .range>button { flex:1; } .range label { width:100%; margin:4px 0 0; } .range input { flex:1; } .today-strip,.activity-summary { grid-template-columns:repeat(2,minmax(0,1fr)); } .ability-chart { height:280px; } .activity-chart { height:245px; } }
-@media(max-width:430px) { .today-strip article,.today-strip button { padding:12px; } .activity-summary article,.metric-grid article,.metric-grid button { padding:12px 4px; } .today-strip strong,.metric-grid strong { font-size:25px; } .ability-board,.error-distribution,.course-table { padding:16px 0; } .course-row { grid-template-columns:minmax(0,1.4fr) repeat(3,minmax(0,.8fr)); gap:4px; font-size:12px; } .course-row>strong,.course-row>span { overflow-wrap:anywhere; } .course-row.heading { font-size:12px; } .range label { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); } .range label>span { grid-column:1/-1; } .range label input { width:100%; } .range label button { grid-column:1/-1; } }
+@media(max-width:800px) { .range { width:100%; } .range>button { flex:1; } .range label { width:100%; margin:4px 0 0; } .range input { flex:0 0 140px; } .today-strip,.activity-summary { grid-template-columns:repeat(2,minmax(0,1fr)); } .ability-chart { height:280px; } .activity-chart { height:245px; } }
+@media(max-width:430px) { .today-strip article,.today-strip button { padding:12px; } .activity-summary article,.metric-grid article,.metric-grid button { padding:12px 4px; } .today-strip strong,.metric-grid strong { font-size:25px; } .ability-board,.error-distribution,.course-table { padding:16px 0; } .course-row { grid-template-columns:minmax(0,1.4fr) repeat(3,minmax(0,.8fr)); gap:4px; font-size:12px; } .course-row>strong,.course-row>span { overflow-wrap:anywhere; } .course-row.heading { font-size:12px; } .range label { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); } .range label>span { grid-column:1/-1; } .range label input { width:100%; inline-size:100%; flex:none; } .range label button { grid-column:1/-1; } }
 .diagnostic-data { margin-top:16px; color:var(--text-secondary); font-size:13px; } .diagnostic-data summary { min-height:44px; display:flex; align-items:center; cursor:pointer; } .diagnostic-table-scroll { max-width:100%; overflow:auto; } .diagnostic-data table { width:100%; border-collapse:collapse; font-size:13px; font-variant-numeric:tabular-nums; } .diagnostic-data caption { text-align:left; padding:8px 0; } .diagnostic-data th,.diagnostic-data td { padding:8px; text-align:right; border-bottom:1px solid var(--border-subtle); white-space:nowrap; } .diagnostic-data th:first-child { text-align:left; }
 </style>

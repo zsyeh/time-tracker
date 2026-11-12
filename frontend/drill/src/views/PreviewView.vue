@@ -6,6 +6,7 @@ import VirtualPreviewList from '../components/preview/VirtualPreviewList.vue'
 import { getPreviewAnchor, getPreviewSession, savePreviewAnchor, type PreviewSession } from '../lib/collectionPreview'
 import { parseListContext, previewQuestionLocation, type ListContext, type PreviewAnchor, type PreviewItem } from '../lib/listContext'
 import { createPreviewImagePipeline } from '../lib/preview/imagePipeline'
+import { createPreviewRangeLoader } from '../lib/preview/rangeLoader'
 import { withWorkspacePrefix } from '../lib/runtimePath'
 import { accountPreferences } from '../../../shared/preferences/store'
 const route = useRoute(), router = useRouter()
@@ -18,8 +19,23 @@ const pipeline = createPreviewImagePipeline({ userId:accountPreferences.userId.v
 const noticeMessages: Record<string,string> = { PAPER_REVISION_PREVIEW_CANONICAL_PRACTICE_IS_SEPARATE:'此处预览试卷快照。打开当前原题会进入独立练习，不会修改这份试卷的题目或作答。', ENTRY_REMOVED_USING_NEAREST:'原题目已不在当前题单中，已定位到附近题目。' }
 const noticeText = computed(() => noticeMessages[notice.value] ?? (/^[A-Z][A-Z0-9_]+$/.test(notice.value) ? '题单已更新，已恢复到附近题目。' : notice.value))
 const images = computed(() => zoomItem.value?.preview.assets.map(asset => ({ src:withWorkspacePrefix(asset.url), width:asset.width, height:asset.height })) ?? [])
-let generation = 0, positionSerial = 0, destroyed = false, pending = new Set<number>(), lastAnchor: PreviewAnchor | null = null, activeContext: ListContext | null = null
+let generation = 0, positionSerial = 0, destroyed = false, lastAnchor: PreviewAnchor | null = null, activeContext: ListContext | null = null
 const initialOwner = accountPreferences.userId.value
+let rangeLoader = createRangeLoader()
+function createRangeLoader() {
+ return createPreviewRangeLoader({
+  cached: offset => !!session.value?.get(offset),
+  load: async (offset, signal) => {
+   const active = session.value, token = generation
+   if (!active || loading.value) return
+   try {
+    const page = await active.load({offset, signal})
+    if (token !== generation || destroyed || signal.aborted) return
+    update(); if (page.notice) { notice.value = page.notice; const anchor = lastAnchor; if (anchor) await list.value?.restoreAnchor({...anchor,index:page.located?.index ?? anchor.index}) }
+   } catch (reason) { if (token === generation && !signal.aborted && !(reason instanceof DOMException && reason.name === 'AbortError')) error.value = reason instanceof Error ? reason.message : '部分题目加载失败' }
+  },
+ })
+}
 function item(index: number) { void revision.value; return session.value?.get(index) }
 function remember(anchor: PreviewAnchor) {
  lastAnchor = anchor; current.value = anchor.index + 1; if (document.activeElement?.id !== 'preview-position') jump.value = String(current.value)
@@ -28,7 +44,7 @@ function remember(anchor: PreviewAnchor) {
 function save() { const anchor = list.value?.captureAnchor() ?? lastAnchor; if (anchor && activeContext) { lastAnchor = anchor; savePreviewAnchor(activeContext, anchor) } }
 function update() { if (!session.value) return; count.value = session.value.count; version.value = session.value.version; revision.value++ }
 async function start(fresh = false) {
- const token = ++generation; positionSerial++; loading.value = true; error.value = ''; pending = new Set()
+ const token = ++generation; positionSerial++; loading.value = true; error.value = ''; rangeLoader.dispose(); rangeLoader = createRangeLoader()
  const ctx = context.value
  if (!ctx) { session.value?.abort(); session.value = null; activeContext = null; count.value = 0; version.value = ''; loading.value = false; error.value = '题单上下文无效，请返回列表重新打开预览。'; return }
  try {
@@ -51,20 +67,9 @@ async function start(fresh = false) {
   error.value = reason instanceof Error ? reason.message : '题单加载失败，请重试。'; loading.value = false
  }
 }
-async function loadRange(first: number, last: number) {
- const active = session.value, token = generation
- if (!active || loading.value) return
- const offsets = Array.from(new Set(Array.from({length:last-first+1},(_,i)=>Math.floor((first+i)/50)*50)))
- await Promise.all(offsets.map(async offset => {
-  if (pending.has(offset) || active.get(offset)) return
-  pending.add(offset)
-  try {
-   const page = await active.load({offset})
-   if (token !== generation || destroyed) return
-   update(); if (page.notice) { notice.value = page.notice; const anchor = lastAnchor; if (anchor) await list.value?.restoreAnchor({...anchor,index:page.located?.index ?? anchor.index}) }
-  } catch (reason) { if (token === generation && !(reason instanceof DOMException && reason.name === 'AbortError')) error.value = reason instanceof Error ? reason.message : '部分题目加载失败' }
-  finally { if (token === generation) pending.delete(offset) }
- }))
+function loadRange(first: number, last: number, visible = first) {
+ if (!session.value || loading.value) return
+ rangeLoader.schedule(first, last, visible)
 }
 async function go() {
  const n = Number(jump.value)
@@ -91,9 +96,9 @@ function changed() { save(); void start(true) }
 function returnToList() { save(); void router.push(context.value?.returnTo ?? '/practice') }
 onBeforeRouteLeave(save)
 watch(() => route.query.list, () => { save(); lastAnchor = null; session.value?.abort(); void start() })
-watch(accountPreferences.userId, owner => { if (owner === initialOwner) return; generation++; session.value?.abort(); session.value = null; pipeline.dispose(); count.value = 0; loading.value = false; error.value = '账号已变化，请返回题单重新打开预览。' })
+watch(accountPreferences.userId, owner => { if (owner === initialOwner) return; generation++; rangeLoader.dispose(); session.value?.abort(); session.value = null; pipeline.dispose(); count.value = 0; loading.value = false; error.value = '账号已变化，请返回题单重新打开预览。' })
 onMounted(() => { void start(true); window.addEventListener('drill:question-state-changed', changed) })
-onBeforeUnmount(() => { save(); destroyed = true; generation++; session.value?.abort(); pipeline.dispose(); window.removeEventListener('drill:question-state-changed', changed) })
+onBeforeUnmount(() => { save(); destroyed = true; generation++; rangeLoader.dispose(); session.value?.abort(); pipeline.dispose(); window.removeEventListener('drill:question-state-changed', changed) })
 </script>
 <template>
  <section class="collection-preview" :data-cached-metadata="session?.cachedCount ?? 0">

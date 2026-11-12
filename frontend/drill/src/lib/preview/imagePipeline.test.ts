@@ -54,3 +54,14 @@ describe('preview-only media admission',()=>{
   expect(states.at(-1)?.status).toBe('error');h.retry();expect(fetches).toHaveLength(2);h.release();await tick();p.dispose()
  })
 })
+
+it('lets a newly visible scan preempt a distant prefetch after a scrollbar jump',async()=>{
+ const p=createPreviewImagePipeline({fetch:fakeFetch as typeof fetch,maxFetch:2})
+ const a=p.request(asset(1),()=>{},2),b=p.request(asset(2),()=>{},2)
+ const visible=p.request(asset(99),()=>{},0)
+ expect(fetches.some(f=>f.signal.aborted)).toBe(true)
+ await tick()
+ expect(fakeFetch.mock.calls.at(-1)?.[0]).toBe('/asset/99')
+ expect(p.stats().fetching).toBeLessThanOrEqual(2)
+ a.release();b.release();visible.release();await tick();p.dispose()
+})

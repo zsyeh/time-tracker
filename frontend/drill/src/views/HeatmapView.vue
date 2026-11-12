@@ -372,9 +372,8 @@ onUnmounted(() => {
 <template>
   <section :class="{ 'exam-type-colours': formatColours }" class="page heatmap-page">
     <header class="page-header">
-      <div><h1>{{ props.coreOnly ? uiText("五科核心题热力图") : props.selectedOnly ? t('selectedHeatmap') : t('coverageByBook') }}</h1></div>
+      <div class="heatmap-heading"><h1>{{ props.coreOnly ? uiText("五科核心题热力图") : props.selectedOnly ? t('selectedHeatmap') : t('coverageByBook') }}</h1><button class="heatmap-preview" type="button" :disabled="loading || !data?.question_count" @click="openGlobalPreview">{{ uiText("全局预览") }}</button></div>
       <div class="heat-controls">
-        <button type="button" :disabled="loading || !data?.question_count" @click="openGlobalPreview">{{ uiText("全局预览") }}</button>
         <div v-if="!props.selectedOnly" class="heat-mode"><button type="button" :aria-pressed="mode === 'topics'" :class="{ active: mode === 'topics' }" @click="mode = 'topics'">{{ typeText('考点', 'Topics') }}</button><button type="button" :aria-pressed="mode === 'questions'" :class="{ active: mode === 'questions' }" @click="mode = 'questions'">{{ typeText('题目', 'Questions') }}</button></div>
         <div class="heat-scope"><button :class="{ active: scope === 'all' }" @click="scope = 'all'">{{ uiText('全部') }}</button><button :class="{ active: scope === 'past_exam' }" @click="scope = 'past_exam'">{{ typeText('历年题', 'Past exams') }}</button><button :class="{ active: scope === 'mock_exam' }" @click="scope = 'mock_exam'">{{ typeText('模拟题', 'Mock exams') }}</button></div>
         <div class="heat-legend" :aria-label="typeText('题目状态图例', 'Question status legend')"><i class="status-unattempted" /><span>{{ uiText('未做') }}</span><template v-if="mode === 'topics'"><i class="status-progress"></i><span>{{ typeText('进行中', 'In progress') }}</span></template><i class="status-mastered"></i><span>{{ uiText('已掌握') }}</span><i class="status-review"></i><span>{{ uiText('待复习') }}</span><i class="status-overdue"></i><span>{{ uiText('逾期') }}</span></div>
@@ -471,6 +470,13 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
+.heatmap-page > .page-header { align-items: stretch; flex-direction: column; gap: 8px; margin-bottom: 8px; }
+.heatmap-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; min-width: 0; }
+.heatmap-heading h1 { min-width: 0; }
+.heatmap-preview { flex: none; min-height: 44px; padding: 4px 12px; border: 0; border-radius: var(--radius-sm); background: var(--surface-subtle); color: var(--text-primary); font: inherit; white-space: nowrap; cursor: pointer; }
+.heatmap-preview:hover:not(:disabled) { background: var(--surface-hover); }
+.heatmap-preview:disabled { opacity: .5; cursor: default; }
+
 .heatmap-page { font-variant-numeric: tabular-nums; }
 .heatmap-page .page-header { margin-bottom: 8px; align-items: flex-start; }
 .heatmap-page .page-header h1 { margin: 0; font-size: 24px; line-height: 1.25; font-weight: 650; }

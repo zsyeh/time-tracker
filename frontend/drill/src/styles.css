@@ -8,9 +8,10 @@ button { color: inherit; }
 :where(button, a, input, select, textarea, [tabindex]):focus-visible { outline: 2px solid var(--accent-focus); outline-offset: 2px; }
 .drill-shell { min-height:100vh; display:flex; }
 .drill-shell > main { flex:1; min-width:0; }
-.workspace-title { color:var(--text-primary);font-size:15px;font-weight:600;text-decoration:none; }
+.workspace-title { color:var(--text-primary);font-size:15px;font-weight:600;text-decoration:none;border:0;box-shadow:none; }
+.workspace-title:focus-visible, .workspace-links a:focus-visible { outline:2px solid var(--text-secondary);outline-offset:2px; }
 .workspace-links { display:flex;gap:4px;padding:0 4px 16px; }
-.workspace-links a { flex:1;min-height:36px;padding:8px 4px;border-radius:6px;text-align:center;text-decoration:none;color:var(--text-secondary);font-size:13px; }
+.workspace-links a { flex:1;min-height:36px;padding:8px 4px;border-radius:6px;text-align:center;text-decoration:none;color:var(--text-secondary);font-size:13px;border:0;box-shadow:none;white-space:nowrap; }
 .workspace-links a:hover, .workspace-links a[aria-current=page] { background:var(--surface-selected);color:var(--text-primary); }
 .primary-navigation { display:grid;gap:2px; }
 .more-tools-trigger { display:flex;align-items:center;gap:8px;width:100%;min-height:36px;margin-top:16px;padding:8px 10px;border:0;border-radius:6px;background:transparent;color:var(--text-secondary);font-size:14px;cursor:pointer; }

@@ -56,6 +56,11 @@ export function createPreviewImagePipeline(options: { fetch?: typeof fetch; user
   const fetched=[...entries.values()].filter(e=>e.phase==='fetching'&&e.blob).sort((a,b)=>priority(a)-priority(b))
   for(const entry of fetched){if(decoding>=maxDecode)break;decode(entry)}
   const waiting=[...entries.values()].filter(e=>e.phase==='waiting'&&e.subscribers.size).sort((a,b)=>priority(a)-priority(b)||a.serial-b.serial)
+  // A fast scrollbar jump must not queue the visible scan behind distant prefetches.
+  if(fetching>=maxFetch&&waiting.some(e=>priority(e)===0)){
+   const victim=[...entries.values()].filter(e=>e.phase==='fetching'&&!e.blob&&priority(e)>0&&!e.controller?.signal.aborted).sort((a,b)=>priority(b)-priority(a))[0]
+   if(victim)evict(victim)
+  }
   for(const entry of waiting){if(fetching>=maxFetch)break;if(admit(entry))begin(entry)}
  }
  function request(asset:PreviewImageAsset, listener:(state:PreviewImageState)=>void, initialPriority=2):PreviewImageHandle{
