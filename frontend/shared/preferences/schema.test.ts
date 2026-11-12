@@ -121,3 +121,8 @@ describe('account preferences boundary validation', () => {
     expect(validSnapshot(cyclic)).toBe(false)
   })
 })
+
+it('validates finite custom copy scales without coercing booleans or strings',()=>{
+ for(const n of [1,2,3,4,1.5,8])expect(validPreference('practice.image_copy_scale',n)).toBe(true)
+ for(const bad of [true,'2',0,-1,8.1,NaN,Infinity,null])expect(validPreference('practice.image_copy_scale',bad)).toBe(false)
+})

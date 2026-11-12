@@ -278,7 +278,8 @@ const pageTurnCopyMessage = ref('')
 const pageTurnCopyFailed = ref(false)
 const clipboardImage = ref<Blob | null>(null)
 const actionFeedback = ref('')
-const { nextMode, pageTurnCopyMode, reviewAutoNext, masteredAutoNext } = usePracticePreferences()
+const { nextMode, pageTurnCopyMode, reviewAutoNext, masteredAutoNext, imageCopyScale } = usePracticePreferences()
+watch([() => props.uuid, imageCopyScale], () => { clipboardImage.value = null; imageCopyState.value = 'idle'; imageCopyMessage.value = '' }, { flush: 'sync' })
 const autoCopyLink = computed({
   get: () => pageTurnCopyMode.value === 'link',
   set: (enabled: boolean) => { pageTurnCopyMode.value = enabled ? 'link' : 'off' },
@@ -341,11 +342,12 @@ function startPageTurnCopy(target: Promise<string>): boolean {
     const urls = target.then((uuid) => fetchQuestion(uuid, query, true)).then((loaded) =>
       questionAssets(loaded).map((asset) => withWorkspacePrefix(asset.url)))
     void urls.catch(() => { /* Clipboard API may reject before awaiting URLs. */ })
-    void copyImagesToClipboard(urls).then((result) => {
+    void copyImagesToClipboard(urls, imageCopyScale.value).then((result) => {
       if (sequence !== pageTurnCopySequence) return
       pageTurnCopyMessage.value = result.combined
         ? '当前题的多张题图已拼接并自动复制 ✓'
         : '当前题题图已自动复制 ✓'
+      if(result.limited)pageTurnCopyMessage.value += ` ${uiText('图片较大，已限制输出尺寸。')}`
     }).catch((reason) => {
       if (sequence !== pageTurnCopySequence) return
       pageTurnCopyFailed.value = true
@@ -406,40 +408,56 @@ function questionImageUrls() {
 
 async function copyQuestionImages() {
   if (!question.value || imageCopyState.value === 'copying') return
+  const uuid = props.uuid, scale = imageCopyScale.value, urls = questionImageUrls()
+  const current = () => props.uuid === uuid && imageCopyScale.value === scale
   imageCopyState.value = 'copying'
   imageCopyMessage.value = ''
   clipboardImage.value = null
   try {
-    const result = await copyImagesToClipboard(questionImageUrls())
+    const result = await copyImagesToClipboard(urls, scale)
+    if (!current()) return
     clipboardImage.value = result.blob
     imageCopyState.value = 'copied'
     imageCopyMessage.value = result.combined ? '多张题图已纵向拼接并复制 ✓' : '已复制题图 ✓'
-    window.setTimeout(() => { if (imageCopyState.value === 'copied') imageCopyState.value = 'idle' }, 2600)
+    if(result.limited)imageCopyMessage.value += ` ${uiText('图片较大，已限制输出尺寸。')}`
+    window.setTimeout(() => { if (current() && imageCopyState.value === 'copied') imageCopyState.value = 'idle' }, 2600)
   } catch (reason) {
+    if (!current()) return
     try {
-      clipboardImage.value = (await buildClipboardPng(questionImageUrls())).blob
+      const result = await buildClipboardPng(urls, scale)
+      if (!current()) return
+      clipboardImage.value = result.blob
     } catch { /* Original download remains available below. */ }
+    if (!current()) return
     imageCopyState.value = 'fallback'
     imageCopyMessage.value = (reason as Error).message
   }
 }
 
 async function shareQuestionImage() {
+  const uuid = props.uuid, scale = imageCopyScale.value, urls = questionImageUrls(), filename = questionImageFilename()
+  const current = () => props.uuid === uuid && imageCopyScale.value === scale
   try {
-    const blob = clipboardImage.value || (await buildClipboardPng(questionImageUrls())).blob
+    const blob = clipboardImage.value || (await buildClipboardPng(urls, scale)).blob
+    if (!current()) return
     clipboardImage.value = blob
-    await shareImageBlob(blob, questionImageFilename())
+    await shareImageBlob(blob, filename)
   } catch (reason) {
+    if (!current()) return
     imageCopyMessage.value = (reason as Error).message
   }
 }
 
 async function downloadQuestionImage() {
+  const uuid = props.uuid, scale = imageCopyScale.value, urls = questionImageUrls(), filename = questionImageFilename()
+  const current = () => props.uuid === uuid && imageCopyScale.value === scale
   try {
-    const blob = clipboardImage.value || (await buildClipboardPng(questionImageUrls())).blob
+    const blob = clipboardImage.value || (await buildClipboardPng(urls, scale)).blob
+    if (!current()) return
     clipboardImage.value = blob
-    downloadImageBlob(blob, questionImageFilename())
+    downloadImageBlob(blob, filename)
   } catch (reason) {
+    if (!current()) return
     imageCopyMessage.value = (reason as Error).message
     if (question.value) downloadAssets('question', questionAssets(question.value))
   }

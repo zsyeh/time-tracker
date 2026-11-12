@@ -1,0 +1,86 @@
+{
+  "engines": [
+    {
+      "engine": "chromium",
+      "pass": true,
+      "rows": [
+        {
+          "scale": 1,
+          "width": 320,
+          "height": 180,
+          "limited": false
+        },
+        {
+          "scale": 2,
+          "width": 640,
+          "height": 360,
+          "limited": false
+        },
+        {
+          "scale": 3,
+          "width": 960,
+          "height": 540,
+          "limited": false
+        },
+        {
+          "scale": 4,
+          "width": 1280,
+          "height": 720,
+          "limited": false
+        },
+        {
+          "scale": 1.5,
+          "width": 480,
+          "height": 270,
+          "limited": false
+        }
+      ],
+      "stacked": [
+        960,
+        1080
+      ]
+    },
+    {
+      "engine": "webkit",
+      "pass": true,
+      "rows": [
+        {
+          "scale": 1,
+          "width": 320,
+          "height": 180,
+          "limited": false
+        },
+        {
+          "scale": 2,
+          "width": 640,
+          "height": 360,
+          "limited": false
+        },
+        {
+          "scale": 3,
+          "width": 960,
+          "height": 540,
+          "limited": false
+        },
+        {
+          "scale": 4,
+          "width": 1280,
+          "height": 720,
+          "limited": false
+        },
+        {
+          "scale": 1.5,
+          "width": 480,
+          "height": 270,
+          "limited": false
+        }
+      ],
+      "stacked": [
+        960,
+        1080
+      ]
+    }
+  ],
+  "real_png_decode": true,
+  "clipboard_os_tested": false
+}

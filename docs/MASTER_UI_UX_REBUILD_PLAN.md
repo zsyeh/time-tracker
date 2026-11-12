@@ -1576,3 +1576,10 @@ R2-01先基线/复现 → R2-02搜索及题目 → R2-03热力图性能与旧视
 | SYNC-04 | 实现并上线 | 防抖/超时/离线重试、CSRF/affinity、旧缓存升级；不阻塞计时/作答 |
 
 最终硬件/PWA项目继续未完成，整体不得宣称用户20项均已通过。风险、回滚命令、全部文件、提交与实测详情见完整报告；后续Agent从这些未关闭项继续，禁止重新覆盖原学习数据或统计口径。
+
+
+## 33. 复制题图倍率预设（COPY-01，2026-11-13）
+
+用户增量：设置2×并支持自定义3×/4×等倍率，保存预设。实现为1×/2×/3×/4×快捷选择、自定义1–8有限数值（允许小数），当前倍率账号持久化/跨设备同步，不是设备独立localStorage。新字段`practice.image_copy_scale`默认1，Drill/EI共用，schema1新增字段无需DB迁移。手动复制、翻题自动复制及失败后的PNG分享/下载使用相同倍率；原始题图/学习数据保持原样。1×单PNG原字节保留；放大仅重采样，不增加真实图像细节，接收App仍可自动缩放。放大导出画布16Mi像素上限/8192宽/16384高保持比例，超限提示，不裁剪。
+
+源文件：`frontend/drill/src/components/ImageCopyScaleSetting.vue`、`lib/imageClipboard.ts`、`lib/practicePreferences.ts`、`views/SettingsView.vue`/`QuestionView.vue`、共享preferences schema/store、`tracker/user_preferences.py`及测试。旧16/14字段缓存补默认但保留离线队列；同字段冲突与账号隔离复用既有CAS。测试/实测/部署状态记录于[倍率交付](image-copy-scale/README.md)。原R01–R16和Round2矩阵不重写；原生Safari系统剪贴板/目标App粘贴显示尺寸未经实机验证不得勾选。

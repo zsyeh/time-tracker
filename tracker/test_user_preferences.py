@@ -371,6 +371,22 @@ class UserPreferencesAPITests(TestCase):
         self.assertEqual(row.values['future.safe'], 'keep')
         self.assertEqual(row.field_revisions['future.safe'], 1)
 
+    def test_custom_image_copy_scale_sync_is_account_bound_and_validated(self):
+        legacy = preference_defaults()
+        legacy.pop('practice.image_copy_scale')
+        UserPreferences.objects.create(user=self.user, values=legacy)
+        self.assertEqual(self.client.get(URL).data['values']['practice.image_copy_scale'], 1)
+        second = APIClient(); second.force_authenticate(self.user)
+        changed = self.change({'practice.image_copy_scale': 3.5})
+        self.assertEqual(changed.status_code, 200)
+        self.assertEqual(second.get(URL).data['values']['practice.image_copy_scale'], 3.5)
+        self.assertEqual(second.patch(URL, payload({'practice.image_copy_scale': 4}), format='json').status_code, 409)
+        for bad in (True, '2', 0, -1, 8.01, None, 10 ** 1000):
+            self.assertEqual(self.change({'practice.image_copy_scale': bad}, {'practice.image_copy_scale': 1}).status_code, 400)
+        second.force_authenticate(self.other)
+        self.assertEqual(second.get(URL).data['values']['practice.image_copy_scale'], 1)
+        self.assertEqual(self.change({'accent': 'green'}).data['values']['practice.image_copy_scale'], 3.5)
+
     def test_existing_shared_and_workspace_practice_semantics(self):
         response = self.change({'practice.next_mode': 'review', 'practice.review_auto_next': True,
                                 'practice.mastered_auto_next': False, 'practice.ei.copy_mode': 'link'})

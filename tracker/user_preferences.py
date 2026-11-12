@@ -5,6 +5,7 @@ GET/HTML reads do not create rows. The global CAS closes the read/merge/write
 race on PostgreSQL and SQLite; field revisions avoid unrelated-setting conflicts.
 """
 import json
+import math
 import re
 from copy import deepcopy
 from datetime import date
@@ -80,6 +81,7 @@ def preference_defaults():
         'practice.next_mode': 'sequential', 'practice.review_auto_next': False,
         'practice.mastered_auto_next': True,
         'practice.drill.copy_mode': 'off', 'practice.ei.copy_mode': 'off',
+        'practice.image_copy_scale': 1,
         'filters.drill': [], 'filters.ei': [],
         'progress.drill': {'target': 24, 'deadline': '2026-11-21'},
         'progress.ei': {'target': 11, 'deadline': '2026-11-21'},
@@ -183,6 +185,10 @@ def _goal_settings(value, key):
 
 
 def _value(key, value):
+    if key == 'practice.image_copy_scale':
+        if type(value) not in (int, float) or not 1 <= value <= 8 or not math.isfinite(value):
+            _invalid('Image copy scale must be a finite number from 1 to 8.', key)
+        return value
     if key in ENUM_FIELDS:
         if not isinstance(value, str) or value not in ENUM_FIELDS[key]:
             _invalid('Unknown preference value.', key)

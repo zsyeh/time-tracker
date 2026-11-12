@@ -15,6 +15,7 @@ export type PreferenceValues = {
   'sidebar.timer': SidebarConfig; 'sidebar.drill': SidebarConfig; 'sidebar.ei': SidebarConfig
   'filters.drill': FilterPreset[]; 'filters.ei': FilterPreset[]
   'progress.drill': GoalSettings; 'progress.ei': GoalSettings
+  'practice.image_copy_scale': number
   'practice.next_mode': 'sequential'|'overdue'|'review'|'unattempted'
   'practice.review_auto_next': boolean; 'practice.mastered_auto_next': boolean
   'practice.drill.copy_mode': 'off'|'link'|'image'; 'practice.ei.copy_mode': 'off'|'link'|'image'
@@ -28,7 +29,7 @@ export function defaultSidebar(workspace: Workspace): SidebarConfig {
 export function preferenceDefaults(): PreferenceValues {
   return { appearance:'system', accent:'blue', font:'small', language:'en',
     'sidebar.timer':defaultSidebar('timer'),'sidebar.drill':defaultSidebar('drill'),'sidebar.ei':defaultSidebar('ei'),
-    'filters.drill':[],'filters.ei':[],'practice.next_mode':'sequential','practice.review_auto_next':false,'practice.mastered_auto_next':true,
+    'practice.image_copy_scale':1,'filters.drill':[],'filters.ei':[],'practice.next_mode':'sequential','practice.review_auto_next':false,'practice.mastered_auto_next':true,
     'practice.drill.copy_mode':'off','practice.ei.copy_mode':'off',
     'progress.drill':{ target:24, deadline:'2026-11-21' }, 'progress.ei':{ target:11, deadline:'2026-11-21' } }
 }
@@ -134,6 +135,7 @@ function validGoalSettings(value: unknown): value is GoalSettings {
 /** Validate both server snapshots and queued/offline values before they reach render. */
 export function validPreference(key: string, value: unknown): boolean {
   if (own(preferenceEnums, key)) return typeof value === 'string' && preferenceEnums[key as PreferenceKey]!.includes(value)
+  if (key === 'practice.image_copy_scale') return typeof value === 'number' && Number.isFinite(value) && value >= 1 && value <= 8
   if (key === 'practice.review_auto_next' || key === 'practice.mastered_auto_next') return typeof value === 'boolean'
   if (key === 'sidebar.timer' || key === 'sidebar.drill' || key === 'sidebar.ei') return validSidebar(value, key.slice(8) as Workspace)
   if (key === 'filters.drill' || key === 'filters.ei') return validPresets(value, key.slice(8) as 'drill' | 'ei')

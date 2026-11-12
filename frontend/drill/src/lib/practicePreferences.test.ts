@@ -16,3 +16,8 @@ it('isolates workspace copying and requires explicit import of unowned legacy pr
 it('keeps core preferences usable when browser storage is denied',async()=>{
  vi.spyOn(Storage.prototype,'getItem').mockImplementation(()=>{throw Error('denied')});vi.spyOn(Storage.prototype,'setItem').mockImplementation(()=>{throw Error('denied')});await setup();const {usePracticePreferences}=await import('./practicePreferences');const prefs=usePracticePreferences('ei');expect(()=>{prefs.pageTurnCopyMode.value='image';prefs.masteredAutoNext.value=false}).not.toThrow();expect(prefs.pageTurnCopyMode.value).toBe('image')
 })
+it('shares the account saved copy scale across Drill and EI',async()=>{
+ const store=await setup();const {usePracticePreferences}=await import('./practicePreferences');const drill=usePracticePreferences('drill'),ei=usePracticePreferences('ei')
+ expect(drill.imageCopyScale.value).toBe(1);drill.imageCopyScale.value=3.5
+ expect(ei.imageCopyScale.value).toBe(3.5);expect(store.values['practice.image_copy_scale']).toBe(3.5)
+})

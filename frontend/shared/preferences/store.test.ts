@@ -266,7 +266,7 @@ it('does not discard the account or optimistic retry queue for an ordinary CSRF/
 
 it('upgrades a 14-field account cache without losing an offline pending edit', async () => {
   const old = copy(snapshot()) as any
-  delete old.values['progress.drill']; delete old.values['progress.ei']
+  delete old.values['progress.drill']; delete old.values['progress.ei']; delete old.values['practice.image_copy_scale']
   localStorage.setItem('learning.preferences.v1.account-a', JSON.stringify({ snapshot: old,
     pending: { font: { value: 'large', base: 0, serial: 42 } } }))
   const remote = server(), store = factory(remote.transport)
@@ -287,4 +287,12 @@ it.each(['invalid-goal','missing-old-field'])('does not accept a corrupt cache d
     pending: { font: { value: 'large', base: 0, serial: 42 } } }))
   const store = factory(server().transport); await store.bind('account-a', snapshot())
   expect(store.values.font).toBe('small'); expect(store.pendingCount.value).toBe(0)
+})
+
+it('adds a missing copy scale to a previous 16-field cache and keeps its queued edit', async()=>{
+ const old=copy(snapshot()) as any;delete old.values['practice.image_copy_scale']
+ localStorage.setItem('learning.preferences.v1.account-a',JSON.stringify({snapshot:old,pending:{font:{value:'large',base:0,serial:8}}}))
+ const remote=server(),store=factory(remote.transport);await store.bind('account-a',snapshot())
+ expect(store.values['practice.image_copy_scale']).toBe(1);expect(store.values.font).toBe('large')
+ await store.flush();expect(remote.read().values.font).toBe('large')
 })

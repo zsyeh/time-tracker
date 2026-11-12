@@ -1,0 +1,83 @@
+
+> personal-learning-os@3.0.0 test
+> vitest run
+
+
+ RUN  v3.2.6 /work/frontend
+
+ ✓ drill/src/lib/practicePreferences.test.ts (4 tests) 1057ms
+   ✓ shares server-backed live preferences between Settings and Question routes  836ms
+ ✓ drill/src/App.test.ts (5 tests) 447ms
+ ✓ drill/src/views/InsightView.test.ts (10 tests) 774ms
+ ✓ drill/src/views/HeatmapView.test.ts (11 tests) 976ms
+ ✓ drill/src/components/PracticeTrendPanel.test.ts (15 tests) 1175ms
+ ✓ drill/src/views/PracticeView.test.ts (10 tests) 1990ms
+   ✓ does not let an old response replace the current query during debounce  332ms
+   ✓ cancels a scheduled old-result prefetch as soon as the search draft changes  455ms
+   ✓ applying a saved query discards a pending input draft even when the applied keyword is unchanged  448ms
+ ✓ drill/src/views/SettingsView.test.ts (2 tests) 257ms
+ ✓ drill/src/components/FullscreenReader.test.ts (6 tests) 273ms
+ ✓ src/views/SettingsView.test.ts (5 tests) 2318ms
+   ✓ uses one independent panel per section without scrolling or changing business state  1066ms
+   ✓ keeps unsaved form values and the same mounted controls across section changes  386ms
+   ✓ maps legacy hashes to the correct panel and lets an explicit section win  356ms
+   ✓ keeps instance controls unavailable to ordinary accounts even through a deep link  322ms
+ ✓ drill/src/composables/usePracticeQuery.test.ts (5 tests) 202ms
+ ✓ drill/src/views/QuestionDiagnosis.test.ts (5 tests) 222ms
+ ✓ drill/src/views/SelectedCollections.test.ts (5 tests) 634ms
+   ✓ circuit keeps the collection filters, source order, labeled/matrix modes and direct start  310ms
+ ✓ src/views/TrendsView.test.ts (1 test) 175ms
+ ✓ drill/src/components/PdfPageStatusPanel.test.ts (1 test) 209ms
+ ✓ drill/src/components/DiagnosisSelector.test.ts (2 tests) 148ms
+ ✓ drill/src/components/ExamTypeEditor.test.ts (7 tests) 200ms
+ ✓ shared/preferences/store.test.ts (24 tests) 386ms
+ ✓ src/lib/learningRecovery.test.ts (9 tests) 193ms
+ ✓ drill/src/components/LearningSharePanel.test.ts (1 test) 173ms
+ ✓ src/components/GlobalSearch.test.ts (2 tests) 172ms
+ ✓ drill/src/components/ReaderPracticeActions.test.ts (4 tests) 131ms
+ ✓ src/lib/markdown.test.ts (2 tests) 167ms
+ ✓ drill/src/components/NoteVisibility.test.ts (4 tests) 114ms
+ ✓ drill/src/views/EiCockpitView.test.ts (1 test) 92ms
+ ✓ drill/src/components/PracticeFilterPanel.test.ts (1 test) 121ms
+ ✓ src/lib/foregroundTimer.test.ts (14 tests) 84ms
+ ✓ drill/src/components/OriginalAnswer.test.ts (2 tests) 127ms
+ ✓ drill/src/lib/chartTheme.test.ts (1 test) 111ms
+ ✓ shared/appearance/resolve.test.ts (23 tests) 155ms
+ ✓ drill/src/lib/workspaceReliability.test.ts (4 tests) 23ms
+ ✓ drill/src/views/QuestionRecord.test.ts (11 tests) 55ms
+ ✓ drill/src/components/PracticeActionToolbar.test.ts (1 test) 83ms
+ ✓ drill/src/lib/workspaceNavigation.test.ts (3 tests) 14ms
+ ✓ drill/src/lib/workspaceMedia.test.ts (2 tests) 27ms
+ ✓ drill/src/lib/share.test.ts (1 test) 48ms
+ ✓ drill/src/lib/workspaceScope.test.ts (5 tests) 20ms
+ ✓ src/math-visualizer/core/numerics.test.ts (6 tests) 17ms
+ ✓ shared/preferences/legacy.test.ts (2 tests) 9ms
+ ✓ shared/search/queryState.test.ts (4 tests) 25ms
+ ✓ drill/src/lib/apiIsolation.test.ts (2 tests) 15ms
+ ✓ drill/src/lib/runtimePath.test.ts (4 tests) 9ms
+ ✓ shared/preferences/schema.test.ts (12 tests) 35ms
+ ✓ src/routes.test.ts (10 tests) 20ms
+ ✓ drill/src/lib/imageClipboard.test.ts (10 tests) 39ms
+ ✓ build/fontScalePlugin.test.ts (1 test) 12ms
+ ✓ drill/src/components/ImageCopyScaleSetting.test.ts (1 test) 62ms
+ ✓ src/math-visualizer/core/formulaRouter.test.ts (8 tests) 26ms
+ ✓ src/lib/heatmap.test.ts (9 tests) 8ms
+ ✓ src/math-visualizer/core/fft.test.ts (2 tests) 11ms
+ ✓ drill/src/lib/heatmapProgress.test.ts (5 tests) 14ms
+ ✓ drill/src/lib/questionNavigation.test.ts (10 tests) 9ms
+ ✓ shared/design/tokens.test.mjs (1 test) 7ms
+ ✓ drill/src/lib/circuitSelected.test.ts (2 tests) 7ms
+ ✓ drill/src/lib/communicationSelected.test.ts (2 tests) 6ms
+ ✓ drill/src/lib/digitalSelected.test.ts (2 tests) 13ms
+ ✓ drill/src/lib/learningSharePrompt.test.ts (3 tests) 9ms
+ ✓ drill/src/lib/sourcePractice.test.ts (5 tests) 6ms
+ ✓ src/lib/subjectStats.test.ts (1 test) 7ms
+ ✓ drill/src/lib/analogSelected.test.ts (2 tests) 12ms
+ ✓ drill/src/lib/signalSelected.test.ts (2 tests) 8ms
+ ✓ src/math-visualizer/core/MathEngine.test.ts (4 tests) 14ms
+ ✓ src/elementComponents.test.ts (1 test) 3ms
+
+ Test Files  62 passed (62)
+      Tests  320 passed (320)
+   Start at  15:58:34
+   Duration  14.53s (transform 6.46s, setup 0ms, collect 22.72s, tests 13.75s, environment 33.35s, prepare 9.61s)
