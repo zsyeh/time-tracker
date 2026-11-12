@@ -1,0 +1,118 @@
+{
+  "kind": "final-sql-quality-equivalence-review",
+  "at_utc": "2026-11-12T12:30:45.757807+00:00",
+  "previous": "search-real-quality-fixed.json",
+  "final": "search-real-quality-final-sql.json",
+  "qrels_sha256_unchanged": "b40e28b296914e719048d4139d2b7ca78155b594dfa25d409b237df7a08c3f7b",
+  "queries_checked": 82,
+  "same_index_states": true,
+  "all_status_count_top24_metrics_equal": true,
+  "differences": [],
+  "formula_rank_checks": [
+    {
+      "id": "REAL-Q34",
+      "q": "\\delta(t-t_0)",
+      "count": 1,
+      "rank": 1,
+      "uuid": "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e",
+      "passed": true
+    },
+    {
+      "id": "REAL-Q35",
+      "q": "\\frac{1}{1+s/\\omega_p}",
+      "count": 1,
+      "rank": 1,
+      "uuid": "7bf3178b-610d-5336-bbf1-54f6f1a265da",
+      "passed": true
+    }
+  ],
+  "final_summary": {
+    "legacy": {
+      "queries": 41,
+      "errors": [],
+      "relevance_queries": 35,
+      "macro_known_relevant_recall_at_20": 0.41904761904761906,
+      "macro_mrr_at_20": 0.36926406926406924,
+      "known_relevant_hit_at_20_queries": 15,
+      "macro_judged_coverage_at_10_nonempty_results": 0.48541666666666666,
+      "known_target_miss_queries": [
+        "REAL-Q01",
+        "REAL-Q06",
+        "REAL-Q08",
+        "REAL-Q09",
+        "REAL-Q11",
+        "REAL-Q12",
+        "REAL-Q13",
+        "REAL-Q14",
+        "REAL-Q17",
+        "REAL-Q18",
+        "REAL-Q19",
+        "REAL-Q21",
+        "REAL-Q22",
+        "REAL-Q24",
+        "REAL-Q25",
+        "REAL-Q29",
+        "REAL-Q30",
+        "REAL-Q31",
+        "REAL-Q32",
+        "REAL-Q33"
+      ],
+      "explicit_grade0_at_10_queries": [
+        "REAL-Q01",
+        "REAL-Q23"
+      ],
+      "expected_empty_passed": 5,
+      "expected_empty_total": 5,
+      "browse_passed": true
+    },
+    "hybrid_v1": {
+      "queries": 41,
+      "errors": [],
+      "relevance_queries": 35,
+      "macro_known_relevant_recall_at_20": 0.7428571428571429,
+      "macro_mrr_at_20": 0.7,
+      "known_relevant_hit_at_20_queries": 26,
+      "macro_judged_coverage_at_10_nonempty_results": 0.3980952380952381,
+      "known_target_miss_queries": [
+        "REAL-Q01",
+        "REAL-Q02",
+        "REAL-Q03",
+        "REAL-Q04",
+        "REAL-Q06",
+        "REAL-Q25",
+        "REAL-Q30",
+        "REAL-Q32",
+        "REAL-Q33"
+      ],
+      "explicit_grade0_at_10_queries": [
+        "REAL-Q23"
+      ],
+      "expected_empty_passed": 5,
+      "expected_empty_total": 5,
+      "browse_passed": true
+    }
+  },
+  "limitations": [
+    "Sparse development qrels, not independent user holdout or exhaustive full-corpus recall.",
+    "One sequential service call per backend/query, no HTTP latency or load-performance claim.",
+    "Previously documented short 波特 ambiguity and metadata-only ranking limitations remain."
+  ],
+  "code_hash_changes": {
+    "drill/search/query.py": {
+      "before": "0c5f6e3ea9f6353f4b901124547a4cb660bfc692bdee708d98ffc427fa586635",
+      "after": "ce12e1ebc26f65450478cc9c9339acbe10050719d4cc4c28ac3d5ff47a3350f6"
+    },
+    "drill/search/postgres.py": {
+      "before": "70f7c05feb37d961e76d2a2d658fe1d996c737badf946dc35fa85d086a17e8d6",
+      "after": "50229196663705f6297f2ca94378e4df404b0025277de603bd5f4cc752107128"
+    },
+    "drill/search/service.py": {
+      "before": "51f5c06f0f5249dfccf622d269bcfd48778ef26ec7df60c7a273ae74b9fc2f90",
+      "after": "a8839facde634ecce0c0cdcb0fc77fb91f2be72fac2ea5a4cfbadedc165dc199"
+    },
+    "drill/search/private.py": {
+      "before": "c1d6ed595ed306efca908dc4216fd4ae23488f6030b759b02f99fea43d436a8a",
+      "after": "75d3de2e176aebb32688036792588ef8fd373a2082e26b9f7b287b28e5e7e5d6"
+    }
+  }
+}

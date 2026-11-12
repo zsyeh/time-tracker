@@ -54,7 +54,11 @@ def main():
         values=sorted(row['ms'] for row in samples)
         rows.append({'id':query['id'],'median_ms':statistics.median(values),
             'p95_ms':values[math.ceil(.95*len(values))-1],'p99_ms':values[math.ceil(.99*len(values))-1],
-            'count':samples[-1]['count'],'top20':samples[-1]['top20'],'statuses':[s['status'] for s in samples]})
+            'max_ms':values[-1],
+            'count':samples[-1]['count'],'top20':samples[-1]['top20'],'statuses':[s['status'] for s in samples],
+            'samples_ms':[s['ms'] for s in samples],
+            'index_versions':sorted({s['index_version'] for s in samples if s.get('index_version')}),
+            'counts':sorted({s['count'] for s in samples if s.get('count') is not None})})
     target=Path(args.output);target.parent.mkdir(parents=True,exist_ok=True)
     fd=os.open(target,os.O_WRONLY|os.O_CREAT|os.O_TRUNC,0o600)
     with os.fdopen(fd,'w') as file:

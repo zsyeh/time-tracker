@@ -1,0 +1,2035 @@
+{
+  "schema_version": 1,
+  "corpus": "real-public-metadata-2026-11-12",
+  "source_sha256": "dec38a454ca2734ba5486a44e2219182435e138f58042aae01a834942903ff3d",
+  "source_counts": {
+    "questiondocument": 23,
+    "questiontopic": 1458,
+    "question": 9281,
+    "questionexamtype": 8635
+  },
+  "created_by": "repository-audit agent; manually reviewed public source metadata candidates",
+  "annotation_status": "development judgments, not external user annotation, not blind holdout, not independently adjudicated",
+  "privacy": "Only public question UUIDs, minimal public labels/topic/book/prompt excerpts. No Attempts, Notes, answers, users, credentials or full corpus export.",
+  "selection_method": "Representative user-requested terms; inspect literal source candidates and concept-equivalent Chinese terms independently of actual search-engine result order; manually select positives and realistic nearby negatives.",
+  "grades": {
+    "3": "Direct requested concept, exact identifier, or exact requested book member; aliases judged semantically, not by engine support.",
+    "2": "Clearly relevant secondary relation or public chapter-only match; image contents remain unknown.",
+    "1": "Weak adjacent concept, insufficient direct intent evidence; must not outrank direct matches.",
+    "0": "Inspected irrelevant/contradictory hard negative, not simply an unjudged document."
+  },
+  "evaluation_contract": {
+    "unjudged": "Unknown, never silently treat every unlisted UUID as irrelevant or claim exhaustive corpus recall.",
+    "binary_positive": "grade >= 2",
+    "primary_metrics": [
+      "KnownRelevantHit@10 and @24",
+      "MRR of grade>=2 among full raw engine result positions",
+      "KnownRelevantRecall@24 (only listed grade>=2 denominators, not true corpus recall)",
+      "JudgedCoverage@10; separately report fraction of returned top10 that have explicit judgments"
+    ],
+    "graded_metrics": "Report condensed nDCG@10 only with label: removes unjudged results, optimistic partial-qrels measure. Never claim it is full-corpus unbiased nDCG. Raw nDCG treating unjudged as0 may be diagnostic only and must be labeled lower-bound/biased.",
+    "empty_queries": "REAL-Q36..40: expected returned question count0 and no exception; literal scans cannot prove absence in un-OCRed images. REAL-Q41: browse semantics, excluded from relevance averages.",
+    "compare": "Run legacy and hybrid against the same real imported snapshot, same workspace and filters, no private query scope, same fixed index version; save actual UUID lists and timings separately.",
+    "release_limit": "This development set is not the Master Plan independent real-user holdout release gate. Obtain user/blind review before asserting that gate has passed.",
+    "performance_fixture": "Do not reuse real UUID qrels against synthetic93000-row UUIDs. For 10x performance, retain real9281 corpus unchanged plus clearly marked distractors, or measure synthetic performance separately without relevance claims."
+  },
+  "queries": [
+    {
+      "id": "REAL-Q01",
+      "q": "多元微分",
+      "workspace": "drill",
+      "category": "chinese-topic-book",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "12049447-679e-5a28-b669-1a282c57ee9d": 3,
+        "f8d15568-5bb8-5df2-9bac-49c9b0cf3986": 3,
+        "31af059c-0c8d-5a4d-837e-afd224463846": 3,
+        "388a0cc2-51c9-5d56-ae28-02274f1843ac": 0
+      },
+      "evidence": {
+        "12049447-679e-5a28-b669-1a282c57ee9d": {
+          "source": {
+            "model": "drill.questiondocument",
+            "pk": 5,
+            "field": "display_title"
+          },
+          "excerpt": "多元微分",
+          "reason": "真实题册内的基本概念题，题干也明确偏导数。"
+        },
+        "f8d15568-5bb8-5df2-9bac-49c9b0cf3986": {
+          "source": {
+            "model": "drill.questiondocument",
+            "pk": 5,
+            "field": "display_title"
+          },
+          "excerpt": "多元微分",
+          "reason": "真实题册内可微与偏导数概念题。"
+        },
+        "31af059c-0c8d-5a4d-837e-afd224463846": {
+          "source": {
+            "model": "drill.questiondocument",
+            "pk": 5,
+            "field": "display_title"
+          },
+          "excerpt": "多元微分",
+          "reason": "真实题册内隐函数存在性题。"
+        },
+        "388a0cc2-51c9-5d56-ae28-02274f1843ac": {
+          "source": {
+            "model": "drill.questiontopic",
+            "pk": 637,
+            "field": "title"
+          },
+          "excerpt": "..... 5 重积分与多元微分结合罕见",
+          "reason": "目录解析污染：标题尾部含“重积分与多元微分结合罕见”，实际题干仅第一象限二重积分；不可只因长topic字符串出现词就强判相关。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "手工审查题干与题册；显式包含目录噪声硬负例。",
+      "literal_public_field_hits": 189
+    },
+    {
+      "id": "REAL-Q02",
+      "q": "偏导数",
+      "workspace": "drill",
+      "category": "chinese-keyword",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "12049447-679e-5a28-b669-1a282c57ee9d": 3,
+        "f8d15568-5bb8-5df2-9bac-49c9b0cf3986": 3,
+        "30f18230-d8e7-55f4-bab2-a3f8e0be4da2": 3,
+        "12d5f65e-7c4a-59c7-b9af-9b081a39f442": 0
+      },
+      "evidence": {
+        "12049447-679e-5a28-b669-1a282c57ee9d": {
+          "source": {
+            "model": "drill.question",
+            "pk": 2590,
+            "field": "prompt_text"
+          },
+          "excerpt": "0,y0\n\n\n处两个偏导数f ′x x0,y0\n\n\n,f ′y x0,y0\n",
+          "reason": "题干明确讨论偏导数存在性。"
+        },
+        "f8d15568-5bb8-5df2-9bac-49c9b0cf3986": {
+          "source": {
+            "model": "drill.question",
+            "pk": 2591,
+            "field": "prompt_text"
+          },
+          "excerpt": ",y0\n\n\n处的两个偏导数连续；\n③f x,y\n\n\n在点x0,y0\n\n\n",
+          "reason": "题干明确讨论偏导数连续与可微。"
+        },
+        "30f18230-d8e7-55f4-bab2-a3f8e0be4da2": {
+          "source": {
+            "model": "drill.question",
+            "pk": 2592,
+            "field": "prompt_text"
+          },
+          "excerpt": " x,y\n\n\n的两个偏导数在点x0,y0\n\n\n处连续是函数f x,y\n\n",
+          "reason": "题干明确比较偏导数连续与可微。"
+        },
+        "12d5f65e-7c4a-59c7-b9af-9b081a39f442": {
+          "source": {
+            "model": "drill.question",
+            "pk": 3490,
+            "field": "display_label"
+          },
+          "excerpt": "1995 · 数二",
+          "reason": "质点阻力微分方程题，不是偏导数主题。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "",
+      "literal_public_field_hits": 222
+    },
+    {
+      "id": "REAL-Q03",
+      "q": "导数",
+      "workspace": "drill",
+      "category": "short-chinese",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "12049447-679e-5a28-b669-1a282c57ee9d": 2,
+        "30f18230-d8e7-55f4-bab2-a3f8e0be4da2": 2,
+        "85445d59-90e0-5b51-9b6c-68bcec1615b5": 3,
+        "12d5f65e-7c4a-59c7-b9af-9b081a39f442": 0
+      },
+      "evidence": {
+        "12049447-679e-5a28-b669-1a282c57ee9d": {
+          "source": {
+            "model": "drill.question",
+            "pk": 2590,
+            "field": "prompt_text"
+          },
+          "excerpt": "0,y0\n\n\n处两个偏导数f ′x x0,y0\n\n\n,f ′y x0,y0\n",
+          "reason": "偏导数是导数的明确子主题。"
+        },
+        "30f18230-d8e7-55f4-bab2-a3f8e0be4da2": {
+          "source": {
+            "model": "drill.question",
+            "pk": 2592,
+            "field": "prompt_text"
+          },
+          "excerpt": " x,y\n\n\n的两个偏导数在点x0,y0\n\n\n处连续是函数f x,y\n\n",
+          "reason": "偏导数连续性题，相关但不是一般一元导数。"
+        },
+        "85445d59-90e0-5b51-9b6c-68bcec1615b5": {
+          "source": {
+            "model": "drill.question",
+            "pk": 3558,
+            "field": "prompt_text"
+          },
+          "excerpt": "  在(a, b) 上可导, 考虑下列叙述\n①若f  x  > g  x ",
+          "reason": "讨论函数可导与导数大小关系。"
+        },
+        "12d5f65e-7c4a-59c7-b9af-9b081a39f442": {
+          "source": {
+            "model": "drill.question",
+            "pk": 3490,
+            "field": "display_label"
+          },
+          "excerpt": "1995 · 数二",
+          "reason": "阻力微分方程应用；无直接导数检索证据。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "",
+      "literal_public_field_hits": 686
+    },
+    {
+      "id": "REAL-Q04",
+      "q": "隐函数",
+      "workspace": "drill",
+      "category": "chinese-keyword",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "31af059c-0c8d-5a4d-837e-afd224463846": 3,
+        "45f6ff98-9d3a-52fb-972e-d8351fc2ae5e": 3,
+        "12049447-679e-5a28-b669-1a282c57ee9d": 1,
+        "12d5f65e-7c4a-59c7-b9af-9b081a39f442": 0
+      },
+      "evidence": {
+        "31af059c-0c8d-5a4d-837e-afd224463846": {
+          "source": {
+            "model": "drill.question",
+            "pk": 2787,
+            "field": "display_label"
+          },
+          "excerpt": " exz = 1, 根据隐函数存在定理, 存在点(0,1,1) 的一个邻域, 在此邻",
+          "reason": "题名明确隐函数存在定理。"
+        },
+        "45f6ff98-9d3a-52fb-972e-d8351fc2ae5e": {
+          "source": {
+            "model": "drill.question",
+            "pk": 2781,
+            "field": "prompt_text"
+          },
+          "excerpt": "xyz = 0 所确定的隐函数, 记g x,y\n\n\n=\n·第26 页，共51页·",
+          "reason": "题干明确由方程确定隐函数。"
+        },
+        "12049447-679e-5a28-b669-1a282c57ee9d": {
+          "source": {
+            "model": "drill.question",
+            "pk": 2590,
+            "field": "prompt_text"
+          },
+          "excerpt": "0,y0\n\n\n处两个偏导数f ′x x0,y0\n\n\n,f ′y x0,y0\n",
+          "reason": "相邻多元微分基础概念；未讨论隐函数，不应优先。"
+        },
+        "12d5f65e-7c4a-59c7-b9af-9b081a39f442": {
+          "source": {
+            "model": "drill.question",
+            "pk": 3490,
+            "field": "display_label"
+          },
+          "excerpt": "1995 · 数二",
+          "reason": "不相关微分方程应用。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "",
+      "literal_public_field_hits": 72
+    },
+    {
+      "id": "REAL-Q05",
+      "q": "傅里叶变换",
+      "workspace": "ei",
+      "category": "chinese-term",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": 3,
+        "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e": 3,
+        "ca96c75f-1771-5db7-8952-5ba457cc7603": 3,
+        "294ff8ab-1100-573d-94ce-bf1c9a8edba5": 3,
+        "2d524c54-b4a5-56c3-8539-c75744fb7b2e": 2,
+        "9b11f3a6-52ad-5551-bd5b-ebfd100520a3": 0
+      },
+      "evidence": {
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5342,
+            "field": "display_label"
+          },
+          "excerpt": "非周期信号傅里叶变换",
+          "reason": "直接变换定义与计算题。"
+        },
+        "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5343,
+            "field": "display_label"
+          },
+          "excerpt": "典型信号的傅里叶变换对",
+          "reason": "直接典型变换对题。"
+        },
+        "ca96c75f-1771-5db7-8952-5ba457cc7603": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5344,
+            "field": "display_label"
+          },
+          "excerpt": "傅里叶变换基本性质",
+          "reason": "直接变换性质题。"
+        },
+        "294ff8ab-1100-573d-94ce-bf1c9a8edba5": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5435,
+            "field": "display_label"
+          },
+          "excerpt": "SIG-SA-06｜傅里叶变换的物理意义是什么？列举并解释至少三条常用傅里叶变换性质",
+          "reason": "直接变换简答题。"
+        },
+        "2d524c54-b4a5-56c3-8539-c75744fb7b2e": {
+          "source": {
+            "model": "drill.questiontopic",
+            "pk": 1474,
+            "field": "title"
+          },
+          "excerpt": "傅里叶变换及其应用",
+          "reason": "只有公开章节元数据；prompt为空，不声称已知图像内具体题干。"
+        },
+        "9b11f3a6-52ad-5551-bd5b-ebfd100520a3": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5340,
+            "field": "display_label"
+          },
+          "excerpt": "周期信号的傅里叶级数",
+          "reason": "级数不是变换；变换查询下为刻意硬负例。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "",
+      "literal_public_field_hits": 19
+    },
+    {
+      "id": "REAL-Q06",
+      "q": "Fourier",
+      "workspace": "ei",
+      "category": "english-alias",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": 3,
+        "ca96c75f-1771-5db7-8952-5ba457cc7603": 3,
+        "9b11f3a6-52ad-5551-bd5b-ebfd100520a3": 3,
+        "7bf3178b-610d-5336-bbf1-54f6f1a265da": 0
+      },
+      "evidence": {
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5342,
+            "field": "display_label"
+          },
+          "excerpt": "非周期信号傅里叶变换",
+          "reason": "Fourier 的标准中文名；虽然字面Fourier未出现，仍是语义正例。"
+        },
+        "ca96c75f-1771-5db7-8952-5ba457cc7603": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5344,
+            "field": "display_label"
+          },
+          "excerpt": "傅里叶变换基本性质",
+          "reason": "真实傅里叶主题。"
+        },
+        "9b11f3a6-52ad-5551-bd5b-ebfd100520a3": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5340,
+            "field": "display_label"
+          },
+          "excerpt": "周期信号的傅里叶级数",
+          "reason": "无transform限定时级数也属于Fourier主题。"
+        },
+        "7bf3178b-610d-5336-bbf1-54f6f1a265da": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5282,
+            "field": "display_label"
+          },
+          "excerpt": "波特图基本表示方法",
+          "reason": "波特图不等于Fourier。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "原始字段无Fourier字面命中，需语义别名召回；不允许标为expected-empty。",
+      "literal_public_field_hits": 1
+    },
+    {
+      "id": "REAL-Q07",
+      "q": "傅里叶",
+      "workspace": "ei",
+      "category": "chinese-topic",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": 3,
+        "ca96c75f-1771-5db7-8952-5ba457cc7603": 3,
+        "9b11f3a6-52ad-5551-bd5b-ebfd100520a3": 3,
+        "7bf3178b-610d-5336-bbf1-54f6f1a265da": 0
+      },
+      "evidence": {
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5342,
+            "field": "display_label"
+          },
+          "excerpt": "非周期信号傅里叶变换",
+          "reason": "Fourier 的标准中文名；虽然字面Fourier未出现，仍是语义正例。"
+        },
+        "ca96c75f-1771-5db7-8952-5ba457cc7603": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5344,
+            "field": "display_label"
+          },
+          "excerpt": "傅里叶变换基本性质",
+          "reason": "真实傅里叶主题。"
+        },
+        "9b11f3a6-52ad-5551-bd5b-ebfd100520a3": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5340,
+            "field": "display_label"
+          },
+          "excerpt": "周期信号的傅里叶级数",
+          "reason": "无transform限定时级数也属于Fourier主题。"
+        },
+        "7bf3178b-610d-5336-bbf1-54f6f1a265da": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5282,
+            "field": "display_label"
+          },
+          "excerpt": "波特图基本表示方法",
+          "reason": "波特图不等于Fourier。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "",
+      "literal_public_field_hits": 25
+    },
+    {
+      "id": "REAL-Q08",
+      "q": "Fourier 变换",
+      "workspace": "ei",
+      "category": "mixed-language",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": 3,
+        "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e": 3,
+        "ca96c75f-1771-5db7-8952-5ba457cc7603": 3,
+        "294ff8ab-1100-573d-94ce-bf1c9a8edba5": 3,
+        "2d524c54-b4a5-56c3-8539-c75744fb7b2e": 2,
+        "9b11f3a6-52ad-5551-bd5b-ebfd100520a3": 0
+      },
+      "evidence": {
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5342,
+            "field": "display_label"
+          },
+          "excerpt": "非周期信号傅里叶变换",
+          "reason": "直接变换定义与计算题。"
+        },
+        "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5343,
+            "field": "display_label"
+          },
+          "excerpt": "典型信号的傅里叶变换对",
+          "reason": "直接典型变换对题。"
+        },
+        "ca96c75f-1771-5db7-8952-5ba457cc7603": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5344,
+            "field": "display_label"
+          },
+          "excerpt": "傅里叶变换基本性质",
+          "reason": "直接变换性质题。"
+        },
+        "294ff8ab-1100-573d-94ce-bf1c9a8edba5": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5435,
+            "field": "display_label"
+          },
+          "excerpt": "SIG-SA-06｜傅里叶变换的物理意义是什么？列举并解释至少三条常用傅里叶变换性质",
+          "reason": "直接变换简答题。"
+        },
+        "2d524c54-b4a5-56c3-8539-c75744fb7b2e": {
+          "source": {
+            "model": "drill.questiontopic",
+            "pk": 1474,
+            "field": "title"
+          },
+          "excerpt": "傅里叶变换及其应用",
+          "reason": "只有公开章节元数据；prompt为空，不声称已知图像内具体题干。"
+        },
+        "9b11f3a6-52ad-5551-bd5b-ebfd100520a3": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5340,
+            "field": "display_label"
+          },
+          "excerpt": "周期信号的傅里叶级数",
+          "reason": "级数不是变换；变换查询下为刻意硬负例。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "",
+      "literal_public_field_hits": 0
+    },
+    {
+      "id": "REAL-Q09",
+      "q": "变换 傅里叶",
+      "workspace": "ei",
+      "category": "word-order",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": 3,
+        "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e": 3,
+        "ca96c75f-1771-5db7-8952-5ba457cc7603": 3,
+        "294ff8ab-1100-573d-94ce-bf1c9a8edba5": 3,
+        "2d524c54-b4a5-56c3-8539-c75744fb7b2e": 2,
+        "9b11f3a6-52ad-5551-bd5b-ebfd100520a3": 0
+      },
+      "evidence": {
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5342,
+            "field": "display_label"
+          },
+          "excerpt": "非周期信号傅里叶变换",
+          "reason": "直接变换定义与计算题。"
+        },
+        "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5343,
+            "field": "display_label"
+          },
+          "excerpt": "典型信号的傅里叶变换对",
+          "reason": "直接典型变换对题。"
+        },
+        "ca96c75f-1771-5db7-8952-5ba457cc7603": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5344,
+            "field": "display_label"
+          },
+          "excerpt": "傅里叶变换基本性质",
+          "reason": "直接变换性质题。"
+        },
+        "294ff8ab-1100-573d-94ce-bf1c9a8edba5": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5435,
+            "field": "display_label"
+          },
+          "excerpt": "SIG-SA-06｜傅里叶变换的物理意义是什么？列举并解释至少三条常用傅里叶变换性质",
+          "reason": "直接变换简答题。"
+        },
+        "2d524c54-b4a5-56c3-8539-c75744fb7b2e": {
+          "source": {
+            "model": "drill.questiontopic",
+            "pk": 1474,
+            "field": "title"
+          },
+          "excerpt": "傅里叶变换及其应用",
+          "reason": "只有公开章节元数据；prompt为空，不声称已知图像内具体题干。"
+        },
+        "9b11f3a6-52ad-5551-bd5b-ebfd100520a3": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5340,
+            "field": "display_label"
+          },
+          "excerpt": "周期信号的傅里叶级数",
+          "reason": "级数不是变换；变换查询下为刻意硬负例。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "",
+      "literal_public_field_hits": 0
+    },
+    {
+      "id": "REAL-Q10",
+      "q": "Z 变换",
+      "workspace": "ei",
+      "category": "latin-han-whitespace",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "4116f9f1-deb9-5d91-b570-124d25f12b2e": 3,
+        "5a462c48-0818-5544-977a-aee83524b00b": 3,
+        "dee4f3f6-2823-5ca0-987d-e8bd95804207": 3,
+        "59ae0ac3-42eb-5c73-9477-78585f00f2d7": 2,
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": 0
+      },
+      "evidence": {
+        "4116f9f1-deb9-5d91-b570-124d25f12b2e": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5356,
+            "field": "display_label"
+          },
+          "excerpt": "z 变换定义",
+          "reason": "真实z变换定义题。"
+        },
+        "5a462c48-0818-5544-977a-aee83524b00b": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5357,
+            "field": "display_label"
+          },
+          "excerpt": "z 变换收敛域",
+          "reason": "真实z变换收敛域题。"
+        },
+        "dee4f3f6-2823-5ca0-987d-e8bd95804207": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5358,
+            "field": "display_label"
+          },
+          "excerpt": "z 变换基本性质",
+          "reason": "真实z变换性质题。"
+        },
+        "59ae0ac3-42eb-5c73-9477-78585f00f2d7": {
+          "source": {
+            "model": "drill.questiontopic",
+            "pk": 1476,
+            "field": "title"
+          },
+          "excerpt": "z 变换与离散时间系统的 z 域分析",
+          "reason": "只有公开章节元数据，不能声称OCR题干。"
+        },
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5342,
+            "field": "display_label"
+          },
+          "excerpt": "非周期信号傅里叶变换",
+          "reason": "其他变换，不是Z变换。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "",
+      "literal_public_field_hits": 22
+    },
+    {
+      "id": "REAL-Q11",
+      "q": "Z变换",
+      "workspace": "ei",
+      "category": "latin-han-no-whitespace",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "4116f9f1-deb9-5d91-b570-124d25f12b2e": 3,
+        "5a462c48-0818-5544-977a-aee83524b00b": 3,
+        "dee4f3f6-2823-5ca0-987d-e8bd95804207": 3,
+        "59ae0ac3-42eb-5c73-9477-78585f00f2d7": 2,
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": 0
+      },
+      "evidence": {
+        "4116f9f1-deb9-5d91-b570-124d25f12b2e": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5356,
+            "field": "display_label"
+          },
+          "excerpt": "z 变换定义",
+          "reason": "真实z变换定义题。"
+        },
+        "5a462c48-0818-5544-977a-aee83524b00b": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5357,
+            "field": "display_label"
+          },
+          "excerpt": "z 变换收敛域",
+          "reason": "真实z变换收敛域题。"
+        },
+        "dee4f3f6-2823-5ca0-987d-e8bd95804207": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5358,
+            "field": "display_label"
+          },
+          "excerpt": "z 变换基本性质",
+          "reason": "真实z变换性质题。"
+        },
+        "59ae0ac3-42eb-5c73-9477-78585f00f2d7": {
+          "source": {
+            "model": "drill.questiontopic",
+            "pk": 1476,
+            "field": "title"
+          },
+          "excerpt": "z 变换与离散时间系统的 z 域分析",
+          "reason": "只有公开章节元数据，不能声称OCR题干。"
+        },
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5342,
+            "field": "display_label"
+          },
+          "excerpt": "非周期信号傅里叶变换",
+          "reason": "其他变换，不是Z变换。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "",
+      "literal_public_field_hits": 22
+    },
+    {
+      "id": "REAL-Q12",
+      "q": "ｚ　变换",
+      "workspace": "ei",
+      "category": "unicode-nfkc",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "4116f9f1-deb9-5d91-b570-124d25f12b2e": 3,
+        "5a462c48-0818-5544-977a-aee83524b00b": 3,
+        "dee4f3f6-2823-5ca0-987d-e8bd95804207": 3,
+        "59ae0ac3-42eb-5c73-9477-78585f00f2d7": 2,
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": 0
+      },
+      "evidence": {
+        "4116f9f1-deb9-5d91-b570-124d25f12b2e": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5356,
+            "field": "display_label"
+          },
+          "excerpt": "z 变换定义",
+          "reason": "真实z变换定义题。"
+        },
+        "5a462c48-0818-5544-977a-aee83524b00b": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5357,
+            "field": "display_label"
+          },
+          "excerpt": "z 变换收敛域",
+          "reason": "真实z变换收敛域题。"
+        },
+        "dee4f3f6-2823-5ca0-987d-e8bd95804207": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5358,
+            "field": "display_label"
+          },
+          "excerpt": "z 变换基本性质",
+          "reason": "真实z变换性质题。"
+        },
+        "59ae0ac3-42eb-5c73-9477-78585f00f2d7": {
+          "source": {
+            "model": "drill.questiontopic",
+            "pk": 1476,
+            "field": "title"
+          },
+          "excerpt": "z 变换与离散时间系统的 z 域分析",
+          "reason": "只有公开章节元数据，不能声称OCR题干。"
+        },
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5342,
+            "field": "display_label"
+          },
+          "excerpt": "非周期信号傅里叶变换",
+          "reason": "其他变换，不是Z变换。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "",
+      "literal_public_field_hits": 22
+    },
+    {
+      "id": "REAL-Q13",
+      "q": "拉普拉斯",
+      "workspace": "ei",
+      "category": "chinese-alias",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "3d0fcd80-f0d8-507b-9d5f-570f7170d36c": 3,
+        "c0c4d36d-534f-517f-9671-6942d7949b29": 3,
+        "a6efc112-97ad-5cf0-9b22-9549b93d2285": 3,
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": 0
+      },
+      "evidence": {
+        "3d0fcd80-f0d8-507b-9d5f-570f7170d36c": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5350,
+            "field": "display_label"
+          },
+          "excerpt": "拉氏变换定义、适用范围与物理意义",
+          "reason": "拉氏变换为拉普拉斯变换的通行简称。"
+        },
+        "c0c4d36d-534f-517f-9671-6942d7949b29": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5351,
+            "field": "display_label"
+          },
+          "excerpt": "拉氏变换收敛域",
+          "reason": "真实收敛域题。"
+        },
+        "a6efc112-97ad-5cf0-9b22-9549b93d2285": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5352,
+            "field": "display_label"
+          },
+          "excerpt": "拉氏变换基本性质与常用变换对",
+          "reason": "真实变换性质题。"
+        },
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5342,
+            "field": "display_label"
+          },
+          "excerpt": "非周期信号傅里叶变换",
+          "reason": "不同变换主题，不能混为同义词。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "原始字段无“拉普拉斯”，有“拉氏”；语义期待不依赖当前alias实现。",
+      "literal_public_field_hits": 0
+    },
+    {
+      "id": "REAL-Q14",
+      "q": "Laplace transform",
+      "workspace": "ei",
+      "category": "english-alias",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "3d0fcd80-f0d8-507b-9d5f-570f7170d36c": 3,
+        "c0c4d36d-534f-517f-9671-6942d7949b29": 3,
+        "a6efc112-97ad-5cf0-9b22-9549b93d2285": 3,
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": 0
+      },
+      "evidence": {
+        "3d0fcd80-f0d8-507b-9d5f-570f7170d36c": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5350,
+            "field": "display_label"
+          },
+          "excerpt": "拉氏变换定义、适用范围与物理意义",
+          "reason": "拉氏变换为拉普拉斯变换的通行简称。"
+        },
+        "c0c4d36d-534f-517f-9671-6942d7949b29": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5351,
+            "field": "display_label"
+          },
+          "excerpt": "拉氏变换收敛域",
+          "reason": "真实收敛域题。"
+        },
+        "a6efc112-97ad-5cf0-9b22-9549b93d2285": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5352,
+            "field": "display_label"
+          },
+          "excerpt": "拉氏变换基本性质与常用变换对",
+          "reason": "真实变换性质题。"
+        },
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5342,
+            "field": "display_label"
+          },
+          "excerpt": "非周期信号傅里叶变换",
+          "reason": "不同变换主题，不能混为同义词。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "",
+      "literal_public_field_hits": 0
+    },
+    {
+      "id": "REAL-Q15",
+      "q": "拉氏变换",
+      "workspace": "ei",
+      "category": "chinese-source-literal",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "3d0fcd80-f0d8-507b-9d5f-570f7170d36c": 3,
+        "c0c4d36d-534f-517f-9671-6942d7949b29": 3,
+        "a6efc112-97ad-5cf0-9b22-9549b93d2285": 3,
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": 0
+      },
+      "evidence": {
+        "3d0fcd80-f0d8-507b-9d5f-570f7170d36c": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5350,
+            "field": "display_label"
+          },
+          "excerpt": "拉氏变换定义、适用范围与物理意义",
+          "reason": "拉氏变换为拉普拉斯变换的通行简称。"
+        },
+        "c0c4d36d-534f-517f-9671-6942d7949b29": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5351,
+            "field": "display_label"
+          },
+          "excerpt": "拉氏变换收敛域",
+          "reason": "真实收敛域题。"
+        },
+        "a6efc112-97ad-5cf0-9b22-9549b93d2285": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5352,
+            "field": "display_label"
+          },
+          "excerpt": "拉氏变换基本性质与常用变换对",
+          "reason": "真实变换性质题。"
+        },
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5342,
+            "field": "display_label"
+          },
+          "excerpt": "非周期信号傅里叶变换",
+          "reason": "不同变换主题，不能混为同义词。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "",
+      "literal_public_field_hits": 23
+    },
+    {
+      "id": "REAL-Q16",
+      "q": "卡诺图",
+      "workspace": "ei",
+      "category": "chinese-term",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "e03928e3-2e2f-543d-a42a-80cb08f52e10": 3,
+        "7ffd5204-1d6e-5ffd-9b60-5d79ef311ec1": 3,
+        "c98ead1a-76f2-5d4e-98ef-6c9f7676cc71": 0
+      },
+      "evidence": {
+        "e03928e3-2e2f-543d-a42a-80cb08f52e10": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5303,
+            "field": "display_label"
+          },
+          "excerpt": "公式法、卡诺图法及含无关项逻辑函数化简",
+          "reason": "题名明确卡诺图法；题干虽仅函数公式，分类提供公开证据。"
+        },
+        "7ffd5204-1d6e-5ffd-9b60-5d79ef311ec1": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5419,
+            "field": "prompt_text"
+          },
+          "excerpt": "哪些常用表示方法？为什么卡诺图中的无关项可以按需要取 $0$ 或 $1$？",
+          "reason": "题干明确无关项在卡诺图中的选取。"
+        },
+        "c98ead1a-76f2-5d4e-98ef-6c9f7676cc71": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5319,
+            "field": "prompt_text"
+          },
+          "excerpt": "D 触发器在有效时钟沿到来前输入为 $D=1$，忽略建立保持时间问题。有效沿到来后下",
+          "reason": "时序触发器题，不是卡诺图。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "",
+      "literal_public_field_hits": 5
+    },
+    {
+      "id": "REAL-Q17",
+      "q": "Karnaugh map",
+      "workspace": "ei",
+      "category": "english-alias",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "e03928e3-2e2f-543d-a42a-80cb08f52e10": 3,
+        "7ffd5204-1d6e-5ffd-9b60-5d79ef311ec1": 3,
+        "c98ead1a-76f2-5d4e-98ef-6c9f7676cc71": 0
+      },
+      "evidence": {
+        "e03928e3-2e2f-543d-a42a-80cb08f52e10": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5303,
+            "field": "display_label"
+          },
+          "excerpt": "公式法、卡诺图法及含无关项逻辑函数化简",
+          "reason": "题名明确卡诺图法；题干虽仅函数公式，分类提供公开证据。"
+        },
+        "7ffd5204-1d6e-5ffd-9b60-5d79ef311ec1": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5419,
+            "field": "prompt_text"
+          },
+          "excerpt": "哪些常用表示方法？为什么卡诺图中的无关项可以按需要取 $0$ 或 $1$？",
+          "reason": "题干明确无关项在卡诺图中的选取。"
+        },
+        "c98ead1a-76f2-5d4e-98ef-6c9f7676cc71": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5319,
+            "field": "prompt_text"
+          },
+          "excerpt": "D 触发器在有效时钟沿到来前输入为 $D=1$，忽略建立保持时间问题。有效沿到来后下",
+          "reason": "时序触发器题，不是卡诺图。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "",
+      "literal_public_field_hits": 0
+    },
+    {
+      "id": "REAL-Q18",
+      "q": "RS 触发器",
+      "workspace": "ei",
+      "category": "mixed-conjunction",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "b34c2537-e271-5520-b6a5-4af9336bf138": 3,
+        "59686d9c-9032-5dd9-94ff-acd9c71d6348": 1,
+        "c98ead1a-76f2-5d4e-98ef-6c9f7676cc71": 0
+      },
+      "evidence": {
+        "b34c2537-e271-5520-b6a5-4af9336bf138": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5427,
+            "field": "prompt_text"
+          },
+          "excerpt": "比较 RS、D、JK、T 触发器的基本逻辑功能，并说明 D 触发器为什么常用于寄存。",
+          "reason": "题干列举RS、D、JK、T触发器并要求比较，不要求RS与触发器连成一个字面子串。"
+        },
+        "59686d9c-9032-5dd9-94ff-acd9c71d6348": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5318,
+            "field": "prompt_text"
+          },
+          "excerpt": "写出常见的四类基本触发器名称。",
+          "reason": "只有泛化类型元数据，未显示RS；弱相关而不是保证强正例。"
+        },
+        "c98ead1a-76f2-5d4e-98ef-6c9f7676cc71": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5319,
+            "field": "prompt_text"
+          },
+          "excerpt": "D 触发器在有效时钟沿到来前输入为 $D=1$，忽略建立保持时间问题。有效沿到来后下",
+          "reason": "明确只问D触发器的下一状态，不能误作RS强相关。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "",
+      "literal_public_field_hits": 0
+    },
+    {
+      "id": "REAL-Q19",
+      "q": "RS触发器",
+      "workspace": "ei",
+      "category": "mixed-conjunction-no-space",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "b34c2537-e271-5520-b6a5-4af9336bf138": 3,
+        "59686d9c-9032-5dd9-94ff-acd9c71d6348": 1,
+        "c98ead1a-76f2-5d4e-98ef-6c9f7676cc71": 0
+      },
+      "evidence": {
+        "b34c2537-e271-5520-b6a5-4af9336bf138": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5427,
+            "field": "prompt_text"
+          },
+          "excerpt": "比较 RS、D、JK、T 触发器的基本逻辑功能，并说明 D 触发器为什么常用于寄存。",
+          "reason": "题干列举RS、D、JK、T触发器并要求比较，不要求RS与触发器连成一个字面子串。"
+        },
+        "59686d9c-9032-5dd9-94ff-acd9c71d6348": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5318,
+            "field": "prompt_text"
+          },
+          "excerpt": "写出常见的四类基本触发器名称。",
+          "reason": "只有泛化类型元数据，未显示RS；弱相关而不是保证强正例。"
+        },
+        "c98ead1a-76f2-5d4e-98ef-6c9f7676cc71": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5319,
+            "field": "prompt_text"
+          },
+          "excerpt": "D 触发器在有效时钟沿到来前输入为 $D=1$，忽略建立保持时间问题。有效沿到来后下",
+          "reason": "明确只问D触发器的下一状态，不能误作RS强相关。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "",
+      "literal_public_field_hits": 0
+    },
+    {
+      "id": "REAL-Q20",
+      "q": "负反馈",
+      "workspace": "ei",
+      "category": "chinese-term",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "927d5d1c-e637-517f-8648-5e493551fcdf": 3,
+        "168d41d6-24b8-5796-9069-ab6795184312": 3,
+        "c66a741a-2b6e-5ced-91b1-b9d5b7a935b4": 3,
+        "e03928e3-2e2f-543d-a42a-80cb08f52e10": 0
+      },
+      "evidence": {
+        "927d5d1c-e637-517f-8648-5e493551fcdf": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5287,
+            "field": "display_label"
+          },
+          "excerpt": "正反馈与负反馈的极性判断",
+          "reason": "直接判断反馈极性。"
+        },
+        "168d41d6-24b8-5796-9069-ab6795184312": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5290,
+            "field": "display_label"
+          },
+          "excerpt": "深度负反馈条件下的近似分析",
+          "reason": "直接深度负反馈计算。"
+        },
+        "c66a741a-2b6e-5ced-91b1-b9d5b7a935b4": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5291,
+            "field": "display_label"
+          },
+          "excerpt": "负反馈放大电路稳定性的基本概念",
+          "reason": "直接负反馈稳定性。"
+        },
+        "e03928e3-2e2f-543d-a42a-80cb08f52e10": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5303,
+            "field": "display_label"
+          },
+          "excerpt": "公式法、卡诺图法及含无关项逻辑函数化简",
+          "reason": "无关数字逻辑题。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "",
+      "literal_public_field_hits": 29
+    },
+    {
+      "id": "REAL-Q21",
+      "q": "negative feedback",
+      "workspace": "ei",
+      "category": "english-alias",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "927d5d1c-e637-517f-8648-5e493551fcdf": 3,
+        "168d41d6-24b8-5796-9069-ab6795184312": 3,
+        "c66a741a-2b6e-5ced-91b1-b9d5b7a935b4": 3,
+        "e03928e3-2e2f-543d-a42a-80cb08f52e10": 0
+      },
+      "evidence": {
+        "927d5d1c-e637-517f-8648-5e493551fcdf": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5287,
+            "field": "display_label"
+          },
+          "excerpt": "正反馈与负反馈的极性判断",
+          "reason": "直接判断反馈极性。"
+        },
+        "168d41d6-24b8-5796-9069-ab6795184312": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5290,
+            "field": "display_label"
+          },
+          "excerpt": "深度负反馈条件下的近似分析",
+          "reason": "直接深度负反馈计算。"
+        },
+        "c66a741a-2b6e-5ced-91b1-b9d5b7a935b4": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5291,
+            "field": "display_label"
+          },
+          "excerpt": "负反馈放大电路稳定性的基本概念",
+          "reason": "直接负反馈稳定性。"
+        },
+        "e03928e3-2e2f-543d-a42a-80cb08f52e10": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5303,
+            "field": "display_label"
+          },
+          "excerpt": "公式法、卡诺图法及含无关项逻辑函数化简",
+          "reason": "无关数字逻辑题。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "",
+      "literal_public_field_hits": 0
+    },
+    {
+      "id": "REAL-Q22",
+      "q": "Bode",
+      "workspace": "ei",
+      "category": "english-alias",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "7bf3178b-610d-5336-bbf1-54f6f1a265da": 3,
+        "9f73e07e-2064-5148-b569-be88869e7d35": 3,
+        "e3e71f21-868e-59b7-ad42-57d49ad0d4c0": 1,
+        "a8b3969a-5ab2-500a-a08e-46a053c28206": 0
+      },
+      "evidence": {
+        "7bf3178b-610d-5336-bbf1-54f6f1a265da": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5282,
+            "field": "display_label"
+          },
+          "excerpt": "波特图基本表示方法",
+          "reason": "Bode图的标准中文名称；明确幅频渐近线题。"
+        },
+        "9f73e07e-2064-5148-b569-be88869e7d35": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5412,
+            "field": "prompt_text"
+          },
+          "excerpt": "特性、相频特性、通频带和波特图之间的关系。",
+          "reason": "题干直接要求说明波特图与频率响应关系。"
+        },
+        "e3e71f21-868e-59b7-ad42-57d49ad0d4c0": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5280,
+            "field": "display_label"
+          },
+          "excerpt": "放大倍数随频率变化的频率响应概念",
+          "reason": "相关频响概念但非波特图本身。"
+        },
+        "a8b3969a-5ab2-500a-a08e-46a053c28206": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5899,
+            "field": "display_label"
+          },
+          "excerpt": "答 8 · 请问信号经过希尔波特变换后有什么变化？实现希尔波特变换器 的变换器又称为",
+          "reason": "希尔波特变换仅含“波特”字符，不是Bode图，重要误召回负例。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "",
+      "literal_public_field_hits": 0
+    },
+    {
+      "id": "REAL-Q23",
+      "q": "波特",
+      "workspace": "ei",
+      "category": "alias-substring-hard-negative",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "7bf3178b-610d-5336-bbf1-54f6f1a265da": 3,
+        "9f73e07e-2064-5148-b569-be88869e7d35": 3,
+        "e3e71f21-868e-59b7-ad42-57d49ad0d4c0": 1,
+        "a8b3969a-5ab2-500a-a08e-46a053c28206": 0
+      },
+      "evidence": {
+        "7bf3178b-610d-5336-bbf1-54f6f1a265da": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5282,
+            "field": "display_label"
+          },
+          "excerpt": "波特图基本表示方法",
+          "reason": "Bode图的标准中文名称；明确幅频渐近线题。"
+        },
+        "9f73e07e-2064-5148-b569-be88869e7d35": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5412,
+            "field": "prompt_text"
+          },
+          "excerpt": "特性、相频特性、通频带和波特图之间的关系。",
+          "reason": "题干直接要求说明波特图与频率响应关系。"
+        },
+        "e3e71f21-868e-59b7-ad42-57d49ad0d4c0": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5280,
+            "field": "display_label"
+          },
+          "excerpt": "放大倍数随频率变化的频率响应概念",
+          "reason": "相关频响概念但非波特图本身。"
+        },
+        "a8b3969a-5ab2-500a-a08e-46a053c28206": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5899,
+            "field": "display_label"
+          },
+          "excerpt": "答 8 · 请问信号经过希尔波特变换后有什么变化？实现希尔波特变换器 的变换器又称为",
+          "reason": "希尔波特变换仅含“波特”字符，不是Bode图，重要误召回负例。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "",
+      "literal_public_field_hits": 8
+    },
+    {
+      "id": "REAL-Q24",
+      "q": "数二线代臻选题",
+      "workspace": "drill",
+      "category": "real-book-title",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "7d7e61e8-6842-5c61-b878-933517b8a552": 3,
+        "b6d2ebb5-dbf5-5c78-b00a-f9d4254c5791": 3,
+        "e87e4529-942d-544a-9091-ed7cb771351c": 3,
+        "12049447-679e-5a28-b669-1a282c57ee9d": 0
+      },
+      "evidence": {
+        "7d7e61e8-6842-5c61-b878-933517b8a552": {
+          "source": {
+            "model": "drill.questiondocument",
+            "pk": 27,
+            "field": "title"
+          },
+          "excerpt": "数二线代臻选题 · A4留白",
+          "reason": "真实题册内第001题。"
+        },
+        "b6d2ebb5-dbf5-5c78-b00a-f9d4254c5791": {
+          "source": {
+            "model": "drill.questiondocument",
+            "pk": 27,
+            "field": "title"
+          },
+          "excerpt": "数二线代臻选题 · A4留白",
+          "reason": "真实题册内第002题。"
+        },
+        "e87e4529-942d-544a-9091-ed7cb771351c": {
+          "source": {
+            "model": "drill.questiondocument",
+            "pk": 27,
+            "field": "title"
+          },
+          "excerpt": "数二线代臻选题 · A4留白",
+          "reason": "真实题册内第003题。"
+        },
+        "12049447-679e-5a28-b669-1a282c57ee9d": {
+          "source": {
+            "model": "drill.questiondocument",
+            "pk": 5,
+            "field": "display_title"
+          },
+          "excerpt": "多元微分",
+          "reason": "另一题册，非线代臻选。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "",
+      "literal_public_field_hits": 2
+    },
+    {
+      "id": "REAL-Q25",
+      "q": "892 信号与系统",
+      "workspace": "ei",
+      "category": "real-book-title",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": 3,
+        "4116f9f1-deb9-5d91-b570-124d25f12b2e": 3,
+        "2d524c54-b4a5-56c3-8539-c75744fb7b2e": 2,
+        "7bf3178b-610d-5336-bbf1-54f6f1a265da": 0
+      },
+      "evidence": {
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": {
+          "source": {
+            "model": "drill.questiondocument",
+            "pk": 14,
+            "field": "title"
+          },
+          "excerpt": "892 · 信号与系统",
+          "reason": "来自892信号与系统主册。"
+        },
+        "4116f9f1-deb9-5d91-b570-124d25f12b2e": {
+          "source": {
+            "model": "drill.questiondocument",
+            "pk": 14,
+            "field": "title"
+          },
+          "excerpt": "892 · 信号与系统",
+          "reason": "来自892信号与系统主册。"
+        },
+        "2d524c54-b4a5-56c3-8539-c75744fb7b2e": {
+          "source": {
+            "model": "drill.questiondocument",
+            "pk": 23,
+            "field": "title"
+          },
+          "excerpt": "892 · 信号与系统课后题（考纲筛选）",
+          "reason": "同科课后题，但与主册不同；相关备选。"
+        },
+        "7bf3178b-610d-5336-bbf1-54f6f1a265da": {
+          "source": {
+            "model": "drill.questiondocument",
+            "pk": 12,
+            "field": "title"
+          },
+          "excerpt": "892 · 模拟电子技术",
+          "reason": "892其他科目，不应因892高排。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "",
+      "literal_public_field_hits": 0
+    },
+    {
+      "id": "REAL-Q26",
+      "q": "SIG-SA-06",
+      "workspace": "ei",
+      "category": "exact-question-code",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "294ff8ab-1100-573d-94ce-bf1c9a8edba5": 3,
+        "ae66b1e8-0f41-5b9d-995a-450fbfdcb3a5": 0
+      },
+      "evidence": {
+        "294ff8ab-1100-573d-94ce-bf1c9a8edba5": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5435,
+            "field": "display_label"
+          },
+          "excerpt": "SIG-SA-06｜傅里叶变换的物理意义是什么？列举并解释至少三条常用傅里叶变换性质",
+          "reason": "完整代码直接对应这一题。"
+        },
+        "ae66b1e8-0f41-5b9d-995a-450fbfdcb3a5": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5434,
+            "field": "display_label"
+          },
+          "excerpt": "SIG-SA-05｜傅里叶级数的核心思想是什么？周期信号的频谱为什么是离散的？",
+          "reason": "相邻代码不是目标。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "",
+      "literal_public_field_hits": 2
+    },
+    {
+      "id": "REAL-Q27",
+      "q": "课后题 3-3",
+      "workspace": "ei",
+      "category": "question-number-with-filter",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "2d524c54-b4a5-56c3-8539-c75744fb7b2e": 3,
+        "81648940-3f5f-5297-ad90-78bf896140df": 0
+      },
+      "evidence": {
+        "2d524c54-b4a5-56c3-8539-c75744fb7b2e": {
+          "source": {
+            "model": "drill.question",
+            "pk": 7207,
+            "field": "display_label"
+          },
+          "excerpt": "课后题 3-3",
+          "reason": "指定信号课后题题册中的真实题号。"
+        },
+        "81648940-3f5f-5297-ad90-78bf896140df": {
+          "source": {
+            "model": "drill.question",
+            "pk": 7208,
+            "field": "display_label"
+          },
+          "excerpt": "课后题 3-4",
+          "reason": "相邻题号不是3-3。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "",
+      "filters": {
+        "document": 23
+      },
+      "literal_public_field_hits": 19
+    },
+    {
+      "id": "REAL-Q28",
+      "q": "臻选 #001",
+      "workspace": "drill",
+      "category": "question-number",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "7d7e61e8-6842-5c61-b878-933517b8a552": 3,
+        "b6d2ebb5-dbf5-5c78-b00a-f9d4254c5791": 0
+      },
+      "evidence": {
+        "7d7e61e8-6842-5c61-b878-933517b8a552": {
+          "source": {
+            "model": "drill.question",
+            "pk": 8747,
+            "field": "display_label"
+          },
+          "excerpt": "臻选 #001 · 2014数一二三",
+          "reason": "完整序号直接命中。"
+        },
+        "b6d2ebb5-dbf5-5c78-b00a-f9d4254c5791": {
+          "source": {
+            "model": "drill.question",
+            "pk": 8748,
+            "field": "display_label"
+          },
+          "excerpt": "臻选 #002 · 2015数一",
+          "reason": "相邻序号不是001。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "",
+      "literal_public_field_hits": 1
+    },
+    {
+      "id": "REAL-Q29",
+      "q": "1d955aa9-db0f-5cbc-9cb9-36521dddb37d",
+      "workspace": "ei",
+      "category": "exact-uuid",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": 3,
+        "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e": 0
+      },
+      "evidence": {
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5342,
+            "field": "uuid"
+          },
+          "excerpt": "1d955aa9-db0f-5cbc-9cb9-36521dddb37d",
+          "reason": "UUID精确定位。"
+        },
+        "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5343,
+            "field": "uuid"
+          },
+          "excerpt": "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e",
+          "reason": "其他UUID。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "",
+      "literal_public_field_hits": 1
+    },
+    {
+      "id": "REAL-Q30",
+      "q": "Fourer",
+      "workspace": "ei",
+      "category": "english-spelling",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": 3,
+        "ca96c75f-1771-5db7-8952-5ba457cc7603": 3,
+        "9b11f3a6-52ad-5551-bd5b-ebfd100520a3": 3,
+        "7bf3178b-610d-5336-bbf1-54f6f1a265da": 0
+      },
+      "evidence": {
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5342,
+            "field": "display_label"
+          },
+          "excerpt": "非周期信号傅里叶变换",
+          "reason": "Fourier 的标准中文名；虽然字面Fourier未出现，仍是语义正例。"
+        },
+        "ca96c75f-1771-5db7-8952-5ba457cc7603": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5344,
+            "field": "display_label"
+          },
+          "excerpt": "傅里叶变换基本性质",
+          "reason": "真实傅里叶主题。"
+        },
+        "9b11f3a6-52ad-5551-bd5b-ebfd100520a3": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5340,
+            "field": "display_label"
+          },
+          "excerpt": "周期信号的傅里叶级数",
+          "reason": "无transform限定时级数也属于Fourier主题。"
+        },
+        "7bf3178b-610d-5336-bbf1-54f6f1a265da": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5282,
+            "field": "display_label"
+          },
+          "excerpt": "波特图基本表示方法",
+          "reason": "波特图不等于Fourier。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "常见漏字拼写；期待纠错/建议或实际结果命中，而非假造源文Fourer。",
+      "literal_public_field_hits": 0
+    },
+    {
+      "id": "REAL-Q31",
+      "q": "傅里页变换",
+      "workspace": "ei",
+      "category": "chinese-spelling",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": 3,
+        "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e": 3,
+        "ca96c75f-1771-5db7-8952-5ba457cc7603": 3,
+        "294ff8ab-1100-573d-94ce-bf1c9a8edba5": 3,
+        "2d524c54-b4a5-56c3-8539-c75744fb7b2e": 2,
+        "9b11f3a6-52ad-5551-bd5b-ebfd100520a3": 0
+      },
+      "evidence": {
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5342,
+            "field": "display_label"
+          },
+          "excerpt": "非周期信号傅里叶变换",
+          "reason": "直接变换定义与计算题。"
+        },
+        "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5343,
+            "field": "display_label"
+          },
+          "excerpt": "典型信号的傅里叶变换对",
+          "reason": "直接典型变换对题。"
+        },
+        "ca96c75f-1771-5db7-8952-5ba457cc7603": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5344,
+            "field": "display_label"
+          },
+          "excerpt": "傅里叶变换基本性质",
+          "reason": "直接变换性质题。"
+        },
+        "294ff8ab-1100-573d-94ce-bf1c9a8edba5": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5435,
+            "field": "display_label"
+          },
+          "excerpt": "SIG-SA-06｜傅里叶变换的物理意义是什么？列举并解释至少三条常用傅里叶变换性质",
+          "reason": "直接变换简答题。"
+        },
+        "2d524c54-b4a5-56c3-8539-c75744fb7b2e": {
+          "source": {
+            "model": "drill.questiontopic",
+            "pk": 1474,
+            "field": "title"
+          },
+          "excerpt": "傅里叶变换及其应用",
+          "reason": "只有公开章节元数据；prompt为空，不声称已知图像内具体题干。"
+        },
+        "9b11f3a6-52ad-5551-bd5b-ebfd100520a3": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5340,
+            "field": "display_label"
+          },
+          "excerpt": "周期信号的傅里叶级数",
+          "reason": "级数不是变换；变换查询下为刻意硬负例。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "“叶→页”错字；明确指向傅里叶变换。",
+      "literal_public_field_hits": 0
+    },
+    {
+      "id": "REAL-Q32",
+      "q": "Lapalce",
+      "workspace": "ei",
+      "category": "english-transposition",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "3d0fcd80-f0d8-507b-9d5f-570f7170d36c": 3,
+        "c0c4d36d-534f-517f-9671-6942d7949b29": 3,
+        "a6efc112-97ad-5cf0-9b22-9549b93d2285": 3,
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": 0
+      },
+      "evidence": {
+        "3d0fcd80-f0d8-507b-9d5f-570f7170d36c": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5350,
+            "field": "display_label"
+          },
+          "excerpt": "拉氏变换定义、适用范围与物理意义",
+          "reason": "拉氏变换为拉普拉斯变换的通行简称。"
+        },
+        "c0c4d36d-534f-517f-9671-6942d7949b29": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5351,
+            "field": "display_label"
+          },
+          "excerpt": "拉氏变换收敛域",
+          "reason": "真实收敛域题。"
+        },
+        "a6efc112-97ad-5cf0-9b22-9549b93d2285": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5352,
+            "field": "display_label"
+          },
+          "excerpt": "拉氏变换基本性质与常用变换对",
+          "reason": "真实变换性质题。"
+        },
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5342,
+            "field": "display_label"
+          },
+          "excerpt": "非周期信号傅里叶变换",
+          "reason": "不同变换主题，不能混为同义词。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "Laplace中相邻字母调换；与真实拉氏变换建立语义期待。",
+      "literal_public_field_hits": 0
+    },
+    {
+      "id": "REAL-Q33",
+      "q": "偏到数",
+      "workspace": "drill",
+      "category": "chinese-spelling",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "12049447-679e-5a28-b669-1a282c57ee9d": 3,
+        "f8d15568-5bb8-5df2-9bac-49c9b0cf3986": 3,
+        "30f18230-d8e7-55f4-bab2-a3f8e0be4da2": 3,
+        "12d5f65e-7c4a-59c7-b9af-9b081a39f442": 0
+      },
+      "evidence": {
+        "12049447-679e-5a28-b669-1a282c57ee9d": {
+          "source": {
+            "model": "drill.question",
+            "pk": 2590,
+            "field": "prompt_text"
+          },
+          "excerpt": "0,y0\n\n\n处两个偏导数f ′x x0,y0\n\n\n,f ′y x0,y0\n",
+          "reason": "题干明确讨论偏导数存在性。"
+        },
+        "f8d15568-5bb8-5df2-9bac-49c9b0cf3986": {
+          "source": {
+            "model": "drill.question",
+            "pk": 2591,
+            "field": "prompt_text"
+          },
+          "excerpt": ",y0\n\n\n处的两个偏导数连续；\n③f x,y\n\n\n在点x0,y0\n\n\n",
+          "reason": "题干明确讨论偏导数连续与可微。"
+        },
+        "30f18230-d8e7-55f4-bab2-a3f8e0be4da2": {
+          "source": {
+            "model": "drill.question",
+            "pk": 2592,
+            "field": "prompt_text"
+          },
+          "excerpt": " x,y\n\n\n的两个偏导数在点x0,y0\n\n\n处连续是函数f x,y\n\n",
+          "reason": "题干明确比较偏导数连续与可微。"
+        },
+        "12d5f65e-7c4a-59c7-b9af-9b081a39f442": {
+          "source": {
+            "model": "drill.question",
+            "pk": 3490,
+            "field": "display_label"
+          },
+          "excerpt": "1995 · 数二",
+          "reason": "质点阻力微分方程题，不是偏导数主题。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "“导→到”错字；独立开发用例，不能宣称已由实现支持。",
+      "literal_public_field_hits": 0
+    },
+    {
+      "id": "REAL-Q34",
+      "q": "\\delta(t-t_0)",
+      "workspace": "ei",
+      "category": "latex-expression",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e": 3,
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": 0
+      },
+      "evidence": {
+        "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5343,
+            "field": "prompt_text"
+          },
+          "excerpt": "1.\n$$\n那么\n$$\n\\delta(t-t_0)\n$$\n的傅里叶变换是什么？",
+          "reason": "已有公共prompt确实含该LaTeX式子。"
+        },
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5342,
+            "field": "prompt_text"
+          },
+          "excerpt": "$\n求\n$$\nx(t)=e^{-at}u(t),\\qquad a>0\n$$\n的傅里叶",
+          "reason": "指数信号不是平移冲激；不是都含t就相关。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "",
+      "literal_public_field_hits": 1
+    },
+    {
+      "id": "REAL-Q35",
+      "q": "\\frac{1}{1+s/\\omega_p}",
+      "workspace": "ei",
+      "category": "latex-expression",
+      "expected_behavior": "relevant-results",
+      "judgments": {
+        "7bf3178b-610d-5336-bbf1-54f6f1a265da": 3,
+        "9d5f8610-1170-5820-924e-a249cd6e30fa": 0
+      },
+      "evidence": {
+        "7bf3178b-610d-5336-bbf1-54f6f1a265da": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5282,
+            "field": "prompt_text"
+          },
+          "excerpt": "点因子\n$$\nH(s)=\\frac{1}{1+s/\\omega_p}\n$$\n在波特幅频图中，",
+          "reason": "真实公式完全存在于公共prompt。"
+        },
+        "9d5f8610-1170-5820-924e-a249cd6e30fa": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5281,
+            "field": "prompt_text"
+          },
+          "excerpt": "\nA(j\\omega)=\\frac{A_0}{1+j\\omega/\\omega_H}",
+          "reason": "不同放大器式子，不是目标公式。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "",
+      "literal_public_field_hits": 1
+    },
+    {
+      "id": "REAL-Q36",
+      "q": "不存在的题册XYZ987",
+      "workspace": "drill",
+      "category": "expected-empty",
+      "expected_behavior": "expected-empty",
+      "judgments": {
+        "12049447-679e-5a28-b669-1a282c57ee9d": 0
+      },
+      "evidence": {
+        "12049447-679e-5a28-b669-1a282c57ee9d": {
+          "source": {
+            "model": "drill.question",
+            "pk": 2590,
+            "field": "display_label"
+          },
+          "excerpt": "1994 · 数一",
+          "reason": "明确无关的真实哨兵题。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "不存在该题册名；所有允许公共字段全文扫描没有该标识。",
+      "literal_public_field_hits": 0
+    },
+    {
+      "id": "REAL-Q37",
+      "q": "Riemann hypothesis",
+      "workspace": "drill",
+      "category": "expected-empty",
+      "expected_behavior": "expected-empty",
+      "judgments": {
+        "12049447-679e-5a28-b669-1a282c57ee9d": 0
+      },
+      "evidence": {
+        "12049447-679e-5a28-b669-1a282c57ee9d": {
+          "source": {
+            "model": "drill.question",
+            "pk": 2590,
+            "field": "display_label"
+          },
+          "excerpt": "1994 · 数一",
+          "reason": "明确无关的真实哨兵题。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "允许公共字段没有该术语或其中文“黎曼假设”；不推测扫描图像内容。",
+      "literal_public_field_hits": 0
+    },
+    {
+      "id": "REAL-Q38",
+      "q": "'; DROP TABLE question; --",
+      "workspace": "ei",
+      "category": "expected-empty",
+      "expected_behavior": "expected-empty",
+      "judgments": {
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": 0
+      },
+      "evidence": {
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5342,
+            "field": "display_label"
+          },
+          "excerpt": "非周期信号傅里叶变换",
+          "reason": "明确无关的真实哨兵题。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "安全边界查询，允许公共字段没有该文本；不得把它当SQL。",
+      "literal_public_field_hits": 0
+    },
+    {
+      "id": "REAL-Q39",
+      "q": "阿贝尔变换",
+      "workspace": "ei",
+      "category": "expected-empty",
+      "expected_behavior": "expected-empty",
+      "judgments": {
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": 0
+      },
+      "evidence": {
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5342,
+            "field": "display_label"
+          },
+          "excerpt": "非周期信号傅里叶变换",
+          "reason": "明确无关的真实哨兵题。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "允许公共字段没有该术语；不推测图片文字。",
+      "literal_public_field_hits": 0
+    },
+    {
+      "id": "REAL-Q40",
+      "q": "🦄🛸",
+      "workspace": "ei",
+      "category": "expected-empty",
+      "expected_behavior": "expected-empty",
+      "judgments": {
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": 0
+      },
+      "evidence": {
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d": {
+          "source": {
+            "model": "drill.question",
+            "pk": 5342,
+            "field": "display_label"
+          },
+          "excerpt": "非周期信号傅里叶变换",
+          "reason": "明确无关的真实哨兵题。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "允许公共字段没有该字符组合；应安静空结果而不是异常。",
+      "literal_public_field_hits": 0
+    },
+    {
+      "id": "REAL-Q41",
+      "q": "",
+      "workspace": "drill",
+      "category": "empty-browse",
+      "expected_behavior": "browse-default-source-order",
+      "judgments": {
+        "12049447-679e-5a28-b669-1a282c57ee9d": 2,
+        "7d7e61e8-6842-5c61-b878-933517b8a552": 2
+      },
+      "evidence": {
+        "12049447-679e-5a28-b669-1a282c57ee9d": {
+          "source": {
+            "model": "drill.questiondocument",
+            "pk": 5,
+            "field": "display_title"
+          },
+          "excerpt": "多元微分",
+          "reason": "作为可浏览题目示例；空查询没有相关性排序目标。"
+        },
+        "7d7e61e8-6842-5c61-b878-933517b8a552": {
+          "source": {
+            "model": "drill.questiondocument",
+            "pk": 27,
+            "field": "title"
+          },
+          "excerpt": "数二线代臻选题 · A4留白",
+          "reason": "作为可浏览题目示例；不是语义正例。"
+        }
+      },
+      "judgment_scope": "partial-manual-development",
+      "notes": "空查询应浏览而非返回空；排除nDCG/MRR/recall计算。",
+      "literal_public_field_hits": null
+    }
+  ]
+}

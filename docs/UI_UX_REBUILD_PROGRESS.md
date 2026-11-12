@@ -4,7 +4,7 @@
 - Integration branch/worktree: `ui-rebuild/integration`, `/home/eh/ui-rebuild-20261112`.
 - Authorization: user message “开始按照要求工作和部署提交 注意留回滚” authorizes implementation, commits and deployment with rollback. It supersedes the preceding research-only restriction; Phase 8 gates still apply.
 - Production rechecked: `time-tracker-ha:20261112-design-6b83e29`, healthy; service active; no production changes yet.
-- Current phase: P01–P04/P06/P07 implementation and UI integration complete; P05 final real-corpus/scale validation; P08 final search review; P09 backup/restore verified, application release pending.
+- Current phase: P01–P08 implementation/integration complete; final code `9df573e`; P09 verified backup/image build, production release in progress. 10× typo p95 variance and physical Safari limits are tracked in the release record.
 - Dependencies: isolated frontend packages in `/home/eh/ui-rebuild-node-modules`; do not modify the previous worktree's dependency symlink.
 
 ## Ownership
@@ -12,7 +12,7 @@
 | Owner | Files | Tasks | State |
 |---|---|---|---|
 | Main | shared/design/appearance/ui, both App/main/styles/index/config, navigation/routes/recovery/templates | P01/P02 | complete |
-| plan_search | search backend/models/search view sections/migrations/tests/settings search flags | P05 | in_progress |
+| plan_search | search backend/models/search view sections/migrations/tests/settings search flags | P05 | complete; scale tail latency disclosed |
 | implement_pages | Timer Settings/GlobalSearch, Drill Settings/Practice/filter/composable/tests | P03/P04 | complete |
 | implement_practice | Question/DiagnosisSelector/PracticeActionToolbar/Reader/LearningSharePanel/tests | P06 | complete |
 | implement_practice + implement_pages | Heatmap/Insight/statistics/low-frequency pages | P07 | complete |
@@ -60,3 +60,11 @@ Read Master §11–18 and §22–30, this ledger, git status/diff and active age
 - Native Safari/iOS PWA physical-device validation is unavailable in this environment. Emulated Chromium tests are recorded accurately, and cannot certify native keyboard/safe-area/first-paint behavior.
 
 - PWA capability marker suppresses the legacy floating launcher in all integrated app shells, including Timer; legacy shell fallback remains tested. Existing navigation test passed browser, standalone and navigator.standalone modes, including integrated-shell absence. This is emulation, not physical iOS.
+
+## Final release gates (supersede historical intermediate counts above)
+- Final full backend: **550 tests, OK, 11 PostgreSQL-only/environment skips**,146.635s. Dedicated final PostgreSQL search/navigation/encryption lane: **74/74 passed**. SQLite targeted lane64 passed+10skips. Final migration drift check: no changes.
+- Frontend remains56 files/251 tests passed, both TypeScript/production builds passed; no frontend code changed after that build.
+- Independent final SQL/index review found no new P1. Same real-corpus82queries preserve count/top24/metrics exactly; known-target Recall@20 .742857,MRR .700, both actual formulas rank1.
+- All ten accents were actually selected and reloaded in Light/Dark; neutral surfaces unchanged. Final Question/Reader/menu/PWA emulation checks passed.
+- Private encrypted10k final warm p95423–466ms now passes500ms. 93k directory172–199ms; one typo case433–527ms remains a disclosed10× load tail risk. Cold worker samples638–680ms retained, never relabeled as warm.
+- Source commit9df573e includes reversible0039 concurrent partial index on derived metadata-only IDs and no statistical formula change. Production package SHA256501f9ac1c8e7d5ce32cd93c0a9620172bc5277af44b589a22843ccd031912432.

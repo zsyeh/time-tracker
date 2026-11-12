@@ -1,0 +1,83 @@
+[
+  {
+    "database": "precision_search",
+    "questions": 9300,
+    "projections": 9300,
+    "normalizer_version": 2,
+    "source_version": "1987f1025fe66f559eac5ed2e833d7dca95f6dbc5e2bf6449cf5be76fc6cb3a1",
+    "states": [
+      {
+        "workspace": "drill",
+        "ready": true,
+        "rebuilding": false,
+        "build_source_version": "1987f1025fe66f559eac5ed2e833d7dca95f6dbc5e2bf6449cf5be76fc6cb3a1",
+        "generation": 13973,
+        "aliases_hash": "51fa21d76c342d3e372bb07b7c53b1722aa6e6bb07a3c2417be82bbecf1fceaa"
+      },
+      {
+        "workspace": "ei",
+        "ready": true,
+        "rebuilding": false,
+        "build_source_version": "1987f1025fe66f559eac5ed2e833d7dca95f6dbc5e2bf6449cf5be76fc6cb3a1",
+        "generation": 4648,
+        "aliases_hash": "51fa21d76c342d3e372bb07b7c53b1722aa6e6bb07a3c2417be82bbecf1fceaa"
+      }
+    ],
+    "partial_index_valid": true,
+    "derived_analyzed": true
+  },
+  {
+    "database": "precision_search_93k",
+    "questions": 93000,
+    "projections": 93000,
+    "normalizer_version": 2,
+    "source_version": "1987f1025fe66f559eac5ed2e833d7dca95f6dbc5e2bf6449cf5be76fc6cb3a1",
+    "states": [
+      {
+        "workspace": "drill",
+        "ready": true,
+        "rebuilding": false,
+        "build_source_version": "1987f1025fe66f559eac5ed2e833d7dca95f6dbc5e2bf6449cf5be76fc6cb3a1",
+        "generation": 103736,
+        "aliases_hash": "51fa21d76c342d3e372bb07b7c53b1722aa6e6bb07a3c2417be82bbecf1fceaa"
+      },
+      {
+        "workspace": "ei",
+        "ready": true,
+        "rebuilding": false,
+        "build_source_version": "1987f1025fe66f559eac5ed2e833d7dca95f6dbc5e2bf6449cf5be76fc6cb3a1",
+        "generation": 23341,
+        "aliases_hash": "51fa21d76c342d3e372bb07b7c53b1722aa6e6bb07a3c2417be82bbecf1fceaa"
+      }
+    ],
+    "partial_index_valid": true,
+    "derived_analyzed": true
+  },
+  {
+    "database": "precision_search_real",
+    "questions": 9281,
+    "projections": 9281,
+    "normalizer_version": 2,
+    "source_version": "1987f1025fe66f559eac5ed2e833d7dca95f6dbc5e2bf6449cf5be76fc6cb3a1",
+    "states": [
+      {
+        "workspace": "drill",
+        "ready": true,
+        "rebuilding": false,
+        "build_source_version": "1987f1025fe66f559eac5ed2e833d7dca95f6dbc5e2bf6449cf5be76fc6cb3a1",
+        "generation": 18644,
+        "aliases_hash": "51fa21d76c342d3e372bb07b7c53b1722aa6e6bb07a3c2417be82bbecf1fceaa"
+      },
+      {
+        "workspace": "ei",
+        "ready": true,
+        "rebuilding": false,
+        "build_source_version": "1987f1025fe66f559eac5ed2e833d7dca95f6dbc5e2bf6449cf5be76fc6cb3a1",
+        "generation": 8595,
+        "aliases_hash": "51fa21d76c342d3e372bb07b7c53b1722aa6e6bb07a3c2417be82bbecf1fceaa"
+      }
+    ],
+    "partial_index_valid": true,
+    "derived_analyzed": true
+  }
+]

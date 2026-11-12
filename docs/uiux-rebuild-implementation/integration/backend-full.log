@@ -1,4 +1,4 @@
-Found 538 test(s).
+Found 550 test(s).
 Creating test database for alias 'default'...
 System check identified no issues (0 silenced).
 .............{"dry_run": true, "questions": 1, "regions": 1, "new_images": 1, "new_bytes": 201, "old_images_retained": 1}
@@ -17,8 +17,8 @@ Merged 0 canonical Notes; existing audit file was preserved.
 {"user": "u***2", "question": "q***1", "before_length": 0, "after_length": 4, "source_attempts": 1}
 Merged 2 canonical Notes.
 Rolled back 2 canonical Notes.
-.......Regenerated 213cdfc2-d97c-4eb3-827d-d6ed5a765640: 6 questions, seed=606, ids=[1, 2, 7, 8, 13, 14]
-.Regenerated c385c8fc-72a0-45e0-b7cc-491d5a6d10e5: 6 questions, seed=202, ids=[1, 2, 9, 11, 18, 13]
+.......Regenerated 4011bb7c-850d-4ea9-b5d0-611864c294d3: 6 questions, seed=606, ids=[1, 2, 7, 8, 13, 14]
+.Regenerated 73528567-fbea-4b55-be24-361ddf8088b3: 6 questions, seed=202, ids=[1, 2, 9, 11, 18, 13]
 ..................................................question_timing_conflict reason=lease_expired
 ....question_timing_conflict reason=owner_mismatch
 question_timing_conflict reason=owner_mismatch
@@ -31,7 +31,7 @@ question_timing_conflict reason=owner_mismatch
 .question_timing_conflict reason=timing_finalized
 .question_timing_conflict reason=active_timer_mismatch
 .question_timing_conflict reason=timing_protocol_mismatch
-..............{"output": "/tmp/tmp42p2v9w5/audit.json", "selected": 3, "core": 3, "statuses": {"AUTO_CHECKED": 2, "NEEDS_REVIEW": 1}, "issues": {"no_own_answer_material": 1}, "manual_verified": 0, "duplicate_manifest_uuids": [], "courses": {"circuit": {"AUTO_CHECKED": 2, "NEEDS_REVIEW": 1}}}
+...................s...{"output": "/tmp/tmprgwiwzeu/audit.json", "selected": 3, "core": 3, "statuses": {"AUTO_CHECKED": 2, "NEEDS_REVIEW": 1}, "issues": {"no_own_answer_material": 1}, "manual_verified": 0, "duplicate_manifest_uuids": [], "courses": {"circuit": {"AUTO_CHECKED": 2, "NEEDS_REVIEW": 1}}}
 .....................................{"validated": 1, "dry_run": true}
 .{"validated": 1, "dry_run": false}
 Imported 1 Agent Markdown solutions.
@@ -96,12 +96,12 @@ Bad Request: /api/task-presets/
 ....Forbidden: /api/settings/data-encryption/
 ..............{"total": 1, "validation_queue": 1, "existing_verified": 0, "pending_manual": 1, "strata": {"legacy_unknown": 1}}
 {"total": 1, "validation_queue": 1, "existing_verified": 0, "pending_manual": 1, "strata": {"legacy_unknown": 1}}
-../tmp/tmpmmxh1ym0/report.json
-........s....ssssss...................................................fallback_sol question=1
+../tmp/tmp60xqjdie/report.json
+........s....sssssssss...................................................fallback_sol question=1
 ..fallback_sol question=1
 .........
 ----------------------------------------------------------------------
-Ran 538 tests in 168.302s
+Ran 550 tests in 146.635s
 
-OK (skipped=7)
+OK (skipped=11)
 Destroying test database for alias 'default'...

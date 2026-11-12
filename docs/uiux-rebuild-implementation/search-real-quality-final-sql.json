@@ -1,0 +1,4658 @@
+{
+  "kind": "single-pass-actual-engine-real-public-corpus-quality-not-http-not-load",
+  "annotation_status": "development judgments, not external user annotation, not blind holdout, not independently adjudicated",
+  "evaluation_contract": {
+    "unjudged": "Unknown, never silently treat every unlisted UUID as irrelevant or claim exhaustive corpus recall.",
+    "binary_positive": "grade >= 2",
+    "primary_metrics": [
+      "KnownRelevantHit@10 and @24",
+      "MRR of grade>=2 among full raw engine result positions",
+      "KnownRelevantRecall@24 (only listed grade>=2 denominators, not true corpus recall)",
+      "JudgedCoverage@10; separately report fraction of returned top10 that have explicit judgments"
+    ],
+    "graded_metrics": "Report condensed nDCG@10 only with label: removes unjudged results, optimistic partial-qrels measure. Never claim it is full-corpus unbiased nDCG. Raw nDCG treating unjudged as0 may be diagnostic only and must be labeled lower-bound/biased.",
+    "empty_queries": "REAL-Q36..40: expected returned question count0 and no exception; literal scans cannot prove absence in un-OCRed images. REAL-Q41: browse semantics, excluded from relevance averages.",
+    "compare": "Run legacy and hybrid against the same real imported snapshot, same workspace and filters, no private query scope, same fixed index version; save actual UUID lists and timings separately.",
+    "release_limit": "This development set is not the Master Plan independent real-user holdout release gate. Obtain user/blind review before asserting that gate has passed.",
+    "performance_fixture": "Do not reuse real UUID qrels against synthetic93000-row UUIDs. For 10x performance, retain real9281 corpus unchanged plus clearly marked distractors, or measure synthetic performance separately without relevance claims."
+  },
+  "corpus": "real-public-metadata-2026-11-12",
+  "source_metadata_sha256": "dec38a454ca2734ba5486a44e2219182435e138f58042aae01a834942903ff3d",
+  "qrels_sha256": "b40e28b296914e719048d4139d2b7ca78155b594dfa25d409b237df7a08c3f7b",
+  "question_count": 9281,
+  "projection_count": 9281,
+  "db_vendor": "postgresql",
+  "postgres_version": 150018,
+  "api": "real drill.search.service.question_list_response via DRF Request/APIRequestFactory; auth fixture user; existing live workspace scope/filter/pagination/ranking",
+  "measurement_budget": {
+    "passes_per_backend_query": 1,
+    "warmups": 0,
+    "concurrency": 1
+  },
+  "limitations": [
+    "No independent blind/user labels.",
+    "Sparse judgments: unjudged is unknown, not relevance0.",
+    "KnownRelevantRecall is not full-corpus recall.",
+    "Single-pass service timing is diagnostic only; no HTTP p95 or throughput claim.",
+    "No images/OCR or private learning data imported."
+  ],
+  "search_code_sha256": {
+    "drill/search/excerpts.py": "141b76169a989c841b1d5bdc41398901595675a92b4b5ff13dd0d25486683322",
+    "drill/search/query.py": "ce12e1ebc26f65450478cc9c9339acbe10050719d4cc4c28ac3d5ff47a3350f6",
+    "drill/search/signals.py": "8a7c63252b02fc46b13a6b4e19ca953e1d3f047998736c8ac931436c11378c3f",
+    "drill/search/postgres.py": "50229196663705f6297f2ca94378e4df404b0025277de603bd5f4cc752107128",
+    "drill/search/sqlite.py": "cf963848303da2c4f2c21355c4d6ae5811996fab1108d8af6a9227bcf764f6c7",
+    "drill/search/service.py": "a8839facde634ecce0c0cdcb0fc77fb91f2be72fac2ea5a4cfbadedc165dc199",
+    "drill/search/index.py": "0b474d56c0e215aac2f6f03e66df361bb5b9a29260968573e3505fa72f813500",
+    "drill/search/private.py": "75d3de2e176aebb32688036792588ef8fd373a2082e26b9f7b287b28e5e7e5d6",
+    "drill/search/suggestions.py": "6293e448087c323830cf4d6cad0d7fb217521a7fbee50fd6a2c10784e0ab6ce3",
+    "drill/search/__init__.py": "d8ba8c6a99a7f5d4d6e4fc3645faf372e9f12a116004d50affb76e198fd866ba",
+    "drill/search/normalize.py": "54bcf5f884cdd37247209372d51c32648fccb8e40eff3c21704ef591f594d547",
+    "drill/data/search_aliases_v1.json": "6b517516aa35248f65fc3a41ebc24dd5ca2ee7aef7514ced8a53cb0c3479cf60"
+  },
+  "index_states": [
+    {
+      "workspace": "drill",
+      "ready": true,
+      "rebuilding": false,
+      "build_source_version": "1987f1025fe66f559eac5ed2e833d7dca95f6dbc5e2bf6449cf5be76fc6cb3a1",
+      "aliases_hash": "51fa21d76c342d3e372bb07b7c53b1722aa6e6bb07a3c2417be82bbecf1fceaa",
+      "generation": 18644
+    },
+    {
+      "workspace": "ei",
+      "ready": true,
+      "rebuilding": false,
+      "build_source_version": "1987f1025fe66f559eac5ed2e833d7dca95f6dbc5e2bf6449cf5be76fc6cb3a1",
+      "aliases_hash": "51fa21d76c342d3e372bb07b7c53b1722aa6e6bb07a3c2417be82bbecf1fceaa",
+      "generation": 8595
+    }
+  ],
+  "summary": {
+    "legacy": {
+      "queries": 41,
+      "errors": [],
+      "relevance_queries": 35,
+      "macro_known_relevant_recall_at_20": 0.41904761904761906,
+      "macro_mrr_at_20": 0.36926406926406924,
+      "known_relevant_hit_at_20_queries": 15,
+      "macro_judged_coverage_at_10_nonempty_results": 0.48541666666666666,
+      "known_target_miss_queries": [
+        "REAL-Q01",
+        "REAL-Q06",
+        "REAL-Q08",
+        "REAL-Q09",
+        "REAL-Q11",
+        "REAL-Q12",
+        "REAL-Q13",
+        "REAL-Q14",
+        "REAL-Q17",
+        "REAL-Q18",
+        "REAL-Q19",
+        "REAL-Q21",
+        "REAL-Q22",
+        "REAL-Q24",
+        "REAL-Q25",
+        "REAL-Q29",
+        "REAL-Q30",
+        "REAL-Q31",
+        "REAL-Q32",
+        "REAL-Q33"
+      ],
+      "explicit_grade0_at_10_queries": [
+        "REAL-Q01",
+        "REAL-Q23"
+      ],
+      "expected_empty_passed": 5,
+      "expected_empty_total": 5,
+      "browse_passed": true
+    },
+    "hybrid_v1": {
+      "queries": 41,
+      "errors": [],
+      "relevance_queries": 35,
+      "macro_known_relevant_recall_at_20": 0.7428571428571429,
+      "macro_mrr_at_20": 0.7,
+      "known_relevant_hit_at_20_queries": 26,
+      "macro_judged_coverage_at_10_nonempty_results": 0.3980952380952381,
+      "known_target_miss_queries": [
+        "REAL-Q01",
+        "REAL-Q02",
+        "REAL-Q03",
+        "REAL-Q04",
+        "REAL-Q06",
+        "REAL-Q25",
+        "REAL-Q30",
+        "REAL-Q32",
+        "REAL-Q33"
+      ],
+      "explicit_grade0_at_10_queries": [
+        "REAL-Q23"
+      ],
+      "expected_empty_passed": 5,
+      "expected_empty_total": 5,
+      "browse_passed": true
+    }
+  },
+  "rows": [
+    {
+      "id": "REAL-Q01",
+      "q": "多元微分",
+      "workspace": "drill",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 134,
+      "top24": [
+        "388a0cc2-51c9-5d56-ae28-02274f1843ac",
+        "f671b6a2-4167-554c-a8f2-9b086143cbc1",
+        "2038894c-fdf1-5e51-9572-77626bf8285c",
+        "4ac4e1d2-1313-5f35-85c7-b984a14945a4",
+        "8494ee21-4b4b-51b5-88ad-26fd0546a8a9",
+        "eecdf0e3-e473-5eb8-b75d-d6962b31d5cb",
+        "652c8687-b5e2-5e58-bd06-debbb370d250",
+        "0a0ae13f-b23f-5ed4-93bd-b9ef861e6081",
+        "49860905-400d-56c7-b030-00b3f01be457",
+        "2fb6ca89-0ade-5aff-9cc9-f3995ed7e8d7",
+        "d4f769c6-4d3f-53c8-98d9-78edc9a35622",
+        "ba73b9df-834b-5c71-b1a4-668a33502158",
+        "4556b110-a1c1-509f-b70c-4ac9154a3dc0",
+        "5627cd6f-d641-56c7-bed7-e4b2ca5e3f41",
+        "b13d5e35-20aa-5837-bf01-3f05fb40440f",
+        "01c71857-9541-5e61-9786-e7862eca6594",
+        "9b0899ab-edeb-5fa2-93c8-4704e7bc0c13",
+        "661befd6-bf5e-59ca-9e7a-688da885ee8c",
+        "47d8a09a-8278-5611-81c5-ffacbee28561",
+        "fdff71d7-9372-53f7-9d3a-0e0e932faeb0",
+        "6498c073-f6fa-5835-84f7-b44673754b03",
+        "8be93a94-fcd0-5419-9008-b2aea8df4853",
+        "2e44f1f9-280c-57ba-a95a-d9cc55b6d25a",
+        "9ec8ba16-826e-50c4-9500-ed57d4d295df"
+      ],
+      "search": {
+        "version": 2,
+        "query": "多元微分",
+        "normalized_query": "多元微分",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 301.996,
+      "metrics": {
+        "known_relevant_recall_at_20": 0.0,
+        "known_relevant_hit_at_20": 0,
+        "mrr_at_20": 0,
+        "judged_coverage_at_10": 0.1,
+        "explicit_grade0_at_10": [
+          "388a0cc2-51c9-5d56-ae28-02274f1843ac"
+        ],
+        "known_positive_count": 3,
+        "known_positive_returned_at_20": [],
+        "unjudged_returned_at_10": [
+          "f671b6a2-4167-554c-a8f2-9b086143cbc1",
+          "2038894c-fdf1-5e51-9572-77626bf8285c",
+          "4ac4e1d2-1313-5f35-85c7-b984a14945a4",
+          "8494ee21-4b4b-51b5-88ad-26fd0546a8a9",
+          "eecdf0e3-e473-5eb8-b75d-d6962b31d5cb",
+          "652c8687-b5e2-5e58-bd06-debbb370d250",
+          "0a0ae13f-b23f-5ed4-93bd-b9ef861e6081",
+          "49860905-400d-56c7-b030-00b3f01be457",
+          "2fb6ca89-0ade-5aff-9cc9-f3995ed7e8d7"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.0
+      },
+      "known_target_found_at_20": false
+    },
+    {
+      "id": "REAL-Q02",
+      "q": "偏导数",
+      "workspace": "drill",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 142,
+      "top24": [
+        "ac64a855-bfce-533b-abf3-4d3668fb7e3c",
+        "12049447-679e-5a28-b669-1a282c57ee9d",
+        "f8d15568-5bb8-5df2-9bac-49c9b0cf3986",
+        "30f18230-d8e7-55f4-bab2-a3f8e0be4da2",
+        "e69d8522-f017-5a87-9c55-1951dc30ed93",
+        "aa0f58b2-b026-5a78-ab07-423135714ca3",
+        "9f832cee-c90e-518d-8094-c4146d216b0c",
+        "3f36c6da-8c90-51c0-8086-db373473d006",
+        "2bba0c4f-d205-53c8-9ce4-eea48700828d",
+        "6aba3977-cad8-5f71-8861-2176c0f26e96",
+        "e7dca1fb-5d9e-55ab-9a84-377f53f431cc",
+        "905bd38a-c1e0-507c-8659-8ead0b810655",
+        "eb7fb946-5ad8-5168-bcc0-7b53f2d2d11c",
+        "fba4c630-0d5c-5077-ab85-28564e6acfab",
+        "33ef7102-3b8c-5316-8e61-d6ec244271c2",
+        "dbe7a5cf-ad11-51b5-853e-8670b6854f13",
+        "e9e43b94-23a0-538f-a874-5ed637b77107",
+        "66d24831-143b-5445-af82-f1519512371e",
+        "d2ab114d-cc48-5bc9-898e-32241c088f6b",
+        "5ad17acb-28b9-52b5-a397-f3d9b9d0d84a",
+        "b2483066-a45e-5027-a88a-70edb5087179",
+        "a7c176bc-7442-5dfb-a507-c1d8e09d62ec",
+        "ce876338-9cc3-5884-b845-59029264b55b",
+        "9750675e-b3e3-515b-aa0b-aa118d6b1fb8"
+      ],
+      "search": {
+        "version": 2,
+        "query": "偏导数",
+        "normalized_query": "偏导数",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 76.095,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 0.5,
+        "judged_coverage_at_10": 0.3,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 3,
+        "known_positive_returned_at_20": [
+          "12049447-679e-5a28-b669-1a282c57ee9d",
+          "f8d15568-5bb8-5df2-9bac-49c9b0cf3986",
+          "30f18230-d8e7-55f4-bab2-a3f8e0be4da2"
+        ],
+        "unjudged_returned_at_10": [
+          "ac64a855-bfce-533b-abf3-4d3668fb7e3c",
+          "e69d8522-f017-5a87-9c55-1951dc30ed93",
+          "aa0f58b2-b026-5a78-ab07-423135714ca3",
+          "9f832cee-c90e-518d-8094-c4146d216b0c",
+          "3f36c6da-8c90-51c0-8086-db373473d006",
+          "2bba0c4f-d205-53c8-9ce4-eea48700828d",
+          "6aba3977-cad8-5f71-8861-2176c0f26e96"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q03",
+      "q": "导数",
+      "workspace": "drill",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 455,
+      "top24": [
+        "9ea562ee-3f2f-5bf2-9266-ecd7ad1ed69d",
+        "7c2eede2-a802-5bdf-9c62-88cd9c35c3d1",
+        "e37c58dc-f439-555e-8ed8-b9931515e777",
+        "0e12c8d6-d449-525c-a477-fd8e59f94abf",
+        "265671eb-566b-56d9-9649-4b6baa5043d5",
+        "9c22dfdb-a84b-52dc-966b-d68b1ca2c418",
+        "542202ff-3e99-5496-a5cc-147320f88b44",
+        "03ae6b53-002a-5354-acd7-24c027157575",
+        "afa22f3c-1d28-559b-aaaa-561e826dada9",
+        "ac64a855-bfce-533b-abf3-4d3668fb7e3c",
+        "12049447-679e-5a28-b669-1a282c57ee9d",
+        "f8d15568-5bb8-5df2-9bac-49c9b0cf3986",
+        "30f18230-d8e7-55f4-bab2-a3f8e0be4da2",
+        "e69d8522-f017-5a87-9c55-1951dc30ed93",
+        "aa0f58b2-b026-5a78-ab07-423135714ca3",
+        "9f832cee-c90e-518d-8094-c4146d216b0c",
+        "3f36c6da-8c90-51c0-8086-db373473d006",
+        "2bba0c4f-d205-53c8-9ce4-eea48700828d",
+        "6aba3977-cad8-5f71-8861-2176c0f26e96",
+        "e7dca1fb-5d9e-55ab-9a84-377f53f431cc",
+        "905bd38a-c1e0-507c-8659-8ead0b810655",
+        "eb7fb946-5ad8-5168-bcc0-7b53f2d2d11c",
+        "fba4c630-0d5c-5077-ab85-28564e6acfab",
+        "33ef7102-3b8c-5316-8e61-d6ec244271c2"
+      ],
+      "search": {
+        "version": 2,
+        "query": "导数",
+        "normalized_query": "导数",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 72.752,
+      "metrics": {
+        "known_relevant_recall_at_20": 0.6666666666666666,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 0.09090909090909091,
+        "judged_coverage_at_10": 0.0,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 3,
+        "known_positive_returned_at_20": [
+          "12049447-679e-5a28-b669-1a282c57ee9d",
+          "30f18230-d8e7-55f4-bab2-a3f8e0be4da2"
+        ],
+        "unjudged_returned_at_10": [
+          "9ea562ee-3f2f-5bf2-9266-ecd7ad1ed69d",
+          "7c2eede2-a802-5bdf-9c62-88cd9c35c3d1",
+          "e37c58dc-f439-555e-8ed8-b9931515e777",
+          "0e12c8d6-d449-525c-a477-fd8e59f94abf",
+          "265671eb-566b-56d9-9649-4b6baa5043d5",
+          "9c22dfdb-a84b-52dc-966b-d68b1ca2c418",
+          "542202ff-3e99-5496-a5cc-147320f88b44",
+          "03ae6b53-002a-5354-acd7-24c027157575",
+          "afa22f3c-1d28-559b-aaaa-561e826dada9",
+          "ac64a855-bfce-533b-abf3-4d3668fb7e3c"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.47078692139073114
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q04",
+      "q": "隐函数",
+      "workspace": "drill",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 95,
+      "top24": [
+        "a3cefb82-cd64-5b92-977d-799bbea83b28",
+        "5e492916-723a-5227-bf74-3fc725b08a25",
+        "45f6ff98-9d3a-52fb-972e-d8351fc2ae5e",
+        "d1397d51-4ee5-58de-ae07-c48dffc78162",
+        "c0444221-d689-5887-856b-c7bd1a42b1f9",
+        "6f8bb0b8-f5db-55c9-bd35-4b6acb183eac",
+        "31af059c-0c8d-5a4d-837e-afd224463846",
+        "8e41fc5a-c3d7-56c7-b91e-5e2fd6aa3e54",
+        "870e62c7-5365-50a2-8a07-e7662773f061",
+        "5fe96734-2c92-5ae2-83bb-b1fa0dd032a6",
+        "4464af62-a399-5896-8e39-7a6687fce2a8",
+        "b6e47187-457d-5946-9e96-fe2bf44dfcc0",
+        "8ee660d4-f258-55d8-9ca9-ac733fb1b8e8",
+        "79242e4f-e4a1-5b2b-ac6e-fec6bc56fdc6",
+        "7fdeec85-4aa1-51f6-a231-f7d9b8f52812",
+        "b452a446-d057-5023-896d-985c2709c17c",
+        "433112d0-3ae0-5bf0-ba40-31017044e27a",
+        "5fe1e201-102f-55ec-8337-7c61c4d41c68",
+        "a93953e2-0edc-56bd-83d3-59feb0c16f57",
+        "c24f3b45-38dc-5e82-9b4f-9022821a5893",
+        "ebca6835-fde7-535f-9c0c-b73f5f49d230",
+        "3a8b601c-4472-5aa2-a80a-e5bdbac0cb33",
+        "7ce3c8d9-9f65-5a76-878b-0b68a1681a54",
+        "72dd6f35-517b-5e83-857d-c91cf744292b"
+      ],
+      "search": {
+        "version": 2,
+        "query": "隐函数",
+        "normalized_query": "隐函数",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 72.717,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 0.3333333333333333,
+        "judged_coverage_at_10": 0.2,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 2,
+        "known_positive_returned_at_20": [
+          "45f6ff98-9d3a-52fb-972e-d8351fc2ae5e",
+          "31af059c-0c8d-5a4d-837e-afd224463846"
+        ],
+        "unjudged_returned_at_10": [
+          "a3cefb82-cd64-5b92-977d-799bbea83b28",
+          "5e492916-723a-5227-bf74-3fc725b08a25",
+          "d1397d51-4ee5-58de-ae07-c48dffc78162",
+          "c0444221-d689-5887-856b-c7bd1a42b1f9",
+          "6f8bb0b8-f5db-55c9-bd35-4b6acb183eac",
+          "8e41fc5a-c3d7-56c7-b91e-5e2fd6aa3e54",
+          "870e62c7-5365-50a2-8a07-e7662773f061",
+          "5fe96734-2c92-5ae2-83bb-b1fa0dd032a6"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.9580414003446834
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q05",
+      "q": "傅里叶变换",
+      "workspace": "ei",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 58,
+      "top24": [
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d",
+        "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e",
+        "ca96c75f-1771-5db7-8952-5ba457cc7603",
+        "294ff8ab-1100-573d-94ce-bf1c9a8edba5",
+        "2d524c54-b4a5-56c3-8539-c75744fb7b2e",
+        "81648940-3f5f-5297-ad90-78bf896140df",
+        "15b9ff09-c904-5ffc-b8fe-b3e0d358adcc",
+        "b636fde4-946f-59fd-a4c0-63eb5e12a454",
+        "2822f271-b229-5ff0-9584-214bffebad60",
+        "e336519e-9859-5808-a9ff-393007d13f47",
+        "869d64d0-933b-5aec-b29c-7da937c35e98",
+        "0e0f1c32-4fb0-5e45-8317-17054bc279ea",
+        "8f514997-e2ce-5e3d-becc-4bee4a8b50be",
+        "cab03032-93c4-5706-b53b-2222c3ffbbcf",
+        "478dd058-8fa9-5d72-baeb-6d1b42b7e44d",
+        "4333bfb3-a5d9-5b56-acb3-7d5a20c46b11",
+        "434d464a-581f-55c6-826a-1f475e7a2422",
+        "f8725e54-d34a-582d-8c2e-f96712d8230e",
+        "9c6d7d66-3643-5e6d-9b0d-a573a6b79aef",
+        "05404db8-ecb7-5516-9487-432cf0b31272",
+        "633f0542-e19c-57c2-9258-ee6875aa38bc",
+        "3768262e-ecc2-51c1-948f-3decac752858",
+        "850c550a-6c79-5373-9377-08f054cf4663",
+        "559a2f9a-3200-5232-a389-fea8f15cd3ef"
+      ],
+      "search": {
+        "version": 2,
+        "query": "傅里叶变换",
+        "normalized_query": "傅里叶变换",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 35.177,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 0.5,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 5,
+        "known_positive_returned_at_20": [
+          "1d955aa9-db0f-5cbc-9cb9-36521dddb37d",
+          "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e",
+          "ca96c75f-1771-5db7-8952-5ba457cc7603",
+          "294ff8ab-1100-573d-94ce-bf1c9a8edba5",
+          "2d524c54-b4a5-56c3-8539-c75744fb7b2e"
+        ],
+        "unjudged_returned_at_10": [
+          "81648940-3f5f-5297-ad90-78bf896140df",
+          "15b9ff09-c904-5ffc-b8fe-b3e0d358adcc",
+          "b636fde4-946f-59fd-a4c0-63eb5e12a454",
+          "2822f271-b229-5ff0-9584-214bffebad60",
+          "e336519e-9859-5808-a9ff-393007d13f47"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q06",
+      "q": "Fourier",
+      "workspace": "ei",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 0,
+      "top24": [],
+      "search": {
+        "version": 2,
+        "query": "Fourier",
+        "normalized_query": "fourier",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 11.718,
+      "metrics": {
+        "known_relevant_recall_at_20": 0.0,
+        "known_relevant_hit_at_20": 0,
+        "mrr_at_20": 0,
+        "judged_coverage_at_10": null,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 3,
+        "known_positive_returned_at_20": [],
+        "unjudged_returned_at_10": [],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.0
+      },
+      "known_target_found_at_20": false
+    },
+    {
+      "id": "REAL-Q07",
+      "q": "傅里叶",
+      "workspace": "ei",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 65,
+      "top24": [
+        "9b11f3a6-52ad-5551-bd5b-ebfd100520a3",
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d",
+        "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e",
+        "ca96c75f-1771-5db7-8952-5ba457cc7603",
+        "ae66b1e8-0f41-5b9d-995a-450fbfdcb3a5",
+        "294ff8ab-1100-573d-94ce-bf1c9a8edba5",
+        "2d524c54-b4a5-56c3-8539-c75744fb7b2e",
+        "81648940-3f5f-5297-ad90-78bf896140df",
+        "15b9ff09-c904-5ffc-b8fe-b3e0d358adcc",
+        "b636fde4-946f-59fd-a4c0-63eb5e12a454",
+        "2822f271-b229-5ff0-9584-214bffebad60",
+        "e336519e-9859-5808-a9ff-393007d13f47",
+        "869d64d0-933b-5aec-b29c-7da937c35e98",
+        "0e0f1c32-4fb0-5e45-8317-17054bc279ea",
+        "8f514997-e2ce-5e3d-becc-4bee4a8b50be",
+        "cab03032-93c4-5706-b53b-2222c3ffbbcf",
+        "478dd058-8fa9-5d72-baeb-6d1b42b7e44d",
+        "4333bfb3-a5d9-5b56-acb3-7d5a20c46b11",
+        "434d464a-581f-55c6-826a-1f475e7a2422",
+        "f8725e54-d34a-582d-8c2e-f96712d8230e",
+        "9c6d7d66-3643-5e6d-9b0d-a573a6b79aef",
+        "05404db8-ecb7-5516-9487-432cf0b31272",
+        "633f0542-e19c-57c2-9258-ee6875aa38bc",
+        "3768262e-ecc2-51c1-948f-3decac752858"
+      ],
+      "search": {
+        "version": 2,
+        "query": "傅里叶",
+        "normalized_query": "傅里叶",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 31.225,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 0.3,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 3,
+        "known_positive_returned_at_20": [
+          "9b11f3a6-52ad-5551-bd5b-ebfd100520a3",
+          "1d955aa9-db0f-5cbc-9cb9-36521dddb37d",
+          "ca96c75f-1771-5db7-8952-5ba457cc7603"
+        ],
+        "unjudged_returned_at_10": [
+          "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e",
+          "ae66b1e8-0f41-5b9d-995a-450fbfdcb3a5",
+          "294ff8ab-1100-573d-94ce-bf1c9a8edba5",
+          "2d524c54-b4a5-56c3-8539-c75744fb7b2e",
+          "81648940-3f5f-5297-ad90-78bf896140df",
+          "15b9ff09-c904-5ffc-b8fe-b3e0d358adcc",
+          "b636fde4-946f-59fd-a4c0-63eb5e12a454"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q08",
+      "q": "Fourier 变换",
+      "workspace": "ei",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 0,
+      "top24": [],
+      "search": {
+        "version": 2,
+        "query": "Fourier 变换",
+        "normalized_query": "fourier 变换",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 12.526,
+      "metrics": {
+        "known_relevant_recall_at_20": 0.0,
+        "known_relevant_hit_at_20": 0,
+        "mrr_at_20": 0,
+        "judged_coverage_at_10": null,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 5,
+        "known_positive_returned_at_20": [],
+        "unjudged_returned_at_10": [],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.0
+      },
+      "known_target_found_at_20": false
+    },
+    {
+      "id": "REAL-Q09",
+      "q": "变换 傅里叶",
+      "workspace": "ei",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 0,
+      "top24": [],
+      "search": {
+        "version": 2,
+        "query": "变换 傅里叶",
+        "normalized_query": "变换傅里叶",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 11.779,
+      "metrics": {
+        "known_relevant_recall_at_20": 0.0,
+        "known_relevant_hit_at_20": 0,
+        "mrr_at_20": 0,
+        "judged_coverage_at_10": null,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 5,
+        "known_positive_returned_at_20": [],
+        "unjudged_returned_at_10": [],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.0
+      },
+      "known_target_found_at_20": false
+    },
+    {
+      "id": "REAL-Q10",
+      "q": "Z 变换",
+      "workspace": "ei",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 56,
+      "top24": [
+        "4116f9f1-deb9-5d91-b570-124d25f12b2e",
+        "5a462c48-0818-5544-977a-aee83524b00b",
+        "dee4f3f6-2823-5ca0-987d-e8bd95804207",
+        "3ac965f4-57ee-5cc3-8bd0-3577b0189ee7",
+        "b412e4ab-c93c-51c8-a122-e71d4defec44",
+        "ea9e9e82-81c0-5c90-a92a-a113a5f1cb37",
+        "59ae0ac3-42eb-5c73-9477-78585f00f2d7",
+        "9a873fc5-7ee6-5623-a7d7-b76b22e5fd91",
+        "68e6a9ad-3e62-5c43-b988-9a3b5fed7509",
+        "535f7184-869e-5402-a403-f06f139782f0",
+        "cc222414-7a19-5eba-981b-25d2505090fa",
+        "0349c324-dc90-5a9f-8726-d26b65839763",
+        "49908bf5-2679-5c2c-bc7a-f121a50e6088",
+        "f6ff0c79-5802-5c2b-b729-c8c3496f468a",
+        "ada389a8-82b8-5569-ab56-a6e8f31c0362",
+        "b718cb2e-ef54-54c5-b6e9-a1dfd58ebf30",
+        "956a1330-5df4-58ce-bdd8-6fa39776ce84",
+        "1ac3da85-bfec-53e3-b389-8efcff80bff9",
+        "10d7c3d5-3433-5041-9660-b94dc0aad337",
+        "ece0f521-b276-5086-ac1d-41675c2282dd",
+        "511bbf47-891c-5c7f-9c58-914585acbb15",
+        "4ad0a573-c752-5d05-8e6d-f75fa156f694",
+        "dd09c618-f901-5278-8bae-04e60059d29d",
+        "f2748dd2-436f-583c-8e32-b577248bc4bc"
+      ],
+      "search": {
+        "version": 2,
+        "query": "Z 变换",
+        "normalized_query": "z 变换",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 45.75,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 0.4,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 4,
+        "known_positive_returned_at_20": [
+          "4116f9f1-deb9-5d91-b570-124d25f12b2e",
+          "5a462c48-0818-5544-977a-aee83524b00b",
+          "dee4f3f6-2823-5ca0-987d-e8bd95804207",
+          "59ae0ac3-42eb-5c73-9477-78585f00f2d7"
+        ],
+        "unjudged_returned_at_10": [
+          "3ac965f4-57ee-5cc3-8bd0-3577b0189ee7",
+          "b412e4ab-c93c-51c8-a122-e71d4defec44",
+          "ea9e9e82-81c0-5c90-a92a-a113a5f1cb37",
+          "9a873fc5-7ee6-5623-a7d7-b76b22e5fd91",
+          "68e6a9ad-3e62-5c43-b988-9a3b5fed7509",
+          "535f7184-869e-5402-a403-f06f139782f0"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q11",
+      "q": "Z变换",
+      "workspace": "ei",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 0,
+      "top24": [],
+      "search": {
+        "version": 2,
+        "query": "Z变换",
+        "normalized_query": "z变换",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 12.208,
+      "metrics": {
+        "known_relevant_recall_at_20": 0.0,
+        "known_relevant_hit_at_20": 0,
+        "mrr_at_20": 0,
+        "judged_coverage_at_10": null,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 4,
+        "known_positive_returned_at_20": [],
+        "unjudged_returned_at_10": [],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.0
+      },
+      "known_target_found_at_20": false
+    },
+    {
+      "id": "REAL-Q12",
+      "q": "ｚ　变换",
+      "workspace": "ei",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 0,
+      "top24": [],
+      "search": {
+        "version": 2,
+        "query": "ｚ　变换",
+        "normalized_query": "z 变换",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 12.097,
+      "metrics": {
+        "known_relevant_recall_at_20": 0.0,
+        "known_relevant_hit_at_20": 0,
+        "mrr_at_20": 0,
+        "judged_coverage_at_10": null,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 4,
+        "known_positive_returned_at_20": [],
+        "unjudged_returned_at_10": [],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.0
+      },
+      "known_target_found_at_20": false
+    },
+    {
+      "id": "REAL-Q13",
+      "q": "拉普拉斯",
+      "workspace": "ei",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 0,
+      "top24": [],
+      "search": {
+        "version": 2,
+        "query": "拉普拉斯",
+        "normalized_query": "拉普拉斯",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 11.685,
+      "metrics": {
+        "known_relevant_recall_at_20": 0.0,
+        "known_relevant_hit_at_20": 0,
+        "mrr_at_20": 0,
+        "judged_coverage_at_10": null,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 3,
+        "known_positive_returned_at_20": [],
+        "unjudged_returned_at_10": [],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.0
+      },
+      "known_target_found_at_20": false
+    },
+    {
+      "id": "REAL-Q14",
+      "q": "Laplace transform",
+      "workspace": "ei",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 0,
+      "top24": [],
+      "search": {
+        "version": 2,
+        "query": "Laplace transform",
+        "normalized_query": "laplace transform",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 13.635,
+      "metrics": {
+        "known_relevant_recall_at_20": 0.0,
+        "known_relevant_hit_at_20": 0,
+        "mrr_at_20": 0,
+        "judged_coverage_at_10": null,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 3,
+        "known_positive_returned_at_20": [],
+        "unjudged_returned_at_10": [],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.0
+      },
+      "known_target_found_at_20": false
+    },
+    {
+      "id": "REAL-Q15",
+      "q": "拉氏变换",
+      "workspace": "ei",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 61,
+      "top24": [
+        "3d0fcd80-f0d8-507b-9d5f-570f7170d36c",
+        "c0c4d36d-534f-517f-9671-6942d7949b29",
+        "a6efc112-97ad-5cf0-9b22-9549b93d2285",
+        "181043e0-5bcb-57f0-843a-851f839a79fb",
+        "e9137197-fcd1-5367-9492-0bf7fd82125d",
+        "ab967b29-fe54-538a-96a2-ec3d405effc3",
+        "db55b6b7-ba33-5816-9aba-6846a74adf6f",
+        "0b1f280a-e491-53a4-8ddf-f34e45f46cc5",
+        "cdda335b-8a83-57ad-adf0-de617e121a44",
+        "5122f208-6142-5076-987a-ca61c3d34909",
+        "3bf979ac-8ac4-5e89-a66a-a72120c3bf40",
+        "5a27763c-9d51-5256-a9a8-8d9008865ae3",
+        "c6d0be88-7b81-527d-a0f6-c988b738d496",
+        "02a5f669-35b3-5756-bf2c-fcf342116fd5",
+        "756a970f-5cd8-521a-a66e-b83faefcf1f6",
+        "30763c94-dd30-59a0-9a25-4cb6f33f5afc",
+        "ac6a3314-6523-5fe5-9f6b-e12ee8c241c4",
+        "a770d398-fd1b-597a-b649-7b0fcd543f92",
+        "8aea793c-19c2-5bde-95ae-3448bdf0f4a9",
+        "333ec3d6-63d9-55c1-802b-2c9417786082",
+        "b6cff347-67f7-5720-8066-34cf02e7507d",
+        "f9e89530-9040-5112-bfc3-3877737b8101",
+        "67abf35e-1cbf-5a3e-84ed-991c0251e5f2",
+        "65d5b817-28a1-5c2d-986f-20331259b1de"
+      ],
+      "search": {
+        "version": 2,
+        "query": "拉氏变换",
+        "normalized_query": "拉氏变换",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 36.251,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 0.3,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 3,
+        "known_positive_returned_at_20": [
+          "3d0fcd80-f0d8-507b-9d5f-570f7170d36c",
+          "c0c4d36d-534f-517f-9671-6942d7949b29",
+          "a6efc112-97ad-5cf0-9b22-9549b93d2285"
+        ],
+        "unjudged_returned_at_10": [
+          "181043e0-5bcb-57f0-843a-851f839a79fb",
+          "e9137197-fcd1-5367-9492-0bf7fd82125d",
+          "ab967b29-fe54-538a-96a2-ec3d405effc3",
+          "db55b6b7-ba33-5816-9aba-6846a74adf6f",
+          "0b1f280a-e491-53a4-8ddf-f34e45f46cc5",
+          "cdda335b-8a83-57ad-adf0-de617e121a44",
+          "5122f208-6142-5076-987a-ca61c3d34909"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q16",
+      "q": "卡诺图",
+      "workspace": "ei",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 13,
+      "top24": [
+        "e03928e3-2e2f-543d-a42a-80cb08f52e10",
+        "7ffd5204-1d6e-5ffd-9b60-5d79ef311ec1",
+        "137a7daa-32b3-561c-8ca0-d5eb5b84583f",
+        "905d1677-5e4c-550d-9b3d-4522e5f2b186",
+        "3ddcd9ab-76a7-5c9a-8dd6-c7fc334a3324",
+        "d4fee5f5-ebc1-5fbe-894d-d2072da7f9d4",
+        "f308473f-cb32-5cfb-a2dd-7e87486b2600",
+        "819b5a82-7a4e-564e-8e3a-88e026845639",
+        "0823ab10-6060-5af8-9d52-18cdfd2afb76",
+        "6bcb6d49-fa96-5cce-bf6f-24b42defc684",
+        "d1f7e897-8fc2-5365-a4e4-b773981e6752",
+        "27e66d98-64c6-5fd3-a9f0-b447cfeef12b",
+        "c6a1c4d1-5274-5c2a-b3a4-72ed53ff5e6f"
+      ],
+      "search": {
+        "version": 2,
+        "query": "卡诺图",
+        "normalized_query": "卡诺图",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 34.085,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 0.2,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 2,
+        "known_positive_returned_at_20": [
+          "e03928e3-2e2f-543d-a42a-80cb08f52e10",
+          "7ffd5204-1d6e-5ffd-9b60-5d79ef311ec1"
+        ],
+        "unjudged_returned_at_10": [
+          "137a7daa-32b3-561c-8ca0-d5eb5b84583f",
+          "905d1677-5e4c-550d-9b3d-4522e5f2b186",
+          "3ddcd9ab-76a7-5c9a-8dd6-c7fc334a3324",
+          "d4fee5f5-ebc1-5fbe-894d-d2072da7f9d4",
+          "f308473f-cb32-5cfb-a2dd-7e87486b2600",
+          "819b5a82-7a4e-564e-8e3a-88e026845639",
+          "0823ab10-6060-5af8-9d52-18cdfd2afb76",
+          "6bcb6d49-fa96-5cce-bf6f-24b42defc684"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q17",
+      "q": "Karnaugh map",
+      "workspace": "ei",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 0,
+      "top24": [],
+      "search": {
+        "version": 2,
+        "query": "Karnaugh map",
+        "normalized_query": "karnaugh map",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 11.75,
+      "metrics": {
+        "known_relevant_recall_at_20": 0.0,
+        "known_relevant_hit_at_20": 0,
+        "mrr_at_20": 0,
+        "judged_coverage_at_10": null,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 2,
+        "known_positive_returned_at_20": [],
+        "unjudged_returned_at_10": [],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.0
+      },
+      "known_target_found_at_20": false
+    },
+    {
+      "id": "REAL-Q18",
+      "q": "RS 触发器",
+      "workspace": "ei",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 0,
+      "top24": [],
+      "search": {
+        "version": 2,
+        "query": "RS 触发器",
+        "normalized_query": "rs 触发器",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 11.946,
+      "metrics": {
+        "known_relevant_recall_at_20": 0.0,
+        "known_relevant_hit_at_20": 0,
+        "mrr_at_20": 0,
+        "judged_coverage_at_10": null,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 1,
+        "known_positive_returned_at_20": [],
+        "unjudged_returned_at_10": [],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.0
+      },
+      "known_target_found_at_20": false
+    },
+    {
+      "id": "REAL-Q19",
+      "q": "RS触发器",
+      "workspace": "ei",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 0,
+      "top24": [],
+      "search": {
+        "version": 2,
+        "query": "RS触发器",
+        "normalized_query": "rs触发器",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 12.027,
+      "metrics": {
+        "known_relevant_recall_at_20": 0.0,
+        "known_relevant_hit_at_20": 0,
+        "mrr_at_20": 0,
+        "judged_coverage_at_10": null,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 1,
+        "known_positive_returned_at_20": [],
+        "unjudged_returned_at_10": [],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.0
+      },
+      "known_target_found_at_20": false
+    },
+    {
+      "id": "REAL-Q20",
+      "q": "负反馈",
+      "workspace": "ei",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 26,
+      "top24": [
+        "927d5d1c-e637-517f-8648-5e493551fcdf",
+        "168d41d6-24b8-5796-9069-ab6795184312",
+        "c66a741a-2b6e-5ced-91b1-b9d5b7a935b4",
+        "9337892c-39ed-587e-8e98-e497ea84046f",
+        "ccd2136d-929f-51f9-a063-92438fdc2017",
+        "ad1cbe96-6cc9-514b-8a7f-05f8ca5f8ea9",
+        "06086b37-546a-5971-b033-a05dbb7ed30b",
+        "c51dd4b1-c888-5e3d-81e7-b7b735d9415f",
+        "4685a61f-cd13-5e02-b35d-d610db0740ae",
+        "00545fd2-1815-56bb-b29d-10ec0b646bbe",
+        "feeb7a4d-bfee-508a-983e-34cb2f05eec5",
+        "afc8595f-9073-54dc-bace-9f41699bc04f",
+        "eb5e543a-c51d-5146-a582-fffb78c9c615",
+        "0129cc16-e317-5dca-a86a-a0e71060123c",
+        "9c56a5af-0c5f-59f1-8398-2788bd6d29c2",
+        "733d197c-db70-56e3-818c-5765a7409a53",
+        "dd26a39e-ebf2-5fdb-8ea8-a56bbd771f2d",
+        "87b35ab6-a8c6-5d57-bc0e-e660ce89d2ca",
+        "a6a98c26-8314-5f59-8e86-76e250679e02",
+        "aa96a9d5-5b1b-5a81-b6c4-ea64036fd847",
+        "564b28f4-e724-53db-a0f8-665ee35789b6",
+        "b1aba79c-6456-53aa-8251-c4c1a37d1a43",
+        "1c901621-9830-522e-a960-4cf5881ea95f",
+        "174d0c0f-23a8-5938-8278-483ea3d0ec74"
+      ],
+      "search": {
+        "version": 2,
+        "query": "负反馈",
+        "normalized_query": "负反馈",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 31.573,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 0.3,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 3,
+        "known_positive_returned_at_20": [
+          "927d5d1c-e637-517f-8648-5e493551fcdf",
+          "168d41d6-24b8-5796-9069-ab6795184312",
+          "c66a741a-2b6e-5ced-91b1-b9d5b7a935b4"
+        ],
+        "unjudged_returned_at_10": [
+          "9337892c-39ed-587e-8e98-e497ea84046f",
+          "ccd2136d-929f-51f9-a063-92438fdc2017",
+          "ad1cbe96-6cc9-514b-8a7f-05f8ca5f8ea9",
+          "06086b37-546a-5971-b033-a05dbb7ed30b",
+          "c51dd4b1-c888-5e3d-81e7-b7b735d9415f",
+          "4685a61f-cd13-5e02-b35d-d610db0740ae",
+          "00545fd2-1815-56bb-b29d-10ec0b646bbe"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q21",
+      "q": "negative feedback",
+      "workspace": "ei",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 0,
+      "top24": [],
+      "search": {
+        "version": 2,
+        "query": "negative feedback",
+        "normalized_query": "negative feedback",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 11.632,
+      "metrics": {
+        "known_relevant_recall_at_20": 0.0,
+        "known_relevant_hit_at_20": 0,
+        "mrr_at_20": 0,
+        "judged_coverage_at_10": null,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 3,
+        "known_positive_returned_at_20": [],
+        "unjudged_returned_at_10": [],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.0
+      },
+      "known_target_found_at_20": false
+    },
+    {
+      "id": "REAL-Q22",
+      "q": "Bode",
+      "workspace": "ei",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 0,
+      "top24": [],
+      "search": {
+        "version": 2,
+        "query": "Bode",
+        "normalized_query": "bode",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 12.523,
+      "metrics": {
+        "known_relevant_recall_at_20": 0.0,
+        "known_relevant_hit_at_20": 0,
+        "mrr_at_20": 0,
+        "judged_coverage_at_10": null,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 2,
+        "known_positive_returned_at_20": [],
+        "unjudged_returned_at_10": [],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.0
+      },
+      "known_target_found_at_20": false
+    },
+    {
+      "id": "REAL-Q23",
+      "q": "波特",
+      "workspace": "ei",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 3,
+      "top24": [
+        "7bf3178b-610d-5336-bbf1-54f6f1a265da",
+        "9f73e07e-2064-5148-b569-be88869e7d35",
+        "a8b3969a-5ab2-500a-a08e-46a053c28206"
+      ],
+      "search": {
+        "version": 2,
+        "query": "波特",
+        "normalized_query": "波特",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 31.257,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 1.0,
+        "explicit_grade0_at_10": [
+          "a8b3969a-5ab2-500a-a08e-46a053c28206"
+        ],
+        "known_positive_count": 2,
+        "known_positive_returned_at_20": [
+          "7bf3178b-610d-5336-bbf1-54f6f1a265da",
+          "9f73e07e-2064-5148-b569-be88869e7d35"
+        ],
+        "unjudged_returned_at_10": [],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.9580414003446834
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q24",
+      "q": "数二线代臻选题",
+      "workspace": "drill",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 0,
+      "top24": [],
+      "search": {
+        "version": 2,
+        "query": "数二线代臻选题",
+        "normalized_query": "数二线代臻选题",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 31.664,
+      "metrics": {
+        "known_relevant_recall_at_20": 0.0,
+        "known_relevant_hit_at_20": 0,
+        "mrr_at_20": 0,
+        "judged_coverage_at_10": null,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 3,
+        "known_positive_returned_at_20": [],
+        "unjudged_returned_at_10": [],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.0
+      },
+      "known_target_found_at_20": false
+    },
+    {
+      "id": "REAL-Q25",
+      "q": "892 信号与系统",
+      "workspace": "ei",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 0,
+      "top24": [],
+      "search": {
+        "version": 2,
+        "query": "892 信号与系统",
+        "normalized_query": "892 信号与系统",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 12.008,
+      "metrics": {
+        "known_relevant_recall_at_20": 0.0,
+        "known_relevant_hit_at_20": 0,
+        "mrr_at_20": 0,
+        "judged_coverage_at_10": null,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 3,
+        "known_positive_returned_at_20": [],
+        "unjudged_returned_at_10": [],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.0
+      },
+      "known_target_found_at_20": false
+    },
+    {
+      "id": "REAL-Q26",
+      "q": "SIG-SA-06",
+      "workspace": "ei",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 1,
+      "top24": [
+        "294ff8ab-1100-573d-94ce-bf1c9a8edba5"
+      ],
+      "search": {
+        "version": 2,
+        "query": "SIG-SA-06",
+        "normalized_query": "sig-sa-06",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 28.799,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 1.0,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 1,
+        "known_positive_returned_at_20": [
+          "294ff8ab-1100-573d-94ce-bf1c9a8edba5"
+        ],
+        "unjudged_returned_at_10": [],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q27",
+      "q": "课后题 3-3",
+      "workspace": "ei",
+      "backend": "legacy",
+      "filters": {
+        "document": 23
+      },
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 6,
+      "top24": [
+        "2d524c54-b4a5-56c3-8539-c75744fb7b2e",
+        "559a2f9a-3200-5232-a389-fea8f15cd3ef",
+        "39b557d7-1bd0-5ecb-8cdd-92dcffbeb788",
+        "6b85c467-d74b-5bd1-b42d-d231372618ac",
+        "64a3b41b-7699-5c4e-81f8-c114aafdb0c8",
+        "ebd54948-d09b-52a9-8f9e-da9bce3ee207"
+      ],
+      "search": {
+        "version": 2,
+        "query": "课后题 3-3",
+        "normalized_query": "课后题 3-3",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 17.159,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 0.16666666666666666,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 1,
+        "known_positive_returned_at_20": [
+          "2d524c54-b4a5-56c3-8539-c75744fb7b2e"
+        ],
+        "unjudged_returned_at_10": [
+          "559a2f9a-3200-5232-a389-fea8f15cd3ef",
+          "39b557d7-1bd0-5ecb-8cdd-92dcffbeb788",
+          "6b85c467-d74b-5bd1-b42d-d231372618ac",
+          "64a3b41b-7699-5c4e-81f8-c114aafdb0c8",
+          "ebd54948-d09b-52a9-8f9e-da9bce3ee207"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q28",
+      "q": "臻选 #001",
+      "workspace": "drill",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 1,
+      "top24": [
+        "7d7e61e8-6842-5c61-b878-933517b8a552"
+      ],
+      "search": {
+        "version": 2,
+        "query": "臻选 #001",
+        "normalized_query": "臻选 #001",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 74.523,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 1.0,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 1,
+        "known_positive_returned_at_20": [
+          "7d7e61e8-6842-5c61-b878-933517b8a552"
+        ],
+        "unjudged_returned_at_10": [],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q29",
+      "q": "1d955aa9-db0f-5cbc-9cb9-36521dddb37d",
+      "workspace": "ei",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 0,
+      "top24": [],
+      "search": {
+        "version": 2,
+        "query": "1d955aa9-db0f-5cbc-9cb9-36521dddb37d",
+        "normalized_query": "1d955aa9-db0f-5cbc-9cb9-36521dddb37d",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 11.718,
+      "metrics": {
+        "known_relevant_recall_at_20": 0.0,
+        "known_relevant_hit_at_20": 0,
+        "mrr_at_20": 0,
+        "judged_coverage_at_10": null,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 1,
+        "known_positive_returned_at_20": [],
+        "unjudged_returned_at_10": [],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.0
+      },
+      "known_target_found_at_20": false
+    },
+    {
+      "id": "REAL-Q30",
+      "q": "Fourer",
+      "workspace": "ei",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 0,
+      "top24": [],
+      "search": {
+        "version": 2,
+        "query": "Fourer",
+        "normalized_query": "fourer",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 17.571,
+      "metrics": {
+        "known_relevant_recall_at_20": 0.0,
+        "known_relevant_hit_at_20": 0,
+        "mrr_at_20": 0,
+        "judged_coverage_at_10": null,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 3,
+        "known_positive_returned_at_20": [],
+        "unjudged_returned_at_10": [],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.0
+      },
+      "known_target_found_at_20": false
+    },
+    {
+      "id": "REAL-Q31",
+      "q": "傅里页变换",
+      "workspace": "ei",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 0,
+      "top24": [],
+      "search": {
+        "version": 2,
+        "query": "傅里页变换",
+        "normalized_query": "傅里页变换",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [
+          "傅里叶变换"
+        ],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 12.355,
+      "metrics": {
+        "known_relevant_recall_at_20": 0.0,
+        "known_relevant_hit_at_20": 0,
+        "mrr_at_20": 0,
+        "judged_coverage_at_10": null,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 5,
+        "known_positive_returned_at_20": [],
+        "unjudged_returned_at_10": [],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.0
+      },
+      "known_target_found_at_20": false
+    },
+    {
+      "id": "REAL-Q32",
+      "q": "Lapalce",
+      "workspace": "ei",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 0,
+      "top24": [],
+      "search": {
+        "version": 2,
+        "query": "Lapalce",
+        "normalized_query": "lapalce",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 13.077,
+      "metrics": {
+        "known_relevant_recall_at_20": 0.0,
+        "known_relevant_hit_at_20": 0,
+        "mrr_at_20": 0,
+        "judged_coverage_at_10": null,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 3,
+        "known_positive_returned_at_20": [],
+        "unjudged_returned_at_10": [],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.0
+      },
+      "known_target_found_at_20": false
+    },
+    {
+      "id": "REAL-Q33",
+      "q": "偏到数",
+      "workspace": "drill",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 0,
+      "top24": [],
+      "search": {
+        "version": 2,
+        "query": "偏到数",
+        "normalized_query": "偏到数",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [
+          "偏导数"
+        ],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 32.357,
+      "metrics": {
+        "known_relevant_recall_at_20": 0.0,
+        "known_relevant_hit_at_20": 0,
+        "mrr_at_20": 0,
+        "judged_coverage_at_10": null,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 3,
+        "known_positive_returned_at_20": [],
+        "unjudged_returned_at_10": [],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.0
+      },
+      "known_target_found_at_20": false
+    },
+    {
+      "id": "REAL-Q34",
+      "q": "\\delta(t-t_0)",
+      "workspace": "ei",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 1,
+      "top24": [
+        "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e"
+      ],
+      "search": {
+        "version": 2,
+        "query": "\\delta(t-t_0)",
+        "normalized_query": "δ(t-t_{0})",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 29.419,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 1.0,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 1,
+        "known_positive_returned_at_20": [
+          "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e"
+        ],
+        "unjudged_returned_at_10": [],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q35",
+      "q": "\\frac{1}{1+s/\\omega_p}",
+      "workspace": "ei",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 1,
+      "top24": [
+        "7bf3178b-610d-5336-bbf1-54f6f1a265da"
+      ],
+      "search": {
+        "version": 2,
+        "query": "\\frac{1}{1+s/\\omega_p}",
+        "normalized_query": "\\frac{1}{1+s/ω_{p}}",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 34.363,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 1.0,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 1,
+        "known_positive_returned_at_20": [
+          "7bf3178b-610d-5336-bbf1-54f6f1a265da"
+        ],
+        "unjudged_returned_at_10": [],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q36",
+      "q": "不存在的题册XYZ987",
+      "workspace": "drill",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "expected-empty",
+      "status": 200,
+      "count": 0,
+      "top24": [],
+      "search": {
+        "version": 2,
+        "query": "不存在的题册XYZ987",
+        "normalized_query": "不存在的题册xyz987",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 32.177,
+      "empty_check_passed": true
+    },
+    {
+      "id": "REAL-Q37",
+      "q": "Riemann hypothesis",
+      "workspace": "drill",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "expected-empty",
+      "status": 200,
+      "count": 0,
+      "top24": [],
+      "search": {
+        "version": 2,
+        "query": "Riemann hypothesis",
+        "normalized_query": "riemann hypothesis",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 32.265,
+      "empty_check_passed": true
+    },
+    {
+      "id": "REAL-Q38",
+      "q": "'; DROP TABLE question; --",
+      "workspace": "ei",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "expected-empty",
+      "status": 200,
+      "count": 0,
+      "top24": [],
+      "search": {
+        "version": 2,
+        "query": "'; DROP TABLE question; --",
+        "normalized_query": "'; drop table question; --",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 12.374,
+      "empty_check_passed": true
+    },
+    {
+      "id": "REAL-Q39",
+      "q": "阿贝尔变换",
+      "workspace": "ei",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "expected-empty",
+      "status": 200,
+      "count": 0,
+      "top24": [],
+      "search": {
+        "version": 2,
+        "query": "阿贝尔变换",
+        "normalized_query": "阿贝尔变换",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 12.507,
+      "empty_check_passed": true
+    },
+    {
+      "id": "REAL-Q40",
+      "q": "🦄🛸",
+      "workspace": "ei",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "expected-empty",
+      "status": 200,
+      "count": 0,
+      "top24": [],
+      "search": {
+        "version": 2,
+        "query": "🦄🛸",
+        "normalized_query": "🦄🛸",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": "no_terms",
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 11.809,
+      "empty_check_passed": true
+    },
+    {
+      "id": "REAL-Q41",
+      "q": "",
+      "workspace": "drill",
+      "backend": "legacy",
+      "filters": {},
+      "expected_behavior": "browse-default-source-order",
+      "status": 200,
+      "count": 5847,
+      "top24": [
+        "61af9093-8322-51db-99af-82c093532760",
+        "4c04c90a-08ab-5549-9845-f8e058dbb019",
+        "b368b430-4918-565e-8754-9668feae9e3f",
+        "42c96155-9e48-5b71-b874-139867c21dd8",
+        "4b95e749-05a6-5a7f-80af-a51c291f9cdb",
+        "4bd16cd9-dc45-5255-9495-b13784bf2a8e",
+        "93de1c48-66a1-544e-b3c0-055d2d10aefa",
+        "6a83b7c7-5447-528a-9c64-ac9a5ce78c2d",
+        "921046a3-abb1-5b6e-bf50-38adcfc6d26f",
+        "08b3917f-3da8-52a3-96c6-a5eb299093a5",
+        "25e542e3-6b5e-5c21-91a7-ebbd6fe1e702",
+        "6f4e6578-c30b-5c51-bda0-77dc2d2c2ee1",
+        "4c4ea1b6-adf0-54d9-b091-d474a6428b3c",
+        "b31b0b70-02e5-5e08-ae7d-bdd445885807",
+        "30714169-27c7-5395-9996-fc5b7845ff72",
+        "8935c826-ed13-5824-9c0c-079eabc21dd5",
+        "f859f9f8-1dcc-51e5-8a87-1ffed23ce94b",
+        "7b4a3305-26b5-5c53-bdef-8717b9e0bc54",
+        "1bc25026-1c1a-5f7e-a45f-181d7ae1a370",
+        "308963db-1ae3-5147-9a1b-c0ac107fa8de",
+        "7598119e-05e0-5d90-b573-45a14c86a959",
+        "c6a9b777-364b-58f5-9c6f-c13def656fa7",
+        "cfddf141-dd2f-5277-b71b-13090740abce",
+        "3541b116-937a-5ecb-8538-3b91f2e6a975"
+      ],
+      "search": {
+        "version": 2,
+        "query": "",
+        "normalized_query": "",
+        "index_version": "legacy:0",
+        "mode": "legacy",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 33.655,
+      "browse_check_passed": true
+    },
+    {
+      "id": "REAL-Q01",
+      "q": "多元微分",
+      "workspace": "drill",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 637,
+      "top24": [
+        "552fa934-dfa4-5cbc-8d3a-7103b2319cb6",
+        "0b53e207-e773-5628-98e2-841bad7daa3a",
+        "20ebe739-d79d-5a91-997c-c2b769a1cbd4",
+        "8de96018-2093-546e-b9d2-b187e577ca3c",
+        "32021ec0-6e5d-5e90-a455-0927e5dc9f3d",
+        "cf4870a8-6ff6-54a0-bfd3-074e36190071",
+        "07203b64-2981-5144-b4fa-17958261af3a",
+        "89600c70-581b-5870-b9c2-7ee09d4fa67b",
+        "f48afe59-e0e2-5eb1-8d0f-c1cbc002d7e7",
+        "d0dbef83-ed93-5953-b9a9-be09bf28301e",
+        "50282890-00b6-520f-ab42-4bf1e93c1d17",
+        "9fd60b7d-dd82-55ff-9cda-d0492c4716cc",
+        "cd232326-656d-57e6-b790-1803e6bb44c7",
+        "8bc6d084-05c6-560d-ad11-94b620bcc8c7",
+        "99c26564-c67d-59f4-a76a-d588721bff99",
+        "cd7630d5-5f09-55ac-9a2b-f182394356aa",
+        "79785639-5fde-5794-9b56-1ea73f72637f",
+        "cb0c47e7-9f85-59a6-8796-775115c17725",
+        "e6e2370a-5800-5e8d-b332-736e720c6ee3",
+        "c69005c0-206e-5ac9-a9c9-7f795e07d1b1",
+        "d24d8bda-2d20-5be7-b575-463315654e3e",
+        "ae6a7041-abb7-5d58-ae3a-578001cb6c4f",
+        "7d7f9cff-2de4-5a2c-8a1e-08d7b907cd28",
+        "c4054ed6-f16e-510f-8b1d-5d000ca1bcb4"
+      ],
+      "search": {
+        "version": 2,
+        "query": "多元微分",
+        "normalized_query": "多元微分",
+        "index_version": "1:51fa21d76c342d3e:18644",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 84.206,
+      "metrics": {
+        "known_relevant_recall_at_20": 0.0,
+        "known_relevant_hit_at_20": 0,
+        "mrr_at_20": 0,
+        "judged_coverage_at_10": 0.0,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 3,
+        "known_positive_returned_at_20": [],
+        "unjudged_returned_at_10": [
+          "552fa934-dfa4-5cbc-8d3a-7103b2319cb6",
+          "0b53e207-e773-5628-98e2-841bad7daa3a",
+          "20ebe739-d79d-5a91-997c-c2b769a1cbd4",
+          "8de96018-2093-546e-b9d2-b187e577ca3c",
+          "32021ec0-6e5d-5e90-a455-0927e5dc9f3d",
+          "cf4870a8-6ff6-54a0-bfd3-074e36190071",
+          "07203b64-2981-5144-b4fa-17958261af3a",
+          "89600c70-581b-5870-b9c2-7ee09d4fa67b",
+          "f48afe59-e0e2-5eb1-8d0f-c1cbc002d7e7",
+          "d0dbef83-ed93-5953-b9a9-be09bf28301e"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.0
+      },
+      "known_target_found_at_20": false
+    },
+    {
+      "id": "REAL-Q02",
+      "q": "偏导数",
+      "workspace": "drill",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 325,
+      "top24": [
+        "6d1433f1-4a93-5ec8-9631-11ae824e43ce",
+        "5e365a8a-33d9-510c-b24c-35d6fabd7e1f",
+        "ccd9bd48-4fe4-5a08-9829-0ab0ce661f4f",
+        "dffb5a16-93df-5664-87c5-40d686ec328c",
+        "98b132fa-9e96-567c-943c-1e9f480b7709",
+        "f8ec5a30-1e5e-523f-84c3-dae701fc7717",
+        "688bd6e5-76d9-5265-a6cb-d648303a037f",
+        "1d0e8f1d-9a3d-5c1e-b47f-bdceb1ae44ea",
+        "47f8f114-f198-5c20-a26a-48b26a971f32",
+        "67192870-5e2d-5f42-a4ee-0145d9ee92dc",
+        "763785c4-1962-58c1-aaf6-e889a3dbbeb2",
+        "363b87d2-6db1-5d47-91ac-b0ac6ff3d696",
+        "66cc12ef-c710-593e-84de-27f4c0bead13",
+        "83064803-e3f6-5bb4-ba03-729700608eb2",
+        "905ffbb7-3a74-5d2c-9287-cb9324e46f71",
+        "7d7f9cff-2de4-5a2c-8a1e-08d7b907cd28",
+        "c4054ed6-f16e-510f-8b1d-5d000ca1bcb4",
+        "6c893f73-ec88-5a83-9df0-ab20ffd70def",
+        "9973e193-249f-5cf5-b2c1-9673c4c0f2ba",
+        "7aac81dc-d419-5fb0-a728-f24b031b19b0",
+        "645fa2ee-5c6c-5a8d-bf63-c4f145942bbb",
+        "021b8cd2-d1da-5c5d-a027-249310e4ba2f",
+        "61cf54e3-8a9b-57c2-8684-db7e6d149d26",
+        "a43c9dfc-0ac2-58e2-9cfa-c21504f644dc"
+      ],
+      "search": {
+        "version": 2,
+        "query": "偏导数",
+        "normalized_query": "偏导数",
+        "index_version": "1:51fa21d76c342d3e:18644",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 58.484,
+      "metrics": {
+        "known_relevant_recall_at_20": 0.0,
+        "known_relevant_hit_at_20": 0,
+        "mrr_at_20": 0,
+        "judged_coverage_at_10": 0.0,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 3,
+        "known_positive_returned_at_20": [],
+        "unjudged_returned_at_10": [
+          "6d1433f1-4a93-5ec8-9631-11ae824e43ce",
+          "5e365a8a-33d9-510c-b24c-35d6fabd7e1f",
+          "ccd9bd48-4fe4-5a08-9829-0ab0ce661f4f",
+          "dffb5a16-93df-5664-87c5-40d686ec328c",
+          "98b132fa-9e96-567c-943c-1e9f480b7709",
+          "f8ec5a30-1e5e-523f-84c3-dae701fc7717",
+          "688bd6e5-76d9-5265-a6cb-d648303a037f",
+          "1d0e8f1d-9a3d-5c1e-b47f-bdceb1ae44ea",
+          "47f8f114-f198-5c20-a26a-48b26a971f32",
+          "67192870-5e2d-5f42-a4ee-0145d9ee92dc"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.0
+      },
+      "known_target_found_at_20": false
+    },
+    {
+      "id": "REAL-Q03",
+      "q": "导数",
+      "workspace": "drill",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 1335,
+      "top24": [
+        "6d1433f1-4a93-5ec8-9631-11ae824e43ce",
+        "7021a4c7-9691-52c9-a52c-cadd648e336e",
+        "dbb8f74b-a123-5284-855b-d6afa26d32a7",
+        "6c32536a-1264-550e-9e26-7a2033a8f420",
+        "6795ad50-6702-5a0c-b154-2f38d8ccd5b9",
+        "7b27c937-342b-5658-9d24-dec5b7558cc8",
+        "69f9fb12-a751-5e2c-b83e-44bc0cf425cc",
+        "18bdb666-0b69-5a0c-bccc-fcc9462219d5",
+        "15633f46-845e-5acf-936f-c980f91cbd72",
+        "5f600e58-c5ee-5cf4-9e2f-823809596bcd",
+        "21a8e432-75b5-552a-9a22-afa3a3d42b6b",
+        "ac0e7579-7cb6-5efb-8d36-777ab282e466",
+        "9e850a00-d649-5e12-ba8e-ca94271cd1ce",
+        "28801ab1-c42f-566a-a349-030ef51eb35b",
+        "77bdd2b3-f7c1-5b3e-9623-844cde125342",
+        "85857663-29d7-50dd-862c-386d38b4c3b0",
+        "8e8375f5-8404-5053-be88-e2d0afbbbd41",
+        "b6f3fbe3-daf0-5360-8a9f-037174eee4b3",
+        "715beec1-71c4-577c-9877-08bdadc41ad9",
+        "56d373cc-7a8c-5a39-ab05-4dc9d107dcaf",
+        "7e901228-5281-57a1-bfd5-f1c7c1351804",
+        "ecd205ef-721a-5144-b9e4-768fe4a7ce13",
+        "7f33a216-68b7-5a35-9625-c7fc6929ea79",
+        "52a2f8c6-bc36-589b-84b4-0db75ec12bf5"
+      ],
+      "search": {
+        "version": 2,
+        "query": "导数",
+        "normalized_query": "导数",
+        "index_version": "1:51fa21d76c342d3e:18644",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 98.076,
+      "metrics": {
+        "known_relevant_recall_at_20": 0.0,
+        "known_relevant_hit_at_20": 0,
+        "mrr_at_20": 0,
+        "judged_coverage_at_10": 0.0,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 3,
+        "known_positive_returned_at_20": [],
+        "unjudged_returned_at_10": [
+          "6d1433f1-4a93-5ec8-9631-11ae824e43ce",
+          "7021a4c7-9691-52c9-a52c-cadd648e336e",
+          "dbb8f74b-a123-5284-855b-d6afa26d32a7",
+          "6c32536a-1264-550e-9e26-7a2033a8f420",
+          "6795ad50-6702-5a0c-b154-2f38d8ccd5b9",
+          "7b27c937-342b-5658-9d24-dec5b7558cc8",
+          "69f9fb12-a751-5e2c-b83e-44bc0cf425cc",
+          "18bdb666-0b69-5a0c-bccc-fcc9462219d5",
+          "15633f46-845e-5acf-936f-c980f91cbd72",
+          "5f600e58-c5ee-5cf4-9e2f-823809596bcd"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.0
+      },
+      "known_target_found_at_20": false
+    },
+    {
+      "id": "REAL-Q04",
+      "q": "隐函数",
+      "workspace": "drill",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 139,
+      "top24": [
+        "9d555d14-be83-56ed-86e7-a666b9b42b22",
+        "11ed0079-5c6f-5245-945f-c4bbf22b1830",
+        "86bb9696-985e-554d-a357-87d3afe470f7",
+        "a39c9342-5ac2-59d1-87c7-87080603135b",
+        "e714d14a-f0f1-52f5-b875-90ef8ed824c6",
+        "be209313-5c4c-50d6-939a-0fc1d61dde7b",
+        "91f95400-05a5-57d2-93d0-1ae47541e4e1",
+        "8ee660d4-f258-55d8-9ca9-ac733fb1b8e8",
+        "c24f3b45-38dc-5e82-9b4f-9022821a5893",
+        "72dd6f35-517b-5e83-857d-c91cf744292b",
+        "a162f053-715a-5ea2-95ea-42383eb4b3cf",
+        "2925aa87-37a8-5175-b47f-7819e2b5efd2",
+        "72c34864-f270-57be-b310-a055b7bc3a29",
+        "65db018c-7a6a-5db2-97fd-a8912742ea7f",
+        "4d9f11d4-2696-5e13-bfc8-8eb43566585e",
+        "cc30ff94-6d23-53f1-a90b-5ac4b5fd38b2",
+        "47063ad3-66b4-51da-ab46-610039d4a969",
+        "8ae05ef3-c75e-5838-8425-d132b34c3183",
+        "b6e47187-457d-5946-9e96-fe2bf44dfcc0",
+        "79242e4f-e4a1-5b2b-ac6e-fec6bc56fdc6",
+        "7fdeec85-4aa1-51f6-a231-f7d9b8f52812",
+        "b452a446-d057-5023-896d-985c2709c17c",
+        "433112d0-3ae0-5bf0-ba40-31017044e27a",
+        "5fe1e201-102f-55ec-8337-7c61c4d41c68"
+      ],
+      "search": {
+        "version": 2,
+        "query": "隐函数",
+        "normalized_query": "隐函数",
+        "index_version": "1:51fa21d76c342d3e:18644",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 38.791,
+      "metrics": {
+        "known_relevant_recall_at_20": 0.0,
+        "known_relevant_hit_at_20": 0,
+        "mrr_at_20": 0,
+        "judged_coverage_at_10": 0.0,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 2,
+        "known_positive_returned_at_20": [],
+        "unjudged_returned_at_10": [
+          "9d555d14-be83-56ed-86e7-a666b9b42b22",
+          "11ed0079-5c6f-5245-945f-c4bbf22b1830",
+          "86bb9696-985e-554d-a357-87d3afe470f7",
+          "a39c9342-5ac2-59d1-87c7-87080603135b",
+          "e714d14a-f0f1-52f5-b875-90ef8ed824c6",
+          "be209313-5c4c-50d6-939a-0fc1d61dde7b",
+          "91f95400-05a5-57d2-93d0-1ae47541e4e1",
+          "8ee660d4-f258-55d8-9ca9-ac733fb1b8e8",
+          "c24f3b45-38dc-5e82-9b4f-9022821a5893",
+          "72dd6f35-517b-5e83-857d-c91cf744292b"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.0
+      },
+      "known_target_found_at_20": false
+    },
+    {
+      "id": "REAL-Q05",
+      "q": "傅里叶变换",
+      "workspace": "ei",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 112,
+      "top24": [
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d",
+        "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e",
+        "ca96c75f-1771-5db7-8952-5ba457cc7603",
+        "294ff8ab-1100-573d-94ce-bf1c9a8edba5",
+        "2d524c54-b4a5-56c3-8539-c75744fb7b2e",
+        "81648940-3f5f-5297-ad90-78bf896140df",
+        "15b9ff09-c904-5ffc-b8fe-b3e0d358adcc",
+        "b636fde4-946f-59fd-a4c0-63eb5e12a454",
+        "2822f271-b229-5ff0-9584-214bffebad60",
+        "e336519e-9859-5808-a9ff-393007d13f47",
+        "869d64d0-933b-5aec-b29c-7da937c35e98",
+        "0e0f1c32-4fb0-5e45-8317-17054bc279ea",
+        "8f514997-e2ce-5e3d-becc-4bee4a8b50be",
+        "cab03032-93c4-5706-b53b-2222c3ffbbcf",
+        "478dd058-8fa9-5d72-baeb-6d1b42b7e44d",
+        "4333bfb3-a5d9-5b56-acb3-7d5a20c46b11",
+        "434d464a-581f-55c6-826a-1f475e7a2422",
+        "f8725e54-d34a-582d-8c2e-f96712d8230e",
+        "9c6d7d66-3643-5e6d-9b0d-a573a6b79aef",
+        "05404db8-ecb7-5516-9487-432cf0b31272",
+        "633f0542-e19c-57c2-9258-ee6875aa38bc",
+        "3768262e-ecc2-51c1-948f-3decac752858",
+        "850c550a-6c79-5373-9377-08f054cf4663",
+        "559a2f9a-3200-5232-a389-fea8f15cd3ef"
+      ],
+      "search": {
+        "version": 2,
+        "query": "傅里叶变换",
+        "normalized_query": "傅里叶变换",
+        "index_version": "1:51fa21d76c342d3e:8595",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 94
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 56.944,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 0.5,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 5,
+        "known_positive_returned_at_20": [
+          "1d955aa9-db0f-5cbc-9cb9-36521dddb37d",
+          "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e",
+          "ca96c75f-1771-5db7-8952-5ba457cc7603",
+          "294ff8ab-1100-573d-94ce-bf1c9a8edba5",
+          "2d524c54-b4a5-56c3-8539-c75744fb7b2e"
+        ],
+        "unjudged_returned_at_10": [
+          "81648940-3f5f-5297-ad90-78bf896140df",
+          "15b9ff09-c904-5ffc-b8fe-b3e0d358adcc",
+          "b636fde4-946f-59fd-a4c0-63eb5e12a454",
+          "2822f271-b229-5ff0-9584-214bffebad60",
+          "e336519e-9859-5808-a9ff-393007d13f47"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q06",
+      "q": "Fourier",
+      "workspace": "ei",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 115,
+      "top24": [
+        "2d524c54-b4a5-56c3-8539-c75744fb7b2e",
+        "81648940-3f5f-5297-ad90-78bf896140df",
+        "15b9ff09-c904-5ffc-b8fe-b3e0d358adcc",
+        "b636fde4-946f-59fd-a4c0-63eb5e12a454",
+        "2822f271-b229-5ff0-9584-214bffebad60",
+        "e336519e-9859-5808-a9ff-393007d13f47",
+        "869d64d0-933b-5aec-b29c-7da937c35e98",
+        "0e0f1c32-4fb0-5e45-8317-17054bc279ea",
+        "8f514997-e2ce-5e3d-becc-4bee4a8b50be",
+        "cab03032-93c4-5706-b53b-2222c3ffbbcf",
+        "478dd058-8fa9-5d72-baeb-6d1b42b7e44d",
+        "4333bfb3-a5d9-5b56-acb3-7d5a20c46b11",
+        "434d464a-581f-55c6-826a-1f475e7a2422",
+        "f8725e54-d34a-582d-8c2e-f96712d8230e",
+        "9c6d7d66-3643-5e6d-9b0d-a573a6b79aef",
+        "05404db8-ecb7-5516-9487-432cf0b31272",
+        "633f0542-e19c-57c2-9258-ee6875aa38bc",
+        "3768262e-ecc2-51c1-948f-3decac752858",
+        "850c550a-6c79-5373-9377-08f054cf4663",
+        "559a2f9a-3200-5232-a389-fea8f15cd3ef",
+        "39b557d7-1bd0-5ecb-8cdd-92dcffbeb788",
+        "6b85c467-d74b-5bd1-b42d-d231372618ac",
+        "64a3b41b-7699-5c4e-81f8-c114aafdb0c8",
+        "ebd54948-d09b-52a9-8f9e-da9bce3ee207"
+      ],
+      "search": {
+        "version": 2,
+        "query": "Fourier",
+        "normalized_query": "fourier",
+        "index_version": "1:51fa21d76c342d3e:8595",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 96
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 66.875,
+      "metrics": {
+        "known_relevant_recall_at_20": 0.0,
+        "known_relevant_hit_at_20": 0,
+        "mrr_at_20": 0,
+        "judged_coverage_at_10": 0.0,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 3,
+        "known_positive_returned_at_20": [],
+        "unjudged_returned_at_10": [
+          "2d524c54-b4a5-56c3-8539-c75744fb7b2e",
+          "81648940-3f5f-5297-ad90-78bf896140df",
+          "15b9ff09-c904-5ffc-b8fe-b3e0d358adcc",
+          "b636fde4-946f-59fd-a4c0-63eb5e12a454",
+          "2822f271-b229-5ff0-9584-214bffebad60",
+          "e336519e-9859-5808-a9ff-393007d13f47",
+          "869d64d0-933b-5aec-b29c-7da937c35e98",
+          "0e0f1c32-4fb0-5e45-8317-17054bc279ea",
+          "8f514997-e2ce-5e3d-becc-4bee4a8b50be",
+          "cab03032-93c4-5706-b53b-2222c3ffbbcf"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.0
+      },
+      "known_target_found_at_20": false
+    },
+    {
+      "id": "REAL-Q07",
+      "q": "傅里叶",
+      "workspace": "ei",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 115,
+      "top24": [
+        "9b11f3a6-52ad-5551-bd5b-ebfd100520a3",
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d",
+        "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e",
+        "ca96c75f-1771-5db7-8952-5ba457cc7603",
+        "ae66b1e8-0f41-5b9d-995a-450fbfdcb3a5",
+        "294ff8ab-1100-573d-94ce-bf1c9a8edba5",
+        "2d524c54-b4a5-56c3-8539-c75744fb7b2e",
+        "81648940-3f5f-5297-ad90-78bf896140df",
+        "15b9ff09-c904-5ffc-b8fe-b3e0d358adcc",
+        "b636fde4-946f-59fd-a4c0-63eb5e12a454",
+        "2822f271-b229-5ff0-9584-214bffebad60",
+        "e336519e-9859-5808-a9ff-393007d13f47",
+        "869d64d0-933b-5aec-b29c-7da937c35e98",
+        "0e0f1c32-4fb0-5e45-8317-17054bc279ea",
+        "8f514997-e2ce-5e3d-becc-4bee4a8b50be",
+        "cab03032-93c4-5706-b53b-2222c3ffbbcf",
+        "478dd058-8fa9-5d72-baeb-6d1b42b7e44d",
+        "4333bfb3-a5d9-5b56-acb3-7d5a20c46b11",
+        "434d464a-581f-55c6-826a-1f475e7a2422",
+        "f8725e54-d34a-582d-8c2e-f96712d8230e",
+        "9c6d7d66-3643-5e6d-9b0d-a573a6b79aef",
+        "05404db8-ecb7-5516-9487-432cf0b31272",
+        "633f0542-e19c-57c2-9258-ee6875aa38bc",
+        "3768262e-ecc2-51c1-948f-3decac752858"
+      ],
+      "search": {
+        "version": 2,
+        "query": "傅里叶",
+        "normalized_query": "傅里叶",
+        "index_version": "1:51fa21d76c342d3e:8595",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 96
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 47.005,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 0.3,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 3,
+        "known_positive_returned_at_20": [
+          "9b11f3a6-52ad-5551-bd5b-ebfd100520a3",
+          "1d955aa9-db0f-5cbc-9cb9-36521dddb37d",
+          "ca96c75f-1771-5db7-8952-5ba457cc7603"
+        ],
+        "unjudged_returned_at_10": [
+          "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e",
+          "ae66b1e8-0f41-5b9d-995a-450fbfdcb3a5",
+          "294ff8ab-1100-573d-94ce-bf1c9a8edba5",
+          "2d524c54-b4a5-56c3-8539-c75744fb7b2e",
+          "81648940-3f5f-5297-ad90-78bf896140df",
+          "15b9ff09-c904-5ffc-b8fe-b3e0d358adcc",
+          "b636fde4-946f-59fd-a4c0-63eb5e12a454"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q08",
+      "q": "Fourier 变换",
+      "workspace": "ei",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 112,
+      "top24": [
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d",
+        "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e",
+        "ca96c75f-1771-5db7-8952-5ba457cc7603",
+        "294ff8ab-1100-573d-94ce-bf1c9a8edba5",
+        "2d524c54-b4a5-56c3-8539-c75744fb7b2e",
+        "81648940-3f5f-5297-ad90-78bf896140df",
+        "15b9ff09-c904-5ffc-b8fe-b3e0d358adcc",
+        "b636fde4-946f-59fd-a4c0-63eb5e12a454",
+        "2822f271-b229-5ff0-9584-214bffebad60",
+        "e336519e-9859-5808-a9ff-393007d13f47",
+        "869d64d0-933b-5aec-b29c-7da937c35e98",
+        "0e0f1c32-4fb0-5e45-8317-17054bc279ea",
+        "8f514997-e2ce-5e3d-becc-4bee4a8b50be",
+        "cab03032-93c4-5706-b53b-2222c3ffbbcf",
+        "478dd058-8fa9-5d72-baeb-6d1b42b7e44d",
+        "4333bfb3-a5d9-5b56-acb3-7d5a20c46b11",
+        "434d464a-581f-55c6-826a-1f475e7a2422",
+        "f8725e54-d34a-582d-8c2e-f96712d8230e",
+        "9c6d7d66-3643-5e6d-9b0d-a573a6b79aef",
+        "05404db8-ecb7-5516-9487-432cf0b31272",
+        "633f0542-e19c-57c2-9258-ee6875aa38bc",
+        "3768262e-ecc2-51c1-948f-3decac752858",
+        "850c550a-6c79-5373-9377-08f054cf4663",
+        "559a2f9a-3200-5232-a389-fea8f15cd3ef"
+      ],
+      "search": {
+        "version": 2,
+        "query": "Fourier 变换",
+        "normalized_query": "fourier 变换",
+        "index_version": "1:51fa21d76c342d3e:8595",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 94
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 60.31,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 0.5,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 5,
+        "known_positive_returned_at_20": [
+          "1d955aa9-db0f-5cbc-9cb9-36521dddb37d",
+          "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e",
+          "ca96c75f-1771-5db7-8952-5ba457cc7603",
+          "294ff8ab-1100-573d-94ce-bf1c9a8edba5",
+          "2d524c54-b4a5-56c3-8539-c75744fb7b2e"
+        ],
+        "unjudged_returned_at_10": [
+          "81648940-3f5f-5297-ad90-78bf896140df",
+          "15b9ff09-c904-5ffc-b8fe-b3e0d358adcc",
+          "b636fde4-946f-59fd-a4c0-63eb5e12a454",
+          "2822f271-b229-5ff0-9584-214bffebad60",
+          "e336519e-9859-5808-a9ff-393007d13f47"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q09",
+      "q": "变换 傅里叶",
+      "workspace": "ei",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 113,
+      "top24": [
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d",
+        "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e",
+        "ca96c75f-1771-5db7-8952-5ba457cc7603",
+        "294ff8ab-1100-573d-94ce-bf1c9a8edba5",
+        "2d524c54-b4a5-56c3-8539-c75744fb7b2e",
+        "81648940-3f5f-5297-ad90-78bf896140df",
+        "15b9ff09-c904-5ffc-b8fe-b3e0d358adcc",
+        "b636fde4-946f-59fd-a4c0-63eb5e12a454",
+        "2822f271-b229-5ff0-9584-214bffebad60",
+        "e336519e-9859-5808-a9ff-393007d13f47",
+        "869d64d0-933b-5aec-b29c-7da937c35e98",
+        "0e0f1c32-4fb0-5e45-8317-17054bc279ea",
+        "8f514997-e2ce-5e3d-becc-4bee4a8b50be",
+        "cab03032-93c4-5706-b53b-2222c3ffbbcf",
+        "478dd058-8fa9-5d72-baeb-6d1b42b7e44d",
+        "4333bfb3-a5d9-5b56-acb3-7d5a20c46b11",
+        "434d464a-581f-55c6-826a-1f475e7a2422",
+        "f8725e54-d34a-582d-8c2e-f96712d8230e",
+        "9c6d7d66-3643-5e6d-9b0d-a573a6b79aef",
+        "05404db8-ecb7-5516-9487-432cf0b31272",
+        "633f0542-e19c-57c2-9258-ee6875aa38bc",
+        "3768262e-ecc2-51c1-948f-3decac752858",
+        "850c550a-6c79-5373-9377-08f054cf4663",
+        "559a2f9a-3200-5232-a389-fea8f15cd3ef"
+      ],
+      "search": {
+        "version": 2,
+        "query": "变换 傅里叶",
+        "normalized_query": "变换傅里叶",
+        "index_version": "1:51fa21d76c342d3e:8595",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 95
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 58.739,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 0.5,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 5,
+        "known_positive_returned_at_20": [
+          "1d955aa9-db0f-5cbc-9cb9-36521dddb37d",
+          "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e",
+          "ca96c75f-1771-5db7-8952-5ba457cc7603",
+          "294ff8ab-1100-573d-94ce-bf1c9a8edba5",
+          "2d524c54-b4a5-56c3-8539-c75744fb7b2e"
+        ],
+        "unjudged_returned_at_10": [
+          "81648940-3f5f-5297-ad90-78bf896140df",
+          "15b9ff09-c904-5ffc-b8fe-b3e0d358adcc",
+          "b636fde4-946f-59fd-a4c0-63eb5e12a454",
+          "2822f271-b229-5ff0-9584-214bffebad60",
+          "e336519e-9859-5808-a9ff-393007d13f47"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q10",
+      "q": "Z 变换",
+      "workspace": "ei",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 93,
+      "top24": [
+        "ea9e9e82-81c0-5c90-a92a-a113a5f1cb37",
+        "4116f9f1-deb9-5d91-b570-124d25f12b2e",
+        "5a462c48-0818-5544-977a-aee83524b00b",
+        "dee4f3f6-2823-5ca0-987d-e8bd95804207",
+        "3ac965f4-57ee-5cc3-8bd0-3577b0189ee7",
+        "b412e4ab-c93c-51c8-a122-e71d4defec44",
+        "59ae0ac3-42eb-5c73-9477-78585f00f2d7",
+        "9a873fc5-7ee6-5623-a7d7-b76b22e5fd91",
+        "68e6a9ad-3e62-5c43-b988-9a3b5fed7509",
+        "535f7184-869e-5402-a403-f06f139782f0",
+        "cc222414-7a19-5eba-981b-25d2505090fa",
+        "0349c324-dc90-5a9f-8726-d26b65839763",
+        "49908bf5-2679-5c2c-bc7a-f121a50e6088",
+        "f6ff0c79-5802-5c2b-b729-c8c3496f468a",
+        "ada389a8-82b8-5569-ab56-a6e8f31c0362",
+        "b718cb2e-ef54-54c5-b6e9-a1dfd58ebf30",
+        "956a1330-5df4-58ce-bdd8-6fa39776ce84",
+        "1ac3da85-bfec-53e3-b389-8efcff80bff9",
+        "10d7c3d5-3433-5041-9660-b94dc0aad337",
+        "ece0f521-b276-5086-ac1d-41675c2282dd",
+        "511bbf47-891c-5c7f-9c58-914585acbb15",
+        "4ad0a573-c752-5d05-8e6d-f75fa156f694",
+        "dd09c618-f901-5278-8bae-04e60059d29d",
+        "f2748dd2-436f-583c-8e32-b577248bc4bc"
+      ],
+      "search": {
+        "version": 2,
+        "query": "Z 变换",
+        "normalized_query": "z 变换",
+        "index_version": "1:51fa21d76c342d3e:8595",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 86
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 51.945,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 0.5,
+        "judged_coverage_at_10": 0.4,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 4,
+        "known_positive_returned_at_20": [
+          "4116f9f1-deb9-5d91-b570-124d25f12b2e",
+          "5a462c48-0818-5544-977a-aee83524b00b",
+          "dee4f3f6-2823-5ca0-987d-e8bd95804207",
+          "59ae0ac3-42eb-5c73-9477-78585f00f2d7"
+        ],
+        "unjudged_returned_at_10": [
+          "ea9e9e82-81c0-5c90-a92a-a113a5f1cb37",
+          "3ac965f4-57ee-5cc3-8bd0-3577b0189ee7",
+          "b412e4ab-c93c-51c8-a122-e71d4defec44",
+          "9a873fc5-7ee6-5623-a7d7-b76b22e5fd91",
+          "68e6a9ad-3e62-5c43-b988-9a3b5fed7509",
+          "535f7184-869e-5402-a403-f06f139782f0"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q11",
+      "q": "Z变换",
+      "workspace": "ei",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 93,
+      "top24": [
+        "ea9e9e82-81c0-5c90-a92a-a113a5f1cb37",
+        "4116f9f1-deb9-5d91-b570-124d25f12b2e",
+        "5a462c48-0818-5544-977a-aee83524b00b",
+        "dee4f3f6-2823-5ca0-987d-e8bd95804207",
+        "3ac965f4-57ee-5cc3-8bd0-3577b0189ee7",
+        "b412e4ab-c93c-51c8-a122-e71d4defec44",
+        "59ae0ac3-42eb-5c73-9477-78585f00f2d7",
+        "9a873fc5-7ee6-5623-a7d7-b76b22e5fd91",
+        "68e6a9ad-3e62-5c43-b988-9a3b5fed7509",
+        "535f7184-869e-5402-a403-f06f139782f0",
+        "cc222414-7a19-5eba-981b-25d2505090fa",
+        "0349c324-dc90-5a9f-8726-d26b65839763",
+        "49908bf5-2679-5c2c-bc7a-f121a50e6088",
+        "f6ff0c79-5802-5c2b-b729-c8c3496f468a",
+        "ada389a8-82b8-5569-ab56-a6e8f31c0362",
+        "b718cb2e-ef54-54c5-b6e9-a1dfd58ebf30",
+        "956a1330-5df4-58ce-bdd8-6fa39776ce84",
+        "1ac3da85-bfec-53e3-b389-8efcff80bff9",
+        "10d7c3d5-3433-5041-9660-b94dc0aad337",
+        "ece0f521-b276-5086-ac1d-41675c2282dd",
+        "511bbf47-891c-5c7f-9c58-914585acbb15",
+        "4ad0a573-c752-5d05-8e6d-f75fa156f694",
+        "dd09c618-f901-5278-8bae-04e60059d29d",
+        "f2748dd2-436f-583c-8e32-b577248bc4bc"
+      ],
+      "search": {
+        "version": 2,
+        "query": "Z变换",
+        "normalized_query": "z变换",
+        "index_version": "1:51fa21d76c342d3e:8595",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 86
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 53.644,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 0.5,
+        "judged_coverage_at_10": 0.4,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 4,
+        "known_positive_returned_at_20": [
+          "4116f9f1-deb9-5d91-b570-124d25f12b2e",
+          "5a462c48-0818-5544-977a-aee83524b00b",
+          "dee4f3f6-2823-5ca0-987d-e8bd95804207",
+          "59ae0ac3-42eb-5c73-9477-78585f00f2d7"
+        ],
+        "unjudged_returned_at_10": [
+          "ea9e9e82-81c0-5c90-a92a-a113a5f1cb37",
+          "3ac965f4-57ee-5cc3-8bd0-3577b0189ee7",
+          "b412e4ab-c93c-51c8-a122-e71d4defec44",
+          "9a873fc5-7ee6-5623-a7d7-b76b22e5fd91",
+          "68e6a9ad-3e62-5c43-b988-9a3b5fed7509",
+          "535f7184-869e-5402-a403-f06f139782f0"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q12",
+      "q": "ｚ　变换",
+      "workspace": "ei",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 93,
+      "top24": [
+        "ea9e9e82-81c0-5c90-a92a-a113a5f1cb37",
+        "4116f9f1-deb9-5d91-b570-124d25f12b2e",
+        "5a462c48-0818-5544-977a-aee83524b00b",
+        "dee4f3f6-2823-5ca0-987d-e8bd95804207",
+        "3ac965f4-57ee-5cc3-8bd0-3577b0189ee7",
+        "b412e4ab-c93c-51c8-a122-e71d4defec44",
+        "59ae0ac3-42eb-5c73-9477-78585f00f2d7",
+        "9a873fc5-7ee6-5623-a7d7-b76b22e5fd91",
+        "68e6a9ad-3e62-5c43-b988-9a3b5fed7509",
+        "535f7184-869e-5402-a403-f06f139782f0",
+        "cc222414-7a19-5eba-981b-25d2505090fa",
+        "0349c324-dc90-5a9f-8726-d26b65839763",
+        "49908bf5-2679-5c2c-bc7a-f121a50e6088",
+        "f6ff0c79-5802-5c2b-b729-c8c3496f468a",
+        "ada389a8-82b8-5569-ab56-a6e8f31c0362",
+        "b718cb2e-ef54-54c5-b6e9-a1dfd58ebf30",
+        "956a1330-5df4-58ce-bdd8-6fa39776ce84",
+        "1ac3da85-bfec-53e3-b389-8efcff80bff9",
+        "10d7c3d5-3433-5041-9660-b94dc0aad337",
+        "ece0f521-b276-5086-ac1d-41675c2282dd",
+        "511bbf47-891c-5c7f-9c58-914585acbb15",
+        "4ad0a573-c752-5d05-8e6d-f75fa156f694",
+        "dd09c618-f901-5278-8bae-04e60059d29d",
+        "f2748dd2-436f-583c-8e32-b577248bc4bc"
+      ],
+      "search": {
+        "version": 2,
+        "query": "ｚ　变换",
+        "normalized_query": "z 变换",
+        "index_version": "1:51fa21d76c342d3e:8595",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 86
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 45.344,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 0.5,
+        "judged_coverage_at_10": 0.4,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 4,
+        "known_positive_returned_at_20": [
+          "4116f9f1-deb9-5d91-b570-124d25f12b2e",
+          "5a462c48-0818-5544-977a-aee83524b00b",
+          "dee4f3f6-2823-5ca0-987d-e8bd95804207",
+          "59ae0ac3-42eb-5c73-9477-78585f00f2d7"
+        ],
+        "unjudged_returned_at_10": [
+          "ea9e9e82-81c0-5c90-a92a-a113a5f1cb37",
+          "3ac965f4-57ee-5cc3-8bd0-3577b0189ee7",
+          "b412e4ab-c93c-51c8-a122-e71d4defec44",
+          "9a873fc5-7ee6-5623-a7d7-b76b22e5fd91",
+          "68e6a9ad-3e62-5c43-b988-9a3b5fed7509",
+          "535f7184-869e-5402-a403-f06f139782f0"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q13",
+      "q": "拉普拉斯",
+      "workspace": "ei",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 152,
+      "top24": [
+        "3d0fcd80-f0d8-507b-9d5f-570f7170d36c",
+        "c0c4d36d-534f-517f-9671-6942d7949b29",
+        "a6efc112-97ad-5cf0-9b22-9549b93d2285",
+        "181043e0-5bcb-57f0-843a-851f839a79fb",
+        "e9137197-fcd1-5367-9492-0bf7fd82125d",
+        "ab967b29-fe54-538a-96a2-ec3d405effc3",
+        "db55b6b7-ba33-5816-9aba-6846a74adf6f",
+        "0b1f280a-e491-53a4-8ddf-f34e45f46cc5",
+        "cdda335b-8a83-57ad-adf0-de617e121a44",
+        "5122f208-6142-5076-987a-ca61c3d34909",
+        "3bf979ac-8ac4-5e89-a66a-a72120c3bf40",
+        "5a27763c-9d51-5256-a9a8-8d9008865ae3",
+        "c6d0be88-7b81-527d-a0f6-c988b738d496",
+        "02a5f669-35b3-5756-bf2c-fcf342116fd5",
+        "756a970f-5cd8-521a-a66e-b83faefcf1f6",
+        "30763c94-dd30-59a0-9a25-4cb6f33f5afc",
+        "ac6a3314-6523-5fe5-9f6b-e12ee8c241c4",
+        "a770d398-fd1b-597a-b649-7b0fcd543f92",
+        "8aea793c-19c2-5bde-95ae-3448bdf0f4a9",
+        "333ec3d6-63d9-55c1-802b-2c9417786082",
+        "b6cff347-67f7-5720-8066-34cf02e7507d",
+        "f9e89530-9040-5112-bfc3-3877737b8101",
+        "67abf35e-1cbf-5a3e-84ed-991c0251e5f2",
+        "65d5b817-28a1-5c2d-986f-20331259b1de"
+      ],
+      "search": {
+        "version": 2,
+        "query": "拉普拉斯",
+        "normalized_query": "拉普拉斯",
+        "index_version": "1:51fa21d76c342d3e:8595",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 140
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 80.138,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 0.3,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 3,
+        "known_positive_returned_at_20": [
+          "3d0fcd80-f0d8-507b-9d5f-570f7170d36c",
+          "c0c4d36d-534f-517f-9671-6942d7949b29",
+          "a6efc112-97ad-5cf0-9b22-9549b93d2285"
+        ],
+        "unjudged_returned_at_10": [
+          "181043e0-5bcb-57f0-843a-851f839a79fb",
+          "e9137197-fcd1-5367-9492-0bf7fd82125d",
+          "ab967b29-fe54-538a-96a2-ec3d405effc3",
+          "db55b6b7-ba33-5816-9aba-6846a74adf6f",
+          "0b1f280a-e491-53a4-8ddf-f34e45f46cc5",
+          "cdda335b-8a83-57ad-adf0-de617e121a44",
+          "5122f208-6142-5076-987a-ca61c3d34909"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q14",
+      "q": "Laplace transform",
+      "workspace": "ei",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 139,
+      "top24": [
+        "3d0fcd80-f0d8-507b-9d5f-570f7170d36c",
+        "c0c4d36d-534f-517f-9671-6942d7949b29",
+        "a6efc112-97ad-5cf0-9b22-9549b93d2285",
+        "181043e0-5bcb-57f0-843a-851f839a79fb",
+        "e9137197-fcd1-5367-9492-0bf7fd82125d",
+        "ab967b29-fe54-538a-96a2-ec3d405effc3",
+        "db55b6b7-ba33-5816-9aba-6846a74adf6f",
+        "0b1f280a-e491-53a4-8ddf-f34e45f46cc5",
+        "cdda335b-8a83-57ad-adf0-de617e121a44",
+        "5122f208-6142-5076-987a-ca61c3d34909",
+        "3bf979ac-8ac4-5e89-a66a-a72120c3bf40",
+        "5a27763c-9d51-5256-a9a8-8d9008865ae3",
+        "c6d0be88-7b81-527d-a0f6-c988b738d496",
+        "02a5f669-35b3-5756-bf2c-fcf342116fd5",
+        "756a970f-5cd8-521a-a66e-b83faefcf1f6",
+        "30763c94-dd30-59a0-9a25-4cb6f33f5afc",
+        "ac6a3314-6523-5fe5-9f6b-e12ee8c241c4",
+        "a770d398-fd1b-597a-b649-7b0fcd543f92",
+        "8aea793c-19c2-5bde-95ae-3448bdf0f4a9",
+        "333ec3d6-63d9-55c1-802b-2c9417786082",
+        "b6cff347-67f7-5720-8066-34cf02e7507d",
+        "f9e89530-9040-5112-bfc3-3877737b8101",
+        "67abf35e-1cbf-5a3e-84ed-991c0251e5f2",
+        "65d5b817-28a1-5c2d-986f-20331259b1de"
+      ],
+      "search": {
+        "version": 2,
+        "query": "Laplace transform",
+        "normalized_query": "laplace transform",
+        "index_version": "1:51fa21d76c342d3e:8595",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 128
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 75.309,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 0.3,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 3,
+        "known_positive_returned_at_20": [
+          "3d0fcd80-f0d8-507b-9d5f-570f7170d36c",
+          "c0c4d36d-534f-517f-9671-6942d7949b29",
+          "a6efc112-97ad-5cf0-9b22-9549b93d2285"
+        ],
+        "unjudged_returned_at_10": [
+          "181043e0-5bcb-57f0-843a-851f839a79fb",
+          "e9137197-fcd1-5367-9492-0bf7fd82125d",
+          "ab967b29-fe54-538a-96a2-ec3d405effc3",
+          "db55b6b7-ba33-5816-9aba-6846a74adf6f",
+          "0b1f280a-e491-53a4-8ddf-f34e45f46cc5",
+          "cdda335b-8a83-57ad-adf0-de617e121a44",
+          "5122f208-6142-5076-987a-ca61c3d34909"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q15",
+      "q": "拉氏变换",
+      "workspace": "ei",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 139,
+      "top24": [
+        "3d0fcd80-f0d8-507b-9d5f-570f7170d36c",
+        "c0c4d36d-534f-517f-9671-6942d7949b29",
+        "a6efc112-97ad-5cf0-9b22-9549b93d2285",
+        "181043e0-5bcb-57f0-843a-851f839a79fb",
+        "e9137197-fcd1-5367-9492-0bf7fd82125d",
+        "ab967b29-fe54-538a-96a2-ec3d405effc3",
+        "db55b6b7-ba33-5816-9aba-6846a74adf6f",
+        "0b1f280a-e491-53a4-8ddf-f34e45f46cc5",
+        "cdda335b-8a83-57ad-adf0-de617e121a44",
+        "5122f208-6142-5076-987a-ca61c3d34909",
+        "3bf979ac-8ac4-5e89-a66a-a72120c3bf40",
+        "5a27763c-9d51-5256-a9a8-8d9008865ae3",
+        "c6d0be88-7b81-527d-a0f6-c988b738d496",
+        "02a5f669-35b3-5756-bf2c-fcf342116fd5",
+        "756a970f-5cd8-521a-a66e-b83faefcf1f6",
+        "30763c94-dd30-59a0-9a25-4cb6f33f5afc",
+        "ac6a3314-6523-5fe5-9f6b-e12ee8c241c4",
+        "a770d398-fd1b-597a-b649-7b0fcd543f92",
+        "8aea793c-19c2-5bde-95ae-3448bdf0f4a9",
+        "333ec3d6-63d9-55c1-802b-2c9417786082",
+        "b6cff347-67f7-5720-8066-34cf02e7507d",
+        "f9e89530-9040-5112-bfc3-3877737b8101",
+        "67abf35e-1cbf-5a3e-84ed-991c0251e5f2",
+        "65d5b817-28a1-5c2d-986f-20331259b1de"
+      ],
+      "search": {
+        "version": 2,
+        "query": "拉氏变换",
+        "normalized_query": "拉氏变换",
+        "index_version": "1:51fa21d76c342d3e:8595",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 128
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 54.273,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 0.3,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 3,
+        "known_positive_returned_at_20": [
+          "3d0fcd80-f0d8-507b-9d5f-570f7170d36c",
+          "c0c4d36d-534f-517f-9671-6942d7949b29",
+          "a6efc112-97ad-5cf0-9b22-9549b93d2285"
+        ],
+        "unjudged_returned_at_10": [
+          "181043e0-5bcb-57f0-843a-851f839a79fb",
+          "e9137197-fcd1-5367-9492-0bf7fd82125d",
+          "ab967b29-fe54-538a-96a2-ec3d405effc3",
+          "db55b6b7-ba33-5816-9aba-6846a74adf6f",
+          "0b1f280a-e491-53a4-8ddf-f34e45f46cc5",
+          "cdda335b-8a83-57ad-adf0-de617e121a44",
+          "5122f208-6142-5076-987a-ca61c3d34909"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q16",
+      "q": "卡诺图",
+      "workspace": "ei",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 76,
+      "top24": [
+        "e03928e3-2e2f-543d-a42a-80cb08f52e10",
+        "137a7daa-32b3-561c-8ca0-d5eb5b84583f",
+        "905d1677-5e4c-550d-9b3d-4522e5f2b186",
+        "3ddcd9ab-76a7-5c9a-8dd6-c7fc334a3324",
+        "d4fee5f5-ebc1-5fbe-894d-d2072da7f9d4",
+        "f308473f-cb32-5cfb-a2dd-7e87486b2600",
+        "819b5a82-7a4e-564e-8e3a-88e026845639",
+        "0823ab10-6060-5af8-9d52-18cdfd2afb76",
+        "6bcb6d49-fa96-5cce-bf6f-24b42defc684",
+        "d1f7e897-8fc2-5365-a4e4-b773981e6752",
+        "27e66d98-64c6-5fd3-a9f0-b447cfeef12b",
+        "c6a1c4d1-5274-5c2a-b3a4-72ed53ff5e6f",
+        "7ffd5204-1d6e-5ffd-9b60-5d79ef311ec1",
+        "8c497569-31c3-5c1f-af67-ea718377ecaf",
+        "2b41d639-a296-5af0-b7a4-0309c9176f4e",
+        "8be1ecbb-4f01-59c2-afbf-48a3f9bdcdc6",
+        "e96bb522-4981-59b1-85ca-997600fe9565",
+        "7e811540-b205-53dd-8ae1-ed5f8650a6cd",
+        "0d76d9ab-33cf-5720-aede-49250fee8f49",
+        "db35e0ed-f805-5754-8548-5b997009a7c9",
+        "73b1d030-aa4f-5e8d-ac26-9658ca7f0a3e",
+        "f7e75516-b73f-59ce-9e95-5866c7f5cb34",
+        "161324fa-5498-514b-aae1-83dff2b021c5",
+        "c904b134-501f-53b2-817e-583cc4a9c2c6"
+      ],
+      "search": {
+        "version": 2,
+        "query": "卡诺图",
+        "normalized_query": "卡诺图",
+        "index_version": "1:51fa21d76c342d3e:8595",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 68
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 53.13,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 0.1,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 2,
+        "known_positive_returned_at_20": [
+          "e03928e3-2e2f-543d-a42a-80cb08f52e10",
+          "7ffd5204-1d6e-5ffd-9b60-5d79ef311ec1"
+        ],
+        "unjudged_returned_at_10": [
+          "137a7daa-32b3-561c-8ca0-d5eb5b84583f",
+          "905d1677-5e4c-550d-9b3d-4522e5f2b186",
+          "3ddcd9ab-76a7-5c9a-8dd6-c7fc334a3324",
+          "d4fee5f5-ebc1-5fbe-894d-d2072da7f9d4",
+          "f308473f-cb32-5cfb-a2dd-7e87486b2600",
+          "819b5a82-7a4e-564e-8e3a-88e026845639",
+          "0823ab10-6060-5af8-9d52-18cdfd2afb76",
+          "6bcb6d49-fa96-5cce-bf6f-24b42defc684",
+          "d1f7e897-8fc2-5365-a4e4-b773981e6752"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q17",
+      "q": "Karnaugh map",
+      "workspace": "ei",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 76,
+      "top24": [
+        "e03928e3-2e2f-543d-a42a-80cb08f52e10",
+        "7ffd5204-1d6e-5ffd-9b60-5d79ef311ec1",
+        "137a7daa-32b3-561c-8ca0-d5eb5b84583f",
+        "905d1677-5e4c-550d-9b3d-4522e5f2b186",
+        "3ddcd9ab-76a7-5c9a-8dd6-c7fc334a3324",
+        "d4fee5f5-ebc1-5fbe-894d-d2072da7f9d4",
+        "f308473f-cb32-5cfb-a2dd-7e87486b2600",
+        "819b5a82-7a4e-564e-8e3a-88e026845639",
+        "0823ab10-6060-5af8-9d52-18cdfd2afb76",
+        "6bcb6d49-fa96-5cce-bf6f-24b42defc684",
+        "d1f7e897-8fc2-5365-a4e4-b773981e6752",
+        "27e66d98-64c6-5fd3-a9f0-b447cfeef12b",
+        "c6a1c4d1-5274-5c2a-b3a4-72ed53ff5e6f",
+        "8c497569-31c3-5c1f-af67-ea718377ecaf",
+        "2b41d639-a296-5af0-b7a4-0309c9176f4e",
+        "8be1ecbb-4f01-59c2-afbf-48a3f9bdcdc6",
+        "e96bb522-4981-59b1-85ca-997600fe9565",
+        "7e811540-b205-53dd-8ae1-ed5f8650a6cd",
+        "0d76d9ab-33cf-5720-aede-49250fee8f49",
+        "db35e0ed-f805-5754-8548-5b997009a7c9",
+        "73b1d030-aa4f-5e8d-ac26-9658ca7f0a3e",
+        "f7e75516-b73f-59ce-9e95-5866c7f5cb34",
+        "161324fa-5498-514b-aae1-83dff2b021c5",
+        "c904b134-501f-53b2-817e-583cc4a9c2c6"
+      ],
+      "search": {
+        "version": 2,
+        "query": "Karnaugh map",
+        "normalized_query": "karnaugh map",
+        "index_version": "1:51fa21d76c342d3e:8595",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 68
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 56.43,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 0.2,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 2,
+        "known_positive_returned_at_20": [
+          "e03928e3-2e2f-543d-a42a-80cb08f52e10",
+          "7ffd5204-1d6e-5ffd-9b60-5d79ef311ec1"
+        ],
+        "unjudged_returned_at_10": [
+          "137a7daa-32b3-561c-8ca0-d5eb5b84583f",
+          "905d1677-5e4c-550d-9b3d-4522e5f2b186",
+          "3ddcd9ab-76a7-5c9a-8dd6-c7fc334a3324",
+          "d4fee5f5-ebc1-5fbe-894d-d2072da7f9d4",
+          "f308473f-cb32-5cfb-a2dd-7e87486b2600",
+          "819b5a82-7a4e-564e-8e3a-88e026845639",
+          "0823ab10-6060-5af8-9d52-18cdfd2afb76",
+          "6bcb6d49-fa96-5cce-bf6f-24b42defc684"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q18",
+      "q": "RS 触发器",
+      "workspace": "ei",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 1,
+      "top24": [
+        "b34c2537-e271-5520-b6a5-4af9336bf138"
+      ],
+      "search": {
+        "version": 2,
+        "query": "RS 触发器",
+        "normalized_query": "rs 触发器",
+        "index_version": "1:51fa21d76c342d3e:8595",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 22.535,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 1.0,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 1,
+        "known_positive_returned_at_20": [
+          "b34c2537-e271-5520-b6a5-4af9336bf138"
+        ],
+        "unjudged_returned_at_10": [],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.9173194127129571
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q19",
+      "q": "RS触发器",
+      "workspace": "ei",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 1,
+      "top24": [
+        "b34c2537-e271-5520-b6a5-4af9336bf138"
+      ],
+      "search": {
+        "version": 2,
+        "query": "RS触发器",
+        "normalized_query": "rs触发器",
+        "index_version": "1:51fa21d76c342d3e:8595",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 20.924,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 1.0,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 1,
+        "known_positive_returned_at_20": [
+          "b34c2537-e271-5520-b6a5-4af9336bf138"
+        ],
+        "unjudged_returned_at_10": [],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.9173194127129571
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q20",
+      "q": "负反馈",
+      "workspace": "ei",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 58,
+      "top24": [
+        "927d5d1c-e637-517f-8648-5e493551fcdf",
+        "168d41d6-24b8-5796-9069-ab6795184312",
+        "c66a741a-2b6e-5ced-91b1-b9d5b7a935b4",
+        "ad1cbe96-6cc9-514b-8a7f-05f8ca5f8ea9",
+        "4685a61f-cd13-5e02-b35d-d610db0740ae",
+        "00545fd2-1815-56bb-b29d-10ec0b646bbe",
+        "feeb7a4d-bfee-508a-983e-34cb2f05eec5",
+        "afc8595f-9073-54dc-bace-9f41699bc04f",
+        "eb5e543a-c51d-5146-a582-fffb78c9c615",
+        "0129cc16-e317-5dca-a86a-a0e71060123c",
+        "9c56a5af-0c5f-59f1-8398-2788bd6d29c2",
+        "733d197c-db70-56e3-818c-5765a7409a53",
+        "dd26a39e-ebf2-5fdb-8ea8-a56bbd771f2d",
+        "87b35ab6-a8c6-5d57-bc0e-e660ce89d2ca",
+        "a6a98c26-8314-5f59-8e86-76e250679e02",
+        "aa96a9d5-5b1b-5a81-b6c4-ea64036fd847",
+        "564b28f4-e724-53db-a0f8-665ee35789b6",
+        "b1aba79c-6456-53aa-8251-c4c1a37d1a43",
+        "1c901621-9830-522e-a960-4cf5881ea95f",
+        "174d0c0f-23a8-5938-8278-483ea3d0ec74",
+        "dcaf6a33-5665-50bf-9161-0918a55a5b4b",
+        "07fd232d-9cd4-5f4e-917e-91fe40d6e5b1",
+        "ccd2136d-929f-51f9-a063-92438fdc2017",
+        "06086b37-546a-5971-b033-a05dbb7ed30b"
+      ],
+      "search": {
+        "version": 2,
+        "query": "负反馈",
+        "normalized_query": "负反馈",
+        "index_version": "1:51fa21d76c342d3e:8595",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 48
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 46.148,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 0.3,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 3,
+        "known_positive_returned_at_20": [
+          "927d5d1c-e637-517f-8648-5e493551fcdf",
+          "168d41d6-24b8-5796-9069-ab6795184312",
+          "c66a741a-2b6e-5ced-91b1-b9d5b7a935b4"
+        ],
+        "unjudged_returned_at_10": [
+          "ad1cbe96-6cc9-514b-8a7f-05f8ca5f8ea9",
+          "4685a61f-cd13-5e02-b35d-d610db0740ae",
+          "00545fd2-1815-56bb-b29d-10ec0b646bbe",
+          "feeb7a4d-bfee-508a-983e-34cb2f05eec5",
+          "afc8595f-9073-54dc-bace-9f41699bc04f",
+          "eb5e543a-c51d-5146-a582-fffb78c9c615",
+          "0129cc16-e317-5dca-a86a-a0e71060123c"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q21",
+      "q": "negative feedback",
+      "workspace": "ei",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 58,
+      "top24": [
+        "927d5d1c-e637-517f-8648-5e493551fcdf",
+        "168d41d6-24b8-5796-9069-ab6795184312",
+        "c66a741a-2b6e-5ced-91b1-b9d5b7a935b4",
+        "ccd2136d-929f-51f9-a063-92438fdc2017",
+        "ad1cbe96-6cc9-514b-8a7f-05f8ca5f8ea9",
+        "06086b37-546a-5971-b033-a05dbb7ed30b",
+        "c51dd4b1-c888-5e3d-81e7-b7b735d9415f",
+        "4685a61f-cd13-5e02-b35d-d610db0740ae",
+        "00545fd2-1815-56bb-b29d-10ec0b646bbe",
+        "feeb7a4d-bfee-508a-983e-34cb2f05eec5",
+        "afc8595f-9073-54dc-bace-9f41699bc04f",
+        "eb5e543a-c51d-5146-a582-fffb78c9c615",
+        "0129cc16-e317-5dca-a86a-a0e71060123c",
+        "9c56a5af-0c5f-59f1-8398-2788bd6d29c2",
+        "733d197c-db70-56e3-818c-5765a7409a53",
+        "dd26a39e-ebf2-5fdb-8ea8-a56bbd771f2d",
+        "87b35ab6-a8c6-5d57-bc0e-e660ce89d2ca",
+        "a6a98c26-8314-5f59-8e86-76e250679e02",
+        "aa96a9d5-5b1b-5a81-b6c4-ea64036fd847",
+        "564b28f4-e724-53db-a0f8-665ee35789b6",
+        "b1aba79c-6456-53aa-8251-c4c1a37d1a43",
+        "1c901621-9830-522e-a960-4cf5881ea95f",
+        "174d0c0f-23a8-5938-8278-483ea3d0ec74",
+        "dcaf6a33-5665-50bf-9161-0918a55a5b4b"
+      ],
+      "search": {
+        "version": 2,
+        "query": "negative feedback",
+        "normalized_query": "negative feedback",
+        "index_version": "1:51fa21d76c342d3e:8595",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 48
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 46.54,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 0.3,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 3,
+        "known_positive_returned_at_20": [
+          "927d5d1c-e637-517f-8648-5e493551fcdf",
+          "168d41d6-24b8-5796-9069-ab6795184312",
+          "c66a741a-2b6e-5ced-91b1-b9d5b7a935b4"
+        ],
+        "unjudged_returned_at_10": [
+          "ccd2136d-929f-51f9-a063-92438fdc2017",
+          "ad1cbe96-6cc9-514b-8a7f-05f8ca5f8ea9",
+          "06086b37-546a-5971-b033-a05dbb7ed30b",
+          "c51dd4b1-c888-5e3d-81e7-b7b735d9415f",
+          "4685a61f-cd13-5e02-b35d-d610db0740ae",
+          "00545fd2-1815-56bb-b29d-10ec0b646bbe",
+          "feeb7a4d-bfee-508a-983e-34cb2f05eec5"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q22",
+      "q": "Bode",
+      "workspace": "ei",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 2,
+      "top24": [
+        "7bf3178b-610d-5336-bbf1-54f6f1a265da",
+        "9f73e07e-2064-5148-b569-be88869e7d35"
+      ],
+      "search": {
+        "version": 2,
+        "query": "Bode",
+        "normalized_query": "bode",
+        "index_version": "1:51fa21d76c342d3e:8595",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 29.285,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 1.0,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 2,
+        "known_positive_returned_at_20": [
+          "7bf3178b-610d-5336-bbf1-54f6f1a265da",
+          "9f73e07e-2064-5148-b569-be88869e7d35"
+        ],
+        "unjudged_returned_at_10": [],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.9580414003446834
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q23",
+      "q": "波特",
+      "workspace": "ei",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 3,
+      "top24": [
+        "7bf3178b-610d-5336-bbf1-54f6f1a265da",
+        "9f73e07e-2064-5148-b569-be88869e7d35",
+        "a8b3969a-5ab2-500a-a08e-46a053c28206"
+      ],
+      "search": {
+        "version": 2,
+        "query": "波特",
+        "normalized_query": "波特",
+        "index_version": "1:51fa21d76c342d3e:8595",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 21.943,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 1.0,
+        "explicit_grade0_at_10": [
+          "a8b3969a-5ab2-500a-a08e-46a053c28206"
+        ],
+        "known_positive_count": 2,
+        "known_positive_returned_at_20": [
+          "7bf3178b-610d-5336-bbf1-54f6f1a265da",
+          "9f73e07e-2064-5148-b569-be88869e7d35"
+        ],
+        "unjudged_returned_at_10": [],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.9580414003446834
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q24",
+      "q": "数二线代臻选题",
+      "workspace": "drill",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 355,
+      "top24": [
+        "7d7e61e8-6842-5c61-b878-933517b8a552",
+        "b6d2ebb5-dbf5-5c78-b00a-f9d4254c5791",
+        "e87e4529-942d-544a-9091-ed7cb771351c",
+        "295a0579-3d98-5a21-825b-0b47976a4993",
+        "de1a819d-beb2-5c3b-bf1a-ad817fd55d87",
+        "c7d25cac-9471-509b-a7fd-28771948a6d6",
+        "f1c079bd-acda-5247-94b9-7086d0b8a61d",
+        "276121a2-df06-5dd0-bbe9-5e4c3ddd36a7",
+        "896115c4-d085-53fe-bd84-db5ecc8909f6",
+        "2f335b98-ba28-5879-8e44-115ae2f92d5e",
+        "60b3371b-8d8b-5384-83b8-a032927c51df",
+        "5b5cb3ef-8291-52ae-966a-8fb0cff647bb",
+        "79357c9d-167b-5136-bf17-04039adfff8f",
+        "d73521f4-5dc2-594a-a4f0-6722b7ab43c9",
+        "143a84f3-04bf-5893-b903-e668b47e457e",
+        "477500df-3338-5b65-94fa-f92f37431dd4",
+        "c1e3fb3a-3f37-56e5-a16e-0ea33787ac55",
+        "b5f7d88d-5ec7-56d8-83c9-8d310a75ff7e",
+        "c43dede4-3969-5f2e-9d61-0e16ae366b31",
+        "a59f9545-17f6-5e64-9b61-b48184fdd37c",
+        "a3d40cd4-d7a2-5835-bc2d-ed0f9950f18d",
+        "294a337e-5b91-5001-a368-f91e6c6e3958",
+        "79ecedcc-810e-5caa-a196-a492c3583465",
+        "1b921363-3a74-5e99-9b8c-6e9dcfbd38c3"
+      ],
+      "search": {
+        "version": 2,
+        "query": "数二线代臻选题",
+        "normalized_query": "数二线代臻选题",
+        "index_version": "1:51fa21d76c342d3e:18644",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 355
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 44.558,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 0.3,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 3,
+        "known_positive_returned_at_20": [
+          "7d7e61e8-6842-5c61-b878-933517b8a552",
+          "b6d2ebb5-dbf5-5c78-b00a-f9d4254c5791",
+          "e87e4529-942d-544a-9091-ed7cb771351c"
+        ],
+        "unjudged_returned_at_10": [
+          "295a0579-3d98-5a21-825b-0b47976a4993",
+          "de1a819d-beb2-5c3b-bf1a-ad817fd55d87",
+          "c7d25cac-9471-509b-a7fd-28771948a6d6",
+          "f1c079bd-acda-5247-94b9-7086d0b8a61d",
+          "276121a2-df06-5dd0-bbe9-5e4c3ddd36a7",
+          "896115c4-d085-53fe-bd84-db5ecc8909f6",
+          "2f335b98-ba28-5879-8e44-115ae2f92d5e"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q25",
+      "q": "892 信号与系统",
+      "workspace": "ei",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 537,
+      "top24": [
+        "47f2120c-e498-53fd-89ed-0e318b13ddec",
+        "cb40d2cd-1091-5ab5-843f-faf72c515c6e",
+        "c61fac69-ab7c-5111-a8b0-42bcba467669",
+        "abc3b3a4-7625-55a8-9e30-c7af96563085",
+        "7ccbacc0-f6e8-5023-b1e3-084358a9ef19",
+        "2f6741bb-46d5-5f7e-b4de-aac3eefec199",
+        "aec45b97-746f-584f-a628-53479b95e6bd",
+        "17f46678-b2d5-58a2-b74e-635b30e94e36",
+        "11327614-6882-5507-8ff4-8e3eca737e9a",
+        "55aaeefe-0e17-5e19-880c-b5add9ce4e8f",
+        "af7cad3f-25df-5673-887c-64ff798080d5",
+        "2272f576-58cd-5b00-8a3e-0dca7d767da4",
+        "19739bd9-e616-509f-b999-d9d22e2442a7",
+        "268448d6-5ad7-59f0-bfc2-d3d77e15fd72",
+        "f101d591-f57b-5b90-be3b-84854e89a010",
+        "e2009a94-a4bf-5b99-907a-23265c530bd7",
+        "3a6ecbb2-9397-59fa-8570-34dba9f474d2",
+        "ff3e52c5-9587-5142-b67c-d2f079bb2140",
+        "38f5446a-a3f0-5dd8-a262-212455c3cc03",
+        "feb1fcd1-12e4-596a-9cfc-df6016ee5256",
+        "6a6440e5-e26f-5abf-8576-a42fdce64b0f",
+        "70b710df-e3ca-565e-ba2f-b4db3803d45e",
+        "a74066ca-06b6-5b31-9dc8-1018e5be76a0",
+        "40240c84-3250-5ee2-849f-8f26a3e69575"
+      ],
+      "search": {
+        "version": 2,
+        "query": "892 信号与系统",
+        "normalized_query": "892 信号与系统",
+        "index_version": "1:51fa21d76c342d3e:8595",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 478
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 181.986,
+      "metrics": {
+        "known_relevant_recall_at_20": 0.0,
+        "known_relevant_hit_at_20": 0,
+        "mrr_at_20": 0,
+        "judged_coverage_at_10": 0.0,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 3,
+        "known_positive_returned_at_20": [],
+        "unjudged_returned_at_10": [
+          "47f2120c-e498-53fd-89ed-0e318b13ddec",
+          "cb40d2cd-1091-5ab5-843f-faf72c515c6e",
+          "c61fac69-ab7c-5111-a8b0-42bcba467669",
+          "abc3b3a4-7625-55a8-9e30-c7af96563085",
+          "7ccbacc0-f6e8-5023-b1e3-084358a9ef19",
+          "2f6741bb-46d5-5f7e-b4de-aac3eefec199",
+          "aec45b97-746f-584f-a628-53479b95e6bd",
+          "17f46678-b2d5-58a2-b74e-635b30e94e36",
+          "11327614-6882-5507-8ff4-8e3eca737e9a",
+          "55aaeefe-0e17-5e19-880c-b5add9ce4e8f"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.0
+      },
+      "known_target_found_at_20": false
+    },
+    {
+      "id": "REAL-Q26",
+      "q": "SIG-SA-06",
+      "workspace": "ei",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 1,
+      "top24": [
+        "294ff8ab-1100-573d-94ce-bf1c9a8edba5"
+      ],
+      "search": {
+        "version": 2,
+        "query": "SIG-SA-06",
+        "normalized_query": "sig-sa-06",
+        "index_version": "1:51fa21d76c342d3e:8595",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 24.108,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 1.0,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 1,
+        "known_positive_returned_at_20": [
+          "294ff8ab-1100-573d-94ce-bf1c9a8edba5"
+        ],
+        "unjudged_returned_at_10": [],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q27",
+      "q": "课后题 3-3",
+      "workspace": "ei",
+      "backend": "hybrid_v1",
+      "filters": {
+        "document": 23
+      },
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 6,
+      "top24": [
+        "2d524c54-b4a5-56c3-8539-c75744fb7b2e",
+        "559a2f9a-3200-5232-a389-fea8f15cd3ef",
+        "39b557d7-1bd0-5ecb-8cdd-92dcffbeb788",
+        "6b85c467-d74b-5bd1-b42d-d231372618ac",
+        "64a3b41b-7699-5c4e-81f8-c114aafdb0c8",
+        "ebd54948-d09b-52a9-8f9e-da9bce3ee207"
+      ],
+      "search": {
+        "version": 2,
+        "query": "课后题 3-3",
+        "normalized_query": "课后题 3-3",
+        "index_version": "1:51fa21d76c342d3e:8595",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 6
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 26.022,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 0.16666666666666666,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 1,
+        "known_positive_returned_at_20": [
+          "2d524c54-b4a5-56c3-8539-c75744fb7b2e"
+        ],
+        "unjudged_returned_at_10": [
+          "559a2f9a-3200-5232-a389-fea8f15cd3ef",
+          "39b557d7-1bd0-5ecb-8cdd-92dcffbeb788",
+          "6b85c467-d74b-5bd1-b42d-d231372618ac",
+          "64a3b41b-7699-5c4e-81f8-c114aafdb0c8",
+          "ebd54948-d09b-52a9-8f9e-da9bce3ee207"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q28",
+      "q": "臻选 #001",
+      "workspace": "drill",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 6,
+      "top24": [
+        "7d7e61e8-6842-5c61-b878-933517b8a552",
+        "896115c4-d085-53fe-bd84-db5ecc8909f6",
+        "1684a604-e00a-5607-9498-97d9812d3c19",
+        "14399c4e-ef72-52c5-85a8-27174dc4f136",
+        "bd7c9259-0862-5185-ae9d-e8952a3526e9",
+        "6e7911fa-8bd4-5ae3-9a99-215aa3a23e66"
+      ],
+      "search": {
+        "version": 2,
+        "query": "臻选 #001",
+        "normalized_query": "臻选 #001",
+        "index_version": "1:51fa21d76c342d3e:18644",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 6
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 22.929,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 0.16666666666666666,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 1,
+        "known_positive_returned_at_20": [
+          "7d7e61e8-6842-5c61-b878-933517b8a552"
+        ],
+        "unjudged_returned_at_10": [
+          "896115c4-d085-53fe-bd84-db5ecc8909f6",
+          "1684a604-e00a-5607-9498-97d9812d3c19",
+          "14399c4e-ef72-52c5-85a8-27174dc4f136",
+          "bd7c9259-0862-5185-ae9d-e8952a3526e9",
+          "6e7911fa-8bd4-5ae3-9a99-215aa3a23e66"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q29",
+      "q": "1d955aa9-db0f-5cbc-9cb9-36521dddb37d",
+      "workspace": "ei",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 1,
+      "top24": [
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d"
+      ],
+      "search": {
+        "version": 2,
+        "query": "1d955aa9-db0f-5cbc-9cb9-36521dddb37d",
+        "normalized_query": "1d955aa9-db0f-5cbc-9cb9-36521dddb37d",
+        "index_version": "1:51fa21d76c342d3e:8595",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 20.347,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 1.0,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 1,
+        "known_positive_returned_at_20": [
+          "1d955aa9-db0f-5cbc-9cb9-36521dddb37d"
+        ],
+        "unjudged_returned_at_10": [],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q30",
+      "q": "Fourer",
+      "workspace": "ei",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 115,
+      "top24": [
+        "2d524c54-b4a5-56c3-8539-c75744fb7b2e",
+        "81648940-3f5f-5297-ad90-78bf896140df",
+        "15b9ff09-c904-5ffc-b8fe-b3e0d358adcc",
+        "b636fde4-946f-59fd-a4c0-63eb5e12a454",
+        "2822f271-b229-5ff0-9584-214bffebad60",
+        "e336519e-9859-5808-a9ff-393007d13f47",
+        "869d64d0-933b-5aec-b29c-7da937c35e98",
+        "0e0f1c32-4fb0-5e45-8317-17054bc279ea",
+        "8f514997-e2ce-5e3d-becc-4bee4a8b50be",
+        "cab03032-93c4-5706-b53b-2222c3ffbbcf",
+        "478dd058-8fa9-5d72-baeb-6d1b42b7e44d",
+        "4333bfb3-a5d9-5b56-acb3-7d5a20c46b11",
+        "434d464a-581f-55c6-826a-1f475e7a2422",
+        "f8725e54-d34a-582d-8c2e-f96712d8230e",
+        "9c6d7d66-3643-5e6d-9b0d-a573a6b79aef",
+        "05404db8-ecb7-5516-9487-432cf0b31272",
+        "633f0542-e19c-57c2-9258-ee6875aa38bc",
+        "3768262e-ecc2-51c1-948f-3decac752858",
+        "850c550a-6c79-5373-9377-08f054cf4663",
+        "559a2f9a-3200-5232-a389-fea8f15cd3ef",
+        "39b557d7-1bd0-5ecb-8cdd-92dcffbeb788",
+        "6b85c467-d74b-5bd1-b42d-d231372618ac",
+        "64a3b41b-7699-5c4e-81f8-c114aafdb0c8",
+        "ebd54948-d09b-52a9-8f9e-da9bce3ee207"
+      ],
+      "search": {
+        "version": 2,
+        "query": "Fourer",
+        "normalized_query": "fourer",
+        "index_version": "1:51fa21d76c342d3e:8595",
+        "mode": "expanded",
+        "reason": null,
+        "corrected_terms": [
+          "fourier"
+        ],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 96
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 135.241,
+      "metrics": {
+        "known_relevant_recall_at_20": 0.0,
+        "known_relevant_hit_at_20": 0,
+        "mrr_at_20": 0,
+        "judged_coverage_at_10": 0.0,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 3,
+        "known_positive_returned_at_20": [],
+        "unjudged_returned_at_10": [
+          "2d524c54-b4a5-56c3-8539-c75744fb7b2e",
+          "81648940-3f5f-5297-ad90-78bf896140df",
+          "15b9ff09-c904-5ffc-b8fe-b3e0d358adcc",
+          "b636fde4-946f-59fd-a4c0-63eb5e12a454",
+          "2822f271-b229-5ff0-9584-214bffebad60",
+          "e336519e-9859-5808-a9ff-393007d13f47",
+          "869d64d0-933b-5aec-b29c-7da937c35e98",
+          "0e0f1c32-4fb0-5e45-8317-17054bc279ea",
+          "8f514997-e2ce-5e3d-becc-4bee4a8b50be",
+          "cab03032-93c4-5706-b53b-2222c3ffbbcf"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.0
+      },
+      "known_target_found_at_20": false
+    },
+    {
+      "id": "REAL-Q31",
+      "q": "傅里页变换",
+      "workspace": "ei",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 112,
+      "top24": [
+        "1d955aa9-db0f-5cbc-9cb9-36521dddb37d",
+        "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e",
+        "ca96c75f-1771-5db7-8952-5ba457cc7603",
+        "294ff8ab-1100-573d-94ce-bf1c9a8edba5",
+        "2d524c54-b4a5-56c3-8539-c75744fb7b2e",
+        "81648940-3f5f-5297-ad90-78bf896140df",
+        "15b9ff09-c904-5ffc-b8fe-b3e0d358adcc",
+        "b636fde4-946f-59fd-a4c0-63eb5e12a454",
+        "2822f271-b229-5ff0-9584-214bffebad60",
+        "e336519e-9859-5808-a9ff-393007d13f47",
+        "869d64d0-933b-5aec-b29c-7da937c35e98",
+        "0e0f1c32-4fb0-5e45-8317-17054bc279ea",
+        "8f514997-e2ce-5e3d-becc-4bee4a8b50be",
+        "cab03032-93c4-5706-b53b-2222c3ffbbcf",
+        "478dd058-8fa9-5d72-baeb-6d1b42b7e44d",
+        "4333bfb3-a5d9-5b56-acb3-7d5a20c46b11",
+        "434d464a-581f-55c6-826a-1f475e7a2422",
+        "f8725e54-d34a-582d-8c2e-f96712d8230e",
+        "9c6d7d66-3643-5e6d-9b0d-a573a6b79aef",
+        "05404db8-ecb7-5516-9487-432cf0b31272",
+        "633f0542-e19c-57c2-9258-ee6875aa38bc",
+        "3768262e-ecc2-51c1-948f-3decac752858",
+        "850c550a-6c79-5373-9377-08f054cf4663",
+        "559a2f9a-3200-5232-a389-fea8f15cd3ef"
+      ],
+      "search": {
+        "version": 2,
+        "query": "傅里页变换",
+        "normalized_query": "傅里页变换",
+        "index_version": "1:51fa21d76c342d3e:8595",
+        "mode": "expanded",
+        "reason": null,
+        "corrected_terms": [
+          "傅里叶变换"
+        ],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 94
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 64.134,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 0.5,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 5,
+        "known_positive_returned_at_20": [
+          "1d955aa9-db0f-5cbc-9cb9-36521dddb37d",
+          "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e",
+          "ca96c75f-1771-5db7-8952-5ba457cc7603",
+          "294ff8ab-1100-573d-94ce-bf1c9a8edba5",
+          "2d524c54-b4a5-56c3-8539-c75744fb7b2e"
+        ],
+        "unjudged_returned_at_10": [
+          "81648940-3f5f-5297-ad90-78bf896140df",
+          "15b9ff09-c904-5ffc-b8fe-b3e0d358adcc",
+          "b636fde4-946f-59fd-a4c0-63eb5e12a454",
+          "2822f271-b229-5ff0-9584-214bffebad60",
+          "e336519e-9859-5808-a9ff-393007d13f47"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q32",
+      "q": "Lapalce",
+      "workspace": "ei",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 152,
+      "top24": [
+        "ab967b29-fe54-538a-96a2-ec3d405effc3",
+        "db55b6b7-ba33-5816-9aba-6846a74adf6f",
+        "0b1f280a-e491-53a4-8ddf-f34e45f46cc5",
+        "cdda335b-8a83-57ad-adf0-de617e121a44",
+        "5122f208-6142-5076-987a-ca61c3d34909",
+        "3bf979ac-8ac4-5e89-a66a-a72120c3bf40",
+        "5a27763c-9d51-5256-a9a8-8d9008865ae3",
+        "c6d0be88-7b81-527d-a0f6-c988b738d496",
+        "02a5f669-35b3-5756-bf2c-fcf342116fd5",
+        "756a970f-5cd8-521a-a66e-b83faefcf1f6",
+        "30763c94-dd30-59a0-9a25-4cb6f33f5afc",
+        "ac6a3314-6523-5fe5-9f6b-e12ee8c241c4",
+        "a770d398-fd1b-597a-b649-7b0fcd543f92",
+        "8aea793c-19c2-5bde-95ae-3448bdf0f4a9",
+        "333ec3d6-63d9-55c1-802b-2c9417786082",
+        "b6cff347-67f7-5720-8066-34cf02e7507d",
+        "f9e89530-9040-5112-bfc3-3877737b8101",
+        "67abf35e-1cbf-5a3e-84ed-991c0251e5f2",
+        "65d5b817-28a1-5c2d-986f-20331259b1de",
+        "fd6da8ac-8377-5a4d-b9bc-c5bc3bf3058a",
+        "6a07f1a6-a820-53ff-871e-a101928649f4",
+        "4a54867f-012e-5c7c-8ee8-0b5f43031d20",
+        "53d177bb-6c7b-5499-890f-6b774ca10c6f",
+        "ded3475a-2a85-55b0-a608-f7ea85399f4e"
+      ],
+      "search": {
+        "version": 2,
+        "query": "Lapalce",
+        "normalized_query": "lapalce",
+        "index_version": "1:51fa21d76c342d3e:8595",
+        "mode": "expanded",
+        "reason": null,
+        "corrected_terms": [
+          "laplace"
+        ],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 140
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 129.086,
+      "metrics": {
+        "known_relevant_recall_at_20": 0.0,
+        "known_relevant_hit_at_20": 0,
+        "mrr_at_20": 0,
+        "judged_coverage_at_10": 0.0,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 3,
+        "known_positive_returned_at_20": [],
+        "unjudged_returned_at_10": [
+          "ab967b29-fe54-538a-96a2-ec3d405effc3",
+          "db55b6b7-ba33-5816-9aba-6846a74adf6f",
+          "0b1f280a-e491-53a4-8ddf-f34e45f46cc5",
+          "cdda335b-8a83-57ad-adf0-de617e121a44",
+          "5122f208-6142-5076-987a-ca61c3d34909",
+          "3bf979ac-8ac4-5e89-a66a-a72120c3bf40",
+          "5a27763c-9d51-5256-a9a8-8d9008865ae3",
+          "c6d0be88-7b81-527d-a0f6-c988b738d496",
+          "02a5f669-35b3-5756-bf2c-fcf342116fd5",
+          "756a970f-5cd8-521a-a66e-b83faefcf1f6"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.0
+      },
+      "known_target_found_at_20": false
+    },
+    {
+      "id": "REAL-Q33",
+      "q": "偏到数",
+      "workspace": "drill",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 325,
+      "top24": [
+        "7d7f9cff-2de4-5a2c-8a1e-08d7b907cd28",
+        "c4054ed6-f16e-510f-8b1d-5d000ca1bcb4",
+        "6c893f73-ec88-5a83-9df0-ab20ffd70def",
+        "9973e193-249f-5cf5-b2c1-9673c4c0f2ba",
+        "7aac81dc-d419-5fb0-a728-f24b031b19b0",
+        "645fa2ee-5c6c-5a8d-bf63-c4f145942bbb",
+        "021b8cd2-d1da-5c5d-a027-249310e4ba2f",
+        "61cf54e3-8a9b-57c2-8684-db7e6d149d26",
+        "a43c9dfc-0ac2-58e2-9cfa-c21504f644dc",
+        "c3c54523-54ff-523e-b0d7-3d150b3c597f",
+        "cfb33170-b40f-5413-890d-6d9089f5f873",
+        "ba1b4fa9-57ba-5c2c-a462-8b5d5832e5dc",
+        "6cde4f8b-8a5b-5ebb-a117-79c0d8a7e1da",
+        "8f4a98e8-4f34-5a2b-9cca-9db9d29dfa3b",
+        "d81b11a5-af3a-5fe8-88d3-2c4480d997f9",
+        "f6ce912a-fbd8-5373-9ae5-a674733906c1",
+        "bd885e41-8112-5af7-a51e-6d1dde960e3d",
+        "5d1b7ba2-4a86-54ea-a85e-26ce975d2d47",
+        "4efc73bd-5557-5a66-ac7e-d99c655c3db8",
+        "3dc69aca-e586-58a5-abaf-db7925c9a641",
+        "d976f38b-4132-59a1-9bb7-659a704aebd2",
+        "1de8712e-826d-56af-988c-18dcede2c489",
+        "9d555d14-be83-56ed-86e7-a666b9b42b22",
+        "11ed0079-5c6f-5245-945f-c4bbf22b1830"
+      ],
+      "search": {
+        "version": 2,
+        "query": "偏到数",
+        "normalized_query": "偏到数",
+        "index_version": "1:51fa21d76c342d3e:18644",
+        "mode": "expanded",
+        "reason": null,
+        "corrected_terms": [
+          "偏导数"
+        ],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 69.24,
+      "metrics": {
+        "known_relevant_recall_at_20": 0.0,
+        "known_relevant_hit_at_20": 0,
+        "mrr_at_20": 0,
+        "judged_coverage_at_10": 0.0,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 3,
+        "known_positive_returned_at_20": [],
+        "unjudged_returned_at_10": [
+          "7d7f9cff-2de4-5a2c-8a1e-08d7b907cd28",
+          "c4054ed6-f16e-510f-8b1d-5d000ca1bcb4",
+          "6c893f73-ec88-5a83-9df0-ab20ffd70def",
+          "9973e193-249f-5cf5-b2c1-9673c4c0f2ba",
+          "7aac81dc-d419-5fb0-a728-f24b031b19b0",
+          "645fa2ee-5c6c-5a8d-bf63-c4f145942bbb",
+          "021b8cd2-d1da-5c5d-a027-249310e4ba2f",
+          "61cf54e3-8a9b-57c2-8684-db7e6d149d26",
+          "a43c9dfc-0ac2-58e2-9cfa-c21504f644dc",
+          "c3c54523-54ff-523e-b0d7-3d150b3c597f"
+        ],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 0.0
+      },
+      "known_target_found_at_20": false
+    },
+    {
+      "id": "REAL-Q34",
+      "q": "\\delta(t-t_0)",
+      "workspace": "ei",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 1,
+      "top24": [
+        "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e"
+      ],
+      "search": {
+        "version": 2,
+        "query": "\\delta(t-t_0)",
+        "normalized_query": "δ(t-t_{0})",
+        "index_version": "1:51fa21d76c342d3e:8595",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 19.684,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 1.0,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 1,
+        "known_positive_returned_at_20": [
+          "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e"
+        ],
+        "unjudged_returned_at_10": [],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q35",
+      "q": "\\frac{1}{1+s/\\omega_p}",
+      "workspace": "ei",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "relevant-results",
+      "status": 200,
+      "count": 1,
+      "top24": [
+        "7bf3178b-610d-5336-bbf1-54f6f1a265da"
+      ],
+      "search": {
+        "version": 2,
+        "query": "\\frac{1}{1+s/\\omega_p}",
+        "normalized_query": "\\frac{1}{1+s/ω_{p}}",
+        "index_version": "1:51fa21d76c342d3e:8595",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 19.775,
+      "metrics": {
+        "known_relevant_recall_at_20": 1.0,
+        "known_relevant_hit_at_20": 1,
+        "mrr_at_20": 1.0,
+        "judged_coverage_at_10": 1.0,
+        "explicit_grade0_at_10": [],
+        "known_positive_count": 1,
+        "known_positive_returned_at_20": [
+          "7bf3178b-610d-5336-bbf1-54f6f1a265da"
+        ],
+        "unjudged_returned_at_10": [],
+        "condensed_ndcg_at_10_optimistic_partial_qrels": 1.0
+      },
+      "known_target_found_at_20": true
+    },
+    {
+      "id": "REAL-Q36",
+      "q": "不存在的题册XYZ987",
+      "workspace": "drill",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "expected-empty",
+      "status": 200,
+      "count": 0,
+      "top24": [],
+      "search": {
+        "version": 2,
+        "query": "不存在的题册XYZ987",
+        "normalized_query": "不存在的题册xyz987",
+        "index_version": "1:51fa21d76c342d3e:18644",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 10.382,
+      "empty_check_passed": true
+    },
+    {
+      "id": "REAL-Q37",
+      "q": "Riemann hypothesis",
+      "workspace": "drill",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "expected-empty",
+      "status": 200,
+      "count": 0,
+      "top24": [],
+      "search": {
+        "version": 2,
+        "query": "Riemann hypothesis",
+        "normalized_query": "riemann hypothesis",
+        "index_version": "1:51fa21d76c342d3e:18644",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 19.144,
+      "empty_check_passed": true
+    },
+    {
+      "id": "REAL-Q38",
+      "q": "'; DROP TABLE question; --",
+      "workspace": "ei",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "expected-empty",
+      "status": 200,
+      "count": 0,
+      "top24": [],
+      "search": {
+        "version": 2,
+        "query": "'; DROP TABLE question; --",
+        "normalized_query": "'; drop table question; --",
+        "index_version": "1:51fa21d76c342d3e:8595",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 23.212,
+      "empty_check_passed": true
+    },
+    {
+      "id": "REAL-Q39",
+      "q": "阿贝尔变换",
+      "workspace": "ei",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "expected-empty",
+      "status": 200,
+      "count": 0,
+      "top24": [],
+      "search": {
+        "version": 2,
+        "query": "阿贝尔变换",
+        "normalized_query": "阿贝尔变换",
+        "index_version": "1:51fa21d76c342d3e:8595",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 8.704,
+      "empty_check_passed": true
+    },
+    {
+      "id": "REAL-Q40",
+      "q": "🦄🛸",
+      "workspace": "ei",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "expected-empty",
+      "status": 200,
+      "count": 0,
+      "top24": [],
+      "search": {
+        "version": 2,
+        "query": "🦄🛸",
+        "normalized_query": "🦄🛸",
+        "index_version": "1:51fa21d76c342d3e:8595",
+        "mode": "hybrid",
+        "reason": "no_terms",
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 0
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 5.812,
+      "empty_check_passed": true
+    },
+    {
+      "id": "REAL-Q41",
+      "q": "",
+      "workspace": "drill",
+      "backend": "hybrid_v1",
+      "filters": {},
+      "expected_behavior": "browse-default-source-order",
+      "status": 200,
+      "count": 5847,
+      "top24": [
+        "61af9093-8322-51db-99af-82c093532760",
+        "4c04c90a-08ab-5549-9845-f8e058dbb019",
+        "b368b430-4918-565e-8754-9668feae9e3f",
+        "42c96155-9e48-5b71-b874-139867c21dd8",
+        "4b95e749-05a6-5a7f-80af-a51c291f9cdb",
+        "4bd16cd9-dc45-5255-9495-b13784bf2a8e",
+        "93de1c48-66a1-544e-b3c0-055d2d10aefa",
+        "6a83b7c7-5447-528a-9c64-ac9a5ce78c2d",
+        "921046a3-abb1-5b6e-bf50-38adcfc6d26f",
+        "08b3917f-3da8-52a3-96c6-a5eb299093a5",
+        "25e542e3-6b5e-5c21-91a7-ebbd6fe1e702",
+        "6f4e6578-c30b-5c51-bda0-77dc2d2c2ee1",
+        "4c4ea1b6-adf0-54d9-b091-d474a6428b3c",
+        "b31b0b70-02e5-5e08-ae7d-bdd445885807",
+        "30714169-27c7-5395-9996-fc5b7845ff72",
+        "8935c826-ed13-5824-9c0c-079eabc21dd5",
+        "f859f9f8-1dcc-51e5-8a87-1ffed23ce94b",
+        "7b4a3305-26b5-5c53-bdef-8717b9e0bc54",
+        "1bc25026-1c1a-5f7e-a45f-181d7ae1a370",
+        "308963db-1ae3-5147-9a1b-c0ac107fa8de",
+        "7598119e-05e0-5d90-b573-45a14c86a959",
+        "c6a9b777-364b-58f5-9c6f-c13def656fa7",
+        "cfddf141-dd2f-5277-b71b-13090740abce",
+        "3541b116-937a-5ecb-8538-3b91f2e6a975"
+      ],
+      "search": {
+        "version": 2,
+        "query": "",
+        "normalized_query": "",
+        "index_version": "1:51fa21d76c342d3e:18644",
+        "mode": "hybrid",
+        "reason": null,
+        "corrected_terms": [],
+        "suggestions": [],
+        "stale": false,
+        "coverage": {
+          "metadata_only_count": 355
+        }
+      },
+      "error": null,
+      "single_pass_observed_service_ms_not_latency_benchmark": 35.47,
+      "browse_check_passed": true
+    }
+  ]
+}

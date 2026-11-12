@@ -1,0 +1,987 @@
+{
+  "kind": "independent-real-public-engine-v2-retest-review",
+  "reviewed_at_utc": "2026-11-12T11:52:08.976077+00:00",
+  "before_evidence": "search-real-quality.json",
+  "after_evidence": "search-real-quality-fixed.json",
+  "qrels": "search-real-qrels.json",
+  "qrels_frozen_same_sha256": "b40e28b296914e719048d4139d2b7ca78155b594dfa25d409b237df7a08c3f7b",
+  "index_rebuild": {
+    "mode": "new process full rebuild; no resume or ready/hash bypass",
+    "normalizer_version": 2,
+    "drill": {
+      "questions": 6392,
+      "valid": true,
+      "mismatch_ids": [],
+      "lexemes_ok": true,
+      "pending": 0
+    },
+    "ei": {
+      "questions": 2889,
+      "valid": true,
+      "mismatch_ids": [],
+      "lexemes_ok": true,
+      "pending": 0
+    }
+  },
+  "metrics": {
+    "legacy": {
+      "queries": 41,
+      "errors": [],
+      "relevance_queries": 35,
+      "macro_known_relevant_recall_at_20": 0.41904761904761906,
+      "macro_mrr_at_20": 0.36926406926406924,
+      "known_relevant_hit_at_20_queries": 15,
+      "macro_judged_coverage_at_10_nonempty_results": 0.48541666666666666,
+      "known_target_miss_queries": [
+        "REAL-Q01",
+        "REAL-Q06",
+        "REAL-Q08",
+        "REAL-Q09",
+        "REAL-Q11",
+        "REAL-Q12",
+        "REAL-Q13",
+        "REAL-Q14",
+        "REAL-Q17",
+        "REAL-Q18",
+        "REAL-Q19",
+        "REAL-Q21",
+        "REAL-Q22",
+        "REAL-Q24",
+        "REAL-Q25",
+        "REAL-Q29",
+        "REAL-Q30",
+        "REAL-Q31",
+        "REAL-Q32",
+        "REAL-Q33"
+      ],
+      "explicit_grade0_at_10_queries": [
+        "REAL-Q01",
+        "REAL-Q23"
+      ],
+      "expected_empty_passed": 5,
+      "expected_empty_total": 5,
+      "browse_passed": true
+    },
+    "hybrid_initial": {
+      "queries": 41,
+      "errors": [],
+      "relevance_queries": 35,
+      "macro_known_relevant_recall_at_20": 0.75,
+      "macro_mrr_at_20": 0.680952380952381,
+      "known_relevant_hit_at_20_queries": 27,
+      "macro_judged_coverage_at_10_nonempty_results": 0.3978494623655914,
+      "known_target_miss_queries": [
+        "REAL-Q01",
+        "REAL-Q02",
+        "REAL-Q03",
+        "REAL-Q25",
+        "REAL-Q31",
+        "REAL-Q33",
+        "REAL-Q34",
+        "REAL-Q35"
+      ],
+      "explicit_grade0_at_10_queries": [
+        "REAL-Q05",
+        "REAL-Q08",
+        "REAL-Q09",
+        "REAL-Q23"
+      ],
+      "expected_empty_passed": 5,
+      "expected_empty_total": 5,
+      "browse_passed": true
+    },
+    "hybrid_v2": {
+      "queries": 41,
+      "errors": [],
+      "relevance_queries": 35,
+      "macro_known_relevant_recall_at_20": 0.7428571428571429,
+      "macro_mrr_at_20": 0.7,
+      "known_relevant_hit_at_20_queries": 26,
+      "macro_judged_coverage_at_10_nonempty_results": 0.3980952380952381,
+      "known_target_miss_queries": [
+        "REAL-Q01",
+        "REAL-Q02",
+        "REAL-Q03",
+        "REAL-Q04",
+        "REAL-Q06",
+        "REAL-Q25",
+        "REAL-Q30",
+        "REAL-Q32",
+        "REAL-Q33"
+      ],
+      "explicit_grade0_at_10_queries": [
+        "REAL-Q23"
+      ],
+      "expected_empty_passed": 5,
+      "expected_empty_total": 5,
+      "browse_passed": true
+    }
+  },
+  "explicit_fixes_verified": [
+    {
+      "id": "REAL-Q34",
+      "q": "\\delta(t-t_0)",
+      "before_count": 0,
+      "after_count": 1,
+      "expected_uuid": "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e",
+      "after_rank": 1,
+      "pass": true,
+      "interpretation": "Original public-prompt exact formula restored; no qrels or source question edits."
+    },
+    {
+      "id": "REAL-Q35",
+      "q": "\\frac{1}{1+s/\\omega_p}",
+      "before_count": 0,
+      "after_count": 1,
+      "expected_uuid": "7bf3178b-610d-5336-bbf1-54f6f1a265da",
+      "after_rank": 1,
+      "pass": true,
+      "interpretation": "Original public-prompt exact formula restored; no qrels or source question edits."
+    },
+    {
+      "id": "REAL-Q31",
+      "q": "傅里页变换",
+      "before_count": 0,
+      "after_count": 112,
+      "corrected_terms": [
+        "傅里叶变换"
+      ],
+      "pass": true,
+      "interpretation": "Approved typo now returns results in expanded mode. For 偏到数, selected frozen-qrels target remains outside20, but actual top results explicitly contain 偏导数."
+    },
+    {
+      "id": "REAL-Q33",
+      "q": "偏到数",
+      "before_count": 0,
+      "after_count": 325,
+      "corrected_terms": [
+        "偏导数"
+      ],
+      "pass": true,
+      "interpretation": "Approved typo now returns results in expanded mode. For 偏到数, selected frozen-qrels target remains outside20, but actual top results explicitly contain 偏导数."
+    },
+    {
+      "id": "REAL-Q05",
+      "q": "傅里叶变换",
+      "before_negative_rank": 5,
+      "after_negative_in_top10": false,
+      "pass": true,
+      "interpretation": "Fourier-series hard negative is no longer top10 for transform intent; directly relevant transform questions and leaf-topic exercises rank ahead."
+    },
+    {
+      "id": "REAL-Q08",
+      "q": "Fourier 变换",
+      "before_negative_rank": 5,
+      "after_negative_in_top10": false,
+      "pass": true,
+      "interpretation": "Fourier-series hard negative is no longer top10 for transform intent; directly relevant transform questions and leaf-topic exercises rank ahead."
+    },
+    {
+      "id": "REAL-Q09",
+      "q": "变换 傅里叶",
+      "before_negative_rank": 5,
+      "after_negative_in_top10": false,
+      "pass": true,
+      "interpretation": "Fourier-series hard negative is no longer top10 for transform intent; directly relevant transform questions and leaf-topic exercises rank ahead."
+    }
+  ],
+  "sparse_judgment_top_result_review": [
+    {
+      "id": "REAL-Q01",
+      "q": "多元微分",
+      "count": 637,
+      "frozen_known_recall_at_20": 0.0,
+      "observed_public_top3": [
+        {
+          "uuid": "552fa934-dfa4-5cbc-8d3a-7103b2319cb6",
+          "public_label": "多元微分大观 多元微分应用",
+          "public_topic": "无条件极值",
+          "document_id": 5,
+          "has_prompt": true
+        },
+        {
+          "uuid": "0b53e207-e773-5628-98e2-841bad7daa3a",
+          "public_label": "多元微分大观 多元微分应用",
+          "public_topic": "无条件极值",
+          "document_id": 5,
+          "has_prompt": true
+        },
+        {
+          "uuid": "20ebe739-d79d-5a91-997c-c2b769a1cbd4",
+          "public_label": "多元微分大观 多元微分应用",
+          "public_topic": "无条件极值",
+          "document_id": 5,
+          "has_prompt": true
+        }
+      ],
+      "review": "The displayed labels/topics support the actual query or its explicit corrected alias. Lack of selected frozen UUIDs in20 is not proof of irrelevant results. Empty prompt means metadata-only evidence; image question content is unknown."
+    },
+    {
+      "id": "REAL-Q02",
+      "q": "偏导数",
+      "count": 325,
+      "frozen_known_recall_at_20": 0.0,
+      "observed_public_top3": [
+        {
+          "uuid": "6d1433f1-4a93-5ec8-9631-11ae824e43ce",
+          "public_label": "多元微分大观 偏导数",
+          "public_topic": "已知偏导数相关求多元函数(偏积分)",
+          "document_id": 5,
+          "has_prompt": true
+        },
+        {
+          "uuid": "5e365a8a-33d9-510c-b24c-35d6fabd7e1f",
+          "public_label": "880 第四章综合填空2",
+          "public_topic": "已知偏导数",
+          "document_id": 5,
+          "has_prompt": true
+        },
+        {
+          "uuid": "ccd9bd48-4fe4-5a08-9829-0ab0ce661f4f",
+          "public_label": "设函数f x,y",
+          "public_topic": "已知偏导数",
+          "document_id": 5,
+          "has_prompt": true
+        }
+      ],
+      "review": "The displayed labels/topics support the actual query or its explicit corrected alias. Lack of selected frozen UUIDs in20 is not proof of irrelevant results. Empty prompt means metadata-only evidence; image question content is unknown."
+    },
+    {
+      "id": "REAL-Q03",
+      "q": "导数",
+      "count": 1335,
+      "frozen_known_recall_at_20": 0.0,
+      "observed_public_top3": [
+        {
+          "uuid": "6d1433f1-4a93-5ec8-9631-11ae824e43ce",
+          "public_label": "多元微分大观 偏导数",
+          "public_topic": "已知偏导数相关求多元函数(偏积分)",
+          "document_id": 5,
+          "has_prompt": true
+        },
+        {
+          "uuid": "7021a4c7-9691-52c9-a52c-cadd648e336e",
+          "public_label": "导数概念",
+          "public_topic": "导数概念",
+          "document_id": 9,
+          "has_prompt": true
+        },
+        {
+          "uuid": "dbb8f74b-a123-5284-855b-d6afa26d32a7",
+          "public_label": "导数概念",
+          "public_topic": "导数概念",
+          "document_id": 9,
+          "has_prompt": true
+        }
+      ],
+      "review": "The displayed labels/topics support the actual query or its explicit corrected alias. Lack of selected frozen UUIDs in20 is not proof of irrelevant results. Empty prompt means metadata-only evidence; image question content is unknown."
+    },
+    {
+      "id": "REAL-Q04",
+      "q": "隐函数",
+      "count": 139,
+      "frozen_known_recall_at_20": 0.0,
+      "observed_public_top3": [
+        {
+          "uuid": "9d555d14-be83-56ed-86e7-a666b9b42b22",
+          "public_label": "多元微分大观 偏导数",
+          "public_topic": "多元隐函数求偏导",
+          "document_id": 5,
+          "has_prompt": true
+        },
+        {
+          "uuid": "11ed0079-5c6f-5245-945f-c4bbf22b1830",
+          "public_label": "多元微分大观 偏导数",
+          "public_topic": "多元隐函数求偏导",
+          "document_id": 5,
+          "has_prompt": true
+        },
+        {
+          "uuid": "86bb9696-985e-554d-a357-87d3afe470f7",
+          "public_label": "多元微分大观 偏导数",
+          "public_topic": "多元隐函数求偏导",
+          "document_id": 5,
+          "has_prompt": true
+        }
+      ],
+      "review": "The displayed labels/topics support the actual query or its explicit corrected alias. Lack of selected frozen UUIDs in20 is not proof of irrelevant results. Empty prompt means metadata-only evidence; image question content is unknown."
+    },
+    {
+      "id": "REAL-Q06",
+      "q": "Fourier",
+      "count": 115,
+      "frozen_known_recall_at_20": 0.0,
+      "observed_public_top3": [
+        {
+          "uuid": "2d524c54-b4a5-56c3-8539-c75744fb7b2e",
+          "public_label": "课后题 3-3",
+          "public_topic": "傅里叶变换及其应用",
+          "document_id": 23,
+          "has_prompt": false
+        },
+        {
+          "uuid": "81648940-3f5f-5297-ad90-78bf896140df",
+          "public_label": "课后题 3-4",
+          "public_topic": "傅里叶变换及其应用",
+          "document_id": 23,
+          "has_prompt": false
+        },
+        {
+          "uuid": "15b9ff09-c904-5ffc-b8fe-b3e0d358adcc",
+          "public_label": "课后题 3-5",
+          "public_topic": "傅里叶变换及其应用",
+          "document_id": 23,
+          "has_prompt": false
+        }
+      ],
+      "review": "The displayed labels/topics support the actual query or its explicit corrected alias. Lack of selected frozen UUIDs in20 is not proof of irrelevant results. Empty prompt means metadata-only evidence; image question content is unknown."
+    },
+    {
+      "id": "REAL-Q25",
+      "q": "892 信号与系统",
+      "count": 537,
+      "frozen_known_recall_at_20": 0.0,
+      "observed_public_top3": [
+        {
+          "uuid": "47f2120c-e498-53fd-89ed-0e318b13ddec",
+          "public_label": "课后题 1-2",
+          "public_topic": "信号与系统理论概述",
+          "document_id": 23,
+          "has_prompt": false
+        },
+        {
+          "uuid": "cb40d2cd-1091-5ab5-843f-faf72c515c6e",
+          "public_label": "课后题 1-3",
+          "public_topic": "信号与系统理论概述",
+          "document_id": 23,
+          "has_prompt": false
+        },
+        {
+          "uuid": "c61fac69-ab7c-5111-a8b0-42bcba467669",
+          "public_label": "课后题 1-5",
+          "public_topic": "信号与系统理论概述",
+          "document_id": 23,
+          "has_prompt": false
+        }
+      ],
+      "review": "The displayed labels/topics support the actual query or its explicit corrected alias. Lack of selected frozen UUIDs in20 is not proof of irrelevant results. Empty prompt means metadata-only evidence; image question content is unknown."
+    },
+    {
+      "id": "REAL-Q30",
+      "q": "Fourer",
+      "count": 115,
+      "frozen_known_recall_at_20": 0.0,
+      "observed_public_top3": [
+        {
+          "uuid": "2d524c54-b4a5-56c3-8539-c75744fb7b2e",
+          "public_label": "课后题 3-3",
+          "public_topic": "傅里叶变换及其应用",
+          "document_id": 23,
+          "has_prompt": false
+        },
+        {
+          "uuid": "81648940-3f5f-5297-ad90-78bf896140df",
+          "public_label": "课后题 3-4",
+          "public_topic": "傅里叶变换及其应用",
+          "document_id": 23,
+          "has_prompt": false
+        },
+        {
+          "uuid": "15b9ff09-c904-5ffc-b8fe-b3e0d358adcc",
+          "public_label": "课后题 3-5",
+          "public_topic": "傅里叶变换及其应用",
+          "document_id": 23,
+          "has_prompt": false
+        }
+      ],
+      "review": "The displayed labels/topics support the actual query or its explicit corrected alias. Lack of selected frozen UUIDs in20 is not proof of irrelevant results. Empty prompt means metadata-only evidence; image question content is unknown."
+    },
+    {
+      "id": "REAL-Q32",
+      "q": "Lapalce",
+      "count": 152,
+      "frozen_known_recall_at_20": 0.0,
+      "observed_public_top3": [
+        {
+          "uuid": "ab967b29-fe54-538a-96a2-ec3d405effc3",
+          "public_label": "课后题 4-2",
+          "public_topic": "拉氏变换与连续时间系统的 s 域分析",
+          "document_id": 23,
+          "has_prompt": false
+        },
+        {
+          "uuid": "db55b6b7-ba33-5816-9aba-6846a74adf6f",
+          "public_label": "课后题 4-3",
+          "public_topic": "拉氏变换与连续时间系统的 s 域分析",
+          "document_id": 23,
+          "has_prompt": false
+        },
+        {
+          "uuid": "0b1f280a-e491-53a4-8ddf-f34e45f46cc5",
+          "public_label": "课后题 4-5",
+          "public_topic": "拉氏变换与连续时间系统的 s 域分析",
+          "document_id": 23,
+          "has_prompt": false
+        }
+      ],
+      "review": "The displayed labels/topics support the actual query or its explicit corrected alias. Lack of selected frozen UUIDs in20 is not proof of irrelevant results. Empty prompt means metadata-only evidence; image question content is unknown."
+    },
+    {
+      "id": "REAL-Q33",
+      "q": "偏到数",
+      "count": 325,
+      "frozen_known_recall_at_20": 0.0,
+      "observed_public_top3": [
+        {
+          "uuid": "7d7f9cff-2de4-5a2c-8a1e-08d7b907cd28",
+          "public_label": "多元微分大观 偏导数",
+          "public_topic": "多元函数求偏导",
+          "document_id": 5,
+          "has_prompt": true
+        },
+        {
+          "uuid": "c4054ed6-f16e-510f-8b1d-5d000ca1bcb4",
+          "public_label": "多元微分大观 偏导数",
+          "public_topic": "多元函数求偏导",
+          "document_id": 5,
+          "has_prompt": true
+        },
+        {
+          "uuid": "6c893f73-ec88-5a83-9df0-ab20ffd70def",
+          "public_label": "多元微分大观 偏导数",
+          "public_topic": "多元函数求偏导",
+          "document_id": 5,
+          "has_prompt": true
+        }
+      ],
+      "review": "The displayed labels/topics support the actual query or its explicit corrected alias. Lack of selected frozen UUIDs in20 is not proof of irrelevant results. Empty prompt means metadata-only evidence; image question content is unknown."
+    }
+  ],
+  "all_query_comparison": [
+    {
+      "id": "REAL-Q01",
+      "q": "多元微分",
+      "before_count": 637,
+      "after_count": 637,
+      "before_known_recall_at20": 0.0,
+      "after_known_recall_at20": 0.0,
+      "before_mrr_at20": 0,
+      "after_mrr_at20": 0,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q02",
+      "q": "偏导数",
+      "before_count": 325,
+      "after_count": 325,
+      "before_known_recall_at20": 0.0,
+      "after_known_recall_at20": 0.0,
+      "before_mrr_at20": 0,
+      "after_mrr_at20": 0,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q03",
+      "q": "导数",
+      "before_count": 1335,
+      "after_count": 1335,
+      "before_known_recall_at20": 0.0,
+      "after_known_recall_at20": 0.0,
+      "before_mrr_at20": 0,
+      "after_mrr_at20": 0,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q04",
+      "q": "隐函数",
+      "before_count": 139,
+      "after_count": 139,
+      "before_known_recall_at20": 1.0,
+      "after_known_recall_at20": 0.0,
+      "before_mrr_at20": 1.0,
+      "after_mrr_at20": 0,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q05",
+      "q": "傅里叶变换",
+      "before_count": 112,
+      "after_count": 112,
+      "before_known_recall_at20": 1.0,
+      "after_known_recall_at20": 1.0,
+      "before_mrr_at20": 1.0,
+      "after_mrr_at20": 1.0,
+      "before_explicit_grade0_at10": [
+        "9b11f3a6-52ad-5551-bd5b-ebfd100520a3"
+      ],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q06",
+      "q": "Fourier",
+      "before_count": 115,
+      "after_count": 115,
+      "before_known_recall_at20": 1.0,
+      "after_known_recall_at20": 0.0,
+      "before_mrr_at20": 0.5,
+      "after_mrr_at20": 0,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q07",
+      "q": "傅里叶",
+      "before_count": 115,
+      "after_count": 115,
+      "before_known_recall_at20": 1.0,
+      "after_known_recall_at20": 1.0,
+      "before_mrr_at20": 1.0,
+      "after_mrr_at20": 1.0,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q08",
+      "q": "Fourier 变换",
+      "before_count": 112,
+      "after_count": 112,
+      "before_known_recall_at20": 1.0,
+      "after_known_recall_at20": 1.0,
+      "before_mrr_at20": 1.0,
+      "after_mrr_at20": 1.0,
+      "before_explicit_grade0_at10": [
+        "9b11f3a6-52ad-5551-bd5b-ebfd100520a3"
+      ],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q09",
+      "q": "变换 傅里叶",
+      "before_count": 113,
+      "after_count": 113,
+      "before_known_recall_at20": 1.0,
+      "after_known_recall_at20": 1.0,
+      "before_mrr_at20": 1.0,
+      "after_mrr_at20": 1.0,
+      "before_explicit_grade0_at10": [
+        "9b11f3a6-52ad-5551-bd5b-ebfd100520a3"
+      ],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q10",
+      "q": "Z 变换",
+      "before_count": 93,
+      "after_count": 93,
+      "before_known_recall_at20": 0.75,
+      "after_known_recall_at20": 1.0,
+      "before_mrr_at20": 0.5,
+      "after_mrr_at20": 0.5,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q11",
+      "q": "Z变换",
+      "before_count": 93,
+      "after_count": 93,
+      "before_known_recall_at20": 0.75,
+      "after_known_recall_at20": 1.0,
+      "before_mrr_at20": 0.5,
+      "after_mrr_at20": 0.5,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q12",
+      "q": "ｚ　变换",
+      "before_count": 93,
+      "after_count": 93,
+      "before_known_recall_at20": 0.75,
+      "after_known_recall_at20": 1.0,
+      "before_mrr_at20": 0.5,
+      "after_mrr_at20": 0.5,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q13",
+      "q": "拉普拉斯",
+      "before_count": 152,
+      "after_count": 152,
+      "before_known_recall_at20": 1.0,
+      "after_known_recall_at20": 1.0,
+      "before_mrr_at20": 1.0,
+      "after_mrr_at20": 1.0,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q14",
+      "q": "Laplace transform",
+      "before_count": 139,
+      "after_count": 139,
+      "before_known_recall_at20": 1.0,
+      "after_known_recall_at20": 1.0,
+      "before_mrr_at20": 1.0,
+      "after_mrr_at20": 1.0,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q15",
+      "q": "拉氏变换",
+      "before_count": 139,
+      "after_count": 139,
+      "before_known_recall_at20": 1.0,
+      "after_known_recall_at20": 1.0,
+      "before_mrr_at20": 1.0,
+      "after_mrr_at20": 1.0,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q16",
+      "q": "卡诺图",
+      "before_count": 76,
+      "after_count": 76,
+      "before_known_recall_at20": 1.0,
+      "after_known_recall_at20": 1.0,
+      "before_mrr_at20": 1.0,
+      "after_mrr_at20": 1.0,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q17",
+      "q": "Karnaugh map",
+      "before_count": 76,
+      "after_count": 76,
+      "before_known_recall_at20": 1.0,
+      "after_known_recall_at20": 1.0,
+      "before_mrr_at20": 1.0,
+      "after_mrr_at20": 1.0,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q18",
+      "q": "RS 触发器",
+      "before_count": 1,
+      "after_count": 1,
+      "before_known_recall_at20": 1.0,
+      "after_known_recall_at20": 1.0,
+      "before_mrr_at20": 1.0,
+      "after_mrr_at20": 1.0,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q19",
+      "q": "RS触发器",
+      "before_count": 1,
+      "after_count": 1,
+      "before_known_recall_at20": 1.0,
+      "after_known_recall_at20": 1.0,
+      "before_mrr_at20": 1.0,
+      "after_mrr_at20": 1.0,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q20",
+      "q": "负反馈",
+      "before_count": 58,
+      "after_count": 58,
+      "before_known_recall_at20": 1.0,
+      "after_known_recall_at20": 1.0,
+      "before_mrr_at20": 1.0,
+      "after_mrr_at20": 1.0,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q21",
+      "q": "negative feedback",
+      "before_count": 58,
+      "after_count": 58,
+      "before_known_recall_at20": 1.0,
+      "after_known_recall_at20": 1.0,
+      "before_mrr_at20": 1.0,
+      "after_mrr_at20": 1.0,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q22",
+      "q": "Bode",
+      "before_count": 2,
+      "after_count": 2,
+      "before_known_recall_at20": 1.0,
+      "after_known_recall_at20": 1.0,
+      "before_mrr_at20": 1.0,
+      "after_mrr_at20": 1.0,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q23",
+      "q": "波特",
+      "before_count": 3,
+      "after_count": 3,
+      "before_known_recall_at20": 1.0,
+      "after_known_recall_at20": 1.0,
+      "before_mrr_at20": 1.0,
+      "after_mrr_at20": 1.0,
+      "before_explicit_grade0_at10": [
+        "a8b3969a-5ab2-500a-a08e-46a053c28206"
+      ],
+      "after_explicit_grade0_at10": [
+        "a8b3969a-5ab2-500a-a08e-46a053c28206"
+      ]
+    },
+    {
+      "id": "REAL-Q24",
+      "q": "数二线代臻选题",
+      "before_count": 355,
+      "after_count": 355,
+      "before_known_recall_at20": 1.0,
+      "after_known_recall_at20": 1.0,
+      "before_mrr_at20": 1.0,
+      "after_mrr_at20": 1.0,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q25",
+      "q": "892 信号与系统",
+      "before_count": 537,
+      "after_count": 537,
+      "before_known_recall_at20": 0.0,
+      "after_known_recall_at20": 0.0,
+      "before_mrr_at20": 0,
+      "after_mrr_at20": 0,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q26",
+      "q": "SIG-SA-06",
+      "before_count": 1,
+      "after_count": 1,
+      "before_known_recall_at20": 1.0,
+      "after_known_recall_at20": 1.0,
+      "before_mrr_at20": 1.0,
+      "after_mrr_at20": 1.0,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q27",
+      "q": "课后题 3-3",
+      "before_count": 6,
+      "after_count": 6,
+      "before_known_recall_at20": 1.0,
+      "after_known_recall_at20": 1.0,
+      "before_mrr_at20": 1.0,
+      "after_mrr_at20": 1.0,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q28",
+      "q": "臻选 #001",
+      "before_count": 6,
+      "after_count": 6,
+      "before_known_recall_at20": 1.0,
+      "after_known_recall_at20": 1.0,
+      "before_mrr_at20": 1.0,
+      "after_mrr_at20": 1.0,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q29",
+      "q": "1d955aa9-db0f-5cbc-9cb9-36521dddb37d",
+      "before_count": 1,
+      "after_count": 1,
+      "before_known_recall_at20": 1.0,
+      "after_known_recall_at20": 1.0,
+      "before_mrr_at20": 1.0,
+      "after_mrr_at20": 1.0,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q30",
+      "q": "Fourer",
+      "before_count": 115,
+      "after_count": 115,
+      "before_known_recall_at20": 1.0,
+      "after_known_recall_at20": 0.0,
+      "before_mrr_at20": 0.5,
+      "after_mrr_at20": 0,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q31",
+      "q": "傅里页变换",
+      "before_count": 0,
+      "after_count": 112,
+      "before_known_recall_at20": 0.0,
+      "after_known_recall_at20": 1.0,
+      "before_mrr_at20": 0,
+      "after_mrr_at20": 1.0,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q32",
+      "q": "Lapalce",
+      "before_count": 152,
+      "after_count": 152,
+      "before_known_recall_at20": 1.0,
+      "after_known_recall_at20": 0.0,
+      "before_mrr_at20": 0.3333333333333333,
+      "after_mrr_at20": 0,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q33",
+      "q": "偏到数",
+      "before_count": 0,
+      "after_count": 325,
+      "before_known_recall_at20": 0.0,
+      "after_known_recall_at20": 0.0,
+      "before_mrr_at20": 0,
+      "after_mrr_at20": 0,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q34",
+      "q": "\\delta(t-t_0)",
+      "before_count": 0,
+      "after_count": 1,
+      "before_known_recall_at20": 0.0,
+      "after_known_recall_at20": 1.0,
+      "before_mrr_at20": 0,
+      "after_mrr_at20": 1.0,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q35",
+      "q": "\\frac{1}{1+s/\\omega_p}",
+      "before_count": 0,
+      "after_count": 1,
+      "before_known_recall_at20": 0.0,
+      "after_known_recall_at20": 1.0,
+      "before_mrr_at20": 0,
+      "after_mrr_at20": 1.0,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q36",
+      "q": "不存在的题册XYZ987",
+      "before_count": 0,
+      "after_count": 0,
+      "before_known_recall_at20": null,
+      "after_known_recall_at20": null,
+      "before_mrr_at20": null,
+      "after_mrr_at20": null,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q37",
+      "q": "Riemann hypothesis",
+      "before_count": 0,
+      "after_count": 0,
+      "before_known_recall_at20": null,
+      "after_known_recall_at20": null,
+      "before_mrr_at20": null,
+      "after_mrr_at20": null,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q38",
+      "q": "'; DROP TABLE question; --",
+      "before_count": 0,
+      "after_count": 0,
+      "before_known_recall_at20": null,
+      "after_known_recall_at20": null,
+      "before_mrr_at20": null,
+      "after_mrr_at20": null,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q39",
+      "q": "阿贝尔变换",
+      "before_count": 0,
+      "after_count": 0,
+      "before_known_recall_at20": null,
+      "after_known_recall_at20": null,
+      "before_mrr_at20": null,
+      "after_mrr_at20": null,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q40",
+      "q": "🦄🛸",
+      "before_count": 0,
+      "after_count": 0,
+      "before_known_recall_at20": null,
+      "after_known_recall_at20": null,
+      "before_mrr_at20": null,
+      "after_mrr_at20": null,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    },
+    {
+      "id": "REAL-Q41",
+      "q": "",
+      "before_count": 5847,
+      "after_count": 5847,
+      "before_known_recall_at20": null,
+      "after_known_recall_at20": null,
+      "before_mrr_at20": null,
+      "after_mrr_at20": null,
+      "before_explicit_grade0_at10": [],
+      "after_explicit_grade0_at10": []
+    }
+  ],
+  "remaining_risks": [
+    {
+      "id": "REAL-Q23",
+      "q": "波特",
+      "finding": "Ambiguous literal substring still returns 希尔波特变换 explicit negative. This is separate from Bode query, whose2 results are both relevant. Short-fragment intent disambiguation remains limited."
+    },
+    {
+      "finding": "Ancestor-only matches remain in total result membership although pushed below direct leaf/title matches. Total112 results for 傅里叶变换 are not all manually judged. No full-corpus precision assertion."
+    },
+    {
+      "finding": "Generic Fourier/Fourer/Lapalce queries now rank metadata-only exercises ahead of selected fully textual examples. Topic evidence is valid, but relative educational preference needs user judgment; no OCR assumptions."
+    },
+    {
+      "finding": "Macro known-relevant recall fell .750→.742857 while MRR rose .680952→.700. This is transparently retained; development-pool target shifts prevent claiming full-quality monotonic improvement."
+    },
+    {
+      "finding": "The same developer-reviewed labels informed fixes; this is an iterative development evaluation, not an untouched external holdout. Independent blind/user review remains outstanding."
+    },
+    {
+      "finding": "82 sequential service calls are not complete HTTP latency, concurrency, or mobile/PWA evidence."
+    }
+  ],
+  "scope": "Only evidence/script files changed by this agent. No business source, production setting, database migration in production, learning state, or corpus content changed. Isolated precision_search_real preserved for main-agent benchmark."
+}

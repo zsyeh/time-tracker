@@ -18,6 +18,21 @@ python manage.py process_question_search_queue --batch-size 100 --max-seconds 20
 python manage.py verify_question_search --enqueue-mismatch
 ```
 
+Deploy through `drill.0039_search_metadata_coverage_index`. This small concurrent
+partial index contains only public projection IDs whose existing coverage flags
+say both prompt and LaTeX are absent; full-catalog coverage aggregation uses it.
+No source/learning schema or coverage meaning changes. Reversing 0039 drops only
+that index. Apply migrations before enabling hybrid; a missing index is a
+performance defect, not a different membership result.
+
+After a PostgreSQL rebuild the command runs `ANALYZE` on the three disposable
+search tables before verification. When benchmarking an already-built isolated
+fixture, perform the same three `ANALYZE` statements explicitly. Do not secretly
+tune benchmark-only indexes, alter source statistics, or hide first-reload tail
+latency. HTTP reports keep per-sample durations, all statuses, stable counts and
+index versions. Separate the first run after worker reload from an already warm
+repeat; report both.
+
 Use `benchmark_question_search --backend hybrid_v1 --user-id FIXTURE_USER_ID
 --queries tests/search/queries.v1.jsonl --qrels tests/search/qrels.v1.jsonl
 --repeats 30 --concurrency 5 --output PRIVATE_PATH` for **service** measurements.

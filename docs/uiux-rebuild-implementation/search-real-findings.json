@@ -1,0 +1,189 @@
+{
+  "kind": "manual-review-of-real-engine-quality-findings",
+  "evaluated_at_utc": "2026-11-12T11:40:03.429470+00:00",
+  "evidence": "search-real-quality.json",
+  "qrels": "search-real-qrels.json",
+  "status": "improved overall; explicit unresolved regressions; not full release acceptance",
+  "verified_setup": {
+    "database": "isolated precision_search_real",
+    "public_questions": 9281,
+    "drill": 6392,
+    "ei": 2889,
+    "rebuild_verify": {
+      "drill": {
+        "valid": true,
+        "mismatch_ids": [],
+        "lexemes_ok": true,
+        "pending": 0
+      },
+      "ei": {
+        "valid": true,
+        "mismatch_ids": [],
+        "lexemes_ok": true,
+        "pending": 0
+      }
+    },
+    "private_learning_data_imported": false,
+    "fixture_user_has_unusable_password": true
+  },
+  "summary": {
+    "legacy": {
+      "queries": 41,
+      "errors": [],
+      "relevance_queries": 35,
+      "macro_known_relevant_recall_at_20": 0.41904761904761906,
+      "macro_mrr_at_20": 0.36926406926406924,
+      "known_relevant_hit_at_20_queries": 15,
+      "macro_judged_coverage_at_10_nonempty_results": 0.48541666666666666,
+      "known_target_miss_queries": [
+        "REAL-Q01",
+        "REAL-Q06",
+        "REAL-Q08",
+        "REAL-Q09",
+        "REAL-Q11",
+        "REAL-Q12",
+        "REAL-Q13",
+        "REAL-Q14",
+        "REAL-Q17",
+        "REAL-Q18",
+        "REAL-Q19",
+        "REAL-Q21",
+        "REAL-Q22",
+        "REAL-Q24",
+        "REAL-Q25",
+        "REAL-Q29",
+        "REAL-Q30",
+        "REAL-Q31",
+        "REAL-Q32",
+        "REAL-Q33"
+      ],
+      "explicit_grade0_at_10_queries": [
+        "REAL-Q01",
+        "REAL-Q23"
+      ],
+      "expected_empty_passed": 5,
+      "expected_empty_total": 5,
+      "browse_passed": true
+    },
+    "hybrid_v1": {
+      "queries": 41,
+      "errors": [],
+      "relevance_queries": 35,
+      "macro_known_relevant_recall_at_20": 0.75,
+      "macro_mrr_at_20": 0.680952380952381,
+      "known_relevant_hit_at_20_queries": 27,
+      "macro_judged_coverage_at_10_nonempty_results": 0.3978494623655914,
+      "known_target_miss_queries": [
+        "REAL-Q01",
+        "REAL-Q02",
+        "REAL-Q03",
+        "REAL-Q25",
+        "REAL-Q31",
+        "REAL-Q33",
+        "REAL-Q34",
+        "REAL-Q35"
+      ],
+      "explicit_grade0_at_10_queries": [
+        "REAL-Q05",
+        "REAL-Q08",
+        "REAL-Q09",
+        "REAL-Q23"
+      ],
+      "expected_empty_passed": 5,
+      "expected_empty_total": 5,
+      "browse_passed": true
+    }
+  },
+  "definite_regressions": [
+    {
+      "id": "REAL-Q34",
+      "q": "\\delta(t-t_0)",
+      "uuid": "7ed1fccc-bff6-52f9-9a1b-cb24dd8cec8e",
+      "public_source": "drill.question.prompt_text",
+      "evidence": "\\delta(t-t_0)",
+      "legacy_count": 1,
+      "hybrid_count": 0,
+      "interpretation": "Exact public formula is present; new formula matching loses an existing literal hit. Needs search-owner fix before enabling hybrid as release default."
+    },
+    {
+      "id": "REAL-Q35",
+      "q": "\\frac{1}{1+s/\\omega_p}",
+      "uuid": "7bf3178b-610d-5336-bbf1-54f6f1a265da",
+      "public_source": "drill.question.prompt_text",
+      "evidence": "H(s)=\\frac{1}{1+s/\\omega_p}",
+      "legacy_count": 1,
+      "hybrid_count": 0,
+      "interpretation": "Exact public formula is present; new formula matching loses an existing literal hit."
+    }
+  ],
+  "unsupported_typo_cases": [
+    {
+      "id": "REAL-Q31",
+      "q": "傅里页变换",
+      "expected": "傅里叶变换",
+      "legacy_count": 0,
+      "hybrid_count": 0,
+      "evidence": "Public labels for 1d955aa9-db0f-5cbc-9cb9-36521dddb37d and others explicitly contain 傅里叶变换; aliases file lists this common typo but current API still returns no results.",
+      "severity": "explicit advertised common typo behavior not delivered"
+    },
+    {
+      "id": "REAL-Q33",
+      "q": "偏到数",
+      "expected": "偏导数",
+      "legacy_count": 0,
+      "hybrid_count": 0,
+      "evidence": "Public prompt for 12049447-679e-5a28-b669-1a282c57ee9d explicitly discusses 偏导数.",
+      "severity": "not a regression; Chinese typo tolerance still incomplete; do not infer arbitrary Chinese typo correction from Latin support"
+    }
+  ],
+  "precision_risks": [
+    {
+      "ids": [
+        "REAL-Q05",
+        "REAL-Q08",
+        "REAL-Q09"
+      ],
+      "interpretation": "The first four results are directly relevant Fourier-transform questions. Grade0 Fourier-series question 9b11f3a6-52ad-5551-bd5b-ebfd100520a3 appears rank5 for 傅里叶变换. It is not interchangeable with transform. Broad ancestor-topic projection appears to admit it; needs owner inspection before declaring precision gate passed."
+    },
+    {
+      "id": "REAL-Q23",
+      "q": "波特",
+      "interpretation": "Ambiguous short literal includes 希尔波特变换 negative a8b3969a-5ab2-500a-a08e-46a053c28206. Bode alias query REAL-Q22 returns only2 relevant results; do not claim this shorter Chinese fragment has the same precision."
+    }
+  ],
+  "partial_qrels_cautions": [
+    {
+      "ids": [
+        "REAL-Q01",
+        "REAL-Q02",
+        "REAL-Q03"
+      ],
+      "interpretation": "KnownRelevantRecall@20=0 for selected judged targets, but manually inspecting top10 confirms actual titles such as 多元微分大观 偏导数 and correct book/topic. These are unjudged relevant candidates, not evidence the query has zero true relevance. Do not label a semantic failure based solely on sparse targets."
+    },
+    {
+      "id": "REAL-Q25",
+      "interpretation": "KnownRelevantRecall@20=0 for selected targets, but top10 are all real 892信号与系统 or its corresponding exercises. Cannot call search a book-query failure; omitted targets are outside first20."
+    },
+    {
+      "ids": [
+        "REAL-Q10",
+        "REAL-Q11",
+        "REAL-Q12"
+      ],
+      "interpretation": "KnownRelevantRecall@20=.75 because one selected metadata-only exercise is outside20. Definition/property questions occupy higher rank; this does not prove .25 true corpus recall loss."
+    }
+  ],
+  "what_is_not_proven": [
+    "Independent user/blind holdout release accuracy",
+    "Exhaustive full-corpus recall",
+    "HTTP p95<=250ms",
+    "93k concurrency throughput",
+    "Actual OCR/image text search"
+  ],
+  "next_actions": [
+    "Search owner fixes exact-formula regressions and approved-typo behavior; do not edit this evidence to imply existing run passed.",
+    "Rebuild only if source_version changes, verify both workspaces, rerun the identical frozen qrels to a separate output file.",
+    "Keep original development qrels frozen for initial/fixed comparison; extend judged pools later as a separately versioned dataset with independent review.",
+    "Leave DRILL_SEARCH_BACKEND=legacy unless explicit unresolved risks are accepted by main agent under release policy."
+  ]
+}
