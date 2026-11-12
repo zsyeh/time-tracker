@@ -1,0 +1,137 @@
+{
+  "frontend/src/views/TodayView.vue": {
+    "source": "frontend/src/styles.css",
+    "prefixes": [
+      "today-",
+      "daily-progress-",
+      "daily-stat-",
+      "overview-secondary",
+      "math-target-"
+    ]
+  },
+  "frontend/src/views/HistoryView.vue": {
+    "source": "frontend/src/styles.css",
+    "prefixes": [
+      "history-",
+      "session-start",
+      "duration-badge",
+      "running-badge",
+      "review-eye"
+    ]
+  },
+  "frontend/src/views/IssuesView.vue": {
+    "source": "frontend/src/styles.css",
+    "prefixes": [
+      "issue-board",
+      "issue-row",
+      "issue-main",
+      "issue-properties",
+      "issue-status",
+      "row-action-danger"
+    ]
+  },
+  "frontend/src/views/SessionDetailView.vue": {
+    "source": "frontend/src/styles.css",
+    "prefixes": [
+      "session-detail-workspace",
+      "session-document",
+      "document-identity",
+      "session-context-rail",
+      "context-section",
+      "context-properties",
+      "context-tags",
+      "share-context",
+      "share-state",
+      "share-actions",
+      "share-reveal",
+      "share-once-note"
+    ]
+  },
+  "frontend/src/views/PublicShareView.vue": {
+    "source": "frontend/src/styles.css",
+    "prefixes": [
+      "public-share-",
+      "public-article",
+      "public-article-"
+    ]
+  },
+  "frontend/drill/src/components/ActivityCalendar.vue": {
+    "source": "frontend/drill/src/styles.css",
+    "prefixes": [
+      "activity-calendar",
+      "activity-scroll",
+      "activity-weekdays",
+      "activity-grid",
+      "activity-placeholder"
+    ]
+  },
+  "frontend/drill/src/views/ActivityView.vue": {
+    "source": "frontend/drill/src/styles.css",
+    "prefixes": [
+      "activity-route-card"
+    ]
+  },
+  "frontend/drill/src/views/BookActivityView.vue": {
+    "source": "frontend/drill/src/styles.css",
+    "prefixes": [
+      "book-activity-list"
+    ]
+  },
+  "frontend/drill/src/views/FeelView.vue": {
+    "source": "frontend/drill/src/styles.css",
+    "prefixes": [
+      "feel-"
+    ]
+  },
+  "frontend/drill/src/views/CollectionView.vue": {
+    "source": "frontend/drill/src/styles.css",
+    "prefixes": [
+      "collection-count",
+      "collection-page"
+    ]
+  },
+  "frontend/drill/src/views/ErrataView.vue": {
+    "source": "frontend/drill/src/styles.css",
+    "prefixes": [
+      "errata-list"
+    ]
+  },
+  "frontend/drill/src/views/PapersView.vue": {
+    "source": "frontend/drill/src/styles.css",
+    "prefixes": [
+      "paper-history-",
+      "paper-mode"
+    ]
+  },
+  "frontend/drill/src/views/PaperNewView.vue": {
+    "source": "frontend/drill/src/styles.css",
+    "prefixes": [
+      "blueprint-grid",
+      "paper-generate-bar"
+    ]
+  },
+  "frontend/drill/src/views/PaperExamView.vue": {
+    "source": "frontend/drill/src/styles.css",
+    "prefixes": [
+      "paper-exam-",
+      "paper-question-shell",
+      "paper-answer-field",
+      "paper-position-dots"
+    ]
+  },
+  "frontend/drill/src/views/PaperReviewView.vue": {
+    "source": "frontend/drill/src/styles.css",
+    "prefixes": [
+      "paper-header-actions",
+      "paper-review-item",
+      "paper-your-answer",
+      "paper-solution"
+    ]
+  },
+  "frontend/drill/src/views/NotFoundView.vue": {
+    "source": "frontend/drill/src/styles.css",
+    "prefixes": [
+      "route-error-page"
+    ]
+  }
+}

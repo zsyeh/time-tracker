@@ -7,7 +7,7 @@ import PdfPageStatusPanel from '../components/PdfPageStatusPanel.vue'
   <section class="page pdf-page-import-view">
     <header class="page-header">
       <div>
-        <span class="eyebrow">EI SELECTED QUESTIONS</span>
+
         <h1>{{ uiText("严选题 PDF 页码记录") }}</h1>
         <p>{{ uiText("仅适用于五科严选题。标准题库不参与匹配，也不能通过此入口批量记录。") }}</p>
       </div>
@@ -21,7 +21,7 @@ import PdfPageStatusPanel from '../components/PdfPageStatusPanel.vue'
 </template>
 
 <style scoped>
-.selected-only-note { display: flex; gap: 14px; align-items: center; margin: 0 0 18px; padding: 13px 16px; border: 1px solid #b9ddd5; border-radius: 11px; background: #edf8f5; color: #265f58; font-size: 13px; line-height: 1.55; }
-.selected-only-note strong { flex: none; color: #12695e; }
+.selected-only-note { display: flex; gap:16px; align-items: center; margin: 0 0 18px; padding: 13px 16px; border:0; border-radius:8px; background:var(--surface-subtle); color:var(--text-secondary); font-size: 13px; line-height: 1.55; }
+.selected-only-note strong { flex: none; color:var(--text-primary); }
 @media (max-width: 600px) { .selected-only-note { display: block; } .selected-only-note strong { display: block; margin-bottom: 4px; } }
 </style>

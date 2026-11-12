@@ -1,0 +1,2390 @@
+[
+  {
+    "page": "practice",
+    "scheme": "light",
+    "viewport": [
+      375,
+      812
+    ],
+    "metrics": {
+      "width": 375,
+      "scrollWidth": 375,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "题库"
+      ],
+      "tiny": [
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        }
+      ],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "practice-light-375x812.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "progress",
+    "scheme": "light",
+    "viewport": [
+      375,
+      812
+    ],
+    "metrics": {
+      "width": 375,
+      "scrollWidth": 375,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "学习进度"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "progress-light-375x812.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "diagnostics",
+    "scheme": "light",
+    "viewport": [
+      375,
+      812
+    ],
+    "metrics": {
+      "width": 375,
+      "scrollWidth": 375,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "Drill 数学 · 解题能力"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "diagnostics-light-375x812.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "selected-heatmap",
+    "scheme": "light",
+    "viewport": [
+      375,
+      812
+    ],
+    "metrics": {
+      "width": 375,
+      "scrollWidth": 375,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "严选题热力图"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "selected-heatmap-light-375x812.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "insight",
+    "scheme": "light",
+    "viewport": [
+      375,
+      812
+    ],
+    "metrics": {
+      "width": 375,
+      "scrollWidth": 375,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "历史记录"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "insight-light-375x812.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "settings",
+    "scheme": "light",
+    "viewport": [
+      375,
+      812
+    ],
+    "metrics": {
+      "width": 375,
+      "scrollWidth": 375,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "设置"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "settings-light-375x812.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "practice",
+    "scheme": "light",
+    "viewport": [
+      390,
+      844
+    ],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "题库"
+      ],
+      "tiny": [
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        }
+      ],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "practice-light-390x844.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "progress",
+    "scheme": "light",
+    "viewport": [
+      390,
+      844
+    ],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "学习进度"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "progress-light-390x844.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "diagnostics",
+    "scheme": "light",
+    "viewport": [
+      390,
+      844
+    ],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "Drill 数学 · 解题能力"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "diagnostics-light-390x844.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "selected-heatmap",
+    "scheme": "light",
+    "viewport": [
+      390,
+      844
+    ],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "严选题热力图"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "selected-heatmap-light-390x844.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "insight",
+    "scheme": "light",
+    "viewport": [
+      390,
+      844
+    ],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "历史记录"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "insight-light-390x844.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "settings",
+    "scheme": "light",
+    "viewport": [
+      390,
+      844
+    ],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "设置"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "settings-light-390x844.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "practice",
+    "scheme": "light",
+    "viewport": [
+      430,
+      932
+    ],
+    "metrics": {
+      "width": 430,
+      "scrollWidth": 430,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "题库"
+      ],
+      "tiny": [
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        }
+      ],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "practice-light-430x932.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "progress",
+    "scheme": "light",
+    "viewport": [
+      430,
+      932
+    ],
+    "metrics": {
+      "width": 430,
+      "scrollWidth": 430,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "学习进度"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "progress-light-430x932.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "diagnostics",
+    "scheme": "light",
+    "viewport": [
+      430,
+      932
+    ],
+    "metrics": {
+      "width": 430,
+      "scrollWidth": 430,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "Drill 数学 · 解题能力"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "diagnostics-light-430x932.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "selected-heatmap",
+    "scheme": "light",
+    "viewport": [
+      430,
+      932
+    ],
+    "metrics": {
+      "width": 430,
+      "scrollWidth": 430,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "严选题热力图"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "selected-heatmap-light-430x932.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "insight",
+    "scheme": "light",
+    "viewport": [
+      430,
+      932
+    ],
+    "metrics": {
+      "width": 430,
+      "scrollWidth": 430,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "历史记录"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "insight-light-430x932.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "settings",
+    "scheme": "light",
+    "viewport": [
+      430,
+      932
+    ],
+    "metrics": {
+      "width": 430,
+      "scrollWidth": 430,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "设置"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "settings-light-430x932.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "practice",
+    "scheme": "light",
+    "viewport": [
+      820,
+      1180
+    ],
+    "metrics": {
+      "width": 820,
+      "scrollWidth": 820,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "题库"
+      ],
+      "tiny": [
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        }
+      ],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "practice-light-820x1180.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "progress",
+    "scheme": "light",
+    "viewport": [
+      820,
+      1180
+    ],
+    "metrics": {
+      "width": 820,
+      "scrollWidth": 820,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "学习进度"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "progress-light-820x1180.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "diagnostics",
+    "scheme": "light",
+    "viewport": [
+      820,
+      1180
+    ],
+    "metrics": {
+      "width": 820,
+      "scrollWidth": 820,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "Drill 数学 · 解题能力"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "diagnostics-light-820x1180.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "selected-heatmap",
+    "scheme": "light",
+    "viewport": [
+      820,
+      1180
+    ],
+    "metrics": {
+      "width": 820,
+      "scrollWidth": 820,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "严选题热力图"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "selected-heatmap-light-820x1180.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "insight",
+    "scheme": "light",
+    "viewport": [
+      820,
+      1180
+    ],
+    "metrics": {
+      "width": 820,
+      "scrollWidth": 820,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "历史记录"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "insight-light-820x1180.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "settings",
+    "scheme": "light",
+    "viewport": [
+      820,
+      1180
+    ],
+    "metrics": {
+      "width": 820,
+      "scrollWidth": 820,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "设置"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "settings-light-820x1180.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "practice",
+    "scheme": "light",
+    "viewport": [
+      1180,
+      820
+    ],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "题库"
+      ],
+      "tiny": [
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        }
+      ],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "practice-light-1180x820.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "progress",
+    "scheme": "light",
+    "viewport": [
+      1180,
+      820
+    ],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "学习进度"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "progress-light-1180x820.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "diagnostics",
+    "scheme": "light",
+    "viewport": [
+      1180,
+      820
+    ],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "Drill 数学 · 解题能力"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "diagnostics-light-1180x820.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "selected-heatmap",
+    "scheme": "light",
+    "viewport": [
+      1180,
+      820
+    ],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "严选题热力图"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "selected-heatmap-light-1180x820.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "insight",
+    "scheme": "light",
+    "viewport": [
+      1180,
+      820
+    ],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "历史记录"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "insight-light-1180x820.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "settings",
+    "scheme": "light",
+    "viewport": [
+      1180,
+      820
+    ],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "设置"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "settings-light-1180x820.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "practice",
+    "scheme": "light",
+    "viewport": [
+      1440,
+      1000
+    ],
+    "metrics": {
+      "width": 1440,
+      "scrollWidth": 1440,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "题库"
+      ],
+      "tiny": [
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        }
+      ],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "practice-light-1440x1000.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "progress",
+    "scheme": "light",
+    "viewport": [
+      1440,
+      1000
+    ],
+    "metrics": {
+      "width": 1440,
+      "scrollWidth": 1440,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "学习进度"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "progress-light-1440x1000.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "diagnostics",
+    "scheme": "light",
+    "viewport": [
+      1440,
+      1000
+    ],
+    "metrics": {
+      "width": 1440,
+      "scrollWidth": 1440,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "Drill 数学 · 解题能力"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "diagnostics-light-1440x1000.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "selected-heatmap",
+    "scheme": "light",
+    "viewport": [
+      1440,
+      1000
+    ],
+    "metrics": {
+      "width": 1440,
+      "scrollWidth": 1440,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "严选题热力图"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "selected-heatmap-light-1440x1000.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "insight",
+    "scheme": "light",
+    "viewport": [
+      1440,
+      1000
+    ],
+    "metrics": {
+      "width": 1440,
+      "scrollWidth": 1440,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "历史记录"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "insight-light-1440x1000.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "settings",
+    "scheme": "light",
+    "viewport": [
+      1440,
+      1000
+    ],
+    "metrics": {
+      "width": 1440,
+      "scrollWidth": 1440,
+      "background": "rgb(255, 255, 255)",
+      "scheme": "light",
+      "headings": [
+        "设置"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "settings-light-1440x1000.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "practice",
+    "scheme": "dark",
+    "viewport": [
+      375,
+      812
+    ],
+    "metrics": {
+      "width": 375,
+      "scrollWidth": 375,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "题库"
+      ],
+      "tiny": [
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        }
+      ],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "practice-dark-375x812.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "progress",
+    "scheme": "dark",
+    "viewport": [
+      375,
+      812
+    ],
+    "metrics": {
+      "width": 375,
+      "scrollWidth": 375,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "学习进度"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "progress-dark-375x812.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "diagnostics",
+    "scheme": "dark",
+    "viewport": [
+      375,
+      812
+    ],
+    "metrics": {
+      "width": 375,
+      "scrollWidth": 375,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "Drill 数学 · 解题能力"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "diagnostics-dark-375x812.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "selected-heatmap",
+    "scheme": "dark",
+    "viewport": [
+      375,
+      812
+    ],
+    "metrics": {
+      "width": 375,
+      "scrollWidth": 375,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "严选题热力图"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "selected-heatmap-dark-375x812.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "insight",
+    "scheme": "dark",
+    "viewport": [
+      375,
+      812
+    ],
+    "metrics": {
+      "width": 375,
+      "scrollWidth": 375,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "历史记录"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "insight-dark-375x812.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "settings",
+    "scheme": "dark",
+    "viewport": [
+      375,
+      812
+    ],
+    "metrics": {
+      "width": 375,
+      "scrollWidth": 375,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "设置"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "settings-dark-375x812.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "practice",
+    "scheme": "dark",
+    "viewport": [
+      390,
+      844
+    ],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "题库"
+      ],
+      "tiny": [
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        }
+      ],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "practice-dark-390x844.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "progress",
+    "scheme": "dark",
+    "viewport": [
+      390,
+      844
+    ],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "学习进度"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "progress-dark-390x844.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "diagnostics",
+    "scheme": "dark",
+    "viewport": [
+      390,
+      844
+    ],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "Drill 数学 · 解题能力"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "diagnostics-dark-390x844.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "selected-heatmap",
+    "scheme": "dark",
+    "viewport": [
+      390,
+      844
+    ],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "严选题热力图"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "selected-heatmap-dark-390x844.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "insight",
+    "scheme": "dark",
+    "viewport": [
+      390,
+      844
+    ],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "历史记录"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "insight-dark-390x844.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "settings",
+    "scheme": "dark",
+    "viewport": [
+      390,
+      844
+    ],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "设置"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "settings-dark-390x844.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "practice",
+    "scheme": "dark",
+    "viewport": [
+      430,
+      932
+    ],
+    "metrics": {
+      "width": 430,
+      "scrollWidth": 430,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "题库"
+      ],
+      "tiny": [
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        }
+      ],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "practice-dark-430x932.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "progress",
+    "scheme": "dark",
+    "viewport": [
+      430,
+      932
+    ],
+    "metrics": {
+      "width": 430,
+      "scrollWidth": 430,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "学习进度"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "progress-dark-430x932.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "diagnostics",
+    "scheme": "dark",
+    "viewport": [
+      430,
+      932
+    ],
+    "metrics": {
+      "width": 430,
+      "scrollWidth": 430,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "Drill 数学 · 解题能力"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "diagnostics-dark-430x932.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "selected-heatmap",
+    "scheme": "dark",
+    "viewport": [
+      430,
+      932
+    ],
+    "metrics": {
+      "width": 430,
+      "scrollWidth": 430,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "严选题热力图"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "selected-heatmap-dark-430x932.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "insight",
+    "scheme": "dark",
+    "viewport": [
+      430,
+      932
+    ],
+    "metrics": {
+      "width": 430,
+      "scrollWidth": 430,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "历史记录"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "insight-dark-430x932.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "settings",
+    "scheme": "dark",
+    "viewport": [
+      430,
+      932
+    ],
+    "metrics": {
+      "width": 430,
+      "scrollWidth": 430,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "设置"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "settings-dark-430x932.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "practice",
+    "scheme": "dark",
+    "viewport": [
+      820,
+      1180
+    ],
+    "metrics": {
+      "width": 820,
+      "scrollWidth": 820,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "题库"
+      ],
+      "tiny": [
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        }
+      ],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "practice-dark-820x1180.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "progress",
+    "scheme": "dark",
+    "viewport": [
+      820,
+      1180
+    ],
+    "metrics": {
+      "width": 820,
+      "scrollWidth": 820,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "学习进度"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "progress-dark-820x1180.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "diagnostics",
+    "scheme": "dark",
+    "viewport": [
+      820,
+      1180
+    ],
+    "metrics": {
+      "width": 820,
+      "scrollWidth": 820,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "Drill 数学 · 解题能力"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "diagnostics-dark-820x1180.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "selected-heatmap",
+    "scheme": "dark",
+    "viewport": [
+      820,
+      1180
+    ],
+    "metrics": {
+      "width": 820,
+      "scrollWidth": 820,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "严选题热力图"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "selected-heatmap-dark-820x1180.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "insight",
+    "scheme": "dark",
+    "viewport": [
+      820,
+      1180
+    ],
+    "metrics": {
+      "width": 820,
+      "scrollWidth": 820,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "历史记录"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "insight-dark-820x1180.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "settings",
+    "scheme": "dark",
+    "viewport": [
+      820,
+      1180
+    ],
+    "metrics": {
+      "width": 820,
+      "scrollWidth": 820,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "设置"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "settings-dark-820x1180.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "practice",
+    "scheme": "dark",
+    "viewport": [
+      1180,
+      820
+    ],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "题库"
+      ],
+      "tiny": [
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        }
+      ],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "practice-dark-1180x820.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "progress",
+    "scheme": "dark",
+    "viewport": [
+      1180,
+      820
+    ],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "学习进度"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "progress-dark-1180x820.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "diagnostics",
+    "scheme": "dark",
+    "viewport": [
+      1180,
+      820
+    ],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "Drill 数学 · 解题能力"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "diagnostics-dark-1180x820.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "selected-heatmap",
+    "scheme": "dark",
+    "viewport": [
+      1180,
+      820
+    ],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "background": "rgba(0, 0, 0, 0)",
+      "scheme": null,
+      "headings": [
+        "Error response"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "selected-heatmap-dark-1180x820.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "insight",
+    "scheme": "dark",
+    "viewport": [
+      1180,
+      820
+    ],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "历史记录"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "insight-dark-1180x820.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "settings",
+    "scheme": "dark",
+    "viewport": [
+      1180,
+      820
+    ],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "设置"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "settings-dark-1180x820.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "practice",
+    "scheme": "dark",
+    "viewport": [
+      1440,
+      1000
+    ],
+    "metrics": {
+      "width": 1440,
+      "scrollWidth": 1440,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "题库"
+      ],
+      "tiny": [
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        },
+        {
+          "text": " · 1",
+          "size": "10px"
+        },
+        {
+          "text": " · 2",
+          "size": "10px"
+        },
+        {
+          "text": " · 3",
+          "size": "10px"
+        }
+      ],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "practice-dark-1440x1000.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "progress",
+    "scheme": "dark",
+    "viewport": [
+      1440,
+      1000
+    ],
+    "metrics": {
+      "width": 1440,
+      "scrollWidth": 1440,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "学习进度"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "progress-dark-1440x1000.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "diagnostics",
+    "scheme": "dark",
+    "viewport": [
+      1440,
+      1000
+    ],
+    "metrics": {
+      "width": 1440,
+      "scrollWidth": 1440,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "Drill 数学 · 解题能力"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "diagnostics-dark-1440x1000.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "selected-heatmap",
+    "scheme": "dark",
+    "viewport": [
+      1440,
+      1000
+    ],
+    "metrics": {
+      "width": 1440,
+      "scrollWidth": 1440,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "严选题热力图"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "selected-heatmap-dark-1440x1000.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "insight",
+    "scheme": "dark",
+    "viewport": [
+      1440,
+      1000
+    ],
+    "metrics": {
+      "width": 1440,
+      "scrollWidth": 1440,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "历史记录"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "insight-dark-1440x1000.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  },
+  {
+    "page": "settings",
+    "scheme": "dark",
+    "viewport": [
+      1440,
+      1000
+    ],
+    "metrics": {
+      "width": 1440,
+      "scrollWidth": 1440,
+      "background": "rgb(20, 20, 20)",
+      "scheme": "dark",
+      "headings": [
+        "设置"
+      ],
+      "tiny": [],
+      "overflow": []
+    },
+    "errors": [],
+    "screenshot": "settings-dark-1440x1000.png",
+    "fixture": true,
+    "browser": "Chromium; not real Safari"
+  }
+]

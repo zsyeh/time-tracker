@@ -12,3 +12,4 @@ use([
 
 export { init }
 export type { EChartsType } from 'echarts/core'
+export {chartPalette,chartVisuals,onChartAppearanceChanged} from '../../shared/design/chartTheme'

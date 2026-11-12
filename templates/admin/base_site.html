@@ -8,12 +8,8 @@
     {% include "includes/touch_style.html" %}
     <link rel="icon" type="image/png" sizes="180x180" href="/icon-180.png?v=img9387">
     <link rel="apple-touch-icon" sizes="180x180" href="/icon-180.png?v=img9387">
-    <script>
-        try {
-            const savedTheme = localStorage.getItem('learning-os-theme') || 'coolapk';
-            document.documentElement.dataset.theme = savedTheme;
-        } catch (_) { document.documentElement.dataset.theme = 'coolapk'; }
-    </script>
+    <script src="{% static 'tracker/ui/appearance-bootstrap.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'tracker/ui/tokens.css' %}">
 {% endblock %}
 
 {% block extrastyle %}
@@ -23,7 +19,7 @@
 
 {% block branding %}
     <div class="learning-admin-brand">
-        <span></span>
+        <span>L</span>
         <div><strong>Learning OS</strong><small>CONTROL PANEL</small></div>
     </div>
 {% endblock %}

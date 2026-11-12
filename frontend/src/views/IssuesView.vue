@@ -124,3 +124,29 @@ onMounted(load)
     </el-dialog>
   </div>
 </template>
+
+
+<style scoped>
+.issue-board { min-height: 180px; }
+.issue-row { min-height: 64px; padding: 12px 8px; border-top: 1px solid var(--border-subtle); display: grid; grid-template-columns: 20px 52px minmax(0, 1fr) auto auto; align-items: center; gap: 9px; transition: background 130ms ease-out; }
+.issue-row:hover { background: var(--bg-surface-hover); }
+.density-comfortable .issue-row { min-height: 68px; padding-block: 11px; }
+.issue-row.resolved { opacity:1; color:var(--text-secondary); }
+.issue-main { min-width: 0; }
+.issue-main > div { min-width: 0; display: flex; align-items: center; gap: 7px; }
+.issue-main b { overflow: hidden; font-size: 14px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.issue-main p, .issue-main small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.issue-main p { margin: 2px 0 0; color: var(--text-secondary); font-size: 12px; }
+.issue-main small { color: var(--text-tertiary); font-size: 12px; }
+.issue-properties { color: var(--text-tertiary); display: flex; align-items: center; justify-content: flex-end; gap: 9px; font-size: 12px; white-space: nowrap; }
+.issue-properties time { font: 12px ui-monospace, monospace; }
+.row-action-danger { padding: 3px 5px; border: 0; border-radius: 4px; color: var(--text-tertiary); background: transparent; font-size: 12px; opacity: 0; cursor: pointer; }
+.issue-row:hover .row-action-danger, .row-action-danger:focus-visible { opacity: 1; }
+.row-action-danger:hover { color: var(--danger); background: color-mix(in srgb, var(--danger) 10%, transparent); }
+@media (max-width: 520px) {
+.issue-row { grid-template-columns: 20px minmax(0, 1fr) auto; }
+.issue-row .resource-key { display:none; }
+.row-action-danger { opacity: 1; }
+}
+.issues-view { min-width:0; } .issue-main p { line-height:1.5; } .row-action-danger { min-width:44px; min-height:44px; } @media(pointer:coarse) { .row-action-danger { opacity:1; } } @media(max-width:600px) { .issue-row { grid-template-columns:20px minmax(0,1fr) auto; gap:8px; } .issue-row > .resource-key { grid-column:2; } .issue-main { grid-column:2; } .issue-properties { grid-column:2; justify-content:flex-start; flex-wrap:wrap; white-space:normal; } .issue-row > .row-action-danger { grid-column:3; grid-row:1/4; } }
+</style>

@@ -11,7 +11,7 @@ import type { ECharts, EChartsCoreOption } from 'echarts/core'
 import { api } from '../lib/api'
 import type { DiagnosticDashboard, ErrorCode } from '../types'
 import { runtimeWorkspace } from '../lib/runtimePath'
-import { chartPalette, chartVisuals } from '../lib/chartTheme'
+import { chartPalette, chartVisuals, onChartAppearanceChanged } from '../lib/chartTheme'
 import { typeText } from '../lib/examTypes'
 
 echarts.use([BarChart, LineChart, GridComponent, LegendComponent, TooltipComponent, CanvasRenderer])
@@ -25,6 +25,7 @@ const customStart = ref('')
 const customEnd = ref('')
 const chartElement = ref<HTMLElement | null>(null)
 const activityChartElement = ref<HTMLElement | null>(null)
+let stopAppearance: (()=>void) | undefined
 let chart: ECharts | null = null
 let activityChart: ECharts | null = null
 let resizeObserver: ResizeObserver | null = null
@@ -40,24 +41,24 @@ function dailyRate(correct: number, sample: number) { return sample ? Math.round
 function option(): EChartsCoreOption {
   const payload = data.value!
   const palette = chartPalette()
-  const { text, border, surface, primary, mastered, review } = palette
+  const { text, border, surface, primary, mastered, accent } = palette
   return {
     ...chartVisuals(palette),
     grid: { left: 38, right: 16, top: 42, bottom: 30 },
     legend: { top: 3, textStyle: { color: text, fontSize: 12 }, data: [uiText("首次独立正确率"), uiText("二次独立正确率")] },
     tooltip: {
-      trigger: 'axis', confine: true, backgroundColor: surface, borderColor: border, textStyle: { color: primary, fontSize: 12 },
+      trigger: 'axis', confine: true, backgroundColor: surface, borderColor: border, textStyle: { color: primary, fontSize: 14 },
       formatter(raw: unknown) {
         const rows = raw as Array<{ dataIndex: number; marker: string; seriesName: string; value: number | null }>
         const point = payload.trend[rows[0]?.dataIndex || 0]
         return [`<strong>${point.date}</strong>`, ...rows.map(row => `${row.marker}${row.seriesName}：${row.value === null ? uiText("无样本") : `${row.value}%`}`), `${uiText("首次样本")}：${point.first_sample}`, `${uiText("二次样本")}：${point.second_sample}`].join('<br>')
       },
     },
-    xAxis: { type: 'category', data: payload.trend.map(row => row.date.slice(5)), axisLine: { lineStyle: { color: border } }, axisLabel: { color: text, fontSize: 11, hideOverlap: true } },
-    yAxis: { type: 'value', min: 0, max: 100, axisLabel: { color: text, fontSize: 11, formatter: '{value}%' }, splitLine: { lineStyle: { color: border, type: 'dashed' } } },
+    xAxis: { type: 'category', data: payload.trend.map(row => row.date.slice(5)), axisLine: { lineStyle: { color: border } }, axisLabel: { color: text, fontSize: 12, hideOverlap: true } },
+    yAxis: { type: 'value', min: 0, max: 100, axisLabel: { color: text, fontSize: 12, formatter: '{value}%' }, splitLine: { lineStyle: { color: border, type: 'dashed' } } },
     series: [
       { name: uiText("首次独立正确率"), type: 'line', connectNulls: false, smooth: .25, data: payload.trend.map(row => dailyRate(row.first_independent_correct, row.first_sample)), lineStyle: { width: 2, color: mastered }, itemStyle: { color: mastered } },
-      { name: uiText("二次独立正确率"), type: 'line', connectNulls: false, smooth: .25, data: payload.trend.map(row => dailyRate(row.second_independent_correct, row.second_sample)), lineStyle: { width: 2, color: review }, itemStyle: { color: review } },
+      { name: uiText("二次独立正确率"), type: 'line', connectNulls: false, smooth: .25, data: payload.trend.map(row => dailyRate(row.second_independent_correct, row.second_sample)), lineStyle: { width: 2, color: accent, type: 'dashed' }, itemStyle: { color: accent } },
     ],
   }
 }
@@ -65,13 +66,14 @@ function option(): EChartsCoreOption {
 function activityOption(): EChartsCoreOption {
   const payload = data.value!
   const palette = chartPalette()
-  const { text, border, surface, primary, accent, review } = palette
+  const { text, border, surface, primary, accent } = palette
+  const review = palette.comparison
   return {
     ...chartVisuals(palette),
     grid: { left: 38, right: 14, top: 40, bottom: 38 },
     legend: { top: 3, textStyle: { color: text, fontSize: 12 }, data: [uiText("每日去重题数"), uiText("提交次数")] },
     tooltip: {
-      trigger: 'axis', confine: true, backgroundColor: surface, borderColor: border, textStyle: { color: primary, fontSize: 12 },
+      trigger: 'axis', confine: true, backgroundColor: surface, borderColor: border, textStyle: { color: primary, fontSize: 14 },
       formatter(raw: unknown) {
         const rows = raw as Array<{ dataIndex: number; marker: string; seriesName: string; value: number }>
         const point = payload.activity[rows[0]?.dataIndex || 0]
@@ -83,8 +85,8 @@ function activityOption(): EChartsCoreOption {
         ].join('<br>')
       },
     },
-    xAxis: { type: 'category', data: payload.activity.map(row => row.date.slice(5)), axisLine: { lineStyle: { color: border } }, axisLabel: { color: text, fontSize: 11, hideOverlap: true } },
-    yAxis: { type: 'value', minInterval: 1, axisLabel: { color: text, fontSize: 11 }, splitLine: { lineStyle: { color: border, type: 'dashed' } } },
+    xAxis: { type: 'category', data: payload.activity.map(row => row.date.slice(5)), axisLine: { lineStyle: { color: border } }, axisLabel: { color: text, fontSize: 12, hideOverlap: true } },
+    yAxis: { type: 'value', minInterval: 1, axisLabel: { color: text, fontSize: 12 }, splitLine: { lineStyle: { color: border, type: 'dashed' } } },
     series: [
       { name: uiText("每日去重题数"), type: 'bar', barMaxWidth: 18, data: payload.activity.map(row => row.daily_unique_questions), itemStyle: { color: accent, borderRadius: [3, 3, 0, 0] } },
       { name: uiText("提交次数"), type: 'line', smooth: .2, data: payload.activity.map(row => row.submissions), lineStyle: { width: 2, color: review }, itemStyle: { color: review } },
@@ -136,7 +138,8 @@ onMounted(() => {
   if (chartElement.value) resizeObserver?.observe(chartElement.value)
   if (activityChartElement.value) resizeObserver?.observe(activityChartElement.value)
   schemeObserver = new MutationObserver(() => { void renderChart() })
-  schemeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-color-scheme'] })
+  schemeObserver.observe(document.documentElement, { attributes: true, attributeFilter: ['data-color-scheme', 'data-accent'] })
+  stopAppearance = onChartAppearanceChanged(() => { void renderChart() })
   window.addEventListener('resize', resizeCharts)
   window.addEventListener('orientationchange', resizeCharts)
   window.addEventListener('pageshow', resizeCharts)
@@ -146,6 +149,7 @@ onUnmounted(() => {
   mounted = false
   window.cancelAnimationFrame(resizeFrame)
   resizeObserver?.disconnect(); schemeObserver?.disconnect(); chart?.dispose(); activityChart?.dispose()
+  stopAppearance?.()
   window.removeEventListener('resize', resizeCharts)
   window.removeEventListener('orientationchange', resizeCharts)
   window.removeEventListener('pageshow', resizeCharts)
@@ -164,7 +168,7 @@ watch(uiLanguage, () => { void renderChart() })
 <template>
   <section class="page diagnostic-page">
     <header class="page-header diagnostic-header">
-      <div><span class="eyebrow">ABILITY DIAGNOSIS</span><h1>{{ title }}</h1><p>{{ uiText("区分“做过”与“能够独立做对”；所有比例均显示真实样本量。") }}</p></div>
+      <div><h1>{{ title }}</h1><p>{{ uiText("区分“做过”与“能够独立做对”；所有比例均显示真实样本量。") }}</p></div>
       <div class="range"><button v-for="value in [7,14,30]" :key="value" :class="{ active: days === value && !customStart }" @click="setDays(value)">{{ value }}{{ uiText("天") }}</button><label><span>{{ uiText("自定") }}</span><input v-model="customStart" :aria-label="uiText('开始日期')" type="date" /><input v-model="customEnd" :aria-label="uiText('结束日期')" type="date" /><button @click="applyCustomRange">{{ uiText("应用") }}</button></label></div>
     </header>
     <RouterLink class="diagnostic-progress-link" to="/progress">{{ typeText('查看学习进度', 'View learning progress') }} <span aria-hidden="true">→</span></RouterLink>
@@ -187,7 +191,7 @@ watch(uiLanguage, () => { void renderChart() })
           <article><small>{{ uiText("历史诊断未知") }}</small><strong>{{ data.period_activity.legacy_unknown_attempts }}</strong><span>{{ uiText("计入题量，不推断独立性") }}</span></article>
         </div>
         <div ref="activityChartElement" class="activity-chart" role="img" :aria-label="uiText('每日去重刷题量与提交次数')" />
-        <p class="activity-note">{{ uiText("蓝柱是每天完成的不同题目数；黄线是保存成功的提交次数。旧记录会显示题量，但不会被冒充为“独立正确”。") }}</p>
+        <p class="activity-note">{{ uiText("柱形是每天完成的不同题目数；折线是保存成功的提交次数。旧记录会显示题量，但不会被冒充为“独立正确”。") }}</p>
       </section>
 
       <section class="ability-board">
@@ -204,20 +208,21 @@ watch(uiLanguage, () => { void renderChart() })
 
       <div class="diagnostic-grid">
         <section class="error-distribution">
-          <header><div><span class="eyebrow">ERROR PROFILE</span><h2>{{ uiText("错误分布") }}</h2></div><small>{{ uiText("只统计有明确主错误的作答") }}</small></header>
+          <header><div><h2>{{ uiText("错误分布") }}</h2></div><small>{{ uiText("只统计有明确主错误的作答") }}</small></header>
           <button v-for="row in data.error_distribution" :key="row.code" :disabled="!row.count" @click="openErrors([row.code])"><b>{{ row.code }}</b><span><i :style="{ width: `${Math.min(100, row.count * 10)}%` }" /></span><strong>{{ row.count }}</strong></button>
         </section>
         <section class="course-table">
-          <header><div><span class="eyebrow">SUBJECTS / BOOKS</span><h2>{{ isEi ? uiText("五大学科能力对比") : uiText("题册能力对比") }}</h2></div></header>
+          <header><div><h2>{{ isEi ? uiText("五大学科能力对比") : uiText("题册能力对比") }}</h2></div></header>
           <div class="course-row heading"><span>{{ uiText("学科 / 题册") }}</span><span>{{ uiText("首次独立") }}</span><span>{{ uiText("方法失败") }}</span><span>{{ uiText("重做通过") }}</span></div>
           <div v-for="course in data.courses" :key="course.code" class="course-row"><strong>{{ course.label }}</strong><span>{{ percentage(course.first_independent_accuracy) }}<small>n={{ course.first_sample }}</small></span><span>{{ percentage(course.method_failure_rate) }}</span><span>{{ percentage(course.redo_pass_rate) }}<small>n={{ course.redo_sample }}</small></span></div>
           <p v-if="!data.courses.length">{{ uiText("当前周期还没有带诊断信息的有效作答。") }}</p>
         </section>
       </div>
       <div class="diagnostic-grid secondary-analysis">
-        <section class="course-table"><header><div><span class="eyebrow">REPEATED ERRORS</span><h2>{{ uiText("反复出错最多的知识点") }}</h2></div></header><div v-for="row in data.repeated_topics" :key="row.topic" class="topic-analysis-row"><strong>{{ row.topic }}</strong><span>{{ row.diagnosed_errors }} {{ uiText("次明确错误") }}</span></div><p v-if="!data.repeated_topics.length">{{ uiText("暂无明确错误标签。") }}</p></section>
-        <section class="course-table"><header><div><span class="eyebrow">7D VS PREVIOUS 7D</span><h2>{{ uiText("近期改善 / 恶化") }}</h2></div></header><div v-for="row in data.topic_trends" :key="row.topic" class="topic-analysis-row"><strong>{{ row.topic }}</strong><span :class="row.change >= 0 ? 'improved' : 'worsened'">{{ row.change > 0 ? '+' : '' }}{{ row.change }}%</span><small>{{ row.previous_rate }}% (n={{ row.previous_sample }}) → {{ row.current_rate }}% (n={{ row.current_sample }})</small></div><p v-if="!data.topic_trends.length">{{ uiText("两个比较窗口尚无足够显式独立作答样本。") }}</p></section>
+        <section class="course-table"><header><div><h2>{{ uiText("反复出错最多的知识点") }}</h2></div></header><div v-for="row in data.repeated_topics" :key="row.topic" class="topic-analysis-row"><strong>{{ row.topic }}</strong><span>{{ row.diagnosed_errors }} {{ uiText("次明确错误") }}</span></div><p v-if="!data.repeated_topics.length">{{ uiText("暂无明确错误标签。") }}</p></section>
+        <section class="course-table"><header><div><h2>{{ uiText("近期改善 / 恶化") }}</h2></div></header><div v-for="row in data.topic_trends" :key="row.topic" class="topic-analysis-row"><strong>{{ row.topic }}</strong><span :class="row.change >= 0 ? 'improved' : 'worsened'">{{ row.change > 0 ? '+' : '' }}{{ row.change }}%</span><small>{{ row.previous_rate }}% (n={{ row.previous_sample }}) → {{ row.current_rate }}% (n={{ row.current_sample }})</small></div><p v-if="!data.topic_trends.length">{{ uiText("两个比较窗口尚无足够显式独立作答样本。") }}</p></section>
       </div>
+      <details class="diagnostic-data"><summary>{{ uiText('查看图表数据') }}</summary><div class="diagnostic-table-scroll"><table><caption>{{ uiText('每日刷题活动') }}</caption><thead><tr><th scope="col">{{ uiText('日期') }}</th><th scope="col">{{ uiText('每日去重题数') }}</th><th scope="col">{{ uiText('提交次数') }}</th></tr></thead><tbody><tr v-for="row in data.activity" :key="row.date"><th scope="row">{{ row.date }}</th><td>{{ row.daily_unique_questions }}</td><td>{{ row.submissions }}</td></tr></tbody></table><table><caption>{{ uiText('独立正确率趋势') }}</caption><thead><tr><th scope="col">{{ uiText('日期') }}</th><th scope="col">{{ uiText('首次独立') }}</th><th scope="col">{{ uiText('二次独立') }}</th></tr></thead><tbody><tr v-for="row in data.trend" :key="row.date"><th scope="row">{{ row.date }}</th><td>{{ percentage(dailyRate(row.first_independent_correct, row.first_sample)) }}</td><td>{{ percentage(dailyRate(row.second_independent_correct, row.second_sample)) }}</td></tr></tbody></table></div></details>
       <p class="diagnostic-notice">{{ data.notice }}</p>
     </template>
   </section>
@@ -232,9 +237,9 @@ watch(uiLanguage, () => { void renderChart() })
 .diagnostic-progress-link:hover { text-decoration:underline; }
 .diagnostic-progress-link:focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:var(--radius-sm); }
 .diagnostic-page .eyebrow { color:var(--text-tertiary); font-size:12px; font-weight:650; letter-spacing:.05em; }
-.range { display:flex; align-items:center; flex-wrap:wrap; gap:4px; padding:4px; border:1px solid var(--border-subtle); border-radius:var(--radius-md); }
+.range { display:flex; align-items:center; flex-wrap:wrap; gap:4px; padding:4px; border:0; border-radius:var(--radius-md); }
 .range>button { min-width:44px; min-height:44px; padding:0 10px; border:0; border-radius:var(--radius-sm); color:var(--text-secondary); background:transparent; font-size:13px; cursor:pointer; }
-.range>button.active { color:var(--accent); background:var(--accent-muted); font-weight:650; }
+.range>button.active { color:var(--text-primary); background:var(--surface-selected); font-weight:650; }
 .range label { display:flex; align-items:center; flex-wrap:wrap; gap:4px; margin-left:4px; color:var(--text-secondary); font-size:12px; }
 .range input { min-width:0; width:128px; min-height:44px; padding:0 8px; border:1px solid var(--border-default); border-radius:var(--radius-sm); color:var(--text-primary); background:var(--bg-elevated); font-size:16px; }
 .range label button { min-height:44px; padding:0 12px; border:1px solid var(--border-default); border-radius:var(--radius-sm); color:var(--text-primary); background:var(--bg-elevated); font-size:13px; cursor:pointer; }
@@ -245,7 +250,7 @@ watch(uiLanguage, () => { void renderChart() })
 .today-strip span,.today-strip small { color:var(--text-secondary); font-size:12px; }
 .today-strip strong { font-size:30px; line-height:1.15; font-weight:650; font-variant-numeric:tabular-nums; overflow-wrap:anywhere; }
 .today-strip button strong { color:var(--review); }
-.ability-board { min-width:0; padding:24px; border-radius:var(--radius-lg); background:var(--bg-surface); }
+.ability-board { min-width:0; padding:24px 0; border:0; border-top:1px solid var(--border-subtle); border-radius:0; background:transparent; }
 .ability-board>header { display:flex; align-items:baseline; justify-content:space-between; gap:12px; }
 .ability-board h2,.diagnostic-grid h2 { margin:0; font-size:17px; line-height:1.35; }
 .ability-board>header span { color:var(--text-secondary); font-size:12px; font-variant-numeric:tabular-nums; }
@@ -257,7 +262,7 @@ watch(uiLanguage, () => { void renderChart() })
 .ability-board h3 { margin:24px 0 0; font-size:15px; }
 .ability-chart { height:310px; width:100%; min-width:0; touch-action:pan-y; }
 .diagnostic-grid { margin-top:16px; display:grid; grid-template-columns:minmax(260px,.8fr) minmax(420px,1.4fr); gap:16px; }
-.error-distribution,.course-table { min-width:0; padding:20px; border-radius:var(--radius-lg); background:var(--bg-surface); }
+.error-distribution,.course-table { min-width:0; padding:20px 0; border:0; border-top:1px solid var(--border-subtle); border-radius:0; background:transparent; }
 .error-distribution>header,.course-table>header { display:flex; justify-content:space-between; align-items:end; gap:8px; margin-bottom:16px; }
 .error-distribution>header small { color:var(--text-secondary); font-size:12px; }
 .error-distribution>button { width:100%; min-height:42px; display:grid; grid-template-columns:34px 1fr 34px; align-items:center; gap:8px; padding:8px 0; border:0; border-top:1px solid var(--border-subtle); color:var(--text-primary); background:transparent; text-align:left; cursor:pointer; font-size:13px; }
@@ -287,5 +292,6 @@ watch(uiLanguage, () => { void renderChart() })
 .diagnostic-page button:focus-visible,.diagnostic-page input:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
 @media(max-width:1100px) { .diagnostic-header { align-items:start; flex-direction:column; } .metric-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .diagnostic-grid,.secondary-analysis { grid-template-columns:minmax(0,1fr); } }
 @media(max-width:800px) { .range { width:100%; } .range>button { flex:1; } .range label { width:100%; margin:4px 0 0; } .range input { flex:1; } .today-strip,.activity-summary { grid-template-columns:repeat(2,minmax(0,1fr)); } .ability-chart { height:280px; } .activity-chart { height:245px; } }
-@media(max-width:430px) { .today-strip article,.today-strip button { padding:12px; } .activity-summary article,.metric-grid article,.metric-grid button { padding:12px 4px; } .today-strip strong,.metric-grid strong { font-size:25px; } .ability-board,.error-distribution,.course-table { padding:16px; } .course-row { grid-template-columns:minmax(0,1.4fr) repeat(3,minmax(0,.8fr)); gap:4px; font-size:12px; } .course-row>strong,.course-row>span { overflow-wrap:anywhere; } .course-row.heading { font-size:11px; } .range label { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); } .range label>span { grid-column:1/-1; } .range label input { width:100%; } .range label button { grid-column:1/-1; } }
+@media(max-width:430px) { .today-strip article,.today-strip button { padding:12px; } .activity-summary article,.metric-grid article,.metric-grid button { padding:12px 4px; } .today-strip strong,.metric-grid strong { font-size:25px; } .ability-board,.error-distribution,.course-table { padding:16px 0; } .course-row { grid-template-columns:minmax(0,1.4fr) repeat(3,minmax(0,.8fr)); gap:4px; font-size:12px; } .course-row>strong,.course-row>span { overflow-wrap:anywhere; } .course-row.heading { font-size:12px; } .range label { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); } .range label>span { grid-column:1/-1; } .range label input { width:100%; } .range label button { grid-column:1/-1; } }
+.diagnostic-data { margin-top:16px; color:var(--text-secondary); font-size:13px; } .diagnostic-data summary { min-height:44px; display:flex; align-items:center; cursor:pointer; } .diagnostic-table-scroll { max-width:100%; overflow:auto; } .diagnostic-data table { width:100%; border-collapse:collapse; font-size:13px; font-variant-numeric:tabular-nums; } .diagnostic-data caption { text-align:left; padding:8px 0; } .diagnostic-data th,.diagnostic-data td { padding:8px; text-align:right; border-bottom:1px solid var(--border-subtle); white-space:nowrap; } .diagnostic-data th:first-child { text-align:left; }
 </style>

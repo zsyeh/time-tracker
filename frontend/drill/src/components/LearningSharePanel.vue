@@ -195,7 +195,7 @@ onMounted(() => {
         <a :href="created.url" target="_blank" rel="noopener noreferrer">{{ labels.view }}</a>
         <button type="button" @click="copy(prompt, 'prompt')">{{ copied === 'prompt' ? labels.copied : labels.copyPrompt }}</button>
         <button type="button" :disabled="busy" @click="copyMarkdown">{{ copied === 'markdown' ? labels.copiedMarkdown : labels.copyMarkdown }}</button>
-        <button type="button" :disabled="busy" @click="revoke(created.id)">{{ labels.revokeNow }}</button>
+        <button type="button" class="share-revoke" :disabled="busy" @click="revoke(created.id)">{{ labels.revokeNow }}</button>
       </div>
       <label v-if="fallbackMarkdown">{{ labels.safariFallback }}
         <textarea :value="fallbackMarkdown" readonly rows="8" @focus="($event.target as HTMLTextAreaElement).select()" />
@@ -206,32 +206,36 @@ onMounted(() => {
       <ul><li v-for="item in records" :key="item.id">{{ kindLabel(item.kind) }} · {{ labels.expires }} {{ new Date(item.expires_at).toLocaleString(language) }} · Note {{ item.include_notes ? labels.noteIncluded : labels.noteExcluded }}
         <button v-if="savedLinks[item.id]" type="button" @click="copy(savedLinks[item.id], `record-${item.id}`)">{{ labels.copyLink }}</button>
         <a v-if="savedLinks[item.id]" :href="savedLinks[item.id]" target="_blank" rel="noopener noreferrer">{{ labels.view }}</a>
-        <button type="button" :disabled="busy" @click="revoke(item.id)">{{ labels.revoke }}</button></li></ul>
+        <button type="button" class="share-revoke" :disabled="busy" @click="revoke(item.id)">{{ labels.revoke }}</button></li></ul>
     </details>
   </details>
 </template>
 
 <style scoped>
-.learning-share-panel { box-sizing: border-box; width: clamp(190px, 25%, 310px); max-width: 100%; margin: 8px 0 12px; padding: 0 11px; border: 1px solid var(--border-default); border-radius: var(--radius-sm); color: var(--text-primary); background: var(--bg-surface); }
-.learning-share-panel[open] { width: 100%; padding: 11px 14px; }
-.learning-share-panel > summary { display: flex; align-items: center; gap: 7px; min-height: 42px; overflow: hidden; color: var(--text-primary); font-size: 11px; font-weight: 700; white-space: nowrap; cursor: pointer; list-style: none; }
+.learning-share-panel { box-sizing: border-box; width: fit-content; max-width: 100%; margin: 8px 0 12px; color: var(--text-primary); }
+.learning-share-panel[open] { width: 100%; padding-block: 8px 16px; border-bottom: 1px solid var(--border-subtle); }
+.learning-share-panel > summary { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 4px 8px; color: var(--text-secondary); font-size: 13px; font-weight: 550; cursor: pointer; list-style: none; }
 .learning-share-panel > summary::-webkit-details-marker { display: none; }
-.learning-share-panel > summary::before { content: '▸'; color: var(--accent); font-size: 13px; }
-.learning-share-panel[open] > summary::before { content: '▾'; }
-.learning-share-panel details summary { min-height: 40px; cursor: pointer; font-weight: 700; }
-.learning-share-panel p { color: var(--text-secondary); }
-.learning-share-panel a { color: var(--accent); }
-.learning-share-controls, .share-actions { display: flex; flex-wrap: wrap; gap: .7rem; align-items: end; }
-.learning-share-controls label { display: grid; gap: .3rem; color: var(--text-primary); }
+.learning-share-panel > summary::before { content: '›'; display: inline-block; color: var(--text-secondary); font-size: 16px; }
+.learning-share-panel[open] > summary::before { transform: rotate(90deg); }
+.learning-share-panel details summary { min-height: 44px; cursor: pointer; font-size: 14px; font-weight: 600; }
+.learning-share-panel p { color: var(--text-secondary); font-size: 13px; line-height: 1.5; }
+.learning-share-panel a { color: var(--accent-ink, var(--accent)); }
+.learning-share-controls, .share-actions { display: flex; flex-wrap: wrap; gap: 12px; align-items: end; }
+.learning-share-controls label { display: grid; gap: 8px; min-width: 0; color: var(--text-primary); font-size: 13px; }
 .learning-share-controls .note-choice { display: flex; align-items: center; min-height: 44px; }
-.learning-share-panel button, .learning-share-panel select, .learning-share-panel input { min-height: 44px; color: var(--text-primary); background: var(--bg-sidebar); border: 1px solid var(--border-default); border-radius: var(--radius-sm); }
+.learning-share-panel button, .learning-share-panel select, .learning-share-panel input { min-height: 44px; color: var(--text-primary); background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: 6px; font-size: 14px; }
 .learning-share-panel input[type="checkbox"] { min-height: auto; accent-color: var(--accent); }
-.learning-share-panel button { padding: .5rem .8rem; cursor: pointer; }
-.learning-share-panel button:hover:not(:disabled) { border-color: var(--accent); color: var(--accent); }
-.learning-share-controls > button { border-color: var(--accent); color: var(--bg-app); background: var(--accent); font-weight: 700; }
-.learning-share-controls > button:hover:not(:disabled) { color: var(--bg-app); background: var(--accent-hover); }
-.learning-share-panel input, .learning-share-panel select, .learning-share-panel textarea { padding: .5rem; }
-.created-share input { box-sizing: border-box; width: 100%; }
-.created-share textarea { box-sizing: border-box; width: 100%; min-height: 10rem; color: var(--text-primary); background: var(--bg-sidebar); border: 1px solid var(--border-default); }
-.scope { overflow-wrap: anywhere; opacity: .8; }
+.learning-share-panel button { padding: 8px 12px; border: 0; background: var(--surface-hover, var(--bg-sidebar)); cursor: pointer; }
+.learning-share-panel button:hover:not(:disabled) { background: var(--surface-selected, var(--bg-surface-active)); }
+.learning-share-panel button:focus-visible { outline: 2px solid var(--accent-ink, var(--accent)); outline-offset: 2px; }
+.learning-share-controls > button { color: var(--accent-on-solid, var(--text-primary)); background: var(--accent-solid, var(--accent)); font-weight: 600; }
+.learning-share-controls > button:hover:not(:disabled) { background: var(--accent-solid, var(--accent)); filter: brightness(.94); }
+.learning-share-panel button.share-revoke { color: var(--danger); background: transparent; }
+.learning-share-panel input, .learning-share-panel select, .learning-share-panel textarea { min-width: 0; max-width: 100%; padding: 8px; }
+.created-share input, .created-share textarea { box-sizing: border-box; width: 100%; }
+.created-share textarea { min-height: 10rem; color: var(--text-primary); background: var(--bg-surface); border: 1px solid var(--border-default); font-size: 14px; }
+.learning-share-panel ul { display: grid; gap: 8px; margin: 8px 0; padding: 0; list-style: none; }
+.learning-share-panel li { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding-block: 8px; border-top: 1px solid var(--border-subtle); font-size: 13px; }
+.scope { overflow-wrap: anywhere; }
 </style>

@@ -77,3 +77,20 @@ it('marks a quickly revisited workspace without overwriting its pending scroll r
   for(let i=0;i<5;i++)await Promise.resolve()
   expect(puts).toContainEqual(expect.objectContaining({workspace:'drill',location:expect.objectContaining({path:'/drill/practice',scroll:{right:123}})}))
 })
+
+it('does not revive a deleted paper from dirty same-version local recovery',async()=>{
+  const {module,router}=await setup(true)
+  state={version:4,last_workspace:null,locations:{}}
+  localStorage.setItem('learning.locations.v2.1',JSON.stringify({version:4,dirty:true,last_workspace:'drill',locations:{drill:{path:'/drill/papers/123e4567-e89b-12d3-a456-426614174000/review',scroll:{window:80}}}}))
+  const fetch=vi.fn(async()=>({ok:false,status:404}));vi.stubGlobal('fetch',fetch)
+  stop=await module.startLearningRecovery(1,'timer',router,request)
+  expect(fetch).toHaveBeenCalledWith('/drill/api/drill/papers/123e4567-e89b-12d3-a456-426614174000/',expect.objectContaining({credentials:'same-origin'}))
+  expect(replace).not.toHaveBeenCalled()
+})
+it('accepts safe settings and PDF routes while guarding paper paths',async()=>{
+  const {module}=await setup(false)
+  expect(module.safeResumePath('/drill/settings?section=appearance')).toBe(true)
+  expect(module.safeResumePath('/ei/selected-pdf-pages')).toBe(true)
+  expect(module.safeResumePath('/drill/papers/123e4567-e89b-12d3-a456-426614174000/review')).toBe(true)
+  expect(module.safeResumePath('/drill/settings?secret=bad')).toBe(false)
+})

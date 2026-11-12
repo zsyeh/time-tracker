@@ -26,7 +26,7 @@ onMounted(async () => {
 <template>
   <section class="page papers-page">
     <header class="page-header">
-      <div><span class="eyebrow">MATH II</span><h1>Paper history</h1><p>Every generated paper keeps its question set and order.</p></div>
+      <div><h1>Paper history</h1><p>Every generated paper keeps its question set and order.</p></div>
       <RouterLink class="primary-action" to="/papers/new">New paper <b>→</b></RouterLink>
     </header>
     <p v-if="error" class="error-state">{{ uiText(error) }}</p>
@@ -44,3 +44,25 @@ onMounted(async () => {
     </div>
   </section>
 </template>
+
+
+<style scoped>
+.paper-history-list { min-width:0; border:0; border-top:1px solid var(--border-subtle); border-radius:0; background:transparent; }
+.paper-history-row { min-height: 66px; padding: 11px 14px; border-bottom: 1px solid var(--border-subtle); display: grid; grid-template-columns: 80px minmax(0, 1fr) 90px auto; align-items: center; gap: 14px; }
+.paper-history-row:last-child { border-bottom: 0; }
+.paper-mode { color: var(--text-tertiary); font-size:13px; text-transform: uppercase; }
+.paper-history-row > div { min-width: 0; display: grid; gap: 4px; }
+.paper-history-row strong { font-size:13px; }
+.paper-history-row small { color: var(--text-tertiary); font-size:13px; }
+.paper-history-progress { text-align: right; }
+.paper-history-actions { display: flex !important; grid-auto-flow: column; gap:8px !important; }
+.paper-history-actions a { padding: 6px 8px; border:0; border-radius: var(--radius-sm); color: var(--text-secondary); background: transparent; text-decoration: none; font-size:13px; cursor: pointer; }
+.paper-history-actions a:hover { border-color: var(--border-default); color: var(--text-primary); background: var(--bg-surface-hover); }
+@media (max-width: 700px) {
+.paper-history-row { grid-template-columns: 1fr auto; }
+.paper-history-row > .paper-mode { display: none; }
+.paper-history-progress { grid-column: 2; grid-row: 1; }
+.paper-history-actions { grid-column: 1/-1; }
+}
+.paper-history-row { min-width:0; } .paper-history-row strong { font-size:14px; } .paper-history-actions a { min-height:44px; display:inline-flex; align-items:center; background:var(--surface-subtle); }
+</style>

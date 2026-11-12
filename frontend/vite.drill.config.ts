@@ -1,3 +1,4 @@
+import { appearancePlugin } from './build/appearancePlugin'
 import { resolve } from 'node:path'
 import { fileURLToPath, URL } from 'node:url'
 import { defineConfig } from 'vite'
@@ -7,7 +8,7 @@ const projectDir = fileURLToPath(new URL('.', import.meta.url))
 
 export default defineConfig({
   root: resolve(projectDir, 'drill'),
-  plugins: [vue()],
+  plugins: [vue(), appearancePlugin('/static/drill/')],
   base: '/static/drill/',
   build: {
     // The deploy script overrides this with a staging directory so a failed

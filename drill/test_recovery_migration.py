@@ -29,4 +29,5 @@ class RecoveryMigrationTests(TransactionTestCase):
             MigrationExecutor(connection).migrate([('drill','0034_questionexamtypeedit')])
             self.assertEqual(Attempt.objects.get(pk=attempt.pk).time_spent_seconds,37)
         finally:
-            MigrationExecutor(connection).migrate([('drill','0035_learning_recovery')])
+            latest = MigrationExecutor(connection)
+            latest.migrate(latest.loader.graph.leaf_nodes())

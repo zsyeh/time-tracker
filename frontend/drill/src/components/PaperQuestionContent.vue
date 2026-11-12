@@ -22,3 +22,7 @@ defineProps<{ question: ExamPaperQuestion }>()
     </div>
   </div>
 </template>
+
+<style scoped>
+.paper-question-content { min-width:0; padding:24px 0; } .paper-question-text { font-size:16px; line-height:1.8; color:var(--text-primary); white-space:pre-wrap; } .paper-question-assets { display:grid; gap:8px; } .paper-question-assets img { display:block; width:100%; height:auto; background:#fff; border-radius:2px; }
+</style>

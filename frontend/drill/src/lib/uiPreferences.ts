@@ -1,3 +1,4 @@
+import { initializeAppearance, setAppearance, useAppearance } from '../../../shared/appearance/preferences'
 import { computed, ref } from 'vue'
 
 export type UiLanguage = 'en' | 'zh-CN' | 'ja'
@@ -43,19 +44,16 @@ function persist(cookieName: string, storageKey: string, value: string) {
 
 const initialLanguage = stored(LANGUAGE_COOKIE, LANGUAGE_KEY)
 export const uiLanguage = ref<UiLanguage>(initialLanguage === 'zh-CN' || initialLanguage === 'ja' ? initialLanguage : 'en')
-export const uiScheme = ref<UiScheme>(stored(SCHEME_COOKIE, SCHEME_KEY) === 'light' ? 'light' : 'dark')
+export const uiScheme = useAppearance().resolved
 
 function apply() {
-  document.documentElement.dataset.colorScheme = uiScheme.value
   document.documentElement.lang = uiLanguage.value
-  document.documentElement.style.colorScheme = uiScheme.value
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', uiScheme.value === 'light' ? '#f6f7f9' : '#101216')
 }
-export function initializeUiPreferences() { apply() }
+export function initializeUiPreferences() { initializeAppearance(); apply() }
 export function useUiPreferences() {
   const messages = computed(() => translations[uiLanguage.value])
   function setLanguage(value: UiLanguage) { uiLanguage.value = value; persist(LANGUAGE_COOKIE, LANGUAGE_KEY, value); apply() }
-  function setScheme(value: UiScheme) { uiScheme.value = value; persist(SCHEME_COOKIE, SCHEME_KEY, value); apply() }
+  function setScheme(value: UiScheme) { setAppearance(value) }
   function t(key: MessageKey, values: Record<string, string | number> = {}) {
     let text: string = messages.value[key]
     Object.entries(values).forEach(([name, value]) => { text = text.replaceAll(`{${name}}`, String(value)) })

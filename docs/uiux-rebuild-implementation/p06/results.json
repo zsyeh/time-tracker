@@ -1,0 +1,1298 @@
+[
+  {
+    "width": 375,
+    "height": 812,
+    "theme": "light",
+    "touch": true,
+    "page_overflow": false,
+    "rows": [
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      }
+    ],
+    "toolbar": [
+      {
+        "a": "previous",
+        "x": 10,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "next",
+        "x": 58,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "mastered",
+        "x": 106,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "review",
+        "x": 154,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "answer",
+        "x": 202,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "100%",
+        "x": 267.375,
+        "y": 4,
+        "w": 49.625,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "Close full screen",
+        "x": 321,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 375,
+    "height": 812,
+    "theme": "dark",
+    "touch": true,
+    "page_overflow": false,
+    "rows": [
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      }
+    ],
+    "toolbar": [
+      {
+        "a": "previous",
+        "x": 10,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "next",
+        "x": 58,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "mastered",
+        "x": 106,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "review",
+        "x": 154,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "answer",
+        "x": 202,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "100%",
+        "x": 267.375,
+        "y": 4,
+        "w": 49.625,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "Close full screen",
+        "x": 321,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "theme": "light",
+    "touch": true,
+    "page_overflow": false,
+    "rows": [
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      }
+    ],
+    "toolbar": [
+      {
+        "a": "previous",
+        "x": 10,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "next",
+        "x": 58,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "mastered",
+        "x": 106,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "review",
+        "x": 154,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "answer",
+        "x": 202,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "100%",
+        "x": 282.375,
+        "y": 4,
+        "w": 49.625,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "Close full screen",
+        "x": 336,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 390,
+    "height": 844,
+    "theme": "dark",
+    "touch": true,
+    "page_overflow": false,
+    "rows": [
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      }
+    ],
+    "toolbar": [
+      {
+        "a": "previous",
+        "x": 10,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "next",
+        "x": 58,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "mastered",
+        "x": 106,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "review",
+        "x": 154,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "answer",
+        "x": 202,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "100%",
+        "x": 282.375,
+        "y": 4,
+        "w": 49.625,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "Close full screen",
+        "x": 336,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 430,
+    "height": 932,
+    "theme": "light",
+    "touch": true,
+    "page_overflow": false,
+    "rows": [
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      }
+    ],
+    "toolbar": [
+      {
+        "a": "previous",
+        "x": 10,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "next",
+        "x": 58,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "mastered",
+        "x": 106,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "review",
+        "x": 154,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "answer",
+        "x": 202,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "100%",
+        "x": 322.375,
+        "y": 4,
+        "w": 49.625,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "Close full screen",
+        "x": 376,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 430,
+    "height": 932,
+    "theme": "dark",
+    "touch": true,
+    "page_overflow": false,
+    "rows": [
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      }
+    ],
+    "toolbar": [
+      {
+        "a": "previous",
+        "x": 10,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "next",
+        "x": 58,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "mastered",
+        "x": 106,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "review",
+        "x": 154,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "answer",
+        "x": 202,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "100%",
+        "x": 322.375,
+        "y": 4,
+        "w": 49.625,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "Close full screen",
+        "x": 376,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 820,
+    "height": 1180,
+    "theme": "light",
+    "touch": true,
+    "page_overflow": false,
+    "rows": [
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      }
+    ],
+    "toolbar": [
+      {
+        "a": "previous",
+        "x": 336.96875,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "next",
+        "x": 384.96875,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "mastered",
+        "x": 432.96875,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "review",
+        "x": 480.96875,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "answer",
+        "x": 528.96875,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "Zoom out",
+        "x": 612.375,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "100%",
+        "x": 660.375,
+        "y": 4,
+        "w": 49.625,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "Zoom in",
+        "x": 714,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "Close full screen",
+        "x": 766,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 820,
+    "height": 1180,
+    "theme": "dark",
+    "touch": true,
+    "page_overflow": false,
+    "rows": [
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      }
+    ],
+    "toolbar": [
+      {
+        "a": "previous",
+        "x": 336.96875,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "next",
+        "x": 384.96875,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "mastered",
+        "x": 432.96875,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "review",
+        "x": 480.96875,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "answer",
+        "x": 528.96875,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "Zoom out",
+        "x": 612.375,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "100%",
+        "x": 660.375,
+        "y": 4,
+        "w": 49.625,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "Zoom in",
+        "x": 714,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "Close full screen",
+        "x": 766,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 1180,
+    "height": 820,
+    "theme": "light",
+    "touch": true,
+    "page_overflow": false,
+    "rows": [
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      }
+    ],
+    "toolbar": [
+      {
+        "a": "previous",
+        "x": 696.96875,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "next",
+        "x": 744.96875,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "mastered",
+        "x": 792.96875,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "review",
+        "x": 840.96875,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "answer",
+        "x": 888.96875,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "Zoom out",
+        "x": 972.375,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "100%",
+        "x": 1020.375,
+        "y": 4,
+        "w": 49.625,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "Zoom in",
+        "x": 1074,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "Close full screen",
+        "x": 1126,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 1180,
+    "height": 820,
+    "theme": "dark",
+    "touch": true,
+    "page_overflow": false,
+    "rows": [
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      }
+    ],
+    "toolbar": [
+      {
+        "a": "previous",
+        "x": 696.96875,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "next",
+        "x": 744.96875,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "mastered",
+        "x": 792.96875,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "review",
+        "x": 840.96875,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "answer",
+        "x": 888.96875,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "Zoom out",
+        "x": 972.375,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "100%",
+        "x": 1020.375,
+        "y": 4,
+        "w": 49.625,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "Zoom in",
+        "x": 1074,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      },
+      {
+        "a": "Close full screen",
+        "x": 1126,
+        "y": 4,
+        "w": 44,
+        "h": 44,
+        "visible": true
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "height": 900,
+    "theme": "light",
+    "touch": false,
+    "page_overflow": false,
+    "rows": [
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      }
+    ],
+    "toolbar": [
+      {
+        "a": "previous",
+        "x": 1036.96875,
+        "y": 7.5,
+        "w": 32,
+        "h": 32,
+        "visible": true
+      },
+      {
+        "a": "next",
+        "x": 1076.96875,
+        "y": 7.5,
+        "w": 32,
+        "h": 32,
+        "visible": true
+      },
+      {
+        "a": "mastered",
+        "x": 1116.96875,
+        "y": 7.5,
+        "w": 32,
+        "h": 32,
+        "visible": true
+      },
+      {
+        "a": "review",
+        "x": 1156.96875,
+        "y": 7.5,
+        "w": 32,
+        "h": 32,
+        "visible": true
+      },
+      {
+        "a": "answer",
+        "x": 1196.96875,
+        "y": 7.5,
+        "w": 32,
+        "h": 32,
+        "visible": true
+      },
+      {
+        "a": "Zoom out",
+        "x": 1268.375,
+        "y": 7.5,
+        "w": 32,
+        "h": 32,
+        "visible": true
+      },
+      {
+        "a": "100%",
+        "x": 1304.375,
+        "y": 7.5,
+        "w": 49.625,
+        "h": 32,
+        "visible": true
+      },
+      {
+        "a": "Zoom in",
+        "x": 1358,
+        "y": 7.5,
+        "w": 32,
+        "h": 32,
+        "visible": true
+      },
+      {
+        "a": "Close full screen",
+        "x": 1398,
+        "y": 7.5,
+        "w": 32,
+        "h": 32,
+        "visible": true
+      }
+    ],
+    "errors": []
+  },
+  {
+    "width": 1440,
+    "height": 900,
+    "theme": "dark",
+    "touch": false,
+    "page_overflow": false,
+    "rows": [
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      },
+      {
+        "h": 44,
+        "fs": "14px"
+      }
+    ],
+    "toolbar": [
+      {
+        "a": "previous",
+        "x": 1036.96875,
+        "y": 7.5,
+        "w": 32,
+        "h": 32,
+        "visible": true
+      },
+      {
+        "a": "next",
+        "x": 1076.96875,
+        "y": 7.5,
+        "w": 32,
+        "h": 32,
+        "visible": true
+      },
+      {
+        "a": "mastered",
+        "x": 1116.96875,
+        "y": 7.5,
+        "w": 32,
+        "h": 32,
+        "visible": true
+      },
+      {
+        "a": "review",
+        "x": 1156.96875,
+        "y": 7.5,
+        "w": 32,
+        "h": 32,
+        "visible": true
+      },
+      {
+        "a": "answer",
+        "x": 1196.96875,
+        "y": 7.5,
+        "w": 32,
+        "h": 32,
+        "visible": true
+      },
+      {
+        "a": "Zoom out",
+        "x": 1268.375,
+        "y": 7.5,
+        "w": 32,
+        "h": 32,
+        "visible": true
+      },
+      {
+        "a": "100%",
+        "x": 1304.375,
+        "y": 7.5,
+        "w": 49.625,
+        "h": 32,
+        "visible": true
+      },
+      {
+        "a": "Zoom in",
+        "x": 1358,
+        "y": 7.5,
+        "w": 32,
+        "h": 32,
+        "visible": true
+      },
+      {
+        "a": "Close full screen",
+        "x": 1398,
+        "y": 7.5,
+        "w": 32,
+        "h": 32,
+        "visible": true
+      }
+    ],
+    "errors": []
+  }
+]

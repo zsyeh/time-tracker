@@ -1,0 +1,175 @@
+{
+  "fixture": true,
+  "nativeSafari": false,
+  "build": {
+    "dist": "e7b997b18629324b6e51bd66522c1b0fb5d85819f108d2835a8bb824e134f957",
+    "drill-dist": "26e3cd69b3a4713d1d39ed43414f6a0d9dfe59c83e422f8888d3b4ef337c6c27"
+  },
+  "menus": {
+    "escape": {
+      "drawer": 0,
+      "popup": 0,
+      "focus": {
+        "tag": "BUTTON",
+        "cls": "ui-icon-button",
+        "text": "",
+        "inDrawer": false,
+        "connected": true
+      }
+    },
+    "tab": {
+      "drawer": 1,
+      "popup": 0,
+      "focus": {
+        "tag": "BODY",
+        "cls": "",
+        "text": "\n    Drill×TimerDrillEI严选题热力图历史记录学习进度更多工具Vvisual-auditDrill题",
+        "inDrawer": false,
+        "connected": true
+      }
+    },
+    "rotation": {
+      "drawer": 0,
+      "popup": 0,
+      "bodyOverflow": ""
+    },
+    "pass": false
+  },
+  "question": {
+    "metrics": {
+      "pane": {
+        "y": 127.6875,
+        "bottom": 812,
+        "width": 377.59375,
+        "height": 684.3125,
+        "scrollHeight": 1246,
+        "clientHeight": 684
+      },
+      "diagnosis": {
+        "y": 299.078125,
+        "bottom": 777.453125,
+        "width": 338.59375,
+        "height": 478.375,
+        "scrollHeight": 478,
+        "clientHeight": 478
+      },
+      "actions": {
+        "y": 1022.546875,
+        "bottom": 1066.546875,
+        "width": 336.59375,
+        "height": 44,
+        "scrollHeight": 44,
+        "clientHeight": 44
+      },
+      "overflow": false,
+      "rows": [
+        {
+          "text": "A知识断层",
+          "height": 44,
+          "y": 321.671875
+        },
+        {
+          "text": "B1想不起来",
+          "height": 44,
+          "y": 400.265625
+        },
+        {
+          "text": "B2不会启动",
+          "height": 44,
+          "y": 444.265625
+        },
+        {
+          "text": "B3不会组合",
+          "height": 44,
+          "y": 488.265625
+        },
+        {
+          "text": "C1计算错误",
+          "height": 44,
+          "y": 566.859375
+        },
+        {
+          "text": "C2符号/方向/单位",
+          "height": 44,
+          "y": 610.859375
+        },
+        {
+          "text": "C3边界/条件错误",
+          "height": 44,
+          "y": 654.859375
+        },
+        {
+          "text": "D看解析仍不懂",
+          "height": 44,
+          "y": 733.453125
+        }
+      ]
+    },
+    "reader": {
+      "open": 1,
+      "afterRotation": {
+        "open": true,
+        "overflow": false,
+        "buttons": [
+          {
+            "label": "上一题 · 顺序题",
+            "width": 44,
+            "height": 44,
+            "right": 54
+          },
+          {
+            "label": "下一题 · 顺序题",
+            "width": 44,
+            "height": 44,
+            "right": 102
+          },
+          {
+            "label": "已掌握 · 下一题 · 顺序题",
+            "width": 44,
+            "height": 44,
+            "right": 150
+          },
+          {
+            "label": "待复习",
+            "width": 44,
+            "height": 44,
+            "right": 198
+          },
+          {
+            "label": "显示答案",
+            "width": 44,
+            "height": 44,
+            "right": 246
+          },
+          {
+            "label": "恢复适合宽度",
+            "width": 49.625,
+            "height": 44,
+            "right": 332
+          },
+          {
+            "label": "关闭全屏",
+            "width": 44,
+            "height": 44,
+            "right": 380
+          }
+        ]
+      },
+      "closed": true
+    },
+    "errors": [],
+    "note": "Synthetic complete QuestionView; no answer submitted."
+  },
+  "deletedPaper": {
+    "url": "https://47.95.10.128/",
+    "paperRequests": [
+      {
+        "path": "/ei/api/drill/papers/11111111-1111-4111-8111-000000000001/",
+        "method": "GET"
+      }
+    ],
+    "errors": [],
+    "pass": true,
+    "network": "ALL intercepted; local static files + invented API only"
+  }
+}

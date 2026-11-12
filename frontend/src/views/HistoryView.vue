@@ -219,3 +219,31 @@ watch(() => route.fullPath, () => { hydrateFromRoute(); void load() }, { immedia
     </el-drawer>
   </div>
 </template>
+
+
+<style scoped>
+.history-panel { overflow: hidden; }
+.history-row { min-height: 64px; padding: 12px 8px; border-top: 1px solid var(--border-subtle); display: grid; grid-template-columns: 7px minmax(0, 1fr) auto auto; align-items: center; gap: 12px; cursor: pointer; transition: background 130ms ease-out; }
+.history-row:hover { background: var(--bg-surface-hover); }
+.density-comfortable .history-row { min-height: 66px; padding-block: 10px; }
+.session-start { color: var(--text-tertiary); font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; text-align: right; }
+.history-main { min-width: 0; }
+.history-main strong { display: block; overflow: hidden; font-size: 14px; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
+.history-main p { max-width: 720px; margin: 2px 0; overflow: hidden; color: var(--text-secondary); font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
+.history-main .session-excerpt { color: var(--text-secondary); }
+.history-main small { color: var(--text-tertiary); font-size: 12px; }
+.history-actions { display: flex; align-items: center; justify-content: flex-end; gap: 8px; }
+.duration-badge { text-align: right; }
+.duration-badge b, .duration-badge small { display: block; }
+.duration-badge b { font: 550 12px ui-monospace, monospace; }
+.duration-badge small { color: var(--text-tertiary); font-size: 12px; }
+.running-badge { color: var(--accent); font-size: 12px; font-weight: 600; }
+.review-eye { min-width: 36px; min-height: 44px; padding: 0 8px; border: 0; border-radius: var(--radius-sm); color: var(--text-tertiary); background: transparent; display: flex; align-items: center; justify-content: center; gap: 4px; cursor: pointer; }
+.review-eye:hover { color: var(--text-primary); background: var(--surface-hover); }
+.review-eye span { font: 12px ui-monospace, monospace; }
+@media (max-width: 520px) {
+.history-row { grid-template-columns: 6px minmax(0, 1fr) auto; gap: 8px; }
+.history-main p { max-width: 52vw; }
+}
+.sessions-view { min-width:0; } .history-main p { line-height:1.5; } .history-actions { min-width:0; } @media(max-width:520px) { .history-row { grid-template-columns:7px minmax(0,1fr) auto; gap:8px; } .history-actions { grid-column:2/-1; justify-content:space-between; } .session-start { font-size:12px; } }
+</style>

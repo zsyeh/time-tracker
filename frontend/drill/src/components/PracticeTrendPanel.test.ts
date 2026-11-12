@@ -128,3 +128,15 @@ it('does not call an empty selected scope a completed goal',async()=>{
   expect(host.textContent).not.toContain('Coverage goal reached')
   expect(host.querySelector('.prediction-panel header .on-track')).toBeNull()
 })
+
+it('redraws the same data on accent changes without fetching or losing date settings and supplies a data table',async()=>{
+  vi.mocked(api).mockResolvedValue(payload());await mount()
+  const requests=vi.mocked(api).mock.calls.length
+  const renders=chartMocks.setOption.mock.calls.length
+  window.dispatchEvent(new Event('learning:appearance-changed'));await settle()
+  expect(chartMocks.setOption.mock.calls.length).toBeGreaterThan(renders)
+  expect(api).toHaveBeenCalledTimes(requests)
+  expect(host.querySelector('.chart-data tbody tr')?.textContent).toContain('2026-11-11')
+  expect(host.querySelector<HTMLDetailsElement>('.chart-data')?.open).toBe(false)
+  expect(host.textContent).not.toContain('FORECAST')
+})

@@ -46,7 +46,7 @@ onMounted(load)
 <template>
   <section class="page collection-page">
     <header class="page-header">
-      <div><span class="eyebrow">{{ uiText(copy().eyebrow) }}</span><h1>{{ uiText(copy().title) }}</h1><p>{{ uiText(copy().description) }}</p></div>
+      <div><h1>{{ uiText(copy().title) }}</h1><p>{{ uiText(copy().description) }}</p></div>
       <strong class="collection-count">{{ data?.count || 0 }}</strong>
     </header>
     <p v-if="error" class="error-state">{{ uiText(error) }}</p>
@@ -63,3 +63,10 @@ onMounted(load)
     <footer v-if="data && (data.previous || data.next)" class="pager"><button :disabled="!data.previous" @click="changePage(page - 1)">{{ uiText("← Previous") }}</button><span>PAGE {{ page }}</span><button :disabled="!data.next" @click="changePage(page + 1)">{{ uiText("Next →") }}</button></footer>
   </section>
 </template>
+
+
+<style scoped>
+.collection-count { color: var(--text-primary); font: 570 30px ui-monospace, monospace; }
+.collection-page .question-copy em { margin-top: 3px; display: block; overflow: hidden; color: var(--text-secondary); font-size: 12px; font-style: normal; text-overflow: ellipsis; white-space: nowrap; }
+.collection-page { min-width:0; } .question-list { border:0; border-top:1px solid var(--border-subtle); border-radius:0; background:transparent; } .question-row { border:0; border-bottom:1px solid var(--border-subtle); border-radius:0; background:transparent; min-height:72px; } .question-copy strong { font-size:14px; } .question-copy small { font-size:12px; }
+</style>

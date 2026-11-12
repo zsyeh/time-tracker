@@ -7,8 +7,9 @@
   <link rel="alternate" type="text/plain" href="{{ markdown_url }}" title="AI-readable Markdown text">
   <title>{{ title }} · Shared study content</title>
   <style>
-    :root { color-scheme: dark; --bg:#111214; --surface:#181a1e; --line:#2a2d33; --text:#e6e7ea; --muted:#9297a1; --accent:#8b87f8; }
+    :root { color-scheme:light dark; --bg:#ffffff; --surface:#f5f5f5; --line:#e8e8e8; --text:#202020; --muted:#525252; --accent:#1d4ed8; }
     * { box-sizing: border-box; }
+    @media(prefers-color-scheme:dark) { :root { --bg:#141414;--surface:#1b1b1b;--line:#2a2a2a;--text:#ededed;--muted:#b0b0b0;--accent:#8ab4ff; } }
     body { margin:0; background:var(--bg); color:var(--text); font:14px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
     .shell { width:min(980px,calc(100% - 32px)); margin:0 auto; padding:36px 0 72px; }
     .topbar { display:flex; align-items:flex-start; justify-content:space-between; gap:20px; padding-bottom:24px; border-bottom:1px solid var(--line); }
@@ -17,7 +18,7 @@
     .subtitle,.machine-note { margin:0; color:var(--muted); }
     .actions { display:flex; gap:8px; flex-wrap:wrap; }
     .actions a { min-height:32px; padding:5px 10px; border:1px solid var(--line); border-radius:6px; color:var(--text); text-decoration:none; white-space:nowrap; }
-    .actions a:hover { border-color:#454954; background:var(--surface); }
+    .actions a:hover { border-color:var(--line); background:var(--surface); }
     .machine-note { margin-top:14px; font-size:12px; }
     .question { padding:32px 0; border-bottom:1px solid var(--line); }
     .question > header { display:flex; align-items:baseline; justify-content:space-between; gap:16px; margin-bottom:18px; }

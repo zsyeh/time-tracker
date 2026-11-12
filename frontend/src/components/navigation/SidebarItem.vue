@@ -19,12 +19,10 @@ withDefaults(defineProps<{
 <template>
   <RouterLink v-if="to && !disabled" :to="to" class="sidebar-item" :class="{ active }">
     <el-icon v-if="icon"><component :is="icon" /></el-icon>
-    <span v-else class="sidebar-item-marker" />
     <span>{{ label }}</span>
   </RouterLink>
   <button v-else type="button" class="sidebar-item" :class="{ active }" :disabled="disabled">
     <el-icon v-if="icon"><component :is="icon" /></el-icon>
-    <span v-else class="sidebar-item-marker" />
     <span>{{ label }}</span>
   </button>
 </template>

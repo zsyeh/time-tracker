@@ -9,12 +9,8 @@
     <meta name="robots" content="noindex,nofollow">
     <title>{% block head_title %}Personal Learning OS{% endblock head_title %}</title>
     <link rel="icon" type="image/png" sizes="180x180" href="/icon-180.png?v=img9387">
-    <script>
-        try {
-            const savedTheme = localStorage.getItem('learning-os-theme') || 'coolapk';
-            document.documentElement.dataset.theme = savedTheme;
-        } catch (_) { document.documentElement.dataset.theme = 'coolapk'; }
-    </script>
+    <script src="{% static 'tracker/ui/appearance-bootstrap.js' %}"></script>
+    <link rel="stylesheet" href="{% static 'tracker/ui/tokens.css' %}">
     <link rel="stylesheet" href="{% static 'tracker/auth.css' %}">
     {% block extra_head %}{% endblock extra_head %}
 </head>
@@ -22,7 +18,7 @@
     <header class="auth-nav">
         <a class="auth-brand" href="/" aria-label="Return to Learning OS">
             <span class="auth-brand-mark">L</span>
-            <span><strong>Learning OS</strong><small>PERSONAL SYSTEM</small></span>
+            <span><strong>Learning OS</strong></span>
         </a>
         {% if user.is_authenticated %}
             <nav>
@@ -40,22 +36,6 @@
     </header>
 
     <main class="auth-layout">
-        <section class="auth-story" aria-hidden="true">
-            <div class="auth-index">01 / ACCESS</div>
-            <span class="auth-kicker">PRIVATE INSTANCE · SECURE ORIGIN</span>
-            <h1>Authentication,<br>clearly defined.</h1>
-            <p>SESSION AUTH · PASSKEY / PASSWORD · PRIVATE DATA</p>
-            <div class="auth-visual">
-                <div class="auth-visual-head"><span>ACTIVITY MATRIX</span><b>≥ 5H</b></div>
-                <div class="auth-cells">
-                    <i></i><i class="l1"></i><i class="l2"></i><i></i><i class="goal"></i><i class="goal"></i><i></i>
-                    <i class="l1"></i><i></i><i class="l2"></i><i class="l2"></i><i class="goal"></i><i></i><i class="l1"></i>
-                    <i></i><i class="l1"></i><i></i><i class="l2"></i><i class="goal"></i><i class="goal"></i><i class="l2"></i>
-                </div>
-                <div class="auth-spec"><span>TRANSPORT</span><b>HTTPS</b><span>PROTOCOL</span><b>WEBAUTHN</b></div>
-            </div>
-        </section>
-
         <section class="auth-card">
             {% if messages %}
                 <div class="auth-messages">

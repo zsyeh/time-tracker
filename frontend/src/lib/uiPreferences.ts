@@ -1,3 +1,4 @@
+import { initializeAppearance, setAppearance, useAppearance } from '../../shared/appearance/preferences'
 import { computed, ref } from 'vue'
 
 export type UiLanguage = 'en' | 'zh-CN' | 'ja'
@@ -83,13 +84,10 @@ function storedScheme(): UiScheme {
 }
 
 export const uiLanguage = ref<UiLanguage>(storedLanguage())
-export const uiScheme = ref<UiScheme>(storedScheme())
+export const uiScheme = useAppearance().resolved
 
 function applyPreferences() {
-  document.documentElement.dataset.colorScheme = uiScheme.value
   document.documentElement.lang = uiLanguage.value
-  document.documentElement.style.colorScheme = uiScheme.value
-  document.querySelector('meta[name="theme-color"]')?.setAttribute('content', uiScheme.value === 'light' ? '#f7f7f8' : '#101012')
 }
 
 export function setUiLanguage(value: UiLanguage) {
@@ -98,13 +96,9 @@ export function setUiLanguage(value: UiLanguage) {
   applyPreferences()
 }
 
-export function setUiScheme(value: UiScheme) {
-  uiScheme.value = value
-  persist(SCHEME_COOKIE, SCHEME_KEY, value)
-  applyPreferences()
-}
+export function setUiScheme(value: UiScheme) { setAppearance(value) }
 
-export function initializeUiPreferences() { applyPreferences() }
+export function initializeUiPreferences() { initializeAppearance(); applyPreferences() }
 
 export function useUiPreferences() {
   const messages = computed(() => translations[uiLanguage.value])

@@ -83,6 +83,12 @@ def root_spa_view(request):
     return spa_view(request)
 
 
+def workspace_settings_spa_view(request):
+    """Preserve the authenticated settings SPA for the requested workspace."""
+    from drill.web_views import drill_spa_view, is_practice_host
+    return drill_spa_view(request) if is_practice_host(request) else spa_view(request)
+
+
 @login_required
 @never_cache
 def direct_start_view(request, subject):

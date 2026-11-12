@@ -42,3 +42,18 @@ onMounted(load)
     <footer class="public-share-footer">SANITIZED MARKDOWN · NO ACCOUNT DATA · READ ONLY</footer>
   </main>
 </template>
+
+
+<style scoped>
+.public-share-page { width: min(920px, calc(100% - 32px)); min-height: 100vh; margin: 0 auto; padding: 20px 0 32px; }
+.public-share-header { height: 48px; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
+.public-share-header .brand { color: var(--text-primary); text-decoration: none; }
+.public-share-header > span { color: var(--text-tertiary); font-size: 12px; }
+.public-article { padding: clamp(22px, 4vw, 48px); }
+.public-article > header { margin-bottom: 22px; padding-bottom: 16px; border-bottom: 1px solid var(--border-subtle); }
+.public-article h1 { max-width: 760px; margin: 5px 0 12px; font-size: clamp(27px, 4.2vw, 42px); line-height: 1.12; letter-spacing: -.04em; overflow-wrap: anywhere; }
+.public-article-meta { color: var(--text-tertiary); display: flex; flex-wrap: wrap; gap: 8px 14px; font-size: 12px; }
+.public-share-unavailable { max-width: 640px; margin: 14vh auto; padding: 32px; }
+.public-share-footer { padding: 18px 0; color: var(--text-tertiary); text-align: center; font-size: 12px; }
+.public-share-page { min-width:0; padding-top:max(16px,env(safe-area-inset-top)); padding-bottom:max(24px,env(safe-area-inset-bottom)); } .public-article,.public-share-unavailable { border:0; border-radius:0; background:transparent; box-shadow:none; } .public-article { padding:24px 0; } .public-share-unavailable { margin:12vh auto; }
+</style>

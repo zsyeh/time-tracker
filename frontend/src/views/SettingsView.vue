@@ -1,20 +1,32 @@
 <script setup lang="ts">
-import { computed, onMounted, reactive, ref } from 'vue'
+import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import { useAppearance } from '../../shared/appearance/preferences'
+import AppearanceSelector from '../../shared/ui/AppearanceSelector.vue'
+import AccentColorPicker from '../../shared/ui/AccentColorPicker.vue'
 import { ElMessage, ElMessageBox } from 'element-plus'
 import { api, patch, post, put, remove } from '../lib/api'
 import type { DataEncryptionStatus, InviteCode, LaunchToken, RuntimeSettingsResponse, RuntimeSettingsValues, StudyTag, Subject, TaskPreset } from '../types'
 import PageHeader from '../components/layout/PageHeader.vue'
-import { useUiPreferences, type UiLanguage, type UiScheme } from '../lib/uiPreferences'
+import { useUiPreferences, type UiLanguage } from '../lib/uiPreferences'
 
 const emit = defineEmits<{ changed: [] }>()
-const { language, scheme, setLanguage, setScheme, t } = useUiPreferences()
+const { language, setLanguage, t } = useUiPreferences()
+const { appearance, accent, setAppearance, setAccent } = useAppearance()
+const route = useRoute()
+const router = useRouter()
+const accountName = ref('')
+const sectionIds: Record<string, string> = { general: 'general', appearance: 'appearance', security: 'privacy', access: 'access', data: 'data', organization: 'organization', invitations: 'invitations', shortcuts: 'shortcuts', instance: 'instance' }
+const activeSection = computed(() => typeof route.query.section === 'string' && sectionIds[route.query.section] ? route.query.section : 'general')
+function chooseSection(section: string) { void router.replace({ query: { ...route.query, section }, hash: '' }) }
+async function scrollSection() { await nextTick(); const hash = route.hash.slice(1); document.getElementById(hash || sectionIds[activeSection.value]!)?.scrollIntoView({ block: 'start', behavior: 'instant' }) }
+watch(() => [route.query.section, route.hash], scrollSection)
 
 const tokens = ref<LaunchToken[]>([])
 const open = ref(false)
 const revealed = ref<LaunchToken | null>(null)
 const tokenConfigureOpen = ref(false)
 const editingToken = ref<LaunchToken | null>(null)
-const theme = ref(localStorage.getItem('learning-os-theme') || 'violet')
 const runtimeLoading = ref(true)
 const runtimeSaving = ref(false)
 const runtimeMeta = ref<RuntimeSettingsResponse | null>(null)
@@ -44,14 +56,7 @@ const presetForm = reactive({
   tag_ids: [] as number[], is_home_shortcut: false, is_active: true, sort_order: 0,
 })
 const subjects = { math: 'Mathematics', english: 'English', major: 'Major', training: 'Politics' }
-const themes = [
-  { id: 'violet', label: 'Linear Violet', color: '#8b7cf6' },
-  { id: 'coolapk', label: 'Coolapk Green', color: '#10c469' },
-  { id: 'youtube', label: 'YouTube Red', color: '#ff0033' },
-  { id: 'bilibili', label: 'Bilibili Pink', color: '#fb7299' },
-  { id: 'meituan', label: 'Meituan Yellow', color: '#ffd100' },
-  { id: 'apple', label: 'Apple White', color: '#f5f5f7' },
-]
+
 
 const shanghaiDate = new Intl.DateTimeFormat('en-CA', {
   timeZone: 'Asia/Shanghai', year: 'numeric', month: '2-digit', day: '2-digit',
@@ -85,11 +90,6 @@ const parentOptions = computed(() => presets.value.filter((preset) => (
   && preset.id !== editingPreset.value?.id
 )))
 
-function setTheme(value: string) {
-  theme.value = value
-  document.documentElement.dataset.theme = value
-  localStorage.setItem('learning-os-theme', value)
-}
 function tagLabels(tags: StudyTag[]) { return tags.map((tag) => `#${tag.name}`).join(' ') }
 
 async function load() {
@@ -206,6 +206,7 @@ async function changeEncryption(value: string | number | boolean) {
 async function loadAccess() {
   try {
     const auth = await api<{ user: { username: string; is_staff: boolean; is_superuser: boolean } }>('/api/auth/session/')
+    accountName.value = auth.user.username
     isAdmin.value = auth.user.is_staff || auth.user.is_superuser
     isSuperuser.value = auth.user.is_superuser
     await loadInvites()
@@ -298,27 +299,28 @@ async function copyAndOpenShortcuts(url: string | undefined, label: string) {
   ElMessage.success(`${label} copied. Paste it into Get Contents of URL.`)
   window.location.href = revealed.value?.shortcuts_create_url || 'shortcuts://create-shortcut'
 }
-onMounted(() => { load(); loadRuntime(); loadAccess(); loadEncryption(); loadOrganization() })
+onMounted(() => { load(); loadRuntime(); loadAccess(); loadEncryption(); loadOrganization(); void scrollSection() })
 </script>
 
 <template>
-  <div class="view-stack">
+  <div class="view-stack settings-page">
     <PageHeader :context="t('workspace')" :title="t('settings')" :metadata="t('preferencesAccess')" />
+    <label class="settings-mobile-section"><span>{{ t('settings') }}</span><select :value="activeSection" @change="chooseSection(($event.target as HTMLSelectElement).value)"><option value="general">General</option><option value="appearance">Appearance</option><option value="security">Privacy and security</option><option value="data">Data</option><option value="organization">Task presets and tags</option><option value="invitations">Invitations</option><option value="shortcuts">Integrations</option></select></label>
     <div class="settings-layout">
       <nav class="settings-index" aria-label="Settings sections">
         <span>{{ t('workspace') }}</span>
-        <a href="#general">{{ t('general') }}</a>
-        <a href="#appearance">{{ t('appearance') }}</a>
-        <a v-if="isSuperuser" href="#instance">{{ t('tracking') }}</a>
+        <a href="?section=general" :aria-current="activeSection === 'general' ? 'location' : undefined" @click.prevent="chooseSection('general')">{{ t('general') }}</a>
+        <a href="?section=appearance" :aria-current="activeSection === 'appearance' ? 'location' : undefined" @click.prevent="chooseSection('appearance')">{{ t('appearance') }}</a>
+        <a v-if="isSuperuser" href="?section=instance" @click.prevent="chooseSection('instance')">{{ t('tracking') }}</a>
         <span>{{ t('content') }}</span>
-        <a href="#organization">{{ t('organization') }}</a>
+        <a href="?section=organization" :aria-current="activeSection === 'organization' ? 'location' : undefined" @click.prevent="chooseSection('organization')">{{ t('organization') }}</a>
         <span>{{ t('account') }}</span>
-        <a href="#privacy">{{ t('security') }}</a>
-        <a href="#access">{{ t('access') }}</a>
-        <a href="#invitations">{{ t('invitations') }}</a>
-        <a href="#data">{{ t('data') }}</a>
+        <a href="?section=security" :aria-current="activeSection === 'security' ? 'location' : undefined" @click.prevent="chooseSection('security')">{{ t('security') }}</a>
+        <a href="?section=access" :aria-current="activeSection === 'access' ? 'location' : undefined" @click.prevent="chooseSection('access')">{{ t('access') }}</a>
+        <a href="?section=invitations" :aria-current="activeSection === 'invitations' ? 'location' : undefined" @click.prevent="chooseSection('invitations')">{{ t('invitations') }}</a>
+        <a href="?section=data" :aria-current="activeSection === 'data' ? 'location' : undefined" @click.prevent="chooseSection('data')">{{ t('data') }}</a>
         <span>{{ t('automation') }}</span>
-        <a href="#shortcuts">{{ t('integrations') }}</a>
+        <a href="?section=shortcuts" :aria-current="activeSection === 'shortcuts' ? 'location' : undefined" @click.prevent="chooseSection('shortcuts')">{{ t('integrations') }}</a>
       </nav>
       <div class="settings-content">
     <section id="general" class="settings-category">
@@ -344,16 +346,16 @@ onMounted(() => { load(); loadRuntime(); loadAccess(); loadEncryption(); loadOrg
           </div>
         </el-form>
       </article>
-      <article id="appearance" class="setting-section theme-card">
-        <div class="card-title"><div><span class="eyebrow">{{ t('appearance') }}</span><h2>Interface</h2></div></div>
-        <div class="ui-preference-rows">
-          <label><span><strong>{{ t('appearance') }}</strong><small>{{ t('dark') }} / {{ t('light') }}</small></span><select :value="scheme" @change="setScheme(($event.target as HTMLSelectElement).value as UiScheme)"><option value="dark">{{ t('dark') }}</option><option value="light">{{ t('light') }}</option></select></label>
-          <label><span><strong>{{ t('language') }}</strong><small>English · 中文 · 日本語</small></span><select :value="language" @change="setLanguage(($event.target as HTMLSelectElement).value as UiLanguage)"><option value="en">English</option><option value="zh-CN">中文</option><option value="ja">日本語</option></select></label>
-        </div>
-        <p>Choose one accent. Activity heatmap colors stay consistent for comparison.</p>
-        <div class="theme-options">
-          <button v-for="item in themes" :key="item.id" type="button" :class="{ active: theme === item.id }" @click="setTheme(item.id)"><i :style="{ background: item.color }" /><span>{{ item.label }}</span><b>{{ theme === item.id ? 'SELECTED' : '' }}</b></button>
-        </div>
+      <article class="setting-section account-settings">
+        <h2>Account</h2>
+        <div class="settings-row"><span>Signed in as</span><strong>{{ accountName || '…' }}</strong></div>
+        <a class="settings-row" href="/accounts/2fa/"><span>Login security</span><span>Manage Passkeys <span aria-hidden="true">›</span></span></a>
+      </article>
+      <article id="appearance" class="setting-section appearance-settings">
+        <h2>{{ t('appearance') }}</h2>
+        <div class="settings-row"><span><strong>{{ t('appearance') }}</strong><small>Follow the system or choose a fixed appearance.</small></span><AppearanceSelector :model-value="appearance" @update:model-value="setAppearance" /></div>
+        <div class="settings-row accent-settings-row"><span><strong>Accent color</strong><small>Applied to controls. Backgrounds stay neutral.</small></span><AccentColorPicker :model-value="accent" @update:model-value="setAccent" /></div>
+        <label class="settings-row"><span><strong>{{ t('language') }}</strong><small>Saved on this device.</small></span><select :value="language" @change="setLanguage(($event.target as HTMLSelectElement).value as UiLanguage)"><option value="en">English</option><option value="zh-CN">中文</option><option value="ja">日本語</option></select></label>
       </article>
     </section>
     <section class="settings-category">
@@ -489,3 +491,25 @@ onMounted(() => { load(); loadRuntime(); loadAccess(); loadEncryption(); loadOrg
     </el-dialog>
   </div>
 </template>
+
+<style scoped>
+.settings-page { max-width:1120px; margin:0 auto; min-width:0; }
+.settings-layout { display:grid; grid-template-columns:192px minmax(0,720px); gap:32px; align-items:start; }
+.settings-index { position:sticky; top:24px; display:flex; flex-direction:column; gap:4px; padding:0; border:0; background:transparent; }
+.settings-index > span { font-size:12px; color:var(--text-secondary); margin:16px 8px 4px; }
+.settings-index a { min-height:36px; padding:8px 12px; border:0; border-radius:6px; color:var(--text-secondary); text-decoration:none; font-size:14px; }
+.settings-index a:hover { background:var(--surface-hover); } .settings-index a[aria-current=location] { background:var(--surface-selected); color:var(--text-primary); font-weight:600; }
+.settings-content { min-width:0; } .settings-category { margin-bottom:32px; padding:0; border:0; background:transparent; box-shadow:none; }
+.settings-category-header { padding:0; margin:0 0 16px; } .settings-category-header > div > span { display:none; } .settings-category-header h2 { font-size:18px; margin:0; } .settings-category-header p { font-size:13px; }
+.setting-section { border:0; border-radius:8px; box-shadow:none; padding:16px; background:var(--surface-subtle); margin:0 0 16px; scroll-margin-top:24px; }
+.setting-section h2 { font-size:16px; margin:0 0 8px; } .setting-section p { font-size:13px; line-height:1.6; }
+.settings-row { display:flex; align-items:center; justify-content:space-between; gap:24px; min-height:56px; padding:12px 0; border:0; color:var(--text-primary); text-decoration:none; font-size:14px; }
+.settings-row + .settings-row { border-top:1px solid var(--border-subtle); } .settings-row > span { min-width:0; } .settings-row strong { font-size:14px; font-weight:500; } .settings-row small { display:block; margin-top:4px; font-size:12px; color:var(--text-secondary); }
+.settings-row select { min-height:40px; max-width:180px; color:var(--text-primary); background:transparent; border:0; font:inherit; }
+.accent-settings-row { align-items:start; } .accent-settings-row > :last-child { max-width:320px; }
+.settings-detail-section { border:0; border-radius:0; background:transparent; box-shadow:none; }
+.settings-mobile-section { display:none; } .token-row { box-shadow:none; border:0; border-bottom:1px solid var(--border-subtle); border-radius:0; background:transparent; padding:16px 0; } .token-row > div { min-width:0; } .token-row small { overflow-wrap:anywhere; }
+:deep(.preset-tree) { background:transparent; } :deep(.el-button:not(.el-button--primary):not(.is-text)) { background:var(--surface-hover); border-color:transparent; } .card-title .eyebrow { display:none; }
+@media(max-width:959px) { .settings-layout { display:block; } .settings-index { display:none; } .settings-mobile-section { display:flex; align-items:center; justify-content:space-between; gap:16px; min-height:44px; margin:0 0 16px; font-size:14px; } .settings-mobile-section select { min-height:44px; min-width:0; max-width:70%; border:0; padding:8px; background:var(--surface-subtle); color:var(--text-primary); font:inherit; } }
+@media(max-width:600px) { .settings-row { flex-wrap:wrap; gap:12px; } .accent-settings-row > :last-child { max-width:100%; } .setting-section { padding:12px; } .settings-category-header { flex-wrap:wrap; gap:12px; } :deep(.preset-tree-row) { white-space:normal; min-width:0; flex-wrap:wrap; height:auto; } :deep(.el-tree-node__content) { min-height:52px; height:auto; } }
+</style>

@@ -1,0 +1,296 @@
+{
+  "fixture": true,
+  "nativeSafari": false,
+  "build": {
+    "dist": "5dad317400394a677e9ce49d1b41358b7c37e6f8cc976489735718b4369a5c8b",
+    "drill-dist": "dad3de4171e0e5c33f0d107f525574a956593c6c4c8e2deba105d3578afa7b3f"
+  },
+  "menus": {
+    "escape": {
+      "drawer": 1,
+      "popup": 0,
+      "focus": {
+        "tag": "BUTTON",
+        "cls": "more-tools-trigger active",
+        "text": "更多工具",
+        "inDrawer": true,
+        "connected": true
+      }
+    },
+    "tab": {
+      "drawer": 1,
+      "popup": 0,
+      "focus": {
+        "tag": "A",
+        "cls": "router-link-active router-link-exact-active workspace-title",
+        "text": "Drill",
+        "inDrawer": true,
+        "connected": true
+      }
+    },
+    "shiftTab": {
+      "drawer": 1,
+      "popup": 0,
+      "focus": {
+        "tag": "BUTTON",
+        "cls": "more-tools-trigger active",
+        "text": "更多工具",
+        "inDrawer": true,
+        "connected": true
+      }
+    },
+    "roving": {
+      "focus": {
+        "tag": "BUTTON",
+        "cls": "",
+        "text": "退出登录",
+        "inDrawer": true,
+        "connected": true
+      },
+      "zeroTabStops": 1
+    },
+    "rotation": {
+      "drawer": 0,
+      "popup": 0,
+      "bodyOverflow": ""
+    },
+    "pass": true
+  },
+  "timerMenus": {
+    "escape": {
+      "drawer": 1,
+      "popup": 0,
+      "focus": {
+        "tag": "BUTTON",
+        "cls": "timer-account",
+        "text": "Vvisual-audit",
+        "inDrawer": true,
+        "connected": true
+      }
+    },
+    "tab": {
+      "drawer": 1,
+      "popup": 0,
+      "focus": {
+        "tag": "A",
+        "cls": "timer-workspace-title",
+        "text": "Learning OS",
+        "inDrawer": true,
+        "connected": true
+      }
+    },
+    "pass": true
+  },
+  "appearance": {
+    "default": {
+      "appearance": "system",
+      "scheme": "light",
+      "accent": "blue",
+      "bg": "rgb(255, 255, 255)"
+    },
+    "systemDark": {
+      "appearance": "system",
+      "scheme": "dark",
+      "accent": "blue",
+      "bg": "rgb(20, 20, 20)"
+    },
+    "manualLight": {
+      "appearance": "light",
+      "scheme": "light",
+      "accent": "blue",
+      "bg": "rgb(255, 255, 255)"
+    },
+    "yellow": {
+      "appearance": "light",
+      "scheme": "light",
+      "accent": "yellow",
+      "bg": "rgb(255, 255, 255)"
+    },
+    "reload": {
+      "appearance": "light",
+      "scheme": "light",
+      "accent": "yellow",
+      "bg": "rgb(255, 255, 255)"
+    },
+    "ei": {
+      "appearance": "light",
+      "scheme": "light",
+      "accent": "yellow",
+      "bg": "rgb(255, 255, 255)"
+    },
+    "pass": true
+  },
+  "question": {
+    "metrics": {
+      "pane": {
+        "y": 144.59375,
+        "bottom": 812,
+        "width": 377.59375,
+        "height": 667.40625,
+        "scrollHeight": 973,
+        "clientHeight": 667
+      },
+      "diagnosis": {
+        "y": 319.984375,
+        "bottom": 530.578125,
+        "width": 338.59375,
+        "height": 210.59375,
+        "scrollHeight": 211,
+        "clientHeight": 211
+      },
+      "actions": {
+        "y": 748,
+        "bottom": 792,
+        "width": 338.59375,
+        "height": 44,
+        "scrollHeight": 44,
+        "clientHeight": 44
+      },
+      "overflow": false,
+      "rows": [
+        {
+          "text": "A知识断层",
+          "height": 44,
+          "y": 342.578125
+        },
+        {
+          "text": "B1想不起来",
+          "height": 44,
+          "y": 342.578125
+        },
+        {
+          "text": "B2不会启动",
+          "height": 44,
+          "y": 390.578125
+        },
+        {
+          "text": "B3不会组合",
+          "height": 44,
+          "y": 390.578125
+        },
+        {
+          "text": "C1计算错误",
+          "height": 44,
+          "y": 438.578125
+        },
+        {
+          "text": "C2符号/方向/单位",
+          "height": 44,
+          "y": 438.578125
+        },
+        {
+          "text": "C3边界/条件错误",
+          "height": 44,
+          "y": 486.578125
+        },
+        {
+          "text": "D看解析仍不懂",
+          "height": 44,
+          "y": 486.578125
+        }
+      ]
+    },
+    "twoSelected": {
+      "checked": 2,
+      "paneBottom": 812,
+      "actionTop": 748,
+      "actionBottom": 792,
+      "fullyVisible": true,
+      "primaryChoices": "主要原因：A · 知识断层B1 · 想不起来"
+    },
+    "noteEditor": {
+      "open": true,
+      "save": {
+        "top": 607.546875,
+        "bottom": 651.546875,
+        "visible": true,
+        "unobstructed": true
+      },
+      "actions": {
+        "top": 672.546875,
+        "bottom": 716.546875,
+        "visible": true
+      }
+    },
+    "moreActions": [
+      {
+        "text": "撤销上次",
+        "visible": true,
+        "unobstructed": true
+      },
+      {
+        "text": "重置本题状态",
+        "visible": true,
+        "unobstructed": true
+      }
+    ],
+    "reader": {
+      "open": 1,
+      "afterRotation": {
+        "open": true,
+        "overflow": false,
+        "buttons": [
+          {
+            "label": "上一题 · 顺序题",
+            "width": 44,
+            "height": 44,
+            "right": 54
+          },
+          {
+            "label": "下一题 · 顺序题",
+            "width": 44,
+            "height": 44,
+            "right": 102
+          },
+          {
+            "label": "已掌握 · 下一题 · 顺序题",
+            "width": 44,
+            "height": 44,
+            "right": 150
+          },
+          {
+            "label": "待复习",
+            "width": 44,
+            "height": 44,
+            "right": 198
+          },
+          {
+            "label": "显示答案",
+            "width": 44,
+            "height": 44,
+            "right": 246
+          },
+          {
+            "label": "恢复适合宽度",
+            "width": 49.625,
+            "height": 44,
+            "right": 332
+          },
+          {
+            "label": "关闭全屏",
+            "width": 44,
+            "height": 44,
+            "right": 380
+          }
+        ]
+      },
+      "closed": true
+    },
+    "errors": [],
+    "pass": true,
+    "note": "Synthetic complete QuestionView; no answer submitted."
+  },
+  "deletedPaper": {
+    "url": "https://47.95.10.128/",
+    "paperRequests": [
+      {
+        "path": "/ei/api/drill/papers/11111111-1111-4111-8111-000000000001/",
+        "method": "GET"
+      }
+    ],
+    "errors": [],
+    "pass": true,
+    "network": "ALL intercepted; local static files + invented API only"
+  },
+  "pass": true
+}

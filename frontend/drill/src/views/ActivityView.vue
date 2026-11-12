@@ -35,7 +35,7 @@ onMounted(load)
 <template>
   <section class="page activity-page">
     <header class="page-header activity-page-header">
-      <div><span class="eyebrow">{{ t('dailyPractice') }}</span><h1>{{ t('practiceActivity') }}</h1><p>Daily volume from July 20 through December 19. Reset events are excluded.</p></div>
+      <div><h1>{{ t('practiceActivity') }}</h1><p>Daily volume from July 20 through December 19. Reset events are excluded.</p></div>
       <div class="activity-legend"><span>LESS</span><i v-for="level in 9" :key="level" :class="`activity-level-${level - 1}`" /><span>MORE</span></div>
     </header>
     <p v-if="error" class="error-state">{{ uiText(error) }}</p>
@@ -53,3 +53,12 @@ onMounted(load)
     </template>
   </section>
 </template>
+
+
+<style scoped>
+.activity-route-card { min-height: 48px; padding: 10px 13px; border:0; border-top:1px solid var(--border-subtle); border-radius:0; color: var(--text-primary); background: var(--bg-surface); text-decoration: none; display: grid; grid-template: auto auto / 1fr auto; }
+.activity-route-card:hover { border-color: var(--border-default); background: var(--bg-surface-hover); }
+.activity-route-card span { color: var(--text-tertiary); font-size:13px; }
+.activity-route-card strong { margin-top: 2px; font-size:13px; }
+.activity-route-card b { grid-column: 2; grid-row: 1/3; align-self: center; color: var(--accent); }
+</style>

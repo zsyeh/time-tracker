@@ -1,3 +1,6 @@
+document.documentElement.dataset.workspace = location.pathname.startsWith('/ei') || location.hostname.startsWith('ei.') ? 'ei' : 'drill'
+import '../../shared/design/tokens.css'
+import '../../shared/design/controls.css'
 import { createApp } from 'vue'
 import { createRouter, createWebHistory } from 'vue-router'
 import App from './App.vue'
@@ -24,6 +27,7 @@ import CommunicationSelectedView from './views/CommunicationSelectedView.vue'
 import PdfPageStatusView from './views/PdfPageStatusView.vue'
 import DiagnosticDashboardView from './views/DiagnosticDashboardView.vue'
 import ProgressView from './views/ProgressView.vue'
+import SettingsView from './views/SettingsView.vue'
 import DiagnosticQueueView from './views/DiagnosticQueueView.vue'
 import NotFoundView from './views/NotFoundView.vue'
 import { initializeUiPreferences } from './lib/uiPreferences'
@@ -36,6 +40,7 @@ const router = createRouter({
     { path: '/', redirect: '/practice' },
     { path: '/practice', name: 'practice', component: PracticeView },
     { path: '/progress', name: 'progress', component: ProgressView },
+    { path: '/settings', name: 'settings', component: SettingsView },
     { path: '/practice/:uuid', name: 'question', component: QuestionView, props: true },
     { path: '/diagnostics', name: 'diagnostics', component: DiagnosticDashboardView },
     { path: '/diagnostic-queue', name: 'diagnostic-queue', component: DiagnosticQueueView },

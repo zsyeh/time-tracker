@@ -1,4 +1,10 @@
 {
   "extends": "./tsconfig.json",
-  "include": ["drill/src/**/*.ts", "drill/src/**/*.tsx", "drill/src/**/*.vue"]
+  "include": [
+    "drill/src/**/*.ts",
+    "drill/src/**/*.tsx",
+    "drill/src/**/*.vue",
+    "shared/**/*.ts",
+    "shared/**/*.vue"
+  ]
 }

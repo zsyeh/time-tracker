@@ -1,6 +1,7 @@
 .ui-button,.ui-icon-button { display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:var(--control-height);padding:8px 12px;border:0;border-radius:var(--radius-control);font:500 14px/20px var(--font-ui);cursor:pointer;text-decoration:none;transition:background var(--duration-feedback),color var(--duration-feedback); }
 .ui-button--primary { background:var(--accent-solid);color:var(--accent-on-solid); }
-.ui-button--primary:hover:not(:disabled) { background:color-mix(in srgb,var(--accent-solid) 92%,var(--accent-on-solid)); }
+.ui-button--primary:hover:not(:disabled) { background:var(--accent-solid-hover); }
+.ui-button--primary:active:not(:disabled) { background:var(--accent-solid-pressed); }
 .ui-button--secondary { background:var(--surface-subtle);color:var(--text-primary); }
 .ui-button--plain,.ui-icon-button { background:transparent;color:var(--text-secondary); }
 .ui-button--secondary:hover:not(:disabled),.ui-button--plain:hover:not(:disabled),.ui-icon-button:hover:not(:disabled) { background:var(--surface-hover);color:var(--text-primary); }

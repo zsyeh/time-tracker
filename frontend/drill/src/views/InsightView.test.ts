@@ -4,6 +4,7 @@ import { createApp, nextTick, type App } from 'vue'
 import InsightView from './InsightView.vue'
 import { api } from '../lib/api'
 import { uiLanguage } from '../lib/uiPreferences'
+import { setLearningUser } from '../../../shared/foregroundTimer'
 
 const navigation = vi.hoisted(() => ({
   query: {} as Record<string, string>,
@@ -37,25 +38,27 @@ async function mount() {
 }
 beforeEach(() => {
   vi.clearAllMocks()
+  setLearningUser('')
   sessionStorage.clear()
   uiLanguage.value = 'en'
   navigation.query = { q: 'old query', state: 'review', questions_page: '2' }
   navigation.replace.mockImplementation(async ({ query }: { query: Record<string, string> }) => { navigation.query = query })
   vi.mocked(api).mockResolvedValue(payload())
 })
-afterEach(() => { app?.unmount(); host?.remove(); app = undefined })
+afterEach(() => { app?.unmount(); host?.remove(); app = undefined; vi.useRealTimers(); setLearningUser('') })
 
 it('keeps advanced filters available while showing the main search and status first', async () => {
   await mount()
   expect(host.querySelector('.filter-primary')?.textContent).toContain('Keyword')
   expect(host.querySelector('.filter-primary')?.textContent).toContain('Question status')
+  expect(host.querySelector('.filter-sort')).not.toBeNull()
   expect(host.querySelectorAll('.filter-dates input[type="date"]')).toHaveLength(2)
   expect(host.querySelectorAll('.filter-dates-mobile input[type="date"]')).toHaveLength(2)
   expect(host.querySelector('.filter-dates-mobile')?.hasAttribute('open')).toBe(false)
   expect(host.querySelector('#insight-advanced-filters')).toBeNull()
   host.querySelector<HTMLButtonElement>('.filter-more')!.click()
   await nextTick()
-  expect(host.querySelectorAll('#insight-advanced-filters select')).toHaveLength(6)
+  expect(host.querySelectorAll('#insight-advanced-filters select')).toHaveLength(5)
   expect(host.querySelector('#insight-advanced-filters input[type="date"]')).toBeNull()
   expect(host.textContent).toContain('Repeated note')
   expect(host.textContent).toContain('K1')
@@ -104,7 +107,7 @@ it('keeps independent pages and returns to the applied query and saved list', as
   expect(target.query.insight_return).toContain('questions_page=2')
   expect(target.query.insight_return).toContain('q=old+query')
   expect(target.query.insight_return).not.toContain('unapplied')
-  expect(sessionStorage.getItem('drill.insight.list.v1')).toBe('notes')
+  expect(sessionStorage.getItem('drill.insight.v2.anonymous.list')).toBe('notes')
   const nextNotes = [...host.querySelectorAll<HTMLButtonElement>('#insight-notes .insight-pagination button')][1]!
   nextNotes.click()
   await settle()
@@ -117,8 +120,77 @@ it('restores scroll and the selected mobile list when returning from a question'
   sessionStorage.setItem('drill.insight.list.v1', 'notes')
   const scrollTo = vi.spyOn(window, 'scrollTo').mockImplementation(() => {})
   await mount()
-  expect(scrollTo).toHaveBeenCalledWith({ top: 320 })
+  await vi.waitFor(() => expect(scrollTo).toHaveBeenCalledWith({ top: 320 }))
   expect(sessionStorage.getItem('drill.insight.scroll.v1')).toBeNull()
   expect(host.querySelector('#insight-notes-tab')?.getAttribute('aria-selected')).toBe('true')
   scrollTo.mockRestore()
+})
+
+it('debounces keyword search for 250ms and does not send unfinished IME text', async () => {
+  await mount()
+  vi.useFakeTimers()
+  const initial = vi.mocked(api).mock.calls.length
+  const input = host.querySelector<HTMLInputElement>('input[type="search"]')!
+  input.dispatchEvent(new CompositionEvent('compositionstart'))
+  input.value = '偏'; input.dispatchEvent(new Event('input'))
+  await vi.advanceTimersByTimeAsync(500)
+  expect(api).toHaveBeenCalledTimes(initial)
+  input.value = '偏导数'; input.dispatchEvent(new CompositionEvent('compositionend'))
+  await vi.advanceTimersByTimeAsync(249)
+  expect(api).toHaveBeenCalledTimes(initial)
+  await vi.advanceTimersByTimeAsync(1)
+  expect(api).toHaveBeenCalledTimes(initial + 1)
+  expect(vi.mocked(api).mock.calls.at(-1)![0]).toContain('q=%E5%81%8F%E5%AF%BC%E6%95%B0')
+  expect(vi.mocked(api).mock.calls.at(-1)![0]).not.toContain('questions_page=')
+})
+
+it('supersedes an old response during the debounce window without replacing newer results', async () => {
+  let resolveFirst!: (value: ReturnType<typeof payload>) => void
+  vi.mocked(api).mockReturnValueOnce(new Promise(done => { resolveFirst = done }) as ReturnType<typeof api>).mockResolvedValue(payload())
+  await mount()
+  const input = host.querySelector<HTMLInputElement>('input[type="search"]')!
+  input.value = 'Fourier'; input.dispatchEvent(new Event('input'))
+  expect((vi.mocked(api).mock.calls[0]![1]?.signal as AbortSignal).aborted).toBe(true)
+  await new Promise(done => setTimeout(done, 270)); await settle()
+  const stale = payload(); stale.recent_questions.results[0]!.label = 'Stale old result'
+  resolveFirst(stale); await settle()
+  expect(host.textContent).toContain('Question 17')
+  expect(host.textContent).not.toContain('Stale old result')
+})
+
+it('keeps multiple Attempts for the same question and persists expanded Note state', async () => {
+  const data = payload()
+  data.recent_questions.results.push({ ...data.recent_questions.results[0]!, attempt_id: 2, created_at: '2026-11-10T08:15:00Z' })
+  vi.mocked(api).mockResolvedValue(data)
+  await mount()
+  expect(host.querySelectorAll('#insight-attempts .insight-list > button')).toHaveLength(2)
+  const expand = host.querySelector<HTMLButtonElement>('#insight-notes article footer button')!
+  expand.click(); await nextTick()
+  expect(expand.getAttribute('aria-expanded')).toBe('true')
+  expect(host.querySelector('#note-body-note-1')?.classList.contains('expanded')).toBe(true)
+  app!.unmount(); app = undefined; host.remove()
+  await mount()
+  expect(host.querySelector('#note-body-note-1')?.classList.contains('expanded')).toBe(true)
+})
+
+it('uses roving tab focus and retains separate pagination while switching mobile lists', async () => {
+  await mount()
+  const attempts = host.querySelector<HTMLButtonElement>('#insight-attempts-tab')!
+  expect(attempts.tabIndex).toBe(0)
+  attempts.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true }))
+  await nextTick()
+  const notes = host.querySelector<HTMLButtonElement>('#insight-notes-tab')!
+  expect(notes.tabIndex).toBe(0); expect(document.activeElement).toBe(notes)
+  expect(attempts.tabIndex).toBe(-1)
+  expect(navigation.query.questions_page).toBe('2')
+})
+
+it('does not restore another account or query scroll state', async () => {
+  setLearningUser('account-2')
+  sessionStorage.setItem('drill.insight.v2.account-1.scroll', JSON.stringify({ top: 500, query: '' }))
+  sessionStorage.setItem('drill.insight.v2.account-2.scroll', JSON.stringify({ top: 600, query: 'q=other' }))
+  const scroll = vi.spyOn(window, 'scrollTo').mockImplementation(() => {})
+  await mount(); await new Promise(done => setTimeout(done, 50))
+  expect(scroll).not.toHaveBeenCalled()
+  scroll.mockRestore()
 })

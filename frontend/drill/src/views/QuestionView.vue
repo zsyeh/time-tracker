@@ -8,6 +8,8 @@ import { cachedNoteDraft, cachedQuestion, clearNoteDraft, fetchNavigationQuestio
 import type { AttemptDiagnosis, ErrorCode, QuestionDetail, QuestionSummary } from '../types'
 import ExamTypeEditor from '../components/ExamTypeEditor.vue'
 import NoteVisibility from '../components/NoteVisibility.vue'
+import DiagnosisSelector from '../components/DiagnosisSelector.vue'
+import PracticeActionToolbar from '../components/PracticeActionToolbar.vue'
 import { typeText } from '../lib/examTypes'
 import type { ReaderPracticeAction, ReaderPracticeControls } from '../lib/readerPractice'
 import MarkdownAnswer from '../components/MarkdownAnswer.vue'
@@ -22,6 +24,7 @@ import { emptyNextQuestionMessage, emptyPreviousQuestionMessage, nextQuestionTar
 import { runtimeWorkspace, withWorkspacePrefix } from '../lib/runtimePath'
 import { buildClipboardPng, copyImagesToClipboard, downloadImageBlob, shareImageBlob } from '../lib/imageClipboard'
 import { useUiPreferences } from '../lib/uiPreferences'
+import { usePracticePreferences } from '../lib/practicePreferences'
 
 const props = defineProps<{ uuid: string }>()
 const { t } = useUiPreferences()
@@ -41,7 +44,7 @@ const errorOptions: Array<{ code: ErrorCode; label: string; group: string }> = [
 
 function navigationQuery() {
   const query = router.currentRoute.value.query
-  return Object.fromEntries(['type_group', 'exam_type', 'document', 'topic', 'source_category', 'q', 'unattempted', 'marker', 'collection', 'bucket', 'tier', 'kind', 'material', 'combined', 'state', 'scope', 'course', 'mode', 'insight_return', 'insight_list', 'collection_page', 'from']
+  return Object.fromEntries(['type_group', 'exam_type', 'document', 'topic', 'source_category', 'q', 'unattempted', 'marker', 'collection', 'bucket', 'tier', 'kind', 'material', 'combined', 'state', 'scope', 'course', 'mode', 'sort', 'search_version', 'index_version', 'status', 'favorite', 'review_later', 'practice_page', 'insight_return', 'insight_list', 'collection_page', 'from']
     .filter((key) => query[key] !== undefined && query[key] !== '')
     .map((key) => [key, String(query[key])]))
 }
@@ -113,7 +116,10 @@ function backToEntryPoint() {
     void router.push('/cockpit')
     return
   }
-  void router.push({ path: '/practice', query: navigationQuery() })
+  const query = navigationQuery()
+  if (query.practice_page) query.page = query.practice_page
+  delete query.practice_page
+  void router.push({ path: '/practice', query })
 }
 
 const question = ref<QuestionDetail | null>(null)
@@ -272,13 +278,7 @@ const pageTurnCopyMessage = ref('')
 const pageTurnCopyFailed = ref(false)
 const clipboardImage = ref<Blob | null>(null)
 const actionFeedback = ref('')
-const nextMode = ref<NextQuestionMode>((localStorage.getItem('drill.next-mode.v1') as NextQuestionMode) || 'sequential')
-type PageTurnCopyMode = 'off' | 'link' | 'image'
-const pageTurnCopyStorageKey = `${runtimeWorkspace}.page-turn-copy.v1`
-const storedPageTurnCopyMode = localStorage.getItem(pageTurnCopyStorageKey)
-const pageTurnCopyMode = ref<PageTurnCopyMode>(
-  storedPageTurnCopyMode === 'link' || storedPageTurnCopyMode === 'image' ? storedPageTurnCopyMode : 'off',
-)
+const { nextMode, pageTurnCopyMode, reviewAutoNext, masteredAutoNext } = usePracticePreferences()
 const autoCopyLink = computed({
   get: () => pageTurnCopyMode.value === 'link',
   set: (enabled: boolean) => { pageTurnCopyMode.value = enabled ? 'link' : 'off' },
@@ -287,8 +287,6 @@ const autoCopyImage = computed({
   get: () => pageTurnCopyMode.value === 'image',
   set: (enabled: boolean) => { pageTurnCopyMode.value = enabled ? 'image' : 'off' },
 })
-const reviewAutoNext = ref(localStorage.getItem('drill.review-auto-next.v1') === 'true')
-const masteredAutoNext = ref(localStorage.getItem('drill.mastered-auto-next.v1') !== 'false')
 const readerControls = computed<ReaderPracticeControls>(() => ({
   mode: nextMode.value,
   canPrevious: Boolean(topPreviousTarget.value), canNext: Boolean(topNextTarget.value),
@@ -300,7 +298,6 @@ const readerControls = computed<ReaderPracticeControls>(() => ({
 }))
 
 watch(nextMode, (value) => {
-  try{localStorage.setItem('drill.next-mode.v1',value)}catch{/* optional preference cache */}
   if(value==='unattempted'&&question.value){
     const query=navigationQueryString()
     void prefetchQuestion(question.value.next_unattempted_question_uuid||null,query)
@@ -308,9 +305,6 @@ watch(nextMode, (value) => {
   }
 })
 watch(diagnosisOpen, (value) => localStorage.setItem(`${runtimeWorkspace}.diagnosis-open.v1`, String(value)))
-watch(pageTurnCopyMode, (value) => localStorage.setItem(pageTurnCopyStorageKey, value))
-watch(reviewAutoNext, (value) => localStorage.setItem('drill.review-auto-next.v1', String(value)))
-watch(masteredAutoNext, (value) => localStorage.setItem('drill.mastered-auto-next.v1', String(value)))
 
 let pageTurnCopySequence = 0
 let pageTurnCopyFeedbackTimer = 0
@@ -1354,10 +1348,10 @@ onBeforeRouteLeave(() => {
       </header>
 
       <div class="question-save-actions" :aria-label="uiText('题目工具')">
-        <button type="button" :class="{ active: question.is_favorite }" :disabled="stateSaving" @click="saveUserState({ is_favorite: !question.is_favorite })"><b>{{ question.is_favorite ? '★' : '☆' }}</b>{{ question.is_favorite ? uiText("已收藏") : uiText("收藏") }}</button>
+        <button type="button" :aria-pressed="question.is_favorite" :class="{ active: question.is_favorite }" :disabled="stateSaving" @click="saveUserState({ is_favorite: !question.is_favorite })"><b>{{ question.is_favorite ? '★' : '☆' }}</b>{{ question.is_favorite ? uiText("已收藏") : uiText("收藏") }}</button>
         <button type="button" :disabled="shareState === 'sharing'" @click="shareQuestion"><b>↗</b>{{ shareState === 'sharing' ? uiText("正在生成…") : shareState === 'copied' ? uiText("链接已复制 ✓") : uiText("复制分享链接") }}</button>
-        <button type="button" :class="{ active: question.review_later }" :disabled="stateSaving" @click="saveUserState({ review_later: !question.review_later })"><b>↻</b>{{ question.review_later ? uiText("已加入下次复习") : uiText("加入下次复习") }}</button>
-        <button type="button" :class="{ active: erratumOpen }" @click="erratumOpen = !erratumOpen"><b>!</b>{{ uiText("提交勘误") }}</button>
+        <button type="button" :aria-pressed="question.review_later" :class="{ active: question.review_later }" :disabled="stateSaving" @click="saveUserState({ review_later: !question.review_later })"><b>↻</b>{{ question.review_later ? uiText("已加入下次复习") : uiText("加入下次复习") }}</button>
+        <button type="button" :aria-expanded="erratumOpen" :class="{ active: erratumOpen }" @click="erratumOpen = !erratumOpen"><b>!</b>{{ uiText("提交勘误") }}</button>
       </div>
 
       <div class="question-workbench">
@@ -1432,15 +1426,11 @@ onBeforeRouteLeave(() => {
             </header>
             <div v-if="diagnosisOpen" class="diagnosis-body">
             <div class="independence-flags">
-              <button type="button" :class="{ active: usedHintThisRound }" @click="toggleUsedHint">{{ usedHintThisRound ? uiText("已使用提示") : uiText("未使用提示") }}</button>
+              <button type="button" :aria-pressed="usedHintThisRound" :class="{ active: usedHintThisRound }" @click="toggleUsedHint">{{ usedHintThisRound ? uiText("已使用提示") : uiText("未使用提示") }}</button>
               <span :class="{ compromised: usedHintThisRound || answerViewedThisRound }">{{ usedHintThisRound || answerViewedThisRound ? uiText("本轮不计为独立作答") : uiText("当前可计为独立作答") }}</span>
             </div>
             <button v-if="route.query.mode === 'method'" class="method-note-link" type="button" @click="noteOpen = true">{{ uiText("把调用的知识点和第一个关系式写入“题目笔记”") }}</button>
-            <div class="error-picker">
-              <button v-for="item in errorOptions" :key="item.code" type="button" :class="{ active: selectedErrors.includes(item.code), primary: primaryError === item.code }" @click="toggleError(item.code)">
-                <b>{{ item.code }}</b><span>{{ uiText(item.label) }}</span>
-              </button>
-            </div>
+            <DiagnosisSelector compact :model-value="selectedErrors" :primary="primaryError" :options="errorOptions" @toggle="toggleError" />
             <p v-if="selectedErrors.length" class="primary-help">{{ uiText("主要原因：") }}<select v-model="primaryError"><option v-for="code in selectedErrors" :key="code" :value="code">{{ code }} · {{ uiText(errorOptions.find((item) => item.code === code)?.label || '') }}</option></select></p>
             <div class="diagnosis-advanced">
               <label>{{ uiText("知识提取") }}<select v-model="knowledgeLevel"><option :value="null">{{ uiText("未知") }}</option><option value="K0">{{ uiText("K0 不知道") }}</option><option value="K1">{{ uiText("K1 回忆不完整") }}</option><option value="K2">{{ uiText("K2 准确提取") }}</option></select></label>
@@ -1470,7 +1460,10 @@ onBeforeRouteLeave(() => {
               <details class="note-field" :open="noteOpen" @toggle="toggleNote"><summary><span>{{ uiText("题目笔记 Note") }}</span><small>{{ noteSaveState === 'saving' ? uiText("保存中…") : noteSaveState === 'saved' ? uiText("已保存") : noteSaveState === 'error' ? uiText("保存失败") : noteSaveState === 'dirty' ? uiText("未保存") : note ? uiText("展开编辑") : uiText("添加笔记") }}</small></summary><textarea v-model="note" maxlength="20000" :placeholder="uiText('记录公式、错误原因、修正方法或下次检查点')" @input="cacheNoteDraft" /><span class="note-controls"><small class="note-draft-hint">{{ noteSaveState === 'saving' ? uiText("保存中…") : noteSaveState === 'saved' ? uiText("已保存到服务器") : noteSaveState === 'error' ? typeText('保存失败，请重试；离开页面前确认已保存。', 'Save failed. Retry and confirm it is saved before leaving this page.') : noteSaveState === 'dirty' ? uiText("未保存") : uiText("停止输入 5 秒后自动保存") }}</small><button type="button" class="save-note" :disabled="noteSaveState === 'saving'" @click="saveNote">{{ noteSaveState === 'saving' ? uiText("保存中…") : noteSaveState === 'error' ? uiText("重试保存") : uiText("保存笔记") }}</button></span></details>
               </NoteVisibility>
             </div>
-            <div class="unified-answer-actions"><button class="correct primary-action" :class="{ selected: question.state === 'mastered' }" :disabled="saving" @click="record('correct')">{{ masteredAutoNext ? uiText("掌握并下一题") : uiText("标记已掌握") }}</button><button class="review" :class="{ selected: question.state === 'review' }" :disabled="saving" @click="record('review')">{{ uiText("待复习") }}{{ reviewAutoNext ? uiText("并下一题") : '' }}</button><details class="secondary-actions"><summary>{{ uiText("更多操作") }}</summary><button :disabled="saving || !question.can_undo" @click="undo">{{ uiText("撤销上次") }}</button><button :disabled="saving || question.state === 'unattempted'" @click="record('reset')">{{ uiText("重置本题状态") }}</button></details></div>
+
+          </div>
+          <div class="answer-submit-bar answer-bar">
+            <PracticeActionToolbar><template #primary><button class="correct primary-action" :class="{ selected: question.state === 'mastered' }" :disabled="saving" @click="record('correct')">{{ masteredAutoNext ? uiText("掌握并下一题") : uiText("标记已掌握") }}</button></template><template #secondary><button class="review" :class="{ selected: question.state === 'review' }" :disabled="saving" @click="record('review')">{{ uiText("待复习") }}{{ reviewAutoNext ? uiText("并下一题") : '' }}</button></template><template #more><details class="practice-more secondary-actions"><summary>{{ uiText("更多操作") }}</summary><div class="practice-more-menu"><button :disabled="saving || !question.can_undo" @click="undo">{{ uiText("撤销上次") }}</button><button class="destructive-action" :disabled="saving || question.state === 'unattempted'" @click="record('reset')">{{ uiText("重置本题状态") }}</button></div></details></template></PracticeActionToolbar>
           </div>
           </section>
 
@@ -1505,95 +1498,75 @@ onBeforeRouteLeave(() => {
 </template>
 
 <style scoped>
-.timing-recovery{display:flex;align-items:center;flex-wrap:wrap;gap:6px;margin:4px 0 7px;font-size:10px}.timing-recovery button{padding:4px 7px;border:1px solid var(--border-default);border-radius:4px;background:var(--bg-sidebar);color:var(--text-secondary);font-size:10px}.timing-recovery.in-reader{flex:none;margin:0;padding:6px max(10px,env(safe-area-inset-right)) 6px max(10px,env(safe-area-inset-left));background:var(--bg-surface);border-bottom:1px solid var(--border-default)}.timing-recovery small{color:var(--text-tertiary);overflow-wrap:anywhere}
-.source-current-question { display: grid; gap: 7px; margin-bottom: 10px; padding: 12px; border: 1px solid #3975cb; border-radius: 8px; background: var(--bg-surface); }
-.source-current-question strong { font-size: 13px; }
-.source-current-question small { font-size: 11px; color: var(--text-secondary); }
-.source-current-question button { padding: 7px; border: 1px solid var(--border-default); border-radius: 5px; cursor: pointer; color: var(--text-primary); background: var(--bg-sidebar); }
-.source-tracking-toolbar { position: sticky; top: 8px; z-index: 8; display: flex; align-items: center; flex-wrap: wrap; gap: 6px; padding: 8px; border: 1px solid var(--border-default); background: var(--bg-surface); border-radius: 8px; }
-.source-tracking-toolbar strong { flex: 1 1 160px; font-size: 12px; color: var(--text-primary); }
-.source-tracking-toolbar button { padding: 6px; cursor: pointer; background: var(--bg-sidebar); color: var(--text-primary); border: 1px solid var(--border-default); border-radius: 5px; }
+.timing-recovery { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin: 4px 0 8px; font-size: 12px; }
+.timing-recovery button, .source-current-question button, .source-tracking-toolbar button { min-height: 36px; padding: 8px; border: 0; border-radius: 6px; background: var(--surface-hover, var(--bg-sidebar)); color: var(--text-primary); font-size: 13px; cursor: pointer; }
+.timing-recovery.in-reader { flex: none; margin: 0; padding: 8px max(12px, env(safe-area-inset-right)) 8px max(12px, env(safe-area-inset-left)); background: var(--bg-surface); border-bottom: 1px solid var(--border-subtle); }
+.timing-recovery small { color: var(--text-secondary); overflow-wrap: anywhere; }
+.source-current-question { display: grid; gap: 8px; margin-bottom: 12px; padding: 12px; border-bottom: 1px solid var(--border-subtle); background: var(--bg-surface); }
+.source-current-question strong { font-size: 14px; }
+.source-current-question small { font-size: 12px; color: var(--text-secondary); }
+.source-tracking-toolbar { position: sticky; top: 8px; z-index: 8; display: flex; align-items: center; flex-wrap: wrap; gap: 8px; padding: 8px; background: var(--bg-surface); }
+.source-tracking-toolbar strong { flex: 1 1 160px; font-size: 14px; color: var(--text-primary); }
 .question-canvas.source-canvas { overflow: visible; }
-.source-review-warning { padding: 12px; border: 1px solid #b6872a; border-radius: 8px; color: #b6872a; font-size: 13px; }
-.diagnosis-panel { display: grid; gap: 10px; margin-bottom: 12px; padding: 11px 12px; border: 1px solid var(--border-default); border-radius: 10px; background: var(--bg-surface); }
-.answer-workflow { overflow: hidden; border: 1px solid var(--border-default); border-radius: 10px; background: var(--bg-surface); display: flex; flex-direction: column; }
-.answer-workflow .diagnosis-panel { margin: 0; border: 0; border-bottom: 1px solid var(--border-default); border-radius: 0; }
+.source-review-warning { padding: 12px; border-inline-start: 2px solid var(--warning); color: var(--warning); font-size: 14px; }
+.answer-workflow { display: flex; flex-direction: column; min-width: 0; background: var(--bg-surface); }
+.diagnosis-panel { display: grid; gap: 12px; margin: 0; padding: 12px; border: 0; border-bottom: 1px solid var(--border-subtle); background: transparent; }
 .answer-workflow .answer-bar { border: 0; border-radius: 0; }
-.page-turn-settings { display: grid; gap: 7px; margin-top: 10px; padding: 10px 11px; border: 1px solid var(--border-default); border-radius: 9px; background: var(--bg-surface); }
-.page-turn-settings > header { display: flex; align-items: center; justify-content: space-between; gap: 8px; }
-.page-turn-settings > header strong { color: var(--text-primary); font-size: 12px; }
-.page-turn-settings > header label { display: flex; align-items: center; gap: 6px; color: var(--text-secondary); font-size: 10px; white-space: nowrap; }
-.page-turn-settings select { max-width: 145px; min-height: 32px; padding: 4px 7px; border: 1px solid var(--border-default); border-radius: 6px; color: var(--text-primary); background: var(--bg-sidebar); font-size: 11px; }
-.page-turn-settings-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
-.page-turn-settings-grid label { display: flex; align-items: center; gap: 7px; min-width: 0; min-height: 36px; padding: 5px 7px; border: 1px solid var(--border-default); border-radius: 6px; color: var(--text-secondary); background: var(--bg-sidebar); font-size: 11px; line-height: 1.2; cursor: pointer; }
-.page-turn-settings-grid label:has(input:checked) { border-color: var(--accent); color: var(--text-primary); background: var(--accent-muted); }
-.page-turn-settings-grid input { flex: none; width: 15px; height: 15px; margin: 0; accent-color: var(--accent); }
-.page-turn-settings > small { color: var(--text-tertiary); font-size: 10px; line-height: 1.35; }
-.diagnosis-status { margin-top: 3px; color: var(--text-tertiary); font-size: 10px; font-weight: 600; }
+.answer-submit-bar { position: sticky; bottom: 0; z-index: 10; flex: none; padding: 8px 12px; background: var(--bg-surface); }
+.answer-submit-bar :deep(.practice-action-toolbar) { margin-top: 0; }
+.diagnosis-panel > header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.diagnosis-panel > header > div:first-child { display: grid; gap: 4px; }
+.diagnosis-panel > header span { font-size: 16px; font-weight: 650; color: var(--text-primary); }
+.diagnosis-status { color: var(--text-secondary); font-size: 12px; font-weight: 500; }
 .diagnosis-status.draft, .diagnosis-status.saving { color: var(--warning); }
 .diagnosis-status.saved { color: var(--success); }
 .diagnosis-status.error { color: var(--danger); }
-.action-feedback { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 18px); z-index: 80; margin: 0; padding: 11px 16px; transform: translateX(-50%); border: 1px solid var(--success); border-radius: 999px; color: #fff; background: color-mix(in srgb, var(--success) 88%, #111); box-shadow: 0 8px 30px rgba(0,0,0,.35); font-size: 12px; font-weight: 750; white-space: nowrap; pointer-events: none; }
-.diagnosis-panel > header { display: flex; align-items: start; justify-content: space-between; gap: 10px; }
-.diagnosis-panel > header div { display: grid; gap: 3px; }
-.diagnosis-panel > header span { font-size: 13px; font-weight: 750; color: var(--text-primary); }
-.diagnosis-panel small { color: var(--text-secondary); font-size: 10px; }
-.diagnosis-panel button, .diagnosis-panel select, .diagnosis-panel textarea { color: var(--text-primary); background: var(--bg-sidebar); border: 1px solid var(--border-default); border-radius: 7px; }
-.diagnosis-panel > header button { padding: 6px 9px; cursor: pointer; white-space: nowrap; }
-.diagnosis-actions { display: flex !important; grid-auto-flow: column; gap: 5px; }
+.diagnosis-actions { display: flex; align-items: center; gap: 4px; margin-left: auto; }
+.diagnosis-actions button, .independence-flags button, .method-note-link { min-height: 36px; padding: 8px; border: 0; border-radius: 6px; color: var(--text-secondary); background: transparent; font-size: 13px; cursor: pointer; }
+.diagnosis-actions button:hover, .independence-flags button:hover, .method-note-link:hover { background: var(--surface-hover, var(--bg-sidebar)); }
+.diagnosis-body { display: grid; gap: 8px; min-width: 0; }
 .independence-flags { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-.independence-flags button { padding: 7px 9px; cursor: pointer; }
-.independence-flags button.active { border-color: #d9a928; color: #d9a928; }
-.independence-flags span { font-size: 11px; color: #23b66f; }
-.independence-flags span.compromised { color: #d9a928; }
-.diagnosis-separation-note { margin: 0; padding: 7px 9px; border-left: 3px solid var(--accent); color: var(--text-secondary); background: color-mix(in srgb, var(--accent) 7%, transparent); font-size: 10px; }
-.asset-load-error { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 10px; min-height: 110px; padding: 16px; border: 1px dashed var(--danger); border-radius: 8px; color: var(--danger); background: color-mix(in srgb, var(--danger) 6%, var(--bg-surface)); }
-.asset-load-error button { min-height: 40px; padding: 8px 12px; border: 1px solid var(--danger); border-radius: 7px; color: var(--text-primary); background: var(--bg-sidebar); cursor: pointer; }
-.method-restart { display: grid; gap: 8px; padding: 10px; border: 1px solid color-mix(in srgb, #d9a928 45%, var(--border-default)); border-radius: 8px; background: color-mix(in srgb, #d9a928 6%, var(--bg-surface)); }
-.method-restart label { display: grid; gap: 5px; color: var(--text-secondary); font-size: 11px; }
-.method-restart input { min-width: 0; padding: 8px; color: var(--text-primary); background: var(--bg-sidebar); border: 1px solid var(--border-default); border-radius: 6px; }
-.error-picker { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
-.error-picker button { display: flex; align-items: center; gap: 7px; min-height: 38px; padding: 7px 9px; text-align: left; cursor: pointer; }
-.error-picker button b { min-width: 22px; font-size: 11px; }
-.error-picker button span { font-size: 11px; }
-.error-picker button.active { border-color: #d9a928; background: color-mix(in srgb, #d9a928 10%, var(--bg-surface)); }
-.error-picker button.primary { box-shadow: inset 3px 0 #d9a928; }
-.primary-help { margin: 0; font-size: 11px; color: var(--text-secondary); }
-.primary-help select { margin-left: 5px; padding: 5px; }
-.diagnosis-advanced { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 7px; }
-.diagnosis-advanced label { display: grid; gap: 5px; font-size: 10px; color: var(--text-secondary); }
-.diagnosis-advanced select { min-width: 0; padding: 7px 5px; }
-.diagnosis-advanced .correction-field { grid-column: 1 / -1; }
-.diagnosis-advanced textarea { min-height: 72px; padding: 8px; resize: vertical; }
-.diagnosis-panel > footer { display: flex; justify-content: space-between; gap: 8px; padding-top: 8px; border-top: 1px solid var(--border-default); font-size: 11px; }
-.save-diagnosis-edit { padding: 9px; border-color: #d9a928 !important; cursor: pointer; }
-.attempt-history { display: grid; gap: 5px; padding-top: 8px; border-top: 1px solid var(--border-default); }
-.attempt-history > button { display: grid; grid-template-columns: 1fr auto; gap: 8px; padding: 8px; text-align: left; cursor: pointer; }
-.attempt-history > button span { display: grid; gap: 3px; }
+.independence-flags button.active { color: var(--text-primary); background: var(--surface-selected, var(--bg-surface-active)); }
+.independence-flags span { font-size: 12px; color: var(--success); }
+.independence-flags span.compromised { color: var(--warning); }
+.primary-help { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0; font-size: 13px; color: var(--text-secondary); }
+.primary-help select, .diagnosis-advanced select, .page-turn-settings select { min-width: 0; max-width: 100%; min-height: 36px; padding: 4px 8px; border: 1px solid var(--border-default); border-radius: 6px; color: var(--text-primary); background: var(--bg-surface); font-size: 14px; }
+.diagnosis-advanced { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.diagnosis-advanced label { display: grid; gap: 8px; min-width: 0; font-size: 12px; color: var(--text-secondary); }
+.diagnosis-advanced select { width: 100%; }
+.diagnosis-body > footer { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; padding-top: 8px; color: var(--text-secondary); border-top: 1px solid var(--border-subtle); font-size: 12px; }
+.diagnosis-body > footer small { font-size: 12px; }
+.attempt-history { display: grid; gap: 4px; padding-top: 8px; border-top: 1px solid var(--border-subtle); }
+.attempt-history > button { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; min-height: 52px; padding: 8px; border: 0; border-radius: 6px; color: var(--text-primary); background: transparent; text-align: left; cursor: pointer; }
+.attempt-history > button:hover { background: var(--surface-hover, var(--bg-sidebar)); }
+.attempt-history > button span { display: grid; gap: 4px; }
 .attempt-history > button span:last-child { text-align: right; }
-.attempt-history p { margin: 4px 0; color: var(--text-secondary); font-size: 10px; }
-@media (max-width: 720px) { .diagnosis-advanced { grid-template-columns: 1fr; } .diagnosis-advanced .correction-field { grid-column: auto; } }
-@media (max-width: 900px) { .action-feedback { bottom: calc(env(safe-area-inset-bottom) + 78px); max-width: calc(100vw - 24px); white-space: normal; text-align: center; } }
-/* Compact diagnosis: two rows of error codes, without changing selection or autosave. */
-.diagnosis-panel { gap: 5px; padding: 6px; }
-.diagnosis-panel > header { align-items: center; gap: 5px; }
-.diagnosis-panel > header > div:first-child { display: flex; flex-wrap: wrap; align-items: center; gap: 3px 6px; min-width: 0; }
-.diagnosis-panel > header span { font-size: 11px; line-height: 1.2; }
-.diagnosis-status { margin-top: 0; font-size: 9px; }
-.diagnosis-panel > header button { min-height: 28px; padding: 3px 5px; font-size: 10px; border-radius: 5px; }
-.diagnosis-actions { flex-shrink: 0; gap: 3px; }
-.diagnosis-body { gap: 5px; }
-.independence-flags { gap: 4px; }
-.independence-flags button { min-height: 28px; padding: 3px 5px; font-size: 10px; }
-.independence-flags span { font-size: 10px; line-height: 1.25; }
-.error-picker { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 4px; }
-.error-picker button { min-width: 0; min-height: 40px; padding: 3px 2px; gap: 2px; flex-direction: column; justify-content: center; text-align: center; border-radius: 5px; }
-.error-picker button b { min-width: 0; font-size: 10px; line-height: 1.1; }
-.error-picker button span { font-size: 10px; line-height: 1.15; overflow-wrap: anywhere; }
-.diagnosis-advanced { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
-.diagnosis-advanced label { min-width: 0; gap: 2px; font-size: 9px; }
-.diagnosis-advanced select { width: 100%; min-height: 28px; padding: 3px 1px; font-size: 10px; }
-.primary-help { font-size: 10px; }
-.primary-help select { max-width: 75%; min-height: 28px; padding: 2px; }
-.diagnosis-body > footer { display: flex; flex-wrap: wrap; gap: 4px; font-size: 10px; }
+.attempt-history p, .attempt-history small { margin: 4px 0; color: var(--text-secondary); font-size: 12px; }
+.page-turn-settings { display: grid; gap: 8px; margin-top: 12px; padding: 12px 0; border-top: 1px solid var(--border-subtle); background: transparent; }
+.page-turn-settings > header { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+.page-turn-settings > header strong { color: var(--text-primary); font-size: 14px; }
+.page-turn-settings > header label { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; color: var(--text-secondary); font-size: 12px; }
+.page-turn-settings select { max-width: 180px; }
+.page-turn-settings-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
+.page-turn-settings-grid label { display: flex; align-items: center; gap: 8px; min-width: 0; min-height: 44px; padding: 8px; border-radius: 6px; color: var(--text-secondary); background: transparent; font-size: 13px; line-height: 1.4; cursor: pointer; }
+.page-turn-settings-grid label:has(input:checked) { color: var(--text-primary); background: var(--surface-selected, var(--bg-surface-active)); }
+.page-turn-settings-grid input { flex: none; width: 16px; height: 16px; margin: 0; accent-color: var(--accent); }
+.page-turn-settings > small { color: var(--text-secondary); font-size: 12px; line-height: 1.4; }
+.action-feedback { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 16px); z-index: 80; max-width: calc(100vw - 24px); margin: 0; padding: 12px 16px; transform: translateX(-50%); border: 1px solid var(--border-subtle); border-radius: 8px; color: var(--text-primary); background: var(--surface-elevated, var(--bg-surface)); box-shadow: 0 4px 16px #0002; font-size: 14px; pointer-events: none; }
+.asset-load-error { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 12px; min-height: 110px; padding: 16px; border: 1px dashed var(--danger); border-radius: 6px; color: var(--danger); background: var(--bg-surface); }
+.asset-load-error button { min-height: 44px; padding: 8px 12px; border: 0; border-radius: 6px; color: var(--text-primary); background: var(--surface-hover, var(--bg-sidebar)); cursor: pointer; }
+.method-restart { display: grid; gap: 8px; padding: 12px; border-inline-start: 2px solid var(--warning); }
+.method-restart label { display: grid; gap: 8px; color: var(--text-secondary); font-size: 13px; }
+.method-restart input { min-width: 0; padding: 8px; color: var(--text-primary); background: var(--bg-surface); border: 1px solid var(--border-default); border-radius: 6px; }
+.question-save-actions button { border: 0; color: var(--text-secondary); background: transparent; font-size: 13px; }
+.question-save-actions button.active, .question-save-actions button + button.active { border: 0; color: var(--text-primary); background: var(--surface-selected, var(--bg-surface-active)); }
+.question-save-actions button:hover:not(:disabled) { background: var(--surface-hover, var(--bg-sidebar)); }
+.question-topbar button { border: 0; background: transparent; font-size: 13px; }
+.question-topbar button:hover:not(:disabled) { background: var(--surface-hover, var(--bg-sidebar)); }
+.note-field, .note-field textarea { font-size: 14px; }
+.note-field summary { border: 0; background: transparent; }
+.note-field summary small, .note-controls small { font-size: 12px; }
+@media (pointer: coarse) { .diagnosis-actions button, .independence-flags button, .method-note-link, .primary-help select, .diagnosis-advanced select, .page-turn-settings select, .timing-recovery button, .save-note { min-height: 44px; } }
+@media (max-width: 480px) { .diagnosis-advanced { grid-template-columns: 1fr; } .page-turn-settings-grid { grid-template-columns: 1fr; } }
+@media (pointer: coarse) { .note-field textarea, .diagnosis-body select, .erratum-compose textarea, .erratum-compose select { font-size: 16px; } }
 </style>

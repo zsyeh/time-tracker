@@ -1,0 +1,7394 @@
+[
+  {
+    "path": "/ei/cockpit",
+    "scheme": "light",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "892 备考驾驶舱",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page cockpit-page",
+          "text": "892 备考驾驶舱Coverage, mastery, re"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "892 备考驾驶舱Coverage, mastery, re"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "892 备考驾驶舱Coverage, mastery, re"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "892 备考驾驶舱"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Coverage, mastery, retention a"
+        },
+        {
+          "tag": "A",
+          "cls": "header-action",
+          "text": "Practice →"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "official-exam-strip",
+          "text": "OFFICIAL SYLLABUS · 2026-11-12"
+        }
+      ]
+    },
+    "screenshot": "ei-cockpit-light-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/ei/circuit-selected?all=1",
+    "scheme": "light",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "电路严选",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page selected-collection exam-type-colours circuit-selected-page",
+          "text": "电路严选先练一阶换路、戴维南与相量，再补二阶、匹配和变压器。"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "电路严选先练一阶换路、戴维南与相量，再补二阶、匹配和变压器。"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "电路严选先练一阶换路、戴维南与相量，再补二阶、匹配和变压器。"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "电路严选"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "先练一阶换路、戴维南与相量，再补二阶、匹配和变压器。原题原记"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "primary-action",
+          "text": "开始／继续刷题 →"
+        },
+        {
+          "tag": "DETAILS",
+          "cls": "selected-notice",
+          "text": "题库说明排序采用你的备考优先级，不代表命题概率。节点法是综合"
+        }
+      ]
+    },
+    "screenshot": "ei-circuit-selected-light-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/ei/signal-selected?all=1",
+    "scheme": "light",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "信号严选",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page selected-collection exam-type-colours signal-selected-page",
+          "text": "信号严选先练 Z 变换、拉氏、傅里叶、卷积和系统函数；再补谱"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "信号严选先练 Z 变换、拉氏、傅里叶、卷积和系统函数；再补谱"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "信号严选先练 Z 变换、拉氏、傅里叶、卷积和系统函数；再补谱"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "信号严选"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "先练 Z 变换、拉氏、傅里叶、卷积和系统函数；再补谱、抽样与"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "primary-action",
+          "text": "开始／继续刷题 →"
+        },
+        {
+          "tag": "DETAILS",
+          "cls": "selected-notice",
+          "text": "题库说明排序采用你的备考优先级，不代表命题概率。傅里叶变换注"
+        }
+      ]
+    },
+    "screenshot": "ei-signal-selected-light-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/ei/analog-selected?all=1",
+    "scheme": "light",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "模电严选",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page selected-collection exam-type-colours analog-selected-page",
+          "text": "模电严选先练静态与小信号、深度负反馈和运放；再补差分、高频与"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "模电严选先练静态与小信号、深度负反馈和运放；再补差分、高频与"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "模电严选先练静态与小信号、深度负反馈和运放；再补差分、高频与"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "模电严选"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "先练静态与小信号、深度负反馈和运放；再补差分、高频与综合分析"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "primary-action",
+          "text": "开始／继续刷题 →"
+        },
+        {
+          "tag": "DETAILS",
+          "cls": "selected-notice",
+          "text": "题库说明排序采用你的备考优先级，不代表命题概率。静态＋动态是"
+        }
+      ]
+    },
+    "screenshot": "ei-analog-selected-light-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/ei/digital-selected?all=1",
+    "scheme": "light",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "数电严选",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page selected-collection exam-type-colours digital-selected-page",
+          "text": "数电严选先练组合逻辑分析／设计与同步时序分析，再补简单时序设"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "数电严选先练组合逻辑分析／设计与同步时序分析，再补简单时序设"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "数电严选先练组合逻辑分析／设计与同步时序分析，再补简单时序设"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "数电严选"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "先练组合逻辑分析／设计与同步时序分析，再补简单时序设计及中规"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "primary-action",
+          "text": "开始／继续刷题 →"
+        },
+        {
+          "tag": "DETAILS",
+          "cls": "selected-notice",
+          "text": "题库说明排序采用你的备考优先级，不代表命题概率。S/A/B/"
+        }
+      ]
+    },
+    "screenshot": "ei-digital-selected-light-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/ei/communication-selected?all=1",
+    "scheme": "light",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "通信严选",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page selected-collection exam-type-colours communication-selected-page",
+          "text": "通信严选先练无码间串扰、匹配滤波和 PCM／香农容量，再补模"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "通信严选先练无码间串扰、匹配滤波和 PCM／香农容量，再补模"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "通信严选先练无码间串扰、匹配滤波和 PCM／香农容量，再补模"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "通信严选"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "先练无码间串扰、匹配滤波和 PCM／香农容量，再补模拟与二进"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "primary-action",
+          "text": "开始／继续刷题 →"
+        },
+        {
+          "tag": "DETAILS",
+          "cls": "selected-notice",
+          "text": "题库说明排序采用你的备考优先级，不代表命题概率。接收误码率不"
+        }
+      ]
+    },
+    "screenshot": "ei-communication-selected-light-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/progress",
+    "scheme": "light",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "学习进度",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page progress-page",
+          "text": "学习进度数学二严选题的目标、工作量与趋势查看解题能力 →覆盖"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header progress-page-header",
+          "text": "学习进度数学二严选题的目标、工作量与趋势查看解题能力 →"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "学习进度数学二严选题的目标、工作量与趋势"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "学习进度"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "数学二严选题的目标、工作量与趋势"
+        },
+        {
+          "tag": "A",
+          "cls": "progress-diagnostics-link",
+          "text": "查看解题能力 →"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "→"
+        }
+      ]
+    },
+    "screenshot": "drill-progress-light-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/diagnostics",
+    "scheme": "light",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "Drill 数学 · 解题能力",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page diagnostic-page",
+          "text": "Drill 数学 · 解题能力区分“做过”与“能够独立做对”"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header diagnostic-header",
+          "text": "Drill 数学 · 解题能力区分“做过”与“能够独立做对”"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "Drill 数学 · 解题能力区分“做过”与“能够独立做对”"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "Drill 数学 · 解题能力"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "区分“做过”与“能够独立做对”；所有比例均显示真实样本量。"
+        },
+        {
+          "tag": "DIV",
+          "cls": "range",
+          "text": "7天14天30天自定应用"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "active",
+          "text": "7天"
+        }
+      ]
+    },
+    "screenshot": "drill-diagnostics-light-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/activity",
+    "scheme": "light",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "练习活跃度",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page activity-page",
+          "text": "练习活跃度Daily volume from July 20"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header activity-page-header",
+          "text": "练习活跃度Daily volume from July 20"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "练习活跃度Daily volume from July 20"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "练习活跃度"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Daily volume from July 20 thro"
+        },
+        {
+          "tag": "DIV",
+          "cls": "activity-legend",
+          "text": "LESSMORE"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "LESS"
+        }
+      ]
+    },
+    "screenshot": "drill-activity-light-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/book-activity",
+    "scheme": "light",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "书目打卡",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page activity-page book-checkin-page",
+          "text": "书目打卡Each book has its own July"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header activity-page-header",
+          "text": "书目打卡Each book has its own July"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "书目打卡Each book has its own July"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "书目打卡"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Each book has its own July 20–"
+        },
+        {
+          "tag": "DIV",
+          "cls": "activity-legend",
+          "text": "LESSMORE"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "LESS"
+        }
+      ]
+    },
+    "screenshot": "drill-book-activity-light-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/feel",
+    "scheme": "light",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "书目手感",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page feel-page",
+          "text": "书目手感Today is 0. Each inactive "
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "书目手感Today is 0. Each inactive "
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "书目手感Today is 0. Each inactive "
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "书目手感"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Today is 0. Each inactive day "
+        },
+        {
+          "tag": "DIV",
+          "cls": "feel-grid",
+          "text": "BOOK练习册 1 · 多元微分与积分-11 day wit"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "",
+          "text": "BOOK练习册 1 · 多元微分与积分-11 day wit"
+        }
+      ]
+    },
+    "screenshot": "drill-feel-light-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/papers",
+    "scheme": "light",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "Paper history",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page papers-page",
+          "text": "Paper historyEvery generated p"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "Paper historyEvery generated p"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "Paper historyEvery generated p"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "Paper history"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Every generated paper keeps it"
+        },
+        {
+          "tag": "A",
+          "cls": "primary-action",
+          "text": "New paper →"
+        },
+        {
+          "tag": "B",
+          "cls": "",
+          "text": "→"
+        }
+      ]
+    },
+    "screenshot": "drill-papers-light-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/papers/new",
+    "scheme": "light",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "Build a Math II paper",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page paper-new-page",
+          "text": "Build a Math II paperChoose on"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "Build a Math II paperChoose on"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "Build a Math II paperChoose on"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "Build a Math II paper"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Choose one mode. The system ha"
+        },
+        {
+          "tag": "A",
+          "cls": "quiet-link",
+          "text": "History"
+        },
+        {
+          "tag": "DIV",
+          "cls": "blueprint-grid",
+          "text": "standard标准训练180 min · 150 poin"
+        }
+      ]
+    },
+    "screenshot": "drill-papers-new-light-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/papers/22222222-2222-4222-8222-222222222222",
+    "scheme": "light",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": null,
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page paper-exam-page",
+          "text": "← Papers数学二 · 合成训练试卷1 / 24Shar"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "paper-exam-header",
+          "text": "← Papers数学二 · 合成训练试卷1 / 24Shar"
+        },
+        {
+          "tag": "A",
+          "cls": "",
+          "text": "← Papers"
+        },
+        {
+          "tag": "DIV",
+          "cls": "paper-exam-actions",
+          "text": "Share + answers0 min left"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "",
+          "text": "Share + answers"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "0 min left"
+        },
+        {
+          "tag": "DIV",
+          "cls": "paper-question-shell",
+          "text": "题目 1single choice · 5 pts设函数在给"
+        }
+      ]
+    },
+    "screenshot": "drill-papers-22222222-2222-4222-8222-222222222222-light-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/papers/22222222-2222-4222-8222-222222222222/review",
+    "scheme": "light",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "数学二 · 合成训练试卷",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page paper-review-page",
+          "text": "数学二 · 合成训练试卷Compare your work "
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "数学二 · 合成训练试卷Compare your work "
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "数学二 · 合成训练试卷Compare your work "
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "数学二 · 合成训练试卷"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Compare your work with the sou"
+        },
+        {
+          "tag": "DIV",
+          "cls": "paper-header-actions",
+          "text": "Share paper + answersQuestion "
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "",
+          "text": "Share paper + answers"
+        }
+      ]
+    },
+    "screenshot": "drill-papers-22222222-2222-4222-8222-222222222222-review-light-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/ei/selected-pdf-pages",
+    "scheme": "light",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "严选题 PDF 页码记录",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page pdf-page-import-view",
+          "text": "严选题 PDF 页码记录仅适用于五科严选题。标准题库不参与匹"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "严选题 PDF 页码记录仅适用于五科严选题。标准题库不参与匹"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "严选题 PDF 页码记录仅适用于五科严选题。标准题库不参与匹"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "严选题 PDF 页码记录"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "仅适用于五科严选题。标准题库不参与匹配，也不能通过此入口批量"
+        },
+        {
+          "tag": "ASIDE",
+          "cls": "selected-only-note",
+          "text": "严选题专用请选择科目，并分别输入题目册与题答对照册的页码。系"
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "严选题专用"
+        }
+      ]
+    },
+    "screenshot": "ei-selected-pdf-pages-light-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/ei/signal-formulas",
+    "scheme": "light",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "信号与系统公式复盘",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page formula-review-page",
+          "text": "信号与系统公式复盘四天循环第 1 天 · 约 15 分钟 ·"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "信号与系统公式复盘四天循环第 1 天 · 约 15 分钟 ·"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "信号与系统公式复盘四天循环第 1 天 · 约 15 分钟 ·"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "信号与系统公式复盘"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "四天循环第 1 天 · 约 15 分钟 · 固定公式库 1 "
+        },
+        {
+          "tag": "A",
+          "cls": "selected-link",
+          "text": "回到变换严选 →"
+        },
+        {
+          "tag": "NAV",
+          "cls": "track-switch",
+          "text": "信号与系统独立四日循环其他四科电路 · 模电 · 数电 · "
+        }
+      ]
+    },
+    "screenshot": "ei-signal-formulas-light-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/today",
+    "scheme": "light",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "今日",
+      "overflow": [
+        {
+          "tag": "DIV",
+          "cls": "today-view",
+          "text": "工作区 /今日11月12日开始学习2026 学习目标2026"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "application-page-header",
+          "text": "工作区 /今日11月12日开始学习"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-title",
+          "text": "工作区 /今日11月12日"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "今日"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-actions",
+          "text": "开始学习"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "header-action",
+          "text": "开始学习"
+        },
+        {
+          "tag": "DIV",
+          "cls": "today-countdown-strip",
+          "text": "2026 学习目标2026年12月19日37天"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "2026 学习目标2026年12月19日"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "2026 学习目标"
+        },
+        {
+          "tag": "TIME",
+          "cls": "",
+          "text": "2026年12月19日"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "37天"
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "37"
+        }
+      ]
+    },
+    "screenshot": "today-light-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/trends",
+    "scheme": "light",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "趋势",
+      "overflow": [
+        {
+          "tag": "DIV",
+          "cls": "view-stack trends-page",
+          "text": "工作区 /趋势最近 60 天7D30D60D180D时长首次"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "application-page-header",
+          "text": "工作区 /趋势最近 60 天7D30D60D180D"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-title",
+          "text": "工作区 /趋势最近 60 天"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "趋势"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-actions",
+          "text": "7D30D60D180D"
+        },
+        {
+          "tag": "DIV",
+          "cls": "header-segmented",
+          "text": "7D30D60D180D"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "",
+          "text": "7D"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "",
+          "text": "30D"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "active",
+          "text": "60D"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "",
+          "text": "180D"
+        },
+        {
+          "tag": "DIV",
+          "cls": "trend-analytics-grid",
+          "text": "时长首次开始每日 · 最近 60 天View chart d"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "panel chart-panel",
+          "text": "时长首次开始每日 · 最近 60 天View chart d"
+        }
+      ]
+    },
+    "screenshot": "trends-light-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/sessions",
+    "scheme": "light",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "学习记录",
+      "overflow": [
+        {
+          "tag": "DIV",
+          "cls": "workspace-view sessions-view",
+          "text": "工作区 /学习记录共 6 条Markdown only全部记"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "application-page-header",
+          "text": "工作区 /学习记录共 6 条"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-title",
+          "text": "工作区 /学习记录共 6 条"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "学习记录"
+        },
+        {
+          "tag": "DIV",
+          "cls": "page-toolbar",
+          "text": "Markdown only全部记录筛选显示视图"
+        },
+        {
+          "tag": "DIV",
+          "cls": "page-toolbar-primary",
+          "text": "Markdown only全部记录"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "toolbar-chip active",
+          "text": "Markdown only"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "Markdown only"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "toolbar-chip active",
+          "text": "全部记录"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "全部记录"
+        },
+        {
+          "tag": "DIV",
+          "cls": "page-toolbar-actions",
+          "text": "筛选显示视图"
+        },
+        {
+          "tag": "LABEL",
+          "cls": "toolbar-search",
+          "text": ""
+        }
+      ]
+    },
+    "screenshot": "sessions-light-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/issues",
+    "scheme": "light",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "问题",
+      "overflow": [
+        {
+          "tag": "DIV",
+          "cls": "workspace-view issues-view",
+          "text": "工作区 /问题2 个未解决 · 1 个已解决新建问题未解决2"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "application-page-header",
+          "text": "工作区 /问题2 个未解决 · 1 个已解决新建问题"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-title",
+          "text": "工作区 /问题2 个未解决 · 1 个已解决"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "问题"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-actions",
+          "text": "新建问题"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "el-button el-button--primary",
+          "text": "新建问题"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "新建问题"
+        },
+        {
+          "tag": "DIV",
+          "cls": "page-toolbar",
+          "text": "未解决2已解决1全部3筛选显示视图"
+        },
+        {
+          "tag": "DIV",
+          "cls": "page-toolbar-primary",
+          "text": "未解决2已解决1全部3"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "toolbar-chip active",
+          "text": "未解决2"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "未解决"
+        },
+        {
+          "tag": "B",
+          "cls": "",
+          "text": "2"
+        }
+      ]
+    },
+    "screenshot": "issues-light-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/settings",
+    "scheme": "light",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "设置",
+      "overflow": [
+        {
+          "tag": "DIV",
+          "cls": "view-stack settings-page",
+          "text": "工作区 /设置偏好、权限与数据设置GeneralAppear"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "application-page-header",
+          "text": "工作区 /设置偏好、权限与数据"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-title",
+          "text": "工作区 /设置偏好、权限与数据"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "设置"
+        },
+        {
+          "tag": "LABEL",
+          "cls": "settings-mobile-section",
+          "text": "设置GeneralAppearancePrivacy and"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "设置"
+        },
+        {
+          "tag": "SELECT",
+          "cls": "",
+          "text": "GeneralAppearancePrivacy and s"
+        },
+        {
+          "tag": "DIV",
+          "cls": "settings-layout",
+          "text": "工作区通用外观内容组织账户安全访问邀请码数据自动化集成Gen"
+        },
+        {
+          "tag": "DIV",
+          "cls": "settings-content",
+          "text": "GeneralWorkspace defaultsIdent"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "settings-category",
+          "text": "GeneralWorkspace defaultsIdent"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "settings-category-header",
+          "text": "GeneralWorkspace defaultsIdent"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "GeneralWorkspace defaults"
+        }
+      ]
+    },
+    "screenshot": "settings-light-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/sessions/22222222-2222-4222-8222-222222222222",
+    "scheme": "light",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "多元微分 · 隐函数与偏导数",
+      "overflow": [
+        {
+          "tag": "DIV",
+          "cls": "workspace-view session-article-view",
+          "text": "Sessions /多元微分 · 隐函数与偏导数Mathem"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "application-page-header",
+          "text": "Sessions /多元微分 · 隐函数与偏导数Mathem"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-title",
+          "text": "Sessions /多元微分 · 隐函数与偏导数Mathem"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "多元微分 · 隐函数与偏导数"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-actions",
+          "text": " SessionsEdit"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "header-action",
+          "text": " Sessions"
+        },
+        {
+          "tag": "I",
+          "cls": "el-icon",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "el-button",
+          "text": "Edit"
+        },
+        {
+          "tag": "I",
+          "cls": "el-icon",
+          "text": ""
+        }
+      ]
+    },
+    "screenshot": "sessions-22222222-2222-4222-8222-222222222222-light-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/share/synthetic-public-token",
+    "scheme": "light",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "多元微分 · 隐函数与偏导数",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "public-share-header",
+          "text": "LLearning OSSHARED ARTICLEREAD"
+        },
+        {
+          "tag": "A",
+          "cls": "brand",
+          "text": "LLearning OSSHARED ARTICLE"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "brand-mark",
+          "text": "L"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "Learning OSSHARED ARTICLE"
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Learning OS"
+        },
+        {
+          "tag": "SMALL",
+          "cls": "",
+          "text": "SHARED ARTICLE"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "READ ONLY"
+        },
+        {
+          "tag": "ARTICLE",
+          "cls": "panel public-article",
+          "text": "PUBLIC SESSION ARTICLE多元微分 · 隐"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "",
+          "text": "PUBLIC SESSION ARTICLE多元微分 · 隐"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "eyebrow",
+          "text": "PUBLIC SESSION ARTICLE"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "多元微分 · 隐函数与偏导数"
+        },
+        {
+          "tag": "DIV",
+          "cls": "public-article-meta",
+          "text": "Mathematics11/11/2026, 09:00:0"
+        }
+      ]
+    },
+    "screenshot": "share-synthetic-public-token-light-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/ei/cockpit",
+    "scheme": "light",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "892 备考驾驶舱",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page cockpit-page",
+          "text": "892 备考驾驶舱Coverage, mastery, re"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "892 备考驾驶舱Coverage, mastery, re"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "892 备考驾驶舱Coverage, mastery, re"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "892 备考驾驶舱"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Coverage, mastery, retention a"
+        },
+        {
+          "tag": "A",
+          "cls": "header-action",
+          "text": "Practice →"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "official-exam-strip",
+          "text": "OFFICIAL SYLLABUS · 2026-11-12"
+        }
+      ]
+    },
+    "screenshot": "ei-cockpit-light-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/ei/circuit-selected?all=1",
+    "scheme": "light",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "电路严选",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page selected-collection exam-type-colours circuit-selected-page",
+          "text": "电路严选先练一阶换路、戴维南与相量，再补二阶、匹配和变压器。"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "电路严选先练一阶换路、戴维南与相量，再补二阶、匹配和变压器。"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "电路严选先练一阶换路、戴维南与相量，再补二阶、匹配和变压器。"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "电路严选"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "先练一阶换路、戴维南与相量，再补二阶、匹配和变压器。原题原记"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "primary-action",
+          "text": "开始／继续刷题 →"
+        },
+        {
+          "tag": "DETAILS",
+          "cls": "selected-notice",
+          "text": "题库说明排序采用你的备考优先级，不代表命题概率。节点法是综合"
+        }
+      ]
+    },
+    "screenshot": "ei-circuit-selected-light-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/ei/signal-selected?all=1",
+    "scheme": "light",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "信号严选",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page selected-collection exam-type-colours signal-selected-page",
+          "text": "信号严选先练 Z 变换、拉氏、傅里叶、卷积和系统函数；再补谱"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "信号严选先练 Z 变换、拉氏、傅里叶、卷积和系统函数；再补谱"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "信号严选先练 Z 变换、拉氏、傅里叶、卷积和系统函数；再补谱"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "信号严选"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "先练 Z 变换、拉氏、傅里叶、卷积和系统函数；再补谱、抽样与"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "primary-action",
+          "text": "开始／继续刷题 →"
+        },
+        {
+          "tag": "DETAILS",
+          "cls": "selected-notice",
+          "text": "题库说明排序采用你的备考优先级，不代表命题概率。傅里叶变换注"
+        }
+      ]
+    },
+    "screenshot": "ei-signal-selected-light-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/ei/analog-selected?all=1",
+    "scheme": "light",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "模电严选",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page selected-collection exam-type-colours analog-selected-page",
+          "text": "模电严选先练静态与小信号、深度负反馈和运放；再补差分、高频与"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "模电严选先练静态与小信号、深度负反馈和运放；再补差分、高频与"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "模电严选先练静态与小信号、深度负反馈和运放；再补差分、高频与"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "模电严选"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "先练静态与小信号、深度负反馈和运放；再补差分、高频与综合分析"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "primary-action",
+          "text": "开始／继续刷题 →"
+        },
+        {
+          "tag": "DETAILS",
+          "cls": "selected-notice",
+          "text": "题库说明排序采用你的备考优先级，不代表命题概率。静态＋动态是"
+        }
+      ]
+    },
+    "screenshot": "ei-analog-selected-light-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/ei/digital-selected?all=1",
+    "scheme": "light",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "数电严选",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page selected-collection exam-type-colours digital-selected-page",
+          "text": "数电严选先练组合逻辑分析／设计与同步时序分析，再补简单时序设"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "数电严选先练组合逻辑分析／设计与同步时序分析，再补简单时序设"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "数电严选先练组合逻辑分析／设计与同步时序分析，再补简单时序设"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "数电严选"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "先练组合逻辑分析／设计与同步时序分析，再补简单时序设计及中规"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "primary-action",
+          "text": "开始／继续刷题 →"
+        },
+        {
+          "tag": "DETAILS",
+          "cls": "selected-notice",
+          "text": "题库说明排序采用你的备考优先级，不代表命题概率。S/A/B/"
+        }
+      ]
+    },
+    "screenshot": "ei-digital-selected-light-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/ei/communication-selected?all=1",
+    "scheme": "light",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "通信严选",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page selected-collection exam-type-colours communication-selected-page",
+          "text": "通信严选先练无码间串扰、匹配滤波和 PCM／香农容量，再补模"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "通信严选先练无码间串扰、匹配滤波和 PCM／香农容量，再补模"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "通信严选先练无码间串扰、匹配滤波和 PCM／香农容量，再补模"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "通信严选"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "先练无码间串扰、匹配滤波和 PCM／香农容量，再补模拟与二进"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "primary-action",
+          "text": "开始／继续刷题 →"
+        },
+        {
+          "tag": "DETAILS",
+          "cls": "selected-notice",
+          "text": "题库说明排序采用你的备考优先级，不代表命题概率。接收误码率不"
+        }
+      ]
+    },
+    "screenshot": "ei-communication-selected-light-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/progress",
+    "scheme": "light",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "学习进度",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page progress-page",
+          "text": "学习进度数学二严选题的目标、工作量与趋势查看解题能力 →覆盖"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header progress-page-header",
+          "text": "学习进度数学二严选题的目标、工作量与趋势查看解题能力 →"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "学习进度数学二严选题的目标、工作量与趋势"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "学习进度"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "数学二严选题的目标、工作量与趋势"
+        },
+        {
+          "tag": "A",
+          "cls": "progress-diagnostics-link",
+          "text": "查看解题能力 →"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "→"
+        }
+      ]
+    },
+    "screenshot": "drill-progress-light-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/diagnostics",
+    "scheme": "light",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "Drill 数学 · 解题能力",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page diagnostic-page",
+          "text": "Drill 数学 · 解题能力区分“做过”与“能够独立做对”"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header diagnostic-header",
+          "text": "Drill 数学 · 解题能力区分“做过”与“能够独立做对”"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "Drill 数学 · 解题能力区分“做过”与“能够独立做对”"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "Drill 数学 · 解题能力"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "区分“做过”与“能够独立做对”；所有比例均显示真实样本量。"
+        },
+        {
+          "tag": "DIV",
+          "cls": "range",
+          "text": "7天14天30天自定应用"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "active",
+          "text": "7天"
+        }
+      ]
+    },
+    "screenshot": "drill-diagnostics-light-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/activity",
+    "scheme": "light",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "练习活跃度",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page activity-page",
+          "text": "练习活跃度Daily volume from July 20"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header activity-page-header",
+          "text": "练习活跃度Daily volume from July 20"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "练习活跃度Daily volume from July 20"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "练习活跃度"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Daily volume from July 20 thro"
+        },
+        {
+          "tag": "DIV",
+          "cls": "activity-legend",
+          "text": "LESSMORE"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "LESS"
+        }
+      ]
+    },
+    "screenshot": "drill-activity-light-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/book-activity",
+    "scheme": "light",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "书目打卡",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page activity-page book-checkin-page",
+          "text": "书目打卡Each book has its own July"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header activity-page-header",
+          "text": "书目打卡Each book has its own July"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "书目打卡Each book has its own July"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "书目打卡"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Each book has its own July 20–"
+        },
+        {
+          "tag": "DIV",
+          "cls": "activity-legend",
+          "text": "LESSMORE"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "LESS"
+        }
+      ]
+    },
+    "screenshot": "drill-book-activity-light-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/feel",
+    "scheme": "light",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "书目手感",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page feel-page",
+          "text": "书目手感Today is 0. Each inactive "
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "书目手感Today is 0. Each inactive "
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "书目手感Today is 0. Each inactive "
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "书目手感"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Today is 0. Each inactive day "
+        },
+        {
+          "tag": "DIV",
+          "cls": "feel-grid",
+          "text": "BOOK练习册 1 · 多元微分与积分-11 day wit"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "",
+          "text": "BOOK练习册 1 · 多元微分与积分-11 day wit"
+        }
+      ]
+    },
+    "screenshot": "drill-feel-light-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/papers",
+    "scheme": "light",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "Paper history",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page papers-page",
+          "text": "Paper historyEvery generated p"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "Paper historyEvery generated p"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "Paper historyEvery generated p"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "Paper history"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Every generated paper keeps it"
+        },
+        {
+          "tag": "A",
+          "cls": "primary-action",
+          "text": "New paper →"
+        },
+        {
+          "tag": "B",
+          "cls": "",
+          "text": "→"
+        }
+      ]
+    },
+    "screenshot": "drill-papers-light-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/papers/new",
+    "scheme": "light",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "Build a Math II paper",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page paper-new-page",
+          "text": "Build a Math II paperChoose on"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "Build a Math II paperChoose on"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "Build a Math II paperChoose on"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "Build a Math II paper"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Choose one mode. The system ha"
+        },
+        {
+          "tag": "A",
+          "cls": "quiet-link",
+          "text": "History"
+        },
+        {
+          "tag": "DIV",
+          "cls": "blueprint-grid",
+          "text": "standard标准训练180 min · 150 poin"
+        }
+      ]
+    },
+    "screenshot": "drill-papers-new-light-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/papers/22222222-2222-4222-8222-222222222222",
+    "scheme": "light",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": null,
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page paper-exam-page",
+          "text": "← Papers数学二 · 合成训练试卷1 / 24Shar"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "paper-exam-header",
+          "text": "← Papers数学二 · 合成训练试卷1 / 24Shar"
+        },
+        {
+          "tag": "A",
+          "cls": "",
+          "text": "← Papers"
+        },
+        {
+          "tag": "DIV",
+          "cls": "paper-exam-title",
+          "text": "数学二 · 合成训练试卷1 / 24"
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "数学二 · 合成训练试卷"
+        },
+        {
+          "tag": "SMALL",
+          "cls": "",
+          "text": "1 / 24"
+        },
+        {
+          "tag": "DIV",
+          "cls": "paper-exam-actions",
+          "text": "Share + answers0 min left"
+        }
+      ]
+    },
+    "screenshot": "drill-papers-22222222-2222-4222-8222-222222222222-light-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/papers/22222222-2222-4222-8222-222222222222/review",
+    "scheme": "light",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "数学二 · 合成训练试卷",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page paper-review-page",
+          "text": "数学二 · 合成训练试卷Compare your work "
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "数学二 · 合成训练试卷Compare your work "
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "数学二 · 合成训练试卷Compare your work "
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "数学二 · 合成训练试卷"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Compare your work with the sou"
+        },
+        {
+          "tag": "DIV",
+          "cls": "paper-header-actions",
+          "text": "Share paper + answersQuestion "
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "",
+          "text": "Share paper + answers"
+        }
+      ]
+    },
+    "screenshot": "drill-papers-22222222-2222-4222-8222-222222222222-review-light-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/ei/selected-pdf-pages",
+    "scheme": "light",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "严选题 PDF 页码记录",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page pdf-page-import-view",
+          "text": "严选题 PDF 页码记录仅适用于五科严选题。标准题库不参与匹"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "严选题 PDF 页码记录仅适用于五科严选题。标准题库不参与匹"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "严选题 PDF 页码记录仅适用于五科严选题。标准题库不参与匹"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "严选题 PDF 页码记录"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "仅适用于五科严选题。标准题库不参与匹配，也不能通过此入口批量"
+        },
+        {
+          "tag": "ASIDE",
+          "cls": "selected-only-note",
+          "text": "严选题专用请选择科目，并分别输入题目册与题答对照册的页码。系"
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "严选题专用"
+        }
+      ]
+    },
+    "screenshot": "ei-selected-pdf-pages-light-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/ei/signal-formulas",
+    "scheme": "light",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "信号与系统公式复盘",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page formula-review-page",
+          "text": "信号与系统公式复盘四天循环第 1 天 · 约 15 分钟 ·"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "信号与系统公式复盘四天循环第 1 天 · 约 15 分钟 ·"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "信号与系统公式复盘四天循环第 1 天 · 约 15 分钟 ·"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "信号与系统公式复盘"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "四天循环第 1 天 · 约 15 分钟 · 固定公式库 1 "
+        },
+        {
+          "tag": "A",
+          "cls": "selected-link",
+          "text": "回到变换严选 →"
+        },
+        {
+          "tag": "NAV",
+          "cls": "track-switch",
+          "text": "信号与系统独立四日循环其他四科电路 · 模电 · 数电 · "
+        }
+      ]
+    },
+    "screenshot": "ei-signal-formulas-light-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/today",
+    "scheme": "light",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "今日",
+      "overflow": [
+        {
+          "tag": "DIV",
+          "cls": "today-view",
+          "text": "工作区 /今日11月12日开始学习2026 学习目标2026"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "application-page-header",
+          "text": "工作区 /今日11月12日开始学习"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-title",
+          "text": "工作区 /今日11月12日"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "application-page-context",
+          "text": "工作区 /"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "今日"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "11月12日"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-actions",
+          "text": "开始学习"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "header-action",
+          "text": "开始学习"
+        },
+        {
+          "tag": "DIV",
+          "cls": "today-countdown-strip",
+          "text": "2026 学习目标2026年12月19日37天"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "2026 学习目标2026年12月19日"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "2026 学习目标"
+        },
+        {
+          "tag": "TIME",
+          "cls": "",
+          "text": "2026年12月19日"
+        }
+      ]
+    },
+    "screenshot": "today-light-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/trends",
+    "scheme": "light",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "趋势",
+      "overflow": [
+        {
+          "tag": "DIV",
+          "cls": "view-stack trends-page",
+          "text": "工作区 /趋势最近 60 天7D30D60D180D时长首次"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "application-page-header",
+          "text": "工作区 /趋势最近 60 天7D30D60D180D"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-title",
+          "text": "工作区 /趋势最近 60 天"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "application-page-context",
+          "text": "工作区 /"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "趋势"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "最近 60 天"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-actions",
+          "text": "7D30D60D180D"
+        },
+        {
+          "tag": "DIV",
+          "cls": "header-segmented",
+          "text": "7D30D60D180D"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "",
+          "text": "7D"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "",
+          "text": "30D"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "active",
+          "text": "60D"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "",
+          "text": "180D"
+        }
+      ]
+    },
+    "screenshot": "trends-light-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/sessions",
+    "scheme": "light",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "学习记录",
+      "overflow": [
+        {
+          "tag": "DIV",
+          "cls": "workspace-view sessions-view",
+          "text": "工作区 /学习记录共 6 条Markdown only全部记"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "application-page-header",
+          "text": "工作区 /学习记录共 6 条"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-title",
+          "text": "工作区 /学习记录共 6 条"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "application-page-context",
+          "text": "工作区 /"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "学习记录"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "共 6 条"
+        },
+        {
+          "tag": "DIV",
+          "cls": "page-toolbar",
+          "text": "Markdown only全部记录筛选显示视图"
+        },
+        {
+          "tag": "DIV",
+          "cls": "page-toolbar-primary",
+          "text": "Markdown only全部记录"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "toolbar-chip active",
+          "text": "Markdown only"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "Markdown only"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "toolbar-chip active",
+          "text": "全部记录"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "全部记录"
+        }
+      ]
+    },
+    "screenshot": "sessions-light-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/issues",
+    "scheme": "light",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "问题",
+      "overflow": [
+        {
+          "tag": "DIV",
+          "cls": "workspace-view issues-view",
+          "text": "工作区 /问题2 个未解决 · 1 个已解决新建问题未解决2"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "application-page-header",
+          "text": "工作区 /问题2 个未解决 · 1 个已解决新建问题"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-title",
+          "text": "工作区 /问题2 个未解决 · 1 个已解决"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "application-page-context",
+          "text": "工作区 /"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "问题"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "2 个未解决 · 1 个已解决"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-actions",
+          "text": "新建问题"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "el-button el-button--primary",
+          "text": "新建问题"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "新建问题"
+        },
+        {
+          "tag": "DIV",
+          "cls": "page-toolbar",
+          "text": "未解决2已解决1全部3筛选显示视图"
+        },
+        {
+          "tag": "DIV",
+          "cls": "page-toolbar-primary",
+          "text": "未解决2已解决1全部3"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "toolbar-chip active",
+          "text": "未解决2"
+        }
+      ]
+    },
+    "screenshot": "issues-light-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/settings",
+    "scheme": "light",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "设置",
+      "overflow": [
+        {
+          "tag": "DIV",
+          "cls": "view-stack settings-page",
+          "text": "工作区 /设置偏好、权限与数据设置GeneralAppear"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "application-page-header",
+          "text": "工作区 /设置偏好、权限与数据"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-title",
+          "text": "工作区 /设置偏好、权限与数据"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "application-page-context",
+          "text": "工作区 /"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "设置"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "偏好、权限与数据"
+        },
+        {
+          "tag": "DIV",
+          "cls": "settings-layout",
+          "text": "工作区通用外观内容组织账户安全访问邀请码数据自动化集成Gen"
+        },
+        {
+          "tag": "NAV",
+          "cls": "settings-index",
+          "text": "工作区通用外观内容组织账户安全访问邀请码数据自动化集成"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "工作区"
+        },
+        {
+          "tag": "A",
+          "cls": "",
+          "text": "通用"
+        },
+        {
+          "tag": "A",
+          "cls": "",
+          "text": "外观"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "内容"
+        }
+      ]
+    },
+    "screenshot": "settings-light-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/sessions/22222222-2222-4222-8222-222222222222",
+    "scheme": "light",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "多元微分 · 隐函数与偏导数",
+      "overflow": [
+        {
+          "tag": "DIV",
+          "cls": "workspace-view session-article-view",
+          "text": "Sessions /多元微分 · 隐函数与偏导数Mathem"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "application-page-header",
+          "text": "Sessions /多元微分 · 隐函数与偏导数Mathem"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-title",
+          "text": "Sessions /多元微分 · 隐函数与偏导数Mathem"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "application-page-context",
+          "text": "Sessions /"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "多元微分 · 隐函数与偏导数"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "Mathematics · 数学 / 微积分 / 多元微分"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-actions",
+          "text": " SessionsEdit"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "header-action",
+          "text": " Sessions"
+        },
+        {
+          "tag": "I",
+          "cls": "el-icon",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        }
+      ]
+    },
+    "screenshot": "sessions-22222222-2222-4222-8222-222222222222-light-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/share/synthetic-public-token",
+    "scheme": "light",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "多元微分 · 隐函数与偏导数",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "public-share-header",
+          "text": "LLearning OSSHARED ARTICLEREAD"
+        },
+        {
+          "tag": "A",
+          "cls": "brand",
+          "text": "LLearning OSSHARED ARTICLE"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "brand-mark",
+          "text": "L"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "Learning OSSHARED ARTICLE"
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Learning OS"
+        },
+        {
+          "tag": "SMALL",
+          "cls": "",
+          "text": "SHARED ARTICLE"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "READ ONLY"
+        },
+        {
+          "tag": "ARTICLE",
+          "cls": "panel public-article",
+          "text": "PUBLIC SESSION ARTICLE多元微分 · 隐"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "",
+          "text": "PUBLIC SESSION ARTICLE多元微分 · 隐"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "eyebrow",
+          "text": "PUBLIC SESSION ARTICLE"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "多元微分 · 隐函数与偏导数"
+        },
+        {
+          "tag": "DIV",
+          "cls": "public-article-meta",
+          "text": "Mathematics11/11/2026, 09:00:0"
+        }
+      ]
+    },
+    "screenshot": "share-synthetic-public-token-light-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/ei/cockpit",
+    "scheme": "dark",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "892 备考驾驶舱",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page cockpit-page",
+          "text": "892 备考驾驶舱Coverage, mastery, re"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "892 备考驾驶舱Coverage, mastery, re"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "892 备考驾驶舱Coverage, mastery, re"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "892 备考驾驶舱"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Coverage, mastery, retention a"
+        },
+        {
+          "tag": "A",
+          "cls": "header-action",
+          "text": "Practice →"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "official-exam-strip",
+          "text": "OFFICIAL SYLLABUS · 2026-11-12"
+        }
+      ]
+    },
+    "screenshot": "ei-cockpit-dark-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/ei/circuit-selected?all=1",
+    "scheme": "dark",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "电路严选",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page selected-collection exam-type-colours circuit-selected-page",
+          "text": "电路严选先练一阶换路、戴维南与相量，再补二阶、匹配和变压器。"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "电路严选先练一阶换路、戴维南与相量，再补二阶、匹配和变压器。"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "电路严选先练一阶换路、戴维南与相量，再补二阶、匹配和变压器。"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "电路严选"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "先练一阶换路、戴维南与相量，再补二阶、匹配和变压器。原题原记"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "primary-action",
+          "text": "开始／继续刷题 →"
+        },
+        {
+          "tag": "DETAILS",
+          "cls": "selected-notice",
+          "text": "题库说明排序采用你的备考优先级，不代表命题概率。节点法是综合"
+        }
+      ]
+    },
+    "screenshot": "ei-circuit-selected-dark-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/ei/signal-selected?all=1",
+    "scheme": "dark",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "信号严选",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page selected-collection exam-type-colours signal-selected-page",
+          "text": "信号严选先练 Z 变换、拉氏、傅里叶、卷积和系统函数；再补谱"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "信号严选先练 Z 变换、拉氏、傅里叶、卷积和系统函数；再补谱"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "信号严选先练 Z 变换、拉氏、傅里叶、卷积和系统函数；再补谱"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "信号严选"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "先练 Z 变换、拉氏、傅里叶、卷积和系统函数；再补谱、抽样与"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "primary-action",
+          "text": "开始／继续刷题 →"
+        },
+        {
+          "tag": "DETAILS",
+          "cls": "selected-notice",
+          "text": "题库说明排序采用你的备考优先级，不代表命题概率。傅里叶变换注"
+        }
+      ]
+    },
+    "screenshot": "ei-signal-selected-dark-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/ei/analog-selected?all=1",
+    "scheme": "dark",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "模电严选",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page selected-collection exam-type-colours analog-selected-page",
+          "text": "模电严选先练静态与小信号、深度负反馈和运放；再补差分、高频与"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "模电严选先练静态与小信号、深度负反馈和运放；再补差分、高频与"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "模电严选先练静态与小信号、深度负反馈和运放；再补差分、高频与"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "模电严选"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "先练静态与小信号、深度负反馈和运放；再补差分、高频与综合分析"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "primary-action",
+          "text": "开始／继续刷题 →"
+        },
+        {
+          "tag": "DETAILS",
+          "cls": "selected-notice",
+          "text": "题库说明排序采用你的备考优先级，不代表命题概率。静态＋动态是"
+        }
+      ]
+    },
+    "screenshot": "ei-analog-selected-dark-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/ei/digital-selected?all=1",
+    "scheme": "dark",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "数电严选",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page selected-collection exam-type-colours digital-selected-page",
+          "text": "数电严选先练组合逻辑分析／设计与同步时序分析，再补简单时序设"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "数电严选先练组合逻辑分析／设计与同步时序分析，再补简单时序设"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "数电严选先练组合逻辑分析／设计与同步时序分析，再补简单时序设"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "数电严选"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "先练组合逻辑分析／设计与同步时序分析，再补简单时序设计及中规"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "primary-action",
+          "text": "开始／继续刷题 →"
+        },
+        {
+          "tag": "DETAILS",
+          "cls": "selected-notice",
+          "text": "题库说明排序采用你的备考优先级，不代表命题概率。S/A/B/"
+        }
+      ]
+    },
+    "screenshot": "ei-digital-selected-dark-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/ei/communication-selected?all=1",
+    "scheme": "dark",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "通信严选",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page selected-collection exam-type-colours communication-selected-page",
+          "text": "通信严选先练无码间串扰、匹配滤波和 PCM／香农容量，再补模"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "通信严选先练无码间串扰、匹配滤波和 PCM／香农容量，再补模"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "通信严选先练无码间串扰、匹配滤波和 PCM／香农容量，再补模"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "通信严选"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "先练无码间串扰、匹配滤波和 PCM／香农容量，再补模拟与二进"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "primary-action",
+          "text": "开始／继续刷题 →"
+        },
+        {
+          "tag": "DETAILS",
+          "cls": "selected-notice",
+          "text": "题库说明排序采用你的备考优先级，不代表命题概率。接收误码率不"
+        }
+      ]
+    },
+    "screenshot": "ei-communication-selected-dark-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/progress",
+    "scheme": "dark",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "学习进度",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page progress-page",
+          "text": "学习进度数学二严选题的目标、工作量与趋势查看解题能力 →覆盖"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header progress-page-header",
+          "text": "学习进度数学二严选题的目标、工作量与趋势查看解题能力 →"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "学习进度数学二严选题的目标、工作量与趋势"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "学习进度"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "数学二严选题的目标、工作量与趋势"
+        },
+        {
+          "tag": "A",
+          "cls": "progress-diagnostics-link",
+          "text": "查看解题能力 →"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "→"
+        }
+      ]
+    },
+    "screenshot": "drill-progress-dark-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/diagnostics",
+    "scheme": "dark",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "Drill 数学 · 解题能力",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page diagnostic-page",
+          "text": "Drill 数学 · 解题能力区分“做过”与“能够独立做对”"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header diagnostic-header",
+          "text": "Drill 数学 · 解题能力区分“做过”与“能够独立做对”"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "Drill 数学 · 解题能力区分“做过”与“能够独立做对”"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "Drill 数学 · 解题能力"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "区分“做过”与“能够独立做对”；所有比例均显示真实样本量。"
+        },
+        {
+          "tag": "DIV",
+          "cls": "range",
+          "text": "7天14天30天自定应用"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "active",
+          "text": "7天"
+        }
+      ]
+    },
+    "screenshot": "drill-diagnostics-dark-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/activity",
+    "scheme": "dark",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "练习活跃度",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page activity-page",
+          "text": "练习活跃度Daily volume from July 20"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header activity-page-header",
+          "text": "练习活跃度Daily volume from July 20"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "练习活跃度Daily volume from July 20"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "练习活跃度"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Daily volume from July 20 thro"
+        },
+        {
+          "tag": "DIV",
+          "cls": "activity-legend",
+          "text": "LESSMORE"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "LESS"
+        }
+      ]
+    },
+    "screenshot": "drill-activity-dark-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/book-activity",
+    "scheme": "dark",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "书目打卡",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page activity-page book-checkin-page",
+          "text": "书目打卡Each book has its own July"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header activity-page-header",
+          "text": "书目打卡Each book has its own July"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "书目打卡Each book has its own July"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "书目打卡"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Each book has its own July 20–"
+        },
+        {
+          "tag": "DIV",
+          "cls": "activity-legend",
+          "text": "LESSMORE"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "LESS"
+        }
+      ]
+    },
+    "screenshot": "drill-book-activity-dark-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/feel",
+    "scheme": "dark",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "书目手感",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page feel-page",
+          "text": "书目手感Today is 0. Each inactive "
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "书目手感Today is 0. Each inactive "
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "书目手感Today is 0. Each inactive "
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "书目手感"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Today is 0. Each inactive day "
+        },
+        {
+          "tag": "DIV",
+          "cls": "feel-grid",
+          "text": "BOOK练习册 1 · 多元微分与积分-11 day wit"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "",
+          "text": "BOOK练习册 1 · 多元微分与积分-11 day wit"
+        }
+      ]
+    },
+    "screenshot": "drill-feel-dark-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/papers",
+    "scheme": "dark",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "Paper history",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page papers-page",
+          "text": "Paper historyEvery generated p"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "Paper historyEvery generated p"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "Paper historyEvery generated p"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "Paper history"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Every generated paper keeps it"
+        },
+        {
+          "tag": "A",
+          "cls": "primary-action",
+          "text": "New paper →"
+        },
+        {
+          "tag": "B",
+          "cls": "",
+          "text": "→"
+        }
+      ]
+    },
+    "screenshot": "drill-papers-dark-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/papers/new",
+    "scheme": "dark",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "Build a Math II paper",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page paper-new-page",
+          "text": "Build a Math II paperChoose on"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "Build a Math II paperChoose on"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "Build a Math II paperChoose on"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "Build a Math II paper"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Choose one mode. The system ha"
+        },
+        {
+          "tag": "A",
+          "cls": "quiet-link",
+          "text": "History"
+        },
+        {
+          "tag": "DIV",
+          "cls": "blueprint-grid",
+          "text": "standard标准训练180 min · 150 poin"
+        }
+      ]
+    },
+    "screenshot": "drill-papers-new-dark-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/papers/22222222-2222-4222-8222-222222222222",
+    "scheme": "dark",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": null,
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page paper-exam-page",
+          "text": "← Papers数学二 · 合成训练试卷1 / 24Shar"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "paper-exam-header",
+          "text": "← Papers数学二 · 合成训练试卷1 / 24Shar"
+        },
+        {
+          "tag": "A",
+          "cls": "",
+          "text": "← Papers"
+        },
+        {
+          "tag": "DIV",
+          "cls": "paper-exam-actions",
+          "text": "Share + answers0 min left"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "",
+          "text": "Share + answers"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "0 min left"
+        },
+        {
+          "tag": "DIV",
+          "cls": "paper-question-shell",
+          "text": "题目 1single choice · 5 pts设函数在给"
+        }
+      ]
+    },
+    "screenshot": "drill-papers-22222222-2222-4222-8222-222222222222-dark-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/papers/22222222-2222-4222-8222-222222222222/review",
+    "scheme": "dark",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "数学二 · 合成训练试卷",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page paper-review-page",
+          "text": "数学二 · 合成训练试卷Compare your work "
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "数学二 · 合成训练试卷Compare your work "
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "数学二 · 合成训练试卷Compare your work "
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "数学二 · 合成训练试卷"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Compare your work with the sou"
+        },
+        {
+          "tag": "DIV",
+          "cls": "paper-header-actions",
+          "text": "Share paper + answersQuestion "
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "",
+          "text": "Share paper + answers"
+        }
+      ]
+    },
+    "screenshot": "drill-papers-22222222-2222-4222-8222-222222222222-review-dark-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/ei/selected-pdf-pages",
+    "scheme": "dark",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "严选题 PDF 页码记录",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page pdf-page-import-view",
+          "text": "严选题 PDF 页码记录仅适用于五科严选题。标准题库不参与匹"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "严选题 PDF 页码记录仅适用于五科严选题。标准题库不参与匹"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "严选题 PDF 页码记录仅适用于五科严选题。标准题库不参与匹"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "严选题 PDF 页码记录"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "仅适用于五科严选题。标准题库不参与匹配，也不能通过此入口批量"
+        },
+        {
+          "tag": "ASIDE",
+          "cls": "selected-only-note",
+          "text": "严选题专用请选择科目，并分别输入题目册与题答对照册的页码。系"
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "严选题专用"
+        }
+      ]
+    },
+    "screenshot": "ei-selected-pdf-pages-dark-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/ei/signal-formulas",
+    "scheme": "dark",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "信号与系统公式复盘",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page formula-review-page",
+          "text": "信号与系统公式复盘四天循环第 1 天 · 约 15 分钟 ·"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "信号与系统公式复盘四天循环第 1 天 · 约 15 分钟 ·"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "信号与系统公式复盘四天循环第 1 天 · 约 15 分钟 ·"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "信号与系统公式复盘"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "四天循环第 1 天 · 约 15 分钟 · 固定公式库 1 "
+        },
+        {
+          "tag": "A",
+          "cls": "selected-link",
+          "text": "回到变换严选 →"
+        },
+        {
+          "tag": "NAV",
+          "cls": "track-switch",
+          "text": "信号与系统独立四日循环其他四科电路 · 模电 · 数电 · "
+        }
+      ]
+    },
+    "screenshot": "ei-signal-formulas-dark-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/today",
+    "scheme": "dark",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "今日",
+      "overflow": [
+        {
+          "tag": "DIV",
+          "cls": "today-view",
+          "text": "工作区 /今日11月12日开始学习2026 学习目标2026"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "application-page-header",
+          "text": "工作区 /今日11月12日开始学习"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-title",
+          "text": "工作区 /今日11月12日"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "今日"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-actions",
+          "text": "开始学习"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "header-action",
+          "text": "开始学习"
+        },
+        {
+          "tag": "DIV",
+          "cls": "today-countdown-strip",
+          "text": "2026 学习目标2026年12月19日37天"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "2026 学习目标2026年12月19日"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "2026 学习目标"
+        },
+        {
+          "tag": "TIME",
+          "cls": "",
+          "text": "2026年12月19日"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "37天"
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "37"
+        }
+      ]
+    },
+    "screenshot": "today-dark-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/trends",
+    "scheme": "dark",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "趋势",
+      "overflow": [
+        {
+          "tag": "DIV",
+          "cls": "view-stack trends-page",
+          "text": "工作区 /趋势最近 60 天7D30D60D180D时长首次"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "application-page-header",
+          "text": "工作区 /趋势最近 60 天7D30D60D180D"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-title",
+          "text": "工作区 /趋势最近 60 天"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "趋势"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-actions",
+          "text": "7D30D60D180D"
+        },
+        {
+          "tag": "DIV",
+          "cls": "header-segmented",
+          "text": "7D30D60D180D"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "",
+          "text": "7D"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "",
+          "text": "30D"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "active",
+          "text": "60D"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "",
+          "text": "180D"
+        },
+        {
+          "tag": "DIV",
+          "cls": "trend-analytics-grid",
+          "text": "时长首次开始每日 · 最近 60 天View chart d"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "panel chart-panel",
+          "text": "时长首次开始每日 · 最近 60 天View chart d"
+        }
+      ]
+    },
+    "screenshot": "trends-dark-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/sessions",
+    "scheme": "dark",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "学习记录",
+      "overflow": [
+        {
+          "tag": "DIV",
+          "cls": "workspace-view sessions-view",
+          "text": "工作区 /学习记录共 6 条Markdown only全部记"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "application-page-header",
+          "text": "工作区 /学习记录共 6 条"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-title",
+          "text": "工作区 /学习记录共 6 条"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "学习记录"
+        },
+        {
+          "tag": "DIV",
+          "cls": "page-toolbar",
+          "text": "Markdown only全部记录筛选显示视图"
+        },
+        {
+          "tag": "DIV",
+          "cls": "page-toolbar-primary",
+          "text": "Markdown only全部记录"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "toolbar-chip active",
+          "text": "Markdown only"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "Markdown only"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "toolbar-chip active",
+          "text": "全部记录"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "全部记录"
+        },
+        {
+          "tag": "DIV",
+          "cls": "page-toolbar-actions",
+          "text": "筛选显示视图"
+        },
+        {
+          "tag": "LABEL",
+          "cls": "toolbar-search",
+          "text": ""
+        }
+      ]
+    },
+    "screenshot": "sessions-dark-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/issues",
+    "scheme": "dark",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "问题",
+      "overflow": [
+        {
+          "tag": "DIV",
+          "cls": "workspace-view issues-view",
+          "text": "工作区 /问题2 个未解决 · 1 个已解决新建问题未解决2"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "application-page-header",
+          "text": "工作区 /问题2 个未解决 · 1 个已解决新建问题"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-title",
+          "text": "工作区 /问题2 个未解决 · 1 个已解决"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "问题"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-actions",
+          "text": "新建问题"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "el-button el-button--primary",
+          "text": "新建问题"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "新建问题"
+        },
+        {
+          "tag": "DIV",
+          "cls": "page-toolbar",
+          "text": "未解决2已解决1全部3筛选显示视图"
+        },
+        {
+          "tag": "DIV",
+          "cls": "page-toolbar-primary",
+          "text": "未解决2已解决1全部3"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "toolbar-chip active",
+          "text": "未解决2"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "未解决"
+        },
+        {
+          "tag": "B",
+          "cls": "",
+          "text": "2"
+        }
+      ]
+    },
+    "screenshot": "issues-dark-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/settings",
+    "scheme": "dark",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "设置",
+      "overflow": [
+        {
+          "tag": "DIV",
+          "cls": "view-stack settings-page",
+          "text": "工作区 /设置偏好、权限与数据设置GeneralAppear"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "application-page-header",
+          "text": "工作区 /设置偏好、权限与数据"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-title",
+          "text": "工作区 /设置偏好、权限与数据"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "设置"
+        },
+        {
+          "tag": "LABEL",
+          "cls": "settings-mobile-section",
+          "text": "设置GeneralAppearancePrivacy and"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "设置"
+        },
+        {
+          "tag": "SELECT",
+          "cls": "",
+          "text": "GeneralAppearancePrivacy and s"
+        },
+        {
+          "tag": "DIV",
+          "cls": "settings-layout",
+          "text": "工作区通用外观内容组织账户安全访问邀请码数据自动化集成Gen"
+        },
+        {
+          "tag": "DIV",
+          "cls": "settings-content",
+          "text": "GeneralWorkspace defaultsIdent"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "settings-category",
+          "text": "GeneralWorkspace defaultsIdent"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "settings-category-header",
+          "text": "GeneralWorkspace defaultsIdent"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "GeneralWorkspace defaults"
+        }
+      ]
+    },
+    "screenshot": "settings-dark-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/sessions/22222222-2222-4222-8222-222222222222",
+    "scheme": "dark",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "多元微分 · 隐函数与偏导数",
+      "overflow": [
+        {
+          "tag": "DIV",
+          "cls": "workspace-view session-article-view",
+          "text": "Sessions /多元微分 · 隐函数与偏导数Mathem"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "application-page-header",
+          "text": "Sessions /多元微分 · 隐函数与偏导数Mathem"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-title",
+          "text": "Sessions /多元微分 · 隐函数与偏导数Mathem"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "多元微分 · 隐函数与偏导数"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-actions",
+          "text": " SessionsEdit"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "header-action",
+          "text": " Sessions"
+        },
+        {
+          "tag": "I",
+          "cls": "el-icon",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "el-button",
+          "text": "Edit"
+        },
+        {
+          "tag": "I",
+          "cls": "el-icon",
+          "text": ""
+        }
+      ]
+    },
+    "screenshot": "sessions-22222222-2222-4222-8222-222222222222-dark-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/share/synthetic-public-token",
+    "scheme": "dark",
+    "width": 390,
+    "height": 844,
+    "errors": [],
+    "metrics": {
+      "width": 390,
+      "scrollWidth": 390,
+      "heading": "多元微分 · 隐函数与偏导数",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "public-share-header",
+          "text": "LLearning OSSHARED ARTICLEREAD"
+        },
+        {
+          "tag": "A",
+          "cls": "brand",
+          "text": "LLearning OSSHARED ARTICLE"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "brand-mark",
+          "text": "L"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "Learning OSSHARED ARTICLE"
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Learning OS"
+        },
+        {
+          "tag": "SMALL",
+          "cls": "",
+          "text": "SHARED ARTICLE"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "READ ONLY"
+        },
+        {
+          "tag": "ARTICLE",
+          "cls": "panel public-article",
+          "text": "PUBLIC SESSION ARTICLE多元微分 · 隐"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "",
+          "text": "PUBLIC SESSION ARTICLE多元微分 · 隐"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "eyebrow",
+          "text": "PUBLIC SESSION ARTICLE"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "多元微分 · 隐函数与偏导数"
+        },
+        {
+          "tag": "DIV",
+          "cls": "public-article-meta",
+          "text": "Mathematics11/11/2026, 09:00:0"
+        }
+      ]
+    },
+    "screenshot": "share-synthetic-public-token-dark-390.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/ei/cockpit",
+    "scheme": "dark",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "892 备考驾驶舱",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page cockpit-page",
+          "text": "892 备考驾驶舱Coverage, mastery, re"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "892 备考驾驶舱Coverage, mastery, re"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "892 备考驾驶舱Coverage, mastery, re"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "892 备考驾驶舱"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Coverage, mastery, retention a"
+        },
+        {
+          "tag": "A",
+          "cls": "header-action",
+          "text": "Practice →"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "official-exam-strip",
+          "text": "OFFICIAL SYLLABUS · 2026-11-12"
+        }
+      ]
+    },
+    "screenshot": "ei-cockpit-dark-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/ei/circuit-selected?all=1",
+    "scheme": "dark",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "电路严选",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page selected-collection exam-type-colours circuit-selected-page",
+          "text": "电路严选先练一阶换路、戴维南与相量，再补二阶、匹配和变压器。"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "电路严选先练一阶换路、戴维南与相量，再补二阶、匹配和变压器。"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "电路严选先练一阶换路、戴维南与相量，再补二阶、匹配和变压器。"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "电路严选"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "先练一阶换路、戴维南与相量，再补二阶、匹配和变压器。原题原记"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "primary-action",
+          "text": "开始／继续刷题 →"
+        },
+        {
+          "tag": "DETAILS",
+          "cls": "selected-notice",
+          "text": "题库说明排序采用你的备考优先级，不代表命题概率。节点法是综合"
+        }
+      ]
+    },
+    "screenshot": "ei-circuit-selected-dark-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/ei/signal-selected?all=1",
+    "scheme": "dark",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "信号严选",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page selected-collection exam-type-colours signal-selected-page",
+          "text": "信号严选先练 Z 变换、拉氏、傅里叶、卷积和系统函数；再补谱"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "信号严选先练 Z 变换、拉氏、傅里叶、卷积和系统函数；再补谱"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "信号严选先练 Z 变换、拉氏、傅里叶、卷积和系统函数；再补谱"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "信号严选"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "先练 Z 变换、拉氏、傅里叶、卷积和系统函数；再补谱、抽样与"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "primary-action",
+          "text": "开始／继续刷题 →"
+        },
+        {
+          "tag": "DETAILS",
+          "cls": "selected-notice",
+          "text": "题库说明排序采用你的备考优先级，不代表命题概率。傅里叶变换注"
+        }
+      ]
+    },
+    "screenshot": "ei-signal-selected-dark-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/ei/analog-selected?all=1",
+    "scheme": "dark",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "模电严选",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page selected-collection exam-type-colours analog-selected-page",
+          "text": "模电严选先练静态与小信号、深度负反馈和运放；再补差分、高频与"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "模电严选先练静态与小信号、深度负反馈和运放；再补差分、高频与"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "模电严选先练静态与小信号、深度负反馈和运放；再补差分、高频与"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "模电严选"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "先练静态与小信号、深度负反馈和运放；再补差分、高频与综合分析"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "primary-action",
+          "text": "开始／继续刷题 →"
+        },
+        {
+          "tag": "DETAILS",
+          "cls": "selected-notice",
+          "text": "题库说明排序采用你的备考优先级，不代表命题概率。静态＋动态是"
+        }
+      ]
+    },
+    "screenshot": "ei-analog-selected-dark-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/ei/digital-selected?all=1",
+    "scheme": "dark",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "数电严选",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page selected-collection exam-type-colours digital-selected-page",
+          "text": "数电严选先练组合逻辑分析／设计与同步时序分析，再补简单时序设"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "数电严选先练组合逻辑分析／设计与同步时序分析，再补简单时序设"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "数电严选先练组合逻辑分析／设计与同步时序分析，再补简单时序设"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "数电严选"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "先练组合逻辑分析／设计与同步时序分析，再补简单时序设计及中规"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "primary-action",
+          "text": "开始／继续刷题 →"
+        },
+        {
+          "tag": "DETAILS",
+          "cls": "selected-notice",
+          "text": "题库说明排序采用你的备考优先级，不代表命题概率。S/A/B/"
+        }
+      ]
+    },
+    "screenshot": "ei-digital-selected-dark-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/ei/communication-selected?all=1",
+    "scheme": "dark",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "通信严选",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page selected-collection exam-type-colours communication-selected-page",
+          "text": "通信严选先练无码间串扰、匹配滤波和 PCM／香农容量，再补模"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "通信严选先练无码间串扰、匹配滤波和 PCM／香农容量，再补模"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "通信严选先练无码间串扰、匹配滤波和 PCM／香农容量，再补模"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "通信严选"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "先练无码间串扰、匹配滤波和 PCM／香农容量，再补模拟与二进"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "primary-action",
+          "text": "开始／继续刷题 →"
+        },
+        {
+          "tag": "DETAILS",
+          "cls": "selected-notice",
+          "text": "题库说明排序采用你的备考优先级，不代表命题概率。接收误码率不"
+        }
+      ]
+    },
+    "screenshot": "ei-communication-selected-dark-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/progress",
+    "scheme": "dark",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "学习进度",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page progress-page",
+          "text": "学习进度数学二严选题的目标、工作量与趋势查看解题能力 →覆盖"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header progress-page-header",
+          "text": "学习进度数学二严选题的目标、工作量与趋势查看解题能力 →"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "学习进度数学二严选题的目标、工作量与趋势"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "学习进度"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "数学二严选题的目标、工作量与趋势"
+        },
+        {
+          "tag": "A",
+          "cls": "progress-diagnostics-link",
+          "text": "查看解题能力 →"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "→"
+        }
+      ]
+    },
+    "screenshot": "drill-progress-dark-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/diagnostics",
+    "scheme": "dark",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "Drill 数学 · 解题能力",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page diagnostic-page",
+          "text": "Drill 数学 · 解题能力区分“做过”与“能够独立做对”"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header diagnostic-header",
+          "text": "Drill 数学 · 解题能力区分“做过”与“能够独立做对”"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "Drill 数学 · 解题能力区分“做过”与“能够独立做对”"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "Drill 数学 · 解题能力"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "区分“做过”与“能够独立做对”；所有比例均显示真实样本量。"
+        },
+        {
+          "tag": "DIV",
+          "cls": "range",
+          "text": "7天14天30天自定应用"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "active",
+          "text": "7天"
+        }
+      ]
+    },
+    "screenshot": "drill-diagnostics-dark-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/activity",
+    "scheme": "dark",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "练习活跃度",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page activity-page",
+          "text": "练习活跃度Daily volume from July 20"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header activity-page-header",
+          "text": "练习活跃度Daily volume from July 20"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "练习活跃度Daily volume from July 20"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "练习活跃度"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Daily volume from July 20 thro"
+        },
+        {
+          "tag": "DIV",
+          "cls": "activity-legend",
+          "text": "LESSMORE"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "LESS"
+        }
+      ]
+    },
+    "screenshot": "drill-activity-dark-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/book-activity",
+    "scheme": "dark",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "书目打卡",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page activity-page book-checkin-page",
+          "text": "书目打卡Each book has its own July"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header activity-page-header",
+          "text": "书目打卡Each book has its own July"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "书目打卡Each book has its own July"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "书目打卡"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Each book has its own July 20–"
+        },
+        {
+          "tag": "DIV",
+          "cls": "activity-legend",
+          "text": "LESSMORE"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "LESS"
+        }
+      ]
+    },
+    "screenshot": "drill-book-activity-dark-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/feel",
+    "scheme": "dark",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "书目手感",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page feel-page",
+          "text": "书目手感Today is 0. Each inactive "
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "书目手感Today is 0. Each inactive "
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "书目手感Today is 0. Each inactive "
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "书目手感"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Today is 0. Each inactive day "
+        },
+        {
+          "tag": "DIV",
+          "cls": "feel-grid",
+          "text": "BOOK练习册 1 · 多元微分与积分-11 day wit"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "",
+          "text": "BOOK练习册 1 · 多元微分与积分-11 day wit"
+        }
+      ]
+    },
+    "screenshot": "drill-feel-dark-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/papers",
+    "scheme": "dark",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "Paper history",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page papers-page",
+          "text": "Paper historyEvery generated p"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "Paper historyEvery generated p"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "Paper historyEvery generated p"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "Paper history"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Every generated paper keeps it"
+        },
+        {
+          "tag": "A",
+          "cls": "primary-action",
+          "text": "New paper →"
+        },
+        {
+          "tag": "B",
+          "cls": "",
+          "text": "→"
+        }
+      ]
+    },
+    "screenshot": "drill-papers-dark-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/papers/new",
+    "scheme": "dark",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "Build a Math II paper",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page paper-new-page",
+          "text": "Build a Math II paperChoose on"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "Build a Math II paperChoose on"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "Build a Math II paperChoose on"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "Build a Math II paper"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Choose one mode. The system ha"
+        },
+        {
+          "tag": "A",
+          "cls": "quiet-link",
+          "text": "History"
+        },
+        {
+          "tag": "DIV",
+          "cls": "blueprint-grid",
+          "text": "standard标准训练180 min · 150 poin"
+        }
+      ]
+    },
+    "screenshot": "drill-papers-new-dark-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/papers/22222222-2222-4222-8222-222222222222",
+    "scheme": "dark",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": null,
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page paper-exam-page",
+          "text": "← Papers数学二 · 合成训练试卷1 / 24Shar"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "paper-exam-header",
+          "text": "← Papers数学二 · 合成训练试卷1 / 24Shar"
+        },
+        {
+          "tag": "A",
+          "cls": "",
+          "text": "← Papers"
+        },
+        {
+          "tag": "DIV",
+          "cls": "paper-exam-title",
+          "text": "数学二 · 合成训练试卷1 / 24"
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "数学二 · 合成训练试卷"
+        },
+        {
+          "tag": "SMALL",
+          "cls": "",
+          "text": "1 / 24"
+        },
+        {
+          "tag": "DIV",
+          "cls": "paper-exam-actions",
+          "text": "Share + answers0 min left"
+        }
+      ]
+    },
+    "screenshot": "drill-papers-22222222-2222-4222-8222-222222222222-dark-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/drill/papers/22222222-2222-4222-8222-222222222222/review",
+    "scheme": "dark",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "数学二 · 合成训练试卷",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "Drill"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Drill"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page paper-review-page",
+          "text": "数学二 · 合成训练试卷Compare your work "
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "数学二 · 合成训练试卷Compare your work "
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "数学二 · 合成训练试卷Compare your work "
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "数学二 · 合成训练试卷"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "Compare your work with the sou"
+        },
+        {
+          "tag": "DIV",
+          "cls": "paper-header-actions",
+          "text": "Share paper + answersQuestion "
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "",
+          "text": "Share paper + answers"
+        }
+      ]
+    },
+    "screenshot": "drill-papers-22222222-2222-4222-8222-222222222222-review-dark-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/ei/selected-pdf-pages",
+    "scheme": "dark",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "严选题 PDF 页码记录",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page pdf-page-import-view",
+          "text": "严选题 PDF 页码记录仅适用于五科严选题。标准题库不参与匹"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "严选题 PDF 页码记录仅适用于五科严选题。标准题库不参与匹"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "严选题 PDF 页码记录仅适用于五科严选题。标准题库不参与匹"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "严选题 PDF 页码记录"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "仅适用于五科严选题。标准题库不参与匹配，也不能通过此入口批量"
+        },
+        {
+          "tag": "ASIDE",
+          "cls": "selected-only-note",
+          "text": "严选题专用请选择科目，并分别输入题目册与题答对照册的页码。系"
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "严选题专用"
+        }
+      ]
+    },
+    "screenshot": "ei-selected-pdf-pages-dark-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/ei/signal-formulas",
+    "scheme": "dark",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "信号与系统公式复盘",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "ui-app-header",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "ui-icon-button",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "EI · 892"
+        },
+        {
+          "tag": "SECTION",
+          "cls": "page formula-review-page",
+          "text": "信号与系统公式复盘四天循环第 1 天 · 约 15 分钟 ·"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "page-header",
+          "text": "信号与系统公式复盘四天循环第 1 天 · 约 15 分钟 ·"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "信号与系统公式复盘四天循环第 1 天 · 约 15 分钟 ·"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "信号与系统公式复盘"
+        },
+        {
+          "tag": "P",
+          "cls": "",
+          "text": "四天循环第 1 天 · 约 15 分钟 · 固定公式库 1 "
+        },
+        {
+          "tag": "A",
+          "cls": "selected-link",
+          "text": "回到变换严选 →"
+        },
+        {
+          "tag": "NAV",
+          "cls": "track-switch",
+          "text": "信号与系统独立四日循环其他四科电路 · 模电 · 数电 · "
+        }
+      ]
+    },
+    "screenshot": "ei-signal-formulas-dark-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/today",
+    "scheme": "dark",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "今日",
+      "overflow": [
+        {
+          "tag": "DIV",
+          "cls": "today-view",
+          "text": "工作区 /今日11月12日开始学习2026 学习目标2026"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "application-page-header",
+          "text": "工作区 /今日11月12日开始学习"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-title",
+          "text": "工作区 /今日11月12日"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "application-page-context",
+          "text": "工作区 /"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "今日"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "11月12日"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-actions",
+          "text": "开始学习"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "header-action",
+          "text": "开始学习"
+        },
+        {
+          "tag": "DIV",
+          "cls": "today-countdown-strip",
+          "text": "2026 学习目标2026年12月19日37天"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "2026 学习目标2026年12月19日"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "2026 学习目标"
+        },
+        {
+          "tag": "TIME",
+          "cls": "",
+          "text": "2026年12月19日"
+        }
+      ]
+    },
+    "screenshot": "today-dark-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/trends",
+    "scheme": "dark",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "趋势",
+      "overflow": [
+        {
+          "tag": "DIV",
+          "cls": "view-stack trends-page",
+          "text": "工作区 /趋势最近 60 天7D30D60D180D时长首次"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "application-page-header",
+          "text": "工作区 /趋势最近 60 天7D30D60D180D"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-title",
+          "text": "工作区 /趋势最近 60 天"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "application-page-context",
+          "text": "工作区 /"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "趋势"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "最近 60 天"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-actions",
+          "text": "7D30D60D180D"
+        },
+        {
+          "tag": "DIV",
+          "cls": "header-segmented",
+          "text": "7D30D60D180D"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "",
+          "text": "7D"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "",
+          "text": "30D"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "active",
+          "text": "60D"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "",
+          "text": "180D"
+        }
+      ]
+    },
+    "screenshot": "trends-dark-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/sessions",
+    "scheme": "dark",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "学习记录",
+      "overflow": [
+        {
+          "tag": "DIV",
+          "cls": "workspace-view sessions-view",
+          "text": "工作区 /学习记录共 6 条Markdown only全部记"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "application-page-header",
+          "text": "工作区 /学习记录共 6 条"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-title",
+          "text": "工作区 /学习记录共 6 条"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "application-page-context",
+          "text": "工作区 /"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "学习记录"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "共 6 条"
+        },
+        {
+          "tag": "DIV",
+          "cls": "page-toolbar",
+          "text": "Markdown only全部记录筛选显示视图"
+        },
+        {
+          "tag": "DIV",
+          "cls": "page-toolbar-primary",
+          "text": "Markdown only全部记录"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "toolbar-chip active",
+          "text": "Markdown only"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "Markdown only"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "toolbar-chip active",
+          "text": "全部记录"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "全部记录"
+        }
+      ]
+    },
+    "screenshot": "sessions-dark-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/issues",
+    "scheme": "dark",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "问题",
+      "overflow": [
+        {
+          "tag": "DIV",
+          "cls": "workspace-view issues-view",
+          "text": "工作区 /问题2 个未解决 · 1 个已解决新建问题未解决2"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "application-page-header",
+          "text": "工作区 /问题2 个未解决 · 1 个已解决新建问题"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-title",
+          "text": "工作区 /问题2 个未解决 · 1 个已解决"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "application-page-context",
+          "text": "工作区 /"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "问题"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "2 个未解决 · 1 个已解决"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-actions",
+          "text": "新建问题"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "el-button el-button--primary",
+          "text": "新建问题"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "新建问题"
+        },
+        {
+          "tag": "DIV",
+          "cls": "page-toolbar",
+          "text": "未解决2已解决1全部3筛选显示视图"
+        },
+        {
+          "tag": "DIV",
+          "cls": "page-toolbar-primary",
+          "text": "未解决2已解决1全部3"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "toolbar-chip active",
+          "text": "未解决2"
+        }
+      ]
+    },
+    "screenshot": "issues-dark-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/settings",
+    "scheme": "dark",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "设置",
+      "overflow": [
+        {
+          "tag": "DIV",
+          "cls": "view-stack settings-page",
+          "text": "工作区 /设置偏好、权限与数据设置GeneralAppear"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "application-page-header",
+          "text": "工作区 /设置偏好、权限与数据"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-title",
+          "text": "工作区 /设置偏好、权限与数据"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "application-page-context",
+          "text": "工作区 /"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "设置"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "偏好、权限与数据"
+        },
+        {
+          "tag": "DIV",
+          "cls": "settings-layout",
+          "text": "工作区通用外观内容组织账户安全访问邀请码数据自动化集成Gen"
+        },
+        {
+          "tag": "NAV",
+          "cls": "settings-index",
+          "text": "工作区通用外观内容组织账户安全访问邀请码数据自动化集成"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "工作区"
+        },
+        {
+          "tag": "A",
+          "cls": "",
+          "text": "通用"
+        },
+        {
+          "tag": "A",
+          "cls": "",
+          "text": "外观"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "内容"
+        }
+      ]
+    },
+    "screenshot": "settings-dark-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/sessions/22222222-2222-4222-8222-222222222222",
+    "scheme": "dark",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "多元微分 · 隐函数与偏导数",
+      "overflow": [
+        {
+          "tag": "DIV",
+          "cls": "workspace-view session-article-view",
+          "text": "Sessions /多元微分 · 隐函数与偏导数Mathem"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "application-page-header",
+          "text": "Sessions /多元微分 · 隐函数与偏导数Mathem"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-title",
+          "text": "Sessions /多元微分 · 隐函数与偏导数Mathem"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "application-page-context",
+          "text": "Sessions /"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "多元微分 · 隐函数与偏导数"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "Mathematics · 数学 / 微积分 / 多元微分"
+        },
+        {
+          "tag": "DIV",
+          "cls": "application-page-actions",
+          "text": " SessionsEdit"
+        },
+        {
+          "tag": "BUTTON",
+          "cls": "header-action",
+          "text": " Sessions"
+        },
+        {
+          "tag": "I",
+          "cls": "el-icon",
+          "text": ""
+        },
+        {
+          "tag": "svg",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        },
+        {
+          "tag": "path",
+          "cls": {},
+          "text": ""
+        }
+      ]
+    },
+    "screenshot": "sessions-22222222-2222-4222-8222-222222222222-dark-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  },
+  {
+    "path": "/share/synthetic-public-token",
+    "scheme": "dark",
+    "width": 1180,
+    "height": 820,
+    "errors": [],
+    "metrics": {
+      "width": 1180,
+      "scrollWidth": 1180,
+      "heading": "多元微分 · 隐函数与偏导数",
+      "overflow": [
+        {
+          "tag": "HEADER",
+          "cls": "public-share-header",
+          "text": "LLearning OSSHARED ARTICLEREAD"
+        },
+        {
+          "tag": "A",
+          "cls": "brand",
+          "text": "LLearning OSSHARED ARTICLE"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "brand-mark",
+          "text": "L"
+        },
+        {
+          "tag": "DIV",
+          "cls": "",
+          "text": "Learning OSSHARED ARTICLE"
+        },
+        {
+          "tag": "STRONG",
+          "cls": "",
+          "text": "Learning OS"
+        },
+        {
+          "tag": "SMALL",
+          "cls": "",
+          "text": "SHARED ARTICLE"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "",
+          "text": "READ ONLY"
+        },
+        {
+          "tag": "ARTICLE",
+          "cls": "panel public-article",
+          "text": "PUBLIC SESSION ARTICLE多元微分 · 隐"
+        },
+        {
+          "tag": "HEADER",
+          "cls": "",
+          "text": "PUBLIC SESSION ARTICLE多元微分 · 隐"
+        },
+        {
+          "tag": "SPAN",
+          "cls": "eyebrow",
+          "text": "PUBLIC SESSION ARTICLE"
+        },
+        {
+          "tag": "H1",
+          "cls": "",
+          "text": "多元微分 · 隐函数与偏导数"
+        },
+        {
+          "tag": "DIV",
+          "cls": "public-article-meta",
+          "text": "Mathematics11/11/2026, 09:00:0"
+        }
+      ]
+    },
+    "screenshot": "share-synthetic-public-token-dark-1180.png",
+    "fixture": true,
+    "browser": "Chromium emulation, not Safari"
+  }
+]

@@ -7,6 +7,7 @@ import { api } from '../lib/api'
 import type { GlobalSearchResponse, GlobalSearchResult, Issue, StudySession } from '../types'
 import MarkdownPreview from './MarkdownPreview.vue'
 import { useUiPreferences } from '../lib/uiPreferences'
+import { learningUserId } from '../../shared/foregroundTimer'
 
 const router = useRouter()
 const { t } = useUiPreferences()
@@ -22,57 +23,85 @@ const cache = new Map<string, GlobalSearchResult[]>()
 const subjects = { math: 'Mathematics', english: 'English', major: 'Major', training: 'Politics' }
 let timer: ReturnType<typeof setTimeout> | undefined
 let requestVersion = 0
+let requestController: AbortController | null = null
+const composing = ref(false)
+const activeResult = ref(-1)
 
 function open() {
   searchOpen.value = true
   nextTick(() => inputRef.value?.focus())
 }
 
-function close() { searchOpen.value = false }
+function close() { searchOpen.value = false; requestController?.abort(); requestVersion += 1; loading.value = false }
 
 async function runSearch() {
+  if (composing.value || !searchOpen.value) return
+  requestController?.abort()
+  requestController = new AbortController()
   const keyword = query.value.trim()
   const version = ++requestVersion
   if (!keyword) { results.value = []; loading.value = false; return }
-  const cacheKey = keyword.toLocaleLowerCase()
+  const cacheKey = `${learningUserId}:${keyword.toLocaleLowerCase()}`
   const cached = cache.get(cacheKey)
   if (cached) { results.value = cached; loading.value = false; return }
   loading.value = true
   try {
-    const response = await api<GlobalSearchResponse>(`/api/search/?q=${encodeURIComponent(keyword)}&limit=18`)
+    const response = await api<GlobalSearchResponse>(`/api/search/?q=${encodeURIComponent(keyword)}&limit=18`, { signal: requestController.signal })
     if (version !== requestVersion) return
     results.value = response.results
     cache.set(cacheKey, response.results)
     if (cache.size > 20) cache.delete(cache.keys().next().value as string)
   } catch (error) {
-    if (version === requestVersion) ElMessage.error((error as Error).message)
+    if (version === requestVersion && (error as Error).name !== 'AbortError') ElMessage.error((error as Error).message)
   } finally {
     if (version === requestVersion) loading.value = false
   }
 }
 
-watch(query, () => {
+function scheduleSearch() {
   if (timer) clearTimeout(timer)
-  timer = setTimeout(runSearch, 220)
-})
+  requestController?.abort()
+  requestVersion += 1
+  activeResult.value = -1
+  loading.value = false
+  if (!composing.value) timer = setTimeout(runSearch, 250)
+}
+watch(query, scheduleSearch, { flush: 'sync' })
+watch(searchOpen, (opened) => { if (!opened) close(); else void runSearch() })
+function startComposition() { composing.value = true; if (timer) clearTimeout(timer); requestController?.abort(); requestVersion += 1 }
+function endComposition() { composing.value = false; scheduleSearch() }
+function inputKeydown(event: KeyboardEvent) {
+  if (composing.value || event.isComposing || event.keyCode === 229) return
+  if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+    if (!results.value.length) return
+    event.preventDefault()
+    activeResult.value = (activeResult.value + (event.key === 'ArrowDown' ? 1 : -1) + results.value.length) % results.value.length
+  } else if (event.key === 'Enter') {
+    event.preventDefault()
+    const result = results.value[activeResult.value]
+    if (result) void openResult(result)
+    else { if (timer) clearTimeout(timer); void runSearch() }
+  }
+}
 
 function textSegments(text: string) {
   const needle = query.value.trim()
-  if (!needle) return [{ text, match: false }]
-  const source = text || ''
-  const lower = source.toLocaleLowerCase()
+  const source = Array.from(text || '')
+  const width = Array.from(needle).length
+  if (!width) return [{ text: text || '', match: false }]
   const target = needle.toLocaleLowerCase()
   const segments: Array<{ text: string; match: boolean }> = []
   let cursor = 0
-  let index = lower.indexOf(target)
-  while (index >= 0) {
-    if (index > cursor) segments.push({ text: source.slice(cursor, index), match: false })
-    segments.push({ text: source.slice(index, index + needle.length), match: true })
-    cursor = index + needle.length
-    index = lower.indexOf(target, cursor)
+  let pending = ''
+  while (cursor < source.length) {
+    const part = source.slice(cursor, cursor + width).join('')
+    if (part.toLocaleLowerCase() === target) {
+      if (pending) { segments.push({ text: pending, match: false }); pending = '' }
+      segments.push({ text: part, match: true }); cursor += width
+    } else { pending += source[cursor]; cursor += 1 }
   }
-  if (cursor < source.length) segments.push({ text: source.slice(cursor), match: false })
-  return segments.length ? segments : [{ text: source, match: false }]
+  if (pending) segments.push({ text: pending, match: false })
+  return segments.length ? segments : [{ text: text || '', match: false }]
 }
 
 async function openResult(result: GlobalSearchResult) {
@@ -115,6 +144,8 @@ onMounted(() => window.addEventListener('keydown', keyboard))
 onBeforeUnmount(() => {
   window.removeEventListener('keydown', keyboard)
   if (timer) clearTimeout(timer)
+  requestController?.abort()
+  requestVersion += 1
 })
 defineExpose({ open })
 </script>
@@ -128,15 +159,15 @@ defineExpose({ open })
     <template #header>
       <div class="global-search-input">
         <el-icon><Search /></el-icon>
-        <el-input ref="inputRef" v-model="query" clearable placeholder="Search titles, Markdown details, and issues" />
+        <el-input ref="inputRef" v-model="query" clearable placeholder="Search titles, study notes, and issues" role="combobox" aria-controls="global-search-options" :aria-expanded="Boolean(results.length)" :aria-activedescendant="activeResult >= 0 ? `global-search-result-${activeResult}` : undefined" @compositionstart="startComposition" @compositionend="endComposition" @keydown="inputKeydown" />
         <kbd>ESC</kbd>
       </div>
     </template>
-    <div class="global-search-results" v-loading="loading">
-      <div v-if="!query.trim()" class="search-empty-state"><span>GLOBAL TEXT SEARCH</span><p>Type a keyword. Results include sessions and Issues.</p></div>
+    <div id="global-search-options" class="global-search-results" role="listbox" aria-label="Search results" :aria-busy="loading" v-loading="loading">
+      <div v-if="!query.trim()" class="search-empty-state"><p>Search your sessions and issues.</p></div>
       <el-empty v-else-if="!loading && !results.length" description="No matching text" :image-size="62" />
       <template v-else>
-        <button v-for="result in results" :key="`${result.kind}-${result.record_id}`" type="button" class="global-result" @click="openResult(result)">
+        <button v-for="(result, index) in results" :id="`global-search-result-${index}`" role="option" :aria-selected="activeResult === index" :key="`${result.kind}-${result.record_id}`" type="button" class="global-result" @click="openResult(result)">
           <span class="result-kind">{{ result.kind }}</span>
           <span class="result-copy"><strong><template v-for="(part, index) in textSegments(result.title)" :key="index"><mark v-if="part.match">{{ part.text }}</mark><template v-else>{{ part.text }}</template></template></strong><small><template v-for="(part, index) in textSegments(result.snippet)" :key="index"><mark v-if="part.match">{{ part.text }}</mark><template v-else>{{ part.text }}</template></template></small></span>
           <span class="result-meta">{{ result.subject_label }}<time>{{ new Date(result.occurred_at).toLocaleDateString('en-CA') }}</time></span>
@@ -159,3 +190,12 @@ defineExpose({ open })
     </div>
   </el-drawer>
 </template>
+
+<style scoped>
+.global-search-trigger { border:0; background:transparent; box-shadow:none; }
+.global-result { border:0; border-radius:4px; background:transparent; min-height:64px; }
+.global-result[aria-selected=true] { background:var(--surface-selected); }
+.global-result mark { background:var(--accent-soft); color:var(--accent-ink); }
+.result-copy { min-width:0; } .result-copy strong,.result-copy small { overflow-wrap:anywhere; }
+.search-empty-state { padding:24px; color:var(--text-secondary); font-size:14px; }
+</style>

@@ -109,13 +109,14 @@ defineExpose({ open, close, isOpen: computed(() => opened.value) })
           <span v-if="images.length > 1" class="reader-count">{{ page }} / {{ images.length }}</span>
           <div class="reader-zoom">
             <button type="button" :aria-label="typeText('缩小', 'Zoom out')" :disabled="zoom <= 50" @click="setZoom(zoom - 25)">−</button>
-            <button type="button" :title="typeText('恢复适合宽度', 'Fit to width')" @click="setZoom(100)">{{ zoom }}%</button>
+            <button type="button" :title="typeText('恢复适合宽度', 'Fit to width')" :aria-label="typeText('恢复适合宽度', 'Fit to width')" @click="setZoom(100)">{{ zoom }}%</button>
             <button type="button" :aria-label="typeText('放大', 'Zoom in')" :disabled="zoom >= 250" @click="setZoom(zoom + 25)">+</button>
           </div>
           <button type="button" class="reader-close" autofocus :aria-label="typeText('关闭全屏', 'Close full screen')" @click="close">✕</button>
         </header>
         <p v-if="controls?.error || controls?.feedback" class="reader-feedback" :class="{ error: controls?.error }" :role="controls?.error ? 'alert' : 'status'">{{ controls?.error || controls?.feedback }}</p>
         <slot name="recovery" />
+        <div class="reader-overlay-host" data-overlay-host />
         <div ref="scroller" class="reader-scroll" tabindex="0" :aria-busy="pending || syncing || loading" @scroll.passive="trackPage">
           <p v-if="pending || loading || syncing" class="reader-hint" role="status">{{ syncing ? typeText('正在同步最新掌握状态…', 'Updating progress…') : typeText('正在加载…', 'Loading…') }}</p>
           <p v-if="loadError" class="reader-hint" role="alert">{{ loadError }} <button type="button" class="reader-load-retry" @click="loadContent">{{ typeText('重试', 'Retry') }}</button></p>
@@ -137,41 +138,40 @@ defineExpose({ open, close, isOpen: computed(() => opened.value) })
 </template>
 
 <style scoped>
-.fullscreen-trigger { flex: none; display: inline-grid; place-items: center; width: 28px; min-height: 28px; padding: 4px; border: 1px solid var(--border-default); border-radius: 5px; color: var(--text-secondary); background: var(--bg-sidebar); cursor: pointer; }
-.fullscreen-trigger:hover { color: var(--accent); border-color: var(--accent); }
-.fullscreen-reader { position: fixed; inset: 0; width: 100%; max-width: none; height: 100vh; height: 100dvh; max-height: none; margin: 0; padding: 0; border: 0; color: var(--text-primary); background: transparent; overflow: hidden; }
+.fullscreen-trigger { flex: none; display: inline-grid; place-items: center; width: 32px; min-height: 32px; padding: 4px; border: 0; border-radius: 6px; color: var(--text-secondary); background: transparent; cursor: pointer; }
+.fullscreen-trigger:hover { color: var(--text-primary); background: var(--surface-hover, var(--bg-sidebar)); }
+.fullscreen-trigger:focus-visible { outline: 2px solid var(--accent-ink, var(--accent)); outline-offset: 2px; }
+.fullscreen-reader { position: fixed; inset: 0; width: 100%; max-width: none; height: 100vh; height: 100dvh; max-height: none; margin: 0; padding: 0; border: 0; color: var(--text-primary); background: var(--bg-app); overflow: hidden; }
 .fullscreen-reader[open] { display: flex; flex-direction: column; }
-/* The native modal top layer keeps this backdrop below all reader content.
-   Keep the dialog transparent so the frosted page remains visible around images. */
-.fullscreen-reader::backdrop {
-  background: rgba(0, 0, 0, 0.55);
-  -webkit-backdrop-filter: blur(6px);
-  backdrop-filter: blur(6px);
-}
-.reader-toolbar { flex: none; display: flex; align-items: center; gap: 10px; min-height: 48px; padding: max(6px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) 6px max(10px, env(safe-area-inset-left)); border-bottom: 1px solid var(--border-default); background: var(--bg-surface); }
-.reader-toolbar strong { min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 13px; }
-.reader-count { flex: none; color: var(--text-secondary); font-size: 11px; font-variant-numeric: tabular-nums; }
-.reader-zoom { display: flex; gap: 3px; }
-.reader-toolbar button { min-width: 34px; min-height: 34px; padding: 4px 7px; border: 1px solid var(--border-default); border-radius: 6px; color: var(--text-primary); background: var(--bg-sidebar); font-size: 12px; cursor: pointer; }
+.fullscreen-reader::backdrop { background: #0009; }
+.reader-toolbar { flex: none; display: flex; align-items: center; gap: 8px; min-height: 48px; padding: max(4px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) 4px max(10px, env(safe-area-inset-left)); border-bottom: 1px solid var(--border-subtle); background: var(--bg-surface); }
+.reader-toolbar strong { min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
+.reader-count { flex: none; color: var(--text-secondary); font-size: 12px; font-variant-numeric: tabular-nums; }
+.reader-zoom { display: flex; flex: none; gap: 4px; }
+.reader-toolbar button { min-width: 32px; min-height: 32px; padding: 4px 8px; border: 0; border-radius: 6px; color: var(--text-primary); background: transparent; font-size: 13px; cursor: pointer; }
+.reader-toolbar button:hover:not(:disabled) { background: var(--surface-hover, var(--bg-sidebar)); }
+.reader-toolbar button:focus-visible { outline: 2px solid var(--accent-ink, var(--accent)); outline-offset: 2px; }
 .reader-toolbar button:disabled { opacity: .4; }
-.reader-toolbar .reader-close { min-width: 40px; }
+.reader-toolbar .reader-close { flex: none; min-width: 32px; }
+.reader-overlay-host { position: relative; z-index: 40; flex: none; }
 .reader-scroll { flex: 1 1 0; min-height: 0; overflow: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; padding: 12px max(10px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(10px, env(safe-area-inset-left)); touch-action: pan-x pan-y pinch-zoom; }
 .reader-document { min-width: 0; margin-inline: auto; }
 .reader-document figure { max-width: none; margin: 0 auto 16px; }
 .reader-document img { display: block; width: 100%; height: auto; background: white; border-radius: 3px; }
-.reader-document figcaption, .reader-hint { color: var(--text-secondary); text-align: center; font-size: 11px; }
-.reader-hint { margin: 0 0 10px; }
-.reader-document figcaption { margin-top: 5px; }
-.reader-markdown { max-width: none; margin: 0 auto; padding: 14px; }
-.reader-retry { width: 100%; min-height: 100px; border: 1px dashed var(--border-default); border-radius: 5px; color: var(--text-primary); background: var(--bg-surface); cursor: pointer; }
-@media (max-width: 500px) { .reader-toolbar { gap: 5px; } .reader-toolbar strong { font-size: 11px; } .reader-toolbar button { padding: 4px; } }
-.reader-feedback { flex: none; margin: 0; padding: 5px 12px; color: var(--success, #64b781); background: var(--bg-surface); font-size: 11px; }
-.reader-feedback.error { color: var(--danger, #e37179); }
+.reader-document figcaption, .reader-hint { color: var(--text-secondary); text-align: center; font-size: 13px; }
+.reader-hint { margin: 0 0 12px; }
+.reader-document figcaption { margin-top: 4px; }
+.reader-markdown { max-width: none; margin: 0 auto; padding: 16px; }
+.reader-retry { width: 100%; min-height: 100px; border: 1px dashed var(--border-default); border-radius: 6px; color: var(--text-primary); background: var(--bg-surface); cursor: pointer; }
+.reader-feedback { flex: none; margin: 0; padding: 8px 12px; color: var(--success); background: var(--bg-surface); font-size: 13px; }
+.reader-feedback.error { color: var(--danger); }
+@media (pointer: coarse) { .fullscreen-trigger { width: 44px; min-height: 44px; } .reader-toolbar button, .reader-toolbar .reader-close { min-width: 44px; min-height: 44px; } }
 @media (max-width: 640px) {
-  .reader-toolbar.has-practice-controls { gap: 5px; }
+  .reader-toolbar { flex-wrap: wrap; }
+  .reader-toolbar.has-practice-controls { gap: 4px; }
   .has-practice-controls > strong { display: none; }
   .has-practice-controls .reader-zoom > button:first-child, .has-practice-controls .reader-zoom > button:last-child { display: none; }
   .has-practice-controls .reader-zoom { margin-left: auto; }
-  .has-practice-controls .reader-close { min-width: 34px; }
+  .has-practice-controls .reader-count { flex-basis: 100%; order: 1; text-align: center; }
 }
 </style>

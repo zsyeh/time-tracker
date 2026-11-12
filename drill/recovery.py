@@ -250,7 +250,14 @@ def valid_location(workspace, path, user=None):
     route = p.path.removeprefix(prefix) if p.path.startswith(prefix+'/') else p.path
     if re.fullmatch(r'/practice/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}', route):
         return Question.objects.filter(uuid=route.split('/')[-1], document__workspace=workspace).exists()
-    return bool(re.fullmatch(r'/(?:practice|progress|activity|book-activity|heatmap|selected-heatmap|core-heatmap|insight|favorites|review-later|diagnostics|diagnostic-queue|cockpit|circuit-selected|signal-selected|signal-formulas|analog-selected|digital-selected|communication-selected|papers|errata|feel)', route))
+    if route == '/papers/new':
+        return True
+    paper = re.fullmatch(r'/papers/([0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12})(?:/review)?', route)
+    if paper:
+        from .models import ExamPaper
+        subject = 'ei' if workspace == 'ei' else 'math2'
+        return user is not None and ExamPaper.objects.filter(uuid=paper.group(1), user=user, blueprint__subject=subject).exists()
+    return bool(re.fullmatch(r'/(?:practice|progress|settings|selected-pdf-pages|activity|book-activity|heatmap|selected-heatmap|core-heatmap|insight|favorites|review-later|diagnostics|diagnostic-queue|cockpit|circuit-selected|signal-selected|signal-formulas|analog-selected|digital-selected|communication-selected|papers|errata|feel)', route))
 
 class LearningRecoveryView(APIView):
     def finalize_response(self, request, response, *args, **kwargs):

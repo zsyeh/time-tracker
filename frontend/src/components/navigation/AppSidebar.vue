@@ -1,62 +1,19 @@
 <script setup lang="ts">
-import { computed, onBeforeUnmount, ref, watch } from 'vue'
-import { useRoute } from 'vue-router'
-import { Clock, DataAnalysis, Expand, Fold, Guide, List, Setting } from '@element-plus/icons-vue'
+import{computed,ref,watch}from'vue'
+import{useRoute}from'vue-router'
+import{Clock,DataAnalysis,List,Guide,Setting}from'@element-plus/icons-vue'
+import SharedSidebar from '../../../shared/ui/navigation/AppSidebar.vue'
+import NavigationItem from '../../../shared/ui/navigation/NavigationItem.vue'
+import NavigationGroup from '../../../shared/ui/navigation/NavigationGroup.vue'
+import UiMenu from '../../../shared/ui/UiMenu.vue'
 import GlobalSearch from '../GlobalSearch.vue'
-import SidebarItem from './SidebarItem.vue'
-import SidebarSection from './SidebarSection.vue'
-import WorkspaceSwitcher from './WorkspaceSwitcher.vue'
-import SidebarPreferences from './SidebarPreferences.vue'
-import { useUiPreferences } from '../../lib/uiPreferences'
-
-const props = defineProps<{ username: string; collapsed: boolean }>()
-const emit = defineEmits<{ 'update:collapsed': [value: boolean]; logout: [] }>()
-const route = useRoute()
-const { t, language } = useUiPreferences()
-const mobileOpen = ref(false)
-const activeSection = computed(() => route.name === 'session-detail' ? 'sessions' : route.name)
-const activeSubject = computed(() => String(route.query.subject || ''))
-
-watch(() => route.fullPath, () => { mobileOpen.value = false })
-watch(mobileOpen, (value) => document.body.classList.toggle('navigation-drawer-open', value))
-onBeforeUnmount(() => document.body.classList.remove('navigation-drawer-open'))
+import{useUiPreferences}from'../../lib/uiPreferences'
+const props=defineProps<{username:string;collapsed:boolean}>();const emit=defineEmits<{'update:collapsed':[value:boolean];logout:[]}>()
+const route=useRoute(),{t}=useUiPreferences(),mobileOpen=ref(false),accountOpen=ref(false),accountTrigger=ref<HTMLElement|null>(null)
+const activeSection=computed(()=>route.name==='session-detail'?'sessions':route.name),activeSubject=computed(()=>String(route.query.subject||''))
+const accountItems=computed(()=>[{id:'settings',label:t('settings'),run:()=>{location.assign('/settings')}},{id:'logout',label:t('signOut'),run:()=>emit('logout')}])
+function toggle(){if(window.innerWidth<900)mobileOpen.value=!mobileOpen.value;else emit('update:collapsed',!props.collapsed)}
+watch(()=>route.fullPath,()=>{mobileOpen.value=false;accountOpen.value=false})
 </script>
-
-<template>
-  <button v-if="collapsed" type="button" class="sidebar-reopen" aria-label="Show sidebar" @click="emit('update:collapsed', false)"><el-icon><Expand /></el-icon></button>
-  <button type="button" class="mobile-sidebar-open" aria-label="Open navigation" aria-controls="app-sidebar" :aria-expanded="mobileOpen" @click="mobileOpen = true"><el-icon><Expand /></el-icon></button>
-  <button v-if="mobileOpen" type="button" class="sidebar-backdrop" aria-label="Close navigation" @click="mobileOpen = false" />
-
-  <aside id="app-sidebar" class="sidebar" :class="{ 'mobile-open': mobileOpen }" @keydown.esc="mobileOpen = false">
-    <div class="sidebar-topline"><WorkspaceSwitcher /><button type="button" class="mobile-sidebar-close" aria-label="Close navigation" @click="mobileOpen = false">×</button></div>
-    <nav class="workspace-quick-links" :aria-label="language === 'zh-CN' ? '切换学习空间' : 'Switch workspace'">
-      <a href="https://47.95.10.128/today" aria-current="page">Timer</a>
-      <a href="https://47.95.10.128/drill/practice">Drill</a>
-      <a href="https://47.95.10.128/ei/practice">EI</a>
-    </nav>
-    <GlobalSearch />
-
-    <nav class="sidebar-navigation" aria-label="Primary navigation">
-      <SidebarItem :label="t('today')" to="/today" :icon="Clock" :active="activeSection === 'today'" />
-      <SidebarSection :title="t('workspace')" storage-key="learning-os.sidebar.workspace">
-        <SidebarItem :label="t('trends')" to="/trends" :icon="DataAnalysis" :active="activeSection === 'trends'" />
-        <SidebarItem :label="t('sessions')" to="/sessions" :icon="List" :active="activeSection === 'sessions' && !activeSubject" />
-        <SidebarItem :label="t('issues')" to="/issues" :icon="Guide" :active="activeSection === 'issues'" />
-      </SidebarSection>
-      <SidebarSection :title="t('subjects')" storage-key="learning-os.sidebar.subjects">
-        <SidebarItem :label="t('mathematics')" :to="{ path: '/sessions', query: { subject: 'math' } }" :active="activeSection === 'sessions' && activeSubject === 'math'" />
-        <SidebarItem :label="t('english')" :to="{ path: '/sessions', query: { subject: 'english' } }" :active="activeSection === 'sessions' && activeSubject === 'english'" />
-        <SidebarItem :label="t('major')" :to="{ path: '/sessions', query: { subject: 'major' } }" :active="activeSection === 'sessions' && activeSubject === 'major'" />
-        <SidebarItem :label="t('training')" :to="{ path: '/sessions', query: { subject: 'training' } }" :active="activeSection === 'sessions' && activeSubject === 'training'" />
-      </SidebarSection>
-    </nav>
-
-    <div class="sidebar-spacer" />
-    <nav class="sidebar-utilities" aria-label="Utility navigation">
-      <SidebarPreferences />
-      <SidebarItem :label="t('settings')" to="/settings" :icon="Setting" :active="activeSection === 'settings'" />
-      <button type="button" class="sidebar-collapse" @click="emit('update:collapsed', true)"><el-icon><Fold /></el-icon><span>{{ t('hideSidebar') }}</span></button>
-    </nav>
-    <div class="sidebar-account"><span>{{ username.slice(0, 1).toUpperCase() }}</span><div><strong>{{ username }}</strong><button type="button" @click="emit('logout')">{{ t('signOut') }}</button></div></div>
-  </aside>
-</template>
+<template><button type="button" class="timer-navigation-toggle ui-icon-button" aria-label="打开导航" @click="toggle"><svg viewBox="0 0 20 20" fill="none" stroke="currentColor"><path d="M3 5h14M3 10h14M3 15h14"/></svg></button><SharedSidebar :collapsed="collapsed" v-model:mobile-open="mobileOpen" label="Learning OS navigation" @update:collapsed="emit('update:collapsed',$event)"><template #workspace><RouterLink class="timer-workspace-title" to="/today">Learning OS</RouterLink></template><template #primary><nav class="timer-workspace-links" aria-label="Switch workspace"><a href="https://47.95.10.128/today" aria-current="page">Timer</a><a href="https://47.95.10.128/drill/practice">Drill</a><a href="https://47.95.10.128/ei/practice">EI</a></nav><GlobalSearch/><nav aria-label="Primary navigation"><NavigationItem :label="t('today')" to="/today" :icon="Clock" :active="activeSection==='today'"/><NavigationItem :label="t('trends')" to="/trends" :icon="DataAnalysis" :active="activeSection==='trends'"/><NavigationItem :label="t('sessions')" to="/sessions" :icon="List" :active="activeSection==='sessions'&&!activeSubject"/><NavigationItem :label="t('issues')" to="/issues" :icon="Guide" :active="activeSection==='issues'"/></nav></template><template #secondary><NavigationGroup :label="t('subjects')" collapsible storage-key="learning-os.sidebar.subjects"><NavigationItem v-for="subject in ['math','english','major','training'] as const" :key="subject" :label="t(subject==='math'?'mathematics':subject)" :to="{path:'/sessions',query:{subject}}" :active="activeSection==='sessions'&&activeSubject===subject"/></NavigationGroup></template><template #footer><button ref="accountTrigger" type="button" class="timer-account" aria-haspopup="menu" :aria-expanded="accountOpen" @click="accountOpen=!accountOpen"><span>{{ username.slice(0,1).toUpperCase() }}</span><strong>{{ username }}</strong><Setting aria-hidden="true"/></button><UiMenu v-model:open="accountOpen" :anchor="accountTrigger" :items="accountItems" :label="t('account')"/></template></SharedSidebar></template>
+<style scoped>.timer-workspace-title{font-size:15px;font-weight:600;text-decoration:none;color:var(--text-primary)}.timer-workspace-links{display:flex;gap:4px;margin-bottom:8px}.timer-workspace-links a{flex:1;min-height:36px;padding:8px 4px;border-radius:6px;text-align:center;text-decoration:none;color:var(--text-secondary);font-size:13px}.timer-workspace-links a[aria-current],.timer-workspace-links a:hover{background:var(--surface-selected);color:var(--text-primary)}.timer-account{display:flex;align-items:center;gap:8px;width:100%;min-height:44px;padding:8px;border:0;border-radius:6px;background:transparent;color:var(--text-primary);cursor:pointer}.timer-account>span{display:grid;place-items:center;width:28px;height:28px;border-radius:6px;background:var(--surface-selected)}.timer-account strong{flex:1;min-width:0;text-align:left;overflow:hidden;text-overflow:ellipsis;font-size:14px;font-weight:500}.timer-account svg{width:16px;height:16px}.timer-navigation-toggle{position:fixed;z-index:21;top:max(8px,env(safe-area-inset-top));left:8px;background:var(--surface-page)}@media(pointer:coarse){.timer-workspace-links a{min-height:44px}}</style>

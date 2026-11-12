@@ -35,7 +35,7 @@ onMounted(load)
 <template>
   <section class="page activity-page book-checkin-page">
     <header class="page-header activity-page-header">
-      <div><span class="eyebrow">{{ t('bookActivity') }}</span><h1>{{ t('bookCheckins') }}</h1><p>Each book has its own July 20–December 19 calendar. Reset events are excluded.</p></div>
+      <div><h1>{{ t('bookCheckins') }}</h1><p>Each book has its own July 20–December 19 calendar. Reset events are excluded.</p></div>
       <div class="activity-legend"><span>LESS</span><i v-for="level in 9" :key="level" :class="`activity-level-${level - 1}`" /><span>MORE</span></div>
     </header>
     <p v-if="error" class="error-state">{{ uiText(error) }}</p>
@@ -54,3 +54,8 @@ onMounted(load)
     </div>
   </section>
 </template>
+
+
+<style scoped>
+.book-activity-list { min-width:0; display:grid; grid-template-columns:minmax(0,1fr); gap:16px; }
+</style>

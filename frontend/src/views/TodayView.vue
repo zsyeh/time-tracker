@@ -86,3 +86,69 @@ function scrollToSession() {
     </section>
   </div>
 </template>
+
+
+<style scoped>
+.today-countdown-strip { min-height: 54px; padding: 8px 2px; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.today-countdown-strip > div { min-width: 0; display: flex; align-items: baseline; gap: 8px; }
+.today-countdown-strip > div span { overflow: hidden; color: var(--text-secondary); font-size: 14px; font-weight: 550; text-overflow: ellipsis; white-space: nowrap; }
+.today-countdown-strip time { color: var(--text-tertiary); font-size: 12px; white-space: nowrap; }
+.today-countdown-strip p { margin: 0; flex: none; display: flex; align-items: baseline; gap: 5px; color: var(--text-tertiary); font-size: 12px; }
+.today-countdown-strip strong { color: var(--text-primary); font-size: 32px; line-height: 1; font-variant-numeric: tabular-nums; font-weight: 650; letter-spacing: -.045em; }
+.today-private-note { min-height: 31px; padding: 7px 2px; border-bottom: 1px solid var(--border-subtle); color: var(--text-tertiary); display: flex; flex-wrap: wrap; gap: 6px 16px; font-size: 12px; }
+.today-private-note b { color: var(--text-secondary); font-weight: 550; }
+.today-section { padding: 20px 2px 22px; border-bottom: 1px solid var(--border-subtle); }
+.today-section:last-child { border-bottom: 0; }
+.today-overview-grid { border: 0; border-radius: 0; background: transparent; display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, 1fr); overflow: visible; }
+.daily-progress-block { min-width: 0; padding: 18px 20px; }
+.daily-progress-main { margin-top: 3px; display: flex; align-items: baseline; justify-content: space-between; }
+.daily-progress-main > div { display: flex; align-items: baseline; gap: 7px; }
+.daily-progress-main strong { font: 600 29px/1.2 ui-monospace, SFMono-Regular, Menlo, monospace; letter-spacing: -.04em; }
+.daily-progress-main span, .daily-progress-main b { color: var(--text-tertiary); font-size: 12px; font-weight: 500; }
+.daily-progress-track { height: 4px; margin-top: 11px; overflow: hidden; border-radius: 2px; background: var(--border-subtle); }
+.daily-progress-track i { height: 100%; border-radius: inherit; background: var(--accent); display: block; }
+.daily-progress-block > p { margin: 9px 0 0; color: var(--text-tertiary); font-size: 12px; }
+.math-target-progress { margin-top: 16px; padding-top: 13px; border-top: 1px solid var(--border-subtle); }
+.math-target-progress > div:first-child { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; }
+.math-target-progress span { color: var(--text-secondary); font-size: 14px; font-weight: 550; }
+.math-target-progress b { color: var(--text-tertiary); font: 500 12px ui-monospace, SFMono-Regular, Menlo, monospace; white-space: nowrap; }
+.math-target-progress .daily-progress-track { margin-top: 8px; }
+.math-target-progress .daily-progress-track i { background: var(--subject-math); }
+.overview-secondary { border-left: 0; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.overview-secondary article { min-width: 0; padding: 16px 12px; border-left: 0; }
+.overview-secondary article:first-child { border-left: 0; }
+.overview-secondary span, .overview-secondary strong, .overview-secondary small { display: block; }
+.overview-secondary span, .overview-secondary small { color: var(--text-secondary); font-size: 12px; white-space: normal; overflow-wrap: anywhere; }
+.overview-secondary strong { margin: 9px 0 5px; font: 600 26px var(--font-ui); font-variant-numeric:tabular-nums; }
+.daily-stat-columns { margin: 20px 0 0; display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.daily-stat-columns > div { min-width: 0; padding: 0 16px; border-left: 1px solid var(--border-subtle); }
+.daily-stat-columns > div:first-child { padding-left: 0; border-left: 0; }
+.daily-stat-columns dt { color: var(--text-tertiary); font-size: 12px; }
+.daily-stat-columns dd { margin: 4px 0 0; font: 550 13px ui-monospace, SFMono-Regular, Menlo, monospace; }
+.today-subject-list { display: grid; }
+.today-subject-list article { min-height: 48px; border-top: 1px solid var(--border-subtle); display: grid; grid-template-columns: 8px minmax(0, .7fr) 54px minmax(0, 1fr); align-items: center; gap: 10px; }
+.today-subject-list article:first-child { border-top: 0; }
+.today-subject-list strong { font-size: 14px; font-weight: 550; }
+.today-subject-list > article > span { color: var(--text-tertiary); font: 12px ui-monospace, SFMono-Regular, Menlo, monospace; text-align: right; }
+.today-subject-list > article > div { height: 3px; overflow: hidden; background: var(--border-subtle); }
+.today-subject-list > article > div i { height: 100%; background: var(--subject); display: block; }
+.today-subject-list .subject-math { --subject: var(--subject-math); }
+.today-subject-list .subject-english { --subject: var(--subject-english); }
+.today-subject-list .subject-major { --subject: var(--subject-major); }
+.today-subject-list .subject-training { --subject: var(--subject-training); }
+@media (max-width: 1024px) {
+.today-overview-grid { grid-template-columns: 1fr; }
+.overview-secondary { border-top: 1px solid var(--border-subtle); border-left: 0; }
+}
+@media (max-width: 768px) {
+.daily-stat-columns { grid-template-columns: 1fr 1fr; gap: 14px 0; }
+.daily-stat-columns > div:nth-child(3) { padding-left: 0; border-left: 0; }
+}
+@media (max-width: 520px) {
+.today-countdown-strip > div { align-items: flex-start; flex-direction: column; gap: 1px; }
+.today-countdown-strip strong { font-size: 29px; }
+.overview-secondary { grid-template-columns: 1fr 1fr; }
+.overview-secondary article:nth-child(3) { grid-column: 1/-1; border-top: 1px solid var(--border-subtle); border-left: 0; }
+}
+.today-view { min-width:0; } .daily-progress-block { padding-left:0; } .daily-progress-main { gap:12px; flex-wrap:wrap; } .daily-stat-columns { gap:16px; } .daily-stat-columns > div { padding:0; border:0; } @media(max-width:520px) { .daily-stat-columns { grid-template-columns:repeat(2,minmax(0,1fr)); } }
+</style>

@@ -28,6 +28,6 @@ function luminance(hex:string){const c=[1,3,5].map(i=>parseInt(hex.slice(i,i+2),
 function contrast(a:string,b:string){const x=luminance(a),y=luminance(b);return(Math.max(x,y)+.05)/(Math.min(x,y)+.05)}
 for(const id of accentIds)for(const scheme of ['light','dark']as const)it(`${id}/${scheme} maintains readable button, link and selected text`,()=>{
  const c=accents[id][scheme],bg=scheme==='light'?'#ffffff':'#141414',selected=scheme==='light'?'#e5e5e5':'#333333'
- expect(contrast(c.solid,c.onSolid)).toBeGreaterThanOrEqual(4.5);expect(contrast(c.ink,bg)).toBeGreaterThanOrEqual(4.5);expect(contrast(c.ink,selected)).toBeGreaterThanOrEqual(4.5)
+ expect(contrast(c.solid,c.onSolid)).toBeGreaterThanOrEqual(4.5);expect(contrast(colorVariables(id,scheme)['--accent-solid-hover'],c.onSolid)).toBeGreaterThanOrEqual(4.5);expect(contrast(colorVariables(id,scheme)['--accent-solid-pressed'],c.onSolid)).toBeGreaterThanOrEqual(4.5);expect(contrast(c.ink,bg)).toBeGreaterThanOrEqual(4.5);expect(contrast(c.ink,selected)).toBeGreaterThanOrEqual(4.5)
  expect(Object.keys(colorVariables(id,scheme)).some(k=>k.startsWith('--surface'))).toBe(false)
 })

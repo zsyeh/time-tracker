@@ -99,3 +99,13 @@ it('exposes recovery actions inside the open modal without changing ordinary too
   expect(dialog.open).toBe(true)
   expect(dialog.querySelectorAll('.reader-toolbar button')).toHaveLength(ordinaryButtons)
 })
+
+it('keeps modal overlays inside the native dialog and returns focus to the original trigger', async () => {
+  const { dialog } = await mount()
+  const trigger = host.querySelector<HTMLButtonElement>('button')!
+  trigger.focus(); trigger.click(); await flush()
+  expect(dialog.querySelector('[data-overlay-host]')).not.toBeNull()
+  expect(dialog.querySelector('[aria-label="Fit to width"]')).not.toBeNull()
+  dialog.querySelector<HTMLButtonElement>('.reader-close')!.click(); await flush()
+  expect(document.activeElement).toBe(trigger)
+})

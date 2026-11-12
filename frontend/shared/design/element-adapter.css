@@ -5,5 +5,5 @@
   --el-border-color:var(--border-default);--el-border-color-light:var(--border-subtle);--el-text-color-primary:var(--text-primary);--el-text-color-regular:var(--text-secondary);--el-text-color-secondary:var(--text-tertiary);
   --el-mask-color:var(--overlay-dim);--el-border-radius-base:var(--radius-control);--el-border-radius-small:4px;--el-font-size-base:14px;--el-component-size:36px;
 }
-.el-button--primary { --el-button-bg-color:var(--accent-solid);--el-button-text-color:var(--accent-on-solid);--el-button-border-color:transparent;--el-button-hover-bg-color:var(--accent-solid);--el-button-hover-text-color:var(--accent-on-solid);--el-button-hover-border-color:transparent; }
+.el-button--primary { --el-button-bg-color:var(--accent-solid);--el-button-text-color:var(--accent-on-solid);--el-button-border-color:transparent;--el-button-hover-bg-color:var(--accent-solid-hover);--el-button-active-bg-color:var(--accent-solid-pressed);--el-button-active-text-color:var(--accent-on-solid);--el-button-active-border-color:transparent;--el-button-hover-text-color:var(--accent-on-solid);--el-button-hover-border-color:transparent; }
 @media(pointer:coarse) { :root { --el-component-size:44px; } }

@@ -27,16 +27,12 @@ const reviewLabel = computed(() => typeText('待复习', 'Needs review') + (prop
 
 <style scoped>
 .reader-practice-actions { display: flex; flex: none; align-items: center; gap: 8px; }
-.reader-practice-actions button { display: grid; place-items: center; flex: none; width: 32px; height: 32px; padding: 5px; border: 1px solid var(--border-default); border-radius: 6px; color: var(--text-secondary); background: var(--bg-sidebar); cursor: pointer; }
+.reader-practice-actions button { display: grid; place-items: center; flex: none; width: 32px; height: 32px; padding: 5px; border: 0; border-radius: 6px; color: var(--text-secondary); background: transparent; cursor: pointer; }
 .reader-practice-actions svg { width: 20px; height: 20px; }
-.reader-practice-actions button:hover:not(:disabled), .reader-practice-actions button:focus-visible { border-color: var(--accent); outline-color: var(--accent); }
-.reader-practice-actions button:disabled { opacity: .35; cursor: default; }
-.reader-practice-actions .reader-mastered[aria-pressed="true"] { border-color: var(--success, #64b781); background: color-mix(in srgb, var(--success, #64b781) 12%, var(--bg-sidebar)); }
-.reader-practice-actions .reader-review[aria-pressed="true"] { border-color: var(--warning, #d4a857); background: color-mix(in srgb, var(--warning, #d4a857) 12%, var(--bg-sidebar)); }
-.reader-practice-actions .reader-answer { color: var(--info, #79b8ed); }
-@media (max-width: 360px) { .reader-practice-actions { gap: 6px; } .reader-practice-actions button { width: 30px; height: 30px; padding: 4px; } }
-</style>
-
-<style scoped>
-.reader-practice-actions .reader-answer[aria-pressed="true"] { border-color: var(--info, #79b8ed); background: color-mix(in srgb, var(--info, #79b8ed) 12%, transparent); }
+.reader-practice-actions button:hover:not(:disabled) { background: var(--surface-hover, var(--bg-sidebar)); }
+.reader-practice-actions button:focus-visible { outline: 2px solid var(--accent-ink, var(--accent)); outline-offset: 2px; }
+.reader-practice-actions button:disabled { opacity: .4; cursor: default; }
+.reader-practice-actions button[aria-pressed="true"] { background: var(--surface-selected, var(--bg-surface-active)); }
+.reader-practice-actions .reader-answer { color: var(--text-primary); }
+@media (pointer: coarse) { .reader-practice-actions { gap: 4px; } .reader-practice-actions button { width: 44px; height: 44px; padding: 10px; } }
 </style>

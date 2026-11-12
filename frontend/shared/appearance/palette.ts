@@ -17,9 +17,11 @@ export const accents: Record<Accent, { label: string; light: ColorSet; dark: Col
   monochrome: { label: 'Black / Monochrome', light: { solid: '#262626', ink: '#262626', onSolid: '#FFFFFF' }, dark: { solid: '#EDEDED', ink: '#EDEDED', onSolid: '#141414' } },
 }
 export function rgb(hex: string) { return [1, 3, 5].map((offset) => parseInt(hex.slice(offset, offset + 2), 16)).join(', ') }
+export function blendHex(a: string, b: string, amount: number) { return '#' + [1, 3, 5].map(i => Math.round(parseInt(a.slice(i, i + 2), 16) * (1 - amount) + parseInt(b.slice(i, i + 2), 16) * amount).toString(16).padStart(2, '0')).join('') }
 export function colorVariables(accent: Accent, scheme: ResolvedScheme): Record<string, string> {
   const colors = accents[accent][scheme]
-  return { '--accent-solid': colors.solid, '--accent-ink': colors.ink, '--accent-on-solid': colors.onSolid, '--accent-ink-rgb': rgb(colors.ink), '--accent-solid-rgb': rgb(colors.solid) }
+  const overlay = scheme === 'light' && colors.onSolid === '#FFFFFF' ? '#000000' : colors.onSolid
+  return { '--accent-solid': colors.solid, '--accent-solid-hover': blendHex(colors.solid, overlay, .08), '--accent-solid-pressed': blendHex(colors.solid, overlay, .12), '--accent-ink': colors.ink, '--accent-on-solid': colors.onSolid, '--accent-ink-rgb': rgb(colors.ink), '--accent-solid-rgb': rgb(colors.solid) }
 }
 export function paletteCss() {
   const declarations = (id: Accent, scheme: ResolvedScheme) => Object.entries(colorVariables(id, scheme)).map(([key, value]) => `${key}:${value}`).join(';')

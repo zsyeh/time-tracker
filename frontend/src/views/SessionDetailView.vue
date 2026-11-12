@@ -149,3 +149,41 @@ onMounted(load)
     </template>
   </div>
 </template>
+
+
+<style scoped>
+.session-detail-workspace { min-height: calc(100vh - 49px); display: grid; grid-template-columns: minmax(0, 1fr) 286px; }
+.session-document { min-width: 0; padding: 24px clamp(18px, 3vw, 38px) 60px 2px; border-right: 1px solid var(--border-subtle); }
+.document-identity { min-height: 34px; margin-bottom: 18px; padding-bottom: 10px; border-bottom: 1px solid var(--border-subtle); color: var(--text-tertiary); display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 12px; }
+.document-identity small { overflow: hidden; font: 12px ui-monospace, monospace; text-overflow: ellipsis; white-space: nowrap; }
+.session-context-rail { min-width: 0; padding: 14px 0 48px 18px; }
+.context-section { padding: 13px 0; border-bottom: 1px solid var(--border-subtle); }
+.context-section > header { min-height: 24px; margin-bottom: 7px; color: var(--text-tertiary); display: flex; align-items: center; justify-content: space-between; font-size: 12px; }
+.context-section > header b { color: var(--text-secondary); font-size: 12px; font-weight: 550; text-transform: uppercase; }
+.context-properties { margin: 0; }
+.context-properties > div { min-height: 30px; display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); align-items: center; gap: 8px; }
+.context-properties dt { color: var(--text-tertiary); font-size: 12px; }
+.context-properties dd { margin: 0; color: var(--text-secondary); font-size: 13px; text-align: right; overflow-wrap:anywhere; }
+.context-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+.context-tags span { padding: 3px 6px; border: 0; background:var(--surface-subtle); border-radius: 4px; color: var(--text-secondary); font-size: 12px; }
+.share-context > p, .share-context > small { margin: 6px 0 9px; color: var(--text-tertiary); display: block; font-size: 12px; line-height: 1.5; }
+.share-context > .el-button { width: 100%; margin-top: 7px; }
+.share-context .share-actions { margin-top: 8px; display: grid; grid-template-columns: 1fr 1fr; gap: 5px; }
+.share-context .share-reveal { overflow: hidden; }
+.share-context .share-reveal a { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.session-context-rail .review-trend { margin-block: 7px 0; padding: 9px; }
+.session-context-rail .review-trend-heading strong { font-size: 14px; }
+.share-state { padding: 3px 7px; border: 1px solid var(--border-default); border-radius: var(--radius-sm); color: var(--text-tertiary); font-size: 12px; }
+.share-actions { display: flex; }
+.share-reveal { margin-top: 10px; padding: 9px; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); display: flex; align-items: center; gap: 7px; font-size: 12px; }
+.share-once-note { font-size: 12px; }
+@media (max-width: 1024px) {
+.session-detail-workspace { grid-template-columns: minmax(0, 1fr) 250px; }
+}
+@media (max-width: 768px) {
+.session-detail-workspace { min-height: 0; grid-template-columns: 1fr; }
+.session-document { padding: 20px 0 30px; border-right: 0; }
+.session-context-rail { padding: 0 0 40px; border-top: 1px solid var(--border-subtle); }
+}
+.session-article-view { min-width:0; } .context-section { padding:16px 0; } .context-properties > div { min-height:40px; }
+</style>

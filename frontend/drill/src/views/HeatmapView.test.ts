@@ -112,3 +112,54 @@ it('restores a returned selection only after an uncached heatmap finishes render
   expect(host.querySelector('[data-question-uuid="q-1"]')?.classList.contains('selected')).toBe(true)
   expect(host.querySelector('.heatmap-state-filters button:nth-child(3)')?.getAttribute('aria-pressed')).toBe('true')
 })
+
+it('retains the original browsing position after consecutive questions while selecting the current question', async () => {
+  vi.mocked(api).mockResolvedValue({ ...payload, groups: [{ ...payload.groups[0], questions: [question, { ...question, uuid: 'q-2', order: 2 }] }] })
+  sessionStorage.setItem('drill.heatmap.return.v2.selected', JSON.stringify({ scope: 'all', typeGroup: '', course: '', material: 'ready', quickState: 'review', questionUuid: 'q-1', scrollY: 420 }))
+  const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/selected-heatmap', component: HeatmapView }] })
+  await router.push('/selected-heatmap?question=q-2')
+  app = createApp(HeatmapView, { selectedOnly: true }); app.use(router).mount(host)
+  await vi.waitFor(() => expect(window.scrollTo).toHaveBeenCalledWith({ top: 420, behavior: 'auto' }))
+  expect(host.querySelector('[data-question-uuid="q-2"]')?.getAttribute('aria-pressed')).toBe('true')
+  expect(host.querySelector('.heatmap-state-filters button:nth-child(3)')?.getAttribute('aria-pressed')).toBe('true')
+})
+
+it('does not override a user scroll when an uncached return finishes late', async () => {
+  let resolve!: (value: typeof payload) => void
+  vi.mocked(api).mockReturnValue(new Promise(done => { resolve = done }) as ReturnType<typeof api>)
+  sessionStorage.setItem('drill.heatmap.return.v2.selected', JSON.stringify({ scope: 'all', typeGroup: '', course: '', material: 'ready', questionUuid: 'q-1', scrollY: 420 }))
+  const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/selected-heatmap', component: HeatmapView }] })
+  await router.push('/selected-heatmap?question=q-1')
+  app = createApp(HeatmapView, { selectedOnly: true }); app.use(router).mount(host)
+  window.dispatchEvent(new Event('wheel'))
+  resolve(payload)
+  await new Promise(done => setTimeout(done, 70))
+  expect(window.scrollTo).not.toHaveBeenCalled()
+  expect(HTMLElement.prototype.scrollIntoView).not.toHaveBeenCalled()
+  expect(host.querySelector('[data-question-uuid="q-1"]')?.getAttribute('aria-pressed')).toBe('true')
+})
+
+it('aborts an old scope request and ignores its late error after a new scope has loaded', async () => {
+  let reject!: (reason: Error) => void
+  vi.mocked(api).mockReturnValueOnce(new Promise((_done, fail) => { reject = fail }) as ReturnType<typeof api>).mockResolvedValue(payload)
+  const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/selected-heatmap', component: HeatmapView }] })
+  await router.push('/selected-heatmap')
+  app = createApp(HeatmapView, { selectedOnly: true }); app.use(router).mount(host)
+  host.querySelector<HTMLButtonElement>('.heat-scope button:nth-child(2)')!.click()
+  await nextTick(); await nextTick()
+  expect((vi.mocked(api).mock.calls[0]![1]?.signal as AbortSignal).aborted).toBe(true)
+  reject(new Error('stale network error'))
+  await vi.waitFor(() => expect(host.querySelectorAll('[data-question-uuid]')).toHaveLength(1))
+  expect(host.textContent).not.toContain('stale network error')
+  await vi.waitFor(() => expect(router.currentRoute.value.query.scope).toBe('past_exam'))
+})
+
+it('does not consume another account return state for the same question', async () => {
+  sessionStorage.setItem('drill.heatmap.return.v2.selected', JSON.stringify({ userId: 'different-account', workspace: 'drill', scope: 'all', typeGroup: '', course: '', material: 'ready', quickState: 'review', questionUuid: 'q-1', scrollY: 999 }))
+  const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/selected-heatmap', component: HeatmapView }] })
+  await router.push('/selected-heatmap?question=q-1')
+  app = createApp(HeatmapView, { selectedOnly: true }); app.use(router).mount(host)
+  await vi.waitFor(() => expect(HTMLElement.prototype.scrollIntoView).toHaveBeenCalled())
+  expect(window.scrollTo).not.toHaveBeenCalled()
+  expect(host.querySelector('.heatmap-state-filters button:first-child')?.getAttribute('aria-pressed')).toBe('true')
+})

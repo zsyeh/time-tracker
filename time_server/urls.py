@@ -42,7 +42,7 @@ from tracker.stress_probe import StressTestProbeView
 from tracker.ops_dashboard import dashboard_action
 from tracker.web_views import (
     LaunchDeviceView, LaunchDisturbanceView, direct_start_view,
-    launch_browser_view, public_spa_view, root_spa_view, spa_view,
+    launch_browser_view, public_spa_view, root_spa_view, spa_view, workspace_settings_spa_view,
 )
 from drill.web_views import (
     drill_login_complete,
@@ -142,7 +142,7 @@ urlpatterns = [
     path('sessions', spa_view, name='spa_sessions'),
     path('sessions/<uuid:session_uuid>', spa_view, name='spa_session_detail'),
     path('issues', spa_view, name='spa_issues'),
-    path('settings', spa_view, name='spa_settings'),
+    path('settings', workspace_settings_spa_view, name='spa_settings'),
     path(
         'share/<str:raw_token>/assets/<int:asset_id>',
         public_drill_share_asset_view,
