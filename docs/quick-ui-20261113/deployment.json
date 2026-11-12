@@ -1,0 +1,15 @@
+{
+  "deployed": "time-tracker-ha:20261113-quick-ui-7cec16c sha256:301e12719073989a8e4f2b5a1aefce9dc07b78c16d8a2647a452ed77b229f455 healthy",
+  "deploy_started_at": "2026-11-13T03:30:24+08:00",
+  "deploy_finished_at": "2026-11-13T03:30:42+08:00",
+  "deploy_exit": "0",
+  "backup_started_at": "2026-11-13T03:22:36+08:00",
+  "backup_finished_at": "2026-11-13T03:22:38+08:00",
+  "backup_exit": "0",
+  "backup_bytes": 981784,
+  "backup_sha256": "2a6940f86fcdb65346028d2c7ad62db1ae91413c3344987feed42c102093566d",
+  "previous_image": "time-tracker-ha:20261113-preview-735a2a7",
+  "previous_id": "sha256:77a5e417d9646d5edf4704ca30bb1b944fa79b5032ccc4c569ed29822431ab6e",
+  "queue_timer": "active",
+  "queue_result": "success"
+}

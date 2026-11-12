@@ -1,0 +1,153 @@
+{
+  "engine": "Chromium local real fixture",
+  "physical_ipad": false,
+  "layouts": [
+    {
+      "width": 390,
+      "overflow": false,
+      "dates": [],
+      "navOutline": "rgb(32, 32, 32)",
+      "previewTop": null,
+      "route": "practice"
+    },
+    {
+      "width": 820,
+      "overflow": false,
+      "dates": [],
+      "navOutline": "rgb(32, 32, 32)",
+      "previewTop": null,
+      "route": "practice"
+    },
+    {
+      "width": 1180,
+      "overflow": false,
+      "dates": [],
+      "navOutline": "rgb(32, 32, 32)",
+      "previewTop": null,
+      "route": "practice"
+    },
+    {
+      "width": 390,
+      "overflow": false,
+      "dates": [],
+      "navOutline": "rgb(32, 32, 32)",
+      "previewTop": 62,
+      "route": "selected-heatmap"
+    },
+    {
+      "width": 820,
+      "overflow": false,
+      "dates": [],
+      "navOutline": "rgb(32, 32, 32)",
+      "previewTop": 62,
+      "route": "selected-heatmap"
+    },
+    {
+      "width": 1180,
+      "overflow": false,
+      "dates": [],
+      "navOutline": "rgb(32, 32, 32)",
+      "previewTop": 72,
+      "route": "selected-heatmap"
+    },
+    {
+      "width": 390,
+      "overflow": false,
+      "dates": [
+        {
+          "width": 140,
+          "right": 312.625
+        }
+      ],
+      "navOutline": "rgb(32, 32, 32)",
+      "previewTop": null,
+      "route": "progress"
+    },
+    {
+      "width": 820,
+      "overflow": false,
+      "dates": [
+        {
+          "width": 140,
+          "right": 497.15625
+        }
+      ],
+      "navOutline": "rgb(32, 32, 32)",
+      "previewTop": null,
+      "route": "progress"
+    },
+    {
+      "width": 1180,
+      "overflow": false,
+      "dates": [
+        {
+          "width": 140,
+          "right": 1156
+        }
+      ],
+      "navOutline": "rgb(32, 32, 32)",
+      "previewTop": null,
+      "route": "progress"
+    },
+    {
+      "width": 390,
+      "overflow": false,
+      "dates": [
+        {
+          "width": 181,
+          "right": 191
+        },
+        {
+          "width": 181,
+          "right": 191
+        }
+      ],
+      "navOutline": "rgb(32, 32, 32)",
+      "previewTop": null,
+      "route": "insight"
+    },
+    {
+      "width": 820,
+      "overflow": false,
+      "dates": [
+        {
+          "width": 140,
+          "right": 156
+        },
+        {
+          "width": 140,
+          "right": 304
+        }
+      ],
+      "navOutline": "rgb(32, 32, 32)",
+      "previewTop": null,
+      "route": "insight"
+    },
+    {
+      "width": 1180,
+      "overflow": false,
+      "dates": [
+        {
+          "width": 140,
+          "right": 388
+        },
+        {
+          "width": 140,
+          "right": 536
+        }
+      ],
+      "navOutline": "rgb(32, 32, 32)",
+      "previewTop": null,
+      "route": "insight"
+    }
+  ],
+  "scrub": {
+    "collection_count": "\u7b2c\n/ 5847\n\u5b9a\u4f4d",
+    "gesture_ms": 507.9,
+    "release_to_metadata_ms": 192.1,
+    "metadata_requests": 1,
+    "note": "Programmatic continuous scrollbar-position changes, not physical touch. Metadata ready is not image decode time.",
+    "mounted": 17
+  },
+  "errors": []
+}

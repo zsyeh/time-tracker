@@ -61,3 +61,11 @@
 ## 6. 流程成效记录
 
 每轮只记开始→上线墙钟、校验时长、构建次数、备份范围/复用与并行情况、回滚入口。若校验超过60秒，说明具体必要风险及实际耗时，不写空泛“继续全面测试”。复盘事实：[2026-11-13](../docs/engineering/2026-11-13-preview-postmortem.md)。
+
+## 7. 已验证环境与本次新增约束（2026-11-13）
+
+- 本NUC没有默认npm PATH。直接复用Node22容器：项目挂到/work，`/home/eh/ui-rebuild-node-modules`挂到`/work/frontend/node_modules`，workdir `/work/frontend`，无需重新安装依赖。
+- Playwright复用 `/home/eh/ei-page-tracking/browser-env/bin/python`，Chromium显式 `executable_path='/usr/bin/google-chrome'`、`args=['--no-sandbox']`；不要假设下载的headless-shell存在。生产CSP下wait_for_function必须传箭头函数，避免表达式的eval路径；不得为探针放宽CSP。
+- 开发/备份/构建可以并行；部署重启与线上浏览器冒烟有严格依赖，健康通过再开探针，避免服务切换使验收误失败。
+- 紧凑控件先看展开状态、英文和父子容器共同生效的实际截图；仅默认折叠状态不算诊断布局验收。
+- [本轮计时](../docs/quick-ui-20261113/README.md)：首次上线6分21秒，最终补修9分05秒；相关自动化gate43.57秒、用户备份2秒。两次上线是可避免的返工，下一轮优先减少这类补发。

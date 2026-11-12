@@ -1,0 +1,47 @@
+[
+  {
+    "width": 390,
+    "overflow": false,
+    "panelHeight": 410.625,
+    "selectionHeights": [
+      44,
+      44,
+      44,
+      44,
+      44,
+      44,
+      44,
+      44
+    ]
+  },
+  {
+    "width": 820,
+    "overflow": false,
+    "panelHeight": 268.34375,
+    "selectionHeights": [
+      44,
+      44,
+      44,
+      44,
+      44,
+      44,
+      44,
+      44
+    ]
+  },
+  {
+    "width": 1180,
+    "overflow": false,
+    "panelHeight": 410.625,
+    "selectionHeights": [
+      44,
+      44,
+      44,
+      44,
+      44,
+      44,
+      44,
+      44
+    ]
+  }
+]
