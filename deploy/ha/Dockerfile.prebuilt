@@ -1,0 +1,11 @@
+# Only use when requirements.txt matches the verified base release exactly.
+# BASE_IMAGE must resolve locally to the retained, recorded production image ID.
+# That image has no ENTRYPOINT. No migrations run during this image build.
+ARG BASE_IMAGE
+FROM ${BASE_IMAGE}
+ARG SOURCE_REVISION
+LABEL org.opencontainers.image.revision=${SOURCE_REVISION}
+WORKDIR /app
+COPY . .
+RUN DJANGO_SECRET_KEY=prebuilt-image-build-only DJANGO_DEBUG=false \
+    python manage.py collectstatic --noinput

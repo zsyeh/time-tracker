@@ -1,6 +1,6 @@
 import json
 from django.core.management.base import BaseCommand, CommandError
-from django.db import transaction
+from django.db import connection
 from drill.models import Question, QuestionSearchDirty, QuestionSearchState
 from drill.search.index import (index_batch, projection, source_version, aliases_hash, manifest_data,
                                 verify_workspace, worker_lock)
@@ -54,6 +54,13 @@ class Command(BaseCommand):
                     QuestionSearchState.objects.filter(pk=state.pk).update(rebuild_last_pk=last)
                     self.stdout.write(json.dumps({'workspace':workspace,'completed':completed,'last_pk':last}))
                 QuestionSearchState.objects.filter(pk=state.pk).update(rebuilding=False)
+                if connection.vendor=='postgresql':
+                    # Refresh only disposable-index planner statistics after a
+                    # bulk build. This is part of deployment, not benchmark-only
+                    # tuning; original Question/learning tables are untouched.
+                    with connection.cursor() as cursor:
+                        for table in ('drill_questionsearchdocument','drill_questionsearchlexeme','drill_questionsearchdirty'):
+                            cursor.execute('ANALYZE '+connection.ops.quote_name(table))
                 if options['verify']:
                     result=verify_workspace(workspace)
                     self.stdout.write(json.dumps(result))

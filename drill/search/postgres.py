@@ -6,9 +6,10 @@ FIELDS = (('labels_norm',1,6),('book_norm',2,4),('topics_norm',4,1),('body_norm'
 
 
 class SearchExpression(Expression):
-    def __init__(self, plan, operation='matches', prefix='search_document__'):
+    def __init__(self, plan, operation='matches', prefix='search_document__', *, materialize_masks=True):
         super().__init__(output_field=BooleanField() if operation == 'matches' else IntegerField())
         self.plan, self.operation = plan, operation
+        self.materialize_masks=materialize_masks
         self.parts = [F(prefix+'terms'), *[KeyTextTransform('direct_topics_norm',F(prefix+'coverage'))
             if name=='direct_topics_norm' else F(prefix+name) for name, _, _ in FIELDS]]
 
@@ -30,8 +31,17 @@ class SearchExpression(Expression):
             else:
                 columns.append(compiler.compile(part)[0])
         terms = columns[0]
+        # Public source text can make the JSON projection a TOAST value. Fetching
+        # the same field mask for every score branch repeatedly detoasts it. A
+        # non-flattened, one-row subquery extracts each requested mask once; it
+        # does not alter membership, tier, weights or the stable ordering.
+        score_keys=sorted({key for group in self.plan.groups for variant in group for key in variant.keys}
+            | ({'id:'+self.plan.exact_identifier} if self.plan.exact_identifier else set()))
+        cached_masks={key:f'_search_masks.k{n}' for n,key in enumerate(score_keys)} if connection.vendor=='postgresql' and self.operation=='score' and self.materialize_masks else {}
         def mask(key, bit):
             if connection.vendor == 'postgresql':
+                if cached_masks:
+                    return f'((COALESCE({cached_masks[key]},0) & {bit}) <> 0)',[]
                 return f"((COALESCE(({terms}->>%s)::integer,0) & {bit}) <> 0)", [key]
             return f"((COALESCE(json_extract({terms}, %s),0) & {bit}) <> 0)", ['$.'+'"'+key.replace('"','\\"')+'"']
         def variant_sql(variant, bit=None, col=None):
@@ -40,7 +50,10 @@ class SearchExpression(Expression):
             params, clauses = [], []
             if bit is None:
                 if connection.vendor == 'postgresql':
-                    clauses.append(f'{terms} ?& %s::text[]'); params.append(list(variant.keys))
+                    if cached_masks:
+                        clauses.extend(f'{cached_masks[key]} IS NOT NULL' for key in variant.keys)
+                    else:
+                        clauses.append(f'{terms} ?& %s::text[]'); params.append(list(variant.keys))
                 else:
                     for key in variant.keys:
                         sql, args = mask(key, 63); clauses.append(sql); params.extend(args)
@@ -102,4 +115,14 @@ class SearchExpression(Expression):
         scores.append(f'(CASE WHEN {check} THEN 4000 ELSE 0 END)')
         needle='\x1f'+self.plan.normalized+'\x1f'
         score_params.extend([needle,'\x1f','\x1f'] if connection.vendor=='postgresql' else ['\x1f','\x1f',needle])
-        return '('+'+'.join(scores)+')',score_params
+        sql='('+'+'.join(scores)+')'
+        if cached_masks:
+            # Multiple keys still decompress a toasted JSON value once per key.
+            # Concatenating the empty object preserves the projection exactly
+            # and yields one inline value behind an optimizer boundary.
+            inline=len(score_keys)>=3
+            mask_terms='_search_terms.terms' if inline else terms
+            extracted=', '.join(f'({mask_terms}->>%s)::integer AS k{n}' for n,_ in enumerate(score_keys))
+            source=(" FROM (SELECT "+terms+" || '{}'::jsonb AS terms OFFSET 0) _search_terms" if inline else '')
+            return '(SELECT '+sql+' FROM (SELECT '+extracted+source+' OFFSET 0) _search_masks)',score_params+score_keys
+        return sql,score_params

@@ -7,7 +7,7 @@ import datetime
 from contextlib import contextmanager
 from copy import deepcopy
 from django.conf import settings
-from django.core.exceptions import ImproperlyConfigured
+from django.core.exceptions import EmptyResultSet, ImproperlyConfigured
 from django.db import connection, transaction
 from django.db.models import Count, Exists, F, OuterRef, Q, Subquery, Value
 from django.db.models.expressions import RawSQL
@@ -45,6 +45,10 @@ def read_snapshot():
                     cursor.execute('SHOW transaction_isolation')
                     if cursor.fetchone()[0] != 'repeatable read':
                         raise ImproperlyConfigured('Search must enter read_snapshot before its first SQL, outside an unrelated atomic block.')
+                if getattr(settings,'DRILL_SEARCH_BACKEND','legacy')=='hybrid_v1':
+                    # Short OLTP search requests cannot amortize JIT compilation.
+                    # Transaction-local only; no global database tuning change.
+                    cursor.execute('SET LOCAL jit = off')
         yield
 
 
@@ -134,9 +138,21 @@ def typo_candidates(workspace, token):
 
 def expand_typos(queryset, plan, workspace):
     from .normalize import aliases
+    # Only a single Latin literal can acquire an English spelling candidate.
+    # Chinese/identifier/formula-only plans otherwise paid for a scoped five-ID
+    # probe whose result could never change the plan (and LIMIT can pick a poor
+    # nested-loop plan on a broad Chinese match).
+    eligible=[group for group in plan.groups if group and len(group[0].keys)==1
+        and group[0].keys[0].startswith('en:') and group[0].keys[0][3:].isascii()
+        and group[0].keys[0][3:].isalpha() and len(group[0].keys[0][3:])>=3]
+    if not plan.raw or not eligible:
+        if len(plan.corrected_terms)!=len(set(plan.corrected_terms)):
+            plan=deepcopy(plan)
+            plan.corrected_terms=list(dict.fromkeys(plan.corrected_terms))
+        return plan
     probe=deepcopy(plan)
     probe.groups=[[variant for variant in group if variant.tier<=2] for group in plan.groups]
-    if not plan.raw or len(list(hybrid_membership(queryset,probe,workspace).order_by().values_list('pk',flat=True)[:5])) >= 5:
+    if len(list(hybrid_membership(queryset,probe,workspace).order_by().values_list('pk',flat=True)[:5])) >= 5:
         return plan
     plan=deepcopy(plan)
     for group in plan.groups:
@@ -196,13 +212,77 @@ def membership(queryset, request, workspace, *, expand=True):
     return queryset,plan,state,version,hybrid
 
 
-def aggregate_types(queryset,user, *, coverage=False):
+def _aggregate_type_rows_reference(queryset,user, *, coverage=False):
     latest=QuestionAttempt.objects.filter(user=user,question_id=OuterRef('pk')).order_by('-created_at','-pk')
     extra={'metadata_only':Count('pk',filter=Q(search_document__coverage__has_prompt=False,search_document__coverage__has_latex=False),distinct=True)} if coverage else {}
-    rows=list(with_exam_type(queryset).alias(_stats_latest=Subquery(latest.values('result')[:1])).order_by().values('final_question_type').annotate(
+    return list(with_exam_type(queryset).alias(_stats_latest=Subquery(latest.values('result')[:1])).order_by().values('final_question_type').annotate(
         total=Count('pk',distinct=True),attempted=Count('pk',filter=Q(_stats_latest__in=('done','correct','review')),distinct=True),
         mastered=Count('pk',filter=Q(_stats_latest__in=('done','correct')),distinct=True),
         review=Count('pk',filter=Q(_stats_latest='review'),distinct=True),**extra))
+
+
+def _aggregate_type_rows_postgres(queryset,user, *, coverage=False,broad_scope=False):
+    # Materialize only live, scoped IDs/type/coverage. A set-based latest-attempt
+    # relation is evaluated once, rather than repeating the same correlated
+    # Subquery for every COUNT FILTER and every question in a broad catalog.
+    # Both relations remain inside the request's repeatable-read snapshot.
+    thin=with_exam_type(queryset).annotate(_stats_id=F('pk')).order_by()
+    columns=['_stats_id','final_question_type']
+    if coverage and not broad_scope:
+        thin=thin.annotate(_metadata_only=Q(search_document__coverage__has_prompt=False,
+            search_document__coverage__has_latex=False))
+        columns.append('_metadata_only')
+    try:
+        source=thin.values(*columns)
+        source_sql,source_params=source.query.sql_with_params()
+    except EmptyResultSet:
+        return []
+    attempt_table=connection.ops.quote_name(QuestionAttempt._meta.db_table)
+    # FK and reverse one-to-one joins preserve one row per source Question.
+    # Retain DISTINCT for any multiplying/unknown join (including future filters)
+    # and explicit extra tables. Proven unique scopes can use a hash aggregate
+    # instead of sorting 70k IDs separately for every count.
+    multiplying=bool(source.query.extra_tables) or any(
+        not (getattr(join.join_field,'many_to_one',False) or getattr(join.join_field,'one_to_one',False))
+        for alias,join in source.query.alias_map.items()
+        if source.query.alias_refcount.get(alias) and hasattr(join,'join_field'))
+    count='COUNT(DISTINCT scope._stats_id)' if multiplying else 'COUNT(*)'
+    metadata_join=''
+    metadata_field='scope._metadata_only'
+    if coverage and broad_scope:
+        # A full catalog counts most projections. Its coverage count needs only
+        # metadata-only IDs, served by the small partial index (0039), rather
+        # than fetching wide projections for every question. Narrow searches
+        # retain the indexed join above.
+        projection_table=connection.ops.quote_name(QuestionSearchDocument._meta.db_table)
+        metadata_join=(' LEFT JOIN (SELECT question_id FROM '+projection_table+
+            " WHERE coverage->'has_prompt'='false'::jsonb AND coverage->'has_latex'='false'::jsonb OFFSET 0) search_coverage ON search_coverage.question_id=scope._stats_id")
+        metadata_field='search_coverage.question_id IS NOT NULL'
+    metadata=(', '+count+' FILTER (WHERE '+metadata_field+') AS metadata_only' if coverage else '')
+    sql='''WITH search_scope AS MATERIALIZED ('''+source_sql+'''),
+        latest AS (
+            SELECT DISTINCT ON (attempt.question_id) attempt.question_id, attempt.result
+            FROM '''+attempt_table+''' attempt INNER JOIN search_scope ON search_scope._stats_id=attempt.question_id
+            WHERE attempt.user_id=%s
+            ORDER BY attempt.question_id, attempt.created_at DESC, attempt.id DESC
+        )
+        SELECT scope.final_question_type, '''+count+''' AS total,
+            '''+count+''' FILTER (WHERE latest.result IN ('done','correct','review')) AS attempted,
+            '''+count+''' FILTER (WHERE latest.result IN ('done','correct')) AS mastered,
+            '''+count+''' FILTER (WHERE latest.result='review') AS review
+            '''+metadata+'''
+        FROM search_scope scope LEFT JOIN latest ON latest.question_id=scope._stats_id
+        '''+metadata_join+'''
+        GROUP BY scope.final_question_type'''
+    with connection.cursor() as cursor:
+        cursor.execute(sql,(*source_params,user.pk))
+        names=[column[0] for column in cursor.description]
+        return [dict(zip(names,row)) for row in cursor.fetchall()]
+
+
+def aggregate_types(queryset,user, *, coverage=False,broad_scope=False):
+    rows=(_aggregate_type_rows_postgres(queryset,user,coverage=coverage,broad_scope=broad_scope)
+        if connection.vendor=='postgresql' else _aggregate_type_rows_reference(queryset,user,coverage=coverage))
     stats={key:{'total':0,'attempted':0,'mastered':0,'review':0} for key in GROUPS}
     for row in rows:
         bucket=stats[type_group(row['final_question_type'])]
@@ -250,7 +330,9 @@ def question_list_response(request):
         if params.get('past_exam')=='1':
             queryset=queryset.filter(source_category='past_exam')
         queryset,plan,state,version,hybrid=membership(queryset,request,workspace)
-        stats,type_rows=aggregate_types(queryset,request.user,coverage=hybrid)
+        broad_scope=not plan.raw and params.get('status','all') in ('','all') and not any(params.get(key)
+            for key in ('collection','document','topic','source_category','past_exam','unattempted','favorite','review_later','marker'))
+        stats,type_rows=aggregate_types(queryset,request.user,coverage=hybrid,broad_scope=broad_scope)
         queryset=filter_exam_type(queryset,params)
         count=sum(row['total'] for row in type_rows if (not params.get('exam_type') or row['final_question_type']==params['exam_type'])
             and (not params.get('type_group') or type_group(row['final_question_type'])==params['type_group']))

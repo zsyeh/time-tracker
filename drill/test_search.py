@@ -177,6 +177,44 @@ class SearchAPITests(TestCase):
     def test_zero_does_not_hydrate(self):
         with patch('drill.views.question_progress',side_effect=AssertionError('zero hydrate')):
             self.assertEqual(self.search('zzzznonexistent')['count'],0)
+    def test_non_latin_plans_do_not_execute_typo_probe(self):
+        from .search.service import expand_typos
+        for raw in ('导数','偏到数',r'\delta(t-t_0)','1-2',str(self.items[0].uuid),'fo',''):
+            plan=parse_query(raw)
+            with self.subTest(query=raw),self.assertNumQueries(0):
+                self.assertIs(expand_typos(Question.objects.all(),plan,'drill'),plan)
+    def test_materialized_score_preserves_every_score_and_order(self):
+        from .search.postgres import SearchExpression
+        from .search.service import expand_typos
+        for raw in ('导数','Fourier transform','fourer','RS触发器','多元微分 偏导数',r'\partial','1-2',str(self.items[0].uuid)):
+            plan=expand_typos(Question.objects.filter(document=self.doc),parse_query(raw),'drill')
+            queryset=QuestionSearchDocument.objects.filter(workspace='drill').annotate(
+                optimized=SearchExpression(plan,'score',prefix=''),
+                reference=SearchExpression(plan,'score',prefix='',materialize_masks=False))
+            with self.subTest(query=raw):
+                rows=list(queryset.values_list('optimized','reference'))
+                self.assertTrue(all(left==right for left,right in rows))
+                self.assertEqual(list(queryset.order_by('-optimized','pk').values_list('pk',flat=True)),
+                    list(queryset.order_by('-reference','pk').values_list('pk',flat=True)))
+    def test_set_aggregate_matches_correlated_reference(self):
+        if connection.vendor!='postgresql':
+            self.skipTest('PostgreSQL materialized aggregate against portable reference')
+        from .search.service import _aggregate_type_rows_postgres,_aggregate_type_rows_reference
+        now=timezone.now()
+        for n,result in enumerate(('done','correct','review','reset')):
+            QuestionAttempt.objects.create(user=self.user,question=self.items[n],result='review',created_at=now)
+            QuestionAttempt.objects.create(user=self.user,question=self.items[n],result=result,created_at=now)
+            QuestionAttempt.objects.create(user=self.other,question=self.items[n],result='correct',created_at=now)
+        scopes=[Question.objects.filter(document=self.doc),Question.objects.filter(document=self.ei),
+            Question.objects.filter(document=self.doc,attempts__isnull=False),Question.objects.none(),
+            Question.objects.filter(pk=self.items[11].pk)]
+        for queryset in scopes:
+            for coverage in (False,True):
+                for broad_scope in (False,True):
+                    with self.subTest(coverage=coverage,broad_scope=broad_scope,query=str(queryset.query) if not queryset.query.is_empty() else 'empty'):
+                        key=lambda row:row['final_question_type']
+                        self.assertEqual(sorted(_aggregate_type_rows_postgres(queryset,self.user,coverage=coverage,broad_scope=broad_scope),key=key),
+                            sorted(_aggregate_type_rows_reference(queryset,self.user,coverage=coverage),key=key))
     def test_suggestions_and_disabled_legacy(self):
         data=self.client.get('/api/drill/search/suggestions/',{'q':'数学'}).data
         self.assertEqual(data['results'][0]['kind'],'document')
