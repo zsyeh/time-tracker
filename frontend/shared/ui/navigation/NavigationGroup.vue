@@ -1,0 +1,5 @@
+<script setup lang="ts">
+import{ref,watch}from'vue';const props=withDefaults(defineProps<{label:string;collapsible?:boolean;expanded?:boolean;storageKey?:string}>(),{expanded:true,collapsible:false});const open=ref(props.expanded);if(props.storageKey){try{const v=localStorage.getItem(props.storageKey);if(v!==null)open.value=v==='true'}catch{}}watch(open,v=>{if(props.storageKey)try{localStorage.setItem(props.storageKey,String(v))}catch{}})
+</script>
+<template><section class="ui-navigation-group"><button v-if="collapsible" type="button" :aria-expanded="open" @click="open=!open">{{ label }}<span aria-hidden="true">{{ open?'⌄':'›' }}</span></button><h2 v-else>{{ label }}</h2><div v-show="open"><slot/></div></section></template>
+<style scoped>.ui-navigation-group{margin-top:16px}.ui-navigation-group h2,.ui-navigation-group>button{display:flex;justify-content:space-between;width:100%;min-height:32px;margin:0;padding:4px 10px;border:0;background:transparent;color:var(--text-tertiary);font:500 12px/20px var(--font-ui);text-align:left}.ui-navigation-group>button{cursor:pointer}.ui-navigation-group>button:hover{color:var(--text-primary)}</style>

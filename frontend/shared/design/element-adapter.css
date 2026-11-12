@@ -1,0 +1,9 @@
+:root {
+  --el-color-primary:var(--accent-ink);--el-color-primary-light-3:var(--accent-ink);--el-color-primary-light-5:var(--accent-ink);--el-color-primary-light-7:var(--surface-selected);--el-color-primary-light-9:var(--surface-subtle);--el-color-primary-dark-2:var(--accent-ink);
+  --el-color-success:var(--status-success);--el-color-warning:var(--status-review);--el-color-danger:var(--status-danger);
+  --el-bg-color:var(--surface-page);--el-bg-color-overlay:var(--surface-elevated);--el-fill-color-blank:var(--surface-page);--el-fill-color-light:var(--surface-hover);--el-fill-color-lighter:var(--surface-subtle);--el-fill-color-dark:var(--surface-sidebar);
+  --el-border-color:var(--border-default);--el-border-color-light:var(--border-subtle);--el-text-color-primary:var(--text-primary);--el-text-color-regular:var(--text-secondary);--el-text-color-secondary:var(--text-tertiary);
+  --el-mask-color:var(--overlay-dim);--el-border-radius-base:var(--radius-control);--el-border-radius-small:4px;--el-font-size-base:14px;--el-component-size:36px;
+}
+.el-button--primary { --el-button-bg-color:var(--accent-solid);--el-button-text-color:var(--accent-on-solid);--el-button-border-color:transparent;--el-button-hover-bg-color:var(--accent-solid);--el-button-hover-text-color:var(--accent-on-solid);--el-button-hover-border-color:transparent; }
+@media(pointer:coarse) { :root { --el-component-size:44px; } }
