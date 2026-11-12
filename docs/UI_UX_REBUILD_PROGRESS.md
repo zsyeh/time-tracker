@@ -3,8 +3,8 @@
 - Baseline: `6b83e2924b9042e75e87bc091ea7f24e0948f8ee`.
 - Integration branch/worktree: `ui-rebuild/integration`, `/home/eh/ui-rebuild-20261112`.
 - Authorization: user message “开始按照要求工作和部署提交 注意留回滚” authorizes implementation, commits and deployment with rollback. It supersedes the preceding research-only restriction; Phase 8 gates still apply.
-- Production rechecked: `time-tracker-ha:20261112-design-6b83e29`, healthy; service active; no production changes yet.
-- Current phase: P01–P08 implementation/integration complete; final code `9df573e`; P09 verified backup/image build, production release in progress. 10× typo p95 variance and physical Safari limits are tracked in the release record.
+- Production released: `time-tracker-ha:20261112-rebuild-9df573e`, healthy;20:55:45 Asia/Shanghai. Old image/config/PWA and verified full backup retained.
+- Current phase: P01–P09 delivered, source and evidence pushed. Application source `9df573e`;31/31 production HTTPS checks passed; worker success. 10× typo p95 variance and physical Safari limits remain explicitly tracked in the release record.
 - Dependencies: isolated frontend packages in `/home/eh/ui-rebuild-node-modules`; do not modify the previous worktree's dependency symlink.
 
 ## Ownership
@@ -16,8 +16,8 @@
 | implement_pages | Timer Settings/GlobalSearch, Drill Settings/Practice/filter/composable/tests | P03/P04 | complete |
 | implement_practice | Question/DiagnosisSelector/PracticeActionToolbar/Reader/LearningSharePanel/tests | P06 | complete |
 | implement_practice + implement_pages | Heatmap/Insight/statistics/low-frequency pages | P07 | complete |
-| plan_review | read only candidate, tests/evidence | P08 | UI passed; search final review |
-| Main | backups, migrations, image/PWA publish, health/rollback | P09 | restore passed; release pending |
+| plan_review | read only candidate, tests/evidence | P08 | complete: UI, final SQL and release-script review |
+| Main | backups, migrations, image/PWA publish, health/rollback | P09 | deployed;31 HTTPS checks/worker success; rollback retained |
 
 ## Baseline evidence
 
@@ -68,3 +68,9 @@ Read Master §11–18 and §22–30, this ledger, git status/diff and active age
 - All ten accents were actually selected and reloaded in Light/Dark; neutral surfaces unchanged. Final Question/Reader/menu/PWA emulation checks passed.
 - Private encrypted10k final warm p95423–466ms now passes500ms. 93k directory172–199ms; one typo case433–527ms remains a disclosed10× load tail risk. Cold worker samples638–680ms retained, never relabeled as warm.
 - Source commit9df573e includes reversible0039 concurrent partial index on derived metadata-only IDs and no statistical formula change. Production package SHA256501f9ac1c8e7d5ce32cd93c0a9620172bc5277af44b589a22843ccd031912432.
+
+## Production completion
+- Release20:55:45 Asia/Shanghai; imageeaec8c27f86b, source9df573e. Migrations0036–0039 applied;9281 derived rows, pending0, both workspaces verified ready.
+-31 authenticated HTTPS checks passed; no study submission/timer/share was created by the smoke. Temporary session removed. Worker forced run succeeded0; timer active; PostgreSQL not restarted.
+-98 edge returned the exact new bundle hash; no edge configuration changed. PWA navigation file hash matches the repository.
+- Full details/evidence/rollback command: [UI_UX_REBUILD_RELEASE.md](UI_UX_REBUILD_RELEASE.md). Physical Safari and10× typo tail risk remain disclosed, not marked as verified passes.

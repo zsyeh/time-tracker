@@ -1,0 +1,28 @@
+{
+  "released_at_utc": "2026-11-12T12:55:45Z",
+  "branch": "ui-rebuild/integration",
+  "application_revision": "9df573e4a70cc5cf9f70a9c232c84470c4f2afb7",
+  "image": "time-tracker-ha:20261112-rebuild-9df573e",
+  "image_id": "sha256:eaec8c27f86b658a5a7f718aa198f82049563d6d391217013b5aa524a07c34cf",
+  "health": "healthy",
+  "oom_killed": false,
+  "worker_result": "success",
+  "worker_exit": 0,
+  "search_documents": 9281,
+  "pending": 0,
+  "migrations": [
+    "0036_question_search_projection",
+    "0037_search_dirty_triggers",
+    "0038_search_postgres_indexes",
+    "0039_search_metadata_coverage_index"
+  ],
+  "edge_98_new_bundle": {
+    "status": 200,
+    "bytes": 1032622,
+    "sha256": "4fa193f420eb7c183fe51687f9fa63e4fc150c14158e38a7003b196aa63a71cb",
+    "matches_local": true
+  },
+  "rollback_script": "/var/snap/docker/common/time-tracker-ha/releases/rollback-ui-rebuild.sh",
+  "backup": "/var/snap/docker/common/time-tracker-ha/backups/ui-rebuild-20261112",
+  "physical_ios_verified": false
+}

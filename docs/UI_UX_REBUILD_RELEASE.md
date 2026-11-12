@@ -84,3 +84,37 @@ Application rollback is `deploy/ha/ui-rebuild-rollback.sh BACKUP_DIRECTORY`. It 
 Application source: `9df573e4a70cc5cf9f70a9c232c84470c4f2afb7`. The final image was built on47 from the verified retained base (identical requirements.txt), with both prebuilt frontends; no registry dependency or migration was executed by the Docker build. Archive SHA256 `501f9ac1c8e7d5ce32cd93c0a9620172bc5277af44b589a22843ccd031912432`.
 
 Production preflight passed (only existing HSTS include/preload recommendations). Additive migrations0036–0039 applied successfully while the old application remained healthy. Verified backfill and application cutover/smoke are recorded below after execution.
+
+### Production release completed
+
+- **2026-11-12 20:55:45 Asia/Shanghai**, application `9df573e4a70cc5cf9f70a9c232c84470c4f2afb7` deployed as `time-tracker-ha:20261112-rebuild-9df573e`. Image ID `sha256:eaec8c27f86b658a5a7f718aa198f82049563d6d391217013b5aa524a07c34cf`; healthy, OOM=false.
+- Migrations0036–0039 applied. Rebuild and independent final verifier completed; the final verifier's Docker exit event was0. Both workspaces ready=true/rebuilding=false;9281 derived documents; pending0. The first SSH streaming preparation log is partial; independent final database state and verifier exit evidence were used, rather than interpreting the incomplete stream as success. Read-only stack inspection identified repeated ancestor topic lookups during verification; no source modification was needed.
+- **31/31 authenticated HTTPS checks returned200**, including direct SPA refresh, both progress pages, settings, search/suggestions, statistics, recovery and actual JS/CSS/bootstrap/PWA files. Only GET requests were sent; the temporary authenticated session was removed in finally. See [smoke evidence](uiux-rebuild-implementation/production/https-smoke.json). These single production measurements are not a p95 benchmark.
+- Worker explicitly executed: Result=success, ExecMainStatus=0; timer active. PostgreSQL remained active throughout and was not restarted. [Final status](uiux-rebuild-implementation/production/status.txt).
+- 98 TLS ingress returned200 and served the exact new Drill bundle:1032622bytes, SHA256 `4fa193f420eb7c183fe51687f9fa63e4fc150c14158e38a7003b196aa63a71cb`, matching the local build. No edge configuration was changed. An existing private share URL was not opened and no new share was created.
+- Source Question count9281 and TimeLog count6528 remain consistent with backup; Attempt count increased1324→1340 between backup and final smoke while the existing application remained available. No restoration or learning-record rewrite occurred. **Normal rollback must retain these newer records.**
+- Source/evidence commits were pushed to `origin/ui-rebuild/integration`; master and other task branches were not overwritten. [Complete file list](uiux-rebuild-implementation/CHANGED_FILES.txt).
+
+#### Operator rollback
+
+Run on47 asroot:
+
+```sh
+/var/snap/docker/common/time-tracker-ha/releases/rollback-ui-rebuild.sh \
+  /var/snap/docker/common/time-tracker-ha/backups/ui-rebuild-20261112
+```
+
+The retained old image is `time-tracker-ha:20261112-design-6b83e29`. This restores only application image/config/PWA and stops the new queue timer. It leaves additive search tables and all newer learning records intact. A full verified dump is available for disaster recovery; do not use it for an ordinary application rollback.
+
+#### Commit sequence
+
+| Commit | Scope |
+|---|---|
+| f613a41 | Master plan and execution baseline |
+| 9f9f676 | Shared neutral design and appearance |
+| 8164d9f | Settings, filters, pages and practice controls |
+| 94b255b | Navigation and visual regressions |
+| f50a852 | Hybrid search and bounded maintenance |
+| 9df573e | Final search SQL/index performance; deployed application |
+| c415dcc | Final regression, visual and search evidence |
+| Subsequent documentation commit | Actual production status and rollback record; no application change |
