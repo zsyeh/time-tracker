@@ -1,0 +1,23 @@
+{
+  "source_revision": "89d52bd",
+  "archive_sha256": "a246a60939a8213ca9ba11327c7656dfbaea2a6dbc802a64c44fcf00380a039a",
+  "drill_index_sha256": "3350ab2c1ba00bdf008bb884b9e916553e1b2d98f1c482bfcdbda33122555f70",
+  "archive_excludes_docs": true,
+  "frontend_tests": 320,
+  "frontend_files": 62,
+  "postgres_preferences_tests": 35,
+  "sqlite_passed": 34,
+  "sqlite_skipped": 1,
+  "database_migration_required": false,
+  "deployed_image": "time-tracker-ha:20261113-copy-scale-89d52bd",
+  "image_id": "sha256:ce8af3d241398288cf779e1089718a84bfe0c36b775fd53e0b97d9e3233cd8f8",
+  "health": "healthy",
+  "oom_killed": false,
+  "deploy_exit": 0,
+  "core_checks": 31,
+  "preference_checks": 8,
+  "migration_plan": "No planned migration operations.",
+  "queue_result": "success",
+  "rollback_directory": "/var/snap/docker/common/time-tracker-ha/backups/round2-copy-scale-20261113",
+  "rollback_source_revision": "46e9d81"
+}

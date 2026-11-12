@@ -1,0 +1,15 @@
+{
+  "pass": true,
+  "real_https": true,
+  "checks": [
+    "two-session-field-merge",
+    "same-field-stale-conflict",
+    "drill-ei-sidebar-filter-roundtrip",
+    "progress-goals-two-session-conflict-and-account-isolation",
+    "custom-copy-scale-two-device-account-isolation-and-validation",
+    "account-isolation-and-affinity",
+    "all-three-server-first-private-shells",
+    "logout-session-boundary"
+  ],
+  "temporary_accounts_cleaned_in_finally": true
+}

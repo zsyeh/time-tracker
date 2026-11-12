@@ -39,6 +39,26 @@ and disposable Django/PG8027 respectively. Session files stay private outside Gi
 
 ## Release
 
-Final image, production smoke and concrete rollback are recorded below after cutover.
+Deployed source`89d52bd`, image`time-tracker-ha:20261113-copy-scale-89d52bd`,
+healthy,OOM=false,deploy-exit0, no planned migration operations, queue succeeded.
+[Release record](release.json). Final HTTPS checks:31core and8preference groups passed;
+custom3.5 is observed from both workspaces, independent accounts remain1, stale
+same-field update409s, invalid9/huge-integer requests400. Private shell bootstrap also
+contains3.5 before the appearance script. Temporary users/sessions are cleaned in finally.
+[Core smoke](production-smoke.json),[preference smoke](preferences-smoke.json),
+[98edge three current asset hashes](edge-static.json),[changed files](CHANGED_FILES.txt).
+
+Rollback on47 (application/PWA/queue only, never reverse DB or overwrite study rows):
+
+```sh
+sh /var/snap/docker/common/time-tracker-ha/releases/copy-scale-89d52bd/deploy/ha/round2-rollback.sh \
+ /var/snap/docker/common/time-tracker-ha/backups/round2-copy-scale-20261113
+```
+
+This restores46e9d81. A fresh pre-cutover preference dump and app/queue/PWA metadata
+are retained privately; the previously verified full DB dump is referenced by symlink,
+not misrepresented as a new full backup. Synthetic375/820/1180 screenshots are uploaded
+to`eh@20.222.88.115:/home/eh/learning-os-round2-screenshots/copy-scale/`.
+
 The existing Round2 report remains a dated record of46e9d81; its native-device and
 performance gaps are not silently closed by this incremental feature.

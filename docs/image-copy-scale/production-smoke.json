@@ -1,0 +1,204 @@
+{
+  "success": true,
+  "checks": [
+    {
+      "path": "/drill/practice",
+      "status": 200,
+      "ms": 49.3,
+      "bytes": 3508
+    },
+    {
+      "path": "/drill/progress",
+      "status": 200,
+      "ms": 22.9,
+      "bytes": 3508
+    },
+    {
+      "path": "/drill/heatmap",
+      "status": 200,
+      "ms": 20.8,
+      "bytes": 3508
+    },
+    {
+      "path": "/drill/insight",
+      "status": 200,
+      "ms": 37.6,
+      "bytes": 3508
+    },
+    {
+      "path": "/drill/settings",
+      "status": 200,
+      "ms": 20.5,
+      "bytes": 3508
+    },
+    {
+      "path": "/ei/practice",
+      "status": 200,
+      "ms": 20.3,
+      "bytes": 3508
+    },
+    {
+      "path": "/ei/progress",
+      "status": 200,
+      "ms": 22.6,
+      "bytes": 3508
+    },
+    {
+      "path": "/ei/settings",
+      "status": 200,
+      "ms": 22.0,
+      "bytes": 3508
+    },
+    {
+      "path": "/settings",
+      "status": 200,
+      "ms": 20.8,
+      "bytes": 3411
+    },
+    {
+      "path": "/today",
+      "status": 200,
+      "ms": 21.2,
+      "bytes": 3411
+    },
+    {
+      "path": "/static/app/assets/appearance.51a8bc4a9a99.js",
+      "status": 200,
+      "ms": 19.2,
+      "bytes": 9736
+    },
+    {
+      "path": "/static/app/assets/index-B0hKo9C3.js",
+      "status": 200,
+      "ms": 760.6,
+      "bytes": 595614
+    },
+    {
+      "path": "/static/app/assets/index-DI8pur0q.css",
+      "status": 200,
+      "ms": 806.7,
+      "bytes": 209485
+    },
+    {
+      "path": "/static/drill/assets/appearance.51a8bc4a9a99.js?v=1794499436000000000",
+      "status": 200,
+      "ms": 18.5,
+      "bytes": 9736
+    },
+    {
+      "path": "/static/drill/assets/index-C4KYT4G5.js?v=1794499436000000000",
+      "status": 200,
+      "ms": 3076.5,
+      "bytes": 1062439
+    },
+    {
+      "path": "/static/drill/assets/index-CCic94hU.css?v=1794499436000000000",
+      "status": 200,
+      "ms": 568.5,
+      "bytes": 197787
+    },
+    {
+      "path": "/pwa/navigation.js",
+      "status": 200,
+      "ms": 48.1,
+      "bytes": 5161
+    },
+    {
+      "path": "/drill/api/drill/catalog/",
+      "status": 200,
+      "ms": 375.8,
+      "bytes": 70996
+    },
+    {
+      "path": "/drill/api/drill/questions/?search_version=2",
+      "status": 200,
+      "ms": 134.0,
+      "bytes": 15254,
+      "count": 5847,
+      "index_version": "1:51fa21d76c342d3e:13"
+    },
+    {
+      "path": "/drill/api/drill/questions/?search_version=2&q=%E5%AF%BC%E6%95%B0",
+      "status": 200,
+      "ms": 237.1,
+      "bytes": 20680,
+      "count": 1335,
+      "index_version": "1:51fa21d76c342d3e:13"
+    },
+    {
+      "path": "/drill/api/drill/search/suggestions/?q=%E5%AF%BC%E6%95%B0",
+      "status": 200,
+      "ms": 27.3,
+      "bytes": 500
+    },
+    {
+      "path": "/drill/api/drill/practice-trends/",
+      "status": 200,
+      "ms": 71.1,
+      "bytes": 8024
+    },
+    {
+      "path": "/drill/api/drill/diagnostics/",
+      "status": 200,
+      "ms": 166.6,
+      "bytes": 5655
+    },
+    {
+      "path": "/ei/api/drill/catalog/",
+      "status": 200,
+      "ms": 71.4,
+      "bytes": 58780
+    },
+    {
+      "path": "/ei/api/drill/questions/?search_version=2",
+      "status": 200,
+      "ms": 61.2,
+      "bytes": 16903,
+      "count": 2830,
+      "index_version": "1:51fa21d76c342d3e:6"
+    },
+    {
+      "path": "/ei/api/drill/questions/?search_version=2&q=Fourier",
+      "status": 200,
+      "ms": 188.5,
+      "bytes": 19974,
+      "count": 115,
+      "index_version": "1:51fa21d76c342d3e:6"
+    },
+    {
+      "path": "/ei/api/drill/search/suggestions/?q=Fourier",
+      "status": 200,
+      "ms": 80.5,
+      "bytes": 71
+    },
+    {
+      "path": "/ei/api/drill/practice-trends/",
+      "status": 200,
+      "ms": 84.0,
+      "bytes": 7983
+    },
+    {
+      "path": "/ei/api/drill/diagnostics/",
+      "status": 200,
+      "ms": 99.6,
+      "bytes": 3838
+    },
+    {
+      "path": "/api/auth/session/",
+      "status": 200,
+      "ms": 22.2,
+      "bytes": 2076
+    },
+    {
+      "path": "/api/learning/recovery/",
+      "status": 200,
+      "ms": 22.9,
+      "bytes": 585
+    }
+  ],
+  "source_counts": {
+    "questions": 9281,
+    "attempts": 1347,
+    "timelogs": 6529
+  }
+}
