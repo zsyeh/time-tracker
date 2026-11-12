@@ -1,0 +1,486 @@
+{
+  "environment": "isolated localhost8035 production-prefix proxy/full production frontend/real PNGs; synthetic accounts only",
+  "cases": {
+    "favorite_origin_238_browser_back_next_and_refresh": {
+      "passed": false,
+      "error": "Page.wait_for_selector: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\".preview-question\") to be visible\n",
+      "trace": "Traceback (most recent call last):\n  File \"/home/eh/learning-os-preview/docs/collection-preview/integration/browser.py\", line 46, in run_case\n    try:report['cases'][name]={'passed':True,'result':await fn()};print('PASS',name,flush=True)\n                                                      ^^^^^^^^^^\n  File \"/home/eh/learning-os-preview/docs/collection-preview/integration/browser.py\", line 62, in favorite_roundtrip\n    await page.goto(BASE+'/drill/favorites');await page.locator('.preview-all').click();await ready_preview(page)\n                                                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/eh/learning-os-preview/docs/collection-preview/integration/browser.py\", line 20, in ready_preview\n    async def ready_preview(page):await page.wait_for_selector('.preview-question');await page.wait_for_timeout(450)\n                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/eh/ei-page-tracking/browser-env/lib/python3.13/site-packages/playwright/async_api/_generated.py\", line 21255, in wait_for_selector\n    await self._impl_obj.wait_for_selector(\n    ...<4 lines>...\n    )\n  File \"/home/eh/ei-page-tracking/browser-env/lib/python3.13/site-packages/playwright/_impl/_page.py\", line 431, in wait_for_selector\n    return await self._main_frame.wait_for_selector(**locals_to_params(locals()))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/eh/ei-page-tracking/browser-env/lib/python3.13/site-packages/playwright/_impl/_frame.py\", line 395, in wait_for_selector\n    await self._channel.send(\n        \"waitForSelector\", self._timeout, locals_to_params(locals())\n    )\n  File \"/home/eh/ei-page-tracking/browser-env/lib/python3.13/site-packages/playwright/_impl/_connection.py\", line 78, in send\n    return await self._connection.wrap_api_call(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<3 lines>...\n    )\n    ^\n  File \"/home/eh/ei-page-tracking/browser-env/lib/python3.13/site-packages/playwright/_impl/_connection.py\", line 636, in wrap_api_call\n    raise rewrite_error(error, f\"{parsed_st['apiName']}: {error}\") from None\nplaywright._impl._errors.TimeoutError: Page.wait_for_selector: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\".preview-question\") to be visible\n\n"
+    },
+    "history_attempt100_to99_same_uuid_preserves_timer": {
+      "passed": true,
+      "result": {
+        "before_url": "http://127.0.0.1:8035/drill/practice/53953db3-1909-5a31-94a3-2991d5593db6?list={%22version%22:1,%22workspace%22:%22drill%22,%22source%22:%22attempts%22,%22query%22:{},%22returnTo%22:%22/insight%22}&entry=attempt:100&position=0&from=preview",
+        "after_url": "http://127.0.0.1:8035/drill/practice/53953db3-1909-5a31-94a3-2991d5593db6?list={%22version%22:1,%22workspace%22:%22drill%22,%22source%22:%22attempts%22,%22query%22:{},%22returnTo%22:%22/insight%22}&entry=attempt:99&position=1&from=preview",
+        "timer_before": "0:02",
+        "timer_after": "0:03",
+        "timing_claim_or_pause_between": []
+      }
+    },
+    "ei_search_preview_practice_prefix": {
+      "passed": false,
+      "error": "Page.wait_for_selector: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\".preview-question\") to be visible\n",
+      "trace": "Traceback (most recent call last):\n  File \"/home/eh/learning-os-preview/docs/collection-preview/integration/browser.py\", line 46, in run_case\n    try:report['cases'][name]={'passed':True,'result':await fn()};print('PASS',name,flush=True)\n                                                      ^^^^^^^^^^\n  File \"/home/eh/learning-os-preview/docs/collection-preview/integration/browser.py\", line 99, in ei_prefix\n    query_before=urlparse(page.url).query;await page.locator('.preview-all').click();await ready_preview(page)\n                                                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/eh/learning-os-preview/docs/collection-preview/integration/browser.py\", line 20, in ready_preview\n    async def ready_preview(page):await page.wait_for_selector('.preview-question');await page.wait_for_timeout(450)\n                                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/eh/ei-page-tracking/browser-env/lib/python3.13/site-packages/playwright/async_api/_generated.py\", line 21255, in wait_for_selector\n    await self._impl_obj.wait_for_selector(\n    ...<4 lines>...\n    )\n  File \"/home/eh/ei-page-tracking/browser-env/lib/python3.13/site-packages/playwright/_impl/_page.py\", line 431, in wait_for_selector\n    return await self._main_frame.wait_for_selector(**locals_to_params(locals()))\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"/home/eh/ei-page-tracking/browser-env/lib/python3.13/site-packages/playwright/_impl/_frame.py\", line 395, in wait_for_selector\n    await self._channel.send(\n        \"waitForSelector\", self._timeout, locals_to_params(locals())\n    )\n  File \"/home/eh/ei-page-tracking/browser-env/lib/python3.13/site-packages/playwright/_impl/_connection.py\", line 78, in send\n    return await self._connection.wrap_api_call(\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n    ...<3 lines>...\n    )\n    ^\n  File \"/home/eh/ei-page-tracking/browser-env/lib/python3.13/site-packages/playwright/_impl/_connection.py\", line 636, in wrap_api_call\n    raise rewrite_error(error, f\"{parsed_st['apiName']}: {error}\") from None\nplaywright._impl._errors.TimeoutError: Page.wait_for_selector: Timeout 30000ms exceeded.\nCall log:\n  - waiting for locator(\".preview-question\") to be visible\n\n"
+    },
+    "filtered_unattempted_save_and_removed_entry_nearest": {
+      "passed": true,
+      "result": {
+        "saved": {
+          "index": 0,
+          "entry": "question:61af9093-8322-51db-99af-82c093532760",
+          "offset": 0,
+          "scrollTop": 0,
+          "cache": 50,
+          "mounted": 11,
+          "overflow": false
+        },
+        "restored": {
+          "index": 0,
+          "entry": "question:4c04c90a-08ab-5549-9845-f8e058dbb019",
+          "offset": 0,
+          "scrollTop": 0,
+          "cache": 49,
+          "mounted": 11,
+          "overflow": false
+        },
+        "count_before": 50,
+        "count_after": 49,
+        "practice_before": "http://127.0.0.1:8035/drill/practice/61af9093-8322-51db-99af-82c093532760?list={%22version%22:1,%22workspace%22:%22drill%22,%22source%22:%22practice%22,%22query%22:{%22favorite%22:%221%22,%22sort%22:%22source%22,%22status%22:%22unattempted%22},%22returnTo%22:%22/practice%22}&entry=question:61af9093-8322-51db-99af-82c093532760&position=0&from=preview",
+        "practice_after": "http://127.0.0.1:8035/drill/practice/4c04c90a-08ab-5549-9845-f8e058dbb019?list={%22version%22:1,%22workspace%22:%22drill%22,%22source%22:%22practice%22,%22query%22:{%22favorite%22:%221%22,%22sort%22:%22source%22,%22status%22:%22unattempted%22},%22returnTo%22:%22/practice%22}&entry=question:4c04c90a-08ab-5549-9845-f8e058dbb019&position=1&from=preview",
+        "expected_next_uuid": "4c04c90a-08ab-5549-9845-f8e058dbb019",
+        "notices": [
+          "原题目已不在当前题单中，已定位到附近题目。"
+        ]
+      }
+    },
+    "appearance_font_accent_rotation_and_account_cache": {
+      "passed": true,
+      "result": {
+        "screenshots": [
+          {
+            "requested": {
+              "appearance": "light",
+              "accent": "blue",
+              "font": "compact"
+            },
+            "width": 390,
+            "anchor": {
+              "index": 11,
+              "entry": "favorite:39",
+              "offset": 0.913330078125,
+              "scrollTop": 2254,
+              "cache": 50,
+              "mounted": 20,
+              "overflow": false
+            },
+            "visual": {
+              "theme": null,
+              "appearance": "light",
+              "accent": "blue",
+              "font": "compact",
+              "scale": "0.9",
+              "background": "rgb(255, 255, 255)",
+              "htmlWidth": 390,
+              "viewport": 390
+            }
+          },
+          {
+            "requested": {
+              "appearance": "light",
+              "accent": "blue",
+              "font": "compact"
+            },
+            "width": 820,
+            "anchor": {
+              "index": 11,
+              "entry": "favorite:39",
+              "offset": 0.765625,
+              "scrollTop": 3514,
+              "cache": 50,
+              "mounted": 20,
+              "overflow": false
+            },
+            "visual": {
+              "theme": null,
+              "appearance": "light",
+              "accent": "blue",
+              "font": "compact",
+              "scale": "0.9",
+              "background": "rgb(255, 255, 255)",
+              "htmlWidth": 820,
+              "viewport": 820
+            }
+          },
+          {
+            "requested": {
+              "appearance": "light",
+              "accent": "blue",
+              "font": "compact"
+            },
+            "width": 1180,
+            "anchor": {
+              "index": 11,
+              "entry": "favorite:39",
+              "offset": 0.472900390625,
+              "scrollTop": 3825,
+              "cache": 50,
+              "mounted": 13,
+              "overflow": false
+            },
+            "visual": {
+              "theme": null,
+              "appearance": "light",
+              "accent": "blue",
+              "font": "compact",
+              "scale": "0.9",
+              "background": "rgb(255, 255, 255)",
+              "htmlWidth": 1180,
+              "viewport": 1180
+            }
+          },
+          {
+            "requested": {
+              "appearance": "dark",
+              "accent": "purple",
+              "font": "extra-large"
+            },
+            "width": 390,
+            "anchor": {
+              "index": 11,
+              "entry": "favorite:39",
+              "offset": 0.913330078125,
+              "scrollTop": 2254,
+              "cache": 50,
+              "mounted": 20,
+              "overflow": false
+            },
+            "visual": {
+              "theme": null,
+              "appearance": "dark",
+              "accent": "purple",
+              "font": "extra-large",
+              "scale": "1.1",
+              "background": "rgb(20, 20, 20)",
+              "htmlWidth": 390,
+              "viewport": 390
+            }
+          },
+          {
+            "requested": {
+              "appearance": "dark",
+              "accent": "purple",
+              "font": "extra-large"
+            },
+            "width": 820,
+            "anchor": {
+              "index": 11,
+              "entry": "favorite:39",
+              "offset": 0.765625,
+              "scrollTop": 3514,
+              "cache": 50,
+              "mounted": 20,
+              "overflow": false
+            },
+            "visual": {
+              "theme": null,
+              "appearance": "dark",
+              "accent": "purple",
+              "font": "extra-large",
+              "scale": "1.1",
+              "background": "rgb(20, 20, 20)",
+              "htmlWidth": 820,
+              "viewport": 820
+            }
+          },
+          {
+            "requested": {
+              "appearance": "dark",
+              "accent": "purple",
+              "font": "extra-large"
+            },
+            "width": 1180,
+            "anchor": {
+              "index": 11,
+              "entry": "favorite:39",
+              "offset": 0.472900390625,
+              "scrollTop": 3825,
+              "cache": 50,
+              "mounted": 13,
+              "overflow": false
+            },
+            "visual": {
+              "theme": null,
+              "appearance": "dark",
+              "accent": "purple",
+              "font": "extra-large",
+              "scale": "1.1",
+              "background": "rgb(20, 20, 20)",
+              "htmlWidth": 1180,
+              "viewport": 1180
+            }
+          },
+          {
+            "requested": {
+              "appearance": "system",
+              "accent": "monochrome",
+              "font": "default"
+            },
+            "width": 390,
+            "anchor": {
+              "index": 11,
+              "entry": "favorite:39",
+              "offset": 0.913330078125,
+              "scrollTop": 2254,
+              "cache": 50,
+              "mounted": 20,
+              "overflow": false
+            },
+            "visual": {
+              "theme": null,
+              "appearance": "system",
+              "accent": "monochrome",
+              "font": "default",
+              "scale": "1",
+              "background": "rgb(20, 20, 20)",
+              "htmlWidth": 390,
+              "viewport": 390
+            }
+          },
+          {
+            "requested": {
+              "appearance": "system",
+              "accent": "monochrome",
+              "font": "default"
+            },
+            "width": 820,
+            "anchor": {
+              "index": 11,
+              "entry": "favorite:39",
+              "offset": 0.765625,
+              "scrollTop": 3514,
+              "cache": 50,
+              "mounted": 20,
+              "overflow": false
+            },
+            "visual": {
+              "theme": null,
+              "appearance": "system",
+              "accent": "monochrome",
+              "font": "default",
+              "scale": "1",
+              "background": "rgb(20, 20, 20)",
+              "htmlWidth": 820,
+              "viewport": 820
+            }
+          },
+          {
+            "requested": {
+              "appearance": "system",
+              "accent": "monochrome",
+              "font": "default"
+            },
+            "width": 1180,
+            "anchor": {
+              "index": 11,
+              "entry": "favorite:39",
+              "offset": 0.472900390625,
+              "scrollTop": 3825,
+              "cache": 50,
+              "mounted": 13,
+              "overflow": false
+            },
+            "visual": {
+              "theme": null,
+              "appearance": "system",
+              "accent": "monochrome",
+              "font": "default",
+              "scale": "1",
+              "background": "rgb(20, 20, 20)",
+              "htmlWidth": 1180,
+              "viewport": 1180
+            }
+          }
+        ],
+        "account_count_50": 50,
+        "account_count_2000": 2000
+      }
+    }
+  },
+  "errors": [],
+  "writes": [
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "POST",
+      "path": "/drill/api/drill/questions/53953db3-1909-5a31-94a3-2991d5593db6/timing/",
+      "action": "claim",
+      "protocol": 2,
+      "timing_digest": "16711c0351a6"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "POST",
+      "path": "/drill/api/drill/questions/53953db3-1909-5a31-94a3-2991d5593db6/timing/",
+      "action": "pause",
+      "protocol": 2,
+      "timing_digest": "16711c0351a6"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/ei/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/ei/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/ei/api/learning/recovery/"
+    },
+    {
+      "account": "50",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "50",
+      "method": "PATCH",
+      "path": "/drill/api/user-preferences/"
+    },
+    {
+      "account": "50",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "50",
+      "method": "POST",
+      "path": "/drill/api/drill/questions/61af9093-8322-51db-99af-82c093532760/timing/",
+      "action": "claim",
+      "protocol": 2,
+      "timing_digest": "8a6279041f34"
+    },
+    {
+      "account": "50",
+      "method": "POST",
+      "path": "/drill/api/drill/questions/61af9093-8322-51db-99af-82c093532760/timing/",
+      "action": "checkpoint",
+      "protocol": 2,
+      "timing_digest": "8a6279041f34"
+    },
+    {
+      "account": "50",
+      "method": "POST",
+      "path": "/drill/api/drill/questions/61af9093-8322-51db-99af-82c093532760/attempts/",
+      "result": "correct",
+      "timing_digest": "8a6279041f34"
+    },
+    {
+      "account": "50",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "50",
+      "method": "POST",
+      "path": "/drill/api/drill/questions/4c04c90a-08ab-5549-9845-f8e058dbb019/timing/",
+      "action": "claim",
+      "protocol": 2,
+      "timing_digest": "c382ca4a7a13"
+    },
+    {
+      "account": "50",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "50",
+      "method": "POST",
+      "path": "/drill/api/drill/questions/4c04c90a-08ab-5549-9845-f8e058dbb019/timing/",
+      "action": "pause",
+      "protocol": 2,
+      "timing_digest": "c382ca4a7a13"
+    },
+    {
+      "account": "50",
+      "method": "PATCH",
+      "path": "/drill/api/user-preferences/"
+    },
+    {
+      "account": "50",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "50",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "50",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "50",
+      "method": "PATCH",
+      "path": "/drill/api/user-preferences/"
+    },
+    {
+      "account": "50",
+      "method": "PATCH",
+      "path": "/drill/api/user-preferences/"
+    },
+    {
+      "account": "50",
+      "method": "PATCH",
+      "path": "/drill/api/user-preferences/"
+    },
+    {
+      "account": "50",
+      "method": "PATCH",
+      "path": "/drill/api/user-preferences/"
+    },
+    {
+      "account": "50",
+      "method": "PATCH",
+      "path": "/drill/api/user-preferences/"
+    },
+    {
+      "account": "50",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    }
+  ]
+}

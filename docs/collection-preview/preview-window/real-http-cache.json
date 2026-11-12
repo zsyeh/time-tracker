@@ -1,0 +1,362 @@
+{
+  "kind": "isolated local actual production bundle, 50 original PNG collection; no network interception/cache bypass",
+  "http_cache_enabled": true,
+  "metadata_requests": [
+    {
+      "offset": 0,
+      "count": 50,
+      "status": 200
+    }
+  ],
+  "asset_headers": [
+    {
+      "cache-control": "private, max-age=31536000, immutable",
+      "etag": "\"b52e17a4d4828abd252febbb86ab367e970718333d62eb5be54650dc66ab3fcd\"",
+      "content-type": "image/png",
+      "vary": "Accept, Cookie"
+    },
+    {
+      "cache-control": "private, max-age=31536000, immutable",
+      "etag": "\"525f714df800c70ef97160d96fb8d12716232abcfe4214c1789bf11381bf4f27\"",
+      "content-type": "image/png",
+      "vary": "Accept, Cookie"
+    },
+    {
+      "cache-control": "private, max-age=31536000, immutable",
+      "etag": "\"5df1ce2a9dcb2124502bfcef4295b8354f4b7bffa8baeda26a59128105fcfe94\"",
+      "content-type": "image/png",
+      "vary": "Accept, Cookie"
+    }
+  ],
+  "samples": [
+    {
+      "position": 50,
+      "ready": 8,
+      "mounted": 7,
+      "cached": 50
+    },
+    {
+      "position": 1,
+      "ready": 9,
+      "mounted": 9,
+      "cached": 50
+    },
+    {
+      "position": 50,
+      "ready": 8,
+      "mounted": 7,
+      "cached": 50
+    },
+    {
+      "position": 1,
+      "ready": 9,
+      "mounted": 9,
+      "cached": 50
+    }
+  ],
+  "resources": [
+    {
+      "path": "/drill/api/drill/assets/55/",
+      "transferSize": 94228,
+      "encodedBodySize": 93928,
+      "decodedBodySize": 93928,
+      "duration": 19.800000190734863
+    },
+    {
+      "path": "/drill/api/drill/assets/61/",
+      "transferSize": 41577,
+      "encodedBodySize": 41277,
+      "decodedBodySize": 41277,
+      "duration": 17.699999809265137
+    },
+    {
+      "path": "/drill/api/drill/assets/63/",
+      "transferSize": 73330,
+      "encodedBodySize": 73030,
+      "decodedBodySize": 73030,
+      "duration": 34.700000286102295
+    },
+    {
+      "path": "/drill/api/drill/assets/59/",
+      "transferSize": 53720,
+      "encodedBodySize": 53420,
+      "decodedBodySize": 53420,
+      "duration": 41.69999980926514
+    },
+    {
+      "path": "/drill/api/drill/assets/64/",
+      "transferSize": 6092,
+      "encodedBodySize": 5792,
+      "decodedBodySize": 5792,
+      "duration": 71.2000002861023
+    },
+    {
+      "path": "/drill/api/drill/assets/65/",
+      "transferSize": 59664,
+      "encodedBodySize": 59364,
+      "decodedBodySize": 59364,
+      "duration": 48.80000019073486
+    },
+    {
+      "path": "/drill/api/drill/assets/60/",
+      "transferSize": 31900,
+      "encodedBodySize": 31600,
+      "decodedBodySize": 31600,
+      "duration": 67.09999990463257
+    },
+    {
+      "path": "/drill/api/drill/assets/62/",
+      "transferSize": 59277,
+      "encodedBodySize": 58977,
+      "decodedBodySize": 58977,
+      "duration": 34.40000009536743
+    },
+    {
+      "path": "/drill/api/drill/assets/57/",
+      "transferSize": 86830,
+      "encodedBodySize": 86530,
+      "decodedBodySize": 86530,
+      "duration": 36.30000019073486
+    },
+    {
+      "path": "/drill/api/drill/assets/6/",
+      "transferSize": 83614,
+      "encodedBodySize": 83314,
+      "decodedBodySize": 83314,
+      "duration": 11
+    },
+    {
+      "path": "/drill/api/drill/assets/3/",
+      "transferSize": 33980,
+      "encodedBodySize": 33680,
+      "decodedBodySize": 33680,
+      "duration": 13.300000190734863
+    },
+    {
+      "path": "/drill/api/drill/assets/4/",
+      "transferSize": 131078,
+      "encodedBodySize": 130778,
+      "decodedBodySize": 130778,
+      "duration": 21.699999809265137
+    },
+    {
+      "path": "/drill/api/drill/assets/7/",
+      "transferSize": 56790,
+      "encodedBodySize": 56490,
+      "decodedBodySize": 56490,
+      "duration": 23.699999809265137
+    },
+    {
+      "path": "/drill/api/drill/assets/2/",
+      "transferSize": 40620,
+      "encodedBodySize": 40320,
+      "decodedBodySize": 40320,
+      "duration": 65.80000019073486
+    },
+    {
+      "path": "/drill/api/drill/assets/1/",
+      "transferSize": 40431,
+      "encodedBodySize": 40131,
+      "decodedBodySize": 40131,
+      "duration": 66.40000009536743
+    },
+    {
+      "path": "/drill/api/drill/assets/8/",
+      "transferSize": 29584,
+      "encodedBodySize": 29284,
+      "decodedBodySize": 29284,
+      "duration": 63.5
+    },
+    {
+      "path": "/drill/api/drill/assets/5/",
+      "transferSize": 6092,
+      "encodedBodySize": 5792,
+      "decodedBodySize": 5792,
+      "duration": 60.60000038146973
+    },
+    {
+      "path": "/drill/api/drill/assets/60/",
+      "transferSize": 0,
+      "encodedBodySize": 31600,
+      "decodedBodySize": 31600,
+      "duration": 1.299999713897705
+    },
+    {
+      "path": "/drill/api/drill/assets/55/",
+      "transferSize": 0,
+      "encodedBodySize": 93928,
+      "decodedBodySize": 93928,
+      "duration": 2.0999999046325684
+    },
+    {
+      "path": "/drill/api/drill/assets/59/",
+      "transferSize": 0,
+      "encodedBodySize": 53420,
+      "decodedBodySize": 53420,
+      "duration": 1.6000003814697266
+    },
+    {
+      "path": "/drill/api/drill/assets/63/",
+      "transferSize": 0,
+      "encodedBodySize": 73030,
+      "decodedBodySize": 73030,
+      "duration": 1.4000000953674316
+    },
+    {
+      "path": "/drill/api/drill/assets/65/",
+      "transferSize": 0,
+      "encodedBodySize": 59364,
+      "decodedBodySize": 59364,
+      "duration": 0.5999999046325684
+    },
+    {
+      "path": "/drill/api/drill/assets/64/",
+      "transferSize": 0,
+      "encodedBodySize": 5792,
+      "decodedBodySize": 5792,
+      "duration": 0.5
+    },
+    {
+      "path": "/drill/api/drill/assets/57/",
+      "transferSize": 0,
+      "encodedBodySize": 86530,
+      "decodedBodySize": 86530,
+      "duration": 0.8999996185302734
+    },
+    {
+      "path": "/drill/api/drill/assets/61/",
+      "transferSize": 0,
+      "encodedBodySize": 41277,
+      "decodedBodySize": 41277,
+      "duration": 1
+    },
+    {
+      "path": "/drill/api/drill/assets/62/",
+      "transferSize": 0,
+      "encodedBodySize": 58977,
+      "decodedBodySize": 58977,
+      "duration": 1.3999996185302734
+    },
+    {
+      "path": "/drill/api/drill/assets/4/",
+      "transferSize": 0,
+      "encodedBodySize": 130778,
+      "decodedBodySize": 130778,
+      "duration": 1.6999998092651367
+    },
+    {
+      "path": "/drill/api/drill/assets/7/",
+      "transferSize": 0,
+      "encodedBodySize": 56490,
+      "decodedBodySize": 56490,
+      "duration": 1.700000286102295
+    },
+    {
+      "path": "/drill/api/drill/assets/1/",
+      "transferSize": 0,
+      "encodedBodySize": 40131,
+      "decodedBodySize": 40131,
+      "duration": 1.6999998092651367
+    },
+    {
+      "path": "/drill/api/drill/assets/6/",
+      "transferSize": 0,
+      "encodedBodySize": 83314,
+      "decodedBodySize": 83314,
+      "duration": 1.700000286102295
+    },
+    {
+      "path": "/drill/api/drill/assets/3/",
+      "transferSize": 0,
+      "encodedBodySize": 33680,
+      "decodedBodySize": 33680,
+      "duration": 0.5999999046325684
+    },
+    {
+      "path": "/drill/api/drill/assets/2/",
+      "transferSize": 0,
+      "encodedBodySize": 40320,
+      "decodedBodySize": 40320,
+      "duration": 0.8000001907348633
+    },
+    {
+      "path": "/drill/api/drill/assets/8/",
+      "transferSize": 0,
+      "encodedBodySize": 29284,
+      "decodedBodySize": 29284,
+      "duration": 0.7999997138977051
+    },
+    {
+      "path": "/drill/api/drill/assets/5/",
+      "transferSize": 0,
+      "encodedBodySize": 5792,
+      "decodedBodySize": 5792,
+      "duration": 0.8999996185302734
+    },
+    {
+      "path": "/drill/api/drill/assets/65/",
+      "transferSize": 0,
+      "encodedBodySize": 59364,
+      "decodedBodySize": 59364,
+      "duration": 1.4000000953674316
+    },
+    {
+      "path": "/drill/api/drill/assets/57/",
+      "transferSize": 0,
+      "encodedBodySize": 86530,
+      "decodedBodySize": 86530,
+      "duration": 2.1999998092651367
+    },
+    {
+      "path": "/drill/api/drill/assets/63/",
+      "transferSize": 0,
+      "encodedBodySize": 73030,
+      "decodedBodySize": 73030,
+      "duration": 2
+    },
+    {
+      "path": "/drill/api/drill/assets/64/",
+      "transferSize": 0,
+      "encodedBodySize": 5792,
+      "decodedBodySize": 5792,
+      "duration": 1.799999713897705
+    },
+    {
+      "path": "/drill/api/drill/assets/55/",
+      "transferSize": 0,
+      "encodedBodySize": 93928,
+      "decodedBodySize": 93928,
+      "duration": 0.5999999046325684
+    },
+    {
+      "path": "/drill/api/drill/assets/62/",
+      "transferSize": 0,
+      "encodedBodySize": 58977,
+      "decodedBodySize": 58977,
+      "duration": 0.6999998092651367
+    },
+    {
+      "path": "/drill/api/drill/assets/61/",
+      "transferSize": 0,
+      "encodedBodySize": 41277,
+      "decodedBodySize": 41277,
+      "duration": 0.8000001907348633
+    },
+    {
+      "path": "/drill/api/drill/assets/59/",
+      "transferSize": 0,
+      "encodedBodySize": 53420,
+      "decodedBodySize": 53420,
+      "duration": 1.0999999046325684
+    },
+    {
+      "path": "/drill/api/drill/assets/60/",
+      "transferSize": 0,
+      "encodedBodySize": 31600,
+      "decodedBodySize": 31600,
+      "duration": 0.5
+    }
+  ],
+  "cache_hits": 26,
+  "errors": []
+}

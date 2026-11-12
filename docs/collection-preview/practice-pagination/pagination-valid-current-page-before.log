@@ -1,0 +1,49 @@
+
+> personal-learning-os@3.0.0 test
+> vitest run drill/src/components/PracticePagination.test.ts
+
+
+ RUN  v3.2.6 /work/frontend
+
+ ❯ drill/src/components/PracticePagination.test.ts (6 tests | 1 failed) 80ms
+   ✓ shows the current and total pages and keeps top/bottom origin with page requests 34ms
+   × accepts any valid integer page and rejects out-of-range, fractional and exponential input 23ms
+     → expected <span data-v-6b3b32d1 …(2)></span> to be null
+   ✓ disables navigation and page entry while loading or when the result is empty 6ms
+   ✓ updates the jump draft when URL navigation changes the current page 6ms
+   ✓ exposes explicit first and last pages with correct boundary states 5ms
+   ✓ keeps first/last controls in native keyboard focus order and supports form submission for a direct jump 6ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  drill/src/components/PracticePagination.test.ts > accepts any valid integer page and rejects out-of-range, fractional and exponential input
+AssertionError: expected <span data-v-6b3b32d1 …(2)></span> to be null
+
+[32m- Expected:[39m 
+null
+
+[31m+ Received:[39m 
+<span
+  class="page-error"
+  data-v-6b3b32d1=""
+  role="alert"
+>
+  Enter a page from 1–5
+</span>
+
+ ❯ drill/src/components/PracticePagination.test.ts:28:75
+     26|   expect(changes).toEqual([])
+     27|   submit('2'); await nextTick()
+     28|   expect(changes).toEqual([]); expect(host.querySelector('[role=alert]…
+       |                                                                           ^
+     29|   submit('4'); await nextTick()
+     30|   expect(changes).toEqual([[4,'bottom']]); expect(host.querySelector('…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+
+
+ Test Files  1 failed (1)
+      Tests  1 failed | 5 passed (6)
+   Start at  18:36:07
+   Duration  1.37s (transform 195ms, setup 0ms, collect 312ms, tests 80ms, environment 530ms, prepare 90ms)
+

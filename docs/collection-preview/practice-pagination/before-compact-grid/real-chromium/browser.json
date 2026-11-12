@@ -1,0 +1,43 @@
+{
+  "cases": [
+    {
+      "engine": "chromium",
+      "width": 390,
+      "height": 844,
+      "fixture_scope": "isolated 2000 synthetic account, favorites",
+      "count": 2000,
+      "total_pages": 84,
+      "last_page_rows": 8,
+      "bottom_before": 571.046875,
+      "bottom_after": 571.046875,
+      "anchor_delta": 0.0,
+      "last_scroll": {
+        "y": 848,
+        "max": 848
+      },
+      "first_enter_last_space": true,
+      "errors": [],
+      "pass": true
+    },
+    {
+      "engine": "chromium",
+      "width": 820,
+      "height": 1180,
+      "fixture_scope": "isolated 2000 synthetic account, favorites",
+      "count": 2000,
+      "total_pages": 84,
+      "last_page_rows": 8,
+      "bottom_before": 1011.234375,
+      "bottom_after": 1011.234375,
+      "anchor_delta": 0.0,
+      "last_scroll": {
+        "y": 48,
+        "max": 48
+      },
+      "first_enter_last_space": true,
+      "errors": [],
+      "pass": true
+    }
+  ],
+  "pass": true
+}

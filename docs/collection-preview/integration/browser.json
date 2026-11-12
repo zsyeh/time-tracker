@@ -1,0 +1,801 @@
+{
+  "environment": "isolated localhost8035 production-prefix proxy/full production frontend/real PNGs; synthetic accounts only",
+  "cases": {
+    "favorite_origin_238_browser_back_next_and_refresh": {
+      "passed": true,
+      "result": {
+        "router_debug": {
+          "actual": "/drill/preview?list={%22version%22:1,%22workspace%22:%22drill%22,%22source%22:%22favorite%22,%22query%22:{},%22returnTo%22:%22/favorites%22}&question=53953db3-1909-5a31-94a3-2991d5593db6",
+          "router": "/preview?list={%22version%22:1,%22workspace%22:%22drill%22,%22source%22:%22favorite%22,%22query%22:{},%22returnTo%22:%22/favorites%22}&question=53953db3-1909-5a31-94a3-2991d5593db6",
+          "indexScripts": [
+            "http://127.0.0.1:8035/static/drill/assets/index-DbQ0jr5g.js?v=1794509932057469063"
+          ]
+        },
+        "first": {
+          "index": 0,
+          "entry": "favorite:1800",
+          "offset": 0,
+          "scrollTop": 0,
+          "cache": 50,
+          "mounted": 8,
+          "overflow": false
+        },
+        "pre_tap": {
+          "index": 237,
+          "entry": "favorite:3563",
+          "offset": -73.1953125,
+          "scrollTop": 45578,
+          "cache": 100,
+          "mounted": 19,
+          "overflow": false
+        },
+        "saved": {
+          "index": 237,
+          "entry": "favorite:3563",
+          "offset": -73.31640625
+        },
+        "browser_back": {
+          "index": 237,
+          "entry": "favorite:3563",
+          "offset": -73.31640625,
+          "scrollTop": 49744,
+          "cache": 100,
+          "mounted": 19,
+          "overflow": false
+        },
+        "question_next_url": "http://127.0.0.1:8035/drill/practice/60e7da93-38a1-5bcc-bfe9-2df8958c8ee7?list={%22version%22:1,%22workspace%22:%22drill%22,%22source%22:%22favorite%22,%22query%22:{},%22returnTo%22:%22/favorites%22}&entry=favorite:3562&position=238&from=preview",
+        "question_return": {
+          "index": 237,
+          "entry": "favorite:3563",
+          "offset": -73.31640625,
+          "scrollTop": 49744,
+          "cache": 100,
+          "mounted": 19,
+          "overflow": false
+        },
+        "refresh": {
+          "index": 237,
+          "entry": "favorite:3563",
+          "offset": -72.87890625,
+          "scrollTop": 39043,
+          "cache": 150,
+          "mounted": 19,
+          "overflow": false
+        }
+      }
+    },
+    "history_attempt100_to99_same_uuid_preserves_timer": {
+      "passed": true,
+      "result": {
+        "before_url": "http://127.0.0.1:8035/drill/practice/53953db3-1909-5a31-94a3-2991d5593db6?list={%22version%22:1,%22workspace%22:%22drill%22,%22source%22:%22attempts%22,%22query%22:{},%22returnTo%22:%22/insight%22}&entry=attempt:100&position=0&from=preview",
+        "after_url": "http://127.0.0.1:8035/drill/practice/53953db3-1909-5a31-94a3-2991d5593db6?list={%22version%22:1,%22workspace%22:%22drill%22,%22source%22:%22attempts%22,%22query%22:{},%22returnTo%22:%22/insight%22}&entry=attempt:99&position=1&from=preview",
+        "timer_before": "0:10",
+        "timer_after": "0:11",
+        "timing_claim_or_pause_between": []
+      }
+    },
+    "ei_search_preview_practice_prefix": {
+      "passed": true,
+      "result": {
+        "router_debug": {
+          "actual": "/ei/practice/7c7ad755-4686-5631-afe5-e0b870577df4?list={%22version%22:1,%22workspace%22:%22ei%22,%22source%22:%22practice%22,%22query%22:{%22q%22:%22%E5%8F%98%E6%8D%A2%22},%22returnTo%22:%22/practice?q=%25E5%258F%2598%25E6%258D%25A2%22}&entry=question:7c7ad755-4686-5631-afe5-e0b870577df4&position=0&from=preview",
+          "router": "/practice/7c7ad755-4686-5631-afe5-e0b870577df4?list={%22version%22:1,%22workspace%22:%22ei%22,%22source%22:%22practice%22,%22query%22:{%22q%22:%22%E5%8F%98%E6%8D%A2%22},%22returnTo%22:%22/practice?q=%25E5%258F%2598%25E6%258D%25A2%22}&entry=question:7c7ad755-4686-5631-afe5-e0b870577df4&position=0&from=preview",
+          "indexScripts": [
+            "http://127.0.0.1:8035/static/drill/assets/index-DeyGeapd.js?v=1794509579887961467"
+          ]
+        },
+        "search_query": "q=%E5%8F%98%E6%8D%A2",
+        "context": {
+          "version": 1,
+          "workspace": "ei",
+          "source": "practice",
+          "query": {
+            "q": "变换"
+          },
+          "returnTo": "/practice?q=%E5%8F%98%E6%8D%A2"
+        },
+        "question": "http://127.0.0.1:8035/ei/practice/7c7ad755-4686-5631-afe5-e0b870577df4?list={%22version%22:1,%22workspace%22:%22ei%22,%22source%22:%22practice%22,%22query%22:{%22q%22:%22%E5%8F%98%E6%8D%A2%22},%22returnTo%22:%22/practice?q=%25E5%258F%2598%25E6%258D%25A2%22}&entry=question:7c7ad755-4686-5631-afe5-e0b870577df4&position=0&from=preview",
+        "returned": "/ei/preview"
+      }
+    },
+    "filtered_unattempted_save_and_removed_entry_nearest": {
+      "passed": true,
+      "result": {
+        "saved": {
+          "index": 0,
+          "entry": "question:4c04c90a-08ab-5549-9845-f8e058dbb019",
+          "offset": 0,
+          "scrollTop": 0,
+          "cache": 49,
+          "mounted": 11,
+          "overflow": false
+        },
+        "restored": {
+          "index": 0,
+          "entry": "question:b368b430-4918-565e-8754-9668feae9e3f",
+          "offset": 0,
+          "scrollTop": 0,
+          "cache": 48,
+          "mounted": 10,
+          "overflow": false
+        },
+        "count_before": 49,
+        "count_after": 48,
+        "practice_before": "http://127.0.0.1:8035/drill/practice/4c04c90a-08ab-5549-9845-f8e058dbb019?list={%22version%22:1,%22workspace%22:%22drill%22,%22source%22:%22practice%22,%22query%22:{%22favorite%22:%221%22,%22sort%22:%22source%22,%22status%22:%22unattempted%22},%22returnTo%22:%22/practice%22}&entry=question:4c04c90a-08ab-5549-9845-f8e058dbb019&position=0&from=preview",
+        "practice_after": "http://127.0.0.1:8035/drill/practice/b368b430-4918-565e-8754-9668feae9e3f?list={%22version%22:1,%22workspace%22:%22drill%22,%22source%22:%22practice%22,%22query%22:{%22favorite%22:%221%22,%22sort%22:%22source%22,%22status%22:%22unattempted%22},%22returnTo%22:%22/practice%22}&entry=question:b368b430-4918-565e-8754-9668feae9e3f&position=1&from=preview",
+        "expected_next_uuid": "b368b430-4918-565e-8754-9668feae9e3f",
+        "notices": [
+          "原题目已不在当前题单中，已定位到附近题目。"
+        ]
+      }
+    },
+    "appearance_font_accent_rotation_and_account_cache": {
+      "passed": true,
+      "result": {
+        "screenshots": [
+          {
+            "requested": {
+              "appearance": "light",
+              "accent": "blue",
+              "font": "compact"
+            },
+            "width": 390,
+            "anchor": {
+              "index": 11,
+              "entry": "favorite:39",
+              "offset": 0.913330078125,
+              "scrollTop": 2254,
+              "cache": 50,
+              "mounted": 20,
+              "overflow": false
+            },
+            "visual": {
+              "theme": null,
+              "appearance": "light",
+              "accent": "blue",
+              "font": "compact",
+              "scale": "0.9",
+              "background": "rgb(255, 255, 255)",
+              "htmlWidth": 390,
+              "viewport": 390
+            }
+          },
+          {
+            "requested": {
+              "appearance": "light",
+              "accent": "blue",
+              "font": "compact"
+            },
+            "width": 820,
+            "anchor": {
+              "index": 11,
+              "entry": "favorite:39",
+              "offset": 0.765625,
+              "scrollTop": 3514,
+              "cache": 50,
+              "mounted": 20,
+              "overflow": false
+            },
+            "visual": {
+              "theme": null,
+              "appearance": "light",
+              "accent": "blue",
+              "font": "compact",
+              "scale": "0.9",
+              "background": "rgb(255, 255, 255)",
+              "htmlWidth": 820,
+              "viewport": 820
+            }
+          },
+          {
+            "requested": {
+              "appearance": "light",
+              "accent": "blue",
+              "font": "compact"
+            },
+            "width": 1180,
+            "anchor": {
+              "index": 11,
+              "entry": "favorite:39",
+              "offset": 0.472900390625,
+              "scrollTop": 3825,
+              "cache": 50,
+              "mounted": 13,
+              "overflow": false
+            },
+            "visual": {
+              "theme": null,
+              "appearance": "light",
+              "accent": "blue",
+              "font": "compact",
+              "scale": "0.9",
+              "background": "rgb(255, 255, 255)",
+              "htmlWidth": 1180,
+              "viewport": 1180
+            }
+          },
+          {
+            "requested": {
+              "appearance": "dark",
+              "accent": "purple",
+              "font": "extra-large"
+            },
+            "width": 390,
+            "anchor": {
+              "index": 11,
+              "entry": "favorite:39",
+              "offset": 0.913330078125,
+              "scrollTop": 2254,
+              "cache": 50,
+              "mounted": 20,
+              "overflow": false
+            },
+            "visual": {
+              "theme": null,
+              "appearance": "dark",
+              "accent": "purple",
+              "font": "extra-large",
+              "scale": "1.1",
+              "background": "rgb(20, 20, 20)",
+              "htmlWidth": 390,
+              "viewport": 390
+            }
+          },
+          {
+            "requested": {
+              "appearance": "dark",
+              "accent": "purple",
+              "font": "extra-large"
+            },
+            "width": 820,
+            "anchor": {
+              "index": 11,
+              "entry": "favorite:39",
+              "offset": 0.765625,
+              "scrollTop": 3514,
+              "cache": 50,
+              "mounted": 20,
+              "overflow": false
+            },
+            "visual": {
+              "theme": null,
+              "appearance": "dark",
+              "accent": "purple",
+              "font": "extra-large",
+              "scale": "1.1",
+              "background": "rgb(20, 20, 20)",
+              "htmlWidth": 820,
+              "viewport": 820
+            }
+          },
+          {
+            "requested": {
+              "appearance": "dark",
+              "accent": "purple",
+              "font": "extra-large"
+            },
+            "width": 1180,
+            "anchor": {
+              "index": 11,
+              "entry": "favorite:39",
+              "offset": 0.472900390625,
+              "scrollTop": 3825,
+              "cache": 50,
+              "mounted": 13,
+              "overflow": false
+            },
+            "visual": {
+              "theme": null,
+              "appearance": "dark",
+              "accent": "purple",
+              "font": "extra-large",
+              "scale": "1.1",
+              "background": "rgb(20, 20, 20)",
+              "htmlWidth": 1180,
+              "viewport": 1180
+            }
+          },
+          {
+            "requested": {
+              "appearance": "system",
+              "accent": "monochrome",
+              "font": "default"
+            },
+            "width": 390,
+            "anchor": {
+              "index": 11,
+              "entry": "favorite:39",
+              "offset": 0.913330078125,
+              "scrollTop": 2254,
+              "cache": 50,
+              "mounted": 20,
+              "overflow": false
+            },
+            "visual": {
+              "theme": null,
+              "appearance": "system",
+              "accent": "monochrome",
+              "font": "default",
+              "scale": "1",
+              "background": "rgb(20, 20, 20)",
+              "htmlWidth": 390,
+              "viewport": 390
+            }
+          },
+          {
+            "requested": {
+              "appearance": "system",
+              "accent": "monochrome",
+              "font": "default"
+            },
+            "width": 820,
+            "anchor": {
+              "index": 11,
+              "entry": "favorite:39",
+              "offset": 0.765625,
+              "scrollTop": 3514,
+              "cache": 50,
+              "mounted": 20,
+              "overflow": false
+            },
+            "visual": {
+              "theme": null,
+              "appearance": "system",
+              "accent": "monochrome",
+              "font": "default",
+              "scale": "1",
+              "background": "rgb(20, 20, 20)",
+              "htmlWidth": 820,
+              "viewport": 820
+            }
+          },
+          {
+            "requested": {
+              "appearance": "system",
+              "accent": "monochrome",
+              "font": "default"
+            },
+            "width": 1180,
+            "anchor": {
+              "index": 11,
+              "entry": "favorite:39",
+              "offset": 0.472900390625,
+              "scrollTop": 3825,
+              "cache": 50,
+              "mounted": 13,
+              "overflow": false
+            },
+            "visual": {
+              "theme": null,
+              "appearance": "system",
+              "accent": "monochrome",
+              "font": "default",
+              "scale": "1",
+              "background": "rgb(20, 20, 20)",
+              "htmlWidth": 1180,
+              "viewport": 1180
+            }
+          }
+        ],
+        "zoom_smoke": {
+          "dialog_open": true,
+          "image_overlay_buttons": 0,
+          "reader_practice_actions": 0
+        },
+        "account_count_50": 50,
+        "account_count_2000": 2000
+      }
+    },
+    "row_zoom_does_not_cover_images": {
+      "passed": true,
+      "result": {
+        "image_overlays": 0,
+        "dialog_images": 1,
+        "reader_practice_actions": 0,
+        "zoom_triggers": 8,
+        "question_rows": 8
+      }
+    }
+  },
+  "errors": [],
+  "writes": [
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "POST",
+      "path": "/drill/api/drill/questions/53953db3-1909-5a31-94a3-2991d5593db6/timing/",
+      "action": "claim",
+      "protocol": 2,
+      "timing_digest": "b255a421698f"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "POST",
+      "path": "/drill/api/drill/questions/53953db3-1909-5a31-94a3-2991d5593db6/timing/",
+      "action": "pause",
+      "protocol": 2,
+      "timing_digest": "16711c0351a6"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/ei/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/ei/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/ei/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/ei/api/learning/recovery/"
+    },
+    {
+      "account": "50",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "50",
+      "method": "PATCH",
+      "path": "/drill/api/user-preferences/"
+    },
+    {
+      "account": "50",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "50",
+      "method": "POST",
+      "path": "/drill/api/drill/questions/4c04c90a-08ab-5549-9845-f8e058dbb019/timing/",
+      "action": "claim",
+      "protocol": 2,
+      "timing_digest": "6fc16edffd7b"
+    },
+    {
+      "account": "50",
+      "method": "POST",
+      "path": "/drill/api/drill/questions/4c04c90a-08ab-5549-9845-f8e058dbb019/timing/",
+      "action": "checkpoint",
+      "protocol": 2,
+      "timing_digest": "c382ca4a7a13"
+    },
+    {
+      "account": "50",
+      "method": "POST",
+      "path": "/drill/api/drill/questions/4c04c90a-08ab-5549-9845-f8e058dbb019/attempts/",
+      "result": "correct",
+      "timing_digest": "c382ca4a7a13"
+    },
+    {
+      "account": "50",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "50",
+      "method": "POST",
+      "path": "/drill/api/drill/questions/b368b430-4918-565e-8754-9668feae9e3f/timing/",
+      "action": "claim",
+      "protocol": 2,
+      "timing_digest": "77d594e11bb5"
+    },
+    {
+      "account": "50",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "50",
+      "method": "POST",
+      "path": "/drill/api/drill/questions/b368b430-4918-565e-8754-9668feae9e3f/timing/",
+      "action": "pause",
+      "protocol": 2,
+      "timing_digest": "77d594e11bb5"
+    },
+    {
+      "account": "50",
+      "method": "PATCH",
+      "path": "/drill/api/user-preferences/"
+    },
+    {
+      "account": "50",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "50",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "50",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "50",
+      "method": "PATCH",
+      "path": "/drill/api/user-preferences/"
+    },
+    {
+      "account": "50",
+      "method": "PATCH",
+      "path": "/drill/api/user-preferences/"
+    },
+    {
+      "account": "50",
+      "method": "PATCH",
+      "path": "/drill/api/user-preferences/"
+    },
+    {
+      "account": "50",
+      "method": "PATCH",
+      "path": "/drill/api/user-preferences/"
+    },
+    {
+      "account": "50",
+      "method": "PATCH",
+      "path": "/drill/api/user-preferences/"
+    },
+    {
+      "account": "50",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "POST",
+      "path": "/drill/api/drill/questions/6e01a038-9903-5187-881e-527739244831/timing/",
+      "action": "claim",
+      "protocol": 2,
+      "timing_digest": "63efef6c782b"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "POST",
+      "path": "/drill/api/drill/questions/6e01a038-9903-5187-881e-527739244831/timing/",
+      "action": "pause",
+      "protocol": 2,
+      "timing_digest": "63efef6c782b"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/ei/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/ei/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/ei/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/ei/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "POST",
+      "path": "/ei/api/drill/questions/7c7ad755-4686-5631-afe5-e0b870577df4/timing/",
+      "action": "claim",
+      "protocol": 2,
+      "timing_digest": "a46ccf36f120"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/ei/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "POST",
+      "path": "/ei/api/drill/questions/7c7ad755-4686-5631-afe5-e0b870577df4/timing/",
+      "action": "pause",
+      "protocol": 2,
+      "timing_digest": "a46ccf36f120"
+    },
+    {
+      "account": "50",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "POST",
+      "path": "/drill/api/drill/questions/6e01a038-9903-5187-881e-527739244831/timing/",
+      "action": "claim",
+      "protocol": 2,
+      "timing_digest": "1f8cebe7d9d6"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "POST",
+      "path": "/drill/api/drill/questions/6e01a038-9903-5187-881e-527739244831/timing/",
+      "action": "pause",
+      "protocol": 2,
+      "timing_digest": "63efef6c782b"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "POST",
+      "path": "/drill/api/drill/questions/6e01a038-9903-5187-881e-527739244831/timing/",
+      "action": "claim",
+      "protocol": 2,
+      "timing_digest": "5d19fc26edab"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "POST",
+      "path": "/drill/api/drill/questions/6e01a038-9903-5187-881e-527739244831/timing/",
+      "action": "pause",
+      "protocol": 2,
+      "timing_digest": "63efef6c782b"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "POST",
+      "path": "/drill/api/drill/questions/6e01a038-9903-5187-881e-527739244831/timing/",
+      "action": "claim",
+      "protocol": 2,
+      "timing_digest": "63efef6c782b"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "POST",
+      "path": "/drill/api/drill/questions/6e01a038-9903-5187-881e-527739244831/timing/",
+      "action": "pause",
+      "protocol": 2,
+      "timing_digest": "63efef6c782b"
+    },
+    {
+      "account": "2000",
+      "method": "POST",
+      "path": "/drill/api/drill/questions/60e7da93-38a1-5bcc-bfe9-2df8958c8ee7/timing/",
+      "action": "claim",
+      "protocol": 2,
+      "timing_digest": "671d05ee4d60"
+    },
+    {
+      "account": "2000",
+      "method": "PUT",
+      "path": "/drill/api/learning/recovery/"
+    },
+    {
+      "account": "2000",
+      "method": "POST",
+      "path": "/drill/api/drill/questions/60e7da93-38a1-5bcc-bfe9-2df8958c8ee7/timing/",
+      "action": "pause",
+      "protocol": 2,
+      "timing_digest": "671d05ee4d60"
+    }
+  ],
+  "network_failures": [
+    {
+      "account": "2000",
+      "path": "/ei/api/learning/recovery/",
+      "status": 409
+    },
+    {
+      "account": "50",
+      "path": "/drill/api/drill/assets/52/",
+      "failure": "net::ERR_ABORTED"
+    },
+    {
+      "account": "50",
+      "path": "/drill/api/drill/assets/54/",
+      "failure": "net::ERR_ABORTED"
+    }
+  ]
+}

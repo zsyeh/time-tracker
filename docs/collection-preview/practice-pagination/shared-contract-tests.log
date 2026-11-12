@@ -1,0 +1,753 @@
+
+> personal-learning-os@3.0.0 test
+> vitest run drill/src/lib/listContext.contract.test.ts drill/src/lib/collectionPreview.contract.test.ts
+
+
+ RUN  v3.2.6 /work/frontend
+
+ ❯ drill/src/lib/listContext.contract.test.ts (5 tests | 1 failed) 36ms
+   × preserves all source filters and original return path while stripping pagination, pins and source routing hints 28ms
+     → expected { bucket: 'fourier', …(28) } to not have property "search_version"
+   ✓ keeps exact history sorting/filter semantics and separate source identities 3ms
+   ✓ uses semantic filter order for cache keys without merging Drill/EI, sources or filters 1ms
+   ✓ keeps duplicate attempt identity separate from the question UUID on preview and practice routes 1ms
+   ✓ rejects malformed and cross-workspace contexts and never accepts external return locations 1ms
+ ❯ drill/src/lib/collectionPreview.contract.test.ts (11 tests | 2 failed) 68ms
+   ✓ loads a 1000-entry list in pages and bounds its LRU cache to 500 entries 33ms
+   ✓ shares an inflight request and locates duplicate UUID entries by attempt identity 2ms
+   ✓ rejects a canceled caller and does not accept an ignored-abort network response into its cache 3ms
+   ✓ prevents an older request from overwriting a later fresh snapshot even when transport ignores AbortSignal 1ms
+   ✓ refreshes a changed collection around the saved entry without resending the expired pin 2ms
+   ✓ does not retry authentication/account-affinity rejection 401 as a collection refresh 1ms
+   ✓ does not retry authentication/account-affinity rejection 409 as a collection refresh 1ms
+   ✓ isolates owner caches and refuses a late response after the active account changes 2ms
+   × does not let an older nonfresh response arriving after a fresh one roll the collection version back 7ms
+     → expected 'v1' to be 'v2' // Object.is equality
+   × rejects a canceled second consumer without canceling the active first consumer of the same request 15ms
+     → promise resolved "{ count: 1000, offset: +0, …(7) }" instead of rejecting
+   ✓ does not expose an old account entry through find() after identity changes 0ms
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  drill/src/lib/collectionPreview.contract.test.ts > does not let an older nonfresh response arriving after a fresh one roll the collection version back
+AssertionError: expected 'v1' to be 'v2' // Object.is equality
+
+Expected: [32m"v[7m2[27m"[39m
+Received: [31m"v[7m1[27m"[39m
+
+ ❯ drill/src/lib/collectionPreview.contract.test.ts:82:26
+     80|  fresh.resolve(page(0,'v2',999));await a
+     81|  oldPage.resolve(page(50,'v1',1000));await b.catch(()=>undefined)
+     82|  expect(session.version).toBe('v2');expect(session.count).toBe(999);ex…
+       |                          ^
+     83| })
+     84| it('rejects a canceled second consumer without canceling the active fi…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  drill/src/lib/collectionPreview.contract.test.ts > rejects a canceled second consumer without canceling the active first consumer of the same request
+AssertionError: promise resolved "{ count: 1000, offset: +0, …(7) }" instead of rejecting
+
+[32m- Expected[39m
+[31m+ Received[39m
+
+[32m- Error {[39m
+[32m-   "message": "rejected promise",[39m
+[31m+ {[39m
+[31m+   "collection_version": "v1",[39m
+[31m+   "count": 1000,[39m
+[31m+   "has_more": true,[39m
+[31m+   "limit": 50,[39m
+[31m+   "located": null,[39m
+[31m+   "next_entry": null,[39m
+[31m+   "offset": 0,[39m
+[31m+   "previous_entry": null,[39m
+[31m+   "results": [[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:1",[39m
+[31m+       "index": 0,[39m
+[31m+       "label": "Synthetic 0",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "same-question",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:2",[39m
+[31m+       "index": 1,[39m
+[31m+       "label": "Synthetic 1",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "same-question",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:3",[39m
+[31m+       "index": 2,[39m
+[31m+       "label": "Synthetic 2",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-2",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:4",[39m
+[31m+       "index": 3,[39m
+[31m+       "label": "Synthetic 3",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-3",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:5",[39m
+[31m+       "index": 4,[39m
+[31m+       "label": "Synthetic 4",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-4",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:6",[39m
+[31m+       "index": 5,[39m
+[31m+       "label": "Synthetic 5",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-5",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:7",[39m
+[31m+       "index": 6,[39m
+[31m+       "label": "Synthetic 6",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-6",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:8",[39m
+[31m+       "index": 7,[39m
+[31m+       "label": "Synthetic 7",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-7",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:9",[39m
+[31m+       "index": 8,[39m
+[31m+       "label": "Synthetic 8",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-8",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:10",[39m
+[31m+       "index": 9,[39m
+[31m+       "label": "Synthetic 9",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-9",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:11",[39m
+[31m+       "index": 10,[39m
+[31m+       "label": "Synthetic 10",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-10",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:12",[39m
+[31m+       "index": 11,[39m
+[31m+       "label": "Synthetic 11",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-11",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:13",[39m
+[31m+       "index": 12,[39m
+[31m+       "label": "Synthetic 12",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-12",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:14",[39m
+[31m+       "index": 13,[39m
+[31m+       "label": "Synthetic 13",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-13",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:15",[39m
+[31m+       "index": 14,[39m
+[31m+       "label": "Synthetic 14",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-14",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:16",[39m
+[31m+       "index": 15,[39m
+[31m+       "label": "Synthetic 15",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-15",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:17",[39m
+[31m+       "index": 16,[39m
+[31m+       "label": "Synthetic 16",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-16",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:18",[39m
+[31m+       "index": 17,[39m
+[31m+       "label": "Synthetic 17",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-17",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:19",[39m
+[31m+       "index": 18,[39m
+[31m+       "label": "Synthetic 18",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-18",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:20",[39m
+[31m+       "index": 19,[39m
+[31m+       "label": "Synthetic 19",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-19",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:21",[39m
+[31m+       "index": 20,[39m
+[31m+       "label": "Synthetic 20",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-20",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:22",[39m
+[31m+       "index": 21,[39m
+[31m+       "label": "Synthetic 21",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-21",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:23",[39m
+[31m+       "index": 22,[39m
+[31m+       "label": "Synthetic 22",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-22",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:24",[39m
+[31m+       "index": 23,[39m
+[31m+       "label": "Synthetic 23",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-23",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:25",[39m
+[31m+       "index": 24,[39m
+[31m+       "label": "Synthetic 24",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-24",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:26",[39m
+[31m+       "index": 25,[39m
+[31m+       "label": "Synthetic 25",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-25",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:27",[39m
+[31m+       "index": 26,[39m
+[31m+       "label": "Synthetic 26",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-26",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:28",[39m
+[31m+       "index": 27,[39m
+[31m+       "label": "Synthetic 27",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-27",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:29",[39m
+[31m+       "index": 28,[39m
+[31m+       "label": "Synthetic 28",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-28",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:30",[39m
+[31m+       "index": 29,[39m
+[31m+       "label": "Synthetic 29",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-29",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:31",[39m
+[31m+       "index": 30,[39m
+[31m+       "label": "Synthetic 30",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-30",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:32",[39m
+[31m+       "index": 31,[39m
+[31m+       "label": "Synthetic 31",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-31",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:33",[39m
+[31m+       "index": 32,[39m
+[31m+       "label": "Synthetic 32",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-32",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:34",[39m
+[31m+       "index": 33,[39m
+[31m+       "label": "Synthetic 33",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-33",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:35",[39m
+[31m+       "index": 34,[39m
+[31m+       "label": "Synthetic 34",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-34",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:36",[39m
+[31m+       "index": 35,[39m
+[31m+       "label": "Synthetic 35",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-35",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:37",[39m
+[31m+       "index": 36,[39m
+[31m+       "label": "Synthetic 36",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-36",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:38",[39m
+[31m+       "index": 37,[39m
+[31m+       "label": "Synthetic 37",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-37",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:39",[39m
+[31m+       "index": 38,[39m
+[31m+       "label": "Synthetic 38",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-38",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:40",[39m
+[31m+       "index": 39,[39m
+[31m+       "label": "Synthetic 39",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-39",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:41",[39m
+[31m+       "index": 40,[39m
+[31m+       "label": "Synthetic 40",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-40",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:42",[39m
+[31m+       "index": 41,[39m
+[31m+       "label": "Synthetic 41",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-41",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:43",[39m
+[31m+       "index": 42,[39m
+[31m+       "label": "Synthetic 42",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-42",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:44",[39m
+[31m+       "index": 43,[39m
+[31m+       "label": "Synthetic 43",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-43",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:45",[39m
+[31m+       "index": 44,[39m
+[31m+       "label": "Synthetic 44",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-44",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:46",[39m
+[31m+       "index": 45,[39m
+[31m+       "label": "Synthetic 45",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-45",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:47",[39m
+[31m+       "index": 46,[39m
+[31m+       "label": "Synthetic 46",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-46",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:48",[39m
+[31m+       "index": 47,[39m
+[31m+       "label": "Synthetic 47",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-47",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:49",[39m
+[31m+       "index": 48,[39m
+[31m+       "label": "Synthetic 48",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-48",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+     {[39m
+[31m+       "document": "Book",[39m
+[31m+       "entry_id": "attempt:50",[39m
+[31m+       "index": 49,[39m
+[31m+       "label": "Synthetic 49",[39m
+[31m+       "preview": {[39m
+[31m+         "assets": [],[39m
+[31m+         "question_markdown": "Synthetic prompt",[39m
+[31m+       },[39m
+[31m+       "question_uuid": "question-49",[39m
+[31m+       "state": "unattempted",[39m
+[31m+       "topic": "Topic",[39m
+[31m+     },[39m
+[31m+   ],[39m
+[2m  }[22m
+
+ ❯ drill/src/lib/collectionPreview.contract.test.ts:87:30
+     85|  const pending=deferred<PreviewPage>();vi.mocked(api).mockReturnValueO…
+     86|  const session=getPreviewSession(context()),first=session.load(),contr…
+     87|  const rejected=expect(second).rejects.toMatchObject({name:'AbortError…
+       |                              ^
+     88|  controller.abort();pending.resolve(page());await first;await rejected
+     89|  expect(api).toHaveBeenCalledTimes(1);expect(session.cachedCount).toBe…
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  drill/src/lib/listContext.contract.test.ts > preserves all source filters and original return path while stripping pagination, pins and source routing hints
+AssertionError: expected { bucket: 'fourier', …(28) } to not have property "search_version"
+
+[32m- Expected:[39m 
+undefined
+
+[31m+ Received:[39m 
+"2"
+
+ ❯ drill/src/lib/listContext.contract.test.ts:12:104
+     10|  const context=buildListContext('practice',query,returnTo)
+     11|  expect(context.returnTo).toBe(returnTo)
+     12|  for(const key of ['page','index_version','search_version','from','unk…
+       |                                                                                                        ^
+     13|  for(const [key,value]of Object.entries(query).filter(([key])=>!['page…
+     14|  expect(parseListContext(JSON.stringify(context))).toEqual(context)
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  2 failed (2)
+      Tests  3 failed | 13 passed (16)
+   Start at  18:14:42
+   Duration  1.47s (transform 197ms, setup 0ms, collect 389ms, tests 104ms, environment 1.04s, prepare 252ms)
+

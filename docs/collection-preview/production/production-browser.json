@@ -1,0 +1,23 @@
+{
+  "production": "https://47.95.10.128",
+  "physical_safari": false,
+  "errors": [],
+  "drill": {
+    "entered_practice_and_returned": true,
+    "saved": {
+      "index": 237,
+      "entry": "question:45ce9e63-b1af-5eca-bb77-4401d1803d30",
+      "offset": -36.90625
+    },
+    "restored": {
+      "index": 237,
+      "entry": "question:45ce9e63-b1af-5eca-bb77-4401d1803d30",
+      "offset": -36.6484375
+    },
+    "mounted": 14
+  },
+  "ei": {
+    "preview": true,
+    "count": "/ 2830"
+  }
+}

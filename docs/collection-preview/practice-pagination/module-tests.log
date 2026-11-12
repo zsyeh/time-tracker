@@ -1,0 +1,23 @@
+
+> personal-learning-os@3.0.0 test
+> vitest run drill/src/views/PracticeView.test.ts drill/src/components/PracticePagination.test.ts drill/src/composables/usePracticeQuery.test.ts drill/src/views/InsightView.test.ts drill/src/views/CollectionView.test.ts drill/src/views/SelectedPreviewEntries.test.ts
+
+
+ RUN  v3.2.6 /work/frontend
+
+ ✓ drill/src/composables/usePracticeQuery.test.ts (6 tests) 159ms
+ ✓ drill/src/components/PracticePagination.test.ts (6 tests) 104ms
+ ✓ drill/src/views/CollectionView.test.ts (3 tests) 218ms
+ ✓ drill/src/views/InsightView.test.ts (12 tests) 652ms
+ ✓ drill/src/views/SelectedPreviewEntries.test.ts (5 tests) 669ms
+ ✓ drill/src/views/PracticeView.test.ts (17 tests) 1804ms
+   ✓ does not let an old response replace the current query during debounce  307ms
+   ✓ cancels a scheduled old-result prefetch as soon as the search draft changes  355ms
+   ✓ applying a saved query discards a pending input draft even when the applied keyword is unchanged  372ms
+   ✓ provides total pages and any-page jumps while preserving applied query and discarding an unsubmitted draft  326ms
+
+ Test Files  6 passed (6)
+      Tests  49 passed (49)
+   Start at  18:16:54
+   Duration  3.85s (transform 1.93s, setup 0ms, collect 5.08s, tests 3.61s, environment 3.58s, prepare 909ms)
+

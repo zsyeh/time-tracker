@@ -1,0 +1,190 @@
+{
+  "kind": "synthetic 10000 dynamic PNGs / isolated virtual list, NOT actual corpus performance",
+  "samples": [
+    {
+      "anchor": {
+        "entry_id": "question:0",
+        "question_uuid": "uuid-0",
+        "index": 0,
+        "offset": 0,
+        "collection_version": "v1",
+        "scrollTop": 0
+      },
+      "mounted": 6,
+      "scroll": 0,
+      "stats": {
+        "entries": 5,
+        "fetching": 0,
+        "decoding": 0,
+        "resident": 5,
+        "pixels": 2500000,
+        "overBudget": false
+      },
+      "overflow": false
+    },
+    {
+      "anchor": {
+        "entry_id": "question:100",
+        "question_uuid": "uuid-100",
+        "index": 100,
+        "offset": -0.11249999998835847,
+        "collection_version": "v1",
+        "scrollTop": 72387
+      },
+      "mounted": 8,
+      "scroll": 72387,
+      "stats": {
+        "entries": 6,
+        "fetching": 0,
+        "decoding": 0,
+        "resident": 6,
+        "pixels": 3600000,
+        "overBudget": false
+      },
+      "overflow": false
+    },
+    {
+      "anchor": {
+        "entry_id": "question:5000",
+        "question_uuid": "uuid-5000",
+        "index": 5000,
+        "offset": 0.525000000372529,
+        "collection_version": "v1",
+        "scrollTop": 3656448
+      },
+      "mounted": 9,
+      "scroll": 3656448,
+      "stats": {
+        "entries": 6,
+        "fetching": 0,
+        "decoding": 0,
+        "resident": 6,
+        "pixels": 3600000,
+        "overBudget": false
+      },
+      "overflow": false
+    },
+    {
+      "anchor": {
+        "entry_id": "question:9999",
+        "question_uuid": "uuid-9999",
+        "index": 9999,
+        "offset": -0.23125034850090742,
+        "collection_version": "v1",
+        "scrollTop": 7312781
+      },
+      "mounted": 5,
+      "scroll": 7312781,
+      "stats": {
+        "entries": 5,
+        "fetching": 0,
+        "decoding": 0,
+        "resident": 5,
+        "pixels": 2800000,
+        "overBudget": false
+      },
+      "overflow": false
+    },
+    {
+      "anchor": {
+        "entry_id": "question:7000",
+        "question_uuid": "uuid-7000",
+        "index": 7000,
+        "offset": -0.46875010896474123,
+        "collection_version": "v1",
+        "scrollTop": 5120030
+      },
+      "mounted": 8,
+      "scroll": 5120030,
+      "stats": {
+        "entries": 7,
+        "fetching": 0,
+        "decoding": 0,
+        "resident": 7,
+        "pixels": 4550000,
+        "overBudget": false
+      },
+      "overflow": false
+    },
+    {
+      "anchor": {
+        "entry_id": "question:50",
+        "question_uuid": "uuid-50",
+        "index": 50,
+        "offset": 0.46054687499417923,
+        "collection_version": "v1",
+        "scrollTop": 36095
+      },
+      "mounted": 8,
+      "scroll": 36095,
+      "stats": {
+        "entries": 7,
+        "fetching": 0,
+        "decoding": 0,
+        "resident": 7,
+        "pixels": 4550000,
+        "overBudget": false
+      },
+      "overflow": false
+    },
+    {
+      "anchor": {
+        "entry_id": "question:1",
+        "question_uuid": "uuid-1",
+        "index": 1,
+        "offset": -0.21875,
+        "collection_version": "v1",
+        "scrollTop": 298
+      },
+      "mounted": 6,
+      "scroll": 298,
+      "stats": {
+        "entries": 5,
+        "fetching": 0,
+        "decoding": 0,
+        "resident": 5,
+        "pixels": 2500000,
+        "overBudget": false
+      },
+      "overflow": false
+    }
+  ],
+  "saved": {
+    "entry_id": "question:1",
+    "question_uuid": "uuid-1",
+    "index": 1,
+    "offset": -0.21875,
+    "collection_version": "v1",
+    "scrollTop": 298
+  },
+  "restored": {
+    "entry_id": "question:1",
+    "question_uuid": "uuid-1",
+    "index": 1,
+    "offset": -0.21875,
+    "collection_version": "v1",
+    "scrollTop": 298
+  },
+  "portrait": {
+    "anchor": {
+      "entry_id": "question:1",
+      "question_uuid": "uuid-1",
+      "index": 1,
+      "offset": -0.625,
+      "collection_version": "v1",
+      "scrollTop": 170
+    },
+    "mounted": 11,
+    "width": 390,
+    "viewport": 390,
+    "stats": {
+      "entries": 9,
+      "fetching": 0,
+      "decoding": 0,
+      "resident": 9,
+      "pixels": 5100000,
+      "overBudget": false
+    }
+  },
+  "errors": []
+}

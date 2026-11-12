@@ -1,0 +1,38 @@
+[
+  {
+    "origin": "https://47.95.10.128",
+    "steps": [
+      {
+        "status": 302,
+        "path": "/drill/preview",
+        "request_bytes": 3862,
+        "location_bytes": 5610
+      },
+      {
+        "status": 302,
+        "path": "/drill-auth/start",
+        "request_bytes": 5610,
+        "location_bytes": 7340
+      },
+      {
+        "status": 200,
+        "path": "/accounts/login/",
+        "request_bytes": 7360,
+        "location_bytes": 0
+      }
+    ],
+    "login_reached": true
+  },
+  {
+    "origin": "https://drill.ehzsy.site",
+    "steps": [
+      {
+        "status": 403,
+        "path": "/preview",
+        "request_bytes": 3860,
+        "location_bytes": 0
+      }
+    ],
+    "login_reached": false
+  }
+]

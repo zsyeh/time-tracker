@@ -1,0 +1,63 @@
+{
+  "observed_at_utc": "2026-11-12T18:43:10.609785+00:00",
+  "mode": "Read-only nginx -T, getconf PAGESIZE, readlink and selected-file SHA256; no server configuration changes or reloads performed by reviewer",
+  "raw_configuration_archived": false,
+  "reason": "Full nginx dumps contain unrelated application configuration and are retained only in a private local directory, not Git.",
+  "hosts": [
+    {
+      "host": "47.95.10.128",
+      "nginx_configuration_test": "successful",
+      "page_size_bytes": 4096,
+      "main_application_config": "/etc/nginx/conf.d/time-tracker-ha.conf",
+      "main_application_config_sha256": "a0bef41473f2c26151fb851a37141622a00047707fd6ae916c24d3020d07b3d9",
+      "shared_location_include": "/etc/nginx/time-tracker-ha/proxy-promoted-common.conf",
+      "shared_location_include_sha256": "ed9389b9c0cfcd8b5c522371ee2a293ff348bfdf1f15f534f4ed80cf6188a502",
+      "relevant_servers": [
+        "47.95.10.128",
+        "timer.ehzsy.site",
+        "drill.ehzsy.site",
+        "ei.ehzsy.site"
+      ],
+      "upstream": "http://127.0.0.1:18000",
+      "explicit_size_directives_in_effective_dump": [],
+      "inferred_default_proxy_response_header_bytes": 4096,
+      "inferred_default_large_client_headers": "4 8k",
+      "recommended_edit": "Add bounded proxy response-buffer directives to shared_location_include; synchronize deploy/ha/proxy-promoted-common.conf"
+    },
+    {
+      "host": "98.142.241.45",
+      "nginx_configuration_test": "successful",
+      "page_size_bytes": 4096,
+      "main_application_config": "/etc/nginx/conf.d/ehzsy.site.conf",
+      "main_application_config_sha256": "d364981b288c25c96a903afa411ac72c7cd19e6f522e60f8abc234fc00be5133",
+      "relevant_servers": [
+        "timer.ehzsy.site",
+        "drill.ehzsy.site",
+        "ei.ehzsy.site"
+      ],
+      "upstream": "https://47.95.10.128 for normal private UI routes; existing dedicated tunnel upstream for selected sharing/auth paths",
+      "explicit_size_directives_in_effective_dump": [],
+      "inferred_default_proxy_response_header_bytes": 4096,
+      "inferred_default_large_client_headers": "4 8k",
+      "recommended_edit": "Add bounded proxy response-buffer directives within only the three relevant server blocks; preserve unrelated hosts, sharing cache, tunnel/TLS and auth routing"
+    }
+  ],
+  "recommended_bounded_response_directives": [
+    "proxy_buffer_size 16k;",
+    "proxy_buffers 8 16k;",
+    "proxy_busy_buffers_size 32k;"
+  ],
+  "request_buffer_change_required_for_measured_cases": false,
+  "request_buffer_reason": "Existing Nginx 8KB single-buffer request budget covers the 8190-byte Gunicorn limit for the measured cases. Do not make unlimited header/body/request limits.",
+  "not_verified_here": [
+    "No production error was intentionally triggered through Nginx.",
+    "No production login was performed by reviewer.",
+    "New directives still require owner-applied nginx -t, reload, end-to-end authentication and rollback verification."
+  ],
+  "default_sources": [
+    "https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_buffer_size",
+    "https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_buffers",
+    "https://nginx.org/en/docs/http/ngx_http_proxy_module.html#proxy_busy_buffers_size",
+    "https://nginx.org/en/docs/http/ngx_http_core_module.html#large_client_header_buffers"
+  ]
+}

@@ -1,0 +1,71 @@
+{
+  "generated_at": "2026-11-12T18:45:08.364Z",
+  "mode": "offline actual Vue Router encoding and equivalent Python/Django quoting; no HTTP/authentication/data writes",
+  "query_unicode_characters": 120,
+  "correction": "The initial 180-character example was NOT a valid search. parse_query limits raw queries to 120 Unicode characters. It is superseded by these 120-character cases.",
+  "budget": {
+    "gunicorn_request_line_bytes": 8190,
+    "nginx_default_single_large_request_buffer_bytes": 8192
+  },
+  "source_files": [
+    "frontend/drill/src/lib/listContext.ts",
+    "frontend/shared/search/queryState.ts",
+    "frontend/drill/src/components/PracticeFilterPanel.vue",
+    "drill/search/query.py",
+    "drill/web_views.py"
+  ],
+  "cases": [
+    {
+      "name": "query_120",
+      "return_to_bytes": 1180,
+      "logical_preview_bytes": 3122,
+      "ip_preview_bytes": 3128,
+      "drill_auth_start_bytes": 4684,
+      "accounts_login_bytes": 6242,
+      "ip_auth_start_bytes": 4678,
+      "ip_accounts_login_bytes": 6238,
+      "max_http11_request_line_bytes": 6255,
+      "remaining_8190_bytes": 1935,
+      "absolute_first_location_bytes": 4708,
+      "location_alone_exceeds_4k_proxy_response_header_buffer": true,
+      "fits_gunicorn_8190": true
+    },
+    {
+      "name": "all_ui_filters_120",
+      "return_to_bytes": 1398,
+      "logical_preview_bytes": 3726,
+      "ip_preview_bytes": 3732,
+      "drill_auth_start_bytes": 5480,
+      "accounts_login_bytes": 7230,
+      "ip_auth_start_bytes": 5474,
+      "ip_accounts_login_bytes": 7226,
+      "max_http11_request_line_bytes": 7243,
+      "remaining_8190_bytes": 947,
+      "absolute_first_location_bytes": 5504,
+      "location_alone_exceeds_4k_proxy_response_header_buffer": true,
+      "fits_gunicorn_8190": true
+    },
+    {
+      "name": "recognized_scope_size_stress_120",
+      "return_to_bytes": 1550,
+      "logical_preview_bytes": 4156,
+      "ip_preview_bytes": 4162,
+      "drill_auth_start_bytes": 6054,
+      "accounts_login_bytes": 7948,
+      "ip_auth_start_bytes": 6048,
+      "ip_accounts_login_bytes": 7944,
+      "max_http11_request_line_bytes": 7961,
+      "remaining_8190_bytes": 229,
+      "absolute_first_location_bytes": 6078,
+      "location_alone_exceeds_4k_proxy_response_header_buffer": true,
+      "fits_gunicorn_8190": true
+    }
+  ],
+  "limitations": [
+    "This is a deterministic encoding calculation, not end-to-end production login verification.",
+    "Document/topic identifiers are synthetic numeric filter values; no nonempty search result is asserted.",
+    "Request-line and upstream response-header budgets are separate. A long Location can exceed the default 4KB upstream header buffer.",
+    "The longest accepted raw JSON/context string is not necessarily a supported HTTP URL. Do not claim the model 16384 field size is the network limit.",
+    "Cookie and other response headers add to Location; allocate bounded response-header headroom."
+  ]
+}

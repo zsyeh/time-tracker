@@ -1,0 +1,15 @@
+
+> personal-learning-os@3.0.0 test
+> vitest run drill/src/lib/listContext.contract.test.ts drill/src/lib/collectionPreview.contract.test.ts
+
+
+ RUN  v3.2.6 /work/frontend
+
+ ✓ drill/src/lib/listContext.contract.test.ts (5 tests) 17ms
+ ✓ drill/src/lib/collectionPreview.contract.test.ts (12 tests) 29ms
+
+ Test Files  2 passed (2)
+      Tests  17 passed (17)
+   Start at  18:20:29
+   Duration  815ms (transform 123ms, setup 0ms, collect 194ms, tests 46ms, environment 713ms, prepare 162ms)
+

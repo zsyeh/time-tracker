@@ -1,0 +1,14 @@
+
+> personal-learning-os@3.0.0 test
+> vitest run drill/src/components/PracticePagination.test.ts
+
+
+ RUN  v3.2.6 /work/frontend
+
+ ✓ drill/src/components/PracticePagination.test.ts (6 tests) 65ms
+
+ Test Files  1 passed (1)
+      Tests  6 passed (6)
+   Start at  18:36:57
+   Duration  970ms (transform 199ms, setup 0ms, collect 262ms, tests 65ms, environment 339ms, prepare 121ms)
+
