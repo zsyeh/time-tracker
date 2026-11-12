@@ -1,0 +1,19 @@
+Found 49 test(s).
+Creating test database for alias 'default'...
+System check identified no issues (0 silenced).
+............................warning: The `fitz` API is deprecated and will be removed in future. Use `import pymupdf` instead.
+{
+  "mapping_rows": 1,
+  "validated_segments": 1,
+  "rendered_assets": 0,
+  "new_assets": null,
+  "question_count": 4,
+  "answer_questions_before": 0,
+  "dry_run": true
+}
+.....................
+----------------------------------------------------------------------
+Ran 49 tests in 28.492s
+
+OK
+Destroying test database for alias 'default'...

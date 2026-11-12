@@ -111,3 +111,29 @@ EXPLAIN observations, without guessing about absent indexes:
 - API view time around385ms versus SQL execute wall127ms also includes fetching results, model construction and Python grouping; JSON serialization adds about30ms for1.8MB. It is incorrect to label that difference as an indexed SQL scan or N+1 without profiling.
 
 Release decision: **do not modify heatmap backend SQL or add indexes in this repair**. The class and payload remain unchanged; this avoids disturbing statistics and state semantics after frontend fixes already beat the historical browser baseline. A later isolated benchmark may evaluate bounded PG-array membership or a values projection if catalog growth warrants it. A naïve live subquery would re-evaluate membership after the question snapshot and needs an explicit concurrency/semantics review. These are deferred experiments, not claimed implemented optimizations.
+
+## Production follow-up: negotiated JSON transfer compression
+
+Real HTTPS cold-context sampling initially found selected heatmap1304→1950ms;
+that result is preserved in`../search-question/final/production/`. A second five-case
+breakdown found response completion→DOM insertion23–31ms and insertion→RAF121–138ms,
+while307254bytes of JSON were sent uncompressed and body transfer varied46–673ms.
+The current Nginx has`gzip on` but no JSON`gzip_types`. Both CDP andResourceTiming
+confirmed encodedBodySize equals decodedBodySize; this was a measured transfer
+bottleneck rather than a guessed SQL/index defect. Subsequent5-case cold median1403ms
+does not erase the initial regression.
+
+Main added standard Django4.2`gzip_page` only toDrillHeatmapView.dispatch. Django's
+middleware decorator registers a post-render callback forDRFResponse, negotiates
+Accept-Encoding, setsVary/Content-Length, skips existing encodings and uses100bytes
+of random-padding protection. Data aggregation, auth, filters and JSON body after
+decoding are unchanged; requests without gzip retain their exact original body.
+No new infrastructure, backend query/index rewrite or Nginx configuration change.
+The endpoint retains its existing renderers; do not call BrowsableAPIHTML token-free.
+
+Four focused transfer tests pass inSQLite andPostgreSQL, plus49existing/new DrillAPI
+checks. They assert byte-for-byte decompression equality in both workspaces, exact
+counts, no prompt leakage, negotiated/no-negotiation behavior, account states,
+workspace rejection, affinity rejection and anonymous authentication. Independent
+review verified installed Django's deferred-render and compression implementation.
+Production compressed bytes and cold-screen evidence are recorded after rollout.

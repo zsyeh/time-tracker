@@ -9,6 +9,8 @@ from django.db.models.functions import Coalesce, Length, TruncDate
 from django.http import Http404, HttpResponse, HttpResponseNotModified
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from django.utils.decorators import method_decorator
+from django.views.decorators.gzip import gzip_page
 from django.utils.http import parse_etags
 from rest_framework import status
 from rest_framework.pagination import PageNumberPagination
@@ -1920,6 +1922,9 @@ def insight_filtered_querysets(request, params):
 
     return recent_attempts, saved_notes, document_ids, course_document_ids
 
+# Compress this large grid response at transport level, after DRF rendering.
+# Query/state semantics stay identical; clients without gzip retain the old body.
+@method_decorator(gzip_page, name='dispatch')
 class DrillHeatmapView(APIView):
     def get(self, request):
         scope = request.query_params.get('scope', 'past_exam')
