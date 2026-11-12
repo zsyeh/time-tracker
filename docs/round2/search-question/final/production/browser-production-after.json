@@ -1,0 +1,1951 @@
+{
+  "phase": "after",
+  "created_utc": "2026-11-12T15:04:16.171763+00:00",
+  "viewport": {
+    "width": 820,
+    "height": 1180
+  },
+  "engine": "chromium",
+  "samples_per_flow": 3,
+  "origin_host": "47.95.10.128",
+  "synthetic_account_verified": true,
+  "policy": "Fresh isolated context per first-open/search/heatmap. Normal cache+prefetch retained for next/previous. Real network and assets; no mocked APIs, throttling or answer/Note writes.",
+  "image_bytes_note": "CDP encoded transfer bytes for Image requests begun during each action, including app adjacent/answer prefetch. Warm prefetched images may start before action and contribute zero; this is not a per-prompt payload size.",
+  "cases": [
+    {
+      "sample": 1,
+      "flow": "direct_navigation",
+      "actions": [
+        {
+          "action": "first_open",
+          "key_ui_usable_ms": 622.75,
+          "first_prompt_image_decoded_ms": 996.81,
+          "prompt_image": {
+            "found": true,
+            "complete": true,
+            "natural_width": 1489,
+            "natural_height": 182,
+            "visible_in_viewport": true
+          },
+          "long_tasks": {
+            "supported": true,
+            "durations_ms": [
+              65,
+              66,
+              366
+            ]
+          },
+          "horizontal_overflow": false,
+          "api": [
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 18.04,
+              "total_ms": 18.2,
+              "encoded_bytes": 2541,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_recovery",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 22.98,
+              "total_ms": 23.36,
+              "encoded_bytes": 605,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_recovery",
+              "method": "PUT",
+              "status": 200,
+              "headers_ms": 67.76,
+              "total_ms": 68.62,
+              "encoded_bytes": 634,
+              "canceled": false
+            },
+            {
+              "kind": "target_detail",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 244.81,
+              "total_ms": 245.06,
+              "encoded_bytes": 2897,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_timing",
+              "method": "POST",
+              "status": 200,
+              "headers_ms": 67.97,
+              "total_ms": 68.39,
+              "encoded_bytes": 715,
+              "canceled": false
+            },
+            {
+              "kind": "adjacent_or_other_detail",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 372.66,
+              "total_ms": 375.28,
+              "encoded_bytes": 3264,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 368.47,
+              "total_ms": 368.78,
+              "encoded_bytes": 40634,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 367.75,
+              "total_ms": 368.05,
+              "encoded_bytes": 145742,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 368.66,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": null,
+              "headers_ms": null,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": null,
+              "headers_ms": null,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": null,
+              "headers_ms": null,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            },
+            {
+              "kind": "adjacent_or_other_detail",
+              "method": "GET",
+              "status": null,
+              "headers_ms": null,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            }
+          ],
+          "images": {
+            "requests_started_in_action": 6,
+            "finished": 2,
+            "encoded_transfer_bytes": 186376,
+            "http_statuses": [
+              200,
+              200,
+              200,
+              null,
+              null,
+              null
+            ],
+            "served_from_cache_count": 0,
+            "disk_cache_count": 0,
+            "prefetch_cache_count": 0,
+            "service_worker_count": 0,
+            "failed_count": 0
+          },
+          "pass": true
+        },
+        {
+          "action": "next",
+          "key_ui_usable_ms": 52.13,
+          "first_prompt_image_decoded_ms": 363.02,
+          "prompt_image": {
+            "found": true,
+            "complete": true,
+            "natural_width": 1489,
+            "natural_height": 272,
+            "visible_in_viewport": true
+          },
+          "long_tasks": {
+            "supported": true,
+            "durations_ms": []
+          },
+          "horizontal_overflow": false,
+          "api": [
+            {
+              "kind": "synthetic_auto_recovery",
+              "method": "PUT",
+              "status": 200,
+              "headers_ms": 17.96,
+              "total_ms": 18.09,
+              "encoded_bytes": 634,
+              "canceled": false
+            },
+            {
+              "kind": "target_detail",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 130.37,
+              "total_ms": 130.55,
+              "encoded_bytes": 3264,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_timing",
+              "method": "POST",
+              "status": 200,
+              "headers_ms": 159.95,
+              "total_ms": 160.15,
+              "encoded_bytes": 689,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_timing",
+              "method": "POST",
+              "status": 200,
+              "headers_ms": 261.39,
+              "total_ms": 261.56,
+              "encoded_bytes": 714,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 151.82,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            },
+            {
+              "kind": "adjacent_or_other_detail",
+              "method": "GET",
+              "status": null,
+              "headers_ms": null,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": null,
+              "headers_ms": null,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": null,
+              "headers_ms": null,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            }
+          ],
+          "images": {
+            "requests_started_in_action": 3,
+            "finished": 0,
+            "encoded_transfer_bytes": 0,
+            "http_statuses": [
+              200,
+              null,
+              null
+            ],
+            "served_from_cache_count": 0,
+            "disk_cache_count": 0,
+            "prefetch_cache_count": 0,
+            "service_worker_count": 0,
+            "failed_count": 0
+          },
+          "pass": true
+        },
+        {
+          "action": "previous",
+          "key_ui_usable_ms": 54.82,
+          "first_prompt_image_decoded_ms": 56.67,
+          "prompt_image": {
+            "found": true,
+            "complete": true,
+            "natural_width": 1489,
+            "natural_height": 182,
+            "visible_in_viewport": true
+          },
+          "long_tasks": {
+            "supported": true,
+            "durations_ms": []
+          },
+          "horizontal_overflow": false,
+          "api": [
+            {
+              "kind": "synthetic_auto_recovery",
+              "method": "PUT",
+              "status": 200,
+              "headers_ms": 87.89,
+              "total_ms": 88.04,
+              "encoded_bytes": 634,
+              "canceled": false
+            },
+            {
+              "kind": "target_detail",
+              "method": "GET",
+              "status": null,
+              "headers_ms": null,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_timing",
+              "method": "POST",
+              "status": null,
+              "headers_ms": null,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            }
+          ],
+          "images": {
+            "requests_started_in_action": 0,
+            "finished": 0,
+            "encoded_transfer_bytes": 0,
+            "http_statuses": [],
+            "served_from_cache_count": 0,
+            "disk_cache_count": 0,
+            "prefetch_cache_count": 0,
+            "service_worker_count": 0,
+            "failed_count": 0
+          },
+          "pass": true
+        }
+      ],
+      "page_error_count": 0
+    },
+    {
+      "sample": 1,
+      "flow": "search_click",
+      "actions": [
+        {
+          "action": "search_list",
+          "key_ui_usable_ms": 1483.98,
+          "api": [
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 3.94,
+              "total_ms": 4.19,
+              "encoded_bytes": 2541,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_recovery",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 25.74,
+              "total_ms": 25.99,
+              "encoded_bytes": 634,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_recovery",
+              "method": "PUT",
+              "status": 200,
+              "headers_ms": 194.76,
+              "total_ms": 197.81,
+              "encoded_bytes": 618,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 194.95,
+              "total_ms": 200.85,
+              "encoded_bytes": 71369,
+              "canceled": false
+            },
+            {
+              "kind": "question_list",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 160.72,
+              "total_ms": 178.17,
+              "encoded_bytes": 21058,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": null,
+              "headers_ms": null,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            }
+          ],
+          "images": {
+            "requests_started_in_action": 0,
+            "finished": 0,
+            "encoded_transfer_bytes": 0,
+            "http_statuses": [],
+            "served_from_cache_count": 0,
+            "disk_cache_count": 0,
+            "prefetch_cache_count": 0,
+            "service_worker_count": 0,
+            "failed_count": 0
+          },
+          "pass": true
+        },
+        {
+          "action": "search_result_click",
+          "key_ui_usable_ms": 137.06,
+          "first_prompt_image_decoded_ms": 949.63,
+          "prompt_image": {
+            "found": true,
+            "complete": true,
+            "natural_width": 1120,
+            "natural_height": 348,
+            "visible_in_viewport": true
+          },
+          "long_tasks": {
+            "supported": true,
+            "durations_ms": [
+              152
+            ]
+          },
+          "horizontal_overflow": false,
+          "api": [
+            {
+              "kind": "target_detail",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 96.25,
+              "total_ms": 96.42,
+              "encoded_bytes": 3016,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_recovery",
+              "method": "PUT",
+              "status": 200,
+              "headers_ms": 4.11,
+              "total_ms": 4.47,
+              "encoded_bytes": 708,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_timing",
+              "method": "POST",
+              "status": 409,
+              "headers_ms": 21.03,
+              "total_ms": 21.15,
+              "encoded_bytes": 604,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 153.02,
+              "total_ms": 808.02,
+              "encoded_bytes": 135186,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 153.27,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            },
+            {
+              "kind": "adjacent_or_other_detail",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 156.17,
+              "total_ms": 158.23,
+              "encoded_bytes": 2895,
+              "canceled": false
+            },
+            {
+              "kind": "adjacent_or_other_detail",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 155.69,
+              "total_ms": 157.88,
+              "encoded_bytes": 2822,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 340.25,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 151.4,
+              "total_ms": 151.6,
+              "encoded_bytes": 18128,
+              "canceled": false
+            },
+            {
+              "kind": "adjacent_or_other_detail",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 161.13,
+              "total_ms": 161.28,
+              "encoded_bytes": 2839,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 100.7,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": null,
+              "headers_ms": null,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            }
+          ],
+          "images": {
+            "requests_started_in_action": 6,
+            "finished": 2,
+            "encoded_transfer_bytes": 153314,
+            "http_statuses": [
+              200,
+              200,
+              200,
+              200,
+              200,
+              null
+            ],
+            "served_from_cache_count": 0,
+            "disk_cache_count": 0,
+            "prefetch_cache_count": 0,
+            "service_worker_count": 0,
+            "failed_count": 0
+          },
+          "pass": true
+        }
+      ],
+      "page_error_count": 0
+    },
+    {
+      "sample": 1,
+      "flow": "selected_heatmap",
+      "actions": [
+        {
+          "action": "selected_heatmap_first_screen",
+          "key_ui_usable_ms": 1893.51,
+          "rendered_cells": 963,
+          "long_tasks": {
+            "supported": true,
+            "durations_ms": [
+              130,
+              118,
+              216
+            ]
+          },
+          "api": [
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 3.93,
+              "total_ms": 4.25,
+              "encoded_bytes": 2541,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_recovery",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 22.74,
+              "total_ms": 22.96,
+              "encoded_bytes": 671,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_recovery",
+              "method": "PUT",
+              "status": 200,
+              "headers_ms": 121.26,
+              "total_ms": 122.38,
+              "encoded_bytes": 605,
+              "canceled": false
+            },
+            {
+              "kind": "heatmap",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 139.65,
+              "total_ms": 592.36,
+              "encoded_bytes": 307638,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 221.0,
+              "total_ms": 223.27,
+              "encoded_bytes": 534,
+              "canceled": false
+            }
+          ],
+          "images": {
+            "requests_started_in_action": 0,
+            "finished": 0,
+            "encoded_transfer_bytes": 0,
+            "http_statuses": [],
+            "served_from_cache_count": 0,
+            "disk_cache_count": 0,
+            "prefetch_cache_count": 0,
+            "service_worker_count": 0,
+            "failed_count": 0
+          },
+          "pass": true
+        }
+      ],
+      "page_error_count": 0
+    },
+    {
+      "sample": 2,
+      "flow": "direct_navigation",
+      "actions": [
+        {
+          "action": "first_open",
+          "key_ui_usable_ms": 967.74,
+          "first_prompt_image_decoded_ms": 977.43,
+          "prompt_image": {
+            "found": true,
+            "complete": true,
+            "natural_width": 1489,
+            "natural_height": 182,
+            "visible_in_viewport": true
+          },
+          "long_tasks": {
+            "supported": true,
+            "durations_ms": [
+              67,
+              60,
+              317
+            ]
+          },
+          "horizontal_overflow": false,
+          "api": [
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 15.63,
+              "total_ms": 15.81,
+              "encoded_bytes": 2541,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_recovery",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 20.62,
+              "total_ms": 20.79,
+              "encoded_bytes": 605,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_recovery",
+              "method": "PUT",
+              "status": 200,
+              "headers_ms": 60.92,
+              "total_ms": 61.42,
+              "encoded_bytes": 634,
+              "canceled": false
+            },
+            {
+              "kind": "target_detail",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 117.82,
+              "total_ms": 117.98,
+              "encoded_bytes": 2897,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_timing",
+              "method": "POST",
+              "status": 409,
+              "headers_ms": 60.84,
+              "total_ms": 61.14,
+              "encoded_bytes": 604,
+              "canceled": false
+            },
+            {
+              "kind": "adjacent_or_other_detail",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 321.62,
+              "total_ms": 324.91,
+              "encoded_bytes": 3264,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 318.56,
+              "total_ms": 318.71,
+              "encoded_bytes": 40634,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 318.19,
+              "total_ms": 407.27,
+              "encoded_bytes": 145742,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 318.7,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 104.0,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": null,
+              "headers_ms": null,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            },
+            {
+              "kind": "adjacent_or_other_detail",
+              "method": "GET",
+              "status": null,
+              "headers_ms": null,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": null,
+              "headers_ms": null,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            }
+          ],
+          "images": {
+            "requests_started_in_action": 6,
+            "finished": 2,
+            "encoded_transfer_bytes": 186376,
+            "http_statuses": [
+              200,
+              200,
+              200,
+              200,
+              null,
+              null
+            ],
+            "served_from_cache_count": 0,
+            "disk_cache_count": 0,
+            "prefetch_cache_count": 0,
+            "service_worker_count": 0,
+            "failed_count": 0
+          },
+          "pass": true
+        },
+        {
+          "action": "next",
+          "key_ui_usable_ms": 53.13,
+          "first_prompt_image_decoded_ms": 54.38,
+          "prompt_image": {
+            "found": true,
+            "complete": true,
+            "natural_width": 1489,
+            "natural_height": 272,
+            "visible_in_viewport": true
+          },
+          "long_tasks": {
+            "supported": true,
+            "durations_ms": []
+          },
+          "horizontal_overflow": false,
+          "api": [
+            {
+              "kind": "synthetic_auto_recovery",
+              "method": "PUT",
+              "status": 200,
+              "headers_ms": 3.59,
+              "total_ms": 3.9,
+              "encoded_bytes": 634,
+              "canceled": false
+            },
+            {
+              "kind": "target_detail",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 121.74,
+              "total_ms": 121.91,
+              "encoded_bytes": 3264,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_timing",
+              "method": "POST",
+              "status": 409,
+              "headers_ms": 53.34,
+              "total_ms": 53.51,
+              "encoded_bytes": 596,
+              "canceled": false
+            },
+            {
+              "kind": "adjacent_or_other_detail",
+              "method": "GET",
+              "status": null,
+              "headers_ms": null,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            }
+          ],
+          "images": {
+            "requests_started_in_action": 0,
+            "finished": 0,
+            "encoded_transfer_bytes": 0,
+            "http_statuses": [],
+            "served_from_cache_count": 0,
+            "disk_cache_count": 0,
+            "prefetch_cache_count": 0,
+            "service_worker_count": 0,
+            "failed_count": 0
+          },
+          "pass": true
+        },
+        {
+          "action": "previous",
+          "key_ui_usable_ms": 49.48,
+          "first_prompt_image_decoded_ms": 51.23,
+          "prompt_image": {
+            "found": true,
+            "complete": true,
+            "natural_width": 1489,
+            "natural_height": 182,
+            "visible_in_viewport": true
+          },
+          "long_tasks": {
+            "supported": true,
+            "durations_ms": []
+          },
+          "horizontal_overflow": false,
+          "api": [
+            {
+              "kind": "synthetic_auto_recovery",
+              "method": "PUT",
+              "status": 200,
+              "headers_ms": 5.07,
+              "total_ms": 5.24,
+              "encoded_bytes": 634,
+              "canceled": false
+            },
+            {
+              "kind": "target_detail",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 126.89,
+              "total_ms": 127.11,
+              "encoded_bytes": 2897,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_timing",
+              "method": "POST",
+              "status": 409,
+              "headers_ms": 66.29,
+              "total_ms": 66.45,
+              "encoded_bytes": 604,
+              "canceled": false
+            }
+          ],
+          "images": {
+            "requests_started_in_action": 0,
+            "finished": 0,
+            "encoded_transfer_bytes": 0,
+            "http_statuses": [],
+            "served_from_cache_count": 0,
+            "disk_cache_count": 0,
+            "prefetch_cache_count": 0,
+            "service_worker_count": 0,
+            "failed_count": 0
+          },
+          "pass": true
+        }
+      ],
+      "page_error_count": 0
+    },
+    {
+      "sample": 2,
+      "flow": "search_click",
+      "actions": [
+        {
+          "action": "search_list",
+          "key_ui_usable_ms": 1477.26,
+          "api": [
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 3.6,
+              "total_ms": 3.82,
+              "encoded_bytes": 2541,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_recovery",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 22.8,
+              "total_ms": 22.95,
+              "encoded_bytes": 634,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_recovery",
+              "method": "PUT",
+              "status": 200,
+              "headers_ms": 191.12,
+              "total_ms": 193.46,
+              "encoded_bytes": 618,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 191.17,
+              "total_ms": 194.64,
+              "encoded_bytes": 71369,
+              "canceled": false
+            },
+            {
+              "kind": "question_list",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 170.53,
+              "total_ms": 177.45,
+              "encoded_bytes": 21058,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": null,
+              "headers_ms": null,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            }
+          ],
+          "images": {
+            "requests_started_in_action": 0,
+            "finished": 0,
+            "encoded_transfer_bytes": 0,
+            "http_statuses": [],
+            "served_from_cache_count": 0,
+            "disk_cache_count": 0,
+            "prefetch_cache_count": 0,
+            "service_worker_count": 0,
+            "failed_count": 0
+          },
+          "pass": true
+        },
+        {
+          "action": "search_result_click",
+          "key_ui_usable_ms": 318.25,
+          "first_prompt_image_decoded_ms": 324.73,
+          "prompt_image": {
+            "found": true,
+            "complete": true,
+            "natural_width": 1120,
+            "natural_height": 348,
+            "visible_in_viewport": true
+          },
+          "long_tasks": {
+            "supported": true,
+            "durations_ms": [
+              151
+            ]
+          },
+          "horizontal_overflow": false,
+          "api": [
+            {
+              "kind": "target_detail",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 125.78,
+              "total_ms": 125.92,
+              "encoded_bytes": 3016,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_recovery",
+              "method": "PUT",
+              "status": 200,
+              "headers_ms": 4.82,
+              "total_ms": 4.94,
+              "encoded_bytes": 708,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_timing",
+              "method": "POST",
+              "status": 409,
+              "headers_ms": 28.24,
+              "total_ms": 28.4,
+              "encoded_bytes": 604,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 153.07,
+              "total_ms": 153.25,
+              "encoded_bytes": 135186,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 153.29,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            },
+            {
+              "kind": "adjacent_or_other_detail",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 253.89,
+              "total_ms": 254.19,
+              "encoded_bytes": 2895,
+              "canceled": false
+            },
+            {
+              "kind": "adjacent_or_other_detail",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 255.35,
+              "total_ms": 255.78,
+              "encoded_bytes": 2822,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": null,
+              "headers_ms": null,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": null,
+              "headers_ms": null,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": null,
+              "headers_ms": null,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            },
+            {
+              "kind": "adjacent_or_other_detail",
+              "method": "GET",
+              "status": null,
+              "headers_ms": null,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            }
+          ],
+          "images": {
+            "requests_started_in_action": 5,
+            "finished": 1,
+            "encoded_transfer_bytes": 135186,
+            "http_statuses": [
+              200,
+              200,
+              null,
+              null,
+              null
+            ],
+            "served_from_cache_count": 0,
+            "disk_cache_count": 0,
+            "prefetch_cache_count": 0,
+            "service_worker_count": 0,
+            "failed_count": 0
+          },
+          "pass": true
+        }
+      ],
+      "page_error_count": 0
+    },
+    {
+      "sample": 2,
+      "flow": "selected_heatmap",
+      "actions": [
+        {
+          "action": "selected_heatmap_first_screen",
+          "key_ui_usable_ms": 1949.62,
+          "rendered_cells": 963,
+          "long_tasks": {
+            "supported": true,
+            "durations_ms": [
+              140,
+              123,
+              132
+            ]
+          },
+          "api": [
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 3.32,
+              "total_ms": 3.63,
+              "encoded_bytes": 2541,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_recovery",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 24.52,
+              "total_ms": 24.81,
+              "encoded_bytes": 671,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_recovery",
+              "method": "PUT",
+              "status": 200,
+              "headers_ms": 124.57,
+              "total_ms": 125.48,
+              "encoded_bytes": 605,
+              "canceled": false
+            },
+            {
+              "kind": "heatmap",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 175.85,
+              "total_ms": 617.29,
+              "encoded_bytes": 307638,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 135.17,
+              "total_ms": 137.77,
+              "encoded_bytes": 534,
+              "canceled": false
+            }
+          ],
+          "images": {
+            "requests_started_in_action": 0,
+            "finished": 0,
+            "encoded_transfer_bytes": 0,
+            "http_statuses": [],
+            "served_from_cache_count": 0,
+            "disk_cache_count": 0,
+            "prefetch_cache_count": 0,
+            "service_worker_count": 0,
+            "failed_count": 0
+          },
+          "pass": true
+        }
+      ],
+      "page_error_count": 0
+    },
+    {
+      "sample": 3,
+      "flow": "direct_navigation",
+      "actions": [
+        {
+          "action": "first_open",
+          "key_ui_usable_ms": 1069.98,
+          "first_prompt_image_decoded_ms": 1077.29,
+          "prompt_image": {
+            "found": true,
+            "complete": true,
+            "natural_width": 1489,
+            "natural_height": 182,
+            "visible_in_viewport": true
+          },
+          "long_tasks": {
+            "supported": true,
+            "durations_ms": [
+              62,
+              60,
+              329
+            ]
+          },
+          "horizontal_overflow": false,
+          "api": [
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 19.77,
+              "total_ms": 19.94,
+              "encoded_bytes": 2541,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_recovery",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 33.43,
+              "total_ms": 33.58,
+              "encoded_bytes": 605,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_recovery",
+              "method": "PUT",
+              "status": 200,
+              "headers_ms": 61.48,
+              "total_ms": 61.6,
+              "encoded_bytes": 634,
+              "canceled": false
+            },
+            {
+              "kind": "target_detail",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 269.32,
+              "total_ms": 269.51,
+              "encoded_bytes": 2897,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_timing",
+              "method": "POST",
+              "status": 409,
+              "headers_ms": 108.45,
+              "total_ms": 108.6,
+              "encoded_bytes": 604,
+              "canceled": false
+            },
+            {
+              "kind": "adjacent_or_other_detail",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 414.59,
+              "total_ms": 414.86,
+              "encoded_bytes": 3264,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 329.81,
+              "total_ms": 330.1,
+              "encoded_bytes": 40634,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 330.27,
+              "total_ms": 449.81,
+              "encoded_bytes": 145742,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 329.95,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": null,
+              "headers_ms": null,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": null,
+              "headers_ms": null,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            },
+            {
+              "kind": "adjacent_or_other_detail",
+              "method": "GET",
+              "status": null,
+              "headers_ms": null,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": null,
+              "headers_ms": null,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            }
+          ],
+          "images": {
+            "requests_started_in_action": 6,
+            "finished": 2,
+            "encoded_transfer_bytes": 186376,
+            "http_statuses": [
+              200,
+              200,
+              200,
+              null,
+              null,
+              null
+            ],
+            "served_from_cache_count": 0,
+            "disk_cache_count": 0,
+            "prefetch_cache_count": 0,
+            "service_worker_count": 0,
+            "failed_count": 0
+          },
+          "pass": true
+        },
+        {
+          "action": "next",
+          "key_ui_usable_ms": 56.92,
+          "first_prompt_image_decoded_ms": 636.33,
+          "prompt_image": {
+            "found": true,
+            "complete": true,
+            "natural_width": 1489,
+            "natural_height": 272,
+            "visible_in_viewport": true
+          },
+          "long_tasks": {
+            "supported": true,
+            "durations_ms": []
+          },
+          "horizontal_overflow": false,
+          "api": [
+            {
+              "kind": "synthetic_auto_recovery",
+              "method": "PUT",
+              "status": 200,
+              "headers_ms": 35.47,
+              "total_ms": 35.64,
+              "encoded_bytes": 634,
+              "canceled": false
+            },
+            {
+              "kind": "target_detail",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 446.0,
+              "total_ms": 446.22,
+              "encoded_bytes": 3264,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_timing",
+              "method": "POST",
+              "status": 409,
+              "headers_ms": 303.45,
+              "total_ms": 303.61,
+              "encoded_bytes": 596,
+              "canceled": false
+            },
+            {
+              "kind": "adjacent_or_other_detail",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 222.1,
+              "total_ms": 222.23,
+              "encoded_bytes": 3099,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 247.02,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": null,
+              "headers_ms": null,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            }
+          ],
+          "images": {
+            "requests_started_in_action": 2,
+            "finished": 0,
+            "encoded_transfer_bytes": 0,
+            "http_statuses": [
+              200,
+              null
+            ],
+            "served_from_cache_count": 0,
+            "disk_cache_count": 0,
+            "prefetch_cache_count": 0,
+            "service_worker_count": 0,
+            "failed_count": 0
+          },
+          "pass": true
+        },
+        {
+          "action": "previous",
+          "key_ui_usable_ms": 59.21,
+          "first_prompt_image_decoded_ms": 60.39,
+          "prompt_image": {
+            "found": true,
+            "complete": true,
+            "natural_width": 1489,
+            "natural_height": 182,
+            "visible_in_viewport": true
+          },
+          "long_tasks": {
+            "supported": true,
+            "durations_ms": []
+          },
+          "horizontal_overflow": false,
+          "api": [
+            {
+              "kind": "synthetic_auto_recovery",
+              "method": "PUT",
+              "status": 200,
+              "headers_ms": 2.92,
+              "total_ms": 3.56,
+              "encoded_bytes": 634,
+              "canceled": false
+            },
+            {
+              "kind": "target_detail",
+              "method": "GET",
+              "status": null,
+              "headers_ms": null,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_timing",
+              "method": "POST",
+              "status": 409,
+              "headers_ms": 50.44,
+              "total_ms": 50.61,
+              "encoded_bytes": 604,
+              "canceled": false
+            }
+          ],
+          "images": {
+            "requests_started_in_action": 0,
+            "finished": 0,
+            "encoded_transfer_bytes": 0,
+            "http_statuses": [],
+            "served_from_cache_count": 0,
+            "disk_cache_count": 0,
+            "prefetch_cache_count": 0,
+            "service_worker_count": 0,
+            "failed_count": 0
+          },
+          "pass": true
+        }
+      ],
+      "page_error_count": 0
+    },
+    {
+      "sample": 3,
+      "flow": "search_click",
+      "actions": [
+        {
+          "action": "search_list",
+          "key_ui_usable_ms": 2659.22,
+          "api": [
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 2.5,
+              "total_ms": 7.49,
+              "encoded_bytes": 2541,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_recovery",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 22.42,
+              "total_ms": 22.6,
+              "encoded_bytes": 634,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_recovery",
+              "method": "PUT",
+              "status": 200,
+              "headers_ms": 185.73,
+              "total_ms": 188.6,
+              "encoded_bytes": 618,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 186.3,
+              "total_ms": 279.09,
+              "encoded_bytes": 71369,
+              "canceled": false
+            },
+            {
+              "kind": "question_list",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 254.26,
+              "total_ms": 271.46,
+              "encoded_bytes": 21058,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 113.22,
+              "total_ms": 348.71,
+              "encoded_bytes": 71369,
+              "canceled": false
+            },
+            {
+              "kind": "adjacent_or_other_detail",
+              "method": "GET",
+              "status": null,
+              "headers_ms": null,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            }
+          ],
+          "images": {
+            "requests_started_in_action": 0,
+            "finished": 0,
+            "encoded_transfer_bytes": 0,
+            "http_statuses": [],
+            "served_from_cache_count": 0,
+            "disk_cache_count": 0,
+            "prefetch_cache_count": 0,
+            "service_worker_count": 0,
+            "failed_count": 0
+          },
+          "pass": true
+        },
+        {
+          "action": "search_result_click",
+          "key_ui_usable_ms": 206.4,
+          "first_prompt_image_decoded_ms": 1090.7,
+          "prompt_image": {
+            "found": true,
+            "complete": true,
+            "natural_width": 1120,
+            "natural_height": 348,
+            "visible_in_viewport": true
+          },
+          "long_tasks": {
+            "supported": true,
+            "durations_ms": [
+              179
+            ]
+          },
+          "horizontal_overflow": false,
+          "api": [
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 380.32,
+              "total_ms": 1079.54,
+              "encoded_bytes": 135186,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 191.45,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_recovery",
+              "method": "PUT",
+              "status": 200,
+              "headers_ms": 3.79,
+              "total_ms": 6.05,
+              "encoded_bytes": 708,
+              "canceled": false
+            },
+            {
+              "kind": "target_detail",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 3.83,
+              "total_ms": 5.81,
+              "encoded_bytes": 3016,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_timing",
+              "method": "POST",
+              "status": 409,
+              "headers_ms": 33.24,
+              "total_ms": 33.36,
+              "encoded_bytes": 604,
+              "canceled": false
+            },
+            {
+              "kind": "adjacent_or_other_detail",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 117.49,
+              "total_ms": 117.75,
+              "encoded_bytes": 2895,
+              "canceled": false
+            },
+            {
+              "kind": "adjacent_or_other_detail",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 449.07,
+              "total_ms": 449.2,
+              "encoded_bytes": 2822,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 460.67,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 883.9,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            },
+            {
+              "kind": "adjacent_or_other_detail",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 178.22,
+              "total_ms": 178.35,
+              "encoded_bytes": 2839,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 62.21,
+              "total_ms": null,
+              "encoded_bytes": null,
+              "canceled": false
+            }
+          ],
+          "images": {
+            "requests_started_in_action": 5,
+            "finished": 1,
+            "encoded_transfer_bytes": 135186,
+            "http_statuses": [
+              200,
+              200,
+              200,
+              200,
+              200
+            ],
+            "served_from_cache_count": 0,
+            "disk_cache_count": 0,
+            "prefetch_cache_count": 0,
+            "service_worker_count": 0,
+            "failed_count": 0
+          },
+          "pass": true
+        }
+      ],
+      "page_error_count": 0
+    },
+    {
+      "sample": 3,
+      "flow": "selected_heatmap",
+      "actions": [
+        {
+          "action": "selected_heatmap_first_screen",
+          "key_ui_usable_ms": 3277.71,
+          "rendered_cells": 963,
+          "long_tasks": {
+            "supported": true,
+            "durations_ms": [
+              163,
+              135,
+              125
+            ]
+          },
+          "api": [
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 16.99,
+              "total_ms": 17.23,
+              "encoded_bytes": 2541,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_recovery",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 22.01,
+              "total_ms": 22.18,
+              "encoded_bytes": 671,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_recovery",
+              "method": "PUT",
+              "status": 200,
+              "headers_ms": 137.3,
+              "total_ms": 138.33,
+              "encoded_bytes": 605,
+              "canceled": false
+            },
+            {
+              "kind": "heatmap",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 160.33,
+              "total_ms": 1744.01,
+              "encoded_bytes": 307638,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 128.19,
+              "total_ms": 130.79,
+              "encoded_bytes": 534,
+              "canceled": false
+            }
+          ],
+          "images": {
+            "requests_started_in_action": 0,
+            "finished": 0,
+            "encoded_transfer_bytes": 0,
+            "http_statuses": [],
+            "served_from_cache_count": 0,
+            "disk_cache_count": 0,
+            "prefetch_cache_count": 0,
+            "service_worker_count": 0,
+            "failed_count": 0
+          },
+          "pass": true
+        }
+      ],
+      "page_error_count": 0
+    }
+  ],
+  "failures": [],
+  "browser_version": "154.0.8037.57",
+  "summary": {
+    "first_open": {
+      "samples": [
+        622.75,
+        967.74,
+        1069.98
+      ],
+      "image_samples": [
+        996.81,
+        977.43,
+        1077.29
+      ],
+      "key_ui_p50_ms": 967.74,
+      "key_ui_p95_ms": 1069.98,
+      "first_prompt_image_decoded_p50_ms": 996.81,
+      "first_prompt_image_decoded_p95_ms": 1077.29
+    },
+    "next": {
+      "samples": [
+        52.13,
+        53.13,
+        56.92
+      ],
+      "image_samples": [
+        363.02,
+        54.38,
+        636.33
+      ],
+      "key_ui_p50_ms": 53.13,
+      "key_ui_p95_ms": 56.92,
+      "first_prompt_image_decoded_p50_ms": 363.02,
+      "first_prompt_image_decoded_p95_ms": 636.33
+    },
+    "previous": {
+      "samples": [
+        54.82,
+        49.48,
+        59.21
+      ],
+      "image_samples": [
+        56.67,
+        51.23,
+        60.39
+      ],
+      "key_ui_p50_ms": 54.82,
+      "key_ui_p95_ms": 59.21,
+      "first_prompt_image_decoded_p50_ms": 56.67,
+      "first_prompt_image_decoded_p95_ms": 60.39
+    },
+    "search_list": {
+      "samples": [
+        1483.98,
+        1477.26,
+        2659.22
+      ],
+      "image_samples": [],
+      "key_ui_p50_ms": 1483.98,
+      "key_ui_p95_ms": 2659.22,
+      "first_prompt_image_decoded_p50_ms": null,
+      "first_prompt_image_decoded_p95_ms": null
+    },
+    "search_result_click": {
+      "samples": [
+        137.06,
+        318.25,
+        206.4
+      ],
+      "image_samples": [
+        949.63,
+        324.73,
+        1090.7
+      ],
+      "key_ui_p50_ms": 206.4,
+      "key_ui_p95_ms": 318.25,
+      "first_prompt_image_decoded_p50_ms": 949.63,
+      "first_prompt_image_decoded_p95_ms": 1090.7
+    },
+    "selected_heatmap_first_screen": {
+      "samples": [
+        1893.51,
+        1949.62,
+        3277.71
+      ],
+      "image_samples": [],
+      "key_ui_p50_ms": 1949.62,
+      "key_ui_p95_ms": 3277.71,
+      "first_prompt_image_decoded_p50_ms": null,
+      "first_prompt_image_decoded_p95_ms": null
+    }
+  },
+  "quantile_note": "3–5 browser samples are descriptive only; nearest-rank P95 here is the maximum and not a stable production latency estimate. Use independent larger HTTP sample for API percentiles.",
+  "pass": true
+}

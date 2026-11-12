@@ -1,0 +1,22 @@
+{
+  "source_commit": "46e9d81",
+  "index_sha256": "53bb4b0bd76938cc2344e6c89546d43f78363374c96fecfa421d4cff399829bd",
+  "static_file_count": 67,
+  "unchanged_during_browser_run": true,
+  "entry_assets": [
+    "/static/drill/assets/appearance.b3bcc7f6fd04.js",
+    "/static/drill/assets/index-BCgPVMSo.js",
+    "/static/drill/assets/index-CEU7P510.css"
+  ],
+  "fixture_preference_fields": 16,
+  "fixture_progress_drill": {
+    "target": 24,
+    "deadline": "2026-11-21"
+  },
+  "fixture_progress_ei": {
+    "target": 11,
+    "deadline": "2026-11-21"
+  },
+  "webkit_main_paths": 2,
+  "webkit_reader_cases": 1
+}

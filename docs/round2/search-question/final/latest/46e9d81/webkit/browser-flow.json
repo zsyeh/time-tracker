@@ -1,0 +1,66 @@
+{
+  "base": "http://127.0.0.1:8023",
+  "engine": "webkit",
+  "rotation_requested": true,
+  "cases": [
+    {
+      "workspace": "drill",
+      "width": 820,
+      "height": 1180,
+      "first_open_ms": 702.6973948813975,
+      "search_click_to_ready_ms": 231.0488917864859,
+      "next_ms": 51.4891529455781,
+      "previous_ms": 40.944942738860846,
+      "primary_detail_requests": 1,
+      "long_tasks_ms": [],
+      "long_task_observer_supported": false,
+      "rotations": [
+        {
+          "width": 1180,
+          "height": 820,
+          "overflow": false,
+          "navigationOverlap": false
+        },
+        {
+          "width": 820,
+          "height": 1180,
+          "overflow": false,
+          "navigationOverlap": false
+        }
+      ],
+      "horizontal_overflow": false,
+      "errors": [],
+      "pass": true
+    },
+    {
+      "workspace": "ei",
+      "width": 820,
+      "height": 1180,
+      "first_open_ms": 691.360040102154,
+      "search_click_to_ready_ms": 231.30023293197155,
+      "next_ms": 52.883476950228214,
+      "previous_ms": 37.45567798614502,
+      "primary_detail_requests": 1,
+      "long_tasks_ms": [],
+      "long_task_observer_supported": false,
+      "rotations": [
+        {
+          "width": 1180,
+          "height": 820,
+          "overflow": false,
+          "navigationOverlap": false
+        },
+        {
+          "width": 820,
+          "height": 1180,
+          "overflow": false,
+          "navigationOverlap": false
+        }
+      ],
+      "horizontal_overflow": false,
+      "errors": [],
+      "pass": true
+    }
+  ],
+  "pass": true
+}

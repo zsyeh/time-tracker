@@ -1,0 +1,1156 @@
+{
+  "phase": "after",
+  "created_utc": "2026-11-12T15:07:40.857098+00:00",
+  "viewport": {
+    "width": 820,
+    "height": 1180
+  },
+  "engine": "chromium",
+  "samples_per_flow": 5,
+  "origin_host": "47.95.10.128",
+  "synthetic_account_verified": true,
+  "policy": "Fresh isolated context per first-open/search/heatmap. Normal cache+prefetch retained for next/previous. Real network and assets; no mocked APIs, throttling or answer/Note writes.",
+  "image_bytes_note": "CDP encoded transfer bytes for Image requests begun during each action, including app adjacent/answer prefetch. Warm prefetched images may start before action and contribute zero; this is not a per-prompt payload size.",
+  "cases": [
+    {
+      "sample": 1,
+      "flow": "selected_heatmap",
+      "actions": [
+        {
+          "action": "selected_heatmap_first_screen",
+          "key_ui_usable_ms": 828.37,
+          "rendered_cells": 963,
+          "long_tasks": {
+            "supported": true,
+            "durations_ms": [
+              168,
+              130,
+              142
+            ]
+          },
+          "domcontentloaded_wall_ms": 421.58,
+          "diagnostic": {
+            "dom_marks": {
+              "first_cell_inserted_ms": 651,
+              "first_cell_paint_candidate_ms": 788.9000000953674,
+              "first_cell_in_viewport": true
+            },
+            "long_task_entries": [
+              {
+                "start": 247.59999990463257,
+                "duration": 168
+              },
+              {
+                "start": 451.90000009536743,
+                "duration": 130
+              },
+              {
+                "start": 651.2999997138977,
+                "duration": 142
+              }
+            ],
+            "navigation": {
+              "start_ms": 0,
+              "fetch_start_ms": 0.6999998092651367,
+              "request_start_ms": 47.09999990463257,
+              "response_start_ms": 82.69999980926514,
+              "response_end_ms": 83.5,
+              "dom_interactive_ms": 136.09999990463257,
+              "dom_content_loaded_start_ms": 415.2999997138977,
+              "dom_content_loaded_end_ms": 415.5,
+              "load_ms": 415.59999990463257,
+              "transfer_bytes": 1477,
+              "encoded_bytes": 1177
+            },
+            "resources": [
+              {
+                "kind": "javascript",
+                "start_ms": 100.40000009536743,
+                "fetch_start_ms": 100.40000009536743,
+                "request_start_ms": 108.2999997138977,
+                "response_start_ms": 127.90000009536743,
+                "response_end_ms": 128.40000009536743,
+                "duration_ms": 28,
+                "transfer_bytes": 3736,
+                "encoded_bytes": 3436,
+                "decoded_bytes": 9056,
+                "initiator_type": "script"
+              },
+              {
+                "kind": "javascript",
+                "start_ms": 100.69999980926514,
+                "fetch_start_ms": 100.69999980926514,
+                "request_start_ms": 145.90000009536743,
+                "response_start_ms": 165.09999990463257,
+                "response_end_ms": 166.5,
+                "duration_ms": 65.80000019073486,
+                "transfer_bytes": 5461,
+                "encoded_bytes": 5161,
+                "decoded_bytes": 5161,
+                "initiator_type": "script"
+              },
+              {
+                "kind": "javascript",
+                "start_ms": 100.7999997138977,
+                "fetch_start_ms": 100.7999997138977,
+                "request_start_ms": 141.7999997138977,
+                "response_start_ms": 177.59999990463257,
+                "response_end_ms": 230.59999990463257,
+                "duration_ms": 129.80000019073486,
+                "transfer_bytes": 349841,
+                "encoded_bytes": 349541,
+                "decoded_bytes": 1056999,
+                "initiator_type": "script"
+              },
+              {
+                "kind": "stylesheet",
+                "start_ms": 100.90000009536743,
+                "fetch_start_ms": 100.90000009536743,
+                "request_start_ms": 128.69999980926514,
+                "response_start_ms": 165.5,
+                "response_end_ms": 178.2999997138977,
+                "duration_ms": 77.39999961853027,
+                "transfer_bytes": 28686,
+                "encoded_bytes": 28386,
+                "decoded_bytes": 196694,
+                "initiator_type": "link"
+              },
+              {
+                "kind": "auth_session_api",
+                "start_ms": 322.59999990463257,
+                "fetch_start_ms": 322.59999990463257,
+                "request_start_ms": 323.2999997138977,
+                "response_start_ms": 403.59999990463257,
+                "response_end_ms": 404.09999990463257,
+                "duration_ms": 81.5,
+                "transfer_bytes": 2288,
+                "encoded_bytes": 1988,
+                "decoded_bytes": 1988,
+                "initiator_type": "fetch"
+              },
+              {
+                "kind": "other",
+                "start_ms": 418.7999997138977,
+                "fetch_start_ms": 418.7999997138977,
+                "request_start_ms": 419.90000009536743,
+                "response_start_ms": 436.90000009536743,
+                "response_end_ms": 437.2999997138977,
+                "duration_ms": 18.5,
+                "transfer_bytes": 1967,
+                "encoded_bytes": 1667,
+                "decoded_bytes": 1667,
+                "initiator_type": "other"
+              },
+              {
+                "kind": "recovery_api",
+                "start_ms": 422.40000009536743,
+                "fetch_start_ms": 422.40000009536743,
+                "request_start_ms": 422.90000009536743,
+                "response_start_ms": 445.69999980926514,
+                "response_end_ms": 445.90000009536743,
+                "duration_ms": 23.5,
+                "transfer_bytes": 485,
+                "encoded_bytes": 185,
+                "decoded_bytes": 185,
+                "initiator_type": "fetch"
+              },
+              {
+                "kind": "heatmap_api",
+                "start_ms": 451.5,
+                "fetch_start_ms": 451.5,
+                "request_start_ms": 452.19999980926514,
+                "response_start_ms": 574.5,
+                "response_end_ms": 620.5,
+                "duration_ms": 169,
+                "transfer_bytes": 307554,
+                "encoded_bytes": 307254,
+                "decoded_bytes": 307254,
+                "initiator_type": "fetch"
+              },
+              {
+                "kind": "other_api",
+                "start_ms": 650.9000000953674,
+                "fetch_start_ms": 650.9000000953674,
+                "request_start_ms": 651.9000000953674,
+                "response_start_ms": 673.7999997138977,
+                "response_end_ms": 674.0999999046326,
+                "duration_ms": 23.199999809265137,
+                "transfer_bytes": 314,
+                "encoded_bytes": 14,
+                "decoded_bytes": 14,
+                "initiator_type": "fetch"
+              }
+            ]
+          },
+          "api": [
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 2.63,
+              "total_ms": 8.64,
+              "encoded_bytes": 2541,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_recovery",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 20.2,
+              "total_ms": 20.36,
+              "encoded_bytes": 605,
+              "canceled": false
+            },
+            {
+              "kind": "heatmap",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 132.89,
+              "total_ms": 171.66,
+              "encoded_bytes": 307638,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 144.91,
+              "total_ms": 146.69,
+              "encoded_bytes": 534,
+              "canceled": false
+            }
+          ],
+          "images": {
+            "requests_started_in_action": 0,
+            "finished": 0,
+            "encoded_transfer_bytes": 0,
+            "http_statuses": [],
+            "served_from_cache_count": 0,
+            "disk_cache_count": 0,
+            "prefetch_cache_count": 0,
+            "service_worker_count": 0,
+            "failed_count": 0
+          },
+          "pass": true
+        }
+      ],
+      "page_error_count": 0
+    },
+    {
+      "sample": 2,
+      "flow": "selected_heatmap",
+      "actions": [
+        {
+          "action": "selected_heatmap_first_screen",
+          "key_ui_usable_ms": 1403.28,
+          "rendered_cells": 963,
+          "long_tasks": {
+            "supported": true,
+            "durations_ms": [
+              135,
+              119,
+              129
+            ]
+          },
+          "domcontentloaded_wall_ms": 465.61,
+          "diagnostic": {
+            "dom_marks": {
+              "first_cell_inserted_ms": 1085,
+              "first_cell_paint_candidate_ms": 1209.2000002861023,
+              "first_cell_in_viewport": true
+            },
+            "long_task_entries": [
+              {
+                "start": 325.80000019073486,
+                "duration": 135
+              },
+              {
+                "start": 494.40000009536743,
+                "duration": 119
+              },
+              {
+                "start": 1085,
+                "duration": 129
+              }
+            ],
+            "navigation": {
+              "start_ms": 0,
+              "fetch_start_ms": 0.6000003814697266,
+              "request_start_ms": 42.700000286102295,
+              "response_start_ms": 67.2000002861023,
+              "response_end_ms": 67.7000002861023,
+              "dom_interactive_ms": 132.90000009536743,
+              "dom_content_loaded_start_ms": 460,
+              "dom_content_loaded_end_ms": 460.1000003814697,
+              "load_ms": 460.5,
+              "transfer_bytes": 1477,
+              "encoded_bytes": 1177
+            },
+            "resources": [
+              {
+                "kind": "javascript",
+                "start_ms": 80.7000002861023,
+                "fetch_start_ms": 80.7000002861023,
+                "request_start_ms": 88.80000019073486,
+                "response_start_ms": 128.10000038146973,
+                "response_end_ms": 128.5,
+                "duration_ms": 47.799999713897705,
+                "transfer_bytes": 3736,
+                "encoded_bytes": 3436,
+                "decoded_bytes": 9056,
+                "initiator_type": "script"
+              },
+              {
+                "kind": "javascript",
+                "start_ms": 81,
+                "fetch_start_ms": 81,
+                "request_start_ms": 169.5,
+                "response_start_ms": 240,
+                "response_end_ms": 240.5,
+                "duration_ms": 159.5,
+                "transfer_bytes": 5461,
+                "encoded_bytes": 5161,
+                "decoded_bytes": 5161,
+                "initiator_type": "script"
+              },
+              {
+                "kind": "javascript",
+                "start_ms": 81.10000038146973,
+                "fetch_start_ms": 81.10000038146973,
+                "request_start_ms": 168.7000002861023,
+                "response_start_ms": 258.6000003814697,
+                "response_end_ms": 310.90000009536743,
+                "duration_ms": 229.7999997138977,
+                "transfer_bytes": 349841,
+                "encoded_bytes": 349541,
+                "decoded_bytes": 1056999,
+                "initiator_type": "script"
+              },
+              {
+                "kind": "stylesheet",
+                "start_ms": 81.30000019073486,
+                "fetch_start_ms": 81.30000019073486,
+                "request_start_ms": 128.7000002861023,
+                "response_start_ms": 240.90000009536743,
+                "response_end_ms": 242,
+                "duration_ms": 160.69999980926514,
+                "transfer_bytes": 28686,
+                "encoded_bytes": 28386,
+                "decoded_bytes": 196694,
+                "initiator_type": "link"
+              },
+              {
+                "kind": "auth_session_api",
+                "start_ms": 388.6000003814697,
+                "fetch_start_ms": 388.6000003814697,
+                "request_start_ms": 389.1000003814697,
+                "response_start_ms": 409,
+                "response_end_ms": 409.30000019073486,
+                "duration_ms": 20.699999809265137,
+                "transfer_bytes": 2288,
+                "encoded_bytes": 1988,
+                "decoded_bytes": 1988,
+                "initiator_type": "fetch"
+              },
+              {
+                "kind": "recovery_api",
+                "start_ms": 467.5,
+                "fetch_start_ms": 467.5,
+                "request_start_ms": 467.90000009536743,
+                "response_start_ms": 488.1000003814697,
+                "response_end_ms": 488.40000009536743,
+                "duration_ms": 20.90000009536743,
+                "transfer_bytes": 485,
+                "encoded_bytes": 185,
+                "decoded_bytes": 185,
+                "initiator_type": "fetch"
+              },
+              {
+                "kind": "other",
+                "start_ms": 468.1000003814697,
+                "fetch_start_ms": 468.1000003814697,
+                "request_start_ms": 468.5,
+                "response_start_ms": 488.90000009536743,
+                "response_end_ms": 489.1000003814697,
+                "duration_ms": 21,
+                "transfer_bytes": 1967,
+                "encoded_bytes": 1667,
+                "decoded_bytes": 1667,
+                "initiator_type": "other"
+              },
+              {
+                "kind": "heatmap_api",
+                "start_ms": 493.2000002861023,
+                "fetch_start_ms": 493.2000002861023,
+                "request_start_ms": 493.80000019073486,
+                "response_start_ms": 612,
+                "response_end_ms": 1062.6000003814697,
+                "duration_ms": 569.4000000953674,
+                "transfer_bytes": 307554,
+                "encoded_bytes": 307254,
+                "decoded_bytes": 307254,
+                "initiator_type": "fetch"
+              },
+              {
+                "kind": "other_api",
+                "start_ms": 1084.9000000953674,
+                "fetch_start_ms": 1084.9000000953674,
+                "request_start_ms": 1085.6000003814697,
+                "response_start_ms": 1107.4000000953674,
+                "response_end_ms": 1108,
+                "duration_ms": 23.09999990463257,
+                "transfer_bytes": 314,
+                "encoded_bytes": 14,
+                "decoded_bytes": 14,
+                "initiator_type": "fetch"
+              }
+            ]
+          },
+          "api": [
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 3.55,
+              "total_ms": 3.71,
+              "encoded_bytes": 2541,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_recovery",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 18.9,
+              "total_ms": 19.1,
+              "encoded_bytes": 605,
+              "canceled": false
+            },
+            {
+              "kind": "heatmap",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 122.02,
+              "total_ms": 572.66,
+              "encoded_bytes": 307638,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 132.38,
+              "total_ms": 135.69,
+              "encoded_bytes": 534,
+              "canceled": false
+            }
+          ],
+          "images": {
+            "requests_started_in_action": 0,
+            "finished": 0,
+            "encoded_transfer_bytes": 0,
+            "http_statuses": [],
+            "served_from_cache_count": 0,
+            "disk_cache_count": 0,
+            "prefetch_cache_count": 0,
+            "service_worker_count": 0,
+            "failed_count": 0
+          },
+          "pass": true
+        }
+      ],
+      "page_error_count": 0
+    },
+    {
+      "sample": 3,
+      "flow": "selected_heatmap",
+      "actions": [
+        {
+          "action": "selected_heatmap_first_screen",
+          "key_ui_usable_ms": 1429.02,
+          "rendered_cells": 963,
+          "long_tasks": {
+            "supported": true,
+            "durations_ms": [
+              133,
+              116,
+              125
+            ]
+          },
+          "domcontentloaded_wall_ms": 493.0,
+          "diagnostic": {
+            "dom_marks": {
+              "first_cell_inserted_ms": 1173.9000000953674,
+              "first_cell_paint_candidate_ms": 1295.3000001907349,
+              "first_cell_in_viewport": true
+            },
+            "long_task_entries": [
+              {
+                "start": 355.09999990463257,
+                "duration": 133
+              },
+              {
+                "start": 525.0999999046326,
+                "duration": 116
+              },
+              {
+                "start": 1174,
+                "duration": 125
+              }
+            ],
+            "navigation": {
+              "start_ms": 0,
+              "fetch_start_ms": 0.5,
+              "request_start_ms": 50.40000009536743,
+              "response_start_ms": 74.30000019073486,
+              "response_end_ms": 74.7000002861023,
+              "dom_interactive_ms": 122,
+              "dom_content_loaded_start_ms": 487.7000002861023,
+              "dom_content_loaded_end_ms": 487.7000002861023,
+              "load_ms": 488,
+              "transfer_bytes": 1477,
+              "encoded_bytes": 1177
+            },
+            "resources": [
+              {
+                "kind": "javascript",
+                "start_ms": 88.80000019073486,
+                "fetch_start_ms": 88.80000019073486,
+                "request_start_ms": 96.5,
+                "response_start_ms": 117.2000002861023,
+                "response_end_ms": 117.5,
+                "duration_ms": 28.699999809265137,
+                "transfer_bytes": 3736,
+                "encoded_bytes": 3436,
+                "decoded_bytes": 9056,
+                "initiator_type": "script"
+              },
+              {
+                "kind": "javascript",
+                "start_ms": 89,
+                "fetch_start_ms": 89,
+                "request_start_ms": 134,
+                "response_start_ms": 153.40000009536743,
+                "response_end_ms": 153.90000009536743,
+                "duration_ms": 64.90000009536743,
+                "transfer_bytes": 5461,
+                "encoded_bytes": 5161,
+                "decoded_bytes": 5161,
+                "initiator_type": "script"
+              },
+              {
+                "kind": "stylesheet",
+                "start_ms": 89.2000002861023,
+                "fetch_start_ms": 89.2000002861023,
+                "request_start_ms": 117.7000002861023,
+                "response_start_ms": 157,
+                "response_end_ms": 164.5,
+                "duration_ms": 75.2999997138977,
+                "transfer_bytes": 28686,
+                "encoded_bytes": 28386,
+                "decoded_bytes": 196694,
+                "initiator_type": "link"
+              },
+              {
+                "kind": "javascript",
+                "start_ms": 89.2000002861023,
+                "fetch_start_ms": 89.2000002861023,
+                "request_start_ms": 132,
+                "response_start_ms": 168.09999990463257,
+                "response_end_ms": 347.5,
+                "duration_ms": 258.2999997138977,
+                "transfer_bytes": 349841,
+                "encoded_bytes": 349541,
+                "decoded_bytes": 1056999,
+                "initiator_type": "script"
+              },
+              {
+                "kind": "auth_session_api",
+                "start_ms": 417.2000002861023,
+                "fetch_start_ms": 417.2000002861023,
+                "request_start_ms": 417.80000019073486,
+                "response_start_ms": 438.80000019073486,
+                "response_end_ms": 439.30000019073486,
+                "duration_ms": 22.09999990463257,
+                "transfer_bytes": 2288,
+                "encoded_bytes": 1988,
+                "decoded_bytes": 1988,
+                "initiator_type": "fetch"
+              },
+              {
+                "kind": "other",
+                "start_ms": 491.5,
+                "fetch_start_ms": 491.5,
+                "request_start_ms": 492,
+                "response_start_ms": 509.2000002861023,
+                "response_end_ms": 509.59999990463257,
+                "duration_ms": 18.09999990463257,
+                "transfer_bytes": 1967,
+                "encoded_bytes": 1667,
+                "decoded_bytes": 1667,
+                "initiator_type": "other"
+              },
+              {
+                "kind": "recovery_api",
+                "start_ms": 495.40000009536743,
+                "fetch_start_ms": 495.40000009536743,
+                "request_start_ms": 495.90000009536743,
+                "response_start_ms": 519.8000001907349,
+                "response_end_ms": 520.0999999046326,
+                "duration_ms": 24.699999809265137,
+                "transfer_bytes": 485,
+                "encoded_bytes": 185,
+                "decoded_bytes": 185,
+                "initiator_type": "fetch"
+              },
+              {
+                "kind": "heatmap_api",
+                "start_ms": 524.7000002861023,
+                "fetch_start_ms": 524.7000002861023,
+                "request_start_ms": 525.4000000953674,
+                "response_start_ms": 631.7000002861023,
+                "response_end_ms": 1149.8000001907349,
+                "duration_ms": 625.0999999046326,
+                "transfer_bytes": 307554,
+                "encoded_bytes": 307254,
+                "decoded_bytes": 307254,
+                "initiator_type": "fetch"
+              },
+              {
+                "kind": "other_api",
+                "start_ms": 1173.9000000953674,
+                "fetch_start_ms": 1173.9000000953674,
+                "request_start_ms": 1174.5,
+                "response_start_ms": 1197.2000002861023,
+                "response_end_ms": 1197.5999999046326,
+                "duration_ms": 23.699999809265137,
+                "transfer_bytes": 314,
+                "encoded_bytes": 14,
+                "decoded_bytes": 14,
+                "initiator_type": "fetch"
+              }
+            ]
+          },
+          "api": [
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 3.52,
+              "total_ms": 3.81,
+              "encoded_bytes": 2541,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_recovery",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 23.1,
+              "total_ms": 23.25,
+              "encoded_bytes": 605,
+              "canceled": false
+            },
+            {
+              "kind": "heatmap",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 118.48,
+              "total_ms": 630.16,
+              "encoded_bytes": 307638,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 129.18,
+              "total_ms": 131.75,
+              "encoded_bytes": 534,
+              "canceled": false
+            }
+          ],
+          "images": {
+            "requests_started_in_action": 0,
+            "finished": 0,
+            "encoded_transfer_bytes": 0,
+            "http_statuses": [],
+            "served_from_cache_count": 0,
+            "disk_cache_count": 0,
+            "prefetch_cache_count": 0,
+            "service_worker_count": 0,
+            "failed_count": 0
+          },
+          "pass": true
+        }
+      ],
+      "page_error_count": 0
+    },
+    {
+      "sample": 4,
+      "flow": "selected_heatmap",
+      "actions": [
+        {
+          "action": "selected_heatmap_first_screen",
+          "key_ui_usable_ms": 1452.46,
+          "rendered_cells": 963,
+          "long_tasks": {
+            "supported": true,
+            "durations_ms": [
+              131,
+              123,
+              130
+            ]
+          },
+          "domcontentloaded_wall_ms": 446.62,
+          "diagnostic": {
+            "dom_marks": {
+              "first_cell_inserted_ms": 1286.8999996185303,
+              "first_cell_paint_candidate_ms": 1412.7999997138977,
+              "first_cell_in_viewport": true
+            },
+            "long_task_entries": [
+              {
+                "start": 311.2999997138977,
+                "duration": 131
+              },
+              {
+                "start": 476.5,
+                "duration": 123
+              },
+              {
+                "start": 1287,
+                "duration": 130
+              }
+            ],
+            "navigation": {
+              "start_ms": 0,
+              "fetch_start_ms": 0.5999999046325684,
+              "request_start_ms": 40.89999961853027,
+              "response_start_ms": 62.5,
+              "response_end_ms": 62.799999713897705,
+              "dom_interactive_ms": 105.59999990463257,
+              "dom_content_loaded_start_ms": 442.2999997138977,
+              "dom_content_loaded_end_ms": 442.2999997138977,
+              "load_ms": 442.69999980926514,
+              "transfer_bytes": 1477,
+              "encoded_bytes": 1177
+            },
+            "resources": [
+              {
+                "kind": "javascript",
+                "start_ms": 75.19999980926514,
+                "fetch_start_ms": 75.19999980926514,
+                "request_start_ms": 83.09999990463257,
+                "response_start_ms": 100.69999980926514,
+                "response_end_ms": 101.09999990463257,
+                "duration_ms": 25.90000009536743,
+                "transfer_bytes": 3736,
+                "encoded_bytes": 3436,
+                "decoded_bytes": 9056,
+                "initiator_type": "script"
+              },
+              {
+                "kind": "javascript",
+                "start_ms": 75.5,
+                "fetch_start_ms": 75.5,
+                "request_start_ms": 118.89999961853027,
+                "response_start_ms": 138,
+                "response_end_ms": 138.5,
+                "duration_ms": 63,
+                "transfer_bytes": 5461,
+                "encoded_bytes": 5161,
+                "decoded_bytes": 5161,
+                "initiator_type": "script"
+              },
+              {
+                "kind": "javascript",
+                "start_ms": 75.59999990463257,
+                "fetch_start_ms": 75.59999990463257,
+                "request_start_ms": 117,
+                "response_start_ms": 150.5,
+                "response_end_ms": 304,
+                "duration_ms": 228.40000009536743,
+                "transfer_bytes": 349841,
+                "encoded_bytes": 349541,
+                "decoded_bytes": 1056999,
+                "initiator_type": "script"
+              },
+              {
+                "kind": "stylesheet",
+                "start_ms": 75.69999980926514,
+                "fetch_start_ms": 75.69999980926514,
+                "request_start_ms": 101.69999980926514,
+                "response_start_ms": 135.7999997138977,
+                "response_end_ms": 146.59999990463257,
+                "duration_ms": 70.90000009536743,
+                "transfer_bytes": 28686,
+                "encoded_bytes": 28386,
+                "decoded_bytes": 196694,
+                "initiator_type": "link"
+              },
+              {
+                "kind": "auth_session_api",
+                "start_ms": 371.2999997138977,
+                "fetch_start_ms": 371.2999997138977,
+                "request_start_ms": 371.8999996185303,
+                "response_start_ms": 392.69999980926514,
+                "response_end_ms": 393.19999980926514,
+                "duration_ms": 21.90000009536743,
+                "transfer_bytes": 2288,
+                "encoded_bytes": 1988,
+                "decoded_bytes": 1988,
+                "initiator_type": "fetch"
+              },
+              {
+                "kind": "other",
+                "start_ms": 446.09999990463257,
+                "fetch_start_ms": 446.09999990463257,
+                "request_start_ms": 446.7999997138977,
+                "response_start_ms": 464.09999990463257,
+                "response_end_ms": 464.3999996185303,
+                "duration_ms": 18.299999713897705,
+                "transfer_bytes": 1967,
+                "encoded_bytes": 1667,
+                "decoded_bytes": 1667,
+                "initiator_type": "other"
+              },
+              {
+                "kind": "recovery_api",
+                "start_ms": 449.2999997138977,
+                "fetch_start_ms": 449.2999997138977,
+                "request_start_ms": 449.69999980926514,
+                "response_start_ms": 470.8999996185303,
+                "response_end_ms": 471.09999990463257,
+                "duration_ms": 21.800000190734863,
+                "transfer_bytes": 485,
+                "encoded_bytes": 185,
+                "decoded_bytes": 185,
+                "initiator_type": "fetch"
+              },
+              {
+                "kind": "heatmap_api",
+                "start_ms": 476.09999990463257,
+                "fetch_start_ms": 476.09999990463257,
+                "request_start_ms": 476.69999980926514,
+                "response_start_ms": 589.0999999046326,
+                "response_end_ms": 1262,
+                "duration_ms": 785.9000000953674,
+                "transfer_bytes": 307554,
+                "encoded_bytes": 307254,
+                "decoded_bytes": 307254,
+                "initiator_type": "fetch"
+              },
+              {
+                "kind": "other_api",
+                "start_ms": 1286.7999997138977,
+                "fetch_start_ms": 1286.7999997138977,
+                "request_start_ms": 1287.7999997138977,
+                "response_start_ms": 1307.8999996185303,
+                "response_end_ms": 1308.0999999046326,
+                "duration_ms": 21.300000190734863,
+                "transfer_bytes": 314,
+                "encoded_bytes": 14,
+                "decoded_bytes": 14,
+                "initiator_type": "fetch"
+              }
+            ]
+          },
+          "api": [
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 3.56,
+              "total_ms": 3.77,
+              "encoded_bytes": 2541,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_recovery",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 20.14,
+              "total_ms": 20.3,
+              "encoded_bytes": 605,
+              "canceled": false
+            },
+            {
+              "kind": "heatmap",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 124.67,
+              "total_ms": 789.87,
+              "encoded_bytes": 307638,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 132.63,
+              "total_ms": 140.36,
+              "encoded_bytes": 534,
+              "canceled": false
+            }
+          ],
+          "images": {
+            "requests_started_in_action": 0,
+            "finished": 0,
+            "encoded_transfer_bytes": 0,
+            "http_statuses": [],
+            "served_from_cache_count": 0,
+            "disk_cache_count": 0,
+            "prefetch_cache_count": 0,
+            "service_worker_count": 0,
+            "failed_count": 0
+          },
+          "pass": true
+        }
+      ],
+      "page_error_count": 0
+    },
+    {
+      "sample": 5,
+      "flow": "selected_heatmap",
+      "actions": [
+        {
+          "action": "selected_heatmap_first_screen",
+          "key_ui_usable_ms": 1294.78,
+          "rendered_cells": 963,
+          "long_tasks": {
+            "supported": true,
+            "durations_ms": [
+              130,
+              120,
+              138
+            ]
+          },
+          "domcontentloaded_wall_ms": 357.03,
+          "diagnostic": {
+            "dom_marks": {
+              "first_cell_inserted_ms": 935,
+              "first_cell_paint_candidate_ms": 1069.5,
+              "first_cell_in_viewport": true
+            },
+            "long_task_entries": [
+              {
+                "start": 222.5,
+                "duration": 130
+              },
+              {
+                "start": 386.30000019073486,
+                "duration": 120
+              },
+              {
+                "start": 935,
+                "duration": 138
+              }
+            ],
+            "navigation": {
+              "start_ms": 0,
+              "fetch_start_ms": 0.7000002861022949,
+              "request_start_ms": 39.80000019073486,
+              "response_start_ms": 61.90000009536743,
+              "response_end_ms": 62.30000019073486,
+              "dom_interactive_ms": 107.90000009536743,
+              "dom_content_loaded_start_ms": 352.30000019073486,
+              "dom_content_loaded_end_ms": 352.30000019073486,
+              "load_ms": 352.59999990463257,
+              "transfer_bytes": 1477,
+              "encoded_bytes": 1177
+            },
+            "resources": [
+              {
+                "kind": "javascript",
+                "start_ms": 77.40000009536743,
+                "fetch_start_ms": 77.40000009536743,
+                "request_start_ms": 83.30000019073486,
+                "response_start_ms": 102,
+                "response_end_ms": 102.30000019073486,
+                "duration_ms": 24.90000009536743,
+                "transfer_bytes": 3736,
+                "encoded_bytes": 3436,
+                "decoded_bytes": 9056,
+                "initiator_type": "script"
+              },
+              {
+                "kind": "javascript",
+                "start_ms": 77.59999990463257,
+                "fetch_start_ms": 77.59999990463257,
+                "request_start_ms": 119.90000009536743,
+                "response_start_ms": 139.59999990463257,
+                "response_end_ms": 140,
+                "duration_ms": 62.40000009536743,
+                "transfer_bytes": 5461,
+                "encoded_bytes": 5161,
+                "decoded_bytes": 5161,
+                "initiator_type": "script"
+              },
+              {
+                "kind": "javascript",
+                "start_ms": 77.7000002861023,
+                "fetch_start_ms": 77.7000002861023,
+                "request_start_ms": 115.90000009536743,
+                "response_start_ms": 149,
+                "response_end_ms": 200.80000019073486,
+                "duration_ms": 123.09999990463257,
+                "transfer_bytes": 349841,
+                "encoded_bytes": 349541,
+                "decoded_bytes": 1056999,
+                "initiator_type": "script"
+              },
+              {
+                "kind": "stylesheet",
+                "start_ms": 77.80000019073486,
+                "fetch_start_ms": 77.80000019073486,
+                "request_start_ms": 102.5,
+                "response_start_ms": 137.80000019073486,
+                "response_end_ms": 146.90000009536743,
+                "duration_ms": 69.09999990463257,
+                "transfer_bytes": 28686,
+                "encoded_bytes": 28386,
+                "decoded_bytes": 196694,
+                "initiator_type": "link"
+              },
+              {
+                "kind": "auth_session_api",
+                "start_ms": 282.90000009536743,
+                "fetch_start_ms": 282.90000009536743,
+                "request_start_ms": 283.5,
+                "response_start_ms": 303,
+                "response_end_ms": 303.5,
+                "duration_ms": 20.59999990463257,
+                "transfer_bytes": 2288,
+                "encoded_bytes": 1988,
+                "decoded_bytes": 1988,
+                "initiator_type": "fetch"
+              },
+              {
+                "kind": "other",
+                "start_ms": 355.40000009536743,
+                "fetch_start_ms": 355.40000009536743,
+                "request_start_ms": 356.2000002861023,
+                "response_start_ms": 372.2000002861023,
+                "response_end_ms": 372.59999990463257,
+                "duration_ms": 17.199999809265137,
+                "transfer_bytes": 1967,
+                "encoded_bytes": 1667,
+                "decoded_bytes": 1667,
+                "initiator_type": "other"
+              },
+              {
+                "kind": "recovery_api",
+                "start_ms": 358.90000009536743,
+                "fetch_start_ms": 358.90000009536743,
+                "request_start_ms": 359.59999990463257,
+                "response_start_ms": 380.7000002861023,
+                "response_end_ms": 381,
+                "duration_ms": 22.09999990463257,
+                "transfer_bytes": 485,
+                "encoded_bytes": 185,
+                "decoded_bytes": 185,
+                "initiator_type": "fetch"
+              },
+              {
+                "kind": "heatmap_api",
+                "start_ms": 385.90000009536743,
+                "fetch_start_ms": 385.90000009536743,
+                "request_start_ms": 386.5,
+                "response_start_ms": 504,
+                "response_end_ms": 912.4000000953674,
+                "duration_ms": 526.5,
+                "transfer_bytes": 307554,
+                "encoded_bytes": 307254,
+                "decoded_bytes": 307254,
+                "initiator_type": "fetch"
+              },
+              {
+                "kind": "other_api",
+                "start_ms": 934.9000000953674,
+                "fetch_start_ms": 934.9000000953674,
+                "request_start_ms": 935.5,
+                "response_start_ms": 956.9000000953674,
+                "response_end_ms": 957.4000000953674,
+                "duration_ms": 22.5,
+                "transfer_bytes": 314,
+                "encoded_bytes": 14,
+                "decoded_bytes": 14,
+                "initiator_type": "fetch"
+              }
+            ]
+          },
+          "api": [
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 2.89,
+              "total_ms": 3.16,
+              "encoded_bytes": 2541,
+              "canceled": false
+            },
+            {
+              "kind": "synthetic_auto_recovery",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 20.04,
+              "total_ms": 20.25,
+              "encoded_bytes": 605,
+              "canceled": false
+            },
+            {
+              "kind": "heatmap",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 122.33,
+              "total_ms": 530.03,
+              "encoded_bytes": 307638,
+              "canceled": false
+            },
+            {
+              "kind": "other_api",
+              "method": "GET",
+              "status": 200,
+              "headers_ms": 141.52,
+              "total_ms": 144.08,
+              "encoded_bytes": 534,
+              "canceled": false
+            }
+          ],
+          "images": {
+            "requests_started_in_action": 0,
+            "finished": 0,
+            "encoded_transfer_bytes": 0,
+            "http_statuses": [],
+            "served_from_cache_count": 0,
+            "disk_cache_count": 0,
+            "prefetch_cache_count": 0,
+            "service_worker_count": 0,
+            "failed_count": 0
+          },
+          "pass": true
+        }
+      ],
+      "page_error_count": 0
+    }
+  ],
+  "failures": [],
+  "browser_version": "154.0.8037.57",
+  "summary": {
+    "selected_heatmap_first_screen": {
+      "samples": [
+        828.37,
+        1403.28,
+        1429.02,
+        1452.46,
+        1294.78
+      ],
+      "image_samples": [],
+      "key_ui_p50_ms": 1403.28,
+      "key_ui_p95_ms": 1452.46,
+      "first_prompt_image_decoded_p50_ms": null,
+      "first_prompt_image_decoded_p95_ms": null
+    }
+  },
+  "quantile_note": "3–5 browser samples are descriptive only; nearest-rank P95 here is the maximum and not a stable production latency estimate. Use independent larger HTTP sample for API percentiles.",
+  "pass": true
+}

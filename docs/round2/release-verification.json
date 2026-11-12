@@ -1,0 +1,19 @@
+{
+  "verified_at": "2026-11-12T15:41:19.025844+00:00",
+  "source_revision": "46e9d81",
+  "image": "time-tracker-ha:20261112-round2-46e9d81",
+  "image_id": "sha256:651d2fd38acc892006f47e9d535a17f032d08e3d7722543ca8344902a62ddc43",
+  "health": "healthy",
+  "oom_killed": false,
+  "deploy_exit": 0,
+  "migration_plan": "Planned operations:\n  No planned migration operations.",
+  "queue_result": "success",
+  "queue_exit": "0",
+  "queue_timer": "active",
+  "rollback_directory": "/var/snap/docker/common/time-tracker-ha/backups/round2-goals-20261112",
+  "rollback_image_id": "sha256:36aaa65b72f8f2092fdf69e4635a138067433ac83d8eef1af05366df9f878faa",
+  "full_backup": "/var/snap/docker/common/time-tracker-ha/backups/round2-20261112/time_tracker.dump",
+  "full_backup_bytes": 2931709569,
+  "full_backup_verification_exit": 0,
+  "new_preferences_backup_bytes": 2951
+}

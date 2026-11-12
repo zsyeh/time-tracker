@@ -102,7 +102,7 @@ Two warmups and ten measured runs per scope per version. This benchmark invokes 
 | EI core421 | 6→6 | 170,309 | 52→51ms | 80→78ms | 22→22ms |
 | Drill topics | 7→7 | 158,808 | 373→376ms | 381→391ms | 144→145ms |
 
-**The complete rendered JSON SHA256 matches exactly between versions for every scope**, as do byte counts and query counts. The normalized AST SHA256 of `DrillHeatmapView` at6b83e29,0103df5 and currentHEAD is identical (`dd8300bd1b866430cbe3c38a7f9477d149e34e292208700094f0693f2db5a18f`). No backend heatmap regression or per-question N+1 was reproduced. The measured repair is on the frontend rendering/restoration path.
+**The complete rendered JSON SHA256 matches exactly between versions for every scope**, as do byte counts and query counts. At measurement time before the later transfer-only gzip decorator, the normalized AST SHA256 of `DrillHeatmapView` at6b83e29,0103df5 and HEAD was identical (`dd8300bd1b866430cbe3c38a7f9477d149e34e292208700094f0693f2db5a18f`). No backend heatmap regression or per-question N+1 was reproduced. The measured repair is on the frontend rendering/restoration path.
 
 EXPLAIN observations, without guessing about absent indexes:
 
@@ -137,3 +137,8 @@ counts, no prompt leakage, negotiated/no-negotiation behavior, account states,
 workspace rejection, affinity rejection and anonymous authentication. Independent
 review verified installed Django's deferred-render and compression implementation.
 Production compressed bytes and cold-screen evidence are recorded after rollout.
+
+
+### Subsequent production transfer-only correction
+
+The API/SQL table above was measured before root added a per-view gzip decorator in response to later production cold-load/network measurements. That later change does not rewrite GET aggregation or question/statistics semantics; the historical full-class AST hash is retained as dated measurement evidence, not falsely asserted for the newly decorated class. Independent compression review and4 passing tests are recorded in [`TRANSFER_COMPRESSION_REVIEW.md`](TRANSFER_COMPRESSION_REVIEW.md). Root owns the final compressed transfer and cold-first-screen production comparison; BUG-04 must not be closed solely from local API equivalence.

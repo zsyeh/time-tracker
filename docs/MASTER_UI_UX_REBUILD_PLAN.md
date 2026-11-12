@@ -1535,3 +1535,44 @@ R2-01先基线/复现 → R2-02搜索及题目 → R2-03热力图性能与旧视
 双前端生产构建及migrationcheck通过。Chrome/WebKit主路径与Reader通过，真实HTTP+PG
 跨设备、隔离、离线与字号验证通过；真实学习数据恢复后迁移/反向十表digest相同。
 生产备份/切换/实测状态在release report追加；实机Safari/PWA未测不得勾选。
+
+### 32.6 最终实现与发布补记：46e9d81（保留此前矩阵与阶段记录）
+
+本节追加实际交付事实，不改写§1–31的R01–R16矩阵，也不将§32.2/32.5的早期“生产待验”和旧测试计数冒称最终结果。当前状态以本节及[完整交付报告](round2/RELEASE_REPORT.md)为准。
+
+发布链：`999b190`核心修复和账号同步 → `15d3c42`Timer/public首屏账号外观 → `2951e54`热力图传输gzip → **`46e9d81`16字段账号偏好完整接入**。主Agent已确认46e9d81生产切换exit0、healthy、OOM=false、search queue成功、migration plan为No planned operations；镜像为`sha256:651d2fd38acc892006f47e9d535a17f032d08e3d7722543ca8344902a62ddc43`。最终31/31核心HTTPS检查、7/7偏好检查、98边缘3项静态资源SHA256核对通过，见[release-verification.json](round2/release-verification.json)、[production-smoke.json](round2/production-smoke.json)、[preferences-smoke.json](round2/preferences-smoke.json)、[edge-static-verification.json](round2/edge-static-verification.json)。旧2951e54阶段31/6结果不冒充新版本7项结果。
+
+**新增两项长期账号设置：** `progress.drill={target:24,deadline:'2026-11-21'}`、`progress.ei={target:11,deadline:'2026-11-21'}`，严格保持旧默认。每日工作量目标为1–500整数；截止日期为有效公历YYYY-MM-DD，禁止额外total/formula字段。每workspace是一项原子CAS冲突字段。schema_version仍1，无新数据库迁移；旧14字段快照只补这两项默认，旧客户端合法PATCH保留新字段。无账号归属的旧localStorage值需显式导入/丢弃，不能静默串号。统计公式、目标集合、去重/净新增口径不变。实现位于`tracker/user_preferences.py`、shared`preferences/schema.ts/store.ts`和`PracticeTrendPanel.vue`及专属测试。
+
+**最终测试：** 前端61files/309tests通过；全后端591tests、12skip、0失败（跳过不算执行通过）；双前端生产构建exit0；偏好专属PG34/34、SQLite33通过+1PG并发skip；schema11/11与strict tsc通过；独立增量review51前端/4后端通过；真实DjangoHTTP+PG的WebKit6组集成通过，含progress两设备与账号边界。前期587/297/30等计数是阶段证据，不能覆盖最终结果。最新日志和[sync/webkit-progress-final.json](round2/sync/webkit-progress-final.json)由主Agent归档。
+
+### 32.7 真实性能结论、回滚事故与尚存边界
+
+生产GET-only同协议、单客户端、2warmups+20samples，最终对比9df573e→46e9d81：搜索上下文详情P50/P95 **4473.43/6670.78→93.82/112.65ms**；Drill搜索187.32/412.08→181.63/315.70ms；EI搜索221.55/582.57→203.13/357.24ms。与此同时next详情91.97/142.21→109.94/288.54ms、previous85.17/123.33→104.55/133.63ms、严选热图779.91/964.64→847.43/975.04ms均未全面改善，普通详情P95也122.21→156.56ms。见[before](round2/production-before.json)与[final after](round2/performance-after.json)；不得挑旧2951e54较快值充当最终结果。
+
+实际生产Chrome三样本中，搜索点击UI7139→206ms、真实题图decode7292→950ms；下一题UI68→53ms，但下一题题图decode **70→363ms退化**。保留原始样本，3样本P95不视为稳定估计。热图首次上线冷首屏1304→1950ms退化后，独立5样本诊断确认307KB未压缩JSON瓶颈；2951e54最小gzip修复后5样本selector中位804ms、正文451→17ms、编码307254→44184B、解码字节不变。TTFB118→167ms并未改善，不能称SQL加速。当前UI/传输路径未改，压缩[独立复测](round2/search-question/final/production/heatmap-gzip-result.md)保持2951e54阶段标签，不冒称46e9d81再次采集。综合性能要求为**部分达标**，不是所有页面/图片都变快。
+
+首次15d3c42切换Docker已healthy，但部署附加探针访问不存在的`https://47.95.10.128/healthz`得404，实际触发自动应用回滚至9df573e；未反迁移数据库。改探针为真实`/accounts/login/`200后同镜像重试成功。私有`round2-20261112/automatic-rollback.log`及重试日志保留；不编造恢复时长或把应用回滚称为全库灾难演练。46e9d81的回滚目录`round2-goals-20261112`保留2951e54，复用原full dump symlink并新增当前UserPreferences dump验证。正/反0022恢复验证使十张既有表完整行digest不变，但该恢复排除图像blob及两张连接表，不能称已验证全量图像恢复。
+
+**未关闭实机验收：** LinuxChromium/WebKit、7视口×5字号、旋转、Reader、首屏阻断mainmodule、freshcontext与离线测试均不等同于实体iPadOS Safari或PWA退出/重启。真实软键盘、safe-area、浏览器chrome、原生PWA生命周期与用户设备对比仍需实机证据。原MasterDoD中的这些项目保持未完成。工程已实现并上线、功能检查通过，与性能部分退化和硬件验收未覆盖并不矛盾；最终交付必须一并说明。
+
+
+### 32.8 最终逐项执行状态（更新历史矩阵的当前状态，不覆盖原记录）
+
+| 原用户ID | 交付状态 | 当前验收证据/边界 |
+|---|---|---|
+| BUG-01 | 修复；自动化布局通过 | Settings8布局、长URI标题45.7→585.6px，7视口×5字号；原生键盘待实机 |
+| BUG-02A/B | 修复；部署通过 | 最终Drill/EI搜索P95315.70/357.24ms、搜索点击206ms；两引擎完整返回闭环 |
+| BUG-03 | 部分改善，原统一性能目标未全面通过 | 搜索上下文详情P504473→94ms；下一题API/题图未全面改善，不勾选完整性能验收 |
+| BUG-04 | 渲染/滚动及传输改善 | 9281格受控对照、963格生产gzip冷首屏804ms；最终原始API仍847/975ms，未称SQL加速 |
+| BUG-05 | 修复；布局通过 | 独立设置面板、URL/旧hash兼容，无错误smooth-scroll；实机仍需验证 |
+| BUG-06 | 修复；自动化多端通过 | normal-flow/slot布局；最终WebKit旋转无菜单/返回重叠 |
+| BUG-07 | 实现并上线 | pin/More/order/group/reset；关键入口不可隐藏，服务端两会话持久化 |
+| BUG-08 | 恢复并上线 | 真实6b83e29旧视觉对照；保留状态/题号/直达与性能改进 |
+| BUG-09 | 实现并上线 | 五字号、推荐95%、触控44px与编辑字体16px下限；两设备同步 |
+| SYNC-01 | 实现并上线 | tracker0022 + 16字段；主题/Accent/font/sidebar/filter/practice/language/progress |
+| SYNC-02 | 实现并上线 | 服务器首帧、字段CAS、账号隔离、版本竞态；31核心/7偏好生产检查 |
+| SYNC-03 | 实现并上线 | 全局账号设置与设备临时collapse/scroll/focus/menu/query明确分离 |
+| SYNC-04 | 实现并上线 | 防抖/超时/离线重试、CSRF/affinity、旧缓存升级；不阻塞计时/作答 |
+
+最终硬件/PWA项目继续未完成，整体不得宣称用户20项均已通过。风险、回滚命令、全部文件、提交与实测详情见完整报告；后续Agent从这些未关闭项继续，禁止重新覆盖原学习数据或统计口径。

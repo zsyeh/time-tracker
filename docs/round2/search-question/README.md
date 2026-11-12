@@ -1,5 +1,10 @@
 # Round 2 — Search entry and question loading (BUG-02/BUG-03)
 
+## 最终46e9d81构建补充回归
+
+新增进度目标账号同步后的最后构建已完成WebKit最小风险门禁：Drill/EI各1条完整交互与Reader1条，全部通过；16字段bootstrap、4次旋转、1GET去重及67文件哈希一致。详见[最终构建证据](final/latest/46e9d81/README.md)。此前完整设备矩阵与生产性能证据按阶段保留；next图片3样本变慢没有被标作普遍改善。
+
+
 ## Reproduced causes
 
 1. `PracticeView.navigationQuery()` carries the **list pagination generation pin** into the question-detail URL. `DrillQuestionDetailView → navigation_queryset → membership → index_state` rejected a valid UUID with HTTP409 whenever the search generation changed between list response and click. This is not a UUID serialization or Drill/EI prefix bug.

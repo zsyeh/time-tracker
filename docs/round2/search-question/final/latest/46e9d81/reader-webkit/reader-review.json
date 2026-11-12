@@ -1,0 +1,164 @@
+{
+  "metrics": {
+    "pane": {
+      "y": 143.640625,
+      "bottom": 812,
+      "width": 377.59375,
+      "height": 668.359375,
+      "scrollHeight": 992,
+      "clientHeight": 668
+    },
+    "diagnosis": {
+      "y": 316.8125,
+      "bottom": 526.453125,
+      "width": 348.59375,
+      "height": 209.640625,
+      "scrollHeight": 210,
+      "clientHeight": 210
+    },
+    "actions": {
+      "y": 748,
+      "bottom": 792,
+      "width": 348.59375,
+      "height": 44,
+      "scrollHeight": 44,
+      "clientHeight": 44
+    },
+    "overflow": false,
+    "rows": [
+      {
+        "text": "A知识断层",
+        "height": 44,
+        "y": 338.453125
+      },
+      {
+        "text": "B1想不起来",
+        "height": 44,
+        "y": 338.453125
+      },
+      {
+        "text": "B2不会启动",
+        "height": 44,
+        "y": 386.453125
+      },
+      {
+        "text": "B3不会组合",
+        "height": 44,
+        "y": 386.453125
+      },
+      {
+        "text": "C1计算错误",
+        "height": 44,
+        "y": 434.453125
+      },
+      {
+        "text": "C2符号/方向/单位",
+        "height": 44,
+        "y": 434.453125
+      },
+      {
+        "text": "C3边界/条件错误",
+        "height": 44,
+        "y": 482.453125
+      },
+      {
+        "text": "D看解析仍不懂",
+        "height": 44,
+        "y": 482.453125
+      }
+    ]
+  },
+  "twoSelected": {
+    "checked": 2,
+    "paneBottom": 812,
+    "actionTop": 748,
+    "actionBottom": 792,
+    "fullyVisible": true,
+    "primaryChoices": "主要原因：A · 知识断层B1 · 想不起来"
+  },
+  "noteEditor": {
+    "open": true,
+    "save": {
+      "top": 605.53125,
+      "bottom": 649.53125,
+      "visible": true,
+      "unobstructed": true
+    },
+    "actions": {
+      "top": 670.53125,
+      "bottom": 714.53125,
+      "visible": true
+    }
+  },
+  "moreActions": [
+    {
+      "text": "撤销上次",
+      "visible": true,
+      "unobstructed": true
+    },
+    {
+      "text": "重置本题状态",
+      "visible": true,
+      "unobstructed": true
+    }
+  ],
+  "reader": {
+    "open": 1,
+    "afterRotation": {
+      "open": true,
+      "overflow": false,
+      "buttons": [
+        {
+          "label": "上一题 · 顺序题",
+          "width": 44,
+          "height": 44,
+          "right": 54
+        },
+        {
+          "label": "下一题 · 顺序题",
+          "width": 44,
+          "height": 44,
+          "right": 102
+        },
+        {
+          "label": "已掌握 · 下一题 · 顺序题",
+          "width": 44,
+          "height": 44,
+          "right": 150
+        },
+        {
+          "label": "待复习",
+          "width": 44,
+          "height": 44,
+          "right": 198
+        },
+        {
+          "label": "显示答案",
+          "width": 44,
+          "height": 44,
+          "right": 246
+        },
+        {
+          "label": "恢复适合宽度",
+          "width": 47.921875,
+          "height": 44,
+          "right": 332
+        },
+        {
+          "label": "关闭全屏",
+          "width": 44,
+          "height": 44,
+          "right": 380
+        }
+      ]
+    },
+    "closed": true
+  },
+  "errors": [],
+  "pass": true,
+  "note": "Synthetic complete QuestionView; no answer submitted.",
+  "engine": "webkit",
+  "browser_version": "27.2",
+  "fixture": "http://127.0.0.1:8023",
+  "reuse": "Original review.question interactions and pass conditions; only fixture URL configured"
+}

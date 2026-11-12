@@ -1,0 +1,26 @@
+{
+  "revision": "46e9d81",
+  "edge": "98.142.241.45",
+  "hostname": "drill.ehzsy.site",
+  "pass": true,
+  "assets": [
+    {
+      "path": "/static/drill/assets/appearance.b3bcc7f6fd04.js",
+      "sha256": "b3bcc7f6fd04d0e20db2c06b3c34da175c5f4bddfaa357c9361932c080f41b3e",
+      "bytes": 9623,
+      "matches": true
+    },
+    {
+      "path": "/static/drill/assets/index-BCgPVMSo.js",
+      "sha256": "2c040927cccd166574462f2e1db044855bd659960d05264063cc15bc44ef5b44",
+      "bytes": 1058366,
+      "matches": true
+    },
+    {
+      "path": "/static/drill/assets/index-CEU7P510.css",
+      "sha256": "b05f41ed449d13509488bee19dba6e036f1c86dd025848f5bca2061f9237a374",
+      "bytes": 196694,
+      "matches": true
+    }
+  ]
+}

@@ -1,4 +1,4 @@
-Found 583 test(s).
+Found 591 test(s).
 Creating test database for alias 'default'...
 System check identified no issues (0 silenced).
 .............{"dry_run": true, "questions": 1, "regions": 1, "new_images": 1, "new_bytes": 201, "old_images_retained": 1}
@@ -7,7 +7,7 @@ System check identified no issues (0 silenced).
 ..{"dry_run": true, "figures": 1, "new_images": 1, "new_bytes": 434}
 {"dry_run": false, "figures": 1, "new_images": 1, "new_bytes": 434}
 {"dry_run": false, "figures": 1, "new_images": 0, "new_bytes": 0}
-..................................................................................{"candidate_pairs": 1, "changed_pairs": 1, "new_state_rows": 0, "existing_state_rows": 1, "max_merged_length": 12}
+......................................................................................{"candidate_pairs": 1, "changed_pairs": 1, "new_state_rows": 0, "existing_state_rows": 1, "max_merged_length": 12}
 {"user": "u***1", "question": "q***1", "before_length": 6, "after_length": 12, "source_attempts": 2}
 Merged 1 canonical Notes.
 {"candidate_pairs": 1, "changed_pairs": 0, "new_state_rows": 0, "existing_state_rows": 0, "max_merged_length": 0}
@@ -17,8 +17,8 @@ Merged 0 canonical Notes; existing audit file was preserved.
 {"user": "u***2", "question": "q***1", "before_length": 0, "after_length": 4, "source_attempts": 1}
 Merged 2 canonical Notes.
 Rolled back 2 canonical Notes.
-.......Regenerated 80667f50-f658-46bc-97ba-679057c418c0: 6 questions, seed=606, ids=[1, 2, 7, 8, 13, 14]
-.Regenerated 052158fa-c8e8-4711-90dc-4b586db6f6a6: 6 questions, seed=202, ids=[1, 2, 9, 11, 18, 13]
+.......Regenerated 979bcfb2-4a04-4eb8-98d9-43173fe69027: 6 questions, seed=606, ids=[1, 2, 7, 8, 13, 14]
+.Regenerated 778a43a0-bf8e-4e5a-832e-ad5a5371ac8d: 6 questions, seed=202, ids=[1, 2, 9, 11, 18, 13]
 ..................................................question_timing_conflict reason=lease_expired
 ....question_timing_conflict reason=owner_mismatch
 question_timing_conflict reason=owner_mismatch
@@ -31,7 +31,7 @@ question_timing_conflict reason=owner_mismatch
 .question_timing_conflict reason=timing_finalized
 .question_timing_conflict reason=active_timer_mismatch
 .question_timing_conflict reason=timing_protocol_mismatch
-...................s......{"output": "/tmp/tmpscpnkp94/audit.json", "selected": 3, "core": 3, "statuses": {"AUTO_CHECKED": 2, "NEEDS_REVIEW": 1}, "issues": {"no_own_answer_material": 1}, "manual_verified": 0, "duplicate_manifest_uuids": [], "courses": {"circuit": {"AUTO_CHECKED": 2, "NEEDS_REVIEW": 1}}}
+...................s......{"output": "/tmp/tmpxb5qmxti/audit.json", "selected": 3, "core": 3, "statuses": {"AUTO_CHECKED": 2, "NEEDS_REVIEW": 1}, "issues": {"no_own_answer_material": 1}, "manual_verified": 0, "duplicate_manifest_uuids": [], "courses": {"circuit": {"AUTO_CHECKED": 2, "NEEDS_REVIEW": 1}}}
 .....................................{"validated": 1, "dry_run": true}
 .{"validated": 1, "dry_run": false}
 Imported 1 Agent Markdown solutions.
@@ -83,7 +83,7 @@ Validated 1 question topic(s) to restore.
 Validated 0 cleaned topic title(s).
   极限: 1 question(s), 1 -> 1 heatmap cells
 Updated 1 question topic(s) and 0 topic title(s).
-...................................................................................................................................................Not Found: /api/not-a-route/
+.......................................................................................................................................................Not Found: /api/not-a-route/
 Not Found: /accounts/not-a-route/
 Not Found: /launch/not-a-token
 .Service Unavailable: /share/capacity-availability-check
@@ -96,12 +96,12 @@ Bad Request: /api/task-presets/
 ....Forbidden: /api/settings/data-encryption/
 ..............{"total": 1, "validation_queue": 1, "existing_verified": 0, "pending_manual": 1, "strata": {"legacy_unknown": 1}}
 {"total": 1, "validation_queue": 1, "existing_verified": 0, "pending_manual": 1, "strata": {"legacy_unknown": 1}}
-../tmp/tmpcir4wawn/report.json
+../tmp/tmpf7g0ev1m/report.json
 ........s....sssssssss................................................s....fallback_sol question=1
 ..fallback_sol question=1
 .........
 ----------------------------------------------------------------------
-Ran 583 tests in 151.987s
+Ran 591 tests in 159.770s
 
 OK (skipped=12)
 Destroying test database for alias 'default'...

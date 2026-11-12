@@ -6,7 +6,7 @@
     "attempt_rows": 0,
     "question_user_state_rows": 0,
     "source_baseline": "6b83e2924b9042e75e87bc091ea7f24e0948f8ee",
-    "source_round2": "current round2 worktree, heatmap class unchanged",
+    "source_round2": "round2 worktree measured 2026-11-12 14:35 UTC, before later transfer-only gzip decorator",
     "class_ast_sha256": {
       "6b83e29": "dd8300bd1b866430cbe3c38a7f9477d149e34e292208700094f0693f2db5a18f",
       "0103df5": "dd8300bd1b866430cbe3c38a7f9477d149e34e292208700094f0693f2db5a18f",

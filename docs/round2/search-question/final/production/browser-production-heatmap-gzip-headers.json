@@ -1,0 +1,8 @@
+{
+  "http_status": 200,
+  "content_encoding": "gzip",
+  "vary": "Accept, Accept-Encoding, Cookie",
+  "encoded_body_bytes": 44195,
+  "decoded_body_bytes": 307254,
+  "check": "Additional authenticated read-only GET confirms actual HTTPS Content-Encoding; not a browser performance sample. First header probe lacked session token and was correctly rejected403."
+}
