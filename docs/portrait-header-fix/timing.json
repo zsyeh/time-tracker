@@ -1,0 +1,20 @@
+{
+  "started_at": "2026-11-13T03:51:40+08:00",
+  "implementation_started_at": "2026-11-13T03:53:53.015189+08:00",
+  "build_finished_at": "2026-11-13T03:54:30.059361+08:00",
+  "browser_finished_at": "2026-11-13T03:54:59.944074+08:00",
+  "production": {
+    "backup-start.txt": "2026-11-13T03:53:54+08:00",
+    "backup-end.txt": "2026-11-13T03:53:56+08:00",
+    "verify-exit.txt": "0",
+    "previous-image-name.txt": "time-tracker-ha:20261113-markdown-9cfe91f",
+    "previous-image-id.txt": "sha256:a97e767f032f46a2e1293672cf815bd4944fa7233abeef94f50705091bc8817f",
+    "deploy-start.txt": "2026-11-13T03:58:06+08:00",
+    "deploy-end.txt": "2026-11-13T03:58:26+08:00",
+    "deploy-exit.txt": "0",
+    "deployed-image.txt": "time-tracker-ha:20261113-portrait-5a555f2 sha256:eb7e4be6e9374fedda52a360ee0d82834c21d0310752fd533a9f326a5d4ed163 healthy",
+    "build_log_finished_at": "2026-11-13T03:58:04.051673+08:00",
+    "backup_bytes": 982728
+  },
+  "documented_at": "2026-11-13T03:59:07.686164+08:00"
+}

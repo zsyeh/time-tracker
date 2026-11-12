@@ -1,0 +1,126 @@
+{
+  "physical_safari": false,
+  "layouts": [
+    {
+      "width": 390,
+      "height": 844,
+      "navHeight": 45,
+      "headerHeight": 70.625,
+      "toolsHeight": 44,
+      "workbenchTop": 171.625,
+      "overflow": false,
+      "navButtons": [
+        {
+          "top": 4,
+          "bottom": 48,
+          "left": 10,
+          "right": 54
+        },
+        {
+          "top": 4,
+          "bottom": 48,
+          "left": 58,
+          "right": 190.5
+        },
+        {
+          "top": 4,
+          "bottom": 48,
+          "left": 194.5,
+          "right": 285.25
+        },
+        {
+          "top": 4,
+          "bottom": 48,
+          "left": 289.25,
+          "right": 380
+        }
+      ]
+    },
+    {
+      "width": 820,
+      "height": 1180,
+      "navHeight": 45,
+      "headerHeight": 71.6875,
+      "toolsHeight": 44,
+      "workbenchTop": 172.6875,
+      "overflow": false,
+      "navButtons": [
+        {
+          "top": 4,
+          "bottom": 48,
+          "left": 16,
+          "right": 60
+        },
+        {
+          "top": 4,
+          "bottom": 48,
+          "left": 240.203125,
+          "right": 360.859375
+        },
+        {
+          "top": 4,
+          "bottom": 48,
+          "left": 541.0625,
+          "right": 681.4375
+        },
+        {
+          "top": 4,
+          "bottom": 48,
+          "left": 687.4375,
+          "right": 804
+        }
+      ]
+    },
+    {
+      "width": 1180,
+      "height": 820,
+      "navHeight": 43,
+      "headerHeight": 43.6875,
+      "toolsHeight": 44,
+      "workbenchTop": 152.6875,
+      "overflow": false,
+      "navButtons": [
+        {
+          "top": 11,
+          "bottom": 47,
+          "left": 14,
+          "right": 58
+        },
+        {
+          "top": 11,
+          "bottom": 47,
+          "left": 420.203125,
+          "right": 540.859375
+        },
+        {
+          "top": 11,
+          "bottom": 47,
+          "left": 903.0625,
+          "right": 1043.4375
+        },
+        {
+          "top": 11,
+          "bottom": 47,
+          "left": 1049.4375,
+          "right": 1166
+        }
+      ]
+    }
+  ],
+  "pointer": {
+    "outline": "none",
+    "tap": "rgba(0, 0, 0, 0)"
+  },
+  "keyboard": {
+    "outline": "solid",
+    "color": "rgb(82, 82, 82)",
+    "focused": true,
+    "visible": true
+  },
+  "logo": {
+    "width": 24,
+    "height": 24,
+    "naturalWidth": 48,
+    "naturalHeight": 48
+  }
+}
