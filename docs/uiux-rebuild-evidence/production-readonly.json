@@ -1,0 +1,269 @@
+{
+  "postgres_version": "15.19 (Debian 15.19-1.pgdg12+2)",
+  "in_recovery": false,
+  "extensions": [
+    [
+      "unaccent",
+      "1.1",
+      null
+    ],
+    [
+      "pg_trgm",
+      "1.6",
+      null
+    ]
+  ],
+  "indexes": [
+    [
+      "drill_question",
+      "drill_question_document_id_3b76eb04",
+      "CREATE INDEX drill_question_document_id_3b76eb04 ON public.drill_question USING btree (document_id)"
+    ],
+    [
+      "drill_question",
+      "drill_question_document_order_unique",
+      "CREATE UNIQUE INDEX drill_question_document_order_unique ON public.drill_question USING btree (document_id, question_order)"
+    ],
+    [
+      "drill_question",
+      "drill_question_exam_year_427e74d3",
+      "CREATE INDEX drill_question_exam_year_427e74d3 ON public.drill_question USING btree (exam_year)"
+    ],
+    [
+      "drill_question",
+      "drill_question_fingerprint_6b9435d1_like",
+      "CREATE INDEX drill_question_fingerprint_6b9435d1_like ON public.drill_question USING btree (fingerprint varchar_pattern_ops)"
+    ],
+    [
+      "drill_question",
+      "drill_question_fingerprint_key",
+      "CREATE UNIQUE INDEX drill_question_fingerprint_key ON public.drill_question USING btree (fingerprint)"
+    ],
+    [
+      "drill_question",
+      "drill_question_is_past_exam_34282e60",
+      "CREATE INDEX drill_question_is_past_exam_34282e60 ON public.drill_question USING btree (is_past_exam)"
+    ],
+    [
+      "drill_question",
+      "drill_question_is_practiceable_1cd02f4f",
+      "CREATE INDEX drill_question_is_practiceable_1cd02f4f ON public.drill_question USING btree (is_practiceable)"
+    ],
+    [
+      "drill_question",
+      "drill_question_order_idx",
+      "CREATE INDEX drill_question_order_idx ON public.drill_question USING btree (document_id, question_order)"
+    ],
+    [
+      "drill_question",
+      "drill_question_pkey",
+      "CREATE UNIQUE INDEX drill_question_pkey ON public.drill_question USING btree (id)"
+    ],
+    [
+      "drill_question",
+      "drill_question_question_type_2f966d26",
+      "CREATE INDEX drill_question_question_type_2f966d26 ON public.drill_question USING btree (question_type)"
+    ],
+    [
+      "drill_question",
+      "drill_question_question_type_2f966d26_like",
+      "CREATE INDEX drill_question_question_type_2f966d26_like ON public.drill_question USING btree (question_type varchar_pattern_ops)"
+    ],
+    [
+      "drill_question",
+      "drill_question_question_type_human_verified_bee17bf6",
+      "CREATE INDEX drill_question_question_type_human_verified_bee17bf6 ON public.drill_question USING btree (question_type_human_verified)"
+    ],
+    [
+      "drill_question",
+      "drill_question_record_kind_975c46e7",
+      "CREATE INDEX drill_question_record_kind_975c46e7 ON public.drill_question USING btree (record_kind)"
+    ],
+    [
+      "drill_question",
+      "drill_question_record_kind_975c46e7_like",
+      "CREATE INDEX drill_question_record_kind_975c46e7_like ON public.drill_question USING btree (record_kind varchar_pattern_ops)"
+    ],
+    [
+      "drill_question",
+      "drill_question_similar_idx",
+      "CREATE INDEX drill_question_similar_idx ON public.drill_question USING btree (similarity_topic_id, question_order)"
+    ],
+    [
+      "drill_question",
+      "drill_question_similarity_topic_id_d77d426b",
+      "CREATE INDEX drill_question_similarity_topic_id_d77d426b ON public.drill_question USING btree (similarity_topic_id)"
+    ],
+    [
+      "drill_question",
+      "drill_question_source_category_edb6d61a",
+      "CREATE INDEX drill_question_source_category_edb6d61a ON public.drill_question USING btree (source_category)"
+    ],
+    [
+      "drill_question",
+      "drill_question_source_category_edb6d61a_like",
+      "CREATE INDEX drill_question_source_category_edb6d61a_like ON public.drill_question USING btree (source_category varchar_pattern_ops)"
+    ],
+    [
+      "drill_question",
+      "drill_question_subject_4176bffe",
+      "CREATE INDEX drill_question_subject_4176bffe ON public.drill_question USING btree (subject)"
+    ],
+    [
+      "drill_question",
+      "drill_question_subject_4176bffe_like",
+      "CREATE INDEX drill_question_subject_4176bffe_like ON public.drill_question USING btree (subject varchar_pattern_ops)"
+    ],
+    [
+      "drill_question",
+      "drill_question_syllabus_scope_0b9836e3",
+      "CREATE INDEX drill_question_syllabus_scope_0b9836e3 ON public.drill_question USING btree (syllabus_scope)"
+    ],
+    [
+      "drill_question",
+      "drill_question_syllabus_scope_0b9836e3_like",
+      "CREATE INDEX drill_question_syllabus_scope_0b9836e3_like ON public.drill_question USING btree (syllabus_scope varchar_pattern_ops)"
+    ],
+    [
+      "drill_question",
+      "drill_question_topic_id_5dfcdb74",
+      "CREATE INDEX drill_question_topic_id_5dfcdb74 ON public.drill_question USING btree (topic_id)"
+    ],
+    [
+      "drill_question",
+      "drill_question_uuid_key",
+      "CREATE UNIQUE INDEX drill_question_uuid_key ON public.drill_question USING btree (uuid)"
+    ],
+    [
+      "drill_questiondocument",
+      "drill_questiondocument_pkey",
+      "CREATE UNIQUE INDEX drill_questiondocument_pkey ON public.drill_questiondocument USING btree (id)"
+    ],
+    [
+      "drill_questiondocument",
+      "drill_questiondocument_sha256_bf653195_like",
+      "CREATE INDEX drill_questiondocument_sha256_bf653195_like ON public.drill_questiondocument USING btree (sha256 varchar_pattern_ops)"
+    ],
+    [
+      "drill_questiondocument",
+      "drill_questiondocument_sha256_key",
+      "CREATE UNIQUE INDEX drill_questiondocument_sha256_key ON public.drill_questiondocument USING btree (sha256)"
+    ],
+    [
+      "drill_questiondocument",
+      "drill_questiondocument_source_id_key",
+      "CREATE UNIQUE INDEX drill_questiondocument_source_id_key ON public.drill_questiondocument USING btree (source_id)"
+    ],
+    [
+      "drill_questiondocument",
+      "drill_questiondocument_workspace_a13e5fef",
+      "CREATE INDEX drill_questiondocument_workspace_a13e5fef ON public.drill_questiondocument USING btree (workspace)"
+    ],
+    [
+      "drill_questiondocument",
+      "drill_questiondocument_workspace_a13e5fef_like",
+      "CREATE INDEX drill_questiondocument_workspace_a13e5fef_like ON public.drill_questiondocument USING btree (workspace varchar_pattern_ops)"
+    ],
+    [
+      "drill_questiontopic",
+      "drill_questiontopic_document_id_3870f49b",
+      "CREATE INDEX drill_questiontopic_document_id_3870f49b ON public.drill_questiontopic USING btree (document_id)"
+    ],
+    [
+      "drill_questiontopic",
+      "drill_questiontopic_parent_id_9c76c8e2",
+      "CREATE INDEX drill_questiontopic_parent_id_9c76c8e2 ON public.drill_questiontopic USING btree (parent_id)"
+    ],
+    [
+      "drill_questiontopic",
+      "drill_questiontopic_pkey",
+      "CREATE UNIQUE INDEX drill_questiontopic_pkey ON public.drill_questiontopic USING btree (id)"
+    ],
+    [
+      "drill_questiontopic",
+      "drill_questiontopic_source_id_key",
+      "CREATE UNIQUE INDEX drill_questiontopic_source_id_key ON public.drill_questiontopic USING btree (source_id)"
+    ],
+    [
+      "drill_questiontopic",
+      "drill_questiontopic_syllabus_requirement_6feb214a",
+      "CREATE INDEX drill_questiontopic_syllabus_requirement_6feb214a ON public.drill_questiontopic USING btree (syllabus_requirement)"
+    ],
+    [
+      "drill_questiontopic",
+      "drill_questiontopic_syllabus_requirement_6feb214a_like",
+      "CREATE INDEX drill_questiontopic_syllabus_requirement_6feb214a_like ON public.drill_questiontopic USING btree (syllabus_requirement varchar_pattern_ops)"
+    ],
+    [
+      "drill_questiontopic",
+      "drill_topic_document_order_unique",
+      "CREATE UNIQUE INDEX drill_topic_document_order_unique ON public.drill_questiontopic USING btree (document_id, sort_order)"
+    ],
+    [
+      "drill_questiontopic",
+      "drill_topic_parent_idx",
+      "CREATE INDEX drill_topic_parent_idx ON public.drill_questiontopic USING btree (document_id, parent_id)"
+    ]
+  ],
+  "sizes": [
+    [
+      "drill_questiondocument",
+      147456
+    ],
+    [
+      "drill_questiontopic",
+      901120
+    ],
+    [
+      "drill_question",
+      15736832
+    ]
+  ],
+  "migrations_latest": {
+    "drill": "0035_learning_recovery",
+    "tracker": "0021_alter_knowledgepoint_category_and_more"
+  },
+  "question_aggregate": [
+    {
+      "document__workspace": "ei",
+      "total": 2889,
+      "practiceable": 2830,
+      "prompt_nonempty": 296,
+      "latex_nonempty": 0
+    },
+    {
+      "document__workspace": "drill",
+      "total": 6392,
+      "practiceable": 5847,
+      "prompt_nonempty": 5861,
+      "latex_nonempty": 0
+    }
+  ],
+  "content_modes": [
+    {
+      "document__workspace": "drill",
+      "content_mode": "mixed",
+      "count": 1817
+    },
+    {
+      "document__workspace": "drill",
+      "content_mode": "image",
+      "count": 2880
+    },
+    {
+      "document__workspace": "ei",
+      "content_mode": "markdown",
+      "count": 296
+    },
+    {
+      "document__workspace": "drill",
+      "content_mode": "text",
+      "count": 1695
+    },
+    {
+      "document__workspace": "ei",
+      "content_mode": "image",
+      "count": 2593
+    }
+  ]
+}
