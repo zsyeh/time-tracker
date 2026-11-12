@@ -53,7 +53,7 @@ legend { margin-bottom: 4px; padding: 0 8px; color: var(--text-secondary); font-
 .diagnosis-check { flex: none; opacity: 0; }
 .diagnosis-check.checked { opacity: 1; }
 fieldset:disabled .diagnosis-selection-row { cursor: default; opacity: .55; }
-.compact .diagnosis-selection-groups { gap: 4px; }
+.compact .diagnosis-selection-groups { grid-template-columns: minmax(0, 1fr); gap: 4px; }
 .compact fieldset { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 4px; }
 .compact legend { margin-bottom: 0; font-size: 12px; }
 .compact .diagnosis-selection-row { gap: 4px; padding: 2px 4px; }
