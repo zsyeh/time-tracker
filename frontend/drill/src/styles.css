@@ -191,30 +191,35 @@ button { color: inherit; }
 .source-original-link { margin: 0 0 10px; font-size: 12px; }
 .source-original-link a { display: inline-flex; padding: 8px; color: var(--text-secondary); border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); text-decoration: none; }
 .source-original-link a:hover { color: var(--text-primary); }
-.question-canvas pre { color: #202124; white-space: pre-wrap; font: 14px/1.8 Georgia, serif; }
-.question-markdown, .question-markdown .markdown-body { color: #202124; font: 15px/1.8 Inter, sans-serif; }
+.question-canvas pre { color: var(--text-primary); white-space: pre-wrap; font: 14px/1.8 Georgia, serif; }
+.question-canvas:has(.question-markdown) { color: var(--text-primary); background: var(--bg-surface); border-color: var(--border-subtle); }
+.question-markdown, .question-markdown .markdown-body { color: var(--text-primary); font: 15px/1.8 Inter, sans-serif; }
 .question-canvas .question-markdown.markdown-preview-shell, .agent-answer-block .agent-markdown-answer.markdown-preview-shell {
   --accent: #2e7047;
   --accent-rgb: 46, 112, 71;
-  --math-color: #151619;
-  --math-display-color: #151619;
-  --math-border: #d5d6d8;
-  --math-background: #ecece8;
+  --math-color: var(--text-primary);
+  --math-display-color: var(--text-primary);
+  --math-border: var(--border-subtle);
+  --math-background: var(--surface-subtle);
   --math-shadow: none;
 }
-.question-markdown .markdown-body :where(h1, h2, h3, h4, strong), .question-markdown .katex { color: #151619; }
-.question-markdown .markdown-body pre, .question-markdown .markdown-body code { color: #202124; background: #eaebed; }
+.question-markdown .markdown-body :where(h1, h2, h3, h4, strong), .question-markdown .katex { color: var(--text-primary); }
+.question-markdown .markdown-body pre, .question-markdown .markdown-body code { color: var(--text-primary); background: var(--surface-subtle); }
 .official-answer { margin-top: 9px; }
 .answer-toggle { width: 100%; height: 37px; padding: 0 12px; border: 1px solid var(--border-default); border-radius: var(--radius-sm); color: var(--text-secondary); background: var(--bg-sidebar); display: flex; align-items: center; justify-content: space-between; font-size: 12px; cursor: pointer; }
 .answer-toggle:hover { border-color: var(--border-strong); }
 .answer-canvas { margin-top: 6px; padding: 10px; border: 1px solid var(--border-default); border-radius: var(--radius-sm); background: #f5f5f2; display: grid; gap: 10px; }
 .answer-canvas img { width: auto; max-width: 100%; height: auto; margin: 0 auto; display: block; }
-.agent-answer-block { padding: 15px; border: 1px solid #d5d6d8; border-radius: var(--radius-sm); color: #202124; background: #f5f5f2; }
-.agent-answer-block > header { margin-bottom: 13px; padding-bottom: 8px; border-bottom: 1px solid #d5d6d8; color: #686a70; display: flex; justify-content: space-between; gap: 10px; font-size: 12px; }
+.agent-answer-block { padding: 15px; border: 1px solid var(--border-subtle); border-radius: var(--radius-sm); color: var(--text-primary); background: var(--bg-surface); }
+.agent-answer-block > header { margin-bottom: 13px; padding-bottom: 8px; border-bottom: 1px solid var(--border-subtle); color: var(--text-secondary); display: flex; justify-content: space-between; gap: 10px; font-size: 12px; }
 .agent-answer-block > header strong { color: #2e7047; }
-.agent-markdown-answer, .agent-markdown-answer .markdown-body { color: #202124; background: transparent; }
-.agent-markdown-answer .markdown-body :where(h1, h2, h3, h4, strong), .agent-markdown-answer .katex { color: #151619; }
-.answer-rendering { color: #686a70; font-size: 12px; }
+.agent-markdown-answer.markdown-preview-shell[data-math-style] { --math-color: var(--text-primary); --math-display-color: var(--text-primary); --math-background: var(--surface-subtle); --math-border: var(--border-subtle); --math-shadow: none; }
+.agent-markdown-answer, .agent-markdown-answer .markdown-body { color: var(--text-primary); background: transparent; }
+.agent-markdown-answer .markdown-body :where(h1, h2, h3, h4, strong), .agent-markdown-answer .katex { color: var(--text-primary); }
+.answer-rendering { color: var(--text-secondary); font-size: 12px; }
+.agent-markdown-answer .markdown-body blockquote, .agent-markdown-answer .markdown-body .footnotes { color: var(--text-secondary); background: var(--surface-subtle); border-color: var(--border-subtle); }
+.agent-markdown-answer .markdown-body :where(pre, :not(pre) > code, th, tr:nth-child(even)) { color: var(--text-primary); background: var(--surface-subtle); }
+.agent-markdown-answer .markdown-body :where(th, td, hr, h1, h2) { border-color: var(--border-subtle); }
 .answer-bar, .learning-markers, .next-question, .similar-trigger, .similar-panel { border: 1px solid var(--border-subtle); border-radius: var(--radius-md); background: var(--bg-surface); }
 .answer-bar { padding: 13px; display: grid; gap: 11px; }
 .answer-bar span, .answer-bar small { display: block; }
