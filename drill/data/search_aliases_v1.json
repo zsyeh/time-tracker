@@ -1,0 +1,19 @@
+{
+  "version": 1,
+  "concepts": [
+    {"canonical":"fourier_transform","equivalents":["Fourier transform","傅里叶变换","傅立叶变换","Fourier 变换"],"common_typos":["傅里页变换"],"workspace":"all","notes":"Transform, not series","test_ids":["S-Q06","S-Q09"]},
+    {"canonical":"fourier_series","equivalents":["Fourier series","傅里叶级数","傅立叶级数"],"common_typos":[],"workspace":"all","test_ids":["S-Q61"]},
+    {"canonical":"laplace_transform","equivalents":["Laplace transform","拉普拉斯变换","拉氏变换"],"common_typos":[],"workspace":"all","test_ids":["S-Q14"]},
+    {"canonical":"z_transform","equivalents":["Z transform","Z-transform","Z 变换","Z变换"],"common_typos":[],"workspace":"all","test_ids":["S-Q10"]},
+    {"canonical":"karnaugh_map","equivalents":["Karnaugh map","K-map","卡诺图"],"common_typos":[],"workspace":"all","test_ids":["S-Q16"]},
+    {"canonical":"rs_flip_flop","equivalents":["RS flip-flop","RS flip flop","RS触发器","RS 触发器"],"cooccurrence":[["RS","触发器"]],"common_typos":[],"workspace":"all","test_ids":["S-Q19"]},
+    {"canonical":"negative_feedback","equivalents":["negative feedback","负反馈"],"common_typos":[],"workspace":"all","test_ids":["S-Q21"]},
+    {"canonical":"fourier","equivalents":["Fourier","傅里叶","傅立叶"],"common_typos":["Fourer","Foureir"],"workspace":"all","test_ids":["S-Q08"]},
+    {"canonical":"laplace","equivalents":["Laplace","拉普拉斯","拉氏"],"common_typos":["Lapalce"],"workspace":"all","test_ids":["S-Q15"]},
+    {"canonical":"karnaugh","equivalents":["Karnaugh","卡诺"],"common_typos":["Karnaughh"],"workspace":"all","test_ids":["S-Q17"]},
+    {"canonical":"bode","equivalents":["Bode","波特图"],"common_typos":[],"workspace":"all","test_ids":["S-Q22"]},
+    {"canonical":"partial_derivative","equivalents":["偏导数","partial derivative"],"common_typos":["偏到数"],"workspace":"all","test_ids":["S-Q02"]},
+    {"canonical":"implicit_function","equivalents":["隐函数","implicit function"],"common_typos":[],"workspace":"all","test_ids":["S-Q04"]},
+    {"canonical":"multivariable_differentiation","equivalents":["多元微分","multivariable differentiation"],"common_typos":[],"workspace":"all","test_ids":["S-Q01"]}
+  ]
+}

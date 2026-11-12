@@ -1157,3 +1157,60 @@ class LearningRecoveryState(models.Model):
     version = models.PositiveIntegerField(default=0)
     active_timer = models.ForeignKey(QuestionTimingSession, null=True, blank=True, on_delete=models.SET_NULL, related_name='+')
     updated_at = models.DateTimeField(auto_now=True)
+
+
+class QuestionSearchDocument(models.Model):
+    """Disposable public question text projection; never user notes or answers."""
+    question = models.OneToOneField(Question, primary_key=True, on_delete=models.CASCADE, related_name='search_document')
+    workspace = models.CharField(max_length=16, db_index=True)
+    schema_version = models.PositiveSmallIntegerField(default=1)
+    source_hash = models.CharField(max_length=64)
+    labels_norm = models.TextField(blank=True)
+    book_norm = models.TextField(blank=True)
+    topics_norm = models.TextField(blank=True)
+    body_norm = models.TextField(blank=True)
+    formula_norm = models.TextField(blank=True)
+    identifiers = models.JSONField(default=list)
+    lexeme_refs = models.JSONField(default=list)
+    terms = models.JSONField(default=dict)
+    coverage = models.JSONField(default=dict)
+    indexed_at = models.DateTimeField(default=timezone.now)
+
+    class Meta:
+        indexes = [models.Index(fields=('workspace', 'schema_version', 'question'), name='drill_search_ws_schema')]
+
+
+class QuestionSearchLexeme(models.Model):
+    workspace = models.CharField(max_length=16)
+    term = models.CharField(max_length=120)
+    kind = models.CharField(max_length=16)
+    display = models.TextField()
+    document_frequency = models.PositiveIntegerField(default=1)
+    target = models.JSONField(default=dict)
+    target_key = models.CharField(max_length=160, default='')
+    schema_version = models.PositiveSmallIntegerField(default=1)
+
+    class Meta:
+        constraints = [models.UniqueConstraint(fields=('workspace', 'kind', 'term', 'target_key'), name='drill_search_lexeme_unique')]
+
+
+class QuestionSearchDirty(models.Model):
+    question = models.OneToOneField(Question, primary_key=True, on_delete=models.CASCADE, related_name='search_dirty')
+    revision = models.PositiveBigIntegerField(default=1)
+    enqueued_at = models.DateTimeField(default=timezone.now)
+    attempts = models.PositiveSmallIntegerField(default=0)
+    next_retry_at = models.DateTimeField(null=True, blank=True)
+    last_error_code = models.CharField(max_length=64, blank=True)
+
+
+class QuestionSearchState(models.Model):
+    workspace = models.CharField(max_length=16, unique=True)
+    schema_version = models.PositiveSmallIntegerField(default=1)
+    generation = models.PositiveBigIntegerField(default=0)
+    aliases_hash = models.CharField(max_length=64, blank=True)
+    manifest_hash = models.CharField(max_length=64, blank=True)
+    last_completed_at = models.DateTimeField(null=True, blank=True)
+    rebuilding = models.BooleanField(default=False)
+    ready = models.BooleanField(default=False)
+    rebuild_last_pk = models.PositiveBigIntegerField(default=0)
+    build_source_version = models.CharField(max_length=64, blank=True)

@@ -8,7 +8,7 @@ from io import StringIO
 from django.contrib.auth import logout
 from django.core.cache import cache
 from django.db import IntegrityError, transaction
-from django.db.models import Count, Q, TextField, Value
+from django.db.models import Count, Exists, OuterRef, Prefetch, Q, TextField, Value
 from django.db.models.deletion import ProtectedError
 from django.db.models.functions import Replace, Trim, TruncDate
 from django.http import Http404, HttpResponse
@@ -73,8 +73,86 @@ def _local(value):
     return timezone.localtime(value) if timezone.is_aware(value) else value
 
 
+_PRIVATE_SESSION_SEARCH_FIELDS = ('title', 'details', 'chapter', 'topic', 'breakthrough',
+                                  'problems', 'next_action', 'task_path')
+
+
+def _private_session_candidates(queryset, plan, user):
+    from django.db import connection
+    from drill.search.private import PrivateTextCandidate
+    if not plan.groups:
+        return queryset.none()
+    if connection.vendor != 'postgresql' or user_encryption_enabled(user.pk):
+        return queryset
+    from copy import copy
+    # The final matcher allows different concepts in title/body/different tags.
+    # Preserve that union *per concept*, then intersect concepts.
+    for index, group in enumerate(plan.groups):
+        group_plan = copy(plan)
+        group_plan.groups = [group]
+        tags = StudyTag.objects.filter(user=user, sessions__pk=OuterRef('pk')).alias(
+            _candidate=PrivateTextCandidate(group_plan, ('name',))).filter(
+                Q(_candidate=True) | ~Q(encrypted_content=''))
+        text_alias = f'_private_text_candidate_{index}'
+        tag_alias = f'_private_tag_candidate_{index}'
+        queryset = queryset.alias(**{
+            text_alias: PrivateTextCandidate(group_plan, _PRIVATE_SESSION_SEARCH_FIELDS),
+            tag_alias: Exists(tags),
+        }).filter(Q(**{text_alias: True}) | Q(**{tag_alias: True})
+                 | ~Q(encrypted_summary='') | ~Q(encrypted_content=''))
+    return queryset
+
+
+def _private_issue_candidates(queryset, plan, user):
+    from django.db import connection
+    from drill.search.private import PrivateTextCandidate
+    if not plan.groups:
+        return queryset.none()
+    if connection.vendor != 'postgresql' or user_encryption_enabled(user.pk):
+        return queryset
+    return queryset.alias(_private_text_candidate=PrivateTextCandidate(plan, ('topic', 'description', 'solution'))).filter(
+        Q(_private_text_candidate=True) | ~Q(encrypted_content=''))
+
+
+def _private_matching_ids(queryset, plan, user, fields, *, limit=None):
+    """Stream owner-only values and decrypt through the existing envelope API.
+
+    Full model hydration is reserved for returned rows. Everything here, including
+    decrypted tag names, lives only for this request; no plaintext index/cache/log.
+    """
+    from drill.search.query import private_matches
+    from .data_encryption import decrypt_payload, is_encrypted_payload
+    model = queryset.model
+    queryset = queryset.filter(user=user)
+    payload_fields = tuple(model.encrypted_field_groups)
+    tags_by_session = {}
+    if model is TimeLog:
+        tags = {tag.pk: tag.name for tag in StudyTag.objects.filter(user=user).only('pk', 'user', 'name', 'encrypted_content')}
+        if tags:
+            links = TimeLog.tags.through.objects.filter(timelog__user=user, studytag_id__in=tags).values_list('timelog_id', 'studytag_id')
+            for session_id, tag_id in links.iterator(chunk_size=1000):
+                tags_by_session.setdefault(session_id, []).append(tags[tag_id])
+    columns = ('pk', *fields, *payload_fields)
+    matched = []
+    for values in queryset.prefetch_related(None).values_list(*columns).iterator(chunk_size=1000):
+        row = dict(zip(columns, values))
+        for payload_field in payload_fields:
+            if is_encrypted_payload(row[payload_field]):
+                decoded = decrypt_payload(row[payload_field], user_id=user.pk,
+                                          context=f'{model._meta.label_lower}:{payload_field}')
+                # Match the mixin's protected field boundary, not arbitrary keys.
+                for field in model.encrypted_field_groups[payload_field]:
+                    if field in fields and field in decoded:
+                        row[field] = decoded[field]
+        if private_matches(plan, *(row[field] for field in fields), *tags_by_session.get(row['pk'], ())):
+            matched.append(row['pk'])
+            if limit is not None and len(matched) >= limit:
+                break
+    return matched
+
+
 def _filtered_sessions(request):
-    queryset = TimeLog.objects.filter(user=request.user).prefetch_related('tags')
+    queryset = TimeLog.objects.filter(user=request.user).prefetch_related(Prefetch('tags', queryset=StudyTag.objects.filter(user=request.user)))
     subject = request.query_params.get('subject')
     if subject:
         try:
@@ -98,29 +176,14 @@ def _filtered_sessions(request):
         queryset = queryset.filter(start_time__date__lte=date_to)
     search = request.query_params.get('search', '').strip()
     if search:
-        if user_encryption_enabled(request.user.pk):
-            needle = search.casefold()
-            matched_ids = [
-                session.pk
-                for session in queryset.iterator(chunk_size=200)
-                if any(needle in str(getattr(session, field) or '').casefold() for field in (
-                    'title', 'details', 'chapter', 'topic', 'breakthrough',
-                    'problems', 'next_action', 'task_path',
-                )) or any(needle in tag.name.casefold() for tag in session.tags.all())
-            ]
-            queryset = queryset.filter(pk__in=matched_ids)
-        else:
-            queryset = queryset.filter(
-                Q(title__icontains=search)
-                | Q(details__icontains=search)
-                | Q(chapter__icontains=search)
-                | Q(topic__icontains=search)
-                | Q(breakthrough__icontains=search)
-                | Q(problems__icontains=search)
-                | Q(next_action__icontains=search)
-                | Q(task_path__icontains=search)
-                | Q(tags__name__icontains=search)
-            ).distinct()
+        from drill.search.service import get_plan
+        from drill.search.query import private_matches
+        plan = get_plan(search)
+        # No lossy icontains prefilter: Unicode and aliases must inspect the complete
+        # owner/date/status scope. Model fields preserve existing at-rest decryption.
+        candidates = _private_session_candidates(queryset, plan, request.user)
+        matched_ids = _private_matching_ids(candidates, plan, request.user, _PRIVATE_SESSION_SEARCH_FIELDS)
+        queryset = queryset.filter(pk__in=matched_ids)
     if request.query_params.get('has_details') == '1':
         if user_encryption_enabled(request.user.pk):
             # Encrypted rows cannot be filtered by plaintext at the database
@@ -620,7 +683,7 @@ class GlobalSearchView(APIView):
     """Return bounded cross-feature search summaries without full session bodies."""
 
     def get(self, request):
-        query = request.query_params.get('q', '').strip()[:120]
+        query = request.query_params.get('q', '').strip()
         if not query:
             return Response({'query': '', 'results': []})
         try:
@@ -629,59 +692,18 @@ class GlobalSearchView(APIView):
             return Response({'detail': 'limit must be an integer'}, status=400)
         limit = max(1, min(limit, 24))
 
-        session_filter = (
-            Q(title__icontains=query)
-            | Q(details__icontains=query)
-            | Q(chapter__icontains=query)
-            | Q(topic__icontains=query)
-            | Q(breakthrough__icontains=query)
-            | Q(problems__icontains=query)
-            | Q(next_action__icontains=query)
-            | Q(task_path__icontains=query)
-            | Q(tags__name__icontains=query)
-        )
-        encrypted_search = user_encryption_enabled(request.user.pk)
-        session_queryset = TimeLog.objects.filter(
-            user=request.user,
-            status='completed',
-        ).prefetch_related('tags').order_by('-start_time')
-        if encrypted_search:
-            needle = query.casefold()
-            sessions = [
-                session
-                for session in session_queryset.iterator(chunk_size=200)
-                if any(needle in str(getattr(session, field) or '').casefold() for field in (
-                    'title', 'details', 'chapter', 'topic', 'breakthrough',
-                    'problems', 'next_action', 'task_path',
-                )) or any(needle in tag.name.casefold() for tag in session.tags.all())
-            ][:limit]
-        else:
-            sessions = session_queryset.filter(session_filter).distinct().only(
-                'id', 'uuid', 'user', 'category', 'title', 'details', 'chapter', 'topic',
-                'breakthrough', 'problems', 'next_action', 'task_path', 'start_time',
-                'encrypted_summary', 'encrypted_content',
-            )[:limit]
-
-        issue_filter = (
-            Q(topic__icontains=query)
-            | Q(description__icontains=query)
-            | Q(solution__icontains=query)
-        )
-        issue_queryset = LearningIssue.objects.filter(user=request.user).order_by('-updated_at')
-        if encrypted_search:
-            needle = query.casefold()
-            issues = [
-                issue
-                for issue in issue_queryset.iterator(chunk_size=200)
-                if any(needle in str(getattr(issue, field) or '').casefold() for field in (
-                    'topic', 'description', 'solution',
-                ))
-            ][:limit]
-        else:
-            issues = issue_queryset.filter(issue_filter).only(
-                'id', 'user', 'category', 'topic', 'issue_type', 'description', 'solution',
-                'resolved', 'updated_at', 'encrypted_content',
-            )[:limit]
+        from drill.search.service import get_plan
+        from drill.search.query import private_matches
+        plan = get_plan(query)
+        session_queryset = TimeLog.objects.filter(user=request.user, status='completed').prefetch_related(Prefetch('tags', queryset=StudyTag.objects.filter(user=request.user))).order_by('-start_time', '-pk')
+        session_queryset = _private_session_candidates(session_queryset, plan, request.user)
+        session_ids = _private_matching_ids(session_queryset, plan, request.user,
+                                            _PRIVATE_SESSION_SEARCH_FIELDS, limit=limit)
+        sessions = session_queryset.filter(pk__in=session_ids)
+        issue_queryset = _private_issue_candidates(LearningIssue.objects.filter(user=request.user), plan, request.user).order_by('-updated_at', '-pk')
+        issue_ids = _private_matching_ids(issue_queryset, plan, request.user,
+                                          ('topic', 'description', 'solution'), limit=limit)
+        issues = issue_queryset.filter(pk__in=issue_ids)
 
         results = []
         for session in sessions:

@@ -10,6 +10,7 @@ class DrillConfig(AppConfig):
     verbose_name = 'Question drill'
 
     def ready(self):
+        from .search import signals  # noqa: F401; SQLite fallback, PG uses database triggers
         for name in ('django.request', 'django.server', 'gunicorn.access'):
             logger = logging.getLogger(name)
             if not any(isinstance(item, RedactLearningShareToken) for item in logger.filters):

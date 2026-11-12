@@ -1,0 +1,64 @@
+{"id": "S-Q01", "q": "多元微分", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q02", "q": "偏导数", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q03", "q": "导数", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q04", "q": "隐函数", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q05", "q": "导", "workspace": "drill", "corpus": "synthetic-v1", "split": "holdout"}
+{"id": "S-Q06", "q": "傅里叶变换", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q07", "q": "傅立叶变换", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q08", "q": "Fourier", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q09", "q": "fourier transform", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q10", "q": "Z 变换", "workspace": "drill", "corpus": "synthetic-v1", "split": "holdout"}
+{"id": "S-Q11", "q": "Z变换", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q12", "q": "z-transform", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q13", "q": "Z", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q14", "q": "拉普拉斯", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q15", "q": "Laplace", "workspace": "drill", "corpus": "synthetic-v1", "split": "holdout"}
+{"id": "S-Q16", "q": "卡诺图", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q17", "q": "Karnaugh map", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q18", "q": "K-map", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q19", "q": "RS 触发器", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q20", "q": "RS触发器", "workspace": "drill", "corpus": "synthetic-v1", "split": "holdout"}
+{"id": "S-Q21", "q": "负反馈", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q22", "q": "Bode", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q23", "q": "波特图", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q24", "q": "数学二严选练习册", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q25", "q": "数学二", "workspace": "drill", "corpus": "synthetic-v1", "split": "holdout"}
+{"id": "S-Q26", "q": "1-2", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q27", "q": "数学二 1-2", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q28", "q": "f126dd8e-f79b-5cec-8429-229f2a5b4883", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q29", "q": "隐函数 偏导数", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q30", "q": "偏导数 隐函数", "workspace": "drill", "corpus": "synthetic-v1", "split": "holdout"}
+{"id": "S-Q31", "q": "Fourier 变换", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q32", "q": "RS 触发器 逻辑", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q33", "q": "Fourer", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q34", "q": "Foureir", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q35", "q": "Lapalce", "workspace": "drill", "corpus": "synthetic-v1", "split": "holdout"}
+{"id": "S-Q36", "q": "Karnaughh", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q37", "q": "傅里页变换", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q38", "q": "\\partial", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q39", "q": "∂", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q40", "q": "\\frac", "workspace": "drill", "corpus": "synthetic-v1", "split": "holdout"}
+{"id": "S-Q41", "q": "\\dfrac", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q42", "q": "x^2", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q43", "q": "x²", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q44", "q": "x ( t )", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q45", "q": "x(t)", "workspace": "drill", "corpus": "synthetic-v1", "split": "holdout"}
+{"id": "S-Q46", "q": "\\left(x\\right)", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q47", "q": "\\customMacro", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q48", "q": "x_1", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q49", "q": "", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q50", "q": "   ", "workspace": "drill", "corpus": "synthetic-v1", "split": "holdout"}
+{"id": "S-Q51", "q": "%_", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q52", "q": "\"'\\", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q53", "q": "😀", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q54", "q": "'; DROP TABLE x --", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q55", "q": "<script>alert(1)</script>", "workspace": "drill", "corpus": "synthetic-v1", "split": "holdout"}
+{"id": "S-Q56", "q": "导数", "workspace": "drill", "corpus": "synthetic-v1", "split": "train", "params": {"status": "mastered", "type_group": "small"}}
+{"id": "S-Q57", "q": "导数", "workspace": "drill", "corpus": "synthetic-v1", "split": "train", "params": {"favorite": "1"}}
+{"id": "S-Q58", "q": "Fourier", "workspace": "drill", "corpus": "synthetic-v1", "split": "train", "params": {"collection": "selected"}}
+{"id": "S-Q59", "q": "Ｆｏｕｒｉｅｒ", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q60", "q": "Fourier transform", "workspace": "drill", "corpus": "synthetic-v1", "split": "holdout"}
+{"id": "S-Q61", "q": "Fourier series", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q62", "q": "x1", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q63", "q": "\\Pi", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}
+{"id": "S-Q64", "q": "\\pi", "workspace": "drill", "corpus": "synthetic-v1", "split": "train"}

@@ -1,4 +1,5 @@
 from django.urls import path
+from .search.suggestions import QuestionSearchSuggestionsView
 from .exam_type_views import QuestionExamTypeView
 from .learning_shares import manage_learning_shares, revoke_learning_share
 from .circuit_selected_views import CircuitSelectedView
@@ -45,6 +46,7 @@ from .views import (
 
 
 urlpatterns = [
+    path('search/suggestions/', QuestionSearchSuggestionsView.as_view(), name='question_search_suggestions'),
     path('questions/<uuid:question_uuid>/exam-type/', QuestionExamTypeView.as_view(), name='question_exam_type'),
     path('learning-shares/', manage_learning_shares, name='learning_shares'),
     path('learning-shares/<int:share_id>/', revoke_learning_share, name='learning_share_revoke'),

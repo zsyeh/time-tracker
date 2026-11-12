@@ -228,26 +228,8 @@ def navigation_queryset(question, request):
         queryset = queryset.filter(source_category=question.source_category)
     if source_category in {choice[0] for choice in Question.SOURCE_CATEGORY_CHOICES}:
         queryset = queryset.filter(source_category=source_category)
-    if request.query_params.get('unattempted') == '1':
-        latest_state = QuestionAttempt.objects.filter(
-            user=request.user,
-            question_id=OuterRef('pk'),
-        ).order_by('-created_at', '-pk')
-        queryset = queryset.annotate(
-            navigation_latest_result=Subquery(latest_state.values('result')[:1]),
-        ).filter(
-            Q(navigation_latest_result__isnull=True) | Q(navigation_latest_result='reset'),
-        )
-    if search:
-        queryset = queryset.filter(
-            Q(source_label__icontains=search)
-            | Q(display_label__icontains=search)
-            | Q(prompt_text__icontains=search)
-            | Q(similarity_topic__title__icontains=search)
-            | Q(similarity_topic__display_title__icontains=search)
-        )
-    if marker in dict(QuestionMarker.MARKER_CHOICES):
-        queryset = queryset.filter(markers__user=request.user, markers__code=marker)
+    from .search.service import membership
+    queryset, _plan, _state, _version, _hybrid = membership(queryset, request, request_workspace(request))
     return filter_exam_type(queryset, request.query_params).order_by('document_id', 'question_order', 'pk')
 
 
@@ -645,53 +627,8 @@ class DrillCatalogView(APIView):
 
 class DrillQuestionListView(APIView):
     def get(self, request):
-        queryset = filter_collection(workspace_questions(request),request).select_related('document', 'similarity_topic')
-        if request.query_params.get('include_structure') != '1':
-            queryset = queryset.filter(is_practiceable=True)
-        document_id = request.query_params.get('document')
-        topic_id = request.query_params.get('topic')
-        source_category = request.query_params.get('source_category', '').strip()
-        search = request.query_params.get('q', '').strip()
-        marker = request.query_params.get('marker', '').strip()
-        if document_id:
-            queryset = queryset.filter(document_id=document_id)
-        if topic_id:
-            queryset = queryset.filter(similarity_topic_id=topic_id)
-        valid_categories = {choice[0] for choice in Question.SOURCE_CATEGORY_CHOICES}
-        if source_category in valid_categories:
-            queryset = queryset.filter(source_category=source_category)
-        if request.query_params.get('past_exam') == '1':
-            queryset = queryset.filter(source_category='past_exam')
-        if request.query_params.get('unattempted') == '1':
-            latest_state = QuestionAttempt.objects.filter(
-                user=request.user,
-                question_id=OuterRef('pk'),
-            ).order_by('-created_at', '-pk')
-            queryset = queryset.annotate(
-                filter_latest_result=Subquery(latest_state.values('result')[:1]),
-            ).filter(
-                Q(filter_latest_result__isnull=True) | Q(filter_latest_result='reset'),
-            )
-        if search:
-            queryset = queryset.filter(
-                Q(source_label__icontains=search)
-                | Q(display_label__icontains=search)
-                | Q(prompt_text__icontains=search)
-                | Q(similarity_topic__title__icontains=search)
-                | Q(similarity_topic__display_title__icontains=search)
-            )
-        if marker in dict(QuestionMarker.MARKER_CHOICES):
-            queryset = queryset.filter(markers__user=request.user, markers__code=marker)
-        format_statistics = queryset_type_statistics(queryset, request.user)
-        queryset = question_progress(filter_exam_type(queryset, request.query_params), request.user).order_by(
-            'document_id', 'question_order',
-        )
-        paginator = PageNumberPagination()
-        paginator.page_size = 24
-        page = paginator.paginate_queryset(queryset, request)
-        response = paginator.get_paginated_response(QuestionSummarySerializer(page, many=True).data)
-        response.data['type_statistics'] = format_statistics
-        return response
+        from .search.service import question_list_response
+        return question_list_response(request)
 
 
 class DrillPaperGenerateView(APIView):
@@ -1929,15 +1866,25 @@ def insight_filtered_querysets(request, params):
         recent_attempts = recent_attempts.filter(error_tags__code=error_code)
         saved_notes = saved_notes.filter(question__attempts__user=request.user, question__attempts__error_tags__code=error_code)
     if query:
-        lookup = (
-            Q(question__display_label__icontains=query) |
-            Q(question__source_label__icontains=query) |
-            Q(question__document__title__icontains=query) |
-            Q(question__document__display_title__icontains=query) |
-            Q(question__similarity_topic__title__icontains=query)
-        )
+        from .search.service import get_plan, hybrid_membership, index_state
+        from .search.query import private_matches
+        plan = get_plan(query)
+        _state, _version, hybrid = index_state(workspace, params)
+        if hybrid:
+            candidates = hybrid_membership(Question.objects.filter(document__workspace=workspace, is_practiceable=True), plan, workspace).values('pk')
+            lookup = Q(question_id__in=Subquery(candidates))
+        else:
+            lookup = (
+                Q(question__display_label__icontains=query) |
+                Q(question__source_label__icontains=query) |
+                Q(question__document__title__icontains=query) |
+                Q(question__document__display_title__icontains=query) |
+                Q(question__similarity_topic__title__icontains=query)
+            )
         recent_attempts = recent_attempts.filter(lookup)
-        saved_notes = saved_notes.filter(lookup | Q(note__icontains=query))
+        note_ids = [pk for pk, note in saved_notes.values_list('pk', 'note').iterator(chunk_size=200)
+                    if private_matches(plan, note)]
+        saved_notes = saved_notes.filter(lookup | Q(pk__in=note_ids))
     if has_note == '1':
         recent_attempts = recent_attempts.filter(question__user_states__user=request.user).exclude(question__user_states__note='')
     elif has_note == '0':

@@ -454,3 +454,9 @@ CSRF_TRUSTED_ORIGINS = [
 # Django's CSRF middleware can validate the same-origin callback POST.
 if IP_AUTH_CALLBACK_ORIGIN not in CSRF_TRUSTED_ORIGINS:
     CSRF_TRUSTED_ORIGINS.append(IP_AUTH_CALLBACK_ORIGIN)
+
+# Search is a rebuildable projection. Keep the legacy path until verified release gates pass.
+DRILL_SEARCH_BACKEND = os.environ.get('DRILL_SEARCH_BACKEND', 'legacy')
+if DRILL_SEARCH_BACKEND not in {'legacy', 'hybrid_v1'}:
+    raise ImproperlyConfigured('DRILL_SEARCH_BACKEND must be legacy or hybrid_v1.')
+DRILL_SEARCH_SUGGESTIONS = env_bool('DRILL_SEARCH_SUGGESTIONS', True)
