@@ -1,0 +1,19 @@
+{
+  "release": {
+    "backup-start.txt": "2026-11-13T03:38:26+08:00",
+    "backup-end.txt": "2026-11-13T03:38:29+08:00",
+    "verify-exit.txt": "0",
+    "previous-image-name.txt": "time-tracker-ha:20261113-quick-ui-7cec16c",
+    "previous-image-id.txt": "sha256:301e12719073989a8e4f2b5a1aefce9dc07b78c16d8a2647a452ed77b229f455",
+    "deploy-start.txt": "2026-11-13T03:40:23+08:00",
+    "deploy-end.txt": "2026-11-13T03:40:51+08:00",
+    "deploy-exit.txt": "0",
+    "deployed-image.txt": "time-tracker-ha:20261113-markdown-9cfe91f sha256:a97e767f032f46a2e1293672cf815bd4944fa7233abeef94f50705091bc8817f healthy"
+  },
+  "static": {
+    "url": "https://47.95.10.128/static/drill/assets/index-3AIx47Ye.css",
+    "http_status": 200,
+    "sha256": "4b6c8118c2fbc2cd21fb41211b05319b8fe74295bcbcaa5a8c642c1ff1ed5631",
+    "matches_built_css": true
+  }
+}

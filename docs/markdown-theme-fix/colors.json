@@ -1,0 +1,54 @@
+[
+  {
+    "theme": "dark",
+    "rows": [
+      {
+        "color": "rgb(237, 237, 237)",
+        "heading": "rgb(237, 237, 237)",
+        "formula": "rgb(237, 237, 237)",
+        "displayFormula": "rgb(237, 237, 237)",
+        "code": "rgb(237, 237, 237)"
+      },
+      {
+        "color": "rgb(237, 237, 237)",
+        "heading": "rgb(237, 237, 237)",
+        "formula": "rgb(237, 237, 237)",
+        "displayFormula": "rgb(237, 237, 237)",
+        "code": "rgb(237, 237, 237)"
+      },
+      {
+        "color": "rgb(237, 237, 237)",
+        "heading": "rgb(237, 237, 237)",
+        "formula": "rgb(237, 237, 237)",
+        "displayFormula": "rgb(237, 237, 237)",
+        "code": "rgb(237, 237, 237)"
+      }
+    ]
+  },
+  {
+    "theme": "light",
+    "rows": [
+      {
+        "color": "rgb(32, 32, 32)",
+        "heading": "rgb(32, 32, 32)",
+        "formula": "rgb(32, 32, 32)",
+        "displayFormula": "rgb(32, 32, 32)",
+        "code": "rgb(32, 32, 32)"
+      },
+      {
+        "color": "rgb(32, 32, 32)",
+        "heading": "rgb(32, 32, 32)",
+        "formula": "rgb(32, 32, 32)",
+        "displayFormula": "rgb(32, 32, 32)",
+        "code": "rgb(32, 32, 32)"
+      },
+      {
+        "color": "rgb(32, 32, 32)",
+        "heading": "rgb(32, 32, 32)",
+        "formula": "rgb(32, 32, 32)",
+        "displayFormula": "rgb(32, 32, 32)",
+        "code": "rgb(32, 32, 32)"
+      }
+    ]
+  }
+]
