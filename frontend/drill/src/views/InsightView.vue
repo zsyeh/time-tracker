@@ -15,7 +15,7 @@ const labels = computed(() => language.value === 'zh-CN' ? {
   keyword: '关键词', keywordPlaceholder: '题号、章节或 Note 内容', course: '科目', allCourses: '全部科目',
   book: '书籍', allBooks: '全部书籍', chapter: '章节', allChapters: '全部章节', state: '题目状态',
   allStates: '全部状态', mastered: '已掌握', review: '待复习', diagnosis: '诊断', allDiagnoses: '全部诊断',
-  note: '笔记', any: '不限', withNote: '有 Note', withoutNote: '无 Note', start: '开始日期', end: '结束日期',
+  note: '笔记', any: '不限', withNote: '有 Note', withoutNote: '无 Note', start: '开始日期', end: '结束日期', dateRange: '日期范围',
   sort: '排序', recent: '最近更新', oldest: '最早记录', apply: '应用筛选', clear: '清空',
   loading: '正在加载学习记录…', recentAttempts: '近期作答', questionNotes: '题目笔记 Note',
   noAttempts: '当前筛选下没有作答记录。', noNotes: '当前筛选下没有题目笔记。',
@@ -27,7 +27,7 @@ const labels = computed(() => language.value === 'zh-CN' ? {
   keyword: 'Keyword', keywordPlaceholder: 'Question number, chapter, or Note', course: 'Subject', allCourses: 'All subjects',
   book: 'Book', allBooks: 'All books', chapter: 'Chapter', allChapters: 'All chapters', state: 'Question status',
   allStates: 'All statuses', mastered: 'Mastered', review: 'Review', diagnosis: 'Diagnosis', allDiagnoses: 'All diagnoses',
-  note: 'Notes', any: 'Any', withNote: 'Has Note', withoutNote: 'No Note', start: 'Start date', end: 'End date',
+  note: 'Notes', any: 'Any', withNote: 'Has Note', withoutNote: 'No Note', start: 'Start date', end: 'End date', dateRange: 'Date range',
   sort: 'Sort', recent: 'Recently updated', oldest: 'Oldest first', apply: 'Apply filters', clear: 'Clear',
   loading: 'Loading history…', recentAttempts: 'Recent attempts', questionNotes: 'Question notes',
   noAttempts: 'No attempts match these filters.', noNotes: 'No question notes match these filters.',
@@ -49,6 +49,8 @@ const filters = reactive(Object.fromEntries(filterKeys.map((key) => [
 ])) as Record<typeof filterKeys[number], string>)
 const advancedOpen = ref(advancedKeys.some((key) => Boolean(route.query[key]) && !(key === 'sort' && route.query.sort === 'recent')))
 const advancedCount = computed(() => advancedKeys.filter((key) => filters[key] && !(key === 'sort' && filters.sort === 'recent')).length)
+const mobileDatesOpen = ref(Boolean(filters.start || filters.end))
+const dateSummary = computed(() => [filters.start, filters.end].filter(Boolean).join(' – '))
 const activeList = ref<'attempts' | 'notes'>(sessionStorage.getItem('drill.insight.list.v1') === 'notes' ? 'notes' : 'attempts')
 const shareScope = computed(() => Object.fromEntries(
   (['q', 'course', 'document', 'topic', 'state', 'error', 'has_note', 'start', 'end'] as const)
@@ -147,6 +149,13 @@ onMounted(async () => {
           <label>{{ labels.start }}<input v-model="filters.start" type="date"></label>
           <label>{{ labels.end }}<input v-model="filters.end" type="date"></label>
         </div>
+        <details class="filter-dates-mobile" :open="mobileDatesOpen" @toggle="mobileDatesOpen = ($event.target as HTMLDetailsElement).open">
+          <summary>{{ labels.dateRange }}<span v-if="dateSummary">{{ dateSummary }}</span></summary>
+          <div class="filter-dates-fields">
+            <label>{{ labels.start }}<input v-model="filters.start" type="date"></label>
+            <label>{{ labels.end }}<input v-model="filters.end" type="date"></label>
+          </div>
+        </details>
         <button class="filter-submit" type="submit">{{ labels.apply }}</button>
         <button class="filter-more" type="button" :aria-expanded="advancedOpen" aria-controls="insight-advanced-filters" @click="advancedOpen = !advancedOpen">{{ labels.advanced }}<span v-if="advancedCount" class="filter-count">{{ advancedCount }}</span></button>
       </div>
@@ -180,9 +189,11 @@ onMounted(async () => {
 .insight-filters { display: block; margin: 0 0 16px; padding: 12px 16px; background: var(--bg-surface); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); }
 .filter-primary { display: grid; grid-template-columns: minmax(180px, 1fr) minmax(136px, 168px) minmax(260px, 340px) auto auto; align-items: end; gap: 12px; }
 .filter-dates { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; min-width: 0; }
+.filter-dates-mobile { display: none; }
 .insight-filters label { display: grid; gap: 4px; min-width: 0; color: var(--text-secondary); font-size: 12px; line-height: 1.35; }
 .insight-filters input, .insight-filters select { width: 100%; min-width: 0; height: 42px; padding: 0 12px; border: 1px solid var(--border-default); border-radius: var(--radius-sm); color: var(--text-primary); background: var(--bg-elevated); font: inherit; font-size: 14px; }
 .insight-filters button { min-height: 42px; padding: 0 12px; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+.insight-filters input:focus-visible, .insight-filters select:focus-visible, .insight-filters button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .filter-submit { border: 1px solid var(--accent); border-radius: var(--radius-sm); color: var(--bg-app); background: var(--accent); }
 .filter-more, .filter-clear { border: 1px solid var(--border-default); border-radius: var(--radius-sm); color: var(--text-secondary); background: transparent; }
 .filter-more:hover, .filter-clear:hover { color: var(--text-primary); background: var(--bg-surface-hover); }
@@ -209,20 +220,21 @@ onMounted(async () => {
 .insight-list em { justify-self: end; padding: 2px 8px; border-radius: var(--radius-sm); background: var(--bg-elevated); font-size: 12px; font-style: normal; font-weight: 600; }
 .insight-list > p { margin: 0; padding: 24px 16px; color: var(--text-secondary); font-size: 14px; }
 .insight-pagination { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 54px; padding: 8px 16px; border-top: 1px solid var(--border-subtle); }
-.insight-pagination button { min-height: 38px; padding: 0 12px; border: 1px solid var(--border-default); border-radius: var(--radius-sm); color: var(--text-secondary); background: transparent; font: inherit; font-size: 13px; cursor: pointer; }
+.insight-pagination button { min-height: 44px; padding: 0 12px; border: 1px solid var(--border-default); border-radius: var(--radius-sm); color: var(--text-secondary); background: transparent; font: inherit; font-size: 13px; cursor: pointer; }
+.insight-pagination button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 .insight-pagination button:hover:not(:disabled) { color: var(--text-primary); background: var(--bg-surface-hover); }
 .insight-pagination button:disabled { opacity: .4; cursor: default; }
 .insight-pagination span { color: var(--text-secondary); font-size: 12px; font-variant-numeric: tabular-nums; }
 .note-list > article { padding: 12px 16px; border-bottom: 1px solid var(--border-subtle); }
 .note-list > article > header { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-.note-list > article > header button { display: grid; min-width: 0; gap: 4px; padding: 0; border: 0; color: var(--text-primary); background: transparent; text-align: left; cursor: pointer; }
+.note-list > article > header button { display: grid; min-width: 0; min-height: 44px; gap: 4px; padding: 0; border: 0; color: var(--text-primary); background: transparent; text-align: left; cursor: pointer; }
 .note-list > article > header button:hover strong { color: var(--accent); }
 .note-list > article > header time { flex: none; color: var(--text-secondary); text-align: right; }
 .note-list > article > p { overflow: hidden; max-height: 4.5em; margin: 8px 0; color: var(--text-primary); font-size: 14px; line-height: 1.5; white-space: pre-wrap; }
 .note-list > article > p.expanded { max-height: none; }
 .note-list > article > footer { display: flex; align-items: center; flex-wrap: wrap; justify-content: flex-start; gap: 8px; color: var(--text-secondary); font-size: 12px; }
 .note-list > article > footer span { margin-right: auto; }
-.note-list > article > footer button { min-height: 32px; padding: 4px 8px; border: 1px solid var(--border-default); border-radius: var(--radius-sm); color: var(--text-secondary); background: var(--bg-elevated); font: inherit; font-size: 12px; cursor: pointer; }
+.note-list > article > footer button { min-height: 44px; padding: 4px 12px; border: 1px solid var(--border-default); border-radius: var(--radius-sm); color: var(--text-secondary); background: var(--bg-elevated); font: inherit; font-size: 13px; cursor: pointer; }
 .note-list > article > footer button:hover { color: var(--text-primary); border-color: var(--border-strong); }
 @media (max-width: 900px) {
   .filter-primary { grid-template-columns: minmax(180px, 1fr) minmax(136px, 168px) auto auto; }
@@ -242,10 +254,21 @@ onMounted(async () => {
   .insight-filters { padding: 12px; }
   .filter-primary { grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
   .filter-primary .wide { grid-column: 1 / -1; }
-  .filter-primary > label:not(.wide) { grid-column: 1; }
-  .filter-dates { grid-column: 1 / -1; }
-  .filter-submit { grid-column: 2; }
-  .filter-more { grid-column: 1 / -1; justify-self: start; }
+  .filter-primary > label:not(.wide) { grid-column: 1; grid-row: 2; }
+  .insight-filters input, .insight-filters select, .insight-filters button { min-height: 44px; }
+  .insight-filters input, .insight-filters select { font-size: 16px; }
+  .filter-dates { display: none; }
+  .filter-dates-mobile { display: block; grid-column: 1; grid-row: 3; min-width: 0; }
+  .filter-dates-mobile summary { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 0 12px; border: 1px solid var(--border-default); border-radius: var(--radius-sm); color: var(--text-secondary); background: var(--bg-elevated); font-size: 13px; font-weight: 600; list-style: none; cursor: pointer; }
+  .filter-dates-mobile summary::-webkit-details-marker { display: none; }
+  .filter-dates-mobile summary::before { content: ''; width: 6px; height: 6px; flex: none; border-right: 1.5px solid currentColor; border-bottom: 1.5px solid currentColor; transform: rotate(-45deg); }
+  .filter-dates-mobile[open] summary::before { transform: rotate(45deg); }
+  .filter-dates-mobile summary:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .filter-dates-mobile summary span { overflow: hidden; margin-left: auto; color: var(--text-primary); font-variant-numeric: tabular-nums; font-weight: 400; text-overflow: ellipsis; white-space: nowrap; }
+  .filter-dates-fields { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding-top: 8px; }
+  .filter-submit { grid-column: 2; grid-row: 2; }
+  .filter-more { grid-column: 2; grid-row: 3; align-self: start; }
+  .insight-list small, .insight-list time { font-size: 13px; }
   .insight-tabs { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); margin-bottom: 8px; border-bottom: 1px solid var(--border-default); }
   .insight-tabs button { min-height: 44px; border: 0; border-bottom: 2px solid transparent; color: var(--text-secondary); background: transparent; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
   .insight-tabs button[aria-selected="true"] { border-bottom-color: var(--accent); color: var(--text-primary); }
@@ -255,6 +278,7 @@ onMounted(async () => {
 }
 @media (max-width: 420px) {
   .filter-advanced { grid-template-columns: minmax(0, 1fr); }
+  .filter-dates-fields { grid-template-columns: minmax(0, 1fr); }
   .record-meta { max-width: 96px; }
 }
 </style>

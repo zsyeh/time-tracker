@@ -203,7 +203,7 @@ watch(uiLanguage, () => { void renderChart() })
 .trend-header p { margin:0; color:var(--text-secondary); font-size:13px; overflow-wrap:anywhere; }
 .eyebrow { color:var(--text-tertiary); font-size:12px; font-weight:650; letter-spacing:.05em; }
 .range-switch { padding:3px; border:1px solid var(--border-subtle); border-radius:var(--radius-md); background:var(--bg-sidebar); display:flex; flex:none; }
-.range-switch button { min-width:42px; min-height:40px; padding:0 8px; border:0; border-radius:var(--radius-sm); color:var(--text-secondary); background:transparent; font-size:13px; cursor:pointer; }
+.range-switch button { min-width:44px; min-height:44px; padding:0 8px; border:0; border-radius:var(--radius-sm); color:var(--text-secondary); background:transparent; font-size:13px; cursor:pointer; }
 .range-switch button.active { color:var(--accent); background:var(--bg-surface-active); font-weight:650; }
 .trend-cards { margin-top:16px; display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:8px; }
 .trend-group-heading { grid-column:1/-1; margin:12px 0 0; color:var(--text-primary); font-size:17px; line-height:1.3; font-weight:630; }
@@ -220,10 +220,10 @@ watch(uiLanguage, () => { void renderChart() })
 .trend-controls { margin-top:16px; display:flex; align-items:center; flex-wrap:wrap; gap:8px 16px; }
 .trend-controls>div { display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
 .trend-controls span,.trend-controls label { color:var(--text-secondary); font-size:13px; }
-.trend-controls button { min-height:40px; padding:0 12px; border:1px solid var(--border-default); border-radius:var(--radius-sm); color:var(--text-secondary); background:transparent; font-size:13px; cursor:pointer; }
+.trend-controls button { min-height:44px; padding:0 12px; border:1px solid var(--border-default); border-radius:var(--radius-sm); color:var(--text-secondary); background:transparent; font-size:13px; cursor:pointer; }
 .trend-controls button.active { color:var(--accent); border-color:var(--accent); background:var(--accent-muted); }
-.trend-controls input { max-width:100%; height:40px; padding:0 8px; border:1px solid var(--border-default); border-radius:var(--radius-sm); color:var(--text-primary); background:var(--bg-elevated); font-size:13px; }
-.trend-controls label input[type=number] { width:64px; margin-left:4px; }
+.trend-controls input { max-width:100%; height:44px; padding:0 8px; border:1px solid var(--border-default); border-radius:var(--radius-sm); color:var(--text-primary); background:var(--bg-elevated); font-size:16px; }
+.trend-controls label input[type=number] { width:72px; margin-left:4px; }
 .deadline-control { margin-left:auto; }
 .trend-chart { width:100%; max-width:100%; height:320px; margin-top:24px; touch-action:pan-y; overflow:hidden; }
 .trend-chart-heading { margin-top:24px; display:flex; align-items:center; justify-content:space-between; gap:16px; }
@@ -250,5 +250,5 @@ watch(uiLanguage, () => { void renderChart() })
 .secondary-metrics .trend-cards strong { font-size:25px; }
 .practice-trend button:focus-visible,.practice-trend input:focus-visible,.secondary-metrics summary:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
 @media(max-width:820px) { .trend-header { align-items:start; flex-direction:column; gap:12px; } .range-switch { width:100%; } .range-switch button { flex:1; min-width:0; } .trend-chart-heading { align-items:start; flex-direction:column; } .trend-cards { grid-template-columns:repeat(2,minmax(0,1fr)); } .deadline-control { margin-left:0; } .trend-chart { height:285px; } .prediction-grid { grid-template-columns:1fr; } }
-@media(max-width:430px) { .practice-trend { padding:16px; } .trend-header h2 { font-size:21px; } .trend-cards article { padding:12px; } .trend-cards strong { font-size:25px; } .trend-chart { height:260px; } .prediction-panel>header { align-items:start; flex-direction:column; } .trend-controls .deadline-control>span { flex-basis:100%; } }
+@media(max-width:430px) { .trend-header h2 { font-size:21px; } .trend-cards article { padding:12px; } .trend-cards strong { font-size:25px; } .trend-chart { height:260px; } .prediction-panel>header { align-items:start; flex-direction:column; } .trend-controls>div { width:100%; } .trend-controls .deadline-control>span { flex-basis:100%; } .deadline-control input[type=date] { flex:1 1 140px; } }
 </style>

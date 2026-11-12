@@ -1,5 +1,7 @@
 function token(name: string, fallback: string) {
-  return getComputedStyle(document.documentElement).getPropertyValue(name).trim() || fallback
+  // Workspace accents live on the Drill/EI shell, not on <html>.
+  const workspace = document.querySelector('.drill-shell') || document.documentElement
+  return getComputedStyle(workspace).getPropertyValue(name).trim() || fallback
 }
 
 export function chartPalette() {

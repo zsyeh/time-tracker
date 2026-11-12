@@ -49,7 +49,9 @@ it('keeps advanced filters available while showing the main search and status fi
   await mount()
   expect(host.querySelector('.filter-primary')?.textContent).toContain('Keyword')
   expect(host.querySelector('.filter-primary')?.textContent).toContain('Question status')
-  expect(host.querySelectorAll('.filter-primary input[type="date"]')).toHaveLength(2)
+  expect(host.querySelectorAll('.filter-dates input[type="date"]')).toHaveLength(2)
+  expect(host.querySelectorAll('.filter-dates-mobile input[type="date"]')).toHaveLength(2)
+  expect(host.querySelector('.filter-dates-mobile')?.hasAttribute('open')).toBe(false)
   expect(host.querySelector('#insight-advanced-filters')).toBeNull()
   host.querySelector<HTMLButtonElement>('.filter-more')!.click()
   await nextTick()
@@ -63,13 +65,30 @@ it('keeps advanced filters available while showing the main search and status fi
 it('keeps the date range in the applied URL and retains both page cursors', async () => {
   navigation.query = { q: 'old query', start: '2026-11-01', end: '2026-11-11', questions_page: '2', notes_page: '2' }
   await mount()
-  expect(host.querySelectorAll('.filter-primary input[type="date"]')).toHaveLength(2)
+  expect(host.querySelector('.filter-dates-mobile')?.hasAttribute('open')).toBe(true)
+  expect(host.querySelector('.filter-dates-mobile summary')?.textContent).toContain('2026-11-01 – 2026-11-11')
   expect(host.querySelector('#insight-advanced-filters')).toBeNull()
   const target = vi.mocked(api).mock.calls.at(-1)![0]
   expect(target).toContain('start=2026-11-01')
   expect(target).toContain('end=2026-11-11')
   expect(target).toContain('questions_page=2')
   expect(target).toContain('notes_page=2')
+})
+
+it('applies dates from the compact mobile date control without changing filter semantics', async () => {
+  await mount()
+  const compactDates = host.querySelector<HTMLDetailsElement>('.filter-dates-mobile')!
+  compactDates.querySelector('summary')!.click()
+  await settle()
+  expect(compactDates.open).toBe(true)
+  const start = compactDates.querySelector<HTMLInputElement>('input[type="date"]')!
+  start.value = '2026-11-01'
+  start.dispatchEvent(new Event('input'))
+  await nextTick()
+  host.querySelector<HTMLButtonElement>('.filter-submit')!.click()
+  await settle()
+  expect(vi.mocked(api).mock.calls.at(-1)![0]).toContain('start=2026-11-01')
+  expect(navigation.query.start).toBe('2026-11-01')
 })
 
 it('keeps independent pages and returns to the applied query and saved list', async () => {

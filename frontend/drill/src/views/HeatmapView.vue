@@ -410,6 +410,12 @@ onUnmounted(() => { loadSequence += 1; window.clearTimeout(locateTimer) })
 .heatmap-page :deep(.exam-type-controls) { margin: 8px 0 16px; }
 .heatmap-page :deep(.exam-type-toolbar small) { display: none; }
 .heatmap-page :deep(.exam-type-toolbar select), .heatmap-page :deep(.exam-small-entry) { min-height: 40px; }
+@media (max-width: 700px) {
+  .heatmap-page :deep(.exam-type-toolbar) { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px; }
+  .heatmap-page :deep(.exam-type-toolbar > label:first-child) { min-width: 0; }
+  .heatmap-page :deep(.exam-type-toolbar select) { min-width: 0; max-width: 100%; }
+  .heatmap-page :deep(.exam-type-toolbar > label:nth-of-type(2)) { grid-column: 1/-1; }
+}
 .heatmap-overview { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin: 0 0 8px; color: var(--text-secondary); font-size: 13px; }
 .heatmap-overview strong { color: var(--text-primary); font-size: 24px; font-weight: 650; line-height: 1; }
 .heatmap-overview span:nth-of-type(n+2) { margin-left: 8px; }

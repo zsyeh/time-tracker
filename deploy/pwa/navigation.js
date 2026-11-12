@@ -2,8 +2,17 @@
 (() => {
   const mode = window.matchMedia('(display-mode: standalone)');
   let host;
+  function hasWorkspaceNavigation() {
+    return /^\/(drill|ei)(?:\/|$)/.test(location.pathname);
+  }
   function syncMode() {
     if (!mode.matches && !navigator.standalone) {
+      if (host) host.hidden = true;
+      return;
+    }
+    // Drill and EI already provide a safe-area-aware drawer. The extra PWA
+    // launcher can cover their fixed answer actions on small screens.
+    if (hasWorkspaceNavigation()) {
       if (host) host.hidden = true;
       return;
     }
@@ -69,5 +78,6 @@
     document.body.append(host);
   }
   syncMode();
+  window.addEventListener('popstate', syncMode);
   mode.addEventListener('change', syncMode);
 })();

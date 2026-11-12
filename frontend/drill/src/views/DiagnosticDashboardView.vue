@@ -165,7 +165,7 @@ watch(uiLanguage, () => { void renderChart() })
   <section class="page diagnostic-page">
     <header class="page-header diagnostic-header">
       <div><span class="eyebrow">ABILITY DIAGNOSIS</span><h1>{{ title }}</h1><p>{{ uiText("区分“做过”与“能够独立做对”；所有比例均显示真实样本量。") }}</p></div>
-      <div class="range"><button v-for="value in [7,14,30]" :key="value" :class="{ active: days === value && !customStart }" @click="setDays(value)">{{ value }}{{ uiText("天") }}</button><label>{{ uiText("自定") }}<input v-model="customStart" type="date" /><input v-model="customEnd" type="date" /><button @click="applyCustomRange">{{ uiText("应用") }}</button></label></div>
+      <div class="range"><button v-for="value in [7,14,30]" :key="value" :class="{ active: days === value && !customStart }" @click="setDays(value)">{{ value }}{{ uiText("天") }}</button><label><span>{{ uiText("自定") }}</span><input v-model="customStart" :aria-label="uiText('开始日期')" type="date" /><input v-model="customEnd" :aria-label="uiText('结束日期')" type="date" /><button @click="applyCustomRange">{{ uiText("应用") }}</button></label></div>
     </header>
     <RouterLink class="diagnostic-progress-link" to="/progress">{{ typeText('查看学习进度', 'View learning progress') }} <span aria-hidden="true">→</span></RouterLink>
     <p v-if="error" class="error-state">{{ uiText(error) }}</p>
@@ -233,11 +233,11 @@ watch(uiLanguage, () => { void renderChart() })
 .diagnostic-progress-link:focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:var(--radius-sm); }
 .diagnostic-page .eyebrow { color:var(--text-tertiary); font-size:12px; font-weight:650; letter-spacing:.05em; }
 .range { display:flex; align-items:center; flex-wrap:wrap; gap:4px; padding:4px; border:1px solid var(--border-subtle); border-radius:var(--radius-md); }
-.range>button { min-width:44px; min-height:40px; padding:0 10px; border:0; border-radius:var(--radius-sm); color:var(--text-secondary); background:transparent; font-size:13px; cursor:pointer; }
+.range>button { min-width:44px; min-height:44px; padding:0 10px; border:0; border-radius:var(--radius-sm); color:var(--text-secondary); background:transparent; font-size:13px; cursor:pointer; }
 .range>button.active { color:var(--accent); background:var(--accent-muted); font-weight:650; }
 .range label { display:flex; align-items:center; flex-wrap:wrap; gap:4px; margin-left:4px; color:var(--text-secondary); font-size:12px; }
-.range input { min-width:0; width:128px; min-height:40px; padding:0 8px; border:1px solid var(--border-default); border-radius:var(--radius-sm); color:var(--text-primary); background:var(--bg-elevated); font-size:12px; }
-.range label button { min-height:40px; padding:0 12px; border:1px solid var(--border-default); border-radius:var(--radius-sm); color:var(--text-primary); background:var(--bg-elevated); font-size:12px; cursor:pointer; }
+.range input { min-width:0; width:128px; min-height:44px; padding:0 8px; border:1px solid var(--border-default); border-radius:var(--radius-sm); color:var(--text-primary); background:var(--bg-elevated); font-size:16px; }
+.range label button { min-height:44px; padding:0 12px; border:1px solid var(--border-default); border-radius:var(--radius-sm); color:var(--text-primary); background:var(--bg-elevated); font-size:13px; cursor:pointer; }
 .today-strip { margin:24px 0; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; }
 .today-strip article,.today-strip button { min-width:0; min-height:112px; padding:16px; border:0; border-radius:var(--radius-md); color:var(--text-primary); background:var(--bg-surface); text-align:left; display:grid; align-content:start; gap:4px; }
 .today-strip button { cursor:pointer; }
@@ -250,14 +250,14 @@ watch(uiLanguage, () => { void renderChart() })
 .ability-board h2,.diagnostic-grid h2 { margin:0; font-size:17px; line-height:1.35; }
 .ability-board>header span { color:var(--text-secondary); font-size:12px; font-variant-numeric:tabular-nums; }
 .metric-grid { margin-top:16px; display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; }
-.metric-grid article,.metric-grid button { min-width:0; min-height:112px; padding:16px; border:0; border-radius:var(--radius-md); color:var(--text-primary); background:var(--bg-elevated); text-align:left; display:grid; align-content:start; gap:6px; }
+.metric-grid article,.metric-grid button { min-width:0; min-height:112px; padding:16px 8px; border:0; border-top:1px solid var(--border-subtle); border-radius:0; color:var(--text-primary); background:transparent; text-align:left; display:grid; align-content:start; gap:6px; }
 .metric-grid button { cursor:pointer; }
 .metric-grid small,.metric-grid span { color:var(--text-secondary); font-size:12px; line-height:1.4; }
 .metric-grid strong { font-size:30px; line-height:1.15; font-weight:650; font-variant-numeric:tabular-nums; }
 .ability-board h3 { margin:24px 0 0; font-size:15px; }
 .ability-chart { height:310px; width:100%; min-width:0; touch-action:pan-y; }
 .diagnostic-grid { margin-top:16px; display:grid; grid-template-columns:minmax(260px,.8fr) minmax(420px,1.4fr); gap:16px; }
-.error-distribution,.course-table { min-width:0; padding:20px; border:1px solid var(--border-subtle); border-radius:var(--radius-lg); background:var(--bg-surface); }
+.error-distribution,.course-table { min-width:0; padding:20px; border-radius:var(--radius-lg); background:var(--bg-surface); }
 .error-distribution>header,.course-table>header { display:flex; justify-content:space-between; align-items:end; gap:8px; margin-bottom:16px; }
 .error-distribution>header small { color:var(--text-secondary); font-size:12px; }
 .error-distribution>button { width:100%; min-height:42px; display:grid; grid-template-columns:34px 1fr 34px; align-items:center; gap:8px; padding:8px 0; border:0; border-top:1px solid var(--border-subtle); color:var(--text-primary); background:transparent; text-align:left; cursor:pointer; font-size:13px; }
@@ -279,13 +279,13 @@ watch(uiLanguage, () => { void renderChart() })
 .topic-analysis-row .worsened { color:var(--danger); }
 .activity-board { margin-bottom:16px; }
 .activity-summary { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:8px; margin-top:16px; }
-.activity-summary article { min-width:0; display:grid; align-content:start; gap:4px; padding:16px; border-radius:var(--radius-md); background:var(--bg-elevated); }
+.activity-summary article { min-width:0; display:grid; align-content:start; gap:4px; padding:16px 8px; border-top:1px solid var(--border-subtle); }
 .activity-summary small,.activity-summary span,.activity-note { color:var(--text-secondary); font-size:12px; line-height:1.4; }
 .activity-summary strong { font-size:25px; font-weight:650; font-variant-numeric:tabular-nums; }
 .activity-chart { width:100%; min-width:0; height:270px; touch-action:pan-y; }
 .activity-note { margin:0; }
 .diagnostic-page button:focus-visible,.diagnostic-page input:focus-visible { outline:2px solid var(--accent); outline-offset:2px; }
-@media(max-width:1100px) { .diagnostic-header { align-items:start; flex-direction:column; } .metric-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } }
-@media(max-width:800px) { .range { width:100%; } .range>button { flex:1; } .range label { width:100%; margin:4px 0 0; } .range input { flex:1; } .today-strip,.activity-summary { grid-template-columns:repeat(2,minmax(0,1fr)); } .diagnostic-grid,.secondary-analysis { grid-template-columns:1fr; } .ability-chart { height:280px; } .activity-chart { height:245px; } }
-@media(max-width:430px) { .today-strip article,.today-strip button,.activity-summary article,.metric-grid article,.metric-grid button { padding:12px; } .today-strip strong,.metric-grid strong { font-size:25px; } .ability-board,.error-distribution,.course-table { padding:16px; } .course-row { grid-template-columns:1.4fr repeat(3,.8fr); gap:4px; font-size:12px; } .course-row.heading { font-size:11px; } .range label { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); } .range label input { width:100%; } }
+@media(max-width:1100px) { .diagnostic-header { align-items:start; flex-direction:column; } .metric-grid { grid-template-columns:repeat(2,minmax(0,1fr)); } .diagnostic-grid,.secondary-analysis { grid-template-columns:minmax(0,1fr); } }
+@media(max-width:800px) { .range { width:100%; } .range>button { flex:1; } .range label { width:100%; margin:4px 0 0; } .range input { flex:1; } .today-strip,.activity-summary { grid-template-columns:repeat(2,minmax(0,1fr)); } .ability-chart { height:280px; } .activity-chart { height:245px; } }
+@media(max-width:430px) { .today-strip article,.today-strip button { padding:12px; } .activity-summary article,.metric-grid article,.metric-grid button { padding:12px 4px; } .today-strip strong,.metric-grid strong { font-size:25px; } .ability-board,.error-distribution,.course-table { padding:16px; } .course-row { grid-template-columns:minmax(0,1.4fr) repeat(3,minmax(0,.8fr)); gap:4px; font-size:12px; } .course-row>strong,.course-row>span { overflow-wrap:anywhere; } .course-row.heading { font-size:11px; } .range label { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); } .range label>span { grid-column:1/-1; } .range label input { width:100%; } .range label button { grid-column:1/-1; } }
 </style>

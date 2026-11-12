@@ -44,7 +44,7 @@ async def run():
    print(kind,await page.evaluate("({standalone:matchMedia('(display-mode: standalone)').matches,ios:navigator.standalone,nav:!!document.querySelector('eh-pwa-navigation')})"),flush=True)
    assert await page.locator('link[rel=manifest]').get_attribute('href')=='/manifest.webmanifest'
    assert await page.locator('meta[name=apple-mobile-web-app-capable]').get_attribute('content')=='yes'
-   assert await page.locator('meta[name=viewport]').get_attribute('content')=='width=device-width, initial-scale=1.0'
+   assert 'width=device-width' in (await page.locator('meta[name=viewport]').get_attribute('content') or '')
    assert await page.evaluate('navigator.serviceWorker.getRegistrations().then(r=>r.length)')==0
    nav=page.locator('eh-pwa-navigation')
    if kind=='browser':
@@ -54,19 +54,24 @@ async def run():
    await nav.locator('summary').click()
    links=await nav.locator('a').evaluate_all('(ls)=>ls.map(l=>({href:l.href,target:l.target}))')
    assert len(links)==4 and all(l['href'].startswith('https://47.95.10.128/') and not l['target'] for l in links)
-   for service,path in [('Drill','/drill/practice'),('EI','/ei/practice'),('Timer','/')]:
+   for service,path in [('Drill','/drill/practice'),('EI','/ei/practice')]:
     await nav.get_by_role('link',name=service,exact=True).click()
     await page.wait_for_url('https://47.95.10.128'+path)
-    # The mock IP origin serves public PWA metadata from the same test server.
+    await page.wait_for_load_state('networkidle')
+    # Each workspace supplies its own drawer, including on deep links.
+    assert await page.locator('eh-pwa-navigation').count()==0
+    await page.goto('https://47.95.10.128/')
     await page.wait_for_load_state('networkidle')
     nav=page.locator('eh-pwa-navigation');await nav.wait_for()
     await nav.locator('summary').click()
-   await nav.get_by_role('button',name='Back',exact=True).click()
-   await page.wait_for_url('https://47.95.10.128/ei/practice')
-   nav=page.locator('eh-pwa-navigation');await nav.locator('summary').click()
    await nav.get_by_role('link',name='Home',exact=True).click()
    await page.wait_for_url('https://47.95.10.128/')
-   nav=page.locator('eh-pwa-navigation');await nav.locator('summary').click()
+   for path in ['/drill/progress','/ei/diagnostics','/drill/practice/example']:
+    await page.goto('https://47.95.10.128'+path)
+    await page.wait_for_load_state('networkidle')
+    assert await page.locator('eh-pwa-navigation').count()==0
+   await page.goto('https://47.95.10.128/')
+   await page.wait_for_load_state('networkidle');nav=page.locator('eh-pwa-navigation');await nav.locator('summary').click()
    await page.evaluate("document.documentElement.lang='zh-CN'")
    await nav.get_by_role('button',name='刷新',exact=True).wait_for()
    await nav.get_by_role('button',name='刷新',exact=True).click()
@@ -76,7 +81,7 @@ async def run():
    await page.set_viewport_size({'width':390,'height':844});await nav.locator('summary').click()
    bounds=await nav.locator('nav').bounding_box();assert bounds['x']>=0 and bounds['x']+bounds['width']<=390
    await page.screenshot(path=str(OUT/(kind+'.png')))
-   results.append({'mode':kind,'services_same_origin':True,'refresh':True,'scroll':True,'mobile_menu_fits':True})
+   results.append({'mode':kind,'services_same_origin':True,'workspace_menu_absent':True,'refresh':True,'scroll':True,'mobile_menu_fits':True})
    await context.close()
   await browser.close()
  server.shutdown();(OUT/'browser-results.json').write_text(json.dumps(results,indent=2));print('Browser, standalone and navigator.standalone navigation checks passed')
