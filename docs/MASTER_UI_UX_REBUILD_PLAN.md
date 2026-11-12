@@ -1583,3 +1583,11 @@ R2-01先基线/复现 → R2-02搜索及题目 → R2-03热力图性能与旧视
 用户增量：设置2×并支持自定义3×/4×等倍率，保存预设。实现为1×/2×/3×/4×快捷选择、自定义1–8有限数值（允许小数），当前倍率账号持久化/跨设备同步，不是设备独立localStorage。新字段`practice.image_copy_scale`默认1，Drill/EI共用，schema1新增字段无需DB迁移。手动复制、翻题自动复制及失败后的PNG分享/下载使用相同倍率；原始题图/学习数据保持原样。1×单PNG原字节保留；放大仅重采样，不增加真实图像细节，接收App仍可自动缩放。放大导出画布16Mi像素上限/8192宽/16384高保持比例，超限提示，不裁剪。
 
 源文件：`frontend/drill/src/components/ImageCopyScaleSetting.vue`、`lib/imageClipboard.ts`、`lib/practicePreferences.ts`、`views/SettingsView.vue`/`QuestionView.vue`、共享preferences schema/store、`tracker/user_preferences.py`及测试。旧16/14字段缓存补默认但保留离线队列；同字段冲突与账号隔离复用既有CAS。测试/实测/部署状态记录于[倍率交付](image-copy-scale/README.md)。原R01–R16和Round2矩阵不重写；原生Safari系统剪贴板/目标App粘贴显示尺寸未经实机验证不得勾选。
+
+## 34. 题单全局预览与双向虚拟阅读、Practice分页（GP-R01–GP-R20）
+
+2026-11-13用户授权实际施工、测试、生产发布及回滚保留。此增量独立于原R01–R16和Round2 BUG/SYNC矩阵；不删除或重写此前验收边界。基线0865665 / 生产89d52bd，隔离工作树`learning-os-preview`，分支`feat/collection-preview`。
+
+[完整接口、资源预算、入口映射、恢复与施工追踪](collection-preview/README.md)记录本轮20项要求；[最终交付状态](collection-preview/DELIVERY.md)由最终回归和部署证据填入，未出具不得视为完成。主Agent集成root共享文件，三个Subagents分别负责后端投影/性能、虚拟阅读与图像、分页/入口，并执行交叉只读审查。
+
+本轮增量迁移0040仅增宽短期认证handoff路径，兼容较长预览URL，不改变题目/作答/笔记/计时/偏好Schema。保持旧生产镜像与发布前完整快照；应用回滚不回写旧学习数据。实体Safari/PWA和原生内存回收若无证据仍保持未通过，禁止用编译或Linux WebKit替代。

@@ -18,6 +18,7 @@ function setup() {
     saving: ref(false), question: ref({ uuid: 'q', state_version: 7 }), props: { uuid: 'q' },
     diagnosisSaveTimer: 0, diagnosisSaveSequence: 0, operationSequence: 0,
     practiceTimer: timer, note: ref('note'), masteredAutoNext: ref(false), reviewAutoNext: ref(false),
+    previewNavigation: ref({}), previewContext: ref(null), isPreviewEntry: ref(false), previewNavigationError: ref(''), previewNavigationTask: Promise.resolve(),
     pageTurnCopyMode: ref('off'), pendingSubmissionKey: ref(null), recordedQuestionSeconds: () => 60,
     usedHintThisRound: ref(false), answerViewedThisRound: ref(false), knowledgeLevel: ref(null), methodLevel: ref(null), executionLevel: ref(null),
     selectedErrors: ref([]), primaryError: ref(null), post: vi.fn().mockResolvedValue({ note_conflict: false }),
@@ -66,7 +67,7 @@ it('keeps the attempt saved when the next-question operation rejects', async () 
   const { scope, timer, record } = setup()
   scope.masteredAutoNext.value = true
   Object.assign(scope, {
-    nextMode: ref('review'), nextQuestionTarget: vi.fn().mockReturnValue('next-q'),
+    effectiveNextMode: ref('review'), topNextTarget: ref('next-q'), nextQuestionTarget: vi.fn().mockReturnValue('next-q'),
     goToNext: vi.fn().mockRejectedValue(new Error('navigation unavailable')),
   })
   await record('correct')
@@ -173,4 +174,19 @@ it('deduplicates after a real timer finalizes, the response is lost, and the pag
   expect(created).toBe(1)
   expect(restored.state.pendingAttempt).toBeUndefined()
   expect(restored.state.submissionKey).toBeNull()
+})
+
+it('saves the answer before awaiting a slow preview-navigation read',async()=>{
+ const {scope,timer,record}=setup()
+ let complete!:()=>void
+ const navigation=new Promise<void>(resolve=>{complete=resolve})
+ scope.masteredAutoNext.value=true
+ const goToNext=vi.fn().mockResolvedValue(undefined)
+ Object.assign(scope,{previewContext:ref({source:'attempts'}),isPreviewEntry:ref(true),previewNavigationTask:navigation,topNextTarget:ref('next-q'),effectiveNextMode:ref('sequential'),goToNext})
+ const pending=record('correct')
+ await vi.waitFor(()=>expect(scope.post).toHaveBeenCalledOnce())
+ expect(timer.finish).toHaveBeenCalledOnce()
+ expect(goToNext).not.toHaveBeenCalled()
+ complete();await pending
+ expect(goToNext).toHaveBeenCalledWith('sequential',false)
 })

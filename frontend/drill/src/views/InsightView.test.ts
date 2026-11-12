@@ -11,7 +11,7 @@ const navigation = vi.hoisted(() => ({
   push: vi.fn(),
   replace: vi.fn(),
 }))
-vi.mock('vue-router', () => ({ useRoute: () => ({ query: navigation.query }), useRouter: () => navigation }))
+vi.mock('vue-router', () => ({ useRoute: () => ({ get query() { return navigation.query }, get fullPath() { return '/insight?' + new URLSearchParams(navigation.query).toString() } }), useRouter: () => navigation }))
 vi.mock('../lib/api', () => ({ api: vi.fn() }))
 vi.mock('../components/LearningSharePanel.vue', () => ({ default: { template: '<div />' } }))
 
@@ -193,4 +193,32 @@ it('does not restore another account or query scroll state', async () => {
   await mount(); await new Promise(done => setTimeout(done, 50))
   expect(scroll).not.toHaveBeenCalled()
   scroll.mockRestore()
+})
+
+it('opens attempts preview from applied filters and the current attempt without committing an unsent search draft',async()=>{
+ navigation.query={q:'old query',state:'review',start:'2026-11-01',end:'2026-11-11',questions_page:'2',notes_page:'2',sort:'oldest'}
+ const response=payload();response.recent_notes.page=2;vi.mocked(api).mockResolvedValue(response)
+ await mount()
+ const input=host.querySelector<HTMLInputElement>('.filter-keyword input')||host.querySelector<HTMLInputElement>('input[type=search]')!
+ input.value='unsubmitted note draft';input.dispatchEvent(new Event('input',{bubbles:true}));await nextTick()
+ host.querySelector<HTMLButtonElement>('[data-preview-list=attempts]')!.click();await settle()
+ const location=navigation.push.mock.calls.at(-1)![0]
+ expect(location.path).toBe('/preview')
+ const context=JSON.parse(location.query.list)
+ expect(context.source).toBe('attempts')
+ expect(context.query).toMatchObject({q:'old query',state:'review',start:'2026-11-01',end:'2026-11-11',sort:'oldest'})
+ expect(context.returnTo).toContain('questions_page=2');expect(context.returnTo).toContain('notes_page=2')
+ expect(context.query).not.toHaveProperty('questions_page');expect(context.query).not.toHaveProperty('notes_page')
+ expect(context.query.q).not.toContain('unsubmitted')
+ expect(location.query.entry).toBe('attempt:1');expect(location.query.question).toBe('attempt-1')
+})
+it('provides an independent notes preview context while retaining both history page cursors',async()=>{
+ navigation.query={q:'saved note',has_note:'1',document:'1',questions_page:'3',notes_page:'2'}
+ const response=payload();response.recent_questions.page=3;response.recent_notes.page=2;vi.mocked(api).mockResolvedValue(response)
+ await mount()
+ host.querySelector<HTMLButtonElement>('[data-preview-list=notes]')!.click();await settle()
+ const location=navigation.push.mock.calls.at(-1)![0],context=JSON.parse(location.query.list)
+ expect(context).toMatchObject({source:'notes',query:{q:'saved note',has_note:'1',document:'1'}})
+ expect(context.returnTo).toContain('questions_page=3');expect(context.returnTo).toContain('notes_page=2')
+ expect(location.query.question).toBe('note-1');expect(location.query.entry).toBeUndefined()
 })

@@ -8,6 +8,7 @@ import HeatmapView from './views/HeatmapView.vue'
 import ActivityView from './views/ActivityView.vue'
 import BookActivityView from './views/BookActivityView.vue'
 import PracticeView from './views/PracticeView.vue'
+import PreviewView from './views/PreviewView.vue'
 import QuestionView from './views/QuestionView.vue'
 import PapersView from './views/PapersView.vue'
 import PaperNewView from './views/PaperNewView.vue'
@@ -38,6 +39,7 @@ const router = createRouter({
   history: createWebHistory(routerBase),
   routes: [
     { path: '/', redirect: '/practice' },
+    { path: '/preview', name: 'preview', component: PreviewView },
     { path: '/practice', name: 'practice', component: PracticeView },
     { path: '/progress', name: 'progress', component: ProgressView },
     { path: '/settings', name: 'settings', component: SettingsView },
@@ -70,6 +72,8 @@ const router = createRouter({
     { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFoundView },
   ],
   scrollBehavior(_to, _from, savedPosition) {
+    if (_to.name === 'preview') return { top: 0 }
+    if (_to.name === 'practice' || (_to.name === 'question' && _from.name === 'question')) return false
     return savedPosition || { top: 0 }
   },
 })

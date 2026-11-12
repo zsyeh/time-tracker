@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { uiText } from '../lib/uiText'
+import { typeText } from '../lib/examTypes'
+import { buildListContext, previewLocation } from '../lib/listContext'
 import { onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { api } from '../lib/api'
@@ -33,6 +35,10 @@ function openQuestion(uuid: string) {
   void router.push({ path: `/practice/${uuid}`, query: { from: 'collection', collection: props.kind, collection_page: String(page.value) } })
 }
 
+function previewAll() {
+  void router.push(previewLocation(buildListContext(props.kind, route.query, route.fullPath), undefined, data.value?.results[0]?.uuid))
+}
+
 function changePage(nextPage: number) {
   page.value = nextPage
   void router.replace({ query: { page: nextPage > 1 ? String(nextPage) : undefined } })
@@ -47,6 +53,7 @@ onMounted(load)
   <section class="page collection-page">
     <header class="page-header">
       <div><h1>{{ uiText(copy().title) }}</h1><p>{{ uiText(copy().description) }}</p></div>
+      <button class="preview-all" type="button" :disabled="loading || !data?.count" @click="previewAll">{{ typeText('全局预览', 'Preview all') }}</button>
       <strong class="collection-count">{{ data?.count || 0 }}</strong>
     </header>
     <p v-if="error" class="error-state">{{ uiText(error) }}</p>

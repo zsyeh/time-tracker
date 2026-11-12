@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import { api, ApiError } from '../lib/api'
 import { cachedCatalog, cachedQuestionPage, fetchCatalog, prefetchQuestion, storeQuestionPage } from '../lib/workspace'
 import type { Catalog, Page, QuestionSummary } from '../types'
@@ -9,6 +9,8 @@ import ExamTypeControls from '../components/ExamTypeControls.vue'
 import ExamTypeBadge from '../components/ExamTypeBadge.vue'
 import SavedPracticeFilters from '../../../shared/ui/SavedPracticeFilters.vue'
 import PracticeFilterPanel from '../components/PracticeFilterPanel.vue'
+import PracticePagination from '../components/PracticePagination.vue'
+import { buildListContext, previewLocation } from '../lib/listContext'
 import { typeText, type TypeStats } from '../lib/examTypes'
 import { runtimeWorkspace } from '../lib/runtimePath'
 import { usePracticeQuery } from '../composables/usePracticeQuery'
@@ -18,11 +20,14 @@ import { highlightCodepoints } from '../../../shared/search/highlight'
 import { uiText } from '../lib/uiText'
 
 const router = useRouter()
+const route = useRoute()
+const ownerPath = route.path
+const rootElement = ref<HTMLElement | null>(null)
 const { t } = useUiPreferences()
 const catalog = ref<Catalog>({ summary: { imported_count: 0, practiceable_count: 0, outline_count: 0, categories: [] }, coverage: { available: [], missing: [], source_archive_checked: false }, documents: [], topics: [] })
 type SearchMatch = { fields: string[]; kind: 'literal'|'alias'|'prefix'|'contains'|'spelling'; excerpt: string; highlights: Array<[number,number]>; coverage: 'text'|'metadata' }
 type SearchQuestion = QuestionSummary & { search_match?: SearchMatch }
-type SearchPage = Page<SearchQuestion> & { type_statistics?: TypeStats; search?: { index_version?: string; version?: string | number; coverage?: { metadata_only_count?: number }; suggestions?: string[]; corrected_terms?: string[] } }
+type SearchPage = Page<SearchQuestion> & { page?: number; page_size?: number; total_pages?: number; type_statistics?: TypeStats; search?: { index_version?: string; version?: string | number; coverage?: { metadata_only_count?: number }; suggestions?: string[]; corrected_terms?: string[] } }
 type Candidate = { kind: string; label: string; value: string; documentId: string; reason?: string }
 const remoteCandidates = ref<Candidate[]>([])
 const remoteQuery = ref('')
@@ -41,10 +46,16 @@ let requestController: AbortController | null = null
 let requestSequence = 0
 let lastLoadedKey = ''
 let prefetchTimer: ReturnType<typeof setTimeout> | undefined
-let interacted = false
+let interactionVersion = 0
+let changedByUi = false
+let leaving = false
+let lastLoadedQuery: PracticeQuery = {}
+type ScrollPlan = { kind: 'restore'|'pager'|'results'|'top'; version: number; rowUuid?: string; rowOffset?: number; scrollY?: number; position?: 'top'|'bottom'; offset?: number }
+let pendingScroll: ScrollPlan | null = null
 let indexVersion = ''
-const { applied, draft: search, composing, refresh, apply, input, submitSearch, compositionStart, compositionEnd } = usePracticeQuery(() => { requestSequence += 1; requestController?.abort(); if (prefetchTimer) clearTimeout(prefetchTimer); loading.value = false })
+const { applied, draft: search, composing, refresh, apply, input, submitSearch, cancelDraft, compositionStart, compositionEnd } = usePracticeQuery(() => { changedByUi = true; requestSequence += 1; requestController?.abort(); if (prefetchTimer) clearTimeout(prefetchTimer); loading.value = false })
 const page = computed(() => Number(applied.value.page) || 1)
+const totalPages = computed(() => questions.value?.count ? questions.value.total_pages ?? Math.ceil(questions.value.count / (questions.value.page_size || 24)) : 0)
 const queryKey = computed(() => {
   // This protocol flag is added by Question on return, but does not change
   // results. Keep one list cache and scroll context for the same user query.
@@ -86,11 +97,34 @@ function readState(key: string) { try { return JSON.parse(sessionStorage.getItem
 function persistState() {
   if (!lastLoadedKey && !ready.value) return
   try {
-    const value = { query: applied.value, lastQuestionUuid: lastQuestionUuid.value, scrollY: window.scrollY, updatedAt: Date.now() }
+    const rows = [...(rootElement.value?.querySelectorAll<HTMLElement>('.question-row') || [])]
+    const visible = (row: HTMLElement) => { const rect = row.getBoundingClientRect(); return rect.bottom > 0 && rect.top < window.innerHeight }
+    const anchor = rows.find(row => row.dataset.questionUuid === lastQuestionUuid.value && visible(row)) || rows.find(visible)
+    const value = { query: lastLoadedQuery, lastQuestionUuid: lastQuestionUuid.value, scrollY: window.scrollY,
+      rowUuid: anchor?.dataset.questionUuid, rowOffset: anchor?.getBoundingClientRect().top, updatedAt: Date.now() }
     sessionStorage.setItem(statePrefix.value + lastLoadedKey, JSON.stringify(value))
     sessionStorage.setItem(statePrefix.value + 'latest', JSON.stringify(value))
   } catch { /* Optional UI restoration must not block browsing. */ }
 }
+async function placeViewport(plan: ScrollPlan, sequence: number) {
+  await nextTick()
+  await new Promise<void>(resolve => requestAnimationFrame(() => requestAnimationFrame(() => resolve())))
+  if (sequence !== requestSequence || route.path !== ownerPath || plan.version !== interactionVersion) return
+  let top = plan.scrollY || 0
+  if (plan.kind === 'pager') {
+    const pager = rootElement.value?.querySelector<HTMLElement>(`[data-page-position="${plan.position}"]`)
+    if (pager) top = window.scrollY + pager.getBoundingClientRect().top - (plan.offset || 0)
+  } else if (plan.kind === 'results') {
+    const heading = rootElement.value?.querySelector<HTMLElement>('.practice-result-bar')
+    if (heading) top = window.scrollY + heading.getBoundingClientRect().top - 16
+  } else if (plan.kind === 'restore' && plan.rowUuid) {
+    const row = [...(rootElement.value?.querySelectorAll<HTMLElement>('.question-row') || [])].find(row => row.dataset.questionUuid === plan.rowUuid)
+    if (row) top = window.scrollY + row.getBoundingClientRect().top - (plan.rowOffset || 0)
+  }
+  const max = Math.max(0, document.documentElement.scrollHeight - window.innerHeight)
+  window.scrollTo({ top: Math.max(0, Math.min(max, Number.isFinite(top) ? top : 0)), behavior: 'auto' })
+}
+
 async function loadQuestions(restore = false) {
   if (!ready.value) return
   requestController?.abort()
@@ -98,11 +132,16 @@ async function loadQuestions(restore = false) {
   requestController = new AbortController()
   const sequence = ++requestSequence
   const key = queryKey.value
-  lastLoadedKey = key
   const saved = readState(key)
+  const plan: ScrollPlan = pendingScroll || (restore && saved && !changedByUi
+    ? { kind: 'restore', version: interactionVersion, rowUuid: saved.rowUuid, rowOffset: saved.rowOffset, scrollY: Number(saved.scrollY) || 0 }
+    : { kind: changedByUi ? 'results' : 'top', version: interactionVersion })
+  pendingScroll = null; changedByUi = false
+  lastLoadedKey = key
+  lastLoadedQuery = { ...applied.value }
   lastQuestionUuid.value = saved?.lastQuestionUuid || ''
   const cached = cachedQuestionPage(`${key}&search_version=2`) as SearchPage | null
-  if (cached) questions.value = cached
+  if (cached) { questions.value = cached; indexVersion = cached.search?.index_version || ''; void placeViewport(plan, sequence) }
   loading.value = true
   error.value = ''
   try {
@@ -116,10 +155,7 @@ async function loadQuestions(restore = false) {
     if (applied.value.q && searchFocused.value && (localCandidates.value.length < 3 || value.search?.suggestions?.length || value.search?.corrected_terms?.length)) void loadSuggestions(applied.value.q, sequence, requestController.signal)
     else { remoteCandidates.value = []; remoteQuery.value = '' }
     storeQuestionPage(`${key}&search_version=2`, value)
-    if (restore && saved && !interacted) {
-      await nextTick()
-      requestAnimationFrame(() => { if (!interacted) window.scrollTo({ top: Number(saved.scrollY || 0), behavior: 'auto' }) })
-    }
+    await placeViewport(plan, sequence)
     const first = value.results[0]
     if (first) {
       const context = navigationQueryString()
@@ -133,7 +169,8 @@ async function loadQuestions(restore = false) {
     error.value = (reason as Error).message
   } finally { if (sequence === requestSequence) loading.value = false }
 }
-watch([queryKey, refresh], () => { if (ready.value) { candidateIndex.value = -1; void loadQuestions(true) } })
+watch([queryKey, refresh], () => { if (ready.value && route.path === ownerPath) { persistState(); candidateIndex.value = -1; void loadQuestions(true) } })
+watch(() => route.path, path => { if (path !== ownerPath) { persistState(); leaving = true } }, { flush: 'sync' })
 watch(search, () => { candidateIndex.value = -1 })
 async function loadSuggestions(query: string, sequence: number, signal: AbortSignal) {
   try {
@@ -147,7 +184,14 @@ async function loadSuggestions(query: string, sequence: number, signal: AbortSig
     }))
   } catch { /* Optional suggestions never block the primary results or catalog suggestions. */ }
 }
-function changePage(value: number) { apply({ page: String(value), search_version: '2', index_version: indexVersion }, 'push', false) }
+function changePage(value: number, position: 'top'|'bottom' = 'bottom') {
+  if (loading.value || !Number.isSafeInteger(value) || value < 1 || value > totalPages.value || value === page.value) return
+  cancelDraft()
+  persistState()
+  const pager = rootElement.value?.querySelector<HTMLElement>(`[data-page-position="${position}"]`)
+  pendingScroll = { kind: 'pager', position, offset: pager?.getBoundingClientRect().top || 0, version: interactionVersion }
+  apply({ page: String(value), search_version: '2', index_version: indexVersion }, 'push', false)
+}
 function changeFilters(value: PracticeQuery) {
   searchNotice.value = ''
   const removed = Object.fromEntries(Object.keys(applied.value).filter((key) => !(key in value)).map((key) => [key, '']))
@@ -180,10 +224,17 @@ function searchKeydown(event: KeyboardEvent) {
   }
 }
 function openQuestion(uuid: string) { lastQuestionUuid.value = uuid; persistState(); void router.push({ path: `/practice/${uuid}`, query: navigationQuery() }) }
-function interactedWithPage() { interacted = true }
+function interactedWithPage() { interactionVersion += 1 }
+function previewAll() {
+  persistState()
+  const query = { ...applied.value }; delete query.page; delete query.index_version; delete query.from
+  const selected = questions.value?.results.find(item => item.uuid === lastQuestionUuid.value) || questions.value?.results[0]
+  void router.push(previewLocation(buildListContext('practice', query, route.fullPath), undefined, selected?.uuid))
+}
 onMounted(async () => {
   window.addEventListener('pointerdown', interactedWithPage, { passive: true })
   window.addEventListener('wheel', interactedWithPage, { passive: true })
+  window.addEventListener('touchmove', interactedWithPage, { passive: true })
   window.addEventListener('keydown', interactedWithPage)
   try {
     catalog.value = cachedCatalog() || await fetchCatalog()
@@ -208,14 +259,15 @@ onMounted(async () => {
   } catch (reason) { error.value = (reason as Error).message; loading.value = false }
 })
 onUnmounted(() => {
-  persistState(); requestSequence += 1; requestController?.abort(); if (prefetchTimer) clearTimeout(prefetchTimer)
+  if (!leaving) persistState(); requestSequence += 1; requestController?.abort(); if (prefetchTimer) clearTimeout(prefetchTimer)
   window.removeEventListener('pointerdown', interactedWithPage); window.removeEventListener('wheel', interactedWithPage); window.removeEventListener('keydown', interactedWithPage)
 })
 </script>
 <template>
-  <section class="page practice-page">
+  <section ref="rootElement" class="page practice-page">
     <header class="page-header practice-header">
       <div><h1>{{ isEi ? t('electronicInformation') : t('questionBank') }}</h1><p>{{ catalog.summary.practiceable_count.toLocaleString() }} {{ uiText('道可练习题') }} <RouterLink class="practice-progress-link" to="/progress">{{ typeText('学习进度', 'Learning progress') }} →</RouterLink></p></div>
+      <button class="preview-all" type="button" :disabled="loading || !questions?.count" @click="previewAll">{{ typeText('全局预览', 'Preview all') }}</button>
       <button class="primary-action" :disabled="loading || !(lastQuestionUuid || questions?.results.length)" @click="openQuestion(lastQuestionUuid || questions!.results[0].uuid)">{{ lastQuestionUuid ? t('resumeLast') : t('openNext') }} <span aria-hidden="true">→</span></button>
     </header>
     <div class="practice-toolbar">
@@ -236,9 +288,10 @@ onUnmounted(() => {
     <p v-if="applied.q && correctedTerms.length" class="search-expansion" role="status">{{ typeText('同时匹配', 'Also matching') }}：{{ correctedTerms.join('、') }}</p>
     <p v-if="searchNotice" class="search-notice" role="status">{{ searchNotice }}</p>
     <p v-if="error" class="error-state" role="alert">{{ uiText(error) }} <button type="button" @click="loadQuestions()">{{ uiText('重试') }}</button></p>
-    <div v-else class="question-list practice-results" :aria-busy="loading">
+    <PracticePagination v-if="questions" :page="page" :total-pages="totalPages" :count="questions.count" :loading="loading" position="top" @change="changePage" />
+    <div v-if="!error" class="question-list practice-results" :aria-busy="loading">
       <template v-if="loading && !questions"><div v-for="index in 8" :key="index" class="practice-skeleton" aria-hidden="true"><span /><span /></div></template>
-      <RouterLink v-for="question in questions?.results" :key="question.uuid" :to="{ path: `/practice/${question.uuid}`, query: navigationQuery() }" :data-type-group="question.type_group" class="question-row" @pointerenter="prefetchQuestion(question.uuid, navigationQueryString())" @click="lastQuestionUuid = question.uuid; persistState()">
+      <RouterLink v-for="question in questions?.results" :key="question.uuid" :to="{ path: `/practice/${question.uuid}`, query: navigationQuery() }" :data-type-group="question.type_group" :data-question-uuid="question.uuid" class="question-row" @pointerenter="prefetchQuestion(question.uuid, navigationQueryString())" @click="lastQuestionUuid = question.uuid; persistState()">
         <span class="question-index">{{ String(question.question_order).padStart(4, '0') }}</span>
         <span class="question-copy"><strong>{{ question.display_label || `${uiText('题目')} ${question.question_order}` }}</strong><small><ExamTypeBadge :type="question.question_type" :group="question.type_group" /> · {{ question.document }} · {{ question.topic || uiText('未分类') }} · {{ question.source_category_label }}<em v-if="question.record_kind === 'grouped'"> {{ uiText('· 组合题摘录') }}</em><em v-if="question.pdf_pages"> · PDF {{ question.pdf_pages.question }}/{{ question.pdf_pages.answer }}/{{ question.pdf_pages.paired }}</em></small><p v-if="applied.q && question.search_match?.excerpt" class="practice-search-excerpt"><span v-if="question.search_match.coverage === 'metadata'" class="search-match-label">{{ matchLabel(question.search_match) }} · </span><template v-for="(part, index) in matchSegments(question)" :key="index"><mark v-if="part.match">{{ part.text }}</mark><template v-else>{{ part.text }}</template></template></p></span>
         <span class="practice-state" :class="question.review_overdue ? 'is-overdue' : `is-${question.state}`">{{ question.review_overdue ? uiText('已到期') : question.state === 'mastered' ? uiText('已掌握') : question.state === 'review' ? uiText('待复习') : uiText('未作答') }}<small v-if="question.attempt_count"> · {{ question.attempt_count }}</small></span>
@@ -246,11 +299,15 @@ onUnmounted(() => {
       </RouterLink>
       <div v-if="!loading && !questions?.results.length" class="empty-state"><strong>{{ uiText('没有符合条件的题目') }}</strong><p>{{ applied.q ? `“${applied.q}” · ` : '' }}{{ uiText('试试其他关键词或减少筛选条件。扫描题可能仅有题册、知识点等信息可搜索。') }}</p><button v-for="candidate in remoteCandidates.filter((item) => item.kind === 'query')" :key="candidate.value" type="button" @click="chooseCandidate(candidate)">{{ uiText('试试') }} {{ candidate.label }}</button><button v-if="filterCount" type="button" @click="clearFilters">{{ uiText('清除筛选') }}</button><button v-if="applied.q" type="button" @click="search = ''; submitSearch()">{{ uiText('清除搜索') }}</button></div>
     </div>
-    <footer v-if="questions && (questions.previous || questions.next)" class="pager"><button :disabled="!questions.previous || loading" @click="changePage(page - 1)">{{ uiText('← 上一页') }}</button><span>{{ uiText('第') }} {{ page }} {{ uiText('页') }}</span><button :disabled="!questions.next || loading" @click="changePage(page + 1)">{{ uiText('下一页 →') }}</button></footer>
+    <PracticePagination v-if="questions" :page="page" :total-pages="totalPages" :count="questions.count" :loading="loading" position="bottom" @change="changePage" />
     <details v-if="catalog.coverage.missing.length || catalog.summary.outline_count" class="practice-source-details"><summary>{{ uiText('题库资料说明') }}</summary><p>{{ catalog.summary.outline_count }} {{ uiText('条目录记录未作为题目展示。') }}</p><p v-if="catalog.coverage.missing.length">{{ uiText('资料缺失') }}：{{ catalog.coverage.missing.join(', ') }}</p></details>
   </section>
 </template>
 <style scoped>
+.practice-header .preview-all { min-height:44px; margin-left:auto; padding:8px 12px; flex:none; }
+.practice-header > .primary-action { flex:none; }
+@media(max-width:600px) { .practice-header { flex-wrap:wrap; } .practice-header > div { flex:1 1 100%; } .practice-header .preview-all { margin-left:0; } }
+
 .saved-filter-entry{display:flex;justify-content:flex-end;margin:4px 0 8px}.saved-filter-entry :deep(>button){font-size:12px;min-height:36px;padding:4px 8px}
 .practice-page { min-width:0; } .search-order-note { margin:0 0 8px; font-size:12px; color:var(--text-secondary); line-height:1.5; } .search-notice { margin:12px 0; color:var(--text-secondary); font-size:13px; line-height:1.5; } .practice-header h1 { margin:0; } .practice-header p { margin:8px 0 0; font-size:13px; } .practice-progress-link { margin-left:16px; color:var(--accent-ink); text-decoration:none; }
 .practice-toolbar { display:flex; gap:8px; align-items:center; margin:24px 0 8px; } .practice-search { position:relative; flex:1; min-width:0; } .practice-search input { width:100%; min-height:44px; background:var(--surface-subtle); color:var(--text-primary); border:1px solid var(--border-control); border-radius:8px; padding:10px 12px; font-size:16px; }

@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { uiText } from '../lib/uiText'
+import { typeText } from '../lib/examTypes'
+import { buildListContext, previewLocation } from '../lib/listContext'
 import SelectedCollectionLayout from '../components/SelectedCollectionLayout.vue'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -41,6 +43,10 @@ function change(key: string, value: string) {
   if (!value) delete query[key]
   void router.replace({ path: '/digital-selected', query })
 }
+function previewAll() {
+  const context = buildListContext('selected', { ...filters.value, collection: 'digital_selected' }, route.fullPath)
+  void router.push(previewLocation(context, undefined, data.value?.groups.flatMap(group => group.questions)[0]?.uuid))
+}
 function open(question: Item) {
   void router.push({ path: `/practice/${question.uuid}`, query: digitalPracticeQuery(filters.value) })
 }
@@ -61,7 +67,7 @@ onMounted(() => {
 
 <template>
   <SelectedCollectionLayout :class="{ 'exam-type-colours': formatColours }" class="digital-selected-page">
-    <header class="page-header"><div><h1>{{ uiText("数电严选") }}</h1><p>{{ uiText("先练组合逻辑分析／设计与同步时序分析，再补简单时序设计及中规模器件。原题原记录，不重复建题。") }}</p></div><button class="primary-action" :disabled="!data?.progress.total || loading" @click="start()">{{ uiText("开始／继续刷题 →") }}</button></header>
+    <header class="page-header"><div><h1>{{ uiText("数电严选") }}</h1><p>{{ uiText("先练组合逻辑分析／设计与同步时序分析，再补简单时序设计及中规模器件。原题原记录，不重复建题。") }}</p></div><button class="preview-all" type="button" :disabled="!data?.progress.total || loading" @click="previewAll">{{ typeText('全局预览', 'Preview all') }}</button><button class="primary-action" :disabled="!data?.progress.total || loading" @click="start()">{{ uiText("开始／继续刷题 →") }}</button></header>
     <details class="selected-notice"><summary>{{ uiText("题库说明") }}</summary><p>{{ uiText("排序采用你的备考优先级，不代表命题概率。S/A/B/C 只是训练优先级；复杂级联计数器不放进最高优先级。默认展示 S 优先必练中的全部题目，不区分当前是否已有答案。") }}</p></details>
     <details class="selected-filter-disclosure"><summary>{{ uiText("筛选") }} · {{ Object.values(filters).filter(Boolean).length }}</summary>
     <section class="digital-filters selected-filters" :aria-label="uiText('数电严选筛选')">

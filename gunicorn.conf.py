@@ -14,3 +14,8 @@ keepalive = 5
 accesslog = None
 errorlog = '-'
 loglevel = os.environ.get('GUNICORN_LOG_LEVEL', 'info')
+
+# Bounded preview URLs are encoded again by the authentication handoff.
+# Match Gunicorn's finite supported request-line ceiling, keeping all existing
+# workers, timing, and credential-safe access logging configuration unchanged.
+limit_request_line = 8190

@@ -25,12 +25,52 @@ import { runtimeWorkspace, withWorkspacePrefix } from '../lib/runtimePath'
 import { buildClipboardPng, copyImagesToClipboard, downloadImageBlob, shareImageBlob } from '../lib/imageClipboard'
 import { useUiPreferences } from '../lib/uiPreferences'
 import { usePracticePreferences } from '../lib/practicePreferences'
+import { parseListContext, previewLocation, previewQuestionLocation, type PreviewPage } from '../lib/listContext'
+import { getPreviewAnchor, getPreviewSession } from '../lib/collectionPreview'
 
 const props = defineProps<{ uuid: string }>()
 const { t } = useUiPreferences()
 const router = useRouter()
 const route = useRoute()
 const note = ref('')
+const isPreviewEntry = computed(() => route.query.from === 'preview')
+const previewContext = computed(() => isPreviewEntry.value ? parseListContext(route.query.list) : null)
+const previewNavigation = ref<PreviewPage | null>(null)
+const previewNavigationError = ref('')
+let previewNavigationSequence = 0
+let previewNavigationTask: Promise<void> = Promise.resolve()
+async function loadPreviewNavigation(signal?: AbortSignal, allowRemoved = false) {
+  const sequence = ++previewNavigationSequence
+  const context = previewContext.value
+  previewNavigation.value = null
+  previewNavigationError.value = ''
+  if (!context) { if (isPreviewEntry.value) previewNavigationError.value = '题单上下文无效，请返回原题单重新打开预览。'; return }
+  const controller = new AbortController()
+  const cancel = () => controller.abort()
+  signal?.addEventListener('abort', cancel, { once: true })
+  if (signal?.aborted) controller.abort()
+  const timeout = window.setTimeout(cancel, 8000)
+  try {
+    const anchor = getPreviewAnchor(context)
+    const routeIndex = Number(route.query.position)
+    const fallbackIndex = Number.isSafeInteger(routeIndex) && routeIndex >= 0 ? routeIndex : anchor?.index
+    const page = await getPreviewSession(context).load({
+      locate_entry: typeof route.query.entry === 'string' ? route.query.entry : undefined,
+      locate_uuid: props.uuid, fallback_index: fallbackIndex, signal: controller.signal,
+    })
+    if (sequence !== previewNavigationSequence || signal?.aborted) return
+    const requestedEntry = typeof route.query.entry === 'string' ? route.query.entry : undefined
+    if (page.located?.question_uuid === props.uuid && (!requestedEntry || page.located.entry_id === requestedEntry)) previewNavigation.value = page
+    else if (allowRemoved && page.located && fallbackIndex !== undefined) {
+      // Saving can remove the current item from e.g. 'unattempted'. The item
+      // now occupying that ordinal is the next valid item, not its successor.
+      previewNavigation.value = { ...page, next_entry: page.located.index >= fallbackIndex ? page.located : null }
+    } else previewNavigationError.value = '此题已不在当前题单中；请返回全局预览继续。'
+  } catch (reason) {
+    if (sequence === previewNavigationSequence && !signal?.aborted) previewNavigationError.value = (reason as Error).name === 'AbortError' ? '题单导航暂不可用，请重试题单。作答保存不受影响。' : (reason as Error).message
+  } finally { window.clearTimeout(timeout); signal?.removeEventListener('abort', cancel) }
+}
+
 const errorOptions: Array<{ code: ErrorCode; label: string; group: string }> = [
   { code: 'A', label: '知识断层', group: 'A' },
   { code: 'B1', label: '想不起来', group: 'B' },
@@ -43,6 +83,7 @@ const errorOptions: Array<{ code: ErrorCode; label: string; group: string }> = [
 ]
 
 function navigationQuery() {
+  if (previewContext.value) return {} as Record<string, string>
   const query = router.currentRoute.value.query
   return Object.fromEntries(['type_group', 'exam_type', 'document', 'topic', 'source_category', 'q', 'unattempted', 'marker', 'collection', 'bucket', 'tier', 'kind', 'material', 'combined', 'state', 'scope', 'course', 'mode', 'sort', 'search_version', 'index_version', 'status', 'favorite', 'review_later', 'practice_page', 'insight_return', 'insight_list', 'collection_page', 'from']
     .filter((key) => query[key] !== undefined && query[key] !== '')
@@ -54,6 +95,7 @@ function navigationQueryString() {
 }
 
 function questionRouteQuery() {
+  if (previewContext.value) return { list: JSON.stringify(previewContext.value), entry: String(route.query.entry || ''), position: String(route.query.position || ''), from: 'preview' }
   const query: Record<string, string> = navigationQuery()
   if (route.query.from === 'core-heatmap') { query.from = 'core-heatmap'; return query }
   if (['circuit-selected', 'signal-selected', 'analog-selected', 'digital-selected', 'communication-selected'].includes(String(route.query.from))) {
@@ -78,6 +120,7 @@ function questionRouteQuery() {
 }
 
 function backToEntryPoint() {
+  if (previewContext.value) { void router.push(previewLocation(previewContext.value)); return }
   if (route.query.from === 'core-heatmap') {
     void router.push({ path: '/core-heatmap', query: { type_group: String(route.query.type_group || ''), scope: String(route.query.scope || 'all'), course: String(route.query.course || ''), material: String(route.query.material || 'ready'), question: props.uuid } })
     return
@@ -126,22 +169,22 @@ const question = ref<QuestionDetail | null>(null)
 const navigationFrame = ref<{ uuid: string; previous: string | null; next: string | null }>({
   uuid: props.uuid, previous: null, next: null,
 })
-const navigationPrevious = computed(() => question.value ? question.value.previous_question_uuid
+const navigationPrevious = computed(() => isPreviewEntry.value ? previewNavigation.value?.previous_entry?.question_uuid || null : question.value ? question.value.previous_question_uuid
   : navigationFrame.value.uuid === props.uuid ? navigationFrame.value.previous : null)
-const navigationNext = computed(() => question.value ? question.value.sequential_next_question_uuid
+const navigationNext = computed(() => isPreviewEntry.value ? previewNavigation.value?.next_entry?.question_uuid || null : question.value ? question.value.sequential_next_question_uuid
   : navigationFrame.value.uuid === props.uuid ? navigationFrame.value.next : null)
-const topPreviousTarget = computed(() => question.value
-  ? previousQuestionTarget(question.value, nextMode.value)
-  : nextMode.value === 'sequential' ? navigationPrevious.value : null)
-const topNextTarget = computed(() => question.value
-  ? nextQuestionTarget(question.value, nextMode.value)
-  : nextMode.value === 'sequential' ? navigationNext.value : null)
+const topPreviousTarget = computed(() => isPreviewEntry.value ? navigationPrevious.value : question.value
+  ? previousQuestionTarget(question.value, effectiveNextMode.value)
+  : effectiveNextMode.value === 'sequential' ? navigationPrevious.value : null)
+const topNextTarget = computed(() => isPreviewEntry.value ? navigationNext.value : question.value
+  ? nextQuestionTarget(question.value, effectiveNextMode.value)
+  : effectiveNextMode.value === 'sequential' ? navigationNext.value : null)
 const topPreviousLabel = computed(() => ({
   sequential: '上一题', overdue: '上一道红色题', review: '上一道黄色题', unattempted: '上一道未做题',
-})[nextMode.value])
+})[effectiveNextMode.value])
 const topNextLabel = computed(() => question.value ? ({
   sequential: '下一题', overdue: '下一道到期题', review: '下一道待复习题', unattempted: '下一道未做题',
-})[nextMode.value] : '下一题')
+})[effectiveNextMode.value] : '下一题')
 const sourceViewer = ref<InstanceType<typeof SourcePaperViewer> | null>(null)
 const questionReader = ref<InstanceType<typeof FullscreenReader> | null>(null)
 const originalAnswerReader = ref<InstanceType<typeof OriginalAnswer> | null>(null)
@@ -198,7 +241,7 @@ function readerClosed() {
 async function readerAction(action: ReaderPracticeAction) {
   if (readerControls.value.busy) return
   if (action === 'previous') goToPrevious()
-  else if (action === 'next') await goToNext(nextMode.value)
+  else if (action === 'next') await goToNext(effectiveNextMode.value)
   else if (action === 'mastered') await record('correct')
   else if (action === 'review') await record('review')
   else if (action === 'answer') {
@@ -231,11 +274,17 @@ function navigateToQuestion(uuid: string | null, direction: 'previous' | 'next',
     previous: direction === 'next' ? props.uuid : null,
     next: direction === 'previous' ? props.uuid : null,
   }
+  const context = previewContext.value
+  if (context) {
+    const entry = direction === 'next' ? previewNavigation.value?.next_entry : previewNavigation.value?.previous_entry
+    if (!entry || entry.question_uuid !== uuid) return
+    return router.push(previewQuestionLocation(context, entry))
+  }
   return router.push({ path: `/practice/${uuid}`, query: questionRouteQuery() })
 }
 
 function selectSourceQuestion(uuid: string) {
-  void router.push({ path: `/practice/${uuid}`, query: questionRouteQuery() })
+  void router.push({ path: `/practice/${uuid}`, query: previewContext.value ? {} : questionRouteQuery() })
 }
 const similar = ref<QuestionSummary[]>([])
 const similarTopic = ref('')
@@ -279,6 +328,7 @@ const pageTurnCopyFailed = ref(false)
 const clipboardImage = ref<Blob | null>(null)
 const actionFeedback = ref('')
 const { nextMode, pageTurnCopyMode, reviewAutoNext, masteredAutoNext, imageCopyScale } = usePracticePreferences()
+const effectiveNextMode = computed(() => isPreviewEntry.value ? 'sequential' : nextMode.value)
 watch([() => props.uuid, imageCopyScale], () => { clipboardImage.value = null; imageCopyState.value = 'idle'; imageCopyMessage.value = '' }, { flush: 'sync' })
 const autoCopyLink = computed({
   get: () => pageTurnCopyMode.value === 'link',
@@ -289,7 +339,7 @@ const autoCopyImage = computed({
   set: (enabled: boolean) => { pageTurnCopyMode.value = enabled ? 'image' : 'off' },
 })
 const readerControls = computed<ReaderPracticeControls>(() => ({
-  mode: nextMode.value,
+  mode: effectiveNextMode.value,
   canPrevious: Boolean(topPreviousTarget.value), canNext: Boolean(topNextTarget.value),
   answerActive: readerKind.value !== 'question',
   canAnswer: Boolean(question.value?.has_answer || question.value?.answer_markdown || question.value?.original_source?.has_answer),
@@ -679,6 +729,12 @@ function discardNoteDraft(uuid = props.uuid) {
 
 function schedulePrefetch(loadedQuestion: QuestionDetail) {
   const query = navigationQueryString()
+  if (previewContext.value) {
+    warmQuestionMedia(loadedQuestion)
+    void prefetchQuestion(navigationPrevious.value, query)
+    void prefetchQuestion(navigationNext.value, query)
+    return
+  }
   // The visible question image is loaded by the DOM; warm its answer now so
   // opening the answer is instant. Adjacent prefetches warm both prompt and
   // answer media for previous, next, and next-next questions.
@@ -700,7 +756,7 @@ function schedulePrefetch(loadedQuestion: QuestionDetail) {
   void prefetchQuestion(loadedQuestion.previous_question_uuid, query)
   void prefetchQuestion(loadedQuestion.next_overdue_review_uuid, query)
   void prefetchQuestion(loadedQuestion.next_review_uuid, query)
-  if (nextMode.value === 'unattempted') {
+  if (effectiveNextMode.value === 'unattempted') {
     void prefetchQuestion(loadedQuestion.next_unattempted_question_uuid ?? null, query)
     void prefetchQuestion(loadedQuestion.previous_unattempted_question_uuid ?? null, query)
   }
@@ -746,6 +802,7 @@ async function load() {
     const direct = pendingFullscreenTarget.value === uuid
     // Pointer/touch prefetch and ordinary search entry share the same request
     // just like full-screen Next. Do not launch a duplicate detail GET on click.
+    const collectionNavigation = previewNavigationTask = loadPreviewNavigation(controller.signal)
     const request = fetchNavigationQuestion(uuid, query, controller.signal)
     void request.catch(() => { /* The awaited request below handles errors, including aborted navigation. */ })
     if (direct && cached) {
@@ -755,7 +812,7 @@ async function load() {
     }
     const loadedQuestion = await request
     if (sequence !== loadSequence) return
-    const individualUuid = sourcePracticeTarget(loadedQuestion, route.query.view)
+    const individualUuid = previewContext.value ? null : sourcePracticeTarget(loadedQuestion, route.query.view)
     if (individualUuid) {
       if (pendingFullscreenTarget.value === uuid) pendingFullscreenTarget.value = individualUuid
       await router.replace({ path: `/practice/${individualUuid}`, query: questionRouteQuery() })
@@ -766,7 +823,7 @@ async function load() {
     restoreRoundDraft()
     if (pendingFullscreenTarget.value === uuid) showReaderDocument(loadedQuestion)
     else if (isReaderOpen() && readerDocument.value.uuid === uuid && readerKind.value !== 'original') showReaderDocument(loadedQuestion, readerKind.value)
-    schedulePrefetch(loadedQuestion)
+    void collectionNavigation.then(() => { if (sequence === loadSequence) schedulePrefetch(loadedQuestion) })
   } catch (reason) {
     if (sequence !== loadSequence || (reason as Error).name === 'AbortError') return
     error.value = (reason as Error).message
@@ -953,11 +1010,21 @@ async function record(result: 'correct' | 'review' | 'reset', omitTiming = false
       void syncQuestionTimer(props.uuid)
     }
     if (willTurn) {
-      const target = question.value ? nextQuestionTarget(question.value, nextMode.value) : null
+      // Persist the answer first: a slow collection read must never gate saving.
+      if (previewContext.value) {
+        await previewNavigationTask
+        if (!previewNavigation.value) await loadPreviewNavigation(undefined, true)
+        if (props.uuid !== uuid || sequence !== operationSequence) return
+      }
+      const target = topNextTarget.value
       if (target) pendingCopy?.resolve(target)
-      else pendingCopy?.reject(new Error(emptyNextQuestionMessage(nextMode.value)))
+      else pendingCopy?.reject(new Error(emptyNextQuestionMessage(effectiveNextMode.value)))
       pendingCopy = null
-      await goToNext(nextMode.value, copyArmed)
+      if (isPreviewEntry.value && !target && previewNavigationError.value) {
+        error.value = '作答已保存；' + previewNavigationError.value
+        return
+      }
+      await goToNext(effectiveNextMode.value, copyArmed)
     }
   } catch (reason) {
     if (!attemptSaved) {
@@ -1236,7 +1303,7 @@ async function loadSimilar(kind: 'past_exam' | 'practice') {
 function goToPrevious() {
   const target = topPreviousTarget.value
   if (!target) {
-    error.value = emptyPreviousQuestionMessage(nextMode.value)
+    error.value = emptyPreviousQuestionMessage(effectiveNextMode.value)
     return
   }
   void navigateToQuestion(target, 'previous')?.catch((reason: Error) => { error.value = reason.message; readerNavigating.value = false })
@@ -1248,7 +1315,7 @@ async function goToNext(kind: NextQuestionMode = 'sequential', copyArmed = false
   error.value = ''
   // Navigation targets and their media are prefetched while the current
   // question is open. Do not put another API round-trip in the click path.
-  const target = question.value
+  const target = isPreviewEntry.value ? navigationNext.value : question.value
     ? nextQuestionTarget(question.value, kind)
     : navigationNext.value
   if (!target) {
@@ -1266,6 +1333,19 @@ async function goToNext(kind: NextQuestionMode = 'sequential', copyArmed = false
   }
 }
 
+watch(() => [route.query.entry, route.query.list], () => {
+  // Distinct history attempts can share a UUID: move the cursor without
+  // restarting this question's timer, draft, or diagnosis.
+  if (question.value?.uuid === props.uuid) {
+    readerNavigating.value = false
+    pendingFullscreenTarget.value = null
+    if (isReaderOpen()) showReaderDocument(question.value)
+    const entry = route.query.entry
+    previewNavigationTask = loadPreviewNavigation().then(() => {
+      if (question.value?.uuid === props.uuid && route.query.entry === entry) schedulePrefetch(question.value)
+    })
+  }
+})
 watch(() => props.uuid, (_uuid, previousUuid) => {
   loadController?.abort()
   operationSequence += 1
@@ -1312,6 +1392,7 @@ onUnmounted(() => {
   persistRoundDraft()
   void practiceTimer?.dispose()
   loadController?.abort()
+  previewNavigationSequence += 1
   window.clearInterval(questionTimerInterval)
   window.clearTimeout(noteAutoSaveTimer)
   window.clearTimeout(noteSavedTimer)
@@ -1347,11 +1428,11 @@ onBeforeRouteLeave(() => {
     <p v-if="pageTurnCopyMessage" class="page-turn-copy-feedback" :class="{ error: pageTurnCopyFailed }" role="status">{{ uiText(pageTurnCopyMessage) }}</p>
     <nav class="question-topbar" :aria-label="uiText('题目导航')">
       <slot name="navigation" />
-      <button class="question-return" type="button" @click="backToEntryPoint">← {{ route.query.from === 'core-heatmap' ? uiText("五科核心热力图") : route.query.from === 'communication-selected' ? uiText("通信严选") : route.query.from === 'digital-selected' ? uiText("数电严选") : route.query.from === 'analog-selected' ? uiText("模电严选") : route.query.from === 'signal-selected' ? uiText("信号严选") : route.query.from === 'circuit-selected' ? uiText("电路严选") : route.query.from === 'selected-heatmap' ? uiText("严选题热力图") : route.query.from === 'heatmap' ? uiText("热力图") : route.query.from === 'collection' ? uiText("收藏题目") : route.query.from === 'insight' ? t('insight') : route.query.from === 'cockpit' ? uiText("892 总览") : uiText("题库") }}</button>
+      <button class="question-return" type="button" @click="backToEntryPoint">← {{ previewContext ? uiText('全局预览') : route.query.from === 'core-heatmap' ? uiText("五科核心热力图") : route.query.from === 'communication-selected' ? uiText("通信严选") : route.query.from === 'digital-selected' ? uiText("数电严选") : route.query.from === 'analog-selected' ? uiText("模电严选") : route.query.from === 'signal-selected' ? uiText("信号严选") : route.query.from === 'circuit-selected' ? uiText("电路严选") : route.query.from === 'selected-heatmap' ? uiText("严选题热力图") : route.query.from === 'heatmap' ? uiText("热力图") : route.query.from === 'collection' ? uiText("收藏题目") : route.query.from === 'insight' ? t('insight') : route.query.from === 'cockpit' ? uiText("892 总览") : uiText("题库") }}</button>
       <div class="question-page-turner">
         <button type="button" :disabled="!topPreviousTarget" @click="goToPrevious">← {{ uiText(topPreviousLabel) }}</button>
         <span v-if="loading">{{ uiText("正在加载当前题") }}</span>
-        <button class="next" type="button" :disabled="!topNextTarget || nextLoading" @click="goToNext(nextMode)">{{ nextLoading ? uiText("切换中…") : `${uiText(topNextLabel)} →` }}</button>
+        <button class="next" type="button" :disabled="!topNextTarget || nextLoading" @click="goToNext(effectiveNextMode)">{{ nextLoading ? uiText("切换中…") : `${uiText(topNextLabel)} →` }}</button>
       </div>
     </nav>
     <section v-if="error && !question" class="question-load-error" role="alert">
@@ -1361,6 +1442,7 @@ onBeforeRouteLeave(() => {
       <div><button type="button" @click="load">{{ uiText("重试") }}</button><button type="button" @click="backToEntryPoint">{{ uiText("返回题库") }}</button><button type="button" :disabled="!topPreviousTarget" @click="goToPrevious">{{ uiText("返回") }}{{ uiText(topPreviousLabel) }}</button></div>
     </section>
     <p v-else-if="error" class="error-state">{{ uiText(error) }}</p>
+    <p v-if="previewNavigationError" role="status">{{ previewNavigationError }} <button type="button" @click="loadPreviewNavigation()">{{ uiText("重试题单") }}</button></p>
     <div v-if="loading" class="question-skeleton">{{ uiText("正在加载题目…") }}</div>
     <template v-else-if="question">
       <header class="question-header">
@@ -1378,7 +1460,7 @@ onBeforeRouteLeave(() => {
       <div class="question-workbench">
         <div class="question-problem-pane">
           <p v-if="question.source_review_warning" role="note" class="source-review-warning">{{ question.source_review_warning }}</p>
-          <p v-if="question.original_source" class="source-original-link"><RouterLink :to="{ path: `/practice/${question.original_source.uuid}`, query: { ...questionRouteQuery(), view: 'original' } }">{{ uiText("查看完整原卷／原页（原始题图已保留） ↗") }}</RouterLink></p>
+          <p v-if="question.original_source" class="source-original-link"><RouterLink :to="{ path: `/practice/${question.original_source.uuid}`, query: { ...(previewContext ? {} : questionRouteQuery()), view: 'original' } }">{{ uiText("查看完整原卷／原页（原始题图已保留） ↗") }}</RouterLink></p>
           <nav v-if="question.source_context" class="source-tracking-toolbar" :aria-label="uiText('当前小题掌握情况')">
             <strong>{{ question.display_label }}</strong>
             <button @click="sourceViewer?.scrollToCurrent()">{{ uiText("定位本题") }}</button>
@@ -1498,12 +1580,12 @@ onBeforeRouteLeave(() => {
             </div>
             <p v-if="!similarKind">{{ uiText("请选择要练习的题源类型。") }}</p>
             <p v-else-if="similarLoading">{{ uiText("正在加载相似题…") }}</p>
-            <button v-for="item in similar" :key="item.uuid" @click="router.push({ path: `/practice/${item.uuid}`, query: questionRouteQuery() })"><span>{{ item.display_label || `题目 ${item.question_order}` }}</span><small>{{ item.document }} · {{ item.state }} · {{ item.attempt_count }} {{ uiText("次作答") }}</small><b>→</b></button>
+            <button v-for="item in similar" :key="item.uuid" @click="router.push({ path: `/practice/${item.uuid}`, query: previewContext ? {} : questionRouteQuery() })"><span>{{ item.display_label || `题目 ${item.question_order}` }}</span><small>{{ item.document }} · {{ item.state }} · {{ item.attempt_count }} {{ uiText("次作答") }}</small><b>→</b></button>
             <p v-if="similarKind && !similarLoading && !similar.length">{{ uiText("该知识点下暂无此题源类型的题目。") }}</p>
           </section>
 
           <section class="page-turn-settings" :aria-label="uiText('翻题偏好')">
-            <header><strong>{{ uiText("翻题偏好") }}</strong><label>{{ uiText("前后翻题") }}<select v-model="nextMode"><option value="sequential">{{ uiText("顺序题") }}</option><option value="overdue">{{ uiText("红色到期复习题") }}</option><option value="review">{{ uiText("黄色近期复习题") }}</option><option value="unattempted">{{ uiText("未做题") }}</option></select></label></header>
+            <header><strong>{{ uiText("翻题偏好") }}</strong><label>{{ uiText("前后翻题") }}<span v-if="previewContext">{{ uiText("沿当前题单顺序") }}</span><select v-else v-model="nextMode"><option value="sequential">{{ uiText("顺序题") }}</option><option value="overdue">{{ uiText("红色到期复习题") }}</option><option value="review">{{ uiText("黄色近期复习题") }}</option><option value="unattempted">{{ uiText("未做题") }}</option></select></label></header>
             <div class="page-turn-settings-grid">
               <label><input v-model="masteredAutoNext" type="checkbox">{{ uiText("掌握后切题") }}</label>
               <label><input v-model="reviewAutoNext" type="checkbox">{{ uiText("待复习后切题") }}</label>

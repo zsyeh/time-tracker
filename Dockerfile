@@ -48,4 +48,4 @@ HEALTHCHECK --interval=15s --timeout=5s --start-period=25s --retries=5 \
     CMD python -c "import urllib.request; request=urllib.request.Request('http://127.0.0.1:8000/admin/login/', headers={'X-Forwarded-Proto':'https'}); urllib.request.urlopen(request, timeout=3)" || exit 1
 
 ENTRYPOINT ["/app/docker-entrypoint.sh"]
-CMD ["gunicorn", "--workers", "2", "--bind", "0.0.0.0:8000", "--error-logfile", "-", "time_server.wsgi:application"]
+CMD ["gunicorn", "--limit-request-line", "8190", "--workers", "2", "--bind", "0.0.0.0:8000", "--error-logfile", "-", "time_server.wsgi:application"]

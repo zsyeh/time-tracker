@@ -1,5 +1,12 @@
+import { parseListContext } from './listContext'
 export function activeDestination(name: unknown, query: Record<string, unknown>): string {
   const route=String(name||'')
+  if (route === 'preview' || (route === 'question' && query.from === 'preview')) {
+    const context = parseListContext(query.list)
+    const origin = context?.returnTo.split(/[?#]/)[0].split('/')[1]
+    if (origin) return origin === 'diagnostic-queue' ? 'diagnostics' : origin
+    return 'practice'
+  }
   if(route.startsWith('paper'))return 'papers'
   if(route==='diagnostic-queue')return 'diagnostics'
   if(route!=='question')return route

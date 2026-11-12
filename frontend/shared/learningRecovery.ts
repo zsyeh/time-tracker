@@ -9,7 +9,7 @@ export function safeResumePath(path: string) {
   const url = new URL(path, location.origin)
   if (url.hash || [...url.searchParams.keys()].some(k => /token|password|secret|csrf|key|pwa_launch/i.test(k))) return false
   return /^\/(?:today|trends|sessions(?:\/[0-9a-f-]{36})?|issues|settings)?$/.test(url.pathname)
-    || /^\/(drill|ei)\/(?:practice(?:\/[0-9a-f-]{36})?|progress|settings|selected-pdf-pages|activity|book-activity|heatmap|selected-heatmap|core-heatmap|insight|favorites|review-later|diagnostics|diagnostic-queue|cockpit|circuit-selected|signal-selected|signal-formulas|analog-selected|digital-selected|communication-selected|papers(?:\/(?:new|[0-9a-f-]{36}(?:\/review)?))?|errata|feel)$/.test(url.pathname)
+    || /^\/(drill|ei)\/(?:practice(?:\/[0-9a-f-]{36})?|preview|progress|settings|selected-pdf-pages|activity|book-activity|heatmap|selected-heatmap|core-heatmap|insight|favorites|review-later|diagnostics|diagnostic-queue|cockpit|circuit-selected|signal-selected|signal-formulas|analog-selected|digital-selected|communication-selected|papers(?:\/(?:new|[0-9a-f-]{36}(?:\/review)?))?|errata|feel)$/.test(url.pathname)
 }
 export function isRecoveryLaunch() { return launch && (matchMedia('(display-mode: standalone)').matches || (navigator as Navigator & { standalone?: boolean }).standalone === true) }
 export async function startLearningRecovery(user: string | number, workspace: string, router: Router, request: Request) {
@@ -99,6 +99,8 @@ export async function startLearningRecovery(user: string | number, workspace: st
   let restoreUntil = performance.now()+4000
   const restorePath = currentPath()
   function restoreScroll() {
+    // The preview owns its measured virtual scroll root and stable entry anchor.
+    if (stopped || router.currentRoute.value.path === '/preview') return
     if (performance.now() > restoreUntil || !restorePlace || restorePlace.path !== restorePath || currentPath() !== restorePath) return
     window.scrollTo(0, restorePlace.scroll.window || 0)
     const right = document.querySelector('.question-control-pane'), left = document.querySelector('.question-problem-pane')

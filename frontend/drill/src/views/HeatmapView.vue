@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { uiText } from '../lib/uiText'
+import { buildListContext, previewLocation } from '../lib/listContext'
 import { learningUserId } from '../../../shared/foregroundTimer'
 import { runtimeWorkspace } from '../lib/runtimePath'
 import { computed, nextTick, onMounted, onUnmounted, ref, shallowRef, watch } from 'vue'
@@ -162,7 +163,7 @@ function openTopic(documentId: number, topicId: number) {
   })
 }
 
-function openQuestion(documentId: number, question: HeatmapQuestion) {
+function saveHeatmapReturn(documentId: number, question: HeatmapQuestion) {
   try {
     sessionStorage.setItem(returnStateKey.value, JSON.stringify({
       scope: scope.value, typeGroup: typeGroup.value, course: course.value,
@@ -173,6 +174,21 @@ function openQuestion(documentId: number, question: HeatmapQuestion) {
   } catch {
     // Private browsing may disallow storage; the return route still selects the question.
   }
+}
+
+function openGlobalPreview() {
+  const selected = selectedQuestion.value
+  const group = data.value?.groups[0]
+  const item = selected?.question || group?.questions[0]
+  if (item) saveHeatmapReturn(selected?.documentId || group!.document_id, item)
+  const query = { ...route.query, scope: scope.value, mode: mode.value, type_group: typeGroup.value, course: course.value, material: material.value, highlight: quickState.value, question: item?.uuid || '' }
+  const returnTo = router.resolve({ path: route.path, query }).fullPath
+  const context = buildListContext('heatmap', { ...shareScope.value, scope: scope.value }, returnTo)
+  void router.push(previewLocation(context, undefined, item?.uuid))
+}
+
+function openQuestion(documentId: number, question: HeatmapQuestion) {
+  saveHeatmapReturn(documentId, question)
   if (props.coreOnly) {
     void router.push({ path: `/practice/${question.uuid}`, query: {
       type_group: typeGroup.value, collection: 'core_selected', from: 'core-heatmap', scope: scope.value,
@@ -358,6 +374,7 @@ onUnmounted(() => {
     <header class="page-header">
       <div><h1>{{ props.coreOnly ? uiText("五科核心题热力图") : props.selectedOnly ? t('selectedHeatmap') : t('coverageByBook') }}</h1></div>
       <div class="heat-controls">
+        <button type="button" :disabled="loading || !data?.question_count" @click="openGlobalPreview">{{ uiText("全局预览") }}</button>
         <div v-if="!props.selectedOnly" class="heat-mode"><button type="button" :aria-pressed="mode === 'topics'" :class="{ active: mode === 'topics' }" @click="mode = 'topics'">{{ typeText('考点', 'Topics') }}</button><button type="button" :aria-pressed="mode === 'questions'" :class="{ active: mode === 'questions' }" @click="mode = 'questions'">{{ typeText('题目', 'Questions') }}</button></div>
         <div class="heat-scope"><button :class="{ active: scope === 'all' }" @click="scope = 'all'">{{ uiText('全部') }}</button><button :class="{ active: scope === 'past_exam' }" @click="scope = 'past_exam'">{{ typeText('历年题', 'Past exams') }}</button><button :class="{ active: scope === 'mock_exam' }" @click="scope = 'mock_exam'">{{ typeText('模拟题', 'Mock exams') }}</button></div>
         <div class="heat-legend" :aria-label="typeText('题目状态图例', 'Question status legend')"><i class="status-unattempted" /><span>{{ uiText('未做') }}</span><template v-if="mode === 'topics'"><i class="status-progress"></i><span>{{ typeText('进行中', 'In progress') }}</span></template><i class="status-mastered"></i><span>{{ uiText('已掌握') }}</span><i class="status-review"></i><span>{{ uiText('待复习') }}</span><i class="status-overdue"></i><span>{{ uiText('逾期') }}</span></div>

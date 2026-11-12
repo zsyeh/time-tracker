@@ -63,7 +63,7 @@ it('debounces historical edits and ignores a response for a question that has al
 })
 it('preserves search filters and index generation through consecutive question navigation', () => {
   const query = { q: 'Fourier', state: 'mastered', status: 'review', favorite: '1', review_later: '1', sort: 'relevance', search_version: '2', index_version: '1:alias:gen', document: 'book1', unexpected: 'ignore' }
-  const navigation = extract('function navigationQuery()', '\nfunction navigationQueryString()', 'navigationQuery', { router: { currentRoute: ref({ query }) } })
+  const navigation = extract('function navigationQuery()', '\nfunction navigationQueryString()', 'navigationQuery', { previewContext: ref(null), router: { currentRoute: ref({ query }) } })
   const { unexpected: _ignored, ...expected } = query
   expect(navigation()).toEqual(expected)
 })
@@ -71,7 +71,7 @@ it('preserves search filters and index generation through consecutive question n
 it('returns to the original Practice page without sending page as question navigation order', () => {
   const push = vi.fn()
   const navigationQuery = () => ({ q: 'Fourier', practice_page: '3', sort: 'relevance', index_version: 'g1' })
-  const back = extract('function backToEntryPoint()', '\nconst question =', 'backToEntryPoint', { route: { query: {} }, router: { push }, navigationQuery })
+  const back = extract('function backToEntryPoint()', '\nconst question =', 'backToEntryPoint', { previewContext: ref(null), route: { query: {} }, router: { push }, navigationQuery })
   back()
   expect(push).toHaveBeenCalledWith({ path: '/practice', query: { q: 'Fourier', page: '3', sort: 'relevance', index_version: 'g1' } })
 })

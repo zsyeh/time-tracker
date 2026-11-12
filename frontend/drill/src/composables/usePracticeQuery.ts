@@ -34,6 +34,7 @@ export function usePracticeQuery(invalidate: () => void) {
     })
   }
   function cancelTyping() { if (timer) clearTimeout(timer); timer = undefined }
+  function cancelDraft() { cancelTyping(); composing.value = false; draft.value = applied.value.q || '' }
   function submitSearch() {
     cancelTyping()
     if (composing.value) return
@@ -51,5 +52,5 @@ export function usePracticeQuery(invalidate: () => void) {
     if (path !== ownerPath) { cancelTyping(); pending = null }
   }, { flush: 'sync' })
   onScopeDispose(() => { disposed = true; cancelTyping(); pending = null })
-  return { applied, draft, composing, refresh, apply, input, submitSearch, compositionStart, compositionEnd }
+  return { applied, draft, composing, refresh, apply, input, submitSearch, cancelDraft, compositionStart, compositionEnd }
 }

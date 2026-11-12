@@ -20,6 +20,7 @@
     "@mdit/plugin-sup": "0.22.0",
     "@mdit/plugin-tasklist": "0.22.0",
     "@mdit/plugin-tex": "0.22.0",
+    "@tanstack/vue-virtual": "3.13.52",
     "cindyjs": "0.0.5",
     "dompurify": "^3.4.13",
     "echarts": "^6.1.0",

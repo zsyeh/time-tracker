@@ -234,7 +234,7 @@ def finish_timing(user, question, key, data):
 
 # Navigation metadata only. No credentials, tokens, arbitrary URLs or user text.
 def valid_location(workspace, path, user=None):
-    if workspace not in ('timer', 'drill', 'ei') or not isinstance(path, str) or len(path) > 2048:
+    if workspace not in ('timer', 'drill', 'ei') or not isinstance(path, str) or len(path) > 16384:
         return False
     p = urlsplit(path)
     if p.scheme or p.netloc or p.fragment or not path.startswith('/') or path.startswith('//') or '\\' in path:
@@ -257,7 +257,7 @@ def valid_location(workspace, path, user=None):
         from .models import ExamPaper
         subject = 'ei' if workspace == 'ei' else 'math2'
         return user is not None and ExamPaper.objects.filter(uuid=paper.group(1), user=user, blueprint__subject=subject).exists()
-    return bool(re.fullmatch(r'/(?:practice|progress|settings|selected-pdf-pages|activity|book-activity|heatmap|selected-heatmap|core-heatmap|insight|favorites|review-later|diagnostics|diagnostic-queue|cockpit|circuit-selected|signal-selected|signal-formulas|analog-selected|digital-selected|communication-selected|papers|errata|feel)', route))
+    return bool(re.fullmatch(r'/(?:practice|preview|progress|settings|selected-pdf-pages|activity|book-activity|heatmap|selected-heatmap|core-heatmap|insight|favorites|review-later|diagnostics|diagnostic-queue|cockpit|circuit-selected|signal-selected|signal-formulas|analog-selected|digital-selected|communication-selected|papers|errata|feel)', route))
 
 class LearningRecoveryView(APIView):
     def finalize_response(self, request, response, *args, **kwargs):

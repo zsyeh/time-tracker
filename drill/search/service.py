@@ -311,43 +311,60 @@ class CountedPage:
         return list(self.queryset[key])
 
 
-def question_list_response(request):
-    from drill.views import workspace_questions, request_workspace, question_progress
+def question_list_scope(request):
+    """Shared membership before format filtering; caller owns read_snapshot.
+
+    Preview pages use the identical live relation without statistics or full
+    Question hydration outside their visible batch.
+    """
+    from drill.views import workspace_questions, request_workspace
     from drill.selected_collections import filter_collection
-    from drill.serializers import QuestionSummarySerializer
     workspace=request_workspace(request)
     params=request.query_params
     sort=params.get('sort','relevance' if params.get('q','').strip() else 'source')
     if sort not in {'source','relevance'}:
         raise ValidationError({'code':'INVALID_FILTER','sort':'Use relevance or source.'})
+    queryset=filter_collection(workspace_questions(request),request)
+    if params.get('include_structure')!='1':
+        queryset=queryset.filter(is_practiceable=True)
+    for param,field in [('document','document_id'),('topic','similarity_topic_id')]:
+        if params.get(param):
+            try:
+                value=int(params[param])
+            except (ValueError,TypeError):
+                raise ValidationError({'code':'INVALID_FILTER',param:'Use an integer ID.'})
+            queryset=queryset.filter(**{field:value})
+    category=params.get('source_category','').strip()
+    if category in dict(Question.SOURCE_CATEGORY_CHOICES):
+        queryset=queryset.filter(source_category=category)
+    if params.get('past_exam')=='1':
+        queryset=queryset.filter(source_category='past_exam')
+    queryset,plan,state,version,hybrid=membership(queryset,request,workspace)
+    return queryset,plan,state,version,hybrid,sort
+
+
+def order_question_scope(queryset,plan,hybrid,sort):
+    """The same stable relevance/source order for Practice and preview pages."""
+    if hybrid and plan.raw and sort=='relevance':
+        return queryset.annotate(_search_tier=SearchExpression(plan,'tier'),_search_score=SearchExpression(plan,'score'),
+            _search_identifier=SearchExpression(plan,'identifier')).order_by('-_search_identifier','_search_tier','-_search_score','document_id','question_order','pk')
+    return queryset.order_by('document_id','question_order','pk')
+
+
+def question_list_response(request):
+    from drill.views import request_workspace, question_progress
+    from drill.serializers import QuestionSummarySerializer
+    workspace=request_workspace(request)
+    params=request.query_params
     with read_snapshot():
-        queryset=filter_collection(workspace_questions(request),request)
-        if params.get('include_structure')!='1':
-            queryset=queryset.filter(is_practiceable=True)
-        for param,field in [('document','document_id'),('topic','similarity_topic_id')]:
-            if params.get(param):
-                try:
-                    value=int(params[param])
-                except (ValueError,TypeError):
-                    raise ValidationError({'code':'INVALID_FILTER',param:'Use an integer ID.'})
-                queryset=queryset.filter(**{field:value})
-        category=params.get('source_category','').strip()
-        if category in dict(Question.SOURCE_CATEGORY_CHOICES):
-            queryset=queryset.filter(source_category=category)
-        if params.get('past_exam')=='1':
-            queryset=queryset.filter(source_category='past_exam')
-        queryset,plan,state,version,hybrid=membership(queryset,request,workspace)
+        queryset,plan,state,version,hybrid,sort=question_list_scope(request)
         broad_scope=not plan.raw and params.get('status','all') in ('','all') and not any(params.get(key)
             for key in ('collection','document','topic','source_category','past_exam','unattempted','favorite','review_later','marker'))
         stats,type_rows=aggregate_types(queryset,request.user,coverage=hybrid,broad_scope=broad_scope)
         queryset=filter_exam_type(queryset,params)
         count=sum(row['total'] for row in type_rows if (not params.get('exam_type') or row['final_question_type']==params['exam_type'])
             and (not params.get('type_group') or type_group(row['final_question_type'])==params['type_group']))
-        if hybrid and plan.raw and sort=='relevance':
-            queryset=queryset.annotate(_search_tier=SearchExpression(plan,'tier'),_search_score=SearchExpression(plan,'score'),
-                _search_identifier=SearchExpression(plan,'identifier')).order_by('-_search_identifier','_search_tier','-_search_score','document_id','question_order','pk')
-        else:
-            queryset=queryset.order_by('document_id','question_order','pk')
+        queryset=order_question_scope(queryset,plan,hybrid,sort)
         paginator=PageNumberPagination();paginator.page_size=24
         page=paginator.paginate_queryset(CountedPage(queryset.values_list('pk',flat=True),count),request)
         ids=list(page)
@@ -362,6 +379,8 @@ def question_list_response(request):
             for pk,result in zip(ids,response.data['results']):
                 if pk in projections:
                     result['search_match']=search_match(plan,projections[pk])
+        response.data.update(page=paginator.page.number,page_size=paginator.page_size,
+            total_pages=(count+paginator.page_size-1)//paginator.page_size)
         response.data['type_statistics']=stats
         if params.get('search_version')=='2' or hybrid:
             metadata_only=0

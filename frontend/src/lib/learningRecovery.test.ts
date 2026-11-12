@@ -94,3 +94,15 @@ it('accepts safe settings and PDF routes while guarding paper paths',async()=>{
   expect(module.safeResumePath('/drill/papers/123e4567-e89b-12d3-a456-426614174000/review')).toBe(true)
   expect(module.safeResumePath('/drill/settings?secret=bad')).toBe(false)
 })
+
+it('accepts virtual preview deep links without treating its private scroller as window scroll',async()=>{
+  const {module,router}=await setup(false)
+  expect(module.safeResumePath('/drill/preview?list=%7B%7D')).toBe(true)
+  expect(module.safeResumePath('/ei/preview')).toBe(true)
+  router.addRoute({path:'/preview',component:{template:'<p>preview</p>'}})
+  await router.push('/preview')
+  state.locations.drill={path:'/drill/preview',scroll:{window:1900}}
+  stop=await module.startLearningRecovery(1,'drill',router,request)
+  await new Promise(r=>requestAnimationFrame(r))
+  expect(window.scrollTo).not.toHaveBeenCalled()
+})

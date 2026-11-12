@@ -1114,7 +1114,7 @@ class DrillLoginHandoff(models.Model):
         related_name='+',
     )
     token_digest = models.CharField(max_length=64, unique=True, db_index=True)
-    target_path = models.CharField(max_length=500, default='/practice')
+    target_path = models.CharField(max_length=16384, default='/practice')
     target_site = models.CharField(
         max_length=16,
         choices=[

@@ -63,3 +63,12 @@ it('drops an already queued query when its view is disposed', async () => {
   await flush()
   expect(replace).not.toHaveBeenCalled()
 })
+
+it('can discard an unsubmitted draft before pagination without a later debounce resetting that page', async () => {
+ const {router,state}=await mount('/practice?q=导数&collection=selected')
+ state.draft.value='unsubmitted';state.input()
+ state.cancelDraft();state.apply({page:'3',index_version:'v1'},'push',false)
+ await flush();await vi.advanceTimersByTimeAsync(500);await flush()
+ expect(router.currentRoute.value.query).toMatchObject({q:'导数',collection:'selected',page:'3',index_version:'v1'})
+ expect(state.draft.value).toBe('导数')
+})

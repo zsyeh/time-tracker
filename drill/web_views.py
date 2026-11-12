@@ -157,6 +157,8 @@ def site_icon_redirect(request, icon_kind='touch'):
 
 
 def _safe_drill_target(value, site='drill'):
+    if not isinstance(value, str) or len(value) > 16384 or any(ord(c) < 32 for c in value) or '\\' in value:
+        return '/' if site == 'dash' else '/practice'
     parsed = urlsplit(value or '')
     if parsed.scheme or parsed.netloc or not parsed.path.startswith('/') or parsed.path.startswith('//'):
         return '/' if site == 'dash' else '/practice'
@@ -164,7 +166,7 @@ def _safe_drill_target(value, site='drill'):
     if site == 'dash':
         return path + (f'?{parsed.query}' if parsed.query else '') if path == '/' else '/'
     allowed = path in {
-        '/', '/practice', '/progress', '/settings', '/activity', '/book-activity', '/heatmap', '/selected-heatmap', '/paper', '/papers', '/favorites', '/review-later',
+        '/', '/practice', '/preview', '/progress', '/settings', '/activity', '/book-activity', '/heatmap', '/selected-heatmap', '/paper', '/papers', '/favorites', '/review-later',
         '/feel', '/insight', '/errata', '/cockpit', '/circuit-selected', '/signal-selected', '/signal-formulas', '/analog-selected', '/digital-selected', '/communication-selected', '/core-heatmap',
         '/diagnostics', '/diagnostic-queue', '/selected-pdf-pages',
     } or path.startswith('/practice/') or path.startswith('/papers/')
@@ -341,7 +343,7 @@ def drill_spa_view(request, **_route):
     response['X-Robots-Tag'] = 'noindex, nofollow, noarchive'
     response['Content-Security-Policy'] = (
         "default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; "
-        "img-src 'self' data:; font-src 'self' data:; connect-src 'self'; "
+        "img-src 'self' data: blob:; font-src 'self' data:; connect-src 'self'; "
         "object-src 'none'; frame-ancestors 'none'; base-uri 'self'"
     )
     return response

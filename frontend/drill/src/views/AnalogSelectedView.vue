@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { uiText } from '../lib/uiText'
+import { typeText } from '../lib/examTypes'
+import { buildListContext, previewLocation } from '../lib/listContext'
 import SelectedCollectionLayout from '../components/SelectedCollectionLayout.vue'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -41,6 +43,10 @@ function change(key: string, value: string) {
   if (!value) delete query[key]
   void router.replace({ path: '/analog-selected', query })
 }
+function previewAll() {
+  const context = buildListContext('selected', { ...filters.value, collection: 'analog_selected' }, route.fullPath)
+  void router.push(previewLocation(context, undefined, data.value?.groups.flatMap(group => group.questions)[0]?.uuid))
+}
 function open(question: Item) {
   void router.push({ path: `/practice/${question.uuid}`, query: analogPracticeQuery(filters.value) })
 }
@@ -61,7 +67,7 @@ onMounted(() => {
 
 <template>
   <SelectedCollectionLayout :class="{ 'exam-type-colours': formatColours }" class="analog-selected-page">
-    <header class="page-header"><div><h1>{{ uiText("模电严选") }}</h1><p>{{ uiText("先练静态与小信号、深度负反馈和运放；再补差分、高频与综合分析。原题原记录，不重复建题。") }}</p></div><button class="primary-action" :disabled="!data?.progress.total || loading" @click="start()">{{ uiText("开始／继续刷题 →") }}</button></header>
+    <header class="page-header"><div><h1>{{ uiText("模电严选") }}</h1><p>{{ uiText("先练静态与小信号、深度负反馈和运放；再补差分、高频与综合分析。原题原记录，不重复建题。") }}</p></div><button class="preview-all" type="button" :disabled="!data?.progress.total || loading" @click="previewAll">{{ typeText('全局预览', 'Preview all') }}</button><button class="primary-action" :disabled="!data?.progress.total || loading" @click="start()">{{ uiText("开始／继续刷题 →") }}</button></header>
     <details class="selected-notice"><summary>{{ uiText("题库说明") }}</summary><p>{{ uiText("排序采用你的备考优先级，不代表命题概率。静态＋动态是首轮重点；差分、高频、多级可专项补强，基础小题单列。默认展示核心必练中的全部题目，不区分当前是否已有答案。") }}</p></details>
     <details class="selected-filter-disclosure"><summary>{{ uiText("筛选") }} · {{ Object.values(filters).filter(Boolean).length }}</summary>
     <section class="analog-filters selected-filters" :aria-label="uiText('模电严选筛选')">

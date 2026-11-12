@@ -10,6 +10,7 @@ from .communication_selected_views import CommunicationSelectedView
 from .signal_formula_review_views import SignalFormulaReviewView
 from .practice_trend_views import PracticeTrendView
 from .pdf_page_status_views import PdfPageStatusView
+from .collection_preview import CollectionPreviewView
 from .diagnostic_views import (
     AttemptDiagnosisView, DiagnosticDashboardView, DiagnosticQuestionListView, ReviewPlanView,
 )
@@ -46,6 +47,7 @@ from .views import (
 
 
 urlpatterns = [
+    path('collection-preview/', CollectionPreviewView.as_view(), name='collection_preview'),
     path('search/suggestions/', QuestionSearchSuggestionsView.as_view(), name='question_search_suggestions'),
     path('questions/<uuid:question_uuid>/exam-type/', QuestionExamTypeView.as_view(), name='question_exam_type'),
     path('learning-shares/', manage_learning_shares, name='learning_shares'),

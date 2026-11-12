@@ -1,5 +1,7 @@
 <script setup lang="ts">
 import { uiText } from '../lib/uiText'
+import { typeText } from '../lib/examTypes'
+import { buildListContext, previewLocation } from '../lib/listContext'
 import SelectedCollectionLayout from '../components/SelectedCollectionLayout.vue'
 import { computed, nextTick, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -41,6 +43,10 @@ function change(key: string, value: string) {
   if (!value) delete query[key]
   void router.replace({ path: '/communication-selected', query })
 }
+function previewAll() {
+  const context = buildListContext('selected', { ...filters.value, collection: 'communication_selected' }, route.fullPath)
+  void router.push(previewLocation(context, undefined, data.value?.groups.flatMap(group => group.questions)[0]?.uuid))
+}
 function open(question: Item) {
   void router.push({ path: `/practice/${question.uuid}`, query: communicationPracticeQuery(filters.value) })
 }
@@ -61,7 +67,7 @@ onMounted(() => {
 
 <template>
   <SelectedCollectionLayout :class="{ 'exam-type-colours': formatColours }" class="communication-selected-page">
-    <header class="page-header"><div><h1>{{ uiText("通信严选") }}</h1><p>{{ uiText("先练无码间串扰、匹配滤波和 PCM／香农容量，再补模拟与二进制调制。原题原记录，不重复建题。") }}</p></div><button class="primary-action" :disabled="!data?.progress.total || loading" @click="start()">{{ uiText("开始／继续刷题 →") }}</button></header>
+    <header class="page-header"><div><h1>{{ uiText("通信严选") }}</h1><p>{{ uiText("先练无码间串扰、匹配滤波和 PCM／香农容量，再补模拟与二进制调制。原题原记录，不重复建题。") }}</p></div><button class="preview-all" type="button" :disabled="!data?.progress.total || loading" @click="previewAll">{{ typeText('全局预览', 'Preview all') }}</button><button class="primary-action" :disabled="!data?.progress.total || loading" @click="start()">{{ uiText("开始／继续刷题 →") }}</button></header>
     <details class="selected-notice"><summary>{{ uiText("题库说明") }}</summary><p>{{ uiText("排序采用你的备考优先级，不代表命题概率。接收误码率不等于匹配滤波大题；复杂均衡、抗噪推导不混入主攻。默认展示核心必练中的全部题目，不区分当前是否已有答案。") }}</p></details>
     <details class="selected-filter-disclosure"><summary>{{ uiText("筛选") }} · {{ Object.values(filters).filter(Boolean).length }}</summary>
     <section class="communication-filters selected-filters" :aria-label="uiText('通信严选筛选')">
