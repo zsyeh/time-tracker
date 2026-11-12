@@ -78,7 +78,9 @@ function resize() {
  cancelAnimationFrame(resizeFrame)
  resizeFrame = requestAnimationFrame(() => {
   const root = scroller.value; if (!root) return
-  const anchor = lastAnchor
+  // Initial layout belongs to the caller's saved-anchor restoration. A
+  // temporary scrollToIndex(offset=0) must not start a competing restore.
+  const anchor = previousWidth > 0 ? lastAnchor : null
   viewportHeight.value = Math.max(160, (window.visualViewport?.height ?? window.innerHeight) - root.getBoundingClientRect().top - 12)
   const nextWidth = root.clientWidth
   if (nextWidth !== previousWidth) {
