@@ -59,9 +59,9 @@ def get_plan(query):
         raise ValidationError({'code': exc.code, 'detail': str(exc)})
 
 
-def index_state(workspace, params):
+def index_state(workspace, params, *, pin_version=True):
     if getattr(settings,'DRILL_SEARCH_BACKEND','legacy') != 'hybrid_v1':
-        if params.get('index_version') and params['index_version'] != 'legacy:0':
+        if pin_version and params.get('index_version') and params['index_version'] != 'legacy:0':
             raise SearchIndexChanged({'code':'SEARCH_INDEX_CHANGED','index_version':'legacy:0'})
         return None, 'legacy:0', False
     state = QuestionSearchState.objects.filter(workspace=workspace).first()
@@ -70,7 +70,7 @@ def index_state(workspace, params):
     hybrid = backend == 'hybrid_v1'
     if hybrid and (not state or not state.ready or state.rebuilding or state.build_source_version != source_version()):
         raise SearchUnavailable({'code':'SEARCH_INDEX_NOT_READY','detail':'Search index is not ready; retry later.'})
-    if params.get('index_version') and params['index_version'] != version:
+    if pin_version and params.get('index_version') and params['index_version'] != version:
         raise SearchIndexChanged({'code':'SEARCH_INDEX_CHANGED','index_version':version})
     return state, version, hybrid
 
@@ -82,23 +82,29 @@ def legacy_membership(queryset, raw):
         |Q(similarity_topic__title__icontains=raw)|Q(similarity_topic__display_title__icontains=raw))
 
 
-def hybrid_membership(queryset, plan, workspace, *, ranked=False):
+def hybrid_membership(queryset, plan, workspace, *, ranked=False, materialize_candidates=True):
     if not plan.raw:
         return queryset
     if not plan.groups:
         return queryset.none()
     queryset = queryset.filter(document__workspace=workspace)
-    if connection.vendor == 'postgresql':
-        # A selective public-index relation must be evaluated independently of
-        # poorly estimated catalog OR filters. OFFSET 0 prevents flattening, but
-        # does NOT force an index: broad single-character queries may seq-scan.
+    if connection.vendor == 'postgresql' and materialize_candidates:
+        # Evaluate the public candidate relation once per statement. OFFSET 0
+        # alone allowed a parameterized nested loop to rerun the same JSONB
+        # scan for every local question during navigation. MATERIALIZED keeps
+        # the result reusable without forcing an index on broad short queries.
         # No candidate cap; the outer live workspace/collection/user scope remains
         # authoritative. SQL identifiers come only from Django's compiler.
         candidates = QuestionSearchDocument.objects.filter(workspace=workspace,schema_version=1).alias(
             _matched=SearchExpression(plan,prefix='')).filter(_matched=True).order_by().values('question_id')
         sql,params=candidates.query.sql_with_params()
-        queryset=queryset.filter(pk__in=RawSQL('SELECT question_id FROM ('+sql+' OFFSET 0) search_candidates',params))
+        queryset=queryset.filter(pk__in=RawSQL(
+            'WITH search_candidates AS MATERIALIZED ('+sql+') '
+            'SELECT question_id FROM search_candidates',params))
     else:
+        # Navigation already has a narrow document/source or selected scope.
+        # Its one-to-one projection join tests only those rows; repeatedly
+        # scanning every workspace candidate costs more than PK lookups here.
         queryset = queryset.filter(search_document__workspace=workspace,search_document__schema_version=1).alias(
             _search_matches=SearchExpression(plan)).filter(_search_matches=True)
     if ranked:
@@ -200,13 +206,14 @@ def apply_state_filters(queryset, params, user):
     return queryset
 
 
-def membership(queryset, request, workspace, *, expand=True):
-    state,version,hybrid=index_state(workspace,request.query_params)
+def membership(queryset, request, workspace, *, expand=True, pin_version=True, materialize_candidates=True):
+    # A pagination pin protects list ordering, never the lifetime of a UUID.
+    state,version,hybrid=index_state(workspace,request.query_params,pin_version=pin_version)
     plan=get_plan(request.query_params.get('q',''))
     queryset=apply_state_filters(queryset,request.query_params,request.user)
     if hybrid:
         plan=expand_typos(queryset,plan,workspace) if expand else plan
-        queryset=hybrid_membership(queryset,plan,workspace)
+        queryset=hybrid_membership(queryset,plan,workspace,materialize_candidates=materialize_candidates)
     else:
         queryset=legacy_membership(queryset,plan.raw)
     return queryset,plan,state,version,hybrid

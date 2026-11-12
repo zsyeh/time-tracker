@@ -1,0 +1,240 @@
+{
+  "base": "http://127.0.0.1:8023",
+  "engine": "webkit",
+  "rotation_requested": true,
+  "cases": [
+    {
+      "workspace": "drill",
+      "width": 390,
+      "height": 844,
+      "first_open_ms": 694.727795664221,
+      "search_click_to_ready_ms": 229.38661510124803,
+      "next_ms": 51.79800698533654,
+      "previous_ms": 46.82807996869087,
+      "primary_detail_requests": 1,
+      "long_tasks_ms": [],
+      "long_task_observer_supported": false,
+      "rotations": [
+        {
+          "width": 844,
+          "height": 390,
+          "overflow": false,
+          "navigationOverlap": false
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "overflow": false,
+          "navigationOverlap": false
+        }
+      ],
+      "horizontal_overflow": false,
+      "errors": [],
+      "pass": true
+    },
+    {
+      "workspace": "drill",
+      "width": 820,
+      "height": 1180,
+      "first_open_ms": 696.2576848454773,
+      "search_click_to_ready_ms": 226.5847409144044,
+      "next_ms": 54.02183486148715,
+      "previous_ms": 42.75448294356465,
+      "primary_detail_requests": 1,
+      "long_tasks_ms": [],
+      "long_task_observer_supported": false,
+      "rotations": [
+        {
+          "width": 1180,
+          "height": 820,
+          "overflow": false,
+          "navigationOverlap": false
+        },
+        {
+          "width": 820,
+          "height": 1180,
+          "overflow": false,
+          "navigationOverlap": false
+        }
+      ],
+      "horizontal_overflow": false,
+      "errors": [],
+      "pass": true
+    },
+    {
+      "workspace": "drill",
+      "width": 1180,
+      "height": 820,
+      "first_open_ms": 704.2803801596165,
+      "search_click_to_ready_ms": 228.9032656699419,
+      "next_ms": 54.84114121645689,
+      "previous_ms": 41.194664780050516,
+      "primary_detail_requests": 1,
+      "long_tasks_ms": [],
+      "long_task_observer_supported": false,
+      "rotations": [
+        {
+          "width": 820,
+          "height": 1180,
+          "overflow": false,
+          "navigationOverlap": false
+        },
+        {
+          "width": 1180,
+          "height": 820,
+          "overflow": false,
+          "navigationOverlap": false
+        }
+      ],
+      "horizontal_overflow": false,
+      "errors": [],
+      "pass": true
+    },
+    {
+      "workspace": "drill",
+      "width": 1440,
+      "height": 900,
+      "first_open_ms": 731.2622028402984,
+      "search_click_to_ready_ms": 232.58795915171504,
+      "next_ms": 48.09348937124014,
+      "previous_ms": 46.04667006060481,
+      "primary_detail_requests": 1,
+      "long_tasks_ms": [],
+      "long_task_observer_supported": false,
+      "rotations": [
+        {
+          "width": 900,
+          "height": 1440,
+          "overflow": false,
+          "navigationOverlap": false
+        },
+        {
+          "width": 1440,
+          "height": 900,
+          "overflow": false,
+          "navigationOverlap": false
+        }
+      ],
+      "horizontal_overflow": false,
+      "errors": [],
+      "pass": true
+    },
+    {
+      "workspace": "ei",
+      "width": 390,
+      "height": 844,
+      "first_open_ms": 715.6423581764102,
+      "search_click_to_ready_ms": 229.83439080417156,
+      "next_ms": 52.98641184344888,
+      "previous_ms": 47.92189970612526,
+      "primary_detail_requests": 1,
+      "long_tasks_ms": [],
+      "long_task_observer_supported": false,
+      "rotations": [
+        {
+          "width": 844,
+          "height": 390,
+          "overflow": false,
+          "navigationOverlap": false
+        },
+        {
+          "width": 390,
+          "height": 844,
+          "overflow": false,
+          "navigationOverlap": false
+        }
+      ],
+      "horizontal_overflow": false,
+      "errors": [],
+      "pass": true
+    },
+    {
+      "workspace": "ei",
+      "width": 820,
+      "height": 1180,
+      "first_open_ms": 685.402643866837,
+      "search_click_to_ready_ms": 226.2080921791494,
+      "next_ms": 52.2289858199656,
+      "previous_ms": 61.52635999023914,
+      "primary_detail_requests": 1,
+      "long_tasks_ms": [],
+      "long_task_observer_supported": false,
+      "rotations": [
+        {
+          "width": 1180,
+          "height": 820,
+          "overflow": false,
+          "navigationOverlap": false
+        },
+        {
+          "width": 820,
+          "height": 1180,
+          "overflow": false,
+          "navigationOverlap": false
+        }
+      ],
+      "horizontal_overflow": false,
+      "errors": [],
+      "pass": true
+    },
+    {
+      "workspace": "ei",
+      "width": 1180,
+      "height": 820,
+      "first_open_ms": 725.8984819054604,
+      "search_click_to_ready_ms": 226.07628488913178,
+      "next_ms": 52.08222521468997,
+      "previous_ms": 44.710332062095404,
+      "primary_detail_requests": 1,
+      "long_tasks_ms": [],
+      "long_task_observer_supported": false,
+      "rotations": [
+        {
+          "width": 820,
+          "height": 1180,
+          "overflow": false,
+          "navigationOverlap": false
+        },
+        {
+          "width": 1180,
+          "height": 820,
+          "overflow": false,
+          "navigationOverlap": false
+        }
+      ],
+      "horizontal_overflow": false,
+      "errors": [],
+      "pass": true
+    },
+    {
+      "workspace": "ei",
+      "width": 1440,
+      "height": 900,
+      "first_open_ms": 718.7378508970141,
+      "search_click_to_ready_ms": 231.41412530094385,
+      "next_ms": 48.965095076709986,
+      "previous_ms": 64.09872090443969,
+      "primary_detail_requests": 1,
+      "long_tasks_ms": [],
+      "long_task_observer_supported": false,
+      "rotations": [
+        {
+          "width": 900,
+          "height": 1440,
+          "overflow": false,
+          "navigationOverlap": false
+        },
+        {
+          "width": 1440,
+          "height": 900,
+          "overflow": false,
+          "navigationOverlap": false
+        }
+      ],
+      "horizontal_overflow": false,
+      "errors": [],
+      "pass": true
+    }
+  ],
+  "pass": true
+}

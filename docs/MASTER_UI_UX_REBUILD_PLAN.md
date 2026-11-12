@@ -1478,3 +1478,60 @@ release_image='time-tracker-ha:<已经构建并验收的唯一tag>'
 基准commit：[6b83e292](https://github.com/zsyeh/time-tracker/tree/6b83e2924b9042e75e87bc091ea7f24e0948f8ee)。关键文件固定链接：[Drill App](https://github.com/zsyeh/time-tracker/blob/6b83e2924b9042e75e87bc091ea7f24e0948f8ee/frontend/drill/src/App.vue)、[Drill styles](https://github.com/zsyeh/time-tracker/blob/6b83e2924b9042e75e87bc091ea7f24e0948f8ee/frontend/drill/src/styles.css)、[QuestionView](https://github.com/zsyeh/time-tracker/blob/6b83e2924b9042e75e87bc091ea7f24e0948f8ee/frontend/drill/src/views/QuestionView.vue)、[PracticeView](https://github.com/zsyeh/time-tracker/blob/6b83e2924b9042e75e87bc091ea7f24e0948f8ee/frontend/drill/src/views/PracticeView.vue)、[SettingsView](https://github.com/zsyeh/time-tracker/blob/6b83e2924b9042e75e87bc091ea7f24e0948f8ee/frontend/src/views/SettingsView.vue)、[models](https://github.com/zsyeh/time-tracker/blob/6b83e2924b9042e75e87bc091ea7f24e0948f8ee/drill/models.py)、[views/search](https://github.com/zsyeh/time-tracker/blob/6b83e2924b9042e75e87bc091ea7f24e0948f8ee/drill/views.py)、[server URLs](https://github.com/zsyeh/time-tracker/blob/6b83e2924b9042e75e87bc091ea7f24e0948f8ee/time_server/urls.py)。若仓库访问权限限制，工作树同SHA是实际审计依据，不声称匿名GitHub一定可读。
 
 本地可携带附件：[仓库审计](uiux-rebuild-research/repository.md)、[只读数据库汇总](uiux-rebuild-evidence/production-readonly.json)、[小样本SQL基线](uiux-rebuild-evidence/search-baseline.json)、[对比度计算](uiux-rebuild-evidence/accent-contrast.json)、[截图DOM度量](uiux-rebuild-evidence/visual-audit.json)、[证据说明](uiux-rebuild-evidence/README.md)。它们不含密钥或用户Note正文。独立文档review记录在[review.md](uiux-rebuild-research/review.md)，只有已完成检查和关闭的问题才能填写通过。
+
+
+## 32. 第二轮回归修复与账号预设同步（2026-11-12，增量要求）
+
+本章追加到原 R01–R16 矩阵之后，不覆盖其历史决策与证据。本轮授权修复、迁移、测试、构建、提交及生产部署；保留可执行应用回滚，禁止用旧数据库覆盖新增学习记录。用户本轮未附可读取的截图/录屏，用户已指示自行复现；以真实代码、浏览器复现、生产只读测量为证据，不虚称已查看附件或完成实机 Safari 验证。
+
+### 32.1 基线与文件所有权
+
+- 线上基线：应用9df573e，归档0103df5；镜像eaec8c27f86b，实际重核healthy；新隔离工作树 `/home/eh/learning-os-round2`，分支`fix/learning-os-round2`。原工作树保持完整。
+- 旧热力图视觉基准：用户本轮大改之前实际生产6b83e29，不使用更早猜想版本。
+- Main独占：App/main/routes、共享tokens/controls/theme/prefs/frontendSidebar/两套Settings、Django views.py/API auth/urls/SPA HTML注入、所有最终集成与部署。
+- Search/Question agent：Practice/Question及专属composables、workspace cache、drill/search和专属回归。共享views修改由Main执行。
+- Heatmap agent：HeatmapView及专属组件/测试/截图，后端共享文件只提建议。
+- Preferences backend agent：tracker新模型/0022迁移/user_preferences服务/专属测试；不改runtime settings/auth/urls，不接触环境密钥。
+
+### 32.2 增量追踪矩阵
+
+| 用户ID | 施工任务 | 真实位置/责任 | 必须提供的验收证据 | 状态 |
+|---|---|---|---|---|
+| BUG-01 | R2-04A 设置宽度/URI修复 | 两套Settings/共享SettingsRow与样式/Main | 375/820/1180/1440长中英文/URI无窄列、无父级溢出截图 | 实现/本地验证通过；生产待验 |
+| BUG-02A | R2-02A 搜索点击/返回 | Practice/usePracticeQuery/Question/service/navigation_queryset | stale generation有效UUID可打开；输入debounce不篡改目标路由；搜索→题目→返回→再搜浏览器闭环 | 实现/本地验证通过；生产待验 |
+| BUG-02B | R2-02B 搜索卡顿 | drill/search/service+PG/前端Network | 同库SQL EXPLAIN ANALYZE、P50/P95、请求/响应bytes与渲染测量前后 | 实现/本地验证通过；生产待验 |
+| BUG-03 | R2-02C 题目性能 | Question/workspace/navigation API | 首次/下一/上一/搜索进入的API和usable前后；预取不重复GET，功能不减少 | 实现/本地验证通过；生产待验 |
+| BUG-04 | R2-03A 热力图性能 | HeatmapView/DrillHeatmapView | 相同963/9281网格API、DOM、首屏/选择/滚动测量，无状态或点击丢失 | 实现/本地验证通过；生产待验 |
+| BUG-05 | R2-04B 设置分类 | Timer Settings/Main | 改为分类+独立内容面板，URL/旧hash兼容；三端点击标题正确，不用错误容器滚动 | 实现/本地验证通过；生产待验 |
+| BUG-06 | R2-04C 折叠按钮重叠 | 两套App/SharedSidebar/Header/Main | 展开/折叠、375/820/1180/1440及旋转按钮矩形不交叠 | 实现/本地验证通过；生产待验 |
+| BUG-07 | R2-05A 可配置侧栏 | shared/preferences/sidebar与Settings/Main | 显示/转More、触控上下排序、组折叠、恢复默认；home/settings不可丢失 | 实现/本地验证通过；生产待验 |
+| BUG-08 | R2-03B 恢复旧热力图 | HeatmapView/6b83e29 | Git真实旧截图/样式对照；保留新数据接口/返回/主题修复 | 实现/本地验证通过；生产待验 |
+| BUG-09 | R2-05B 全局字体 | shared Tokens/Appearance/Main |90/95/100/105/110%，不使用整页transform；触控44不缩小；中英数字/公式/代码/图像验证 | 实现/本地验证通过；生产待验 |
+| SYNC-01 | R2-06A 账号持久化 | tracker.UserPreferences/0022/API | Appearance/Accent/font/sidebar/显式filter预设/practice/language服务端保存，两客户端一致 | 实现/本地验证通过；生产待验 |
+| SYNC-02 | R2-06B 服务端权威 | API+HTML bootstrap+shared store/Main | 登录服务端注入首帧；乐观UI/失败可恢复/登出清隔离；同字段冲突409/不同字段可合并 | 实现/本地验证通过；生产待验 |
+| SYNC-03 | R2-06C 状态边界 | schema/store/Sidebar | group长期偏好可同步，临时窗口折叠/滚动/弹窗/焦点不入API；账户切换不串号 | 实现/本地验证通过；生产待验 |
+| SYNC-04 | R2-06D 离线与校验 | API/store/tests | per-user成功快照+待写字段缓存；重连按字段版本规则；debounce/CSRF/权限/Schema/回滚，不阻塞计时作答 | 实现/本地验证通过；生产待验 |
+
+### 32.3 固定架构决策
+
+1. 用户预设独立于`/api/settings/runtime/`。新增UserPreferences OneToOne账号，schema1、全局revision、values JSON、field_revisions JSON、updated_at。GET无副作用默认合并，PATCH严格字段白名单、32KiB上限。
+2. API `/api/user-preferences/`：PATCH `{schema_version:1,changes:{key:value},base_revisions:{key:n}}`。不同字段过时快照可安全合并；相同字段冲突409返回current及conflicts，客户端保留待写更改并允许使用服务器/显式重试。不得静默用过期整包覆盖。侧栏每workspace及filter预设每workspace作为各自原子字段。
+3. 字体预设compact/small/default/large/extra-large对应0.9/0.95/1/1.05/1.1；新默认small95%，界面标推荐，100%始终可选。持久key font。触控尺寸独立于字体。
+4. 侧栏模型每workspace `{order,hidden,collapsed_groups}`。hidden表示转入More而非删路由；workspace/home链接及account/settings footer始终不可隐藏。排序提供触控44px上下按钮，不强制拖放。临时窗口collapse只设备本地。
+5. 已保存题库筛选需用户显式命名保存，最多每workspace10条；不把每次临时查询自动跨设备同步；禁止保存page/index_version/滚动/焦点/敏感token。
+6. SPA HTML对已认证用户注入安全JSON快照，外部同步bootstrap在应用首帧前应用外观；共享静态HTML缓存中不存用户信息。服务端响应private/no-store。未登录/公开分享不得读前一账号缓存。
+7. 用户旧外观device-only决定被本轮明确需求取代；学习数据、统计公式、UUID/Attempt/Note/计时语义保持原样。已有NextMode/autoNext跨Drill/EI共享语义、copy-mode按workspace语义保持。
+
+### 32.4 顺序与完成条件
+
+R2-01先基线/复现 → R2-02搜索及题目 → R2-03热力图性能与旧视觉 → R2-04设置/布局 → R2-05可配置侧栏/字体 → R2-06账号同步 → R2-07整体验收 → R2-08备份/迁移/部署/线上验证。独立模块在明确文件所有权下并行，不跳过集成门禁。
+
+所有用户最终20条验收逐项记录于本轮release ledger；无证据的项不得勾选。性能必须标设备、数据库、样本数、并发、冷热与网络，前后同fixture/语义；生产只读GET测量不打开会自动POST计时的真实题目页面。实机Safari/PWA证据缺口必须保留，不能用Chromium冒充。
+
+### 32.5 集成验证与交接状态
+
+本轮完整报告与20条验收台账：[round2/RELEASE_REPORT.md](round2/RELEASE_REPORT.md)。
+代码集成/独立复核完成；前端297/60files、全量后端583（12skip）、PG偏好30/30，
+双前端生产构建及migrationcheck通过。Chrome/WebKit主路径与Reader通过，真实HTTP+PG
+跨设备、隔离、离线与字号验证通过；真实学习数据恢复后迁移/反向十表digest相同。
+生产备份/切换/实测状态在release report追加；实机Safari/PWA未测不得勾选。

@@ -1,12 +1,14 @@
 // @vitest-environment jsdom
-import { afterEach, expect, it, vi } from 'vitest'
+import { bindTestPreferences, clearTestPreferences } from '../../../shared/preferences/testSupport'
+import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { createApp, h, nextTick, reactive, type App } from 'vue'
 import FullscreenReader from './FullscreenReader.vue'
 import { uiLanguage } from '../lib/uiPreferences'
 let app: App | undefined
 let host: HTMLElement
 const flush = async () => { await nextTick(); await nextTick() }
-afterEach(() => { app?.unmount(); host?.remove(); document.body.style.overflow = ''; vi.restoreAllMocks() })
+beforeEach(async () => { localStorage.clear(); await bindTestPreferences() })
+afterEach(() => { app?.unmount(); host?.remove(); document.body.style.overflow = ''; vi.restoreAllMocks(); clearTestPreferences() })
 async function mount(prepare?: () => Promise<void>) {
   uiLanguage.value = 'en'
   host = document.createElement('div'); document.body.append(host)

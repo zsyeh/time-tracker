@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
-import { afterEach, expect, it, vi } from 'vitest'
+import { bindTestPreferences, clearTestPreferences } from '../../../shared/preferences/testSupport'
+import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { createApp, h, nextTick, reactive, type App } from 'vue'
 import DiagnosisSelector from './DiagnosisSelector.vue'
 import type { ErrorCode } from '../types'
@@ -7,7 +8,8 @@ import { uiLanguage } from '../lib/uiPreferences'
 
 let app: App | undefined
 let host: HTMLElement
-afterEach(() => { app?.unmount(); host?.remove() })
+beforeEach(async () => { localStorage.clear(); await bindTestPreferences('zh-CN') })
+afterEach(() => { app?.unmount(); host?.remove(); clearTestPreferences() })
 const options = [
   { code: 'A' as const, label: '知识断层', group: 'A' },
   { code: 'B1' as const, label: '想不起来', group: 'B' },

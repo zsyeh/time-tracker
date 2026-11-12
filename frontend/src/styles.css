@@ -208,7 +208,7 @@ kbd { margin-left: auto; padding: 0; border: 0; color: var(--text-tertiary); bac
 .settings-category + .settings-category { border-top: 0; }
 .settings-category-header { min-height: 58px; padding: 11px 2px; border-bottom: 1px solid var(--border-subtle); display: flex; align-items: center; justify-content: space-between; gap: 18px; }
 .settings-category-header > div:first-child { min-width: 0; }
-.settings-category-header span { color: var(--text-tertiary); display: block; font-size: 12px; }
+.settings-category-header > div > span { color: var(--text-tertiary); display: block; font-size: 12px; }
 .settings-category-header h2 { margin: 2px 0 0; font-size: 14px; font-weight: 600; }
 .settings-category-header > p { max-width: 300px; margin: 0; color: var(--text-tertiary); font-size: 12px; text-align: right; }
 .settings-category.settings-detail-section, .settings-category.token-panel, .settings-category.organization-panel { padding: 0; border-bottom: 1px solid var(--border-subtle); }

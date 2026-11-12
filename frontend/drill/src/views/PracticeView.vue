@@ -7,6 +7,7 @@ import type { Catalog, Page, QuestionSummary } from '../types'
 import { useUiPreferences } from '../lib/uiPreferences'
 import ExamTypeControls from '../components/ExamTypeControls.vue'
 import ExamTypeBadge from '../components/ExamTypeBadge.vue'
+import SavedPracticeFilters from '../../../shared/ui/SavedPracticeFilters.vue'
 import PracticeFilterPanel from '../components/PracticeFilterPanel.vue'
 import { typeText, type TypeStats } from '../lib/examTypes'
 import { runtimeWorkspace } from '../lib/runtimePath'
@@ -42,10 +43,15 @@ let lastLoadedKey = ''
 let prefetchTimer: ReturnType<typeof setTimeout> | undefined
 let interacted = false
 let indexVersion = ''
-let searchVersion = '2'
-const { applied, draft: search, composing, refresh, apply, input, submitSearch, compositionStart, compositionEnd } = usePracticeQuery(() => { requestSequence += 1; requestController?.abort(); loading.value = false })
+const { applied, draft: search, composing, refresh, apply, input, submitSearch, compositionStart, compositionEnd } = usePracticeQuery(() => { requestSequence += 1; requestController?.abort(); if (prefetchTimer) clearTimeout(prefetchTimer); loading.value = false })
 const page = computed(() => Number(applied.value.page) || 1)
-const queryKey = computed(() => serializePracticeQuery(applied.value))
+const queryKey = computed(() => {
+  // This protocol flag is added by Question on return, but does not change
+  // results. Keep one list cache and scroll context for the same user query.
+  const query = { ...applied.value }
+  delete query.search_version
+  return serializePracticeQuery(query)
+})
 const statePrefix = computed(() => `learning.practice.view.v2.${runtimeWorkspace}.${learningUserId || 'session'}.`)
 const correctedTerms = computed(() => [...new Set(questions.value?.search?.corrected_terms || [])].slice(0, 3))
 const filterCount = computed(() => countPracticeFilters(applied.value))
@@ -68,6 +74,7 @@ const filterSummary = computed(() => {
     q.type_group && ({ small: '小题', large: '大题', short_answer: '简答题', unknown: '未分类' }[q.type_group]),
     q.exam_type, q.status && status[q.status], q.favorite && '收藏', q.review_later && '下次复习', q.marker && '学习标记', q.include_structure && '包含资料目录'].filter(Boolean).map((text) => uiText(String(text)))
 })
+function applySavedFilters(query:Record<string,string>){search.value=query.q||'';submitSearch();apply({...Object.fromEntries(['from','q','sort','document','topic','source_category','type_group','exam_type','status','favorite','review_later','marker','include_structure','collection','course','material','bucket','tier','kind','combined','state','scope'].map(key=>[key,''])),...query})}
 function matchSegments(question: SearchQuestion) { return highlightCodepoints(question.search_match?.excerpt || '', question.search_match?.highlights || []) }
 function matchLabel(match: SearchMatch) {
   if (match.coverage !== 'metadata') return ''
@@ -87,13 +94,14 @@ function persistState() {
 async function loadQuestions(restore = false) {
   if (!ready.value) return
   requestController?.abort()
+  if (prefetchTimer) clearTimeout(prefetchTimer)
   requestController = new AbortController()
   const sequence = ++requestSequence
   const key = queryKey.value
   lastLoadedKey = key
   const saved = readState(key)
   lastQuestionUuid.value = saved?.lastQuestionUuid || ''
-  const cached = cachedQuestionPage(`${key}&search_version=${searchVersion}&index_version=${indexVersion}`) as SearchPage | null
+  const cached = cachedQuestionPage(`${key}&search_version=2`) as SearchPage | null
   if (cached) questions.value = cached
   loading.value = true
   error.value = ''
@@ -105,16 +113,20 @@ async function loadQuestions(restore = false) {
     if (sequence !== requestSequence) return
     questions.value = value
     indexVersion = value.search?.index_version || ''
-    searchVersion = String(value.search?.version || '2')
     if (applied.value.q && searchFocused.value && (localCandidates.value.length < 3 || value.search?.suggestions?.length || value.search?.corrected_terms?.length)) void loadSuggestions(applied.value.q, sequence, requestController.signal)
     else { remoteCandidates.value = []; remoteQuery.value = '' }
-    storeQuestionPage(`${key}&search_version=${searchVersion}&index_version=${indexVersion}`, value)
+    storeQuestionPage(`${key}&search_version=2`, value)
     if (restore && saved && !interacted) {
       await nextTick()
       requestAnimationFrame(() => { if (!interacted) window.scrollTo({ top: Number(saved.scrollY || 0), behavior: 'auto' }) })
     }
     const first = value.results[0]
-    if (first) prefetchTimer = setTimeout(() => { void prefetchQuestion(first.uuid, navigationQueryString()) }, 300)
+    if (first) {
+      const context = navigationQueryString()
+      prefetchTimer = setTimeout(() => {
+        if (sequence === requestSequence) void prefetchQuestion(first.uuid, context)
+      }, 300)
+    }
   } catch (reason) {
     if (sequence !== requestSequence || (reason as Error).name === 'AbortError') return
     if (reason instanceof ApiError && reason.status === 409 && page.value > 1) { searchNotice.value = uiText('题库结果已更新，已返回第 1 页并保留搜索与筛选。'); apply({ page: '1', index_version: '' }, 'replace', false); return }
@@ -219,6 +231,7 @@ onUnmounted(() => {
     <p v-if="applied.q" class="search-order-note">{{ uiText("排序只影响结果列表，练习仍按题册顺序。") }}</p>
     <div v-if="filterSummary.length" class="filter-summary"><span>{{ filterSummary.join(' · ') }}</span><button type="button" @click="clearFilters">{{ uiText('清除筛选') }}</button></div>
     <details class="practice-type-overview"><summary>{{ uiText('题型概览') }}</summary><ExamTypeControls v-model="typeGroup" :stats="questions?.type_statistics" @practice="typeGroup = 'small'" /></details>
+    <div class="saved-filter-entry"><SavedPracticeFilters :workspace="isEi?'ei':'drill'" :query="applied" @apply="applySavedFilters"/></div>
     <PracticeFilterPanel :open="filtersOpen" :anchor="filterButton" :model-value="applied" :catalog="catalog" @update:open="filtersOpen = $event" @update:model-value="changeFilters" />
     <p v-if="applied.q && correctedTerms.length" class="search-expansion" role="status">{{ typeText('同时匹配', 'Also matching') }}：{{ correctedTerms.join('、') }}</p>
     <p v-if="searchNotice" class="search-notice" role="status">{{ searchNotice }}</p>
@@ -238,6 +251,7 @@ onUnmounted(() => {
   </section>
 </template>
 <style scoped>
+.saved-filter-entry{display:flex;justify-content:flex-end;margin:4px 0 8px}.saved-filter-entry :deep(>button){font-size:12px;min-height:36px;padding:4px 8px}
 .practice-page { min-width:0; } .search-order-note { margin:0 0 8px; font-size:12px; color:var(--text-secondary); line-height:1.5; } .search-notice { margin:12px 0; color:var(--text-secondary); font-size:13px; line-height:1.5; } .practice-header h1 { margin:0; } .practice-header p { margin:8px 0 0; font-size:13px; } .practice-progress-link { margin-left:16px; color:var(--accent-ink); text-decoration:none; }
 .practice-toolbar { display:flex; gap:8px; align-items:center; margin:24px 0 8px; } .practice-search { position:relative; flex:1; min-width:0; } .practice-search input { width:100%; min-height:44px; background:var(--surface-subtle); color:var(--text-primary); border:1px solid var(--border-control); border-radius:8px; padding:10px 12px; font-size:16px; }
 .filter-trigger, .practice-sort select { min-height:44px; padding:8px 12px; font-size:14px; color:var(--text-primary); background:var(--surface-subtle); border:0; border-radius:6px; cursor:pointer; } .practice-sort select { background:transparent; padding-right:4px; max-width:140px; }

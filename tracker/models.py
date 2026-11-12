@@ -708,3 +708,22 @@ class LaunchToken(models.Model):
         if self.max_uses is not None and self.usage_count >= self.max_uses:
             return False
         return True
+
+
+class UserPreferences(models.Model):
+    """Account UI choices, separate from study records and runtime secrets.
+
+    The global revision guards an atomic JSON merge; per-field revisions let
+    independent choices merge without overwriting another device's changes.
+    Defaults and the field allowlist are owned by the preferences service.
+    """
+
+    user = models.OneToOneField(
+        settings.AUTH_USER_MODEL, primary_key=True, on_delete=models.CASCADE,
+        related_name='ui_preferences',
+    )
+    schema_version = models.PositiveSmallIntegerField(default=1)
+    revision = models.PositiveBigIntegerField(default=0)
+    values = models.JSONField(default=dict)
+    field_revisions = models.JSONField(default=dict)
+    updated_at = models.DateTimeField(auto_now=True)

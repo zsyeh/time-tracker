@@ -229,7 +229,7 @@ def navigation_queryset(question, request):
     if source_category in {choice[0] for choice in Question.SOURCE_CATEGORY_CHOICES}:
         queryset = queryset.filter(source_category=source_category)
     from .search.service import membership
-    queryset, _plan, _state, _version, _hybrid = membership(queryset, request, request_workspace(request))
+    queryset, _plan, _state, _version, _hybrid = membership(queryset, request, request_workspace(request), pin_version=False, materialize_candidates=False)
     return filter_exam_type(queryset, request.query_params).order_by('document_id', 'question_order', 'pk')
 
 

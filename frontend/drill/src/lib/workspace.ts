@@ -141,7 +141,11 @@ export function storeQuestionPage(key: string, value: Page<QuestionSummary>) {
 }
 
 function detailKey(uuid: string, query = '') {
-  return `${uuid}?${query}`
+  // Router query objects have different insertion orders in Practice and
+  // Question. Equivalent URLs must share cache/prefetch ownership on touch.
+  const params = new URLSearchParams(query)
+  params.sort()
+  return `${uuid}?${params.toString()}`
 }
 
 export function cachedQuestion(uuid: string, query = ''): QuestionDetail | null {

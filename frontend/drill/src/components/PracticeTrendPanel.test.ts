@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { bindTestPreferences, clearTestPreferences } from '../../../shared/preferences/testSupport'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { createApp, nextTick, type App } from 'vue'
 import PracticeTrendPanel from './PracticeTrendPanel.vue'
@@ -20,8 +21,8 @@ const payload=()=>({workspace:'drill',project_label:'Drill',today:'2026-11-11',r
   points:[{date:'2026-11-11',count:18,submissions:21,moving_average_7:22,target:24,is_today:true}],period:{daily_unique_total:90,submissions:110,different_questions:75},
   summary:{today:18,today_submissions:21,today_net_coverage:3,last7:140,average7:20,last14:270,average14:19.3,previous7:130,growth_percent:7.7,last30:500,streak:3,target_days_last7:4,completed_distinct:333,remaining:444},
   prediction:{deadline:'2026-11-21',original_deadline:'2026-11-22',days_remaining_including_today:11,remaining:444,required_daily:41,deadline_passed:false,notice:'',scenarios:[{label:'last7',window_days:7,available_history_days:7,history_sufficient:true,status:'ready',average:20,projected_added:217,projected_total:550,projected_toward_goal:550,shortfall:227,on_track:false,estimated_completion_date:'2026-12-03'}]}})
-beforeEach(()=>{
-  vi.clearAllMocks();localStorage.clear();uiLanguage.value='en';observers.length=0;runtime.workspace='drill'
+beforeEach(async()=>{
+  vi.clearAllMocks();localStorage.clear();await bindTestPreferences();uiLanguage.value='en';observers.length=0;runtime.workspace='drill'
   chartMocks.init.mockReturnValue(chartMocks)
   vi.stubGlobal('ResizeObserver',class{observe=vi.fn();unobserve=vi.fn();disconnect=vi.fn();constructor(){observers.push(this)}})
   vi.stubGlobal('visualViewport',viewport)
@@ -29,7 +30,7 @@ beforeEach(()=>{
   vi.stubGlobal('cancelAnimationFrame',(id:number)=>window.clearTimeout(id))
   vi.stubGlobal('BroadcastChannel',class{onmessage=null;close=vi.fn()})
 })
-afterEach(()=>{app?.unmount();host?.remove();vi.restoreAllMocks();vi.unstubAllGlobals()})
+afterEach(()=>{app?.unmount();host?.remove();vi.restoreAllMocks();vi.unstubAllGlobals();clearTestPreferences()})
 async function settle(){await Promise.resolve();await nextTick();await nextTick();await new Promise(resolve=>setTimeout(resolve,5))}
 async function mount(){host=document.createElement('div');document.body.append(host);app=createApp(PracticeTrendPanel);app.mount(host);await settle()}
 it('shows dynamic goal, small/large remaining and distinct workload versus net new; secondary metrics start collapsed',async()=>{

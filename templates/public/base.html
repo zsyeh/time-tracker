@@ -1,4 +1,4 @@
-{% load static %}
+{% load static learning_preferences %}
 <!doctype html>
 <html lang="en">
 <head>
@@ -9,6 +9,7 @@
     <meta name="robots" content="noindex,nofollow">
     <title>{% block title %}Personal Learning OS{% endblock %}</title>
     <link rel="icon" type="image/png" sizes="180x180" href="/icon-180.png?v=img9387">
+    {% learning_preferences_bootstrap anonymous=True %}
     <script src="{% static 'tracker/ui/appearance-bootstrap.js' %}"></script>
     <link rel="stylesheet" href="{% static 'tracker/ui/tokens.css' %}">
     <link rel="stylesheet" href="{% static 'tracker/public.css' %}">

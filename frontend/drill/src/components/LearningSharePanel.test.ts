@@ -1,5 +1,6 @@
 // @vitest-environment jsdom
-import { afterEach, describe, expect, it, vi } from 'vitest'
+import { bindTestPreferences, clearTestPreferences } from '../../../shared/preferences/testSupport'
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
 import { createApp, nextTick, type App } from 'vue'
 import LearningSharePanel from './LearningSharePanel.vue'
 import { api, post } from '../lib/api'
@@ -8,10 +9,12 @@ import { uiLanguage } from '../lib/uiPreferences'
 vi.mock('../lib/api', () => ({ api: vi.fn(), post: vi.fn(), remove: vi.fn() }))
 let app: App | undefined
 let host: HTMLDivElement
+beforeEach(async () => { localStorage.clear(); await bindTestPreferences() })
 afterEach(() => {
   app?.unmount()
   host?.remove()
   uiLanguage.value = 'en'
+  clearTestPreferences()
   vi.resetAllMocks()
 })
 

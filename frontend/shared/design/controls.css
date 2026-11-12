@@ -41,3 +41,10 @@
 .ui-choice-sheet { position:fixed;inset:auto 0 0;width:100%;max-width:none;max-height:calc(100dvh - env(safe-area-inset-top) - 16px);margin:0;padding:16px 12px max(16px,env(safe-area-inset-bottom));border:0;border-radius:12px 12px 0 0;background:var(--surface-elevated);color:var(--text-primary);overflow:auto;overscroll-behavior:contain; }
 .ui-choice-sheet::backdrop { background:var(--overlay-dim); }
 .ui-choice-sheet>header { display:flex;align-items:center;justify-content:space-between;margin-bottom:12px; }
+/* Typography scaling never shrinks coarse editable text below Safari's zoom threshold. */
+@media (pointer: coarse) {
+  input:not([type=checkbox]):not([type=radio]):not([type=range]), textarea, select {
+    /* Component font shorthands must not undo Safari's 16px editable-text floor. */
+    font-size: max(16px, calc(16px * var(--ui-font-scale, 1))) !important;
+  }
+}

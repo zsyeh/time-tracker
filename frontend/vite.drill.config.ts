@@ -1,3 +1,4 @@
+import { fontScalePlugin } from './build/fontScalePlugin'
 import { appearancePlugin } from './build/appearancePlugin'
 import { resolve } from 'node:path'
 import { fileURLToPath, URL } from 'node:url'
@@ -9,6 +10,7 @@ const projectDir = fileURLToPath(new URL('.', import.meta.url))
 export default defineConfig({
   root: resolve(projectDir, 'drill'),
   plugins: [vue(), appearancePlugin('/static/drill/')],
+  css: { postcss: { plugins: [fontScalePlugin()] } },
   base: '/static/drill/',
   build: {
     // The deploy script overrides this with a staging directory so a failed

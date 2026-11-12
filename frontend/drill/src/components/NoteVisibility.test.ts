@@ -1,4 +1,5 @@
 // @vitest-environment jsdom
+import { bindTestPreferences, clearTestPreferences } from '../../../shared/preferences/testSupport'
 import { afterEach, beforeEach, expect, it } from 'vitest'
 import { createApp, h, nextTick, reactive, type App } from 'vue'
 import NoteVisibility from './NoteVisibility.vue'
@@ -7,8 +8,8 @@ import { uiText } from '../lib/uiText'
 
 let app: App | undefined
 let host: HTMLDivElement
-beforeEach(() => { localStorage.clear(); uiLanguage.value = 'en' })
-afterEach(() => { app?.unmount(); host?.remove() })
+beforeEach(async () => { localStorage.clear(); await bindTestPreferences() })
+afterEach(() => { app?.unmount(); host?.remove(); clearTestPreferences() })
 async function mount(note = '私人笔记，不要翻译', questionKey = 'q1') {
   const props = reactive({ note, questionKey })
   host = document.createElement('div'); document.body.append(host)

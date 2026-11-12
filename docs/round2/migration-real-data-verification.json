@@ -1,0 +1,46 @@
+{
+  "unchanged": true,
+  "tables": {
+    "auth_user": {
+      "count": 132,
+      "digest": "16e601666a211ac33cd5622ff7f79651"
+    },
+    "drill_question": {
+      "count": 9281,
+      "digest": "523867439f51c99dfed1150e0eec9ad7"
+    },
+    "tracker_timelog": {
+      "count": 6528,
+      "digest": "5c55fa4c161d308847777105fce0670d"
+    },
+    "drill_questionmarker": {
+      "count": 38,
+      "digest": "d3e80b026ee26511a00a172c225f2e6d"
+    },
+    "drill_questionattempt": {
+      "count": 1347,
+      "digest": "2be9c5fca82fc9f69ec5b83c1bc6c6d3"
+    },
+    "drill_questionerratum": {
+      "count": 35,
+      "digest": "f5aef7f23803f5bd984464b1cd6f6638"
+    },
+    "drill_questionrevision": {
+      "count": 586,
+      "digest": "88d1d1bd7128864aecdf6e0d9b945922"
+    },
+    "drill_questionuserstate": {
+      "count": 1379,
+      "digest": "33eca683eac593f5c82781a2ab1b10f2"
+    },
+    "drill_questionreviewplan": {
+      "count": 202,
+      "digest": "444334587ede7c8fbed04c03a36a9713"
+    },
+    "drill_questiontimingsession": {
+      "count": 887,
+      "digest": "cb9080ca23bdc6a1325441fdbb1f457d"
+    }
+  },
+  "note": "Full schema and all non-asset rows restored. Image blobs and their 2 linking tables deliberately excluded; this is not a full image restore."
+}

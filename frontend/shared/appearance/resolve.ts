@@ -1,3 +1,4 @@
+import { readPreferenceBootstrap } from '../preferences/bootstrap'
 import { accentIds, colorVariables, type Accent, type Appearance, type ResolvedScheme, type VisualPreferences } from './palette'
 export const VISUAL_KEY = 'learning.ui.visual.v1'
 export const VISUAL_COOKIE = 'learning_ui_visual_v1'
@@ -19,6 +20,8 @@ export function parseVisual(value: string | null): VisualPreferences | null {
   return null
 }
 export function readVisualPreferences(): VisualPreferences {
+  const bootstrap = readPreferenceBootstrap()
+  if (bootstrap) return { version:1, appearance:bootstrap.snapshot?.values.appearance || 'system', accent:bootstrap.snapshot?.values.accent || 'blue' }
   const current = parseVisual(cookieValue(VISUAL_COOKIE)) || parseVisual(localValue(VISUAL_KEY))
   if (current) return current
   const oldScheme = cookieValue('learning_os_color_scheme') || localValue('learning-os-color-scheme')

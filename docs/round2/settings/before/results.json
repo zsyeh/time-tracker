@@ -1,0 +1,2287 @@
+{
+  "synthetic": true,
+  "build_sha256": "26d289bf4f9fddfa2b96e053a1fba5b2eff738431985ffac7a076db39d69f6ec",
+  "cases": [
+    {
+      "scheme": "light",
+      "width": 390,
+      "navigation": {
+        "scrollY": 3439,
+        "overflow": false,
+        "visiblePanels": [
+          "general",
+          "",
+          "data",
+          "organization",
+          "invitations",
+          "shortcuts"
+        ],
+        "content": {
+          "x": 12,
+          "y": -3246,
+          "width": 366,
+          "height": 4140.09375,
+          "right": 378,
+          "bottom": 894.09375
+        },
+        "panel": {
+          "x": 12,
+          "y": 468.53125,
+          "width": 366,
+          "height": 393.5625,
+          "right": 378,
+          "bottom": 862.09375
+        },
+        "title": {
+          "x": 14,
+          "y": 630.09375,
+          "width": 362,
+          "height": 57,
+          "right": 376,
+          "bottom": 687.09375
+        },
+        "actions": [
+          {
+            "x": 14,
+            "y": 735.09375,
+            "width": 80.171875,
+            "height": 32,
+            "right": 94.171875,
+            "bottom": 767.09375
+          },
+          {
+            "x": 109.171875,
+            "y": 735.09375,
+            "width": 58.140625,
+            "height": 32,
+            "right": 167.3125,
+            "bottom": 767.09375
+          },
+          {
+            "x": 182.3125,
+            "y": 735.09375,
+            "width": 101.859375,
+            "height": 32,
+            "right": 284.171875,
+            "bottom": 767.09375
+          },
+          {
+            "x": 26,
+            "y": 770.09375,
+            "width": 143.390625,
+            "height": 32,
+            "right": 169.390625,
+            "bottom": 802.09375
+          },
+          {
+            "x": 184.390625,
+            "y": 770.09375,
+            "width": 60.765625,
+            "height": 32,
+            "right": 245.15625,
+            "bottom": 802.09375
+          }
+        ],
+        "accountVisible": true,
+        "appearanceVisible": true,
+        "uri": []
+      },
+      "layout": {
+        "scrollY": 3545,
+        "overflow": false,
+        "visiblePanels": [
+          "general",
+          "",
+          "data",
+          "organization",
+          "invitations",
+          "shortcuts"
+        ],
+        "content": {
+          "x": 12,
+          "y": -3352,
+          "width": 366,
+          "height": 4140.09375,
+          "right": 378,
+          "bottom": 788.09375
+        },
+        "panel": {
+          "x": 12,
+          "y": 362.53125,
+          "width": 366,
+          "height": 393.5625,
+          "right": 378,
+          "bottom": 756.09375
+        },
+        "title": {
+          "x": 14,
+          "y": 524.09375,
+          "width": 362,
+          "height": 57,
+          "right": 376,
+          "bottom": 581.09375
+        },
+        "actions": [
+          {
+            "x": 14,
+            "y": 629.09375,
+            "width": 80.171875,
+            "height": 32,
+            "right": 94.171875,
+            "bottom": 661.09375
+          },
+          {
+            "x": 109.171875,
+            "y": 629.09375,
+            "width": 58.140625,
+            "height": 32,
+            "right": 167.3125,
+            "bottom": 661.09375
+          },
+          {
+            "x": 182.3125,
+            "y": 629.09375,
+            "width": 101.859375,
+            "height": 32,
+            "right": 284.171875,
+            "bottom": 661.09375
+          },
+          {
+            "x": 26,
+            "y": 664.09375,
+            "width": 143.390625,
+            "height": 32,
+            "right": 169.390625,
+            "bottom": 696.09375
+          },
+          {
+            "x": 184.390625,
+            "y": 664.09375,
+            "width": 60.765625,
+            "height": 32,
+            "right": 245.15625,
+            "bottom": 696.09375
+          }
+        ],
+        "accountVisible": true,
+        "appearanceVisible": true,
+        "uri": []
+      },
+      "dialog": {
+        "scrollY": 3545,
+        "overflow": false,
+        "visiblePanels": [
+          "general",
+          "",
+          "data",
+          "organization",
+          "invitations",
+          "shortcuts"
+        ],
+        "content": {
+          "x": 12,
+          "y": -3352,
+          "width": 366,
+          "height": 4140.09375,
+          "right": 378,
+          "bottom": 788.09375
+        },
+        "panel": {
+          "x": 12,
+          "y": 362.53125,
+          "width": 366,
+          "height": 393.5625,
+          "right": 378,
+          "bottom": 756.09375
+        },
+        "title": {
+          "x": 14,
+          "y": 524.09375,
+          "width": 362,
+          "height": 57,
+          "right": 376,
+          "bottom": 581.09375
+        },
+        "actions": [
+          {
+            "x": 14,
+            "y": 629.09375,
+            "width": 80.171875,
+            "height": 32,
+            "right": 94.171875,
+            "bottom": 661.09375
+          },
+          {
+            "x": 109.171875,
+            "y": 629.09375,
+            "width": 58.140625,
+            "height": 32,
+            "right": 167.3125,
+            "bottom": 661.09375
+          },
+          {
+            "x": 182.3125,
+            "y": 629.09375,
+            "width": 101.859375,
+            "height": 32,
+            "right": 284.171875,
+            "bottom": 661.09375
+          },
+          {
+            "x": 26,
+            "y": 664.09375,
+            "width": 143.390625,
+            "height": 32,
+            "right": 169.390625,
+            "bottom": 696.09375
+          },
+          {
+            "x": 184.390625,
+            "y": 664.09375,
+            "width": 60.765625,
+            "height": 32,
+            "right": 245.15625,
+            "bottom": 696.09375
+          }
+        ],
+        "accountVisible": true,
+        "appearanceVisible": true,
+        "uri": [
+          {
+            "box": {
+              "x": 42.796875,
+              "y": 350.59375,
+              "width": 304.390625,
+              "height": 311.8125,
+              "right": 347.1875,
+              "bottom": 662.40625
+            },
+            "overflow": false
+          },
+          {
+            "box": {
+              "x": 42.796875,
+              "y": 747.40625,
+              "width": 304.390625,
+              "height": 311.8125,
+              "right": 347.1875,
+              "bottom": 1059.21875
+            },
+            "overflow": false
+          },
+          {
+            "box": {
+              "x": 42.796875,
+              "y": 1144.21875,
+              "width": 304.390625,
+              "height": 311.8125,
+              "right": 347.1875,
+              "bottom": 1456.03125
+            },
+            "overflow": false
+          }
+        ]
+      },
+      "errors": [],
+      "synthetic_writes": [
+        "synthetic-regenerate"
+      ]
+    },
+    {
+      "scheme": "light",
+      "width": 820,
+      "navigation": {
+        "scrollY": 2382,
+        "overflow": false,
+        "visiblePanels": [
+          "general",
+          "",
+          "data",
+          "organization",
+          "invitations",
+          "shortcuts"
+        ],
+        "content": {
+          "x": 24,
+          "y": -2193,
+          "width": 772,
+          "height": 3415.546875,
+          "right": 796,
+          "bottom": 1222.546875
+        },
+        "panel": {
+          "x": 24,
+          "y": 877.171875,
+          "width": 772,
+          "height": 313.375,
+          "right": 796,
+          "bottom": 1190.546875
+        },
+        "title": {
+          "x": 26,
+          "y": 1019.546875,
+          "width": 149.6875,
+          "height": 111,
+          "right": 175.6875,
+          "bottom": 1130.546875
+        },
+        "actions": [
+          {
+            "x": 289.671875,
+            "y": 1059.046875,
+            "width": 80.171875,
+            "height": 32,
+            "right": 369.84375,
+            "bottom": 1091.046875
+          },
+          {
+            "x": 384.84375,
+            "y": 1059.046875,
+            "width": 58.140625,
+            "height": 32,
+            "right": 442.984375,
+            "bottom": 1091.046875
+          },
+          {
+            "x": 457.984375,
+            "y": 1059.046875,
+            "width": 101.859375,
+            "height": 32,
+            "right": 559.84375,
+            "bottom": 1091.046875
+          },
+          {
+            "x": 574.84375,
+            "y": 1059.046875,
+            "width": 143.390625,
+            "height": 32,
+            "right": 718.234375,
+            "bottom": 1091.046875
+          },
+          {
+            "x": 733.234375,
+            "y": 1059.046875,
+            "width": 60.765625,
+            "height": 32,
+            "right": 794,
+            "bottom": 1091.046875
+          }
+        ],
+        "accountVisible": true,
+        "appearanceVisible": true,
+        "uri": []
+      },
+      "layout": {
+        "scrollY": 2497,
+        "overflow": false,
+        "visiblePanels": [
+          "general",
+          "",
+          "data",
+          "organization",
+          "invitations",
+          "shortcuts"
+        ],
+        "content": {
+          "x": 24,
+          "y": -2308,
+          "width": 772,
+          "height": 3415.546875,
+          "right": 796,
+          "bottom": 1107.546875
+        },
+        "panel": {
+          "x": 24,
+          "y": 762.171875,
+          "width": 772,
+          "height": 313.375,
+          "right": 796,
+          "bottom": 1075.546875
+        },
+        "title": {
+          "x": 26,
+          "y": 904.546875,
+          "width": 149.6875,
+          "height": 111,
+          "right": 175.6875,
+          "bottom": 1015.546875
+        },
+        "actions": [
+          {
+            "x": 289.671875,
+            "y": 944.046875,
+            "width": 80.171875,
+            "height": 32,
+            "right": 369.84375,
+            "bottom": 976.046875
+          },
+          {
+            "x": 384.84375,
+            "y": 944.046875,
+            "width": 58.140625,
+            "height": 32,
+            "right": 442.984375,
+            "bottom": 976.046875
+          },
+          {
+            "x": 457.984375,
+            "y": 944.046875,
+            "width": 101.859375,
+            "height": 32,
+            "right": 559.84375,
+            "bottom": 976.046875
+          },
+          {
+            "x": 574.84375,
+            "y": 944.046875,
+            "width": 143.390625,
+            "height": 32,
+            "right": 718.234375,
+            "bottom": 976.046875
+          },
+          {
+            "x": 733.234375,
+            "y": 944.046875,
+            "width": 60.765625,
+            "height": 32,
+            "right": 794,
+            "bottom": 976.046875
+          }
+        ],
+        "accountVisible": true,
+        "appearanceVisible": true,
+        "uri": []
+      },
+      "dialog": {
+        "scrollY": 2497,
+        "overflow": false,
+        "visiblePanels": [
+          "general",
+          "",
+          "data",
+          "organization",
+          "invitations",
+          "shortcuts"
+        ],
+        "content": {
+          "x": 24,
+          "y": -2308,
+          "width": 772,
+          "height": 3415.546875,
+          "right": 796,
+          "bottom": 1107.546875
+        },
+        "panel": {
+          "x": 24,
+          "y": 762.171875,
+          "width": 772,
+          "height": 313.375,
+          "right": 796,
+          "bottom": 1075.546875
+        },
+        "title": {
+          "x": 26,
+          "y": 904.546875,
+          "width": 149.6875,
+          "height": 111,
+          "right": 175.6875,
+          "bottom": 1015.546875
+        },
+        "actions": [
+          {
+            "x": 289.671875,
+            "y": 944.046875,
+            "width": 80.171875,
+            "height": 32,
+            "right": 369.84375,
+            "bottom": 976.046875
+          },
+          {
+            "x": 384.84375,
+            "y": 944.046875,
+            "width": 58.140625,
+            "height": 32,
+            "right": 442.984375,
+            "bottom": 976.046875
+          },
+          {
+            "x": 457.984375,
+            "y": 944.046875,
+            "width": 101.859375,
+            "height": 32,
+            "right": 559.84375,
+            "bottom": 976.046875
+          },
+          {
+            "x": 574.84375,
+            "y": 944.046875,
+            "width": 143.390625,
+            "height": 32,
+            "right": 718.234375,
+            "bottom": 976.046875
+          },
+          {
+            "x": 733.234375,
+            "y": 944.046875,
+            "width": 60.765625,
+            "height": 32,
+            "right": 794,
+            "bottom": 976.046875
+          }
+        ],
+        "accountVisible": true,
+        "appearanceVisible": true,
+        "uri": [
+          {
+            "box": {
+              "x": 65,
+              "y": 353,
+              "width": 690,
+              "height": 139.125,
+              "right": 755,
+              "bottom": 492.125
+            },
+            "overflow": false
+          },
+          {
+            "box": {
+              "x": 65,
+              "y": 577.125,
+              "width": 690,
+              "height": 139.125,
+              "right": 755,
+              "bottom": 716.25
+            },
+            "overflow": false
+          },
+          {
+            "box": {
+              "x": 65,
+              "y": 801.25,
+              "width": 690,
+              "height": 139.125,
+              "right": 755,
+              "bottom": 940.375
+            },
+            "overflow": false
+          }
+        ]
+      },
+      "errors": [],
+      "synthetic_writes": [
+        "synthetic-regenerate"
+      ]
+    },
+    {
+      "scheme": "light",
+      "width": 1180,
+      "navigation": {
+        "scrollY": 2870,
+        "overflow": false,
+        "visiblePanels": [
+          "general",
+          "",
+          "data",
+          "organization",
+          "invitations",
+          "shortcuts"
+        ],
+        "content": {
+          "x": 480,
+          "y": -2757,
+          "width": 668,
+          "height": 3614.734375,
+          "right": 1148,
+          "bottom": 857.734375
+        },
+        "panel": {
+          "x": 480,
+          "y": 332.359375,
+          "width": 668,
+          "height": 493.375,
+          "right": 1148,
+          "bottom": 825.734375
+        },
+        "title": {
+          "x": 482,
+          "y": 474.734375,
+          "width": 45.6875,
+          "height": 291,
+          "right": 527.6875,
+          "bottom": 765.734375
+        },
+        "actions": [
+          {
+            "x": 641.671875,
+            "y": 604.234375,
+            "width": 80.171875,
+            "height": 32,
+            "right": 721.84375,
+            "bottom": 636.234375
+          },
+          {
+            "x": 736.84375,
+            "y": 604.234375,
+            "width": 58.140625,
+            "height": 32,
+            "right": 794.984375,
+            "bottom": 636.234375
+          },
+          {
+            "x": 809.984375,
+            "y": 604.234375,
+            "width": 101.859375,
+            "height": 32,
+            "right": 911.84375,
+            "bottom": 636.234375
+          },
+          {
+            "x": 926.84375,
+            "y": 604.234375,
+            "width": 143.390625,
+            "height": 32,
+            "right": 1070.234375,
+            "bottom": 636.234375
+          },
+          {
+            "x": 1085.234375,
+            "y": 604.234375,
+            "width": 60.765625,
+            "height": 32,
+            "right": 1146,
+            "bottom": 636.234375
+          }
+        ],
+        "accountVisible": true,
+        "appearanceVisible": true,
+        "uri": []
+      },
+      "layout": {
+        "scrollY": 2980,
+        "overflow": false,
+        "visiblePanels": [
+          "general",
+          "",
+          "data",
+          "organization",
+          "invitations",
+          "shortcuts"
+        ],
+        "content": {
+          "x": 480,
+          "y": -2867,
+          "width": 668,
+          "height": 3614.734375,
+          "right": 1148,
+          "bottom": 747.734375
+        },
+        "panel": {
+          "x": 480,
+          "y": 222.359375,
+          "width": 668,
+          "height": 493.375,
+          "right": 1148,
+          "bottom": 715.734375
+        },
+        "title": {
+          "x": 482,
+          "y": 364.734375,
+          "width": 45.6875,
+          "height": 291,
+          "right": 527.6875,
+          "bottom": 655.734375
+        },
+        "actions": [
+          {
+            "x": 641.671875,
+            "y": 494.234375,
+            "width": 80.171875,
+            "height": 32,
+            "right": 721.84375,
+            "bottom": 526.234375
+          },
+          {
+            "x": 736.84375,
+            "y": 494.234375,
+            "width": 58.140625,
+            "height": 32,
+            "right": 794.984375,
+            "bottom": 526.234375
+          },
+          {
+            "x": 809.984375,
+            "y": 494.234375,
+            "width": 101.859375,
+            "height": 32,
+            "right": 911.84375,
+            "bottom": 526.234375
+          },
+          {
+            "x": 926.84375,
+            "y": 494.234375,
+            "width": 143.390625,
+            "height": 32,
+            "right": 1070.234375,
+            "bottom": 526.234375
+          },
+          {
+            "x": 1085.234375,
+            "y": 494.234375,
+            "width": 60.765625,
+            "height": 32,
+            "right": 1146,
+            "bottom": 526.234375
+          }
+        ],
+        "accountVisible": true,
+        "appearanceVisible": true,
+        "uri": []
+      },
+      "dialog": {
+        "scrollY": 2980,
+        "overflow": false,
+        "visiblePanels": [
+          "general",
+          "",
+          "data",
+          "organization",
+          "invitations",
+          "shortcuts"
+        ],
+        "content": {
+          "x": 480,
+          "y": -2867,
+          "width": 668,
+          "height": 3614.734375,
+          "right": 1148,
+          "bottom": 747.734375
+        },
+        "panel": {
+          "x": 480,
+          "y": 222.359375,
+          "width": 668,
+          "height": 493.375,
+          "right": 1148,
+          "bottom": 715.734375
+        },
+        "title": {
+          "x": 482,
+          "y": 364.734375,
+          "width": 45.6875,
+          "height": 291,
+          "right": 527.6875,
+          "bottom": 655.734375
+        },
+        "actions": [
+          {
+            "x": 641.671875,
+            "y": 494.234375,
+            "width": 80.171875,
+            "height": 32,
+            "right": 721.84375,
+            "bottom": 526.234375
+          },
+          {
+            "x": 736.84375,
+            "y": 494.234375,
+            "width": 58.140625,
+            "height": 32,
+            "right": 794.984375,
+            "bottom": 526.234375
+          },
+          {
+            "x": 809.984375,
+            "y": 494.234375,
+            "width": 101.859375,
+            "height": 32,
+            "right": 911.84375,
+            "bottom": 526.234375
+          },
+          {
+            "x": 926.84375,
+            "y": 494.234375,
+            "width": 143.390625,
+            "height": 32,
+            "right": 1070.234375,
+            "bottom": 526.234375
+          },
+          {
+            "x": 1085.234375,
+            "y": 494.234375,
+            "width": 60.765625,
+            "height": 32,
+            "right": 1146,
+            "bottom": 526.234375
+          }
+        ],
+        "accountVisible": true,
+        "appearanceVisible": true,
+        "uri": [
+          {
+            "box": {
+              "x": 245,
+              "y": 299,
+              "width": 690,
+              "height": 139.125,
+              "right": 935,
+              "bottom": 438.125
+            },
+            "overflow": false
+          },
+          {
+            "box": {
+              "x": 245,
+              "y": 523.125,
+              "width": 690,
+              "height": 139.125,
+              "right": 935,
+              "bottom": 662.25
+            },
+            "overflow": false
+          },
+          {
+            "box": {
+              "x": 245,
+              "y": 747.25,
+              "width": 690,
+              "height": 139.125,
+              "right": 935,
+              "bottom": 886.375
+            },
+            "overflow": false
+          }
+        ]
+      },
+      "errors": [],
+      "synthetic_writes": [
+        "synthetic-regenerate"
+      ]
+    },
+    {
+      "scheme": "light",
+      "width": 1440,
+      "navigation": {
+        "scrollY": 2601,
+        "overflow": false,
+        "visiblePanels": [
+          "general",
+          "",
+          "data",
+          "organization",
+          "invitations",
+          "shortcuts"
+        ],
+        "content": {
+          "x": 504,
+          "y": -2488,
+          "width": 720,
+          "height": 3488.734375,
+          "right": 1224,
+          "bottom": 1000.734375
+        },
+        "panel": {
+          "x": 504,
+          "y": 601.359375,
+          "width": 720,
+          "height": 367.375,
+          "right": 1224,
+          "bottom": 968.734375
+        },
+        "title": {
+          "x": 506,
+          "y": 743.734375,
+          "width": 97.6875,
+          "height": 165,
+          "right": 603.6875,
+          "bottom": 908.734375
+        },
+        "actions": [
+          {
+            "x": 717.671875,
+            "y": 810.234375,
+            "width": 80.171875,
+            "height": 32,
+            "right": 797.84375,
+            "bottom": 842.234375
+          },
+          {
+            "x": 812.84375,
+            "y": 810.234375,
+            "width": 58.140625,
+            "height": 32,
+            "right": 870.984375,
+            "bottom": 842.234375
+          },
+          {
+            "x": 885.984375,
+            "y": 810.234375,
+            "width": 101.859375,
+            "height": 32,
+            "right": 987.84375,
+            "bottom": 842.234375
+          },
+          {
+            "x": 1002.84375,
+            "y": 810.234375,
+            "width": 143.390625,
+            "height": 32,
+            "right": 1146.234375,
+            "bottom": 842.234375
+          },
+          {
+            "x": 1161.234375,
+            "y": 810.234375,
+            "width": 60.765625,
+            "height": 32,
+            "right": 1222,
+            "bottom": 842.234375
+          }
+        ],
+        "accountVisible": true,
+        "appearanceVisible": true,
+        "uri": []
+      },
+      "layout": {
+        "scrollY": 2714,
+        "overflow": false,
+        "visiblePanels": [
+          "general",
+          "",
+          "data",
+          "organization",
+          "invitations",
+          "shortcuts"
+        ],
+        "content": {
+          "x": 504,
+          "y": -2601,
+          "width": 720,
+          "height": 3488.734375,
+          "right": 1224,
+          "bottom": 887.734375
+        },
+        "panel": {
+          "x": 504,
+          "y": 488.359375,
+          "width": 720,
+          "height": 367.375,
+          "right": 1224,
+          "bottom": 855.734375
+        },
+        "title": {
+          "x": 506,
+          "y": 630.734375,
+          "width": 97.6875,
+          "height": 165,
+          "right": 603.6875,
+          "bottom": 795.734375
+        },
+        "actions": [
+          {
+            "x": 717.671875,
+            "y": 697.234375,
+            "width": 80.171875,
+            "height": 32,
+            "right": 797.84375,
+            "bottom": 729.234375
+          },
+          {
+            "x": 812.84375,
+            "y": 697.234375,
+            "width": 58.140625,
+            "height": 32,
+            "right": 870.984375,
+            "bottom": 729.234375
+          },
+          {
+            "x": 885.984375,
+            "y": 697.234375,
+            "width": 101.859375,
+            "height": 32,
+            "right": 987.84375,
+            "bottom": 729.234375
+          },
+          {
+            "x": 1002.84375,
+            "y": 697.234375,
+            "width": 143.390625,
+            "height": 32,
+            "right": 1146.234375,
+            "bottom": 729.234375
+          },
+          {
+            "x": 1161.234375,
+            "y": 697.234375,
+            "width": 60.765625,
+            "height": 32,
+            "right": 1222,
+            "bottom": 729.234375
+          }
+        ],
+        "accountVisible": true,
+        "appearanceVisible": true,
+        "uri": []
+      },
+      "dialog": {
+        "scrollY": 2714,
+        "overflow": false,
+        "visiblePanels": [
+          "general",
+          "",
+          "data",
+          "organization",
+          "invitations",
+          "shortcuts"
+        ],
+        "content": {
+          "x": 504,
+          "y": -2601,
+          "width": 720,
+          "height": 3488.734375,
+          "right": 1224,
+          "bottom": 887.734375
+        },
+        "panel": {
+          "x": 504,
+          "y": 488.359375,
+          "width": 720,
+          "height": 367.375,
+          "right": 1224,
+          "bottom": 855.734375
+        },
+        "title": {
+          "x": 506,
+          "y": 630.734375,
+          "width": 97.6875,
+          "height": 165,
+          "right": 603.6875,
+          "bottom": 795.734375
+        },
+        "actions": [
+          {
+            "x": 717.671875,
+            "y": 697.234375,
+            "width": 80.171875,
+            "height": 32,
+            "right": 797.84375,
+            "bottom": 729.234375
+          },
+          {
+            "x": 812.84375,
+            "y": 697.234375,
+            "width": 58.140625,
+            "height": 32,
+            "right": 870.984375,
+            "bottom": 729.234375
+          },
+          {
+            "x": 885.984375,
+            "y": 697.234375,
+            "width": 101.859375,
+            "height": 32,
+            "right": 987.84375,
+            "bottom": 729.234375
+          },
+          {
+            "x": 1002.84375,
+            "y": 697.234375,
+            "width": 143.390625,
+            "height": 32,
+            "right": 1146.234375,
+            "bottom": 729.234375
+          },
+          {
+            "x": 1161.234375,
+            "y": 697.234375,
+            "width": 60.765625,
+            "height": 32,
+            "right": 1222,
+            "bottom": 729.234375
+          }
+        ],
+        "accountVisible": true,
+        "appearanceVisible": true,
+        "uri": [
+          {
+            "box": {
+              "x": 375,
+              "y": 320,
+              "width": 690,
+              "height": 139.125,
+              "right": 1065,
+              "bottom": 459.125
+            },
+            "overflow": false
+          },
+          {
+            "box": {
+              "x": 375,
+              "y": 544.125,
+              "width": 690,
+              "height": 139.125,
+              "right": 1065,
+              "bottom": 683.25
+            },
+            "overflow": false
+          },
+          {
+            "box": {
+              "x": 375,
+              "y": 768.25,
+              "width": 690,
+              "height": 139.125,
+              "right": 1065,
+              "bottom": 907.375
+            },
+            "overflow": false
+          }
+        ]
+      },
+      "errors": [],
+      "synthetic_writes": [
+        "synthetic-regenerate"
+      ]
+    },
+    {
+      "scheme": "dark",
+      "width": 390,
+      "navigation": {
+        "scrollY": 3476,
+        "overflow": false,
+        "visiblePanels": [
+          "general",
+          "",
+          "data",
+          "organization",
+          "invitations",
+          "shortcuts"
+        ],
+        "content": {
+          "x": 12,
+          "y": -3283,
+          "width": 366,
+          "height": 4140.09375,
+          "right": 378,
+          "bottom": 857.09375
+        },
+        "panel": {
+          "x": 12,
+          "y": 431.53125,
+          "width": 366,
+          "height": 393.5625,
+          "right": 378,
+          "bottom": 825.09375
+        },
+        "title": {
+          "x": 14,
+          "y": 593.09375,
+          "width": 362,
+          "height": 57,
+          "right": 376,
+          "bottom": 650.09375
+        },
+        "actions": [
+          {
+            "x": 14,
+            "y": 698.09375,
+            "width": 80.171875,
+            "height": 32,
+            "right": 94.171875,
+            "bottom": 730.09375
+          },
+          {
+            "x": 109.171875,
+            "y": 698.09375,
+            "width": 58.140625,
+            "height": 32,
+            "right": 167.3125,
+            "bottom": 730.09375
+          },
+          {
+            "x": 182.3125,
+            "y": 698.09375,
+            "width": 101.859375,
+            "height": 32,
+            "right": 284.171875,
+            "bottom": 730.09375
+          },
+          {
+            "x": 26,
+            "y": 733.09375,
+            "width": 143.390625,
+            "height": 32,
+            "right": 169.390625,
+            "bottom": 765.09375
+          },
+          {
+            "x": 184.390625,
+            "y": 733.09375,
+            "width": 60.765625,
+            "height": 32,
+            "right": 245.15625,
+            "bottom": 765.09375
+          }
+        ],
+        "accountVisible": true,
+        "appearanceVisible": true,
+        "uri": []
+      },
+      "layout": {
+        "scrollY": 3545,
+        "overflow": false,
+        "visiblePanels": [
+          "general",
+          "",
+          "data",
+          "organization",
+          "invitations",
+          "shortcuts"
+        ],
+        "content": {
+          "x": 12,
+          "y": -3352,
+          "width": 366,
+          "height": 4140.09375,
+          "right": 378,
+          "bottom": 788.09375
+        },
+        "panel": {
+          "x": 12,
+          "y": 362.53125,
+          "width": 366,
+          "height": 393.5625,
+          "right": 378,
+          "bottom": 756.09375
+        },
+        "title": {
+          "x": 14,
+          "y": 524.09375,
+          "width": 362,
+          "height": 57,
+          "right": 376,
+          "bottom": 581.09375
+        },
+        "actions": [
+          {
+            "x": 14,
+            "y": 629.09375,
+            "width": 80.171875,
+            "height": 32,
+            "right": 94.171875,
+            "bottom": 661.09375
+          },
+          {
+            "x": 109.171875,
+            "y": 629.09375,
+            "width": 58.140625,
+            "height": 32,
+            "right": 167.3125,
+            "bottom": 661.09375
+          },
+          {
+            "x": 182.3125,
+            "y": 629.09375,
+            "width": 101.859375,
+            "height": 32,
+            "right": 284.171875,
+            "bottom": 661.09375
+          },
+          {
+            "x": 26,
+            "y": 664.09375,
+            "width": 143.390625,
+            "height": 32,
+            "right": 169.390625,
+            "bottom": 696.09375
+          },
+          {
+            "x": 184.390625,
+            "y": 664.09375,
+            "width": 60.765625,
+            "height": 32,
+            "right": 245.15625,
+            "bottom": 696.09375
+          }
+        ],
+        "accountVisible": true,
+        "appearanceVisible": true,
+        "uri": []
+      },
+      "dialog": {
+        "scrollY": 3545,
+        "overflow": false,
+        "visiblePanels": [
+          "general",
+          "",
+          "data",
+          "organization",
+          "invitations",
+          "shortcuts"
+        ],
+        "content": {
+          "x": 12,
+          "y": -3352,
+          "width": 366,
+          "height": 4140.09375,
+          "right": 378,
+          "bottom": 788.09375
+        },
+        "panel": {
+          "x": 12,
+          "y": 362.53125,
+          "width": 366,
+          "height": 393.5625,
+          "right": 378,
+          "bottom": 756.09375
+        },
+        "title": {
+          "x": 14,
+          "y": 524.09375,
+          "width": 362,
+          "height": 57,
+          "right": 376,
+          "bottom": 581.09375
+        },
+        "actions": [
+          {
+            "x": 14,
+            "y": 629.09375,
+            "width": 80.171875,
+            "height": 32,
+            "right": 94.171875,
+            "bottom": 661.09375
+          },
+          {
+            "x": 109.171875,
+            "y": 629.09375,
+            "width": 58.140625,
+            "height": 32,
+            "right": 167.3125,
+            "bottom": 661.09375
+          },
+          {
+            "x": 182.3125,
+            "y": 629.09375,
+            "width": 101.859375,
+            "height": 32,
+            "right": 284.171875,
+            "bottom": 661.09375
+          },
+          {
+            "x": 26,
+            "y": 664.09375,
+            "width": 143.390625,
+            "height": 32,
+            "right": 169.390625,
+            "bottom": 696.09375
+          },
+          {
+            "x": 184.390625,
+            "y": 664.09375,
+            "width": 60.765625,
+            "height": 32,
+            "right": 245.15625,
+            "bottom": 696.09375
+          }
+        ],
+        "accountVisible": true,
+        "appearanceVisible": true,
+        "uri": [
+          {
+            "box": {
+              "x": 42.796875,
+              "y": 350.59375,
+              "width": 304.390625,
+              "height": 311.8125,
+              "right": 347.1875,
+              "bottom": 662.40625
+            },
+            "overflow": false
+          },
+          {
+            "box": {
+              "x": 42.796875,
+              "y": 747.40625,
+              "width": 304.390625,
+              "height": 311.8125,
+              "right": 347.1875,
+              "bottom": 1059.21875
+            },
+            "overflow": false
+          },
+          {
+            "box": {
+              "x": 42.796875,
+              "y": 1144.21875,
+              "width": 304.390625,
+              "height": 311.8125,
+              "right": 347.1875,
+              "bottom": 1456.03125
+            },
+            "overflow": false
+          }
+        ]
+      },
+      "errors": [],
+      "synthetic_writes": [
+        "synthetic-regenerate"
+      ]
+    },
+    {
+      "scheme": "dark",
+      "width": 820,
+      "navigation": {
+        "scrollY": 2424,
+        "overflow": false,
+        "visiblePanels": [
+          "general",
+          "",
+          "data",
+          "organization",
+          "invitations",
+          "shortcuts"
+        ],
+        "content": {
+          "x": 24,
+          "y": -2235,
+          "width": 772,
+          "height": 3415.546875,
+          "right": 796,
+          "bottom": 1180.546875
+        },
+        "panel": {
+          "x": 24,
+          "y": 835.171875,
+          "width": 772,
+          "height": 313.375,
+          "right": 796,
+          "bottom": 1148.546875
+        },
+        "title": {
+          "x": 26,
+          "y": 977.546875,
+          "width": 149.6875,
+          "height": 111,
+          "right": 175.6875,
+          "bottom": 1088.546875
+        },
+        "actions": [
+          {
+            "x": 289.671875,
+            "y": 1017.046875,
+            "width": 80.171875,
+            "height": 32,
+            "right": 369.84375,
+            "bottom": 1049.046875
+          },
+          {
+            "x": 384.84375,
+            "y": 1017.046875,
+            "width": 58.140625,
+            "height": 32,
+            "right": 442.984375,
+            "bottom": 1049.046875
+          },
+          {
+            "x": 457.984375,
+            "y": 1017.046875,
+            "width": 101.859375,
+            "height": 32,
+            "right": 559.84375,
+            "bottom": 1049.046875
+          },
+          {
+            "x": 574.84375,
+            "y": 1017.046875,
+            "width": 143.390625,
+            "height": 32,
+            "right": 718.234375,
+            "bottom": 1049.046875
+          },
+          {
+            "x": 733.234375,
+            "y": 1017.046875,
+            "width": 60.765625,
+            "height": 32,
+            "right": 794,
+            "bottom": 1049.046875
+          }
+        ],
+        "accountVisible": true,
+        "appearanceVisible": true,
+        "uri": []
+      },
+      "layout": {
+        "scrollY": 2497,
+        "overflow": false,
+        "visiblePanels": [
+          "general",
+          "",
+          "data",
+          "organization",
+          "invitations",
+          "shortcuts"
+        ],
+        "content": {
+          "x": 24,
+          "y": -2308,
+          "width": 772,
+          "height": 3415.546875,
+          "right": 796,
+          "bottom": 1107.546875
+        },
+        "panel": {
+          "x": 24,
+          "y": 762.171875,
+          "width": 772,
+          "height": 313.375,
+          "right": 796,
+          "bottom": 1075.546875
+        },
+        "title": {
+          "x": 26,
+          "y": 904.546875,
+          "width": 149.6875,
+          "height": 111,
+          "right": 175.6875,
+          "bottom": 1015.546875
+        },
+        "actions": [
+          {
+            "x": 289.671875,
+            "y": 944.046875,
+            "width": 80.171875,
+            "height": 32,
+            "right": 369.84375,
+            "bottom": 976.046875
+          },
+          {
+            "x": 384.84375,
+            "y": 944.046875,
+            "width": 58.140625,
+            "height": 32,
+            "right": 442.984375,
+            "bottom": 976.046875
+          },
+          {
+            "x": 457.984375,
+            "y": 944.046875,
+            "width": 101.859375,
+            "height": 32,
+            "right": 559.84375,
+            "bottom": 976.046875
+          },
+          {
+            "x": 574.84375,
+            "y": 944.046875,
+            "width": 143.390625,
+            "height": 32,
+            "right": 718.234375,
+            "bottom": 976.046875
+          },
+          {
+            "x": 733.234375,
+            "y": 944.046875,
+            "width": 60.765625,
+            "height": 32,
+            "right": 794,
+            "bottom": 976.046875
+          }
+        ],
+        "accountVisible": true,
+        "appearanceVisible": true,
+        "uri": []
+      },
+      "dialog": {
+        "scrollY": 2497,
+        "overflow": false,
+        "visiblePanels": [
+          "general",
+          "",
+          "data",
+          "organization",
+          "invitations",
+          "shortcuts"
+        ],
+        "content": {
+          "x": 24,
+          "y": -2308,
+          "width": 772,
+          "height": 3415.546875,
+          "right": 796,
+          "bottom": 1107.546875
+        },
+        "panel": {
+          "x": 24,
+          "y": 762.171875,
+          "width": 772,
+          "height": 313.375,
+          "right": 796,
+          "bottom": 1075.546875
+        },
+        "title": {
+          "x": 26,
+          "y": 904.546875,
+          "width": 149.6875,
+          "height": 111,
+          "right": 175.6875,
+          "bottom": 1015.546875
+        },
+        "actions": [
+          {
+            "x": 289.671875,
+            "y": 944.046875,
+            "width": 80.171875,
+            "height": 32,
+            "right": 369.84375,
+            "bottom": 976.046875
+          },
+          {
+            "x": 384.84375,
+            "y": 944.046875,
+            "width": 58.140625,
+            "height": 32,
+            "right": 442.984375,
+            "bottom": 976.046875
+          },
+          {
+            "x": 457.984375,
+            "y": 944.046875,
+            "width": 101.859375,
+            "height": 32,
+            "right": 559.84375,
+            "bottom": 976.046875
+          },
+          {
+            "x": 574.84375,
+            "y": 944.046875,
+            "width": 143.390625,
+            "height": 32,
+            "right": 718.234375,
+            "bottom": 976.046875
+          },
+          {
+            "x": 733.234375,
+            "y": 944.046875,
+            "width": 60.765625,
+            "height": 32,
+            "right": 794,
+            "bottom": 976.046875
+          }
+        ],
+        "accountVisible": true,
+        "appearanceVisible": true,
+        "uri": [
+          {
+            "box": {
+              "x": 65,
+              "y": 353,
+              "width": 690,
+              "height": 139.125,
+              "right": 755,
+              "bottom": 492.125
+            },
+            "overflow": false
+          },
+          {
+            "box": {
+              "x": 65,
+              "y": 577.125,
+              "width": 690,
+              "height": 139.125,
+              "right": 755,
+              "bottom": 716.25
+            },
+            "overflow": false
+          },
+          {
+            "box": {
+              "x": 65,
+              "y": 801.25,
+              "width": 690,
+              "height": 139.125,
+              "right": 755,
+              "bottom": 940.375
+            },
+            "overflow": false
+          }
+        ]
+      },
+      "errors": [],
+      "synthetic_writes": [
+        "synthetic-regenerate"
+      ]
+    },
+    {
+      "scheme": "dark",
+      "width": 1180,
+      "navigation": {
+        "scrollY": 2870,
+        "overflow": false,
+        "visiblePanels": [
+          "general",
+          "",
+          "data",
+          "organization",
+          "invitations",
+          "shortcuts"
+        ],
+        "content": {
+          "x": 480,
+          "y": -2757,
+          "width": 668,
+          "height": 3614.734375,
+          "right": 1148,
+          "bottom": 857.734375
+        },
+        "panel": {
+          "x": 480,
+          "y": 332.359375,
+          "width": 668,
+          "height": 493.375,
+          "right": 1148,
+          "bottom": 825.734375
+        },
+        "title": {
+          "x": 482,
+          "y": 474.734375,
+          "width": 45.6875,
+          "height": 291,
+          "right": 527.6875,
+          "bottom": 765.734375
+        },
+        "actions": [
+          {
+            "x": 641.671875,
+            "y": 604.234375,
+            "width": 80.171875,
+            "height": 32,
+            "right": 721.84375,
+            "bottom": 636.234375
+          },
+          {
+            "x": 736.84375,
+            "y": 604.234375,
+            "width": 58.140625,
+            "height": 32,
+            "right": 794.984375,
+            "bottom": 636.234375
+          },
+          {
+            "x": 809.984375,
+            "y": 604.234375,
+            "width": 101.859375,
+            "height": 32,
+            "right": 911.84375,
+            "bottom": 636.234375
+          },
+          {
+            "x": 926.84375,
+            "y": 604.234375,
+            "width": 143.390625,
+            "height": 32,
+            "right": 1070.234375,
+            "bottom": 636.234375
+          },
+          {
+            "x": 1085.234375,
+            "y": 604.234375,
+            "width": 60.765625,
+            "height": 32,
+            "right": 1146,
+            "bottom": 636.234375
+          }
+        ],
+        "accountVisible": true,
+        "appearanceVisible": true,
+        "uri": []
+      },
+      "layout": {
+        "scrollY": 2980,
+        "overflow": false,
+        "visiblePanels": [
+          "general",
+          "",
+          "data",
+          "organization",
+          "invitations",
+          "shortcuts"
+        ],
+        "content": {
+          "x": 480,
+          "y": -2867,
+          "width": 668,
+          "height": 3614.734375,
+          "right": 1148,
+          "bottom": 747.734375
+        },
+        "panel": {
+          "x": 480,
+          "y": 222.359375,
+          "width": 668,
+          "height": 493.375,
+          "right": 1148,
+          "bottom": 715.734375
+        },
+        "title": {
+          "x": 482,
+          "y": 364.734375,
+          "width": 45.6875,
+          "height": 291,
+          "right": 527.6875,
+          "bottom": 655.734375
+        },
+        "actions": [
+          {
+            "x": 641.671875,
+            "y": 494.234375,
+            "width": 80.171875,
+            "height": 32,
+            "right": 721.84375,
+            "bottom": 526.234375
+          },
+          {
+            "x": 736.84375,
+            "y": 494.234375,
+            "width": 58.140625,
+            "height": 32,
+            "right": 794.984375,
+            "bottom": 526.234375
+          },
+          {
+            "x": 809.984375,
+            "y": 494.234375,
+            "width": 101.859375,
+            "height": 32,
+            "right": 911.84375,
+            "bottom": 526.234375
+          },
+          {
+            "x": 926.84375,
+            "y": 494.234375,
+            "width": 143.390625,
+            "height": 32,
+            "right": 1070.234375,
+            "bottom": 526.234375
+          },
+          {
+            "x": 1085.234375,
+            "y": 494.234375,
+            "width": 60.765625,
+            "height": 32,
+            "right": 1146,
+            "bottom": 526.234375
+          }
+        ],
+        "accountVisible": true,
+        "appearanceVisible": true,
+        "uri": []
+      },
+      "dialog": {
+        "scrollY": 2980,
+        "overflow": false,
+        "visiblePanels": [
+          "general",
+          "",
+          "data",
+          "organization",
+          "invitations",
+          "shortcuts"
+        ],
+        "content": {
+          "x": 480,
+          "y": -2867,
+          "width": 668,
+          "height": 3614.734375,
+          "right": 1148,
+          "bottom": 747.734375
+        },
+        "panel": {
+          "x": 480,
+          "y": 222.359375,
+          "width": 668,
+          "height": 493.375,
+          "right": 1148,
+          "bottom": 715.734375
+        },
+        "title": {
+          "x": 482,
+          "y": 364.734375,
+          "width": 45.6875,
+          "height": 291,
+          "right": 527.6875,
+          "bottom": 655.734375
+        },
+        "actions": [
+          {
+            "x": 641.671875,
+            "y": 494.234375,
+            "width": 80.171875,
+            "height": 32,
+            "right": 721.84375,
+            "bottom": 526.234375
+          },
+          {
+            "x": 736.84375,
+            "y": 494.234375,
+            "width": 58.140625,
+            "height": 32,
+            "right": 794.984375,
+            "bottom": 526.234375
+          },
+          {
+            "x": 809.984375,
+            "y": 494.234375,
+            "width": 101.859375,
+            "height": 32,
+            "right": 911.84375,
+            "bottom": 526.234375
+          },
+          {
+            "x": 926.84375,
+            "y": 494.234375,
+            "width": 143.390625,
+            "height": 32,
+            "right": 1070.234375,
+            "bottom": 526.234375
+          },
+          {
+            "x": 1085.234375,
+            "y": 494.234375,
+            "width": 60.765625,
+            "height": 32,
+            "right": 1146,
+            "bottom": 526.234375
+          }
+        ],
+        "accountVisible": true,
+        "appearanceVisible": true,
+        "uri": [
+          {
+            "box": {
+              "x": 245,
+              "y": 299,
+              "width": 690,
+              "height": 139.125,
+              "right": 935,
+              "bottom": 438.125
+            },
+            "overflow": false
+          },
+          {
+            "box": {
+              "x": 245,
+              "y": 523.125,
+              "width": 690,
+              "height": 139.125,
+              "right": 935,
+              "bottom": 662.25
+            },
+            "overflow": false
+          },
+          {
+            "box": {
+              "x": 245,
+              "y": 747.25,
+              "width": 690,
+              "height": 139.125,
+              "right": 935,
+              "bottom": 886.375
+            },
+            "overflow": false
+          }
+        ]
+      },
+      "errors": [],
+      "synthetic_writes": [
+        "synthetic-regenerate"
+      ]
+    },
+    {
+      "scheme": "dark",
+      "width": 1440,
+      "navigation": {
+        "scrollY": 2601,
+        "overflow": false,
+        "visiblePanels": [
+          "general",
+          "",
+          "data",
+          "organization",
+          "invitations",
+          "shortcuts"
+        ],
+        "content": {
+          "x": 504,
+          "y": -2488,
+          "width": 720,
+          "height": 3488.734375,
+          "right": 1224,
+          "bottom": 1000.734375
+        },
+        "panel": {
+          "x": 504,
+          "y": 601.359375,
+          "width": 720,
+          "height": 367.375,
+          "right": 1224,
+          "bottom": 968.734375
+        },
+        "title": {
+          "x": 506,
+          "y": 743.734375,
+          "width": 97.6875,
+          "height": 165,
+          "right": 603.6875,
+          "bottom": 908.734375
+        },
+        "actions": [
+          {
+            "x": 717.671875,
+            "y": 810.234375,
+            "width": 80.171875,
+            "height": 32,
+            "right": 797.84375,
+            "bottom": 842.234375
+          },
+          {
+            "x": 812.84375,
+            "y": 810.234375,
+            "width": 58.140625,
+            "height": 32,
+            "right": 870.984375,
+            "bottom": 842.234375
+          },
+          {
+            "x": 885.984375,
+            "y": 810.234375,
+            "width": 101.859375,
+            "height": 32,
+            "right": 987.84375,
+            "bottom": 842.234375
+          },
+          {
+            "x": 1002.84375,
+            "y": 810.234375,
+            "width": 143.390625,
+            "height": 32,
+            "right": 1146.234375,
+            "bottom": 842.234375
+          },
+          {
+            "x": 1161.234375,
+            "y": 810.234375,
+            "width": 60.765625,
+            "height": 32,
+            "right": 1222,
+            "bottom": 842.234375
+          }
+        ],
+        "accountVisible": true,
+        "appearanceVisible": true,
+        "uri": []
+      },
+      "layout": {
+        "scrollY": 2714,
+        "overflow": false,
+        "visiblePanels": [
+          "general",
+          "",
+          "data",
+          "organization",
+          "invitations",
+          "shortcuts"
+        ],
+        "content": {
+          "x": 504,
+          "y": -2601,
+          "width": 720,
+          "height": 3488.734375,
+          "right": 1224,
+          "bottom": 887.734375
+        },
+        "panel": {
+          "x": 504,
+          "y": 488.359375,
+          "width": 720,
+          "height": 367.375,
+          "right": 1224,
+          "bottom": 855.734375
+        },
+        "title": {
+          "x": 506,
+          "y": 630.734375,
+          "width": 97.6875,
+          "height": 165,
+          "right": 603.6875,
+          "bottom": 795.734375
+        },
+        "actions": [
+          {
+            "x": 717.671875,
+            "y": 697.234375,
+            "width": 80.171875,
+            "height": 32,
+            "right": 797.84375,
+            "bottom": 729.234375
+          },
+          {
+            "x": 812.84375,
+            "y": 697.234375,
+            "width": 58.140625,
+            "height": 32,
+            "right": 870.984375,
+            "bottom": 729.234375
+          },
+          {
+            "x": 885.984375,
+            "y": 697.234375,
+            "width": 101.859375,
+            "height": 32,
+            "right": 987.84375,
+            "bottom": 729.234375
+          },
+          {
+            "x": 1002.84375,
+            "y": 697.234375,
+            "width": 143.390625,
+            "height": 32,
+            "right": 1146.234375,
+            "bottom": 729.234375
+          },
+          {
+            "x": 1161.234375,
+            "y": 697.234375,
+            "width": 60.765625,
+            "height": 32,
+            "right": 1222,
+            "bottom": 729.234375
+          }
+        ],
+        "accountVisible": true,
+        "appearanceVisible": true,
+        "uri": []
+      },
+      "dialog": {
+        "scrollY": 2714,
+        "overflow": false,
+        "visiblePanels": [
+          "general",
+          "",
+          "data",
+          "organization",
+          "invitations",
+          "shortcuts"
+        ],
+        "content": {
+          "x": 504,
+          "y": -2601,
+          "width": 720,
+          "height": 3488.734375,
+          "right": 1224,
+          "bottom": 887.734375
+        },
+        "panel": {
+          "x": 504,
+          "y": 488.359375,
+          "width": 720,
+          "height": 367.375,
+          "right": 1224,
+          "bottom": 855.734375
+        },
+        "title": {
+          "x": 506,
+          "y": 630.734375,
+          "width": 97.6875,
+          "height": 165,
+          "right": 603.6875,
+          "bottom": 795.734375
+        },
+        "actions": [
+          {
+            "x": 717.671875,
+            "y": 697.234375,
+            "width": 80.171875,
+            "height": 32,
+            "right": 797.84375,
+            "bottom": 729.234375
+          },
+          {
+            "x": 812.84375,
+            "y": 697.234375,
+            "width": 58.140625,
+            "height": 32,
+            "right": 870.984375,
+            "bottom": 729.234375
+          },
+          {
+            "x": 885.984375,
+            "y": 697.234375,
+            "width": 101.859375,
+            "height": 32,
+            "right": 987.84375,
+            "bottom": 729.234375
+          },
+          {
+            "x": 1002.84375,
+            "y": 697.234375,
+            "width": 143.390625,
+            "height": 32,
+            "right": 1146.234375,
+            "bottom": 729.234375
+          },
+          {
+            "x": 1161.234375,
+            "y": 697.234375,
+            "width": 60.765625,
+            "height": 32,
+            "right": 1222,
+            "bottom": 729.234375
+          }
+        ],
+        "accountVisible": true,
+        "appearanceVisible": true,
+        "uri": [
+          {
+            "box": {
+              "x": 375,
+              "y": 320,
+              "width": 690,
+              "height": 139.125,
+              "right": 1065,
+              "bottom": 459.125
+            },
+            "overflow": false
+          },
+          {
+            "box": {
+              "x": 375,
+              "y": 544.125,
+              "width": 690,
+              "height": 139.125,
+              "right": 1065,
+              "bottom": 683.25
+            },
+            "overflow": false
+          },
+          {
+            "box": {
+              "x": 375,
+              "y": 768.25,
+              "width": 690,
+              "height": 139.125,
+              "right": 1065,
+              "bottom": 907.375
+            },
+            "overflow": false
+          }
+        ]
+      },
+      "errors": [],
+      "synthetic_writes": [
+        "synthetic-regenerate"
+      ]
+    }
+  ],
+  "pass": null
+}

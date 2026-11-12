@@ -45,3 +45,21 @@ it('restores the input on browser navigation and preserves explicit pagination',
   expect(state.draft.value).toBe('Fourier')
   expect(state.applied.value.page).toBe('2')
 })
+
+it('never commits a pending input into a destination question route', async () => {
+  const { router, state } = await mount('/practice?q=导数')
+  router.addRoute({ path: '/practice/:uuid', component: { template: '<div />' } })
+  state.draft.value = '偏导数'; state.input()
+  await router.push('/practice/real-question?q=导数&practice_page=2')
+  await vi.advanceTimersByTimeAsync(500); await flush()
+  expect(router.currentRoute.value.path).toBe('/practice/real-question')
+  expect(router.currentRoute.value.query).toEqual({ q: '导数', practice_page: '2' })
+})
+it('drops an already queued query when its view is disposed', async () => {
+  const { router, state } = await mount('/practice?q=导数')
+  const replace = vi.spyOn(router, 'replace')
+  state.apply({ q: '偏导数' }, 'replace')
+  app!.unmount(); app = undefined
+  await flush()
+  expect(replace).not.toHaveBeenCalled()
+})

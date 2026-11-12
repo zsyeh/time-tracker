@@ -726,7 +726,9 @@ async function load() {
   similarCounts.value = { past_exam: 0, practice: 0 }
   try {
     const direct = pendingFullscreenTarget.value === uuid
-    const request = direct ? fetchNavigationQuestion(uuid, query, controller.signal) : fetchQuestion(uuid, query, Boolean(cached), controller.signal)
+    // Pointer/touch prefetch and ordinary search entry share the same request
+    // just like full-screen Next. Do not launch a duplicate detail GET on click.
+    const request = fetchNavigationQuestion(uuid, query, controller.signal)
     void request.catch(() => { /* The awaited request below handles errors, including aborted navigation. */ })
     if (direct && cached) {
       showReaderDocument(cached)
@@ -1326,6 +1328,7 @@ onBeforeRouteLeave(() => {
     <p v-if="actionFeedback" class="action-feedback" role="status">✓ {{ uiText(actionFeedback) }}</p>
     <p v-if="pageTurnCopyMessage" class="page-turn-copy-feedback" :class="{ error: pageTurnCopyFailed }" role="status">{{ uiText(pageTurnCopyMessage) }}</p>
     <nav class="question-topbar" :aria-label="uiText('题目导航')">
+      <slot name="navigation" />
       <button class="question-return" type="button" @click="backToEntryPoint">← {{ route.query.from === 'core-heatmap' ? uiText("五科核心热力图") : route.query.from === 'communication-selected' ? uiText("通信严选") : route.query.from === 'digital-selected' ? uiText("数电严选") : route.query.from === 'analog-selected' ? uiText("模电严选") : route.query.from === 'signal-selected' ? uiText("信号严选") : route.query.from === 'circuit-selected' ? uiText("电路严选") : route.query.from === 'selected-heatmap' ? uiText("严选题热力图") : route.query.from === 'heatmap' ? uiText("热力图") : route.query.from === 'collection' ? uiText("收藏题目") : route.query.from === 'insight' ? t('insight') : route.query.from === 'cockpit' ? uiText("892 总览") : uiText("题库") }}</button>
       <div class="question-page-turner">
         <button type="button" :disabled="!topPreviousTarget" @click="goToPrevious">← {{ uiText(topPreviousLabel) }}</button>

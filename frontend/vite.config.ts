@@ -1,9 +1,11 @@
+import { fontScalePlugin } from './build/fontScalePlugin'
 import { appearancePlugin } from './build/appearancePlugin'
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 
 export default defineConfig({
   plugins: [vue(), appearancePlugin('/static/app/')],
+  css: { postcss: { plugins: [fontScalePlugin()] } },
   base: '/static/app/',
   build: {
     // Native deployment builds into a staging directory first. Keeping the

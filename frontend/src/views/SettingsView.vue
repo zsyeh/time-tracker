@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, reactive, ref, watch } from 'vue'
+import FontSizeSelector from '../../shared/ui/FontSizeSelector.vue'
+import SidebarCustomization from '../../shared/ui/SidebarCustomization.vue'
+import PreferenceSyncStatus from '../../shared/ui/PreferenceSyncStatus.vue'
+import { computed, onMounted, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useAppearance } from '../../shared/appearance/preferences'
 import AppearanceSelector from '../../shared/ui/AppearanceSelector.vue'
@@ -16,11 +19,18 @@ const { appearance, accent, setAppearance, setAccent } = useAppearance()
 const route = useRoute()
 const router = useRouter()
 const accountName = ref('')
-const sectionIds: Record<string, string> = { general: 'general', appearance: 'appearance', security: 'privacy', access: 'access', data: 'data', organization: 'organization', invitations: 'invitations', shortcuts: 'shortcuts', instance: 'instance' }
-const activeSection = computed(() => typeof route.query.section === 'string' && sectionIds[route.query.section] ? route.query.section : 'general')
-function chooseSection(section: string) { void router.replace({ query: { ...route.query, section }, hash: '' }) }
-async function scrollSection() { await nextTick(); const hash = route.hash.slice(1); document.getElementById(hash || sectionIds[activeSection.value]!)?.scrollIntoView({ block: 'start', behavior: 'instant' }) }
-watch(() => [route.query.section, route.hash], scrollSection)
+const sectionIds: Record<string, string> = { general: 'general', appearance: 'appearance', security: 'privacy', access: 'access', data: 'data', organization: 'organization', invitations: 'invitations', shortcuts: 'shortcuts', instance: 'instance', sidebar:'sidebar' }
+const accessLoaded = ref(false)
+const activeSection = computed(() => {
+  const query = typeof route.query.section === 'string' ? route.query.section : ''
+  const hash = route.hash.slice(1)
+  const section = sectionIds[query] ? query
+    : Object.keys(sectionIds).find(key => key === hash || sectionIds[key] === hash) || 'general'
+  return section === 'instance' && accessLoaded.value && !isSuperuser.value ? 'general' : section
+})
+function chooseSection(section: string) {
+  if (sectionIds[section]) void router.replace({ query: { ...route.query, section }, hash: '' })
+}
 
 const tokens = ref<LaunchToken[]>([])
 const open = ref(false)
@@ -211,6 +221,7 @@ async function loadAccess() {
     isSuperuser.value = auth.user.is_superuser
     await loadInvites()
   } catch (error) { ElMessage.error((error as Error).message) }
+  finally { accessLoaded.value = true }
 }
 async function createInvite() {
   try {
@@ -299,19 +310,21 @@ async function copyAndOpenShortcuts(url: string | undefined, label: string) {
   ElMessage.success(`${label} copied. Paste it into Get Contents of URL.`)
   window.location.href = revealed.value?.shortcuts_create_url || 'shortcuts://create-shortcut'
 }
-onMounted(() => { load(); loadRuntime(); loadAccess(); loadEncryption(); loadOrganization(); void scrollSection() })
+onMounted(() => { load(); loadRuntime(); loadAccess(); loadEncryption(); loadOrganization() })
 </script>
 
 <template>
   <div class="view-stack settings-page">
     <PageHeader :context="t('workspace')" :title="t('settings')" :metadata="t('preferencesAccess')" />
-    <label class="settings-mobile-section"><span>{{ t('settings') }}</span><select :value="activeSection" @change="chooseSection(($event.target as HTMLSelectElement).value)"><option value="general">General</option><option value="appearance">Appearance</option><option value="security">Privacy and security</option><option value="data">Data</option><option value="organization">Task presets and tags</option><option value="invitations">Invitations</option><option value="shortcuts">Integrations</option></select></label>
+    <PreferenceSyncStatus/>
+    <label class="settings-mobile-section"><span>{{ t('settings') }}</span><select :value="activeSection" @change="chooseSection(($event.target as HTMLSelectElement).value)"><option value="general">General</option><option value="appearance">Appearance</option><option value="sidebar">Sidebar</option><option v-if="isSuperuser" value="instance">Homepage and schedule</option><option value="security">Privacy and security</option><option value="access">Secure access</option><option value="data">Data</option><option value="organization">Task presets and tags</option><option value="invitations">Invitations</option><option value="shortcuts">Integrations</option></select></label>
     <div class="settings-layout">
       <nav class="settings-index" aria-label="Settings sections">
         <span>{{ t('workspace') }}</span>
         <a href="?section=general" :aria-current="activeSection === 'general' ? 'location' : undefined" @click.prevent="chooseSection('general')">{{ t('general') }}</a>
         <a href="?section=appearance" :aria-current="activeSection === 'appearance' ? 'location' : undefined" @click.prevent="chooseSection('appearance')">{{ t('appearance') }}</a>
-        <a v-if="isSuperuser" href="?section=instance" @click.prevent="chooseSection('instance')">{{ t('tracking') }}</a>
+        <a href="?section=sidebar" :aria-current="activeSection === 'sidebar' ? 'location' : undefined" @click.prevent="chooseSection('sidebar')">Sidebar</a>
+        <a v-if="isSuperuser" href="?section=instance" :aria-current="activeSection === 'instance' ? 'location' : undefined" @click.prevent="chooseSection('instance')">{{ t('tracking') }}</a>
         <span>{{ t('content') }}</span>
         <a href="?section=organization" :aria-current="activeSection === 'organization' ? 'location' : undefined" @click.prevent="chooseSection('organization')">{{ t('organization') }}</a>
         <span>{{ t('account') }}</span>
@@ -322,10 +335,15 @@ onMounted(() => { load(); loadRuntime(); loadAccess(); loadEncryption(); loadOrg
         <span>{{ t('automation') }}</span>
         <a href="?section=shortcuts" :aria-current="activeSection === 'shortcuts' ? 'location' : undefined" @click.prevent="chooseSection('shortcuts')">{{ t('integrations') }}</a>
       </nav>
-      <div class="settings-content">
-    <section id="general" class="settings-category">
-      <header class="settings-category-header"><div><span>General</span><h2>Workspace defaults</h2></div><p>Identity, schedule, and visual preferences.</p></header>
-      <article v-if="isSuperuser" id="instance" class="setting-section instance-settings" v-loading="runtimeLoading">
+      <div class="settings-content" aria-live="off">
+    <section v-show="activeSection === 'general'" id="general" class="settings-category">
+      <header class="settings-category-header"><div><span>General</span><h2>Account</h2></div><p>Your identity and sign-in settings.</p></header>
+      <article class="setting-section account-settings">
+        <div class="settings-row"><span>Signed in as</span><strong>{{ accountName || '…' }}</strong></div>
+        <a class="settings-row" href="/accounts/2fa/"><span>Login security</span><span>Manage Passkeys <span aria-hidden="true">›</span></span></a>
+      </article>
+    </section>
+      <article v-if="isSuperuser" v-show="activeSection === 'instance'" id="instance" class="setting-section instance-settings" v-loading="runtimeLoading">
         <div class="card-title"><div><span class="eyebrow">LOCAL INSTANCE</span><h2>Homepage and schedule</h2></div><span class="env-badge">.ENV ↔ WEB</span></div>
         <p>These display values are read from the local environment file. Saving updates only the fields shown here and applies them immediately.</p>
         <el-form label-position="top" class="runtime-settings-form" @submit.prevent="saveRuntime">
@@ -346,21 +364,17 @@ onMounted(() => { load(); loadRuntime(); loadAccess(); loadEncryption(); loadOrg
           </div>
         </el-form>
       </article>
-      <article class="setting-section account-settings">
-        <h2>Account</h2>
-        <div class="settings-row"><span>Signed in as</span><strong>{{ accountName || '…' }}</strong></div>
-        <a class="settings-row" href="/accounts/2fa/"><span>Login security</span><span>Manage Passkeys <span aria-hidden="true">›</span></span></a>
-      </article>
-      <article id="appearance" class="setting-section appearance-settings">
+      <article v-show="activeSection === 'appearance'" id="appearance" class="setting-section appearance-settings">
         <h2>{{ t('appearance') }}</h2>
         <div class="settings-row"><span><strong>{{ t('appearance') }}</strong><small>Follow the system or choose a fixed appearance.</small></span><AppearanceSelector :model-value="appearance" @update:model-value="setAppearance" /></div>
         <div class="settings-row accent-settings-row"><span><strong>Accent color</strong><small>Applied to controls. Backgrounds stay neutral.</small></span><AccentColorPicker :model-value="accent" @update:model-value="setAccent" /></div>
-        <label class="settings-row"><span><strong>{{ t('language') }}</strong><small>Saved on this device.</small></span><select :value="language" @change="setLanguage(($event.target as HTMLSelectElement).value as UiLanguage)"><option value="en">English</option><option value="zh-CN">中文</option><option value="ja">日本語</option></select></label>
+        <FontSizeSelector/>
+        <label class="settings-row"><span><strong>{{ t('language') }}</strong><small>Synced to your account.</small></span><select :value="language" @change="setLanguage(($event.target as HTMLSelectElement).value as UiLanguage)"><option value="en">English</option><option value="zh-CN">中文</option><option value="ja">日本語</option></select></label>
       </article>
-    </section>
-    <section class="settings-category">
+    <section v-show="activeSection === 'sidebar'" id="sidebar" class="settings-category"><SidebarCustomization workspace="timer"/></section>
+    <section v-show="activeSection === 'security'" id="privacy" class="settings-category">
       <header class="settings-category-header"><div><span>Security</span><h2>Privacy and access</h2></div><p>Storage protection and account credentials.</p></header>
-      <article id="privacy" class="setting-section encryption-card" v-loading="encryptionLoading">
+      <article class="setting-section encryption-card" v-loading="encryptionLoading">
         <div class="card-title">
           <div><span class="eyebrow">STORAGE PRIVACY</span><h2>Private content at rest</h2></div>
           <span class="secure-badge">{{ dataEncryption?.algorithm || 'AES-256-GCM' }}</span>
@@ -373,13 +387,15 @@ onMounted(() => { load(); loadRuntime(); loadAccess(); loadEncryption(); loadOrg
         <p class="encryption-disclosure">No additional password is required. To preserve performance and convenience, the encryption key remains on the server. A person with sufficient server access may still obtain the key and decrypt the data; this protection increases the effort required but does not make access impossible.</p>
         <p class="encryption-disclosure">If you require privacy from the server operator, use a self-hosted deployment. The server administrator will apply reasonable safeguards to prevent database disclosure, but no hosted service can guarantee absolute confidentiality. Public share links and GitHub Markdown archives remain readable at their destinations.</p>
       </article>
-      <article id="access" class="setting-section">
+    </section>
+    <section v-show="activeSection === 'access'" id="access" class="settings-category">
+      <article class="setting-section">
         <div class="card-title"><div><span class="eyebrow">PASSKEY</span><h2>Secure access</h2></div><span class="secure-badge">WebAuthn</span></div>
         <p>Passkey and password are alternative sign-in methods. Either one completes login; no second factor is required. Passwords are optional, and Passkey-only accounts are supported.</p>
         <div class="settings-actions"><a class="el-button el-button--primary" href="/accounts/2fa/webauthn/add/">Add Passkey</a><a class="text-link" href="/accounts/2fa/">Manage</a></div>
       </article>
     </section>
-    <section id="data" class="settings-category">
+    <section v-show="activeSection === 'data'" id="data" class="settings-category">
       <header class="settings-category-header"><div><span>Data</span><h2>Portability and administration</h2></div><p>Exports and instance controls.</p></header>
       <article class="setting-section">
         <div class="card-title"><div><span class="eyebrow">PORTABLE DATA</span><h2>Data export</h2></div></div>
@@ -392,7 +408,7 @@ onMounted(() => { load(); loadRuntime(); loadAccess(); loadEncryption(); loadOrg
         <div class="settings-actions"><a class="el-button el-button--primary" href="/admin/">Open Django Admin</a><a class="text-link" href="/admin/tracker/invitecode/dashboard/">Invitation dashboard</a><a class="text-link" href="/admin/tracker/invitecode/auth-recovery/">Reset login status</a></div>
       </article>
     </section>
-    <section id="organization" class="settings-category settings-detail-section organization-panel">
+    <section v-show="activeSection === 'organization'" id="organization" class="settings-category settings-detail-section organization-panel">
       <header class="settings-category-header"><div><span>Organization</span><h2>Task presets and tags</h2></div><el-button type="primary" @click="openPresetEditor()">New task preset</el-button></header>
       <p class="section-note">Build up to four custom levels below a subject. Mark any task as a homepage shortcut; its tags are preselected when the Session starts.</p>
       <div class="tag-manager">
@@ -409,7 +425,7 @@ onMounted(() => { load(); loadRuntime(); loadAccess(); loadEncryption(); loadOrg
         </template>
       </el-tree>
     </section>
-    <section id="invitations" class="settings-category settings-detail-section token-panel invite-panel">
+    <section v-show="activeSection === 'invitations'" id="invitations" class="settings-category settings-detail-section token-panel invite-panel">
       <header class="settings-category-header"><div><span>Access</span><h2>Invite codes</h2></div><div class="invite-heading-actions"><a v-if="isAdmin" class="text-link" href="/admin/tracker/invitecode/dashboard/">Full visitor log</a><el-button type="primary" :disabled="!dailyInviteAvailable" @click="inviteOpen = true">{{ dailyInviteAvailable ? 'Generate invite' : 'Daily invite used' }}</el-button></div></header>
       <p class="section-note">{{ isAdmin ? 'Choose 1–100 uses per code. Raw codes are shown once and stored as hashes.' : 'You can generate one single-use invite per Shanghai calendar day. You can see the username after it is redeemed.' }}</p>
       <el-empty v-if="!invites.length" description="No invite codes" />
@@ -419,7 +435,7 @@ onMounted(() => { load(); loadRuntime(); loadAccess(); loadEncryption(); loadOrg
         <div><el-button v-if="invite.is_active" text type="danger" @click="revokeInvite(invite)">Revoke</el-button></div>
       </article>
     </section>
-    <section id="shortcuts" class="settings-category settings-detail-section token-panel">
+    <section v-show="activeSection === 'shortcuts'" id="shortcuts" class="settings-category settings-detail-section token-panel">
       <header class="settings-category-header"><div><span>Integrations</span><h2>Start and disturbance URIs</h2></div><el-button type="primary" @click="open = true">New capability</el-button></header>
       <p class="section-note">No sign-in is required when a valid secret URI is called. Start and disturbance use separate random secrets. Each can be copied only when created or regenerated.</p>
       <el-empty v-if="!tokens.length" description="No launch tokens" />
@@ -494,22 +510,74 @@ onMounted(() => { load(); loadRuntime(); loadAccess(); loadEncryption(); loadOrg
 
 <style scoped>
 .settings-page { max-width:1120px; margin:0 auto; min-width:0; }
-.settings-layout { display:grid; grid-template-columns:192px minmax(0,720px); gap:32px; align-items:start; }
+.settings-layout { display:grid; grid-template-columns:176px minmax(0,720px); gap:24px; align-items:start; }
 .settings-index { position:sticky; top:24px; display:flex; flex-direction:column; gap:4px; padding:0; border:0; background:transparent; }
 .settings-index > span { font-size:12px; color:var(--text-secondary); margin:16px 8px 4px; }
-.settings-index a { min-height:36px; padding:8px 12px; border:0; border-radius:6px; color:var(--text-secondary); text-decoration:none; font-size:14px; }
-.settings-index a:hover { background:var(--surface-hover); } .settings-index a[aria-current=location] { background:var(--surface-selected); color:var(--text-primary); font-weight:600; }
-.settings-content { min-width:0; } .settings-category { margin-bottom:32px; padding:0; border:0; background:transparent; box-shadow:none; }
-.settings-category-header { padding:0; margin:0 0 16px; } .settings-category-header > div > span { display:none; } .settings-category-header h2 { font-size:18px; margin:0; } .settings-category-header p { font-size:13px; }
-.setting-section { border:0; border-radius:8px; box-shadow:none; padding:16px; background:var(--surface-subtle); margin:0 0 16px; scroll-margin-top:24px; }
-.setting-section h2 { font-size:16px; margin:0 0 8px; } .setting-section p { font-size:13px; line-height:1.6; }
-.settings-row { display:flex; align-items:center; justify-content:space-between; gap:24px; min-height:56px; padding:12px 0; border:0; color:var(--text-primary); text-decoration:none; font-size:14px; }
-.settings-row + .settings-row { border-top:1px solid var(--border-subtle); } .settings-row > span { min-width:0; } .settings-row strong { font-size:14px; font-weight:500; } .settings-row small { display:block; margin-top:4px; font-size:12px; color:var(--text-secondary); }
-.settings-row select { min-height:40px; max-width:180px; color:var(--text-primary); background:transparent; border:0; font:inherit; }
-.accent-settings-row { align-items:start; } .accent-settings-row > :last-child { max-width:320px; }
-.settings-detail-section { border:0; border-radius:0; background:transparent; box-shadow:none; }
-.settings-mobile-section { display:none; } .token-row { box-shadow:none; border:0; border-bottom:1px solid var(--border-subtle); border-radius:0; background:transparent; padding:16px 0; } .token-row > div { min-width:0; } .token-row small { overflow-wrap:anywhere; }
-:deep(.preset-tree) { background:transparent; } :deep(.el-button:not(.el-button--primary):not(.is-text)) { background:var(--surface-hover); border-color:transparent; } .card-title .eyebrow { display:none; }
-@media(max-width:959px) { .settings-layout { display:block; } .settings-index { display:none; } .settings-mobile-section { display:flex; align-items:center; justify-content:space-between; gap:16px; min-height:44px; margin:0 0 16px; font-size:14px; } .settings-mobile-section select { min-height:44px; min-width:0; max-width:70%; border:0; padding:8px; background:var(--surface-subtle); color:var(--text-primary); font:inherit; } }
-@media(max-width:600px) { .settings-row { flex-wrap:wrap; gap:12px; } .accent-settings-row > :last-child { max-width:100%; } .setting-section { padding:12px; } .settings-category-header { flex-wrap:wrap; gap:12px; } :deep(.preset-tree-row) { white-space:normal; min-width:0; flex-wrap:wrap; height:auto; } :deep(.el-tree-node__content) { min-height:52px; height:auto; } }
+.settings-index > span:first-child { margin-top:0; }
+.settings-index a { height:auto; min-height:40px; padding:8px 12px; border:0; border-radius:6px; color:var(--text-secondary); text-decoration:none; font-size:14px; line-height:1.5; }
+.settings-index a:hover { background:var(--surface-hover); }
+.settings-index a[aria-current=location] { background:var(--surface-selected); color:var(--text-primary); font-weight:600; }
+.settings-content { display:block; min-width:0; padding:0; }
+.settings-content > .settings-category { margin:0; padding:0; border:0; background:transparent; box-shadow:none; }
+.settings-category-header { min-height:0; display:flex; flex-wrap:wrap; align-items:center; gap:12px; padding:0; margin:0 0 16px; border:0; }
+.settings-category-header > div:first-child { flex:1 1 180px; min-width:0; }
+.settings-category-header > div > span { display:none; }
+.settings-category-header h2 { font-size:18px; margin:0; line-height:1.4; }
+.settings-category-header > p { flex:1 1 220px; margin:0; max-width:none; font-size:13px; text-align:left; line-height:1.6; }
+.setting-section { min-width:0; border:0; border-radius:8px; box-shadow:none; padding:16px; background:var(--surface-subtle); margin:0 0 16px; }
+.setting-section h2 { font-size:16px; margin:0 0 8px; }
+.setting-section p { font-size:13px; line-height:1.6; }
+.settings-row { display:flex; align-items:center; justify-content:space-between; gap:16px; min-height:56px; padding:12px 0; border:0; color:var(--text-primary); text-decoration:none; font-size:14px; }
+.settings-row + .settings-row { border-top:1px solid var(--border-subtle); }
+.settings-row > span:first-child { flex:1 1 160px; min-width:0; }
+.settings-row > :last-child { min-width:0; overflow-wrap:anywhere; }
+.settings-row strong { font-size:14px; font-weight:500; }
+.settings-row small { display:block; margin-top:4px; font-size:12px; color:var(--text-secondary); }
+.settings-row select { min-height:44px; max-width:180px; color:var(--text-primary); background:transparent; border:0; font:inherit; }
+.accent-settings-row { align-items:start; }
+.accent-settings-row > :last-child { max-width:320px; }
+.settings-mobile-section { display:none; }
+.token-row { display:grid; grid-template-columns:minmax(0,1fr) auto; align-items:start; gap:12px 16px; min-width:0; box-shadow:none; border:0; border-bottom:1px solid var(--border-subtle); border-radius:0; background:transparent; padding:16px 0; }
+.token-row > div { min-width:0; }
+.token-row strong { font-size:14px; line-height:1.5; overflow-wrap:anywhere; }
+.token-row small { font-size:12px; line-height:1.6; overflow-wrap:anywhere; }
+.token-row > :last-child { grid-column:1/-1; }
+.capability-actions { display:flex; flex-wrap:wrap; justify-content:flex-start; gap:4px 8px; }
+.capability-actions :deep(.el-button) { margin:0; min-height:40px; max-width:100%; white-space:normal; text-align:left; line-height:1.4; }
+.capability-actions :deep(.el-button > span) { min-width:0; overflow-wrap:anywhere; }
+.invite-heading-actions { flex-wrap:wrap; justify-content:flex-start; }
+.runtime-settings-footer { flex-wrap:wrap; }
+.runtime-settings-footer > div { display:flex; flex-wrap:wrap; gap:8px; }
+.runtime-settings-footer :deep(.el-button + .el-button) { margin-left:0; }
+.card-title { flex-wrap:wrap; gap:12px; }
+.card-title > div:first-child { flex:1 1 180px; min-width:0; }
+.card-title .eyebrow { display:none; }
+.reveal-url { box-sizing:border-box; min-width:0; max-width:100%; white-space:pre-wrap; overflow-wrap:anywhere; word-break:break-word; color:var(--text-primary); }
+.capability-reveal { min-width:0; max-width:100%; }
+.capability-reveal > div:last-child { flex-wrap:wrap; gap:8px; }
+.capability-reveal :deep(.el-button) { min-width:0; max-width:100%; height:auto; min-height:40px; white-space:normal; }
+.capability-reveal :deep(.el-button + .el-button) { margin-left:0; }
+.invite-signup-url { min-width:0; overflow-wrap:anywhere; }
+:deep(.preset-tree) { background:transparent; }
+:deep(.el-button:not(.el-button--primary):not(.is-text)) { background:var(--surface-hover); border-color:transparent; }
+@media(pointer:coarse) {
+  .settings-index a,.capability-actions :deep(.el-button),.capability-reveal :deep(.el-button) { min-height:44px; }
+}
+@media(max-width:959px) {
+  .settings-layout { display:block; }
+  .settings-index { display:none; }
+  .settings-mobile-section { display:flex; align-items:center; justify-content:space-between; gap:16px; min-height:44px; margin:0 0 16px; font-size:14px; }
+  .settings-mobile-section select { min-height:44px; min-width:0; max-width:70%; border:0; padding:8px; background:var(--surface-subtle); color:var(--text-primary); font:inherit; }
+}
+@media(max-width:600px) {
+  .settings-row { flex-wrap:wrap; gap:12px; }
+  .accent-settings-row > :last-child { max-width:100%; }
+  .setting-section { padding:12px; }
+  .token-row { grid-template-columns:minmax(0,1fr); }
+  .token-row > .el-tag { grid-row:2; }
+  .tag-create { grid-template-columns:minmax(0,1fr) auto; gap:8px; }
+  .tag-create > :first-child { grid-column:1/-1; }
+  :deep(.preset-tree-row) { white-space:normal; min-width:0; flex-wrap:wrap; height:auto; }
+  :deep(.el-tree-node__content) { min-height:52px; height:auto; }
+}
 </style>

@@ -1,13 +1,9 @@
+import { useAccountPreferences } from '../../../shared/preferences/store'
 import { initializeAppearance, setAppearance, useAppearance } from '../../../shared/appearance/preferences'
-import { computed, ref } from 'vue'
+import { computed } from 'vue'
 
 export type UiLanguage = 'en' | 'zh-CN' | 'ja'
 export type UiScheme = 'dark' | 'light'
-
-const LANGUAGE_KEY = 'learning-os-ui-language'
-const SCHEME_KEY = 'learning-os-color-scheme'
-const LANGUAGE_COOKIE = 'learning_os_ui_language'
-const SCHEME_COOKIE = 'learning_os_color_scheme'
 
 const english = {
   practice: 'Practice', activity: 'Activity', bookActivity: 'Book Check-ins', knowledge: 'Knowledge', selectedHeatmap: 'Selected Heatmap', buildPaper: 'Build Paper', favorites: 'Favorites', nextTime: 'Next Time', bookFeel: 'Book Feel', insight: 'History',
@@ -27,23 +23,7 @@ const translations: Record<UiLanguage, Messages> = {
   },
 }
 
-function readCookie(name: string) {
-  const match = document.cookie.split('; ').find((item) => item.startsWith(`${name}=`))
-  return match ? decodeURIComponent(match.slice(name.length + 1)) : null
-}
-function stored(cookieName: string, storageKey: string) {
-  const cookie = readCookie(cookieName)
-  if (cookie) return cookie
-  try { return localStorage.getItem(storageKey) } catch { return null }
-}
-function persist(cookieName: string, storageKey: string, value: string) {
-  try { localStorage.setItem(storageKey, value) } catch { /* Browser storage can be restricted. */ }
-  const sharedDomain = location.hostname === 'ehzsy.site' || location.hostname.endsWith('.ehzsy.site') ? '; Domain=.ehzsy.site' : ''
-  document.cookie = `${cookieName}=${encodeURIComponent(value)}; Path=/; Max-Age=31536000; SameSite=Lax${sharedDomain}`
-}
-
-const initialLanguage = stored(LANGUAGE_COOKIE, LANGUAGE_KEY)
-export const uiLanguage = ref<UiLanguage>(initialLanguage === 'zh-CN' || initialLanguage === 'ja' ? initialLanguage : 'en')
+export const uiLanguage = computed({get:() => useAccountPreferences().values.language,set:(value:UiLanguage)=>useAccountPreferences().set('language',value)})
 export const uiScheme = useAppearance().resolved
 
 function apply() {
@@ -52,7 +32,7 @@ function apply() {
 export function initializeUiPreferences() { initializeAppearance(); apply() }
 export function useUiPreferences() {
   const messages = computed(() => translations[uiLanguage.value])
-  function setLanguage(value: UiLanguage) { uiLanguage.value = value; persist(LANGUAGE_COOKIE, LANGUAGE_KEY, value); apply() }
+  function setLanguage(value: UiLanguage) { useAccountPreferences().set('language',value); apply() }
   function setScheme(value: UiScheme) { setAppearance(value) }
   function t(key: MessageKey, values: Record<string, string | number> = {}) {
     let text: string = messages.value[key]

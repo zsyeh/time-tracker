@@ -163,3 +163,60 @@ it('does not consume another account return state for the same question', async 
   expect(window.scrollTo).not.toHaveBeenCalled()
   expect(host.querySelector('.heatmap-state-filters button:first-child')?.getAttribute('aria-pressed')).toBe('true')
 })
+
+it('restores a warm cached return before a slow refresh completes', async () => {
+  const { cachedHeatmap } = await import('../lib/workspace')
+  vi.mocked(cachedHeatmap).mockReturnValueOnce(payload)
+  vi.mocked(api).mockReturnValue(new Promise(() => {}) as ReturnType<typeof api>)
+  sessionStorage.setItem('drill.heatmap.return.v2.selected', JSON.stringify({
+    scope: 'all', typeGroup: '', course: '', material: 'ready', questionUuid: 'q-1', scrollY: 320,
+  }))
+  const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/selected-heatmap', component: HeatmapView }] })
+  await router.push('/selected-heatmap?question=q-1')
+  app = createApp(HeatmapView, { selectedOnly: true }); app.use(router).mount(host)
+  await vi.waitFor(() => expect(window.scrollTo).toHaveBeenCalledWith({ top: 320, behavior: 'auto' }))
+  expect(host.querySelector('[data-question-uuid="q-1"]')?.getAttribute('aria-pressed')).toBe('true')
+  expect(host.querySelector('.question-skeleton')).toBeNull()
+})
+
+it('uses the pre-rebuild status cells and retains metadata in the accessible name', async () => {
+  const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/selected-heatmap', component: HeatmapView }] })
+  await router.push('/selected-heatmap')
+  app = createApp(HeatmapView, { selectedOnly: true }); app.use(router).mount(host)
+  await vi.waitFor(() => expect(host.querySelector('[data-question-uuid="q-1"]')).not.toBeNull())
+  const cell = host.querySelector('[data-question-uuid="q-1"]')!
+  expect(cell.classList.contains('status-review')).toBe(true)
+  expect(cell.getAttribute('aria-label')).toContain('Question 1')
+  expect(cell.querySelector('.cell-state-mark')).toBeNull()
+  expect(cell.getAttribute('data-question-order')).toBe('1')
+  expect(cell.childElementCount).toBe(0)
+})
+
+it('updates memoized cached cells and preview from a fresh server snapshot', async () => {
+  const { cachedHeatmap } = await import('../lib/workspace')
+  vi.mocked(cachedHeatmap).mockReturnValueOnce(payload)
+  let resolve!: (value: unknown) => void
+  vi.mocked(api).mockReturnValue(new Promise(done => { resolve = done }) as ReturnType<typeof api>)
+  const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/selected-heatmap', component: HeatmapView }] })
+  await router.push('/selected-heatmap?question=q-1')
+  app = createApp(HeatmapView, { selectedOnly: true }); app.use(router).mount(host)
+  await vi.waitFor(() => expect(host.querySelector('[data-question-uuid="q-1"]')?.getAttribute('aria-pressed')).toBe('true'))
+  resolve({ ...payload, groups: [{ ...payload.groups[0], questions: [{ ...question, state: 'mastered', attempt_count: 2 }] }] })
+  await vi.waitFor(() => expect(host.querySelector('[data-question-uuid="q-1"]')?.classList.contains('status-mastered')).toBe(true))
+  const cell = host.querySelector('[data-question-uuid="q-1"]')!
+  expect(cell.classList.contains('status-review')).toBe(false)
+  expect(cell.getAttribute('aria-pressed')).toBe('true')
+  expect(cell.getAttribute('aria-label')).toContain('2')
+})
+
+
+it('restores the historical total-first overview and locator beside the state filters', async () => {
+  const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/selected-heatmap', component: HeatmapView }] })
+  await router.push('/selected-heatmap')
+  app = createApp(HeatmapView, { selectedOnly: true }); app.use(router).mount(host)
+  await vi.waitFor(() => expect(host.querySelector('.heatmap-overview strong')?.textContent).toBe('1'))
+  expect(host.querySelector('.heatmap-overview')?.firstElementChild?.tagName).toBe('STRONG')
+  expect(host.querySelector('.heatmap-overview .heatmap-next')).toBeNull()
+  expect(host.querySelector('.heatmap-actions .heatmap-state-filters')).not.toBeNull()
+  expect(host.querySelector('.heatmap-actions > .heatmap-next')).not.toBeNull()
+})

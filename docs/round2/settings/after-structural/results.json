@@ -1,0 +1,2175 @@
+{
+  "synthetic": true,
+  "build_sha256": "e38f1165eec6c8d1cf2f8efff099f751344233d3bbdc04c3a267b51b5e22c334",
+  "cases": [
+    {
+      "scheme": "light",
+      "width": 390,
+      "navigation": {
+        "scrollY": 0,
+        "overflow": false,
+        "visiblePanels": [
+          "shortcuts"
+        ],
+        "content": {
+          "x": 12,
+          "y": 193,
+          "width": 366,
+          "height": 392.984375,
+          "right": 378,
+          "bottom": 585.984375
+        },
+        "panel": {
+          "x": 12,
+          "y": 193,
+          "width": 366,
+          "height": 392.984375,
+          "right": 378,
+          "bottom": 585.984375
+        },
+        "title": {
+          "x": 14,
+          "y": 325.75,
+          "width": 362,
+          "height": 61.125,
+          "right": 376,
+          "bottom": 386.875
+        },
+        "actions": [
+          {
+            "x": 14,
+            "y": 434.875,
+            "width": 77.3125,
+            "height": 44,
+            "right": 91.3125,
+            "bottom": 478.875
+          },
+          {
+            "x": 99.3125,
+            "y": 434.875,
+            "width": 56.40625,
+            "height": 44,
+            "right": 155.71875,
+            "bottom": 478.875
+          },
+          {
+            "x": 163.71875,
+            "y": 434.875,
+            "width": 97.90625,
+            "height": 44,
+            "right": 261.625,
+            "bottom": 478.875
+          },
+          {
+            "x": 14,
+            "y": 482.875,
+            "width": 137.328125,
+            "height": 44,
+            "right": 151.328125,
+            "bottom": 526.875
+          },
+          {
+            "x": 159.328125,
+            "y": 482.875,
+            "width": 58.890625,
+            "height": 44,
+            "right": 218.21875,
+            "bottom": 526.875
+          }
+        ],
+        "accountVisible": false,
+        "appearanceVisible": false,
+        "uri": []
+      },
+      "layout": {
+        "scrollY": 0,
+        "overflow": false,
+        "visiblePanels": [
+          "shortcuts"
+        ],
+        "content": {
+          "x": 12,
+          "y": 193,
+          "width": 366,
+          "height": 392.984375,
+          "right": 378,
+          "bottom": 585.984375
+        },
+        "panel": {
+          "x": 12,
+          "y": 193,
+          "width": 366,
+          "height": 392.984375,
+          "right": 378,
+          "bottom": 585.984375
+        },
+        "title": {
+          "x": 14,
+          "y": 325.75,
+          "width": 362,
+          "height": 61.125,
+          "right": 376,
+          "bottom": 386.875
+        },
+        "actions": [
+          {
+            "x": 14,
+            "y": 434.875,
+            "width": 77.3125,
+            "height": 44,
+            "right": 91.3125,
+            "bottom": 478.875
+          },
+          {
+            "x": 99.3125,
+            "y": 434.875,
+            "width": 56.40625,
+            "height": 44,
+            "right": 155.71875,
+            "bottom": 478.875
+          },
+          {
+            "x": 163.71875,
+            "y": 434.875,
+            "width": 97.90625,
+            "height": 44,
+            "right": 261.625,
+            "bottom": 478.875
+          },
+          {
+            "x": 14,
+            "y": 482.875,
+            "width": 137.328125,
+            "height": 44,
+            "right": 151.328125,
+            "bottom": 526.875
+          },
+          {
+            "x": 159.328125,
+            "y": 482.875,
+            "width": 58.890625,
+            "height": 44,
+            "right": 218.21875,
+            "bottom": 526.875
+          }
+        ],
+        "accountVisible": false,
+        "appearanceVisible": false,
+        "uri": []
+      },
+      "dialog": {
+        "scrollY": 0,
+        "overflow": false,
+        "visiblePanels": [
+          "shortcuts"
+        ],
+        "content": {
+          "x": 12,
+          "y": 193,
+          "width": 366,
+          "height": 392.984375,
+          "right": 378,
+          "bottom": 585.984375
+        },
+        "panel": {
+          "x": 12,
+          "y": 193,
+          "width": 366,
+          "height": 392.984375,
+          "right": 378,
+          "bottom": 585.984375
+        },
+        "title": {
+          "x": 14,
+          "y": 325.75,
+          "width": 362,
+          "height": 61.125,
+          "right": 376,
+          "bottom": 386.875
+        },
+        "actions": [
+          {
+            "x": 14,
+            "y": 434.875,
+            "width": 77.3125,
+            "height": 44,
+            "right": 91.3125,
+            "bottom": 478.875
+          },
+          {
+            "x": 99.3125,
+            "y": 434.875,
+            "width": 56.40625,
+            "height": 44,
+            "right": 155.71875,
+            "bottom": 478.875
+          },
+          {
+            "x": 163.71875,
+            "y": 434.875,
+            "width": 97.90625,
+            "height": 44,
+            "right": 261.625,
+            "bottom": 478.875
+          },
+          {
+            "x": 14,
+            "y": 482.875,
+            "width": 137.328125,
+            "height": 44,
+            "right": 151.328125,
+            "bottom": 526.875
+          },
+          {
+            "x": 159.328125,
+            "y": 482.875,
+            "width": 58.890625,
+            "height": 44,
+            "right": 218.21875,
+            "bottom": 526.875
+          }
+        ],
+        "accountVisible": false,
+        "appearanceVisible": false,
+        "uri": [
+          {
+            "box": {
+              "x": 42.796875,
+              "y": 350.59375,
+              "width": 304.390625,
+              "height": 261.25,
+              "right": 347.1875,
+              "bottom": 611.84375
+            },
+            "overflow": false
+          },
+          {
+            "box": {
+              "x": 42.796875,
+              "y": 708.84375,
+              "width": 304.390625,
+              "height": 261.25,
+              "right": 347.1875,
+              "bottom": 970.09375
+            },
+            "overflow": false
+          },
+          {
+            "box": {
+              "x": 42.796875,
+              "y": 1067.09375,
+              "width": 304.390625,
+              "height": 261.25,
+              "right": 347.1875,
+              "bottom": 1328.34375
+            },
+            "overflow": false
+          }
+        ]
+      },
+      "errors": [],
+      "synthetic_writes": [
+        "synthetic-regenerate"
+      ],
+      "pass": true
+    },
+    {
+      "scheme": "light",
+      "width": 820,
+      "navigation": {
+        "scrollY": 0,
+        "overflow": false,
+        "visiblePanels": [
+          "shortcuts"
+        ],
+        "content": {
+          "x": 24,
+          "y": 189,
+          "width": 772,
+          "height": 270.796875,
+          "right": 796,
+          "bottom": 459.796875
+        },
+        "panel": {
+          "x": 24,
+          "y": 189,
+          "width": 772,
+          "height": 270.796875,
+          "right": 796,
+          "bottom": 459.796875
+        },
+        "title": {
+          "x": 26,
+          "y": 303.5,
+          "width": 665.578125,
+          "height": 41.1875,
+          "right": 691.578125,
+          "bottom": 344.6875
+        },
+        "actions": [
+          {
+            "x": 26,
+            "y": 356.6875,
+            "width": 77.3125,
+            "height": 44,
+            "right": 103.3125,
+            "bottom": 400.6875
+          },
+          {
+            "x": 111.3125,
+            "y": 356.6875,
+            "width": 56.40625,
+            "height": 44,
+            "right": 167.71875,
+            "bottom": 400.6875
+          },
+          {
+            "x": 175.71875,
+            "y": 356.6875,
+            "width": 97.90625,
+            "height": 44,
+            "right": 273.625,
+            "bottom": 400.6875
+          },
+          {
+            "x": 281.625,
+            "y": 356.6875,
+            "width": 137.328125,
+            "height": 44,
+            "right": 418.953125,
+            "bottom": 400.6875
+          },
+          {
+            "x": 426.953125,
+            "y": 356.6875,
+            "width": 58.890625,
+            "height": 44,
+            "right": 485.84375,
+            "bottom": 400.6875
+          }
+        ],
+        "accountVisible": false,
+        "appearanceVisible": false,
+        "uri": []
+      },
+      "layout": {
+        "scrollY": 0,
+        "overflow": false,
+        "visiblePanels": [
+          "shortcuts"
+        ],
+        "content": {
+          "x": 24,
+          "y": 189,
+          "width": 772,
+          "height": 270.796875,
+          "right": 796,
+          "bottom": 459.796875
+        },
+        "panel": {
+          "x": 24,
+          "y": 189,
+          "width": 772,
+          "height": 270.796875,
+          "right": 796,
+          "bottom": 459.796875
+        },
+        "title": {
+          "x": 26,
+          "y": 303.5,
+          "width": 665.578125,
+          "height": 41.1875,
+          "right": 691.578125,
+          "bottom": 344.6875
+        },
+        "actions": [
+          {
+            "x": 26,
+            "y": 356.6875,
+            "width": 77.3125,
+            "height": 44,
+            "right": 103.3125,
+            "bottom": 400.6875
+          },
+          {
+            "x": 111.3125,
+            "y": 356.6875,
+            "width": 56.40625,
+            "height": 44,
+            "right": 167.71875,
+            "bottom": 400.6875
+          },
+          {
+            "x": 175.71875,
+            "y": 356.6875,
+            "width": 97.90625,
+            "height": 44,
+            "right": 273.625,
+            "bottom": 400.6875
+          },
+          {
+            "x": 281.625,
+            "y": 356.6875,
+            "width": 137.328125,
+            "height": 44,
+            "right": 418.953125,
+            "bottom": 400.6875
+          },
+          {
+            "x": 426.953125,
+            "y": 356.6875,
+            "width": 58.890625,
+            "height": 44,
+            "right": 485.84375,
+            "bottom": 400.6875
+          }
+        ],
+        "accountVisible": false,
+        "appearanceVisible": false,
+        "uri": []
+      },
+      "dialog": {
+        "scrollY": 0,
+        "overflow": false,
+        "visiblePanels": [
+          "shortcuts"
+        ],
+        "content": {
+          "x": 24,
+          "y": 189,
+          "width": 772,
+          "height": 270.796875,
+          "right": 796,
+          "bottom": 459.796875
+        },
+        "panel": {
+          "x": 24,
+          "y": 189,
+          "width": 772,
+          "height": 270.796875,
+          "right": 796,
+          "bottom": 459.796875
+        },
+        "title": {
+          "x": 26,
+          "y": 303.5,
+          "width": 665.578125,
+          "height": 41.1875,
+          "right": 691.578125,
+          "bottom": 344.6875
+        },
+        "actions": [
+          {
+            "x": 26,
+            "y": 356.6875,
+            "width": 77.3125,
+            "height": 44,
+            "right": 103.3125,
+            "bottom": 400.6875
+          },
+          {
+            "x": 111.3125,
+            "y": 356.6875,
+            "width": 56.40625,
+            "height": 44,
+            "right": 167.71875,
+            "bottom": 400.6875
+          },
+          {
+            "x": 175.71875,
+            "y": 356.6875,
+            "width": 97.90625,
+            "height": 44,
+            "right": 273.625,
+            "bottom": 400.6875
+          },
+          {
+            "x": 281.625,
+            "y": 356.6875,
+            "width": 137.328125,
+            "height": 44,
+            "right": 418.953125,
+            "bottom": 400.6875
+          },
+          {
+            "x": 426.953125,
+            "y": 356.6875,
+            "width": 58.890625,
+            "height": 44,
+            "right": 485.84375,
+            "bottom": 400.6875
+          }
+        ],
+        "accountVisible": false,
+        "appearanceVisible": false,
+        "uri": [
+          {
+            "box": {
+              "x": 65,
+              "y": 353,
+              "width": 690,
+              "height": 133.5,
+              "right": 755,
+              "bottom": 486.5
+            },
+            "overflow": false
+          },
+          {
+            "box": {
+              "x": 65,
+              "y": 583.5,
+              "width": 690,
+              "height": 133.5,
+              "right": 755,
+              "bottom": 717
+            },
+            "overflow": false
+          },
+          {
+            "box": {
+              "x": 65,
+              "y": 814,
+              "width": 690,
+              "height": 133.5,
+              "right": 755,
+              "bottom": 947.5
+            },
+            "overflow": false
+          }
+        ]
+      },
+      "errors": [],
+      "synthetic_writes": [
+        "synthetic-regenerate"
+      ],
+      "pass": true
+    },
+    {
+      "scheme": "light",
+      "width": 1180,
+      "navigation": {
+        "scrollY": 0,
+        "overflow": false,
+        "visiblePanels": [
+          "shortcuts"
+        ],
+        "content": {
+          "x": 456,
+          "y": 113,
+          "width": 692,
+          "height": 270.796875,
+          "right": 1148,
+          "bottom": 383.796875
+        },
+        "panel": {
+          "x": 456,
+          "y": 113,
+          "width": 692,
+          "height": 270.796875,
+          "right": 1148,
+          "bottom": 383.796875
+        },
+        "title": {
+          "x": 458,
+          "y": 227.5,
+          "width": 585.578125,
+          "height": 41.1875,
+          "right": 1043.578125,
+          "bottom": 268.6875
+        },
+        "actions": [
+          {
+            "x": 458,
+            "y": 280.6875,
+            "width": 77.3125,
+            "height": 44,
+            "right": 535.3125,
+            "bottom": 324.6875
+          },
+          {
+            "x": 543.3125,
+            "y": 280.6875,
+            "width": 56.40625,
+            "height": 44,
+            "right": 599.71875,
+            "bottom": 324.6875
+          },
+          {
+            "x": 607.71875,
+            "y": 280.6875,
+            "width": 97.90625,
+            "height": 44,
+            "right": 705.625,
+            "bottom": 324.6875
+          },
+          {
+            "x": 713.625,
+            "y": 280.6875,
+            "width": 137.328125,
+            "height": 44,
+            "right": 850.953125,
+            "bottom": 324.6875
+          },
+          {
+            "x": 858.953125,
+            "y": 280.6875,
+            "width": 58.890625,
+            "height": 44,
+            "right": 917.84375,
+            "bottom": 324.6875
+          }
+        ],
+        "accountVisible": false,
+        "appearanceVisible": false,
+        "uri": []
+      },
+      "layout": {
+        "scrollY": 0,
+        "overflow": false,
+        "visiblePanels": [
+          "shortcuts"
+        ],
+        "content": {
+          "x": 456,
+          "y": 113,
+          "width": 692,
+          "height": 270.796875,
+          "right": 1148,
+          "bottom": 383.796875
+        },
+        "panel": {
+          "x": 456,
+          "y": 113,
+          "width": 692,
+          "height": 270.796875,
+          "right": 1148,
+          "bottom": 383.796875
+        },
+        "title": {
+          "x": 458,
+          "y": 227.5,
+          "width": 585.578125,
+          "height": 41.1875,
+          "right": 1043.578125,
+          "bottom": 268.6875
+        },
+        "actions": [
+          {
+            "x": 458,
+            "y": 280.6875,
+            "width": 77.3125,
+            "height": 44,
+            "right": 535.3125,
+            "bottom": 324.6875
+          },
+          {
+            "x": 543.3125,
+            "y": 280.6875,
+            "width": 56.40625,
+            "height": 44,
+            "right": 599.71875,
+            "bottom": 324.6875
+          },
+          {
+            "x": 607.71875,
+            "y": 280.6875,
+            "width": 97.90625,
+            "height": 44,
+            "right": 705.625,
+            "bottom": 324.6875
+          },
+          {
+            "x": 713.625,
+            "y": 280.6875,
+            "width": 137.328125,
+            "height": 44,
+            "right": 850.953125,
+            "bottom": 324.6875
+          },
+          {
+            "x": 858.953125,
+            "y": 280.6875,
+            "width": 58.890625,
+            "height": 44,
+            "right": 917.84375,
+            "bottom": 324.6875
+          }
+        ],
+        "accountVisible": false,
+        "appearanceVisible": false,
+        "uri": []
+      },
+      "dialog": {
+        "scrollY": 0,
+        "overflow": false,
+        "visiblePanels": [
+          "shortcuts"
+        ],
+        "content": {
+          "x": 456,
+          "y": 113,
+          "width": 692,
+          "height": 270.796875,
+          "right": 1148,
+          "bottom": 383.796875
+        },
+        "panel": {
+          "x": 456,
+          "y": 113,
+          "width": 692,
+          "height": 270.796875,
+          "right": 1148,
+          "bottom": 383.796875
+        },
+        "title": {
+          "x": 458,
+          "y": 227.5,
+          "width": 585.578125,
+          "height": 41.1875,
+          "right": 1043.578125,
+          "bottom": 268.6875
+        },
+        "actions": [
+          {
+            "x": 458,
+            "y": 280.6875,
+            "width": 77.3125,
+            "height": 44,
+            "right": 535.3125,
+            "bottom": 324.6875
+          },
+          {
+            "x": 543.3125,
+            "y": 280.6875,
+            "width": 56.40625,
+            "height": 44,
+            "right": 599.71875,
+            "bottom": 324.6875
+          },
+          {
+            "x": 607.71875,
+            "y": 280.6875,
+            "width": 97.90625,
+            "height": 44,
+            "right": 705.625,
+            "bottom": 324.6875
+          },
+          {
+            "x": 713.625,
+            "y": 280.6875,
+            "width": 137.328125,
+            "height": 44,
+            "right": 850.953125,
+            "bottom": 324.6875
+          },
+          {
+            "x": 858.953125,
+            "y": 280.6875,
+            "width": 58.890625,
+            "height": 44,
+            "right": 917.84375,
+            "bottom": 324.6875
+          }
+        ],
+        "accountVisible": false,
+        "appearanceVisible": false,
+        "uri": [
+          {
+            "box": {
+              "x": 245,
+              "y": 299,
+              "width": 690,
+              "height": 133.5,
+              "right": 935,
+              "bottom": 432.5
+            },
+            "overflow": false
+          },
+          {
+            "box": {
+              "x": 245,
+              "y": 529.5,
+              "width": 690,
+              "height": 133.5,
+              "right": 935,
+              "bottom": 663
+            },
+            "overflow": false
+          },
+          {
+            "box": {
+              "x": 245,
+              "y": 760,
+              "width": 690,
+              "height": 133.5,
+              "right": 935,
+              "bottom": 893.5
+            },
+            "overflow": false
+          }
+        ]
+      },
+      "errors": [],
+      "synthetic_writes": [
+        "synthetic-regenerate"
+      ],
+      "pass": true
+    },
+    {
+      "scheme": "light",
+      "width": 1440,
+      "navigation": {
+        "scrollY": 0,
+        "overflow": false,
+        "visiblePanels": [
+          "shortcuts"
+        ],
+        "content": {
+          "x": 480,
+          "y": 113,
+          "width": 720,
+          "height": 270.796875,
+          "right": 1200,
+          "bottom": 383.796875
+        },
+        "panel": {
+          "x": 480,
+          "y": 113,
+          "width": 720,
+          "height": 270.796875,
+          "right": 1200,
+          "bottom": 383.796875
+        },
+        "title": {
+          "x": 482,
+          "y": 227.5,
+          "width": 613.578125,
+          "height": 41.1875,
+          "right": 1095.578125,
+          "bottom": 268.6875
+        },
+        "actions": [
+          {
+            "x": 482,
+            "y": 280.6875,
+            "width": 77.3125,
+            "height": 44,
+            "right": 559.3125,
+            "bottom": 324.6875
+          },
+          {
+            "x": 567.3125,
+            "y": 280.6875,
+            "width": 56.40625,
+            "height": 44,
+            "right": 623.71875,
+            "bottom": 324.6875
+          },
+          {
+            "x": 631.71875,
+            "y": 280.6875,
+            "width": 97.90625,
+            "height": 44,
+            "right": 729.625,
+            "bottom": 324.6875
+          },
+          {
+            "x": 737.625,
+            "y": 280.6875,
+            "width": 137.328125,
+            "height": 44,
+            "right": 874.953125,
+            "bottom": 324.6875
+          },
+          {
+            "x": 882.953125,
+            "y": 280.6875,
+            "width": 58.890625,
+            "height": 44,
+            "right": 941.84375,
+            "bottom": 324.6875
+          }
+        ],
+        "accountVisible": false,
+        "appearanceVisible": false,
+        "uri": []
+      },
+      "layout": {
+        "scrollY": 0,
+        "overflow": false,
+        "visiblePanels": [
+          "shortcuts"
+        ],
+        "content": {
+          "x": 480,
+          "y": 113,
+          "width": 720,
+          "height": 270.796875,
+          "right": 1200,
+          "bottom": 383.796875
+        },
+        "panel": {
+          "x": 480,
+          "y": 113,
+          "width": 720,
+          "height": 270.796875,
+          "right": 1200,
+          "bottom": 383.796875
+        },
+        "title": {
+          "x": 482,
+          "y": 227.5,
+          "width": 613.578125,
+          "height": 41.1875,
+          "right": 1095.578125,
+          "bottom": 268.6875
+        },
+        "actions": [
+          {
+            "x": 482,
+            "y": 280.6875,
+            "width": 77.3125,
+            "height": 44,
+            "right": 559.3125,
+            "bottom": 324.6875
+          },
+          {
+            "x": 567.3125,
+            "y": 280.6875,
+            "width": 56.40625,
+            "height": 44,
+            "right": 623.71875,
+            "bottom": 324.6875
+          },
+          {
+            "x": 631.71875,
+            "y": 280.6875,
+            "width": 97.90625,
+            "height": 44,
+            "right": 729.625,
+            "bottom": 324.6875
+          },
+          {
+            "x": 737.625,
+            "y": 280.6875,
+            "width": 137.328125,
+            "height": 44,
+            "right": 874.953125,
+            "bottom": 324.6875
+          },
+          {
+            "x": 882.953125,
+            "y": 280.6875,
+            "width": 58.890625,
+            "height": 44,
+            "right": 941.84375,
+            "bottom": 324.6875
+          }
+        ],
+        "accountVisible": false,
+        "appearanceVisible": false,
+        "uri": []
+      },
+      "dialog": {
+        "scrollY": 0,
+        "overflow": false,
+        "visiblePanels": [
+          "shortcuts"
+        ],
+        "content": {
+          "x": 480,
+          "y": 113,
+          "width": 720,
+          "height": 270.796875,
+          "right": 1200,
+          "bottom": 383.796875
+        },
+        "panel": {
+          "x": 480,
+          "y": 113,
+          "width": 720,
+          "height": 270.796875,
+          "right": 1200,
+          "bottom": 383.796875
+        },
+        "title": {
+          "x": 482,
+          "y": 227.5,
+          "width": 613.578125,
+          "height": 41.1875,
+          "right": 1095.578125,
+          "bottom": 268.6875
+        },
+        "actions": [
+          {
+            "x": 482,
+            "y": 280.6875,
+            "width": 77.3125,
+            "height": 44,
+            "right": 559.3125,
+            "bottom": 324.6875
+          },
+          {
+            "x": 567.3125,
+            "y": 280.6875,
+            "width": 56.40625,
+            "height": 44,
+            "right": 623.71875,
+            "bottom": 324.6875
+          },
+          {
+            "x": 631.71875,
+            "y": 280.6875,
+            "width": 97.90625,
+            "height": 44,
+            "right": 729.625,
+            "bottom": 324.6875
+          },
+          {
+            "x": 737.625,
+            "y": 280.6875,
+            "width": 137.328125,
+            "height": 44,
+            "right": 874.953125,
+            "bottom": 324.6875
+          },
+          {
+            "x": 882.953125,
+            "y": 280.6875,
+            "width": 58.890625,
+            "height": 44,
+            "right": 941.84375,
+            "bottom": 324.6875
+          }
+        ],
+        "accountVisible": false,
+        "appearanceVisible": false,
+        "uri": [
+          {
+            "box": {
+              "x": 375,
+              "y": 320,
+              "width": 690,
+              "height": 133.5,
+              "right": 1065,
+              "bottom": 453.5
+            },
+            "overflow": false
+          },
+          {
+            "box": {
+              "x": 375,
+              "y": 550.5,
+              "width": 690,
+              "height": 133.5,
+              "right": 1065,
+              "bottom": 684
+            },
+            "overflow": false
+          },
+          {
+            "box": {
+              "x": 375,
+              "y": 781,
+              "width": 690,
+              "height": 133.5,
+              "right": 1065,
+              "bottom": 914.5
+            },
+            "overflow": false
+          }
+        ]
+      },
+      "errors": [],
+      "synthetic_writes": [
+        "synthetic-regenerate"
+      ],
+      "pass": true
+    },
+    {
+      "scheme": "dark",
+      "width": 390,
+      "navigation": {
+        "scrollY": 0,
+        "overflow": false,
+        "visiblePanels": [
+          "shortcuts"
+        ],
+        "content": {
+          "x": 12,
+          "y": 193,
+          "width": 366,
+          "height": 392.984375,
+          "right": 378,
+          "bottom": 585.984375
+        },
+        "panel": {
+          "x": 12,
+          "y": 193,
+          "width": 366,
+          "height": 392.984375,
+          "right": 378,
+          "bottom": 585.984375
+        },
+        "title": {
+          "x": 14,
+          "y": 325.75,
+          "width": 362,
+          "height": 61.125,
+          "right": 376,
+          "bottom": 386.875
+        },
+        "actions": [
+          {
+            "x": 14,
+            "y": 434.875,
+            "width": 77.3125,
+            "height": 44,
+            "right": 91.3125,
+            "bottom": 478.875
+          },
+          {
+            "x": 99.3125,
+            "y": 434.875,
+            "width": 56.40625,
+            "height": 44,
+            "right": 155.71875,
+            "bottom": 478.875
+          },
+          {
+            "x": 163.71875,
+            "y": 434.875,
+            "width": 97.90625,
+            "height": 44,
+            "right": 261.625,
+            "bottom": 478.875
+          },
+          {
+            "x": 14,
+            "y": 482.875,
+            "width": 137.328125,
+            "height": 44,
+            "right": 151.328125,
+            "bottom": 526.875
+          },
+          {
+            "x": 159.328125,
+            "y": 482.875,
+            "width": 58.890625,
+            "height": 44,
+            "right": 218.21875,
+            "bottom": 526.875
+          }
+        ],
+        "accountVisible": false,
+        "appearanceVisible": false,
+        "uri": []
+      },
+      "layout": {
+        "scrollY": 0,
+        "overflow": false,
+        "visiblePanels": [
+          "shortcuts"
+        ],
+        "content": {
+          "x": 12,
+          "y": 193,
+          "width": 366,
+          "height": 392.984375,
+          "right": 378,
+          "bottom": 585.984375
+        },
+        "panel": {
+          "x": 12,
+          "y": 193,
+          "width": 366,
+          "height": 392.984375,
+          "right": 378,
+          "bottom": 585.984375
+        },
+        "title": {
+          "x": 14,
+          "y": 325.75,
+          "width": 362,
+          "height": 61.125,
+          "right": 376,
+          "bottom": 386.875
+        },
+        "actions": [
+          {
+            "x": 14,
+            "y": 434.875,
+            "width": 77.3125,
+            "height": 44,
+            "right": 91.3125,
+            "bottom": 478.875
+          },
+          {
+            "x": 99.3125,
+            "y": 434.875,
+            "width": 56.40625,
+            "height": 44,
+            "right": 155.71875,
+            "bottom": 478.875
+          },
+          {
+            "x": 163.71875,
+            "y": 434.875,
+            "width": 97.90625,
+            "height": 44,
+            "right": 261.625,
+            "bottom": 478.875
+          },
+          {
+            "x": 14,
+            "y": 482.875,
+            "width": 137.328125,
+            "height": 44,
+            "right": 151.328125,
+            "bottom": 526.875
+          },
+          {
+            "x": 159.328125,
+            "y": 482.875,
+            "width": 58.890625,
+            "height": 44,
+            "right": 218.21875,
+            "bottom": 526.875
+          }
+        ],
+        "accountVisible": false,
+        "appearanceVisible": false,
+        "uri": []
+      },
+      "dialog": {
+        "scrollY": 0,
+        "overflow": false,
+        "visiblePanels": [
+          "shortcuts"
+        ],
+        "content": {
+          "x": 12,
+          "y": 193,
+          "width": 366,
+          "height": 392.984375,
+          "right": 378,
+          "bottom": 585.984375
+        },
+        "panel": {
+          "x": 12,
+          "y": 193,
+          "width": 366,
+          "height": 392.984375,
+          "right": 378,
+          "bottom": 585.984375
+        },
+        "title": {
+          "x": 14,
+          "y": 325.75,
+          "width": 362,
+          "height": 61.125,
+          "right": 376,
+          "bottom": 386.875
+        },
+        "actions": [
+          {
+            "x": 14,
+            "y": 434.875,
+            "width": 77.3125,
+            "height": 44,
+            "right": 91.3125,
+            "bottom": 478.875
+          },
+          {
+            "x": 99.3125,
+            "y": 434.875,
+            "width": 56.40625,
+            "height": 44,
+            "right": 155.71875,
+            "bottom": 478.875
+          },
+          {
+            "x": 163.71875,
+            "y": 434.875,
+            "width": 97.90625,
+            "height": 44,
+            "right": 261.625,
+            "bottom": 478.875
+          },
+          {
+            "x": 14,
+            "y": 482.875,
+            "width": 137.328125,
+            "height": 44,
+            "right": 151.328125,
+            "bottom": 526.875
+          },
+          {
+            "x": 159.328125,
+            "y": 482.875,
+            "width": 58.890625,
+            "height": 44,
+            "right": 218.21875,
+            "bottom": 526.875
+          }
+        ],
+        "accountVisible": false,
+        "appearanceVisible": false,
+        "uri": [
+          {
+            "box": {
+              "x": 42.796875,
+              "y": 350.59375,
+              "width": 304.390625,
+              "height": 261.25,
+              "right": 347.1875,
+              "bottom": 611.84375
+            },
+            "overflow": false
+          },
+          {
+            "box": {
+              "x": 42.796875,
+              "y": 708.84375,
+              "width": 304.390625,
+              "height": 261.25,
+              "right": 347.1875,
+              "bottom": 970.09375
+            },
+            "overflow": false
+          },
+          {
+            "box": {
+              "x": 42.796875,
+              "y": 1067.09375,
+              "width": 304.390625,
+              "height": 261.25,
+              "right": 347.1875,
+              "bottom": 1328.34375
+            },
+            "overflow": false
+          }
+        ]
+      },
+      "errors": [],
+      "synthetic_writes": [
+        "synthetic-regenerate"
+      ],
+      "pass": true
+    },
+    {
+      "scheme": "dark",
+      "width": 820,
+      "navigation": {
+        "scrollY": 0,
+        "overflow": false,
+        "visiblePanels": [
+          "shortcuts"
+        ],
+        "content": {
+          "x": 24,
+          "y": 189,
+          "width": 772,
+          "height": 270.796875,
+          "right": 796,
+          "bottom": 459.796875
+        },
+        "panel": {
+          "x": 24,
+          "y": 189,
+          "width": 772,
+          "height": 270.796875,
+          "right": 796,
+          "bottom": 459.796875
+        },
+        "title": {
+          "x": 26,
+          "y": 303.5,
+          "width": 665.578125,
+          "height": 41.1875,
+          "right": 691.578125,
+          "bottom": 344.6875
+        },
+        "actions": [
+          {
+            "x": 26,
+            "y": 356.6875,
+            "width": 77.3125,
+            "height": 44,
+            "right": 103.3125,
+            "bottom": 400.6875
+          },
+          {
+            "x": 111.3125,
+            "y": 356.6875,
+            "width": 56.40625,
+            "height": 44,
+            "right": 167.71875,
+            "bottom": 400.6875
+          },
+          {
+            "x": 175.71875,
+            "y": 356.6875,
+            "width": 97.90625,
+            "height": 44,
+            "right": 273.625,
+            "bottom": 400.6875
+          },
+          {
+            "x": 281.625,
+            "y": 356.6875,
+            "width": 137.328125,
+            "height": 44,
+            "right": 418.953125,
+            "bottom": 400.6875
+          },
+          {
+            "x": 426.953125,
+            "y": 356.6875,
+            "width": 58.890625,
+            "height": 44,
+            "right": 485.84375,
+            "bottom": 400.6875
+          }
+        ],
+        "accountVisible": false,
+        "appearanceVisible": false,
+        "uri": []
+      },
+      "layout": {
+        "scrollY": 0,
+        "overflow": false,
+        "visiblePanels": [
+          "shortcuts"
+        ],
+        "content": {
+          "x": 24,
+          "y": 189,
+          "width": 772,
+          "height": 270.796875,
+          "right": 796,
+          "bottom": 459.796875
+        },
+        "panel": {
+          "x": 24,
+          "y": 189,
+          "width": 772,
+          "height": 270.796875,
+          "right": 796,
+          "bottom": 459.796875
+        },
+        "title": {
+          "x": 26,
+          "y": 303.5,
+          "width": 665.578125,
+          "height": 41.1875,
+          "right": 691.578125,
+          "bottom": 344.6875
+        },
+        "actions": [
+          {
+            "x": 26,
+            "y": 356.6875,
+            "width": 77.3125,
+            "height": 44,
+            "right": 103.3125,
+            "bottom": 400.6875
+          },
+          {
+            "x": 111.3125,
+            "y": 356.6875,
+            "width": 56.40625,
+            "height": 44,
+            "right": 167.71875,
+            "bottom": 400.6875
+          },
+          {
+            "x": 175.71875,
+            "y": 356.6875,
+            "width": 97.90625,
+            "height": 44,
+            "right": 273.625,
+            "bottom": 400.6875
+          },
+          {
+            "x": 281.625,
+            "y": 356.6875,
+            "width": 137.328125,
+            "height": 44,
+            "right": 418.953125,
+            "bottom": 400.6875
+          },
+          {
+            "x": 426.953125,
+            "y": 356.6875,
+            "width": 58.890625,
+            "height": 44,
+            "right": 485.84375,
+            "bottom": 400.6875
+          }
+        ],
+        "accountVisible": false,
+        "appearanceVisible": false,
+        "uri": []
+      },
+      "dialog": {
+        "scrollY": 0,
+        "overflow": false,
+        "visiblePanels": [
+          "shortcuts"
+        ],
+        "content": {
+          "x": 24,
+          "y": 189,
+          "width": 772,
+          "height": 270.796875,
+          "right": 796,
+          "bottom": 459.796875
+        },
+        "panel": {
+          "x": 24,
+          "y": 189,
+          "width": 772,
+          "height": 270.796875,
+          "right": 796,
+          "bottom": 459.796875
+        },
+        "title": {
+          "x": 26,
+          "y": 303.5,
+          "width": 665.578125,
+          "height": 41.1875,
+          "right": 691.578125,
+          "bottom": 344.6875
+        },
+        "actions": [
+          {
+            "x": 26,
+            "y": 356.6875,
+            "width": 77.3125,
+            "height": 44,
+            "right": 103.3125,
+            "bottom": 400.6875
+          },
+          {
+            "x": 111.3125,
+            "y": 356.6875,
+            "width": 56.40625,
+            "height": 44,
+            "right": 167.71875,
+            "bottom": 400.6875
+          },
+          {
+            "x": 175.71875,
+            "y": 356.6875,
+            "width": 97.90625,
+            "height": 44,
+            "right": 273.625,
+            "bottom": 400.6875
+          },
+          {
+            "x": 281.625,
+            "y": 356.6875,
+            "width": 137.328125,
+            "height": 44,
+            "right": 418.953125,
+            "bottom": 400.6875
+          },
+          {
+            "x": 426.953125,
+            "y": 356.6875,
+            "width": 58.890625,
+            "height": 44,
+            "right": 485.84375,
+            "bottom": 400.6875
+          }
+        ],
+        "accountVisible": false,
+        "appearanceVisible": false,
+        "uri": [
+          {
+            "box": {
+              "x": 65,
+              "y": 353,
+              "width": 690,
+              "height": 133.5,
+              "right": 755,
+              "bottom": 486.5
+            },
+            "overflow": false
+          },
+          {
+            "box": {
+              "x": 65,
+              "y": 583.5,
+              "width": 690,
+              "height": 133.5,
+              "right": 755,
+              "bottom": 717
+            },
+            "overflow": false
+          },
+          {
+            "box": {
+              "x": 65,
+              "y": 814,
+              "width": 690,
+              "height": 133.5,
+              "right": 755,
+              "bottom": 947.5
+            },
+            "overflow": false
+          }
+        ]
+      },
+      "errors": [],
+      "synthetic_writes": [
+        "synthetic-regenerate"
+      ],
+      "pass": true
+    },
+    {
+      "scheme": "dark",
+      "width": 1180,
+      "navigation": {
+        "scrollY": 0,
+        "overflow": false,
+        "visiblePanels": [
+          "shortcuts"
+        ],
+        "content": {
+          "x": 456,
+          "y": 113,
+          "width": 692,
+          "height": 270.796875,
+          "right": 1148,
+          "bottom": 383.796875
+        },
+        "panel": {
+          "x": 456,
+          "y": 113,
+          "width": 692,
+          "height": 270.796875,
+          "right": 1148,
+          "bottom": 383.796875
+        },
+        "title": {
+          "x": 458,
+          "y": 227.5,
+          "width": 585.578125,
+          "height": 41.1875,
+          "right": 1043.578125,
+          "bottom": 268.6875
+        },
+        "actions": [
+          {
+            "x": 458,
+            "y": 280.6875,
+            "width": 77.3125,
+            "height": 44,
+            "right": 535.3125,
+            "bottom": 324.6875
+          },
+          {
+            "x": 543.3125,
+            "y": 280.6875,
+            "width": 56.40625,
+            "height": 44,
+            "right": 599.71875,
+            "bottom": 324.6875
+          },
+          {
+            "x": 607.71875,
+            "y": 280.6875,
+            "width": 97.90625,
+            "height": 44,
+            "right": 705.625,
+            "bottom": 324.6875
+          },
+          {
+            "x": 713.625,
+            "y": 280.6875,
+            "width": 137.328125,
+            "height": 44,
+            "right": 850.953125,
+            "bottom": 324.6875
+          },
+          {
+            "x": 858.953125,
+            "y": 280.6875,
+            "width": 58.890625,
+            "height": 44,
+            "right": 917.84375,
+            "bottom": 324.6875
+          }
+        ],
+        "accountVisible": false,
+        "appearanceVisible": false,
+        "uri": []
+      },
+      "layout": {
+        "scrollY": 0,
+        "overflow": false,
+        "visiblePanels": [
+          "shortcuts"
+        ],
+        "content": {
+          "x": 456,
+          "y": 113,
+          "width": 692,
+          "height": 270.796875,
+          "right": 1148,
+          "bottom": 383.796875
+        },
+        "panel": {
+          "x": 456,
+          "y": 113,
+          "width": 692,
+          "height": 270.796875,
+          "right": 1148,
+          "bottom": 383.796875
+        },
+        "title": {
+          "x": 458,
+          "y": 227.5,
+          "width": 585.578125,
+          "height": 41.1875,
+          "right": 1043.578125,
+          "bottom": 268.6875
+        },
+        "actions": [
+          {
+            "x": 458,
+            "y": 280.6875,
+            "width": 77.3125,
+            "height": 44,
+            "right": 535.3125,
+            "bottom": 324.6875
+          },
+          {
+            "x": 543.3125,
+            "y": 280.6875,
+            "width": 56.40625,
+            "height": 44,
+            "right": 599.71875,
+            "bottom": 324.6875
+          },
+          {
+            "x": 607.71875,
+            "y": 280.6875,
+            "width": 97.90625,
+            "height": 44,
+            "right": 705.625,
+            "bottom": 324.6875
+          },
+          {
+            "x": 713.625,
+            "y": 280.6875,
+            "width": 137.328125,
+            "height": 44,
+            "right": 850.953125,
+            "bottom": 324.6875
+          },
+          {
+            "x": 858.953125,
+            "y": 280.6875,
+            "width": 58.890625,
+            "height": 44,
+            "right": 917.84375,
+            "bottom": 324.6875
+          }
+        ],
+        "accountVisible": false,
+        "appearanceVisible": false,
+        "uri": []
+      },
+      "dialog": {
+        "scrollY": 0,
+        "overflow": false,
+        "visiblePanels": [
+          "shortcuts"
+        ],
+        "content": {
+          "x": 456,
+          "y": 113,
+          "width": 692,
+          "height": 270.796875,
+          "right": 1148,
+          "bottom": 383.796875
+        },
+        "panel": {
+          "x": 456,
+          "y": 113,
+          "width": 692,
+          "height": 270.796875,
+          "right": 1148,
+          "bottom": 383.796875
+        },
+        "title": {
+          "x": 458,
+          "y": 227.5,
+          "width": 585.578125,
+          "height": 41.1875,
+          "right": 1043.578125,
+          "bottom": 268.6875
+        },
+        "actions": [
+          {
+            "x": 458,
+            "y": 280.6875,
+            "width": 77.3125,
+            "height": 44,
+            "right": 535.3125,
+            "bottom": 324.6875
+          },
+          {
+            "x": 543.3125,
+            "y": 280.6875,
+            "width": 56.40625,
+            "height": 44,
+            "right": 599.71875,
+            "bottom": 324.6875
+          },
+          {
+            "x": 607.71875,
+            "y": 280.6875,
+            "width": 97.90625,
+            "height": 44,
+            "right": 705.625,
+            "bottom": 324.6875
+          },
+          {
+            "x": 713.625,
+            "y": 280.6875,
+            "width": 137.328125,
+            "height": 44,
+            "right": 850.953125,
+            "bottom": 324.6875
+          },
+          {
+            "x": 858.953125,
+            "y": 280.6875,
+            "width": 58.890625,
+            "height": 44,
+            "right": 917.84375,
+            "bottom": 324.6875
+          }
+        ],
+        "accountVisible": false,
+        "appearanceVisible": false,
+        "uri": [
+          {
+            "box": {
+              "x": 245,
+              "y": 299,
+              "width": 690,
+              "height": 133.5,
+              "right": 935,
+              "bottom": 432.5
+            },
+            "overflow": false
+          },
+          {
+            "box": {
+              "x": 245,
+              "y": 529.5,
+              "width": 690,
+              "height": 133.5,
+              "right": 935,
+              "bottom": 663
+            },
+            "overflow": false
+          },
+          {
+            "box": {
+              "x": 245,
+              "y": 760,
+              "width": 690,
+              "height": 133.5,
+              "right": 935,
+              "bottom": 893.5
+            },
+            "overflow": false
+          }
+        ]
+      },
+      "errors": [],
+      "synthetic_writes": [
+        "synthetic-regenerate"
+      ],
+      "pass": true
+    },
+    {
+      "scheme": "dark",
+      "width": 1440,
+      "navigation": {
+        "scrollY": 0,
+        "overflow": false,
+        "visiblePanels": [
+          "shortcuts"
+        ],
+        "content": {
+          "x": 480,
+          "y": 113,
+          "width": 720,
+          "height": 270.796875,
+          "right": 1200,
+          "bottom": 383.796875
+        },
+        "panel": {
+          "x": 480,
+          "y": 113,
+          "width": 720,
+          "height": 270.796875,
+          "right": 1200,
+          "bottom": 383.796875
+        },
+        "title": {
+          "x": 482,
+          "y": 227.5,
+          "width": 613.578125,
+          "height": 41.1875,
+          "right": 1095.578125,
+          "bottom": 268.6875
+        },
+        "actions": [
+          {
+            "x": 482,
+            "y": 280.6875,
+            "width": 77.3125,
+            "height": 44,
+            "right": 559.3125,
+            "bottom": 324.6875
+          },
+          {
+            "x": 567.3125,
+            "y": 280.6875,
+            "width": 56.40625,
+            "height": 44,
+            "right": 623.71875,
+            "bottom": 324.6875
+          },
+          {
+            "x": 631.71875,
+            "y": 280.6875,
+            "width": 97.90625,
+            "height": 44,
+            "right": 729.625,
+            "bottom": 324.6875
+          },
+          {
+            "x": 737.625,
+            "y": 280.6875,
+            "width": 137.328125,
+            "height": 44,
+            "right": 874.953125,
+            "bottom": 324.6875
+          },
+          {
+            "x": 882.953125,
+            "y": 280.6875,
+            "width": 58.890625,
+            "height": 44,
+            "right": 941.84375,
+            "bottom": 324.6875
+          }
+        ],
+        "accountVisible": false,
+        "appearanceVisible": false,
+        "uri": []
+      },
+      "layout": {
+        "scrollY": 0,
+        "overflow": false,
+        "visiblePanels": [
+          "shortcuts"
+        ],
+        "content": {
+          "x": 480,
+          "y": 113,
+          "width": 720,
+          "height": 270.796875,
+          "right": 1200,
+          "bottom": 383.796875
+        },
+        "panel": {
+          "x": 480,
+          "y": 113,
+          "width": 720,
+          "height": 270.796875,
+          "right": 1200,
+          "bottom": 383.796875
+        },
+        "title": {
+          "x": 482,
+          "y": 227.5,
+          "width": 613.578125,
+          "height": 41.1875,
+          "right": 1095.578125,
+          "bottom": 268.6875
+        },
+        "actions": [
+          {
+            "x": 482,
+            "y": 280.6875,
+            "width": 77.3125,
+            "height": 44,
+            "right": 559.3125,
+            "bottom": 324.6875
+          },
+          {
+            "x": 567.3125,
+            "y": 280.6875,
+            "width": 56.40625,
+            "height": 44,
+            "right": 623.71875,
+            "bottom": 324.6875
+          },
+          {
+            "x": 631.71875,
+            "y": 280.6875,
+            "width": 97.90625,
+            "height": 44,
+            "right": 729.625,
+            "bottom": 324.6875
+          },
+          {
+            "x": 737.625,
+            "y": 280.6875,
+            "width": 137.328125,
+            "height": 44,
+            "right": 874.953125,
+            "bottom": 324.6875
+          },
+          {
+            "x": 882.953125,
+            "y": 280.6875,
+            "width": 58.890625,
+            "height": 44,
+            "right": 941.84375,
+            "bottom": 324.6875
+          }
+        ],
+        "accountVisible": false,
+        "appearanceVisible": false,
+        "uri": []
+      },
+      "dialog": {
+        "scrollY": 0,
+        "overflow": false,
+        "visiblePanels": [
+          "shortcuts"
+        ],
+        "content": {
+          "x": 480,
+          "y": 113,
+          "width": 720,
+          "height": 270.796875,
+          "right": 1200,
+          "bottom": 383.796875
+        },
+        "panel": {
+          "x": 480,
+          "y": 113,
+          "width": 720,
+          "height": 270.796875,
+          "right": 1200,
+          "bottom": 383.796875
+        },
+        "title": {
+          "x": 482,
+          "y": 227.5,
+          "width": 613.578125,
+          "height": 41.1875,
+          "right": 1095.578125,
+          "bottom": 268.6875
+        },
+        "actions": [
+          {
+            "x": 482,
+            "y": 280.6875,
+            "width": 77.3125,
+            "height": 44,
+            "right": 559.3125,
+            "bottom": 324.6875
+          },
+          {
+            "x": 567.3125,
+            "y": 280.6875,
+            "width": 56.40625,
+            "height": 44,
+            "right": 623.71875,
+            "bottom": 324.6875
+          },
+          {
+            "x": 631.71875,
+            "y": 280.6875,
+            "width": 97.90625,
+            "height": 44,
+            "right": 729.625,
+            "bottom": 324.6875
+          },
+          {
+            "x": 737.625,
+            "y": 280.6875,
+            "width": 137.328125,
+            "height": 44,
+            "right": 874.953125,
+            "bottom": 324.6875
+          },
+          {
+            "x": 882.953125,
+            "y": 280.6875,
+            "width": 58.890625,
+            "height": 44,
+            "right": 941.84375,
+            "bottom": 324.6875
+          }
+        ],
+        "accountVisible": false,
+        "appearanceVisible": false,
+        "uri": [
+          {
+            "box": {
+              "x": 375,
+              "y": 320,
+              "width": 690,
+              "height": 133.5,
+              "right": 1065,
+              "bottom": 453.5
+            },
+            "overflow": false
+          },
+          {
+            "box": {
+              "x": 375,
+              "y": 550.5,
+              "width": 690,
+              "height": 133.5,
+              "right": 1065,
+              "bottom": 684
+            },
+            "overflow": false
+          },
+          {
+            "box": {
+              "x": 375,
+              "y": 781,
+              "width": 690,
+              "height": 133.5,
+              "right": 1065,
+              "bottom": 914.5
+            },
+            "overflow": false
+          }
+        ]
+      },
+      "errors": [],
+      "synthetic_writes": [
+        "synthetic-regenerate"
+      ],
+      "pass": true
+    }
+  ],
+  "pass": true
+}

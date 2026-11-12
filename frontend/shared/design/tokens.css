@@ -1,5 +1,6 @@
 /* Shared neutral materials, semantic roles, component roles. */
 :root {
+  --ui-font-scale: .95;
   --n-00:#000000; --n-10:#101010; --n-14:#141414; --n-1b:#1b1b1b;
   --n-20:#202020; --n-24:#242424; --n-2a:#2a2a2a; --n-2b:#2b2b2b;
   --n-33:#333333; --n-3b:#3b3b3b; --n-52:#525252; --n-66:#666666;

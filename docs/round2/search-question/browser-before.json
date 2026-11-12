@@ -1,0 +1,20 @@
+{
+  "base": "http://127.0.0.1:8014",
+  "cases": [
+    {
+      "workspace": "drill",
+      "width": 820,
+      "height": 1180,
+      "first_open_ms": 792.765298858285,
+      "search_click_to_ready_ms": 248.46734758466482,
+      "next_ms": 65.6855870038271,
+      "previous_ms": 48.76604303717613,
+      "primary_detail_requests": 2,
+      "long_tasks_ms": [],
+      "horizontal_overflow": false,
+      "errors": [],
+      "pass": false
+    }
+  ],
+  "pass": false
+}

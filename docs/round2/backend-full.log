@@ -1,0 +1,107 @@
+Found 574 test(s).
+Creating test database for alias 'default'...
+System check identified no issues (0 silenced).
+.............{"dry_run": true, "questions": 1, "regions": 1, "new_images": 1, "new_bytes": 201, "old_images_retained": 1}
+{"dry_run": false, "questions": 1, "regions": 1, "new_images": 1, "new_bytes": 201, "old_images_retained": 1, "attempts_preserved": 1, "states_preserved": 0, "existing_revision_links_preserved": 1}
+{"dry_run": false, "questions": 1, "regions": 1, "new_images": 0, "new_bytes": 0, "old_images_retained": 1, "attempts_preserved": 1, "states_preserved": 0, "existing_revision_links_preserved": 2}
+..{"dry_run": true, "figures": 1, "new_images": 1, "new_bytes": 434}
+{"dry_run": false, "figures": 1, "new_images": 1, "new_bytes": 434}
+{"dry_run": false, "figures": 1, "new_images": 0, "new_bytes": 0}
+..................................................................................{"candidate_pairs": 1, "changed_pairs": 1, "new_state_rows": 0, "existing_state_rows": 1, "max_merged_length": 12}
+{"user": "u***1", "question": "q***1", "before_length": 6, "after_length": 12, "source_attempts": 2}
+Merged 1 canonical Notes.
+{"candidate_pairs": 1, "changed_pairs": 0, "new_state_rows": 0, "existing_state_rows": 0, "max_merged_length": 0}
+Merged 0 canonical Notes; existing audit file was preserved.
+..{"candidate_pairs": 2, "changed_pairs": 2, "new_state_rows": 2, "existing_state_rows": 0, "max_merged_length": 4}
+{"user": "u***1", "question": "q***1", "before_length": 0, "after_length": 4, "source_attempts": 1}
+{"user": "u***2", "question": "q***1", "before_length": 0, "after_length": 4, "source_attempts": 1}
+Merged 2 canonical Notes.
+Rolled back 2 canonical Notes.
+.......Regenerated 2062f95f-9c8d-49d3-b3e1-292872e8a861: 6 questions, seed=606, ids=[1, 2, 7, 8, 13, 14]
+.Regenerated e29df65b-4ae2-4a07-89f9-c21dcdaa6ca4: 6 questions, seed=202, ids=[1, 2, 9, 11, 18, 13]
+..................................................question_timing_conflict reason=lease_expired
+....question_timing_conflict reason=owner_mismatch
+question_timing_conflict reason=owner_mismatch
+.question_timing_conflict reason=owner_mismatch
+....question_timing_conflict reason=timing_round_mismatch
+..question_timing_conflict reason=active_timer_mismatch
+.....question_timing_conflict reason=owner_mismatch
+..question_timing_conflict reason=stale_sequence
+question_timing_conflict reason=owner_mismatch
+.question_timing_conflict reason=timing_finalized
+.question_timing_conflict reason=active_timer_mismatch
+.question_timing_conflict reason=timing_protocol_mismatch
+...................s......{"output": "/tmp/tmpi11_t7b0/audit.json", "selected": 3, "core": 3, "statuses": {"AUTO_CHECKED": 2, "NEEDS_REVIEW": 1}, "issues": {"no_own_answer_material": 1}, "manual_verified": 0, "duplicate_manifest_uuids": [], "courses": {"circuit": {"AUTO_CHECKED": 2, "NEEDS_REVIEW": 1}}}
+.....................................{"validated": 1, "dry_run": true}
+.{"validated": 1, "dry_run": false}
+Imported 1 Agent Markdown solutions.
+.Validated 1 topicless practice rows.
+  answer-book-toc: 1
+Dry run: no database rows changed.
+Validated 1 topicless practice rows.
+  answer-book-toc: 1
+Classified 1 topicless questions.
+.........................warning: The `fitz` API is deprecated and will be removed in future. Use `import pymupdf` instead.
+{
+  "mapping_rows": 1,
+  "validated_segments": 1,
+  "rendered_assets": 0,
+  "new_assets": null,
+  "question_count": 4,
+  "answer_questions_before": 0,
+  "dry_run": true
+}
+................................................Updated: 0 documents, 0 topics, 1 question rows
+  record:question: 1
+  source:past_exam: 1
+Question bank ready: 1 documents, 1 topics, 1 questions, 1 assets processed.
+Updated: 0 documents, 0 topics, 1 question rows
+  record:question: 1
+  source:past_exam: 1
+Question bank ready: 1 documents, 1 topics, 1 questions, 1 assets processed.
+.Edge formulas: 1 cut edge(s) found.
+Dry run complete: 1 cut edge(s); no rows changed.
+Edge formulas: 1 cut edge(s) found.
+Edge formulas: repaired 2 crop image(s).
+Crop-edge repair complete: 1 fragments, 2 images updated.
+.{"action": "promoted", "neighbor_consensus": 1, "labels": {"single_choice": 1}}
+..Validated 1 unclassified practice rows.
+  mock_exam: 1
+Dry run: no database rows changed.
+Validated 1 unclassified practice rows.
+  mock_exam: 1
+Classified 1 practice rows.
+.Validated 1 question topic(s) to normalize.
+Validated 0 cleaned topic title(s).
+  极限: 1 question(s), 1 -> 1 heatmap cells
+Dry run: no database rows changed.
+Validated 1 question topic(s) to normalize.
+Validated 0 cleaned topic title(s).
+  极限: 1 question(s), 1 -> 1 heatmap cells
+Updated 1 question topic(s) and 0 topic title(s).
+Validated 1 question topic(s) to restore.
+Validated 0 cleaned topic title(s).
+  极限: 1 question(s), 1 -> 1 heatmap cells
+Updated 1 question topic(s) and 0 topic title(s).
+..........................................................................................................................................Not Found: /api/not-a-route/
+Not Found: /accounts/not-a-route/
+Not Found: /launch/not-a-token
+.Service Unavailable: /share/capacity-availability-check
+..Not Found: /api/study-tags/1/
+Not Found: /api/task-presets/1/
+Not Found: /api/sessions/
+.Bad Request: /api/task-presets/
+Bad Request: /api/task-presets/
+.....Service Unavailable: /api/settings/data-encryption/
+....Forbidden: /api/settings/data-encryption/
+..............{"total": 1, "validation_queue": 1, "existing_verified": 0, "pending_manual": 1, "strata": {"legacy_unknown": 1}}
+{"total": 1, "validation_queue": 1, "existing_verified": 0, "pending_manual": 1, "strata": {"legacy_unknown": 1}}
+../tmp/tmpmjqun37w/report.json
+........s....sssssssss................................................s....fallback_sol question=1
+..fallback_sol question=1
+.........
+----------------------------------------------------------------------
+Ran 574 tests in 153.294s
+
+OK (skipped=12)
+Destroying test database for alias 'default'...

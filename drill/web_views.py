@@ -1,3 +1,4 @@
+from tracker.preference_bootstrap import inject_preferences_bootstrap
 from functools import lru_cache
 import ipaddress
 import json
@@ -335,7 +336,7 @@ def drill_spa_view(request, **_route):
     html = _drill_html()
     if not html:
         return render(request, 'frontend_missing.html', status=503)
-    response = HttpResponse(html)
+    response = HttpResponse(inject_preferences_bootstrap(html, request.user))
     response['Cache-Control'] = 'private, no-store'
     response['X-Robots-Tag'] = 'noindex, nofollow, noarchive'
     response['Content-Security-Policy'] = (

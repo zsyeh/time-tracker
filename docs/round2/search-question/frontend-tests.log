@@ -1,0 +1,20 @@
+
+> personal-learning-os@3.0.0 test
+> vitest run drill/src/views/PracticeView.test.ts drill/src/composables/usePracticeQuery.test.ts drill/src/lib/workspaceNavigation.test.ts drill/src/lib/workspaceScope.test.ts drill/src/lib/workspaceReliability.test.ts
+
+
+ RUN  v3.2.6 /work/frontend
+
+ ✓ drill/src/lib/workspaceNavigation.test.ts (3 tests) 15ms
+ ✓ drill/src/lib/workspaceScope.test.ts (5 tests) 15ms
+ ✓ drill/src/lib/workspaceReliability.test.ts (4 tests) 16ms
+ ✓ drill/src/composables/usePracticeQuery.test.ts (5 tests) 156ms
+ ✓ drill/src/views/PracticeView.test.ts (9 tests) 906ms
+   ✓ does not let an old response replace the current query during debounce  301ms
+   ✓ cancels a scheduled old-result prefetch as soon as the search draft changes  347ms
+
+ Test Files  5 passed (5)
+      Tests  26 passed (26)
+   Start at  14:06:56
+   Duration  2.72s (transform 1.07s, setup 0ms, collect 1.74s, tests 1.11s, environment 3.15s, prepare 670ms)
+

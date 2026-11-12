@@ -1,12 +1,14 @@
 // @vitest-environment jsdom
-import { afterEach, expect, it, vi } from 'vitest'
+import { bindTestPreferences, clearTestPreferences } from '../../../shared/preferences/testSupport'
+import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { createApp, h, nextTick, reactive, type App } from 'vue'
 import ReaderPracticeActions from './ReaderPracticeActions.vue'
 import type { ReaderPracticeControls } from '../lib/readerPractice'
 import { uiLanguage } from '../lib/uiPreferences'
 let app: App | undefined
 let host: HTMLElement
-afterEach(() => { app?.unmount(); host?.remove() })
+beforeEach(async () => { localStorage.clear(); await bindTestPreferences() })
+afterEach(() => { app?.unmount(); host?.remove(); clearTestPreferences() })
 async function mount() {
   uiLanguage.value = 'en'
   const controls = reactive<ReaderPracticeControls>({ mode: 'sequential', canPrevious: true, canNext: true, canAnswer: true, busy: false, masteredAutoNext: true, reviewAutoNext: false, state: 'unattempted', error: '', feedback: '' })

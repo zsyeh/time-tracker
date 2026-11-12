@@ -1,0 +1,11 @@
+Found 29 test(s).
+Creating test database for alias 'default'...
+System check identified no issues (0 silenced).
+/usr/local/lib/python3.11/site-packages/django/core/handlers/base.py:61: UserWarning: No directory at: /work/staticfiles/
+  mw_instance = middleware(adapted_handler)
+.............................
+----------------------------------------------------------------------
+Ran 29 tests in 12.108s
+
+OK
+Destroying test database for alias 'default'...

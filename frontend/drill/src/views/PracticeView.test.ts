@@ -4,7 +4,7 @@ import { createApp, nextTick, type App } from 'vue'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import PracticeView from './PracticeView.vue'
 import { api, ApiError } from '../lib/api'
-import { cachedCatalog } from '../lib/workspace'
+import { cachedCatalog, cachedQuestionPage, prefetchQuestion } from '../lib/workspace'
 vi.mock('../lib/api', () => ({ api: vi.fn(), ApiError: class extends Error { constructor(public status: number, message: string) { super(message) } } }))
 vi.mock('../lib/workspace', () => ({ cachedCatalog: vi.fn(), cachedQuestionPage: vi.fn(() => null), fetchCatalog: vi.fn(async () => catalog), prefetchQuestion: vi.fn(), storeQuestionPage: vi.fn() }))
 const catalog = { summary: { imported_count: 2, practiceable_count: 2, outline_count: 0, categories: [] }, coverage: { available: [], missing: [], source_archive_checked: false }, documents: [{ id: 1, title: 'Book', question_count: 2 }], topics: [] }
@@ -75,4 +75,51 @@ it('explains spelling expansion without replacing the original query', async () 
  expect(host.querySelector('.search-expansion')?.textContent).toContain('fourier')
  expect(host.querySelector<HTMLInputElement>('#practice-search')?.value).toBe('Fourrier')
  expect(router.currentRoute.value.query.q).toBe('Fourrier')
+})
+
+
+it('shows the cached result page immediately while revalidating after returning', async () => {
+ const cached = { count: 1, results: [{ ...question, display_label: 'Restored result' }], search: { version: 2, index_version: 'old:23' } }
+ vi.mocked(cachedQuestionPage).mockReturnValueOnce(cached as never)
+ vi.mocked(api).mockImplementationOnce(() => new Promise(() => {}))
+ await mount('/practice?q=导数')
+ expect(host.textContent).toContain('Restored result')
+ expect(cachedQuestionPage).toHaveBeenCalledWith('q=%E5%AF%BC%E6%95%B0&search_version=2')
+ expect(host.querySelector('.question-row')).not.toBeNull()
+})
+
+it('cancels a scheduled old-result prefetch as soon as the search draft changes', async () => {
+ await mount('/practice?q=old')
+ const input = host.querySelector<HTMLInputElement>('#practice-search')!
+ input.value = 'new'; input.dispatchEvent(new Event('input', { bubbles: true }))
+ await nextTick()
+ await new Promise(resolve => setTimeout(resolve, 330)); await flush()
+ expect(prefetchQuestion).not.toHaveBeenCalled()
+})
+
+it('reuses the same result and scroll cache key with the protocol flag added on return', async () => {
+ const cached = { count: 1, results: [{ ...question, display_label: 'Returned result' }], search: { version: 2, index_version: 'old:23' } }
+ vi.mocked(cachedQuestionPage).mockReturnValueOnce(cached as never)
+ vi.mocked(api).mockImplementationOnce(() => new Promise(() => {}))
+ await mount('/practice?q=导数&search_version=2&index_version=old%3A23')
+ expect(host.textContent).toContain('Returned result')
+ expect(cachedQuestionPage).toHaveBeenCalledWith('q=%E5%AF%BC%E6%95%B0&search_version=2')
+})
+
+it('applying a saved query discards a pending input draft even when the applied keyword is unchanged', async () => {
+ const { bindTestPreferences, clearTestPreferences } = await import('../../../shared/preferences/testSupport')
+ const { accountPreferences } = await import('../../../shared/preferences/store')
+ await bindTestPreferences('en', 'preset-race')
+ accountPreferences.set('filters.drill', [{ id: 'derivative', name: 'Saved derivative', query: { q: '导数' } }])
+ try {
+  const router = await mount('/practice?q=导数&from=circuit-selected')
+  const input = host.querySelector<HTMLInputElement>('#practice-search')!
+  input.value = 'pending draft'; input.dispatchEvent(new Event('input', { bubbles: true })); await nextTick()
+  host.querySelector<HTMLButtonElement>('.saved-filter-entry > button')!.click(); await flush()
+  document.querySelector<HTMLButtonElement>('.preset-open')!.click(); await flush()
+  await new Promise(resolve => setTimeout(resolve, 320)); await flush()
+  expect(router.currentRoute.value.query.q).toBe('导数')
+  expect(router.currentRoute.value.query.from).toBeUndefined()
+  expect(input.value).toBe('导数')
+ } finally { clearTestPreferences() }
 })

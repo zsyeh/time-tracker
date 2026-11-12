@@ -1,3 +1,4 @@
+from .user_preferences import preferences_snapshot
 import csv
 import datetime
 import json
@@ -220,14 +221,20 @@ def auth_session(request):
             'is_staff': request.user.is_staff,
             'is_superuser': request.user.is_superuser,
         } if request.user.is_authenticated else None,
+        'preferences': preferences_snapshot(request.user) if request.user.is_authenticated else None,
         'csrf_token': get_token(request),
-    })
+    }, headers={'Cache-Control': 'private, no-store', 'Vary': 'Cookie'})
 
 
 @api_view(['POST'])
 def auth_logout(request):
     logout(request)
-    return Response(status=status.HTTP_204_NO_CONTENT)
+    response = Response(status=status.HTTP_204_NO_CONTENT)
+    for name in ('learning_ui_visual_v1', 'learning_os_color_scheme', 'learning_os_ui_language'):
+        response.delete_cookie(name, path='/')
+        if request.get_host().split(':')[0] == 'ehzsy.site' or request.get_host().split(':')[0].endswith('.ehzsy.site'):
+            response.delete_cookie(name, path='/', domain='.ehzsy.site')
+    return response
 
 
 class SessionListCreateView(APIView):

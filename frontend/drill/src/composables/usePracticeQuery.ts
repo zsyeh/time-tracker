@@ -14,7 +14,10 @@ export function usePracticeQuery(invalidate: () => void) {
   let pending: PracticeQuery | null = null
   let pendingMode: 'push' | 'replace' = 'push'
   let queued = false
+  let disposed = false
+  const ownerPath = route.path
   function apply(patch: PracticeQuery, mode: 'push' | 'replace' = 'push', resetPage = true) {
+    if (disposed || route.path !== ownerPath) return
     invalidate()
     pending = normalizePracticeQuery({ ...(pending || applied.value), ...patch, ...(resetPage ? { page: '', index_version: '' } : {}) })
     pendingMode = mode
@@ -23,6 +26,7 @@ export function usePracticeQuery(invalidate: () => void) {
     // Related filter changes in the same event become one URL and one request.
     queueMicrotask(() => {
       queued = false
+      if (disposed || route.path !== ownerPath || !pending) { pending = null; return }
       const query = pending!
       pending = null
       if (serializePracticeQuery(query) !== serializePracticeQuery(applied.value)) void router[pendingMode]({ query })
@@ -43,6 +47,9 @@ export function usePracticeQuery(invalidate: () => void) {
   function compositionStart() { composing.value = true; cancelTyping(); invalidate() }
   function compositionEnd() { composing.value = false; input() }
   watch(() => applied.value.q, (query) => { if (!composing.value) draft.value = query || '' })
-  onScopeDispose(cancelTyping)
+  watch(() => route.path, (path) => {
+    if (path !== ownerPath) { cancelTyping(); pending = null }
+  }, { flush: 'sync' })
+  onScopeDispose(() => { disposed = true; cancelTyping(); pending = null })
   return { applied, draft, composing, refresh, apply, input, submitSearch, compositionStart, compositionEnd }
 }

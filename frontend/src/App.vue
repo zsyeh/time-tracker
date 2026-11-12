@@ -1,4 +1,6 @@
 <script setup lang="ts">
+import { useAccountPreferences } from '../shared/preferences/store'
+import type { PreferenceSnapshot } from '../shared/preferences/schema'
 import { computed, defineAsyncComponent, nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
@@ -10,6 +12,7 @@ import type { Overview } from './types'
 import type { FormulaLaunchRequest } from './math-visualizer/core/formulaRouter'
 
 const MathLabView = defineAsyncComponent(() => import('./views/MathLabView.vue'))
+const preferences=useAccountPreferences()
 const route = useRoute()
 const recoveryRouter = useRouter()
 let stopRecovery: (() => void) | undefined
@@ -19,7 +22,7 @@ const loading = ref(false)
 const username = ref('')
 const identityReady = ref(false)
 function readSidebarCollapsed() {
-  try { return localStorage.getItem('learning-os.sidebar.collapsed') === 'true' }
+  try { return sessionStorage.getItem('learning-os.sidebar.window.v2.'+(preferences.userId.value||'session')) === 'true' }
   catch { return false }
 }
 const sidebarCollapsed = ref(readSidebarCollapsed())
@@ -35,10 +38,11 @@ async function load() {
   try {
     const [data, auth] = await Promise.all([
       api<Overview>('/api/dashboard/overview/?days=180'),
-      api<{ user: { username: string; id?: number } }>('/api/auth/session/'),
+      api<{ user: { username: string; id?: number };preferences?:PreferenceSnapshot }>('/api/auth/session/'),
     ])
     overview.value = data
     mathVisualizationEnabled.value = Boolean(data.features?.math_visualization)
+    void preferences.bind(auth.user.id ?? auth.user.username,auth.preferences)
     username.value = auth.user.username
     if (!recoveryStarted) {
       recoveryStarted = true
@@ -48,7 +52,7 @@ async function load() {
   } catch (error) { ElMessage.error((error as Error).message) } finally { loading.value = false }
 }
 
-async function logout() { await post('/api/auth/logout/'); location.assign('/accounts/login/') }
+async function logout() { await post('/api/auth/logout/'); preferences.reset(true); location.assign('/accounts/login/') }
 
 async function openMathLab(event: Event) {
   if (!mathVisualizationEnabled.value) return
@@ -82,7 +86,7 @@ watch(isPublicRoute, (isPublic) => {
   if (!isPublic && !overview.value) void load()
 }, { immediate: true })
 watch(sidebarCollapsed, (value) => {
-  try { localStorage.setItem('learning-os.sidebar.collapsed', String(value)) } catch { /* Storage may be unavailable. */ }
+  try { sessionStorage.setItem('learning-os.sidebar.window.v2.'+(preferences.userId.value||'session'), String(value)) } catch { /* Storage may be unavailable. */ }
 })
 
 onMounted(() => window.addEventListener('learning-os-open-math-lab', openMathLab))
