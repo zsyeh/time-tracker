@@ -18,6 +18,7 @@
   --nav-active-bg:var(--surface-selected); --nav-active-text:var(--text-primary);
   --menu-bg:var(--surface-elevated); --menu-border:var(--border-subtle);
   --settings-group-bg:var(--surface-subtle); --settings-separator:var(--border-subtle);
+  --format-small:var(--status-info); --format-large:var(--status-review); --format-short-answer:#6b21a8;
   --status-success-soft:color-mix(in srgb,var(--status-success) 10%,var(--surface-page));
   --status-review-soft:color-mix(in srgb,var(--status-review) 10%,var(--surface-page));
   --status-danger-soft:color-mix(in srgb,var(--status-danger) 8%,var(--surface-page));
@@ -51,6 +52,7 @@
   --overlay-dim: rgb(0 0 0 / .28);
 }
 [data-color-scheme="dark"] {
+  --format-short-answer:#c2a6ff;
   color-scheme: dark;
   --surface-page: var(--n-14); --surface-sidebar: var(--n-10);
   --surface-subtle: var(--n-1b); --surface-hover: var(--n-2b);

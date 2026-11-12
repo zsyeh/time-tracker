@@ -1,0 +1,2349 @@
+{
+  "fixture": true,
+  "nativeSafari": false,
+  "build": {
+    "dist": "e02e4865a74d1d6716a983a4c4b96ea0d265d10693d4542c32f2915b68fec6fc",
+    "drill-dist": "dad3de4171e0e5c33f0d107f525574a956593c6c4c8e2deba105d3578afa7b3f"
+  },
+  "trends": {
+    "cases": [
+      {
+        "scheme": "light",
+        "width": 390,
+        "metrics": {
+          "overflow": false,
+          "summary": [
+            {
+              "label": "平均开始时间",
+              "value": "08:35",
+              "labelBox": {
+                "x": 12,
+                "y": 596,
+                "right": 296.1875,
+                "bottom": 615.5,
+                "width": 284.1875,
+                "height": 19.5
+              },
+              "valueBox": {
+                "x": 308.1875,
+                "y": 584,
+                "right": 378,
+                "bottom": 615.1875,
+                "width": 69.8125,
+                "height": 31.1875
+              },
+              "overlap": false
+            },
+            {
+              "label": "5 小时达标日",
+              "value": "37",
+              "labelBox": {
+                "x": 12,
+                "y": 675,
+                "right": 335.3125,
+                "bottom": 694.5,
+                "width": 323.3125,
+                "height": 19.5
+              },
+              "valueBox": {
+                "x": 347.3125,
+                "y": 663,
+                "right": 378,
+                "bottom": 694.1875,
+                "width": 30.6875,
+                "height": 31.1875
+              },
+              "overlap": false
+            },
+            {
+              "label": "累计完成",
+              "value": "209h",
+              "labelBox": {
+                "x": 12,
+                "y": 754,
+                "right": 303.328125,
+                "bottom": 773.5,
+                "width": 291.328125,
+                "height": 19.5
+              },
+              "valueBox": {
+                "x": 315.328125,
+                "y": 742,
+                "right": 378,
+                "bottom": 773.1875,
+                "width": 62.671875,
+                "height": 31.1875
+              },
+              "overlap": false
+            }
+          ],
+          "rows": [
+            {
+              "label": "2026-11-02",
+              "value": "23h 20m",
+              "labelBox": {
+                "x": 12,
+                "y": 1218.5,
+                "right": 305.03125,
+                "bottom": 1239.5,
+                "width": 293.03125,
+                "height": 21
+              },
+              "valueBox": {
+                "x": 321.03125,
+                "y": 1219,
+                "right": 378,
+                "bottom": 1239,
+                "width": 56.96875,
+                "height": 20
+              },
+              "overlap": false
+            },
+            {
+              "label": "2026-11",
+              "value": "35h 0m",
+              "labelBox": {
+                "x": 12,
+                "y": 1357.5,
+                "right": 313,
+                "bottom": 1378.5,
+                "width": 301,
+                "height": 21
+              },
+              "valueBox": {
+                "x": 329,
+                "y": 1358,
+                "right": 378,
+                "bottom": 1378,
+                "width": 49,
+                "height": 20
+              },
+              "overlap": false
+            },
+            {
+              "label": "#核心12 sessions",
+              "value": "21h 40m",
+              "labelBox": {
+                "x": 12,
+                "y": 1491.5,
+                "right": 305.03125,
+                "bottom": 1534.5,
+                "width": 293.03125,
+                "height": 43
+              },
+              "valueBox": {
+                "x": 321.03125,
+                "y": 1503,
+                "right": 378,
+                "bottom": 1523,
+                "width": 56.96875,
+                "height": 20
+              },
+              "overlap": false
+            },
+            {
+              "label": "Mathematics · 数学 / 多元微分12 sessions",
+              "value": "21h 40m",
+              "labelBox": {
+                "x": 12,
+                "y": 1642.5,
+                "right": 305.03125,
+                "bottom": 1685.5,
+                "width": 293.03125,
+                "height": 43
+              },
+              "valueBox": {
+                "x": 321.03125,
+                "y": 1654,
+                "right": 378,
+                "bottom": 1674,
+                "width": 56.96875,
+                "height": 20
+              },
+              "overlap": false
+            }
+          ],
+          "subjects": [
+            {
+              "label": "Mathematics",
+              "value": "100h 0m",
+              "card": {
+                "x": 12,
+                "y": 903.5,
+                "right": 187,
+                "bottom": 1000.5,
+                "width": 175,
+                "height": 97
+              },
+              "valueBox": {
+                "x": 12,
+                "y": 933.5,
+                "right": 129.359375,
+                "bottom": 973.5,
+                "width": 117.359375,
+                "height": 40
+              },
+              "footer": {
+                "x": 12,
+                "y": 974.5,
+                "right": 187,
+                "bottom": 992.5,
+                "width": 175,
+                "height": 18
+              }
+            },
+            {
+              "label": "English",
+              "value": "38h 20m",
+              "card": {
+                "x": 203,
+                "y": 903.5,
+                "right": 378,
+                "bottom": 1000.5,
+                "width": 175,
+                "height": 97
+              },
+              "valueBox": {
+                "x": 203,
+                "y": 933.5,
+                "right": 320.359375,
+                "bottom": 973.5,
+                "width": 117.359375,
+                "height": 40
+              },
+              "footer": {
+                "x": 203,
+                "y": 974.5,
+                "right": 378,
+                "bottom": 992.5,
+                "width": 175,
+                "height": 18
+              }
+            },
+            {
+              "label": "Major",
+              "value": "56h 40m",
+              "card": {
+                "x": 12,
+                "y": 1016.5,
+                "right": 187,
+                "bottom": 1113.5,
+                "width": 175,
+                "height": 97
+              },
+              "valueBox": {
+                "x": 12,
+                "y": 1046.5,
+                "right": 129.359375,
+                "bottom": 1086.5,
+                "width": 117.359375,
+                "height": 40
+              },
+              "footer": {
+                "x": 12,
+                "y": 1087.5,
+                "right": 187,
+                "bottom": 1105.5,
+                "width": 175,
+                "height": 18
+              }
+            }
+          ],
+          "canvas": [
+            {
+              "x": 12,
+              "y": 151,
+              "right": 378,
+              "bottom": 451,
+              "width": 366,
+              "height": 300
+            }
+          ],
+          "headers": [
+            {
+              "label": "最近几周",
+              "value": "6 周",
+              "labelBox": {
+                "x": 12,
+                "y": 1170.5,
+                "right": 80,
+                "bottom": 1196,
+                "width": 68,
+                "height": 25.5
+              },
+              "valueBox": {
+                "x": 356.640625,
+                "y": 1176.5,
+                "right": 378,
+                "bottom": 1194.5,
+                "width": 21.359375,
+                "height": 18
+              },
+              "overlap": false
+            },
+            {
+              "label": "最近几月",
+              "value": "6 月",
+              "labelBox": {
+                "x": 12,
+                "y": 1309.5,
+                "right": 80,
+                "bottom": 1335,
+                "width": 68,
+                "height": 25.5
+              },
+              "valueBox": {
+                "x": 356.640625,
+                "y": 1315.5,
+                "right": 378,
+                "bottom": 1333.5,
+                "width": 21.359375,
+                "height": 18
+              },
+              "overlap": false
+            },
+            {
+              "label": "Tags",
+              "value": "Reusable labels",
+              "labelBox": {
+                "x": 12,
+                "y": 1448.5,
+                "right": 49.96875,
+                "bottom": 1474,
+                "width": 37.96875,
+                "height": 25.5
+              },
+              "valueBox": {
+                "x": 290.78125,
+                "y": 1454.5,
+                "right": 378,
+                "bottom": 1472.5,
+                "width": 87.21875,
+                "height": 18
+              },
+              "overlap": false
+            },
+            {
+              "label": "Tasks",
+              "value": "Preset paths",
+              "labelBox": {
+                "x": 12,
+                "y": 1599.5,
+                "right": 58.5,
+                "bottom": 1625,
+                "width": 46.5,
+                "height": 25.5
+              },
+              "valueBox": {
+                "x": 308.625,
+                "y": 1605.5,
+                "right": 378,
+                "bottom": 1623.5,
+                "width": 69.375,
+                "height": 18
+              },
+              "overlap": false
+            }
+          ],
+          "summarySeparated": true,
+          "pass": true
+        },
+        "errors": []
+      },
+      {
+        "scheme": "light",
+        "width": 1180,
+        "metrics": {
+          "overflow": false,
+          "summary": [
+            {
+              "label": "平均开始时间",
+              "value": "08:35",
+              "labelBox": {
+                "x": 256,
+                "y": 648,
+                "right": 542.65625,
+                "bottom": 667.5,
+                "width": 286.65625,
+                "height": 19.5
+              },
+              "valueBox": {
+                "x": 256,
+                "y": 675.5,
+                "right": 542.65625,
+                "bottom": 709.09375,
+                "width": 286.65625,
+                "height": 33.59375
+              },
+              "overlap": false
+            },
+            {
+              "label": "5 小时达标日",
+              "value": "37",
+              "labelBox": {
+                "x": 558.65625,
+                "y": 648,
+                "right": 845.328125,
+                "bottom": 667.5,
+                "width": 286.671875,
+                "height": 19.5
+              },
+              "valueBox": {
+                "x": 558.65625,
+                "y": 675.5,
+                "right": 845.328125,
+                "bottom": 709.09375,
+                "width": 286.671875,
+                "height": 33.59375
+              },
+              "overlap": false
+            },
+            {
+              "label": "累计完成",
+              "value": "209h",
+              "labelBox": {
+                "x": 861.328125,
+                "y": 648,
+                "right": 1147.984375,
+                "bottom": 667.5,
+                "width": 286.65625,
+                "height": 19.5
+              },
+              "valueBox": {
+                "x": 861.328125,
+                "y": 675.5,
+                "right": 1147.984375,
+                "bottom": 709.09375,
+                "width": 286.65625,
+                "height": 33.59375
+              },
+              "overlap": false
+            }
+          ],
+          "rows": [
+            {
+              "label": "2026-11-02",
+              "value": "23h 20m",
+              "labelBox": {
+                "x": 256,
+                "y": 1045.09375,
+                "right": 617.03125,
+                "bottom": 1066.09375,
+                "width": 361.03125,
+                "height": 21
+              },
+              "valueBox": {
+                "x": 633.03125,
+                "y": 1045.59375,
+                "right": 690,
+                "bottom": 1065.59375,
+                "width": 56.96875,
+                "height": 20
+              },
+              "overlap": false
+            },
+            {
+              "label": "2026-11",
+              "value": "35h 0m",
+              "labelBox": {
+                "x": 714,
+                "y": 1045.09375,
+                "right": 1083,
+                "bottom": 1066.09375,
+                "width": 369,
+                "height": 21
+              },
+              "valueBox": {
+                "x": 1099,
+                "y": 1045.59375,
+                "right": 1148,
+                "bottom": 1065.59375,
+                "width": 49,
+                "height": 20
+              },
+              "overlap": false
+            },
+            {
+              "label": "#核心12 sessions",
+              "value": "21h 40m",
+              "labelBox": {
+                "x": 256,
+                "y": 1179.09375,
+                "right": 617.03125,
+                "bottom": 1222.09375,
+                "width": 361.03125,
+                "height": 43
+              },
+              "valueBox": {
+                "x": 633.03125,
+                "y": 1190.59375,
+                "right": 690,
+                "bottom": 1210.59375,
+                "width": 56.96875,
+                "height": 20
+              },
+              "overlap": false
+            },
+            {
+              "label": "Mathematics · 数学 / 多元微分12 sessions",
+              "value": "21h 40m",
+              "labelBox": {
+                "x": 714,
+                "y": 1179.09375,
+                "right": 1075.03125,
+                "bottom": 1222.09375,
+                "width": 361.03125,
+                "height": 43
+              },
+              "valueBox": {
+                "x": 1091.03125,
+                "y": 1190.59375,
+                "right": 1148,
+                "bottom": 1210.59375,
+                "width": 56.96875,
+                "height": 20
+              },
+              "overlap": false
+            }
+          ],
+          "subjects": [
+            {
+              "label": "Mathematics",
+              "value": "100h 0m",
+              "card": {
+                "x": 256,
+                "y": 843.09375,
+                "right": 467,
+                "bottom": 940.09375,
+                "width": 211,
+                "height": 97
+              },
+              "valueBox": {
+                "x": 256,
+                "y": 873.09375,
+                "right": 373.359375,
+                "bottom": 913.09375,
+                "width": 117.359375,
+                "height": 40
+              },
+              "footer": {
+                "x": 256,
+                "y": 914.09375,
+                "right": 467,
+                "bottom": 932.09375,
+                "width": 211,
+                "height": 18
+              }
+            },
+            {
+              "label": "English",
+              "value": "38h 20m",
+              "card": {
+                "x": 483,
+                "y": 843.09375,
+                "right": 694,
+                "bottom": 940.09375,
+                "width": 211,
+                "height": 97
+              },
+              "valueBox": {
+                "x": 483,
+                "y": 873.09375,
+                "right": 600.359375,
+                "bottom": 913.09375,
+                "width": 117.359375,
+                "height": 40
+              },
+              "footer": {
+                "x": 483,
+                "y": 914.09375,
+                "right": 694,
+                "bottom": 932.09375,
+                "width": 211,
+                "height": 18
+              }
+            },
+            {
+              "label": "Major",
+              "value": "56h 40m",
+              "card": {
+                "x": 710,
+                "y": 843.09375,
+                "right": 921,
+                "bottom": 940.09375,
+                "width": 211,
+                "height": 97
+              },
+              "valueBox": {
+                "x": 710,
+                "y": 873.09375,
+                "right": 827.359375,
+                "bottom": 913.09375,
+                "width": 117.359375,
+                "height": 40
+              },
+              "footer": {
+                "x": 710,
+                "y": 914.09375,
+                "right": 921,
+                "bottom": 932.09375,
+                "width": 211,
+                "height": 18
+              }
+            }
+          ],
+          "canvas": [
+            {
+              "x": 256,
+              "y": 147,
+              "right": 1148,
+              "bottom": 507,
+              "width": 892,
+              "height": 360
+            }
+          ],
+          "headers": [
+            {
+              "label": "最近几周",
+              "value": "6 周",
+              "labelBox": {
+                "x": 256,
+                "y": 997.09375,
+                "right": 324,
+                "bottom": 1022.59375,
+                "width": 68,
+                "height": 25.5
+              },
+              "valueBox": {
+                "x": 668.640625,
+                "y": 1003.09375,
+                "right": 690,
+                "bottom": 1021.09375,
+                "width": 21.359375,
+                "height": 18
+              },
+              "overlap": false
+            },
+            {
+              "label": "最近几月",
+              "value": "6 月",
+              "labelBox": {
+                "x": 714,
+                "y": 997.09375,
+                "right": 782,
+                "bottom": 1022.59375,
+                "width": 68,
+                "height": 25.5
+              },
+              "valueBox": {
+                "x": 1126.640625,
+                "y": 1003.09375,
+                "right": 1148,
+                "bottom": 1021.09375,
+                "width": 21.359375,
+                "height": 18
+              },
+              "overlap": false
+            },
+            {
+              "label": "Tags",
+              "value": "Reusable labels",
+              "labelBox": {
+                "x": 256,
+                "y": 1136.09375,
+                "right": 293.96875,
+                "bottom": 1161.59375,
+                "width": 37.96875,
+                "height": 25.5
+              },
+              "valueBox": {
+                "x": 602.78125,
+                "y": 1142.09375,
+                "right": 690,
+                "bottom": 1160.09375,
+                "width": 87.21875,
+                "height": 18
+              },
+              "overlap": false
+            },
+            {
+              "label": "Tasks",
+              "value": "Preset paths",
+              "labelBox": {
+                "x": 714,
+                "y": 1136.09375,
+                "right": 760.5,
+                "bottom": 1161.59375,
+                "width": 46.5,
+                "height": 25.5
+              },
+              "valueBox": {
+                "x": 1078.625,
+                "y": 1142.09375,
+                "right": 1148,
+                "bottom": 1160.09375,
+                "width": 69.375,
+                "height": 18
+              },
+              "overlap": false
+            }
+          ],
+          "summarySeparated": true,
+          "pass": true
+        },
+        "errors": []
+      },
+      {
+        "scheme": "dark",
+        "width": 390,
+        "metrics": {
+          "overflow": false,
+          "summary": [
+            {
+              "label": "平均开始时间",
+              "value": "08:35",
+              "labelBox": {
+                "x": 12,
+                "y": 596,
+                "right": 296.1875,
+                "bottom": 615.5,
+                "width": 284.1875,
+                "height": 19.5
+              },
+              "valueBox": {
+                "x": 308.1875,
+                "y": 584,
+                "right": 378,
+                "bottom": 615.1875,
+                "width": 69.8125,
+                "height": 31.1875
+              },
+              "overlap": false
+            },
+            {
+              "label": "5 小时达标日",
+              "value": "37",
+              "labelBox": {
+                "x": 12,
+                "y": 675,
+                "right": 335.3125,
+                "bottom": 694.5,
+                "width": 323.3125,
+                "height": 19.5
+              },
+              "valueBox": {
+                "x": 347.3125,
+                "y": 663,
+                "right": 378,
+                "bottom": 694.1875,
+                "width": 30.6875,
+                "height": 31.1875
+              },
+              "overlap": false
+            },
+            {
+              "label": "累计完成",
+              "value": "209h",
+              "labelBox": {
+                "x": 12,
+                "y": 754,
+                "right": 303.328125,
+                "bottom": 773.5,
+                "width": 291.328125,
+                "height": 19.5
+              },
+              "valueBox": {
+                "x": 315.328125,
+                "y": 742,
+                "right": 378,
+                "bottom": 773.1875,
+                "width": 62.671875,
+                "height": 31.1875
+              },
+              "overlap": false
+            }
+          ],
+          "rows": [
+            {
+              "label": "2026-11-02",
+              "value": "23h 20m",
+              "labelBox": {
+                "x": 12,
+                "y": 1218.5,
+                "right": 305.03125,
+                "bottom": 1239.5,
+                "width": 293.03125,
+                "height": 21
+              },
+              "valueBox": {
+                "x": 321.03125,
+                "y": 1219,
+                "right": 378,
+                "bottom": 1239,
+                "width": 56.96875,
+                "height": 20
+              },
+              "overlap": false
+            },
+            {
+              "label": "2026-11",
+              "value": "35h 0m",
+              "labelBox": {
+                "x": 12,
+                "y": 1357.5,
+                "right": 313,
+                "bottom": 1378.5,
+                "width": 301,
+                "height": 21
+              },
+              "valueBox": {
+                "x": 329,
+                "y": 1358,
+                "right": 378,
+                "bottom": 1378,
+                "width": 49,
+                "height": 20
+              },
+              "overlap": false
+            },
+            {
+              "label": "#核心12 sessions",
+              "value": "21h 40m",
+              "labelBox": {
+                "x": 12,
+                "y": 1491.5,
+                "right": 305.03125,
+                "bottom": 1534.5,
+                "width": 293.03125,
+                "height": 43
+              },
+              "valueBox": {
+                "x": 321.03125,
+                "y": 1503,
+                "right": 378,
+                "bottom": 1523,
+                "width": 56.96875,
+                "height": 20
+              },
+              "overlap": false
+            },
+            {
+              "label": "Mathematics · 数学 / 多元微分12 sessions",
+              "value": "21h 40m",
+              "labelBox": {
+                "x": 12,
+                "y": 1642.5,
+                "right": 305.03125,
+                "bottom": 1685.5,
+                "width": 293.03125,
+                "height": 43
+              },
+              "valueBox": {
+                "x": 321.03125,
+                "y": 1654,
+                "right": 378,
+                "bottom": 1674,
+                "width": 56.96875,
+                "height": 20
+              },
+              "overlap": false
+            }
+          ],
+          "subjects": [
+            {
+              "label": "Mathematics",
+              "value": "100h 0m",
+              "card": {
+                "x": 12,
+                "y": 903.5,
+                "right": 187,
+                "bottom": 1000.5,
+                "width": 175,
+                "height": 97
+              },
+              "valueBox": {
+                "x": 12,
+                "y": 933.5,
+                "right": 129.359375,
+                "bottom": 973.5,
+                "width": 117.359375,
+                "height": 40
+              },
+              "footer": {
+                "x": 12,
+                "y": 974.5,
+                "right": 187,
+                "bottom": 992.5,
+                "width": 175,
+                "height": 18
+              }
+            },
+            {
+              "label": "English",
+              "value": "38h 20m",
+              "card": {
+                "x": 203,
+                "y": 903.5,
+                "right": 378,
+                "bottom": 1000.5,
+                "width": 175,
+                "height": 97
+              },
+              "valueBox": {
+                "x": 203,
+                "y": 933.5,
+                "right": 320.359375,
+                "bottom": 973.5,
+                "width": 117.359375,
+                "height": 40
+              },
+              "footer": {
+                "x": 203,
+                "y": 974.5,
+                "right": 378,
+                "bottom": 992.5,
+                "width": 175,
+                "height": 18
+              }
+            },
+            {
+              "label": "Major",
+              "value": "56h 40m",
+              "card": {
+                "x": 12,
+                "y": 1016.5,
+                "right": 187,
+                "bottom": 1113.5,
+                "width": 175,
+                "height": 97
+              },
+              "valueBox": {
+                "x": 12,
+                "y": 1046.5,
+                "right": 129.359375,
+                "bottom": 1086.5,
+                "width": 117.359375,
+                "height": 40
+              },
+              "footer": {
+                "x": 12,
+                "y": 1087.5,
+                "right": 187,
+                "bottom": 1105.5,
+                "width": 175,
+                "height": 18
+              }
+            }
+          ],
+          "canvas": [
+            {
+              "x": 12,
+              "y": 151,
+              "right": 378,
+              "bottom": 451,
+              "width": 366,
+              "height": 300
+            }
+          ],
+          "headers": [
+            {
+              "label": "最近几周",
+              "value": "6 周",
+              "labelBox": {
+                "x": 12,
+                "y": 1170.5,
+                "right": 80,
+                "bottom": 1196,
+                "width": 68,
+                "height": 25.5
+              },
+              "valueBox": {
+                "x": 356.640625,
+                "y": 1176.5,
+                "right": 378,
+                "bottom": 1194.5,
+                "width": 21.359375,
+                "height": 18
+              },
+              "overlap": false
+            },
+            {
+              "label": "最近几月",
+              "value": "6 月",
+              "labelBox": {
+                "x": 12,
+                "y": 1309.5,
+                "right": 80,
+                "bottom": 1335,
+                "width": 68,
+                "height": 25.5
+              },
+              "valueBox": {
+                "x": 356.640625,
+                "y": 1315.5,
+                "right": 378,
+                "bottom": 1333.5,
+                "width": 21.359375,
+                "height": 18
+              },
+              "overlap": false
+            },
+            {
+              "label": "Tags",
+              "value": "Reusable labels",
+              "labelBox": {
+                "x": 12,
+                "y": 1448.5,
+                "right": 49.96875,
+                "bottom": 1474,
+                "width": 37.96875,
+                "height": 25.5
+              },
+              "valueBox": {
+                "x": 290.78125,
+                "y": 1454.5,
+                "right": 378,
+                "bottom": 1472.5,
+                "width": 87.21875,
+                "height": 18
+              },
+              "overlap": false
+            },
+            {
+              "label": "Tasks",
+              "value": "Preset paths",
+              "labelBox": {
+                "x": 12,
+                "y": 1599.5,
+                "right": 58.5,
+                "bottom": 1625,
+                "width": 46.5,
+                "height": 25.5
+              },
+              "valueBox": {
+                "x": 308.625,
+                "y": 1605.5,
+                "right": 378,
+                "bottom": 1623.5,
+                "width": 69.375,
+                "height": 18
+              },
+              "overlap": false
+            }
+          ],
+          "summarySeparated": true,
+          "pass": true
+        },
+        "errors": []
+      },
+      {
+        "scheme": "dark",
+        "width": 1180,
+        "metrics": {
+          "overflow": false,
+          "summary": [
+            {
+              "label": "平均开始时间",
+              "value": "08:35",
+              "labelBox": {
+                "x": 256,
+                "y": 648,
+                "right": 542.65625,
+                "bottom": 667.5,
+                "width": 286.65625,
+                "height": 19.5
+              },
+              "valueBox": {
+                "x": 256,
+                "y": 675.5,
+                "right": 542.65625,
+                "bottom": 709.09375,
+                "width": 286.65625,
+                "height": 33.59375
+              },
+              "overlap": false
+            },
+            {
+              "label": "5 小时达标日",
+              "value": "37",
+              "labelBox": {
+                "x": 558.65625,
+                "y": 648,
+                "right": 845.328125,
+                "bottom": 667.5,
+                "width": 286.671875,
+                "height": 19.5
+              },
+              "valueBox": {
+                "x": 558.65625,
+                "y": 675.5,
+                "right": 845.328125,
+                "bottom": 709.09375,
+                "width": 286.671875,
+                "height": 33.59375
+              },
+              "overlap": false
+            },
+            {
+              "label": "累计完成",
+              "value": "209h",
+              "labelBox": {
+                "x": 861.328125,
+                "y": 648,
+                "right": 1147.984375,
+                "bottom": 667.5,
+                "width": 286.65625,
+                "height": 19.5
+              },
+              "valueBox": {
+                "x": 861.328125,
+                "y": 675.5,
+                "right": 1147.984375,
+                "bottom": 709.09375,
+                "width": 286.65625,
+                "height": 33.59375
+              },
+              "overlap": false
+            }
+          ],
+          "rows": [
+            {
+              "label": "2026-11-02",
+              "value": "23h 20m",
+              "labelBox": {
+                "x": 256,
+                "y": 1045.09375,
+                "right": 617.03125,
+                "bottom": 1066.09375,
+                "width": 361.03125,
+                "height": 21
+              },
+              "valueBox": {
+                "x": 633.03125,
+                "y": 1045.59375,
+                "right": 690,
+                "bottom": 1065.59375,
+                "width": 56.96875,
+                "height": 20
+              },
+              "overlap": false
+            },
+            {
+              "label": "2026-11",
+              "value": "35h 0m",
+              "labelBox": {
+                "x": 714,
+                "y": 1045.09375,
+                "right": 1083,
+                "bottom": 1066.09375,
+                "width": 369,
+                "height": 21
+              },
+              "valueBox": {
+                "x": 1099,
+                "y": 1045.59375,
+                "right": 1148,
+                "bottom": 1065.59375,
+                "width": 49,
+                "height": 20
+              },
+              "overlap": false
+            },
+            {
+              "label": "#核心12 sessions",
+              "value": "21h 40m",
+              "labelBox": {
+                "x": 256,
+                "y": 1179.09375,
+                "right": 617.03125,
+                "bottom": 1222.09375,
+                "width": 361.03125,
+                "height": 43
+              },
+              "valueBox": {
+                "x": 633.03125,
+                "y": 1190.59375,
+                "right": 690,
+                "bottom": 1210.59375,
+                "width": 56.96875,
+                "height": 20
+              },
+              "overlap": false
+            },
+            {
+              "label": "Mathematics · 数学 / 多元微分12 sessions",
+              "value": "21h 40m",
+              "labelBox": {
+                "x": 714,
+                "y": 1179.09375,
+                "right": 1075.03125,
+                "bottom": 1222.09375,
+                "width": 361.03125,
+                "height": 43
+              },
+              "valueBox": {
+                "x": 1091.03125,
+                "y": 1190.59375,
+                "right": 1148,
+                "bottom": 1210.59375,
+                "width": 56.96875,
+                "height": 20
+              },
+              "overlap": false
+            }
+          ],
+          "subjects": [
+            {
+              "label": "Mathematics",
+              "value": "100h 0m",
+              "card": {
+                "x": 256,
+                "y": 843.09375,
+                "right": 467,
+                "bottom": 940.09375,
+                "width": 211,
+                "height": 97
+              },
+              "valueBox": {
+                "x": 256,
+                "y": 873.09375,
+                "right": 373.359375,
+                "bottom": 913.09375,
+                "width": 117.359375,
+                "height": 40
+              },
+              "footer": {
+                "x": 256,
+                "y": 914.09375,
+                "right": 467,
+                "bottom": 932.09375,
+                "width": 211,
+                "height": 18
+              }
+            },
+            {
+              "label": "English",
+              "value": "38h 20m",
+              "card": {
+                "x": 483,
+                "y": 843.09375,
+                "right": 694,
+                "bottom": 940.09375,
+                "width": 211,
+                "height": 97
+              },
+              "valueBox": {
+                "x": 483,
+                "y": 873.09375,
+                "right": 600.359375,
+                "bottom": 913.09375,
+                "width": 117.359375,
+                "height": 40
+              },
+              "footer": {
+                "x": 483,
+                "y": 914.09375,
+                "right": 694,
+                "bottom": 932.09375,
+                "width": 211,
+                "height": 18
+              }
+            },
+            {
+              "label": "Major",
+              "value": "56h 40m",
+              "card": {
+                "x": 710,
+                "y": 843.09375,
+                "right": 921,
+                "bottom": 940.09375,
+                "width": 211,
+                "height": 97
+              },
+              "valueBox": {
+                "x": 710,
+                "y": 873.09375,
+                "right": 827.359375,
+                "bottom": 913.09375,
+                "width": 117.359375,
+                "height": 40
+              },
+              "footer": {
+                "x": 710,
+                "y": 914.09375,
+                "right": 921,
+                "bottom": 932.09375,
+                "width": 211,
+                "height": 18
+              }
+            }
+          ],
+          "canvas": [
+            {
+              "x": 256,
+              "y": 147,
+              "right": 1148,
+              "bottom": 507,
+              "width": 892,
+              "height": 360
+            }
+          ],
+          "headers": [
+            {
+              "label": "最近几周",
+              "value": "6 周",
+              "labelBox": {
+                "x": 256,
+                "y": 997.09375,
+                "right": 324,
+                "bottom": 1022.59375,
+                "width": 68,
+                "height": 25.5
+              },
+              "valueBox": {
+                "x": 668.640625,
+                "y": 1003.09375,
+                "right": 690,
+                "bottom": 1021.09375,
+                "width": 21.359375,
+                "height": 18
+              },
+              "overlap": false
+            },
+            {
+              "label": "最近几月",
+              "value": "6 月",
+              "labelBox": {
+                "x": 714,
+                "y": 997.09375,
+                "right": 782,
+                "bottom": 1022.59375,
+                "width": 68,
+                "height": 25.5
+              },
+              "valueBox": {
+                "x": 1126.640625,
+                "y": 1003.09375,
+                "right": 1148,
+                "bottom": 1021.09375,
+                "width": 21.359375,
+                "height": 18
+              },
+              "overlap": false
+            },
+            {
+              "label": "Tags",
+              "value": "Reusable labels",
+              "labelBox": {
+                "x": 256,
+                "y": 1136.09375,
+                "right": 293.96875,
+                "bottom": 1161.59375,
+                "width": 37.96875,
+                "height": 25.5
+              },
+              "valueBox": {
+                "x": 602.78125,
+                "y": 1142.09375,
+                "right": 690,
+                "bottom": 1160.09375,
+                "width": 87.21875,
+                "height": 18
+              },
+              "overlap": false
+            },
+            {
+              "label": "Tasks",
+              "value": "Preset paths",
+              "labelBox": {
+                "x": 714,
+                "y": 1136.09375,
+                "right": 760.5,
+                "bottom": 1161.59375,
+                "width": 46.5,
+                "height": 25.5
+              },
+              "valueBox": {
+                "x": 1078.625,
+                "y": 1142.09375,
+                "right": 1148,
+                "bottom": 1160.09375,
+                "width": 69.375,
+                "height": 18
+              },
+              "overlap": false
+            }
+          ],
+          "summarySeparated": true,
+          "pass": true
+        },
+        "errors": []
+      }
+    ],
+    "pass": true
+  },
+  "search": {
+    "metrics": {
+      "query": "fourire",
+      "excerpt": "🧪 Fourier 傅里叶变换 <img src=x onerror=\"window.__reviewInjected=1\"> 与 LaTeX \\frac{a}{b} 的公开题干",
+      "marks": [
+        "Fourier"
+      ],
+      "injectedImages": 0,
+      "injectedScripts": 0,
+      "executed": false,
+      "correction": "同时匹配：fourier",
+      "overflow": false,
+      "pass": true
+    },
+    "errors": [],
+    "syntheticPublicFieldsOnly": true,
+    "pass": true
+  },
+  "palettes": {
+    "combinations": [
+      {
+        "scheme": "light",
+        "accent": "blue",
+        "before": {
+          "appearance": "light",
+          "scheme": "light",
+          "accent": "blue",
+          "body": {
+            "background": "rgb(255, 255, 255)",
+            "color": "rgb(32, 32, 32)"
+          },
+          "surface": "#ffffff",
+          "subtle": "#f5f5f5",
+          "elevated": "#ffffff",
+          "canvas": "#f7f7f7",
+          "accentSolid": "#2563EB",
+          "stored": {
+            "version": 1,
+            "appearance": "light",
+            "accent": "blue"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "after": {
+          "appearance": "light",
+          "scheme": "light",
+          "accent": "blue",
+          "body": {
+            "background": "rgb(255, 255, 255)",
+            "color": "rgb(32, 32, 32)"
+          },
+          "surface": "#ffffff",
+          "subtle": "#f5f5f5",
+          "elevated": "#ffffff",
+          "canvas": "#f7f7f7",
+          "accentSolid": "#2563EB",
+          "stored": {
+            "version": 1,
+            "appearance": "light",
+            "accent": "blue"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "pass": true
+      },
+      {
+        "scheme": "light",
+        "accent": "cyan",
+        "before": {
+          "appearance": "light",
+          "scheme": "light",
+          "accent": "cyan",
+          "body": {
+            "background": "rgb(255, 255, 255)",
+            "color": "rgb(32, 32, 32)"
+          },
+          "surface": "#ffffff",
+          "subtle": "#f5f5f5",
+          "elevated": "#ffffff",
+          "canvas": "#f7f7f7",
+          "accentSolid": "#0E7490",
+          "stored": {
+            "version": 1,
+            "appearance": "light",
+            "accent": "cyan"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "after": {
+          "appearance": "light",
+          "scheme": "light",
+          "accent": "cyan",
+          "body": {
+            "background": "rgb(255, 255, 255)",
+            "color": "rgb(32, 32, 32)"
+          },
+          "surface": "#ffffff",
+          "subtle": "#f5f5f5",
+          "elevated": "#ffffff",
+          "canvas": "#f7f7f7",
+          "accentSolid": "#0E7490",
+          "stored": {
+            "version": 1,
+            "appearance": "light",
+            "accent": "cyan"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "pass": true
+      },
+      {
+        "scheme": "light",
+        "accent": "green",
+        "before": {
+          "appearance": "light",
+          "scheme": "light",
+          "accent": "green",
+          "body": {
+            "background": "rgb(255, 255, 255)",
+            "color": "rgb(32, 32, 32)"
+          },
+          "surface": "#ffffff",
+          "subtle": "#f5f5f5",
+          "elevated": "#ffffff",
+          "canvas": "#f7f7f7",
+          "accentSolid": "#15803D",
+          "stored": {
+            "version": 1,
+            "appearance": "light",
+            "accent": "green"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "after": {
+          "appearance": "light",
+          "scheme": "light",
+          "accent": "green",
+          "body": {
+            "background": "rgb(255, 255, 255)",
+            "color": "rgb(32, 32, 32)"
+          },
+          "surface": "#ffffff",
+          "subtle": "#f5f5f5",
+          "elevated": "#ffffff",
+          "canvas": "#f7f7f7",
+          "accentSolid": "#15803D",
+          "stored": {
+            "version": 1,
+            "appearance": "light",
+            "accent": "green"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "pass": true
+      },
+      {
+        "scheme": "light",
+        "accent": "lime",
+        "before": {
+          "appearance": "light",
+          "scheme": "light",
+          "accent": "lime",
+          "body": {
+            "background": "rgb(255, 255, 255)",
+            "color": "rgb(32, 32, 32)"
+          },
+          "surface": "#ffffff",
+          "subtle": "#f5f5f5",
+          "elevated": "#ffffff",
+          "canvas": "#f7f7f7",
+          "accentSolid": "#B5D96A",
+          "stored": {
+            "version": 1,
+            "appearance": "light",
+            "accent": "lime"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "after": {
+          "appearance": "light",
+          "scheme": "light",
+          "accent": "lime",
+          "body": {
+            "background": "rgb(255, 255, 255)",
+            "color": "rgb(32, 32, 32)"
+          },
+          "surface": "#ffffff",
+          "subtle": "#f5f5f5",
+          "elevated": "#ffffff",
+          "canvas": "#f7f7f7",
+          "accentSolid": "#B5D96A",
+          "stored": {
+            "version": 1,
+            "appearance": "light",
+            "accent": "lime"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "pass": true
+      },
+      {
+        "scheme": "light",
+        "accent": "yellow",
+        "before": {
+          "appearance": "light",
+          "scheme": "light",
+          "accent": "yellow",
+          "body": {
+            "background": "rgb(255, 255, 255)",
+            "color": "rgb(32, 32, 32)"
+          },
+          "surface": "#ffffff",
+          "subtle": "#f5f5f5",
+          "elevated": "#ffffff",
+          "canvas": "#f7f7f7",
+          "accentSolid": "#F4D06F",
+          "stored": {
+            "version": 1,
+            "appearance": "light",
+            "accent": "yellow"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "after": {
+          "appearance": "light",
+          "scheme": "light",
+          "accent": "yellow",
+          "body": {
+            "background": "rgb(255, 255, 255)",
+            "color": "rgb(32, 32, 32)"
+          },
+          "surface": "#ffffff",
+          "subtle": "#f5f5f5",
+          "elevated": "#ffffff",
+          "canvas": "#f7f7f7",
+          "accentSolid": "#F4D06F",
+          "stored": {
+            "version": 1,
+            "appearance": "light",
+            "accent": "yellow"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "pass": true
+      },
+      {
+        "scheme": "light",
+        "accent": "orange",
+        "before": {
+          "appearance": "light",
+          "scheme": "light",
+          "accent": "orange",
+          "body": {
+            "background": "rgb(255, 255, 255)",
+            "color": "rgb(32, 32, 32)"
+          },
+          "surface": "#ffffff",
+          "subtle": "#f5f5f5",
+          "elevated": "#ffffff",
+          "canvas": "#f7f7f7",
+          "accentSolid": "#B54708",
+          "stored": {
+            "version": 1,
+            "appearance": "light",
+            "accent": "orange"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "after": {
+          "appearance": "light",
+          "scheme": "light",
+          "accent": "orange",
+          "body": {
+            "background": "rgb(255, 255, 255)",
+            "color": "rgb(32, 32, 32)"
+          },
+          "surface": "#ffffff",
+          "subtle": "#f5f5f5",
+          "elevated": "#ffffff",
+          "canvas": "#f7f7f7",
+          "accentSolid": "#B54708",
+          "stored": {
+            "version": 1,
+            "appearance": "light",
+            "accent": "orange"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "pass": true
+      },
+      {
+        "scheme": "light",
+        "accent": "pink",
+        "before": {
+          "appearance": "light",
+          "scheme": "light",
+          "accent": "pink",
+          "body": {
+            "background": "rgb(255, 255, 255)",
+            "color": "rgb(32, 32, 32)"
+          },
+          "surface": "#ffffff",
+          "subtle": "#f5f5f5",
+          "elevated": "#ffffff",
+          "canvas": "#f7f7f7",
+          "accentSolid": "#BE185D",
+          "stored": {
+            "version": 1,
+            "appearance": "light",
+            "accent": "pink"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "after": {
+          "appearance": "light",
+          "scheme": "light",
+          "accent": "pink",
+          "body": {
+            "background": "rgb(255, 255, 255)",
+            "color": "rgb(32, 32, 32)"
+          },
+          "surface": "#ffffff",
+          "subtle": "#f5f5f5",
+          "elevated": "#ffffff",
+          "canvas": "#f7f7f7",
+          "accentSolid": "#BE185D",
+          "stored": {
+            "version": 1,
+            "appearance": "light",
+            "accent": "pink"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "pass": true
+      },
+      {
+        "scheme": "light",
+        "accent": "magenta",
+        "before": {
+          "appearance": "light",
+          "scheme": "light",
+          "accent": "magenta",
+          "body": {
+            "background": "rgb(255, 255, 255)",
+            "color": "rgb(32, 32, 32)"
+          },
+          "surface": "#ffffff",
+          "subtle": "#f5f5f5",
+          "elevated": "#ffffff",
+          "canvas": "#f7f7f7",
+          "accentSolid": "#A21CAF",
+          "stored": {
+            "version": 1,
+            "appearance": "light",
+            "accent": "magenta"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "after": {
+          "appearance": "light",
+          "scheme": "light",
+          "accent": "magenta",
+          "body": {
+            "background": "rgb(255, 255, 255)",
+            "color": "rgb(32, 32, 32)"
+          },
+          "surface": "#ffffff",
+          "subtle": "#f5f5f5",
+          "elevated": "#ffffff",
+          "canvas": "#f7f7f7",
+          "accentSolid": "#A21CAF",
+          "stored": {
+            "version": 1,
+            "appearance": "light",
+            "accent": "magenta"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "pass": true
+      },
+      {
+        "scheme": "light",
+        "accent": "purple",
+        "before": {
+          "appearance": "light",
+          "scheme": "light",
+          "accent": "purple",
+          "body": {
+            "background": "rgb(255, 255, 255)",
+            "color": "rgb(32, 32, 32)"
+          },
+          "surface": "#ffffff",
+          "subtle": "#f5f5f5",
+          "elevated": "#ffffff",
+          "canvas": "#f7f7f7",
+          "accentSolid": "#7E22CE",
+          "stored": {
+            "version": 1,
+            "appearance": "light",
+            "accent": "purple"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "after": {
+          "appearance": "light",
+          "scheme": "light",
+          "accent": "purple",
+          "body": {
+            "background": "rgb(255, 255, 255)",
+            "color": "rgb(32, 32, 32)"
+          },
+          "surface": "#ffffff",
+          "subtle": "#f5f5f5",
+          "elevated": "#ffffff",
+          "canvas": "#f7f7f7",
+          "accentSolid": "#7E22CE",
+          "stored": {
+            "version": 1,
+            "appearance": "light",
+            "accent": "purple"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "pass": true
+      },
+      {
+        "scheme": "light",
+        "accent": "monochrome",
+        "before": {
+          "appearance": "light",
+          "scheme": "light",
+          "accent": "monochrome",
+          "body": {
+            "background": "rgb(255, 255, 255)",
+            "color": "rgb(32, 32, 32)"
+          },
+          "surface": "#ffffff",
+          "subtle": "#f5f5f5",
+          "elevated": "#ffffff",
+          "canvas": "#f7f7f7",
+          "accentSolid": "#262626",
+          "stored": {
+            "version": 1,
+            "appearance": "light",
+            "accent": "monochrome"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "after": {
+          "appearance": "light",
+          "scheme": "light",
+          "accent": "monochrome",
+          "body": {
+            "background": "rgb(255, 255, 255)",
+            "color": "rgb(32, 32, 32)"
+          },
+          "surface": "#ffffff",
+          "subtle": "#f5f5f5",
+          "elevated": "#ffffff",
+          "canvas": "#f7f7f7",
+          "accentSolid": "#262626",
+          "stored": {
+            "version": 1,
+            "appearance": "light",
+            "accent": "monochrome"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "pass": true
+      },
+      {
+        "scheme": "dark",
+        "accent": "blue",
+        "before": {
+          "appearance": "dark",
+          "scheme": "dark",
+          "accent": "blue",
+          "body": {
+            "background": "rgb(20, 20, 20)",
+            "color": "rgb(237, 237, 237)"
+          },
+          "surface": "#141414",
+          "subtle": "#1b1b1b",
+          "elevated": "#242424",
+          "canvas": "#101010",
+          "accentSolid": "#8AB4FF",
+          "stored": {
+            "version": 1,
+            "appearance": "dark",
+            "accent": "blue"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "after": {
+          "appearance": "dark",
+          "scheme": "dark",
+          "accent": "blue",
+          "body": {
+            "background": "rgb(20, 20, 20)",
+            "color": "rgb(237, 237, 237)"
+          },
+          "surface": "#141414",
+          "subtle": "#1b1b1b",
+          "elevated": "#242424",
+          "canvas": "#101010",
+          "accentSolid": "#8AB4FF",
+          "stored": {
+            "version": 1,
+            "appearance": "dark",
+            "accent": "blue"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "pass": true
+      },
+      {
+        "scheme": "dark",
+        "accent": "cyan",
+        "before": {
+          "appearance": "dark",
+          "scheme": "dark",
+          "accent": "cyan",
+          "body": {
+            "background": "rgb(20, 20, 20)",
+            "color": "rgb(237, 237, 237)"
+          },
+          "surface": "#141414",
+          "subtle": "#1b1b1b",
+          "elevated": "#242424",
+          "canvas": "#101010",
+          "accentSolid": "#67D5E8",
+          "stored": {
+            "version": 1,
+            "appearance": "dark",
+            "accent": "cyan"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "after": {
+          "appearance": "dark",
+          "scheme": "dark",
+          "accent": "cyan",
+          "body": {
+            "background": "rgb(20, 20, 20)",
+            "color": "rgb(237, 237, 237)"
+          },
+          "surface": "#141414",
+          "subtle": "#1b1b1b",
+          "elevated": "#242424",
+          "canvas": "#101010",
+          "accentSolid": "#67D5E8",
+          "stored": {
+            "version": 1,
+            "appearance": "dark",
+            "accent": "cyan"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "pass": true
+      },
+      {
+        "scheme": "dark",
+        "accent": "green",
+        "before": {
+          "appearance": "dark",
+          "scheme": "dark",
+          "accent": "green",
+          "body": {
+            "background": "rgb(20, 20, 20)",
+            "color": "rgb(237, 237, 237)"
+          },
+          "surface": "#141414",
+          "subtle": "#1b1b1b",
+          "elevated": "#242424",
+          "canvas": "#101010",
+          "accentSolid": "#72D59B",
+          "stored": {
+            "version": 1,
+            "appearance": "dark",
+            "accent": "green"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "after": {
+          "appearance": "dark",
+          "scheme": "dark",
+          "accent": "green",
+          "body": {
+            "background": "rgb(20, 20, 20)",
+            "color": "rgb(237, 237, 237)"
+          },
+          "surface": "#141414",
+          "subtle": "#1b1b1b",
+          "elevated": "#242424",
+          "canvas": "#101010",
+          "accentSolid": "#72D59B",
+          "stored": {
+            "version": 1,
+            "appearance": "dark",
+            "accent": "green"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "pass": true
+      },
+      {
+        "scheme": "dark",
+        "accent": "lime",
+        "before": {
+          "appearance": "dark",
+          "scheme": "dark",
+          "accent": "lime",
+          "body": {
+            "background": "rgb(20, 20, 20)",
+            "color": "rgb(237, 237, 237)"
+          },
+          "surface": "#141414",
+          "subtle": "#1b1b1b",
+          "elevated": "#242424",
+          "canvas": "#101010",
+          "accentSolid": "#B5D96A",
+          "stored": {
+            "version": 1,
+            "appearance": "dark",
+            "accent": "lime"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "after": {
+          "appearance": "dark",
+          "scheme": "dark",
+          "accent": "lime",
+          "body": {
+            "background": "rgb(20, 20, 20)",
+            "color": "rgb(237, 237, 237)"
+          },
+          "surface": "#141414",
+          "subtle": "#1b1b1b",
+          "elevated": "#242424",
+          "canvas": "#101010",
+          "accentSolid": "#B5D96A",
+          "stored": {
+            "version": 1,
+            "appearance": "dark",
+            "accent": "lime"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "pass": true
+      },
+      {
+        "scheme": "dark",
+        "accent": "yellow",
+        "before": {
+          "appearance": "dark",
+          "scheme": "dark",
+          "accent": "yellow",
+          "body": {
+            "background": "rgb(20, 20, 20)",
+            "color": "rgb(237, 237, 237)"
+          },
+          "surface": "#141414",
+          "subtle": "#1b1b1b",
+          "elevated": "#242424",
+          "canvas": "#101010",
+          "accentSolid": "#F4D06F",
+          "stored": {
+            "version": 1,
+            "appearance": "dark",
+            "accent": "yellow"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "after": {
+          "appearance": "dark",
+          "scheme": "dark",
+          "accent": "yellow",
+          "body": {
+            "background": "rgb(20, 20, 20)",
+            "color": "rgb(237, 237, 237)"
+          },
+          "surface": "#141414",
+          "subtle": "#1b1b1b",
+          "elevated": "#242424",
+          "canvas": "#101010",
+          "accentSolid": "#F4D06F",
+          "stored": {
+            "version": 1,
+            "appearance": "dark",
+            "accent": "yellow"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "pass": true
+      },
+      {
+        "scheme": "dark",
+        "accent": "orange",
+        "before": {
+          "appearance": "dark",
+          "scheme": "dark",
+          "accent": "orange",
+          "body": {
+            "background": "rgb(20, 20, 20)",
+            "color": "rgb(237, 237, 237)"
+          },
+          "surface": "#141414",
+          "subtle": "#1b1b1b",
+          "elevated": "#242424",
+          "canvas": "#101010",
+          "accentSolid": "#FFB375",
+          "stored": {
+            "version": 1,
+            "appearance": "dark",
+            "accent": "orange"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "after": {
+          "appearance": "dark",
+          "scheme": "dark",
+          "accent": "orange",
+          "body": {
+            "background": "rgb(20, 20, 20)",
+            "color": "rgb(237, 237, 237)"
+          },
+          "surface": "#141414",
+          "subtle": "#1b1b1b",
+          "elevated": "#242424",
+          "canvas": "#101010",
+          "accentSolid": "#FFB375",
+          "stored": {
+            "version": 1,
+            "appearance": "dark",
+            "accent": "orange"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "pass": true
+      },
+      {
+        "scheme": "dark",
+        "accent": "pink",
+        "before": {
+          "appearance": "dark",
+          "scheme": "dark",
+          "accent": "pink",
+          "body": {
+            "background": "rgb(20, 20, 20)",
+            "color": "rgb(237, 237, 237)"
+          },
+          "surface": "#141414",
+          "subtle": "#1b1b1b",
+          "elevated": "#242424",
+          "canvas": "#101010",
+          "accentSolid": "#F6A4C7",
+          "stored": {
+            "version": 1,
+            "appearance": "dark",
+            "accent": "pink"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "after": {
+          "appearance": "dark",
+          "scheme": "dark",
+          "accent": "pink",
+          "body": {
+            "background": "rgb(20, 20, 20)",
+            "color": "rgb(237, 237, 237)"
+          },
+          "surface": "#141414",
+          "subtle": "#1b1b1b",
+          "elevated": "#242424",
+          "canvas": "#101010",
+          "accentSolid": "#F6A4C7",
+          "stored": {
+            "version": 1,
+            "appearance": "dark",
+            "accent": "pink"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "pass": true
+      },
+      {
+        "scheme": "dark",
+        "accent": "magenta",
+        "before": {
+          "appearance": "dark",
+          "scheme": "dark",
+          "accent": "magenta",
+          "body": {
+            "background": "rgb(20, 20, 20)",
+            "color": "rgb(237, 237, 237)"
+          },
+          "surface": "#141414",
+          "subtle": "#1b1b1b",
+          "elevated": "#242424",
+          "canvas": "#101010",
+          "accentSolid": "#E9A0EF",
+          "stored": {
+            "version": 1,
+            "appearance": "dark",
+            "accent": "magenta"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "after": {
+          "appearance": "dark",
+          "scheme": "dark",
+          "accent": "magenta",
+          "body": {
+            "background": "rgb(20, 20, 20)",
+            "color": "rgb(237, 237, 237)"
+          },
+          "surface": "#141414",
+          "subtle": "#1b1b1b",
+          "elevated": "#242424",
+          "canvas": "#101010",
+          "accentSolid": "#E9A0EF",
+          "stored": {
+            "version": 1,
+            "appearance": "dark",
+            "accent": "magenta"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "pass": true
+      },
+      {
+        "scheme": "dark",
+        "accent": "purple",
+        "before": {
+          "appearance": "dark",
+          "scheme": "dark",
+          "accent": "purple",
+          "body": {
+            "background": "rgb(20, 20, 20)",
+            "color": "rgb(237, 237, 237)"
+          },
+          "surface": "#141414",
+          "subtle": "#1b1b1b",
+          "elevated": "#242424",
+          "canvas": "#101010",
+          "accentSolid": "#C2A6FF",
+          "stored": {
+            "version": 1,
+            "appearance": "dark",
+            "accent": "purple"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "after": {
+          "appearance": "dark",
+          "scheme": "dark",
+          "accent": "purple",
+          "body": {
+            "background": "rgb(20, 20, 20)",
+            "color": "rgb(237, 237, 237)"
+          },
+          "surface": "#141414",
+          "subtle": "#1b1b1b",
+          "elevated": "#242424",
+          "canvas": "#101010",
+          "accentSolid": "#C2A6FF",
+          "stored": {
+            "version": 1,
+            "appearance": "dark",
+            "accent": "purple"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "pass": true
+      },
+      {
+        "scheme": "dark",
+        "accent": "monochrome",
+        "before": {
+          "appearance": "dark",
+          "scheme": "dark",
+          "accent": "monochrome",
+          "body": {
+            "background": "rgb(20, 20, 20)",
+            "color": "rgb(237, 237, 237)"
+          },
+          "surface": "#141414",
+          "subtle": "#1b1b1b",
+          "elevated": "#242424",
+          "canvas": "#101010",
+          "accentSolid": "#EDEDED",
+          "stored": {
+            "version": 1,
+            "appearance": "dark",
+            "accent": "monochrome"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "after": {
+          "appearance": "dark",
+          "scheme": "dark",
+          "accent": "monochrome",
+          "body": {
+            "background": "rgb(20, 20, 20)",
+            "color": "rgb(237, 237, 237)"
+          },
+          "surface": "#141414",
+          "subtle": "#1b1b1b",
+          "elevated": "#242424",
+          "canvas": "#101010",
+          "accentSolid": "#EDEDED",
+          "stored": {
+            "version": 1,
+            "appearance": "dark",
+            "accent": "monochrome"
+          },
+          "cookie": true,
+          "overflow": false
+        },
+        "pass": true
+      }
+    ],
+    "pass": true
+  },
+  "pass": true
+}

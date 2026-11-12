@@ -3,14 +3,14 @@
   const mode = window.matchMedia('(display-mode: standalone)');
   let host;
   function hasWorkspaceNavigation() {
-    return /^\/(drill|ei)(?:\/|$)/.test(location.pathname);
+    return document.querySelector('meta[name="learning-app-navigation"][content="integrated"]') !== null || /^\/(drill|ei)(?:\/|$)/.test(location.pathname);
   }
   function syncMode() {
     if (!mode.matches && !navigator.standalone) {
       if (host) host.hidden = true;
       return;
     }
-    // Drill and EI already provide a safe-area-aware drawer. The extra PWA
+    // Integrated app shells already provide a safe-area-aware drawer. The extra PWA
     // launcher can cover their fixed answer actions on small screens.
     if (hasWorkspaceNavigation()) {
       if (host) host.hidden = true;

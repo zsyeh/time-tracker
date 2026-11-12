@@ -1,0 +1,11 @@
+[Unit]
+Description=Schedule bounded public question search refresh
+
+[Timer]
+OnBootSec=30s
+OnUnitInactiveSec=15s
+AccuracySec=1s
+Unit=time-tracker-search-queue.service
+
+[Install]
+WantedBy=timers.target

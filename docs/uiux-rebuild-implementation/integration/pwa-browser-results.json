@@ -1,0 +1,24 @@
+[
+  {
+    "mode": "browser",
+    "menu_absent": true
+  },
+  {
+    "mode": "standalone",
+    "services_same_origin": true,
+    "workspace_menu_absent": true,
+    "refresh": true,
+    "scroll": true,
+    "mobile_menu_fits": true,
+    "integrated_menu_absent": true
+  },
+  {
+    "mode": "ios-standalone",
+    "services_same_origin": true,
+    "workspace_menu_absent": true,
+    "refresh": true,
+    "scroll": true,
+    "mobile_menu_fits": true,
+    "integrated_menu_absent": true
+  }
+]

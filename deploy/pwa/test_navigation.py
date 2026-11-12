@@ -16,6 +16,7 @@ class Handler(SimpleHTTPRequestHandler):
    f=REPO/'frontend'/('drill-dist' if path.startswith(('/drill/','/ei/')) else 'dist')/'index.html'
    html=f.read_text();head=html.split('</head>')[0]+'</head>'
    head=re.sub(r'<script type="module"[^>]*></script>','',head)
+   if urlparse(self.path).query != 'integrated=1': head=re.sub(r'<meta name="learning-app-navigation"[^>]*>', '', head)
    body=head+'<body><main style="height:2400px"><h1>'+path+'</h1><p>PWA navigation fixture</p></main></body></html>'
    self.send_response(200);self.send_header('Content-Type','text/html; charset=utf-8');self.end_headers();self.wfile.write(body.encode());return
   if not f.is_file():self.send_error(404);return
@@ -82,6 +83,9 @@ async def run():
    bounds=await nav.locator('nav').bounding_box();assert bounds['x']>=0 and bounds['x']+bounds['width']<=390
    await page.screenshot(path=str(OUT/(kind+'.png')))
    results.append({'mode':kind,'services_same_origin':True,'workspace_menu_absent':True,'refresh':True,'scroll':True,'mobile_menu_fits':True})
+   await page.goto(f'http://127.0.0.1:{PORT}/?integrated=1'); await page.wait_for_load_state('networkidle')
+   assert await page.locator('eh-pwa-navigation').count()==0
+   results[-1]['integrated_menu_absent']=True
    await context.close()
   await browser.close()
  server.shutdown();(OUT/'browser-results.json').write_text(json.dumps(results,indent=2));print('Browser, standalone and navigator.standalone navigation checks passed')

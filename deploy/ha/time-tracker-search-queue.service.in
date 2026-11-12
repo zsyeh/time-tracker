@@ -1,0 +1,10 @@
+[Unit]
+Description=Refresh disposable public question search projection
+After=time-tracker-ha-postgres.service
+ConditionPathExists=/var/snap/docker/common/time-tracker-ha/secrets/database.env
+
+[Service]
+Type=oneshot
+TimeoutStartSec=45
+ExecStart=/usr/local/bin/time-tracker-docker run --rm --name time-tracker-search-queue --network host --stop-timeout 10 --cpus 0.5 --memory 384m --read-only --tmpfs /tmp:rw,noexec,nosuid,size=32m --env-file /var/snap/docker/common/time-tracker-ha/secrets/app.env -v /var/snap/docker/common/time-tracker-ha/secrets/app.env:/app/.env:ro -v /var/snap/docker/common/time-tracker-ha/secrets/database.env:/app/.env.database:ro -v /var/snap/docker/common/time-tracker-ha/secrets/data-encryption.key:/app/.data-encryption.key:ro --entrypoint python @IMAGE@ manage.py process_question_search_queue --batch-size 100 --max-seconds 20
+ExecStopPost=-/usr/local/bin/time-tracker-docker rm -f time-tracker-search-queue

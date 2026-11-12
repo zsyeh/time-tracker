@@ -62,6 +62,40 @@ Visual inspection of [selected diagnosis](final/question-diagnosis-selected-1180
 
 Additional source review covered external synchronous appearance bootstrap / CSP compatibility, preference validation and persistence, route-aware sidebars, grouped settings, user/workspace-scoped Heatmap and Insight state, preserved Question timing / Note / Attempt handlers, and request-local private matching. This review found no remaining high-severity defect in those inspected paths. It is not a claim that every route or every source line was exhaustively verified.
 
+## Supplemental visual and interaction review
+
+The final supplemental [measurements](supplement-final/supplement.json) and nine screenshots cover three additional acceptance areas. Run the same local fixture server and:
+
+```sh
+/home/eh/ei-page-tracking/browser-env/bin/python docs/uiux-rebuild-implementation/review/supplement_review.py --repo . --output /tmp/ui-review-supplement
+```
+
+The Timer build changed only after the scoped Trends refinement, with final HTML SHA256 `e02e4865a74d1d6716a983a4c4b96ea0d265d10693d4542c32f2915b68fec6fc`. The Drill HTML fingerprint is unchanged from the earlier final review. All supplementary cases passed; the reviewer coordinated Chrome execution with the search benchmark owner and closed Chrome before its performance window.
+
+| Case | Final result and evidence |
+| --- | --- |
+| Trends: Light / Dark × 390 / 1180px | All four have no horizontal overflow, no intersecting label/value boxes, no intersecting breakdown headers, and all subject values fit their columns. Initial screenshot inspection found desktop summary labels directly adjoining values despite non-overlap; the owner changed `.insight > span, .insight > strong` to block layout. Final assertions require either a vertical separation of at least 4px or horizontal separation of at least 8px. All four now pass. Only the final Trends screenshots are archived here. |
+| Safe public search excerpt | Synthetic public `search_match` contains an emoji before `Fourier`, a literal `<img ... onerror=...>` string and LaTeX. The rendered mark contains exactly `Fourier`, confirming codepoint offsets across the emoji; no `img` / `script` element is created, no payload executes, and text matches the source excerpt. The original `fourire` query remains while the UI shows `同时匹配：fourier`. |
+| 20 Appearance / Accent combinations | Actual setting clicks cover Light and Dark × all ten accent options, followed by a reload for every combination. All retain appearance, accent, localStorage and cookie persistence. Body, page, sidebar, subtle and elevated neutral backgrounds remain unchanged within each scheme. Yellow and Monochrome have representative screenshots in both themes. |
+
+Neutral surface values observed across every accent:
+
+| Theme | Page | Sidebar | Subtle | Elevated |
+| --- | --- | --- | --- | --- |
+| Light | `#ffffff` | `#f7f7f7` | `#f5f5f5` | `#ffffff` |
+| Dark | `#141414` | `#101010` | `#1b1b1b` | `#242424` |
+
+Key screenshots: [Trends desktop Light](supplement-final/trends-light-1180.png), [Trends phone Dark](supplement-final/trends-dark-390.png), [safe search excerpt](supplement-final/practice-safe-search-light-1180.png), [Yellow Light settings](supplement-final/appearance-light-yellow-1180.png), [Monochrome Dark settings](supplement-final/appearance-dark-monochrome-1180.png). Screenshot inspection confirms the metrics. These are still synthetic Chromium checks, with the same device and production limits below.
+
+### Final semantic-color / Note-control rebuild
+
+After the integration owner separated format-marker colors from the user accent, increased the Note privacy control target and added the integrated-navigation PWA capability meta, the original `browser_review.py` was rerun against both final builds. [Final polish measurements](final-polish/review.json) pass every case again, with Note Save unobstructed at 44px, two diagnosis reasons selected, submit actions fully visible, both More menu actions accessible and Reader rotation intact. The Note expansion increases the scrollable content height as expected while the sticky submit section remains usable. [Final Note and More screenshot](final-polish/question-note-more-1180x820.png) was independently inspected.
+
+- Timer HTML SHA256: `26d289bf4f9fddfa2b96e053a1fba5b2eff738431985ffac7a076db39d69f6ec`.
+- Drill HTML SHA256: `94d4e4f89e31d4cae1818739d5a001d2c1dc24e9e073a4dd8f774b52a956456a`.
+- This rerun does not claim another complete 20-accent screenshot matrix. The earlier 20 combinations remain recorded against their identified build.
+- PWA capability detection was inspected in source; the integration owner runs `deploy/pwa/test_navigation.py` for integrated-shell and legacy fallback behavior. This browser script does not substitute for that test or native PWA device acceptance.
+
 ## Verification boundaries and remaining release gates
 
 - This directory is a focused independent review, not the entire R01–R16 acceptance matrix. The integration owner must combine it with module tests, the full screenshot matrix, search relevance/performance evidence and release checks.
