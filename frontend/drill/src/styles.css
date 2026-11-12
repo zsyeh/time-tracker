@@ -321,7 +321,7 @@ button { color: inherit; }
 .drill-shell > main { grid-column: 1; }
 .sidebar-collapse { display: none; }
 .page, .question-page.page { width: min(100% - 32px, 1240px); padding-top: calc(14px + env(safe-area-inset-top)); }
-.question-topbar { min-height: 52px; margin-top: -6px; padding-left: 52px; }
+.question-topbar { min-height: 44px; margin-top: -6px; padding-left: 0; }
 .question-header { padding-top: 3px; }
 .question-nav button, .question-save-actions button { min-height: 44px; }
 .filter-panel { grid-template-columns: 1fr 1fr; }
@@ -377,10 +377,10 @@ button { color: inherit; }
 
 }
 @media (max-width: 620px) {
-.question-topbar { align-items: stretch; flex-direction: column; padding-top: 6px; padding-bottom: 6px; }
-.question-return { max-width: calc(100vw - 86px); align-self: flex-start; text-align: left; }
-.question-page-turner { width: 100%; }
-.question-page-turner button { flex: 1; min-height: 42px; }
+.question-topbar { display:grid;grid-template-columns:44px minmax(0,1fr) minmax(0,1.4fr);align-items:center;gap:4px;min-height:44px;padding:0; }
+.question-return { max-width:100%;min-width:0;align-self:center;text-align:left; }
+.question-page-turner { width:auto;min-width:0;gap:4px; }
+.question-page-turner button { flex:1;min-width:0;min-height:44px;padding:0 4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
 .question-page-turner span { display: none; }
 .question-header h1 { font-size: 20px; }
 .question-save-actions > div { position: fixed; top: 64px; right: 10px; left: 10px; flex-wrap: wrap; }
@@ -388,6 +388,25 @@ button { color: inherit; }
 
 
 
+}
+/* Portrait keeps one navigation row and one horizontally scrollable tool row.
+   The existing large-landscape / full-screen reader layout stays independent. */
+@media (max-width: 999px) and (orientation: portrait) {
+  .question-page.page { padding-top: max(4px, env(safe-area-inset-top)); }
+  .question-page .question-topbar { min-height:44px; margin:0 0 4px; padding:0; gap:4px; }
+  .question-page .question-topbar button { min-height:44px; white-space:nowrap; }
+  .question-page .question-header { flex-direction:row; align-items:center; gap:8px; padding:4px 0; }
+  .question-page .question-header > div:first-child { flex:1; min-width:0; }
+  .question-page .question-header .eyebrow { display:none; }
+  .question-page .question-header h1 { margin:0; font-size:17px; line-height:1.25; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+  .question-page .question-header p { font-size:12px; line-height:1.3; }
+  .question-page .question-badges { margin-top:2px; gap:4px; }
+  .question-page .attempt-counter { min-width:0; padding-left:8px; flex:none; display:grid; grid-template-columns:auto auto; align-items:center; gap:2px 8px; border:0; }
+  .question-page .attempt-counter > span { display:none; }
+  .question-page .attempt-counter strong { margin:0; grid-row:1 / 3; font-size:12px; }
+  .question-page .attempt-counter small { margin:0; grid-column:2; font-size:12px; line-height:1.3; }
+  .question-page .question-save-actions { flex-wrap:nowrap; justify-content:flex-start; gap:4px; margin:0 0 4px; overflow-x:auto; scrollbar-width:thin; }
+  .question-page .question-save-actions button { flex:none; min-height:44px; padding:0 8px; white-space:nowrap; }
 }
 @media (prefers-reduced-motion: reduce) {
 *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
