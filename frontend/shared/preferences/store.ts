@@ -11,7 +11,19 @@ const same = (left:unknown,right:unknown) => JSON.stringify(left) === JSON.strin
 const emptySnapshot = ():PreferenceSnapshot => ({ schema_version:1, revision:0, values:preferenceDefaults(), field_revisions:{} })
 const cacheKey = (id:string) => `learning.preferences.v1.${id}`
 function readCache(id:string) {
-  try { return JSON.parse(localStorage.getItem(cacheKey(id)) || 'null') } catch { return null }
+  try {
+    const cached = JSON.parse(localStorage.getItem(cacheKey(id)) || 'null')
+    // Additive v1 upgrade: preserve the account's offline queue, but never repair
+    // a corrupt existing field or invent missing pre-existing required fields.
+    if (cached?.snapshot?.values && typeof cached.snapshot.values === 'object' && !Array.isArray(cached.snapshot.values)) {
+      const values = { ...cached.snapshot.values }
+      for (const key of ['progress.drill', 'progress.ei'] as const) {
+        if (!Object.prototype.hasOwnProperty.call(values, key)) values[key] = preferenceDefaults()[key]
+      }
+      return { ...cached, snapshot: { ...cached.snapshot, values } }
+    }
+    return cached
+  } catch { return null }
 }
 function appearance(values:PreferenceValues) {
   const visual = { version:1 as const, appearance:values.appearance, accent:values.accent }

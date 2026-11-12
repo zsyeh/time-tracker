@@ -9,10 +9,12 @@ export const sidebarIds = {
 } as const
 export type SidebarConfig = { order: string[]; hidden: string[]; collapsed_groups: string[] }
 export type FilterPreset = { id: string; name: string; query: Record<string,string> }
+export type GoalSettings = { target: number; deadline: string }
 export type PreferenceValues = {
   appearance: Appearance; accent: Accent; font: FontSize; language: 'en'|'zh-CN'|'ja'
   'sidebar.timer': SidebarConfig; 'sidebar.drill': SidebarConfig; 'sidebar.ei': SidebarConfig
   'filters.drill': FilterPreset[]; 'filters.ei': FilterPreset[]
+  'progress.drill': GoalSettings; 'progress.ei': GoalSettings
   'practice.next_mode': 'sequential'|'overdue'|'review'|'unattempted'
   'practice.review_auto_next': boolean; 'practice.mastered_auto_next': boolean
   'practice.drill.copy_mode': 'off'|'link'|'image'; 'practice.ei.copy_mode': 'off'|'link'|'image'
@@ -27,7 +29,8 @@ export function preferenceDefaults(): PreferenceValues {
   return { appearance:'system', accent:'blue', font:'small', language:'en',
     'sidebar.timer':defaultSidebar('timer'),'sidebar.drill':defaultSidebar('drill'),'sidebar.ei':defaultSidebar('ei'),
     'filters.drill':[],'filters.ei':[],'practice.next_mode':'sequential','practice.review_auto_next':false,'practice.mastered_auto_next':true,
-    'practice.drill.copy_mode':'off','practice.ei.copy_mode':'off' }
+    'practice.drill.copy_mode':'off','practice.ei.copy_mode':'off',
+    'progress.drill':{ target:24, deadline:'2026-11-21' }, 'progress.ei':{ target:11, deadline:'2026-11-21' } }
 }
 /** Unknown future fields may coexist, but every field this client renders must be valid. */
 export function validSnapshot(value: unknown): value is PreferenceSnapshot {
@@ -117,11 +120,23 @@ function validPresets(value: unknown, workspace: 'drill' | 'ei') {
   }
   return true
 }
+function validGoalSettings(value: unknown): value is GoalSettings {
+  if (!record(value) || !exactKeys(value, ['target', 'deadline'])
+    || typeof value.target !== 'number' || !Number.isInteger(value.target) || value.target < 1 || value.target > 500
+    || typeof value.deadline !== 'string' || value.deadline.length !== 10
+    || !/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/.test(value.deadline)) return false
+  const [year, month, day] = value.deadline.split('-').map(Number) as [number, number, number]
+  if (year < 1 || month < 1 || month > 12 || day < 1) return false
+  const leap = year % 4 === 0 && (year % 100 !== 0 || year % 400 === 0)
+  const days = [31, leap ? 29 : 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31]
+  return day <= days[month - 1]!
+}
 /** Validate both server snapshots and queued/offline values before they reach render. */
 export function validPreference(key: string, value: unknown): boolean {
   if (own(preferenceEnums, key)) return typeof value === 'string' && preferenceEnums[key as PreferenceKey]!.includes(value)
   if (key === 'practice.review_auto_next' || key === 'practice.mastered_auto_next') return typeof value === 'boolean'
   if (key === 'sidebar.timer' || key === 'sidebar.drill' || key === 'sidebar.ei') return validSidebar(value, key.slice(8) as Workspace)
   if (key === 'filters.drill' || key === 'filters.ei') return validPresets(value, key.slice(8) as 'drill' | 'ei')
+  if (key === 'progress.drill' || key === 'progress.ei') return validGoalSettings(value)
   return false
 }

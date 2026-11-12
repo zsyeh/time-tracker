@@ -263,3 +263,28 @@ it('does not discard the account or optimistic retry queue for an ordinary CSRF/
   expect(store.userId.value).toBe('account-a'); expect(store.values.font).toBe('large'); expect(store.status.value).toBe('error')
   expect(JSON.parse(localStorage.getItem('learning.preferences.v1.account-a')!).pending.font.value).toBe('large')
 })
+
+it('upgrades a 14-field account cache without losing an offline pending edit', async () => {
+  const old = copy(snapshot()) as any
+  delete old.values['progress.drill']; delete old.values['progress.ei']
+  localStorage.setItem('learning.preferences.v1.account-a', JSON.stringify({ snapshot: old,
+    pending: { font: { value: 'large', base: 0, serial: 42 } } }))
+  const remote = server(), store = factory(remote.transport)
+  await store.bind('account-a', snapshot())
+  expect(store.values.font).toBe('large'); expect(store.pendingCount.value).toBe(1)
+  expect(store.values['progress.drill']).toEqual({ target: 24, deadline: '2026-11-21' })
+  await store.flush()
+  expect(remote.calls[0]?.patch?.changes).toEqual({ font: 'large' })
+  expect(store.pendingCount.value).toBe(0)
+})
+
+it.each(['invalid-goal','missing-old-field'])('does not accept a corrupt cache during additive upgrade: %s', async kind => {
+  const old = copy(snapshot()) as any
+  delete old.values['progress.ei']
+  if(kind==='invalid-goal') old.values['progress.drill']={target:0, deadline:'bad'}
+  else delete old.values.accent
+  localStorage.setItem('learning.preferences.v1.account-a', JSON.stringify({ snapshot: old,
+    pending: { font: { value: 'large', base: 0, serial: 42 } } }))
+  const store = factory(server().transport); await store.bind('account-a', snapshot())
+  expect(store.values.font).toBe('small'); expect(store.pendingCount.value).toBe(0)
+})

@@ -31,3 +31,5 @@ identity header pinning, two-device conflicts, debounce, failures and logout.
 Historical unscoped practice keys are never silently copied to a possibly different
 account. Settings offers an explicit one-time import/discard choice. Existing
 Drill/EI shared next-mode and auto-next semantics and independent copy modes remain.
+
+Final additive goal coverage (`webkit-progress-final.json`): six check groups passed, including real-server Drill daily target/deadline edits reopened on a second context, account isolation, and unchanged offline/font/rotation checks. Progress settings now use `progress.drill` / `progress.ei`; date range remains device state. Explicit legacy import includes v1/v2 trend settings and never auto-assigns unowned browser data.

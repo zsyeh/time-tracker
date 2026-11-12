@@ -181,6 +181,84 @@ class UserPreferencesAPITests(TestCase):
         self.assertEqual(self.change({'appearance': 'dark'}, {'appearance': 1}).data['revision'], 1)
         self.assertEqual(self.change({'appearance': 'dark'}).status_code, 409)
 
+    def test_progress_defaults_and_additive_upgrade_do_not_rewrite_existing_preferences(self):
+        legacy_values = preference_defaults()
+        legacy_values.pop('progress.drill'); legacy_values.pop('progress.ei')
+        legacy_values['accent'] = 'green'
+        row = UserPreferences.objects.create(user=self.user, values=legacy_values,
+                                             field_revisions={'accent': 3}, revision=3)
+        value = self.client.get(URL).data
+        self.assertEqual(value['schema_version'], 1)
+        self.assertEqual(value['values']['progress.drill'], {'target': 24, 'deadline': '2026-11-21'})
+        self.assertEqual(value['values']['progress.ei'], {'target': 11, 'deadline': '2026-11-21'})
+        self.assertEqual(value['field_revisions']['progress.drill'], 0)
+        self.assertEqual(value['field_revisions']['progress.ei'], 0)
+        row.refresh_from_db()
+        self.assertEqual(row.values, legacy_values)
+        self.assertEqual(row.revision, 3)
+        goal = {'target': 30, 'deadline': '2027-01-01'}
+        self.assertEqual(self.change({'progress.drill': goal}).status_code, 200)
+        # An old client's allowlisted patch must not overwrite newly added fields.
+        self.assertEqual(self.change({'accent': 'purple'}, {'accent': 3}).status_code, 200)
+        self.assertEqual(self.client.get(URL).data['values']['progress.drill'], goal)
+
+    def test_progress_two_devices_conflict_per_workspace_and_keep_accounts_isolated(self):
+        second = APIClient(); second.force_login(self.user)
+        initial = second.get(URL).data
+        drill_goal = {'target': 40, 'deadline': '2028-02-29'}
+        first = self.change({'progress.drill': drill_goal})
+        self.assertEqual(first.status_code, 200)
+        self.assertEqual(second.get(URL).data['values']['progress.drill'], drill_goal)
+        ei_goal = {'target': 18, 'deadline': '2027-06-30'}
+        independent = second.patch(URL, payload({'progress.ei': ei_goal},
+            {'progress.ei': initial['field_revisions']['progress.ei']}), format='json')
+        self.assertEqual(independent.status_code, 200)
+        self.assertEqual(independent.data['values']['progress.drill'], drill_goal)
+        before = preferences_snapshot(self.user)
+        stale_goal = {'target': 20, 'deadline': '2026-12-31'}
+        conflict = second.patch(URL, payload({'progress.drill': stale_goal, 'accent': 'orange'}), format='json')
+        self.assertEqual(conflict.status_code, 409)
+        self.assertEqual(conflict.data['conflicts'], ['progress.drill'])
+        self.assertEqual(conflict.data['current']['values']['progress.drill'], drill_goal)
+        self.assertEqual(preferences_snapshot(self.user), before)
+        recovered = second.patch(URL, payload({'progress.drill': stale_goal},
+            {'progress.drill': conflict.data['current']['field_revisions']['progress.drill']}), format='json')
+        self.assertEqual(recovered.status_code, 200)
+        self.assertEqual(self.client.get(URL).data['values']['progress.drill'], stale_goal)
+        second.force_login(self.other)
+        self.assertEqual(second.get(URL).data['values']['progress.drill']['target'], 24)
+        self.assertEqual(second.get(URL).data['values']['progress.ei']['target'], 11)
+        self.assertEqual(second.patch(URL, payload({'progress.drill': drill_goal}), format='json').status_code, 200)
+        self.assertEqual(preferences_snapshot(self.user)['values']['progress.drill'], stale_goal)
+        self.assertEqual(preferences_snapshot(self.user)['values']['progress.ei'], ei_goal)
+
+    def test_progress_rejects_invalid_targets_and_calendar_dates_atomically(self):
+        goal = {'target': 24, 'deadline': '2026-11-21'}
+        invalid = [None, [], {}, {'target': 24}, {'deadline': '2026-11-21'},
+                   dict(goal, total=963), dict(goal, formula='override')]
+        invalid.extend(dict(goal, target=value) for value in [0, -1, 501, True, False, 1.5, '24', None])
+        invalid.extend(dict(goal, deadline=value) for value in [None, 20261121, '', '2026-2-01',
+            '2026-02-29', '1900-02-29', '2026-04-31', '2026-00-01', '2026-13-01',
+            '2026-01-00', '0000-01-01', '10000-01-01', '2026-11-21T00:00:00Z',
+            '2026-11-21\n', ' 2026-11-21', '２０２６-１１-２１'])
+        for workspace in ('drill', 'ei'):
+            for value in invalid:
+                with self.subTest(workspace=workspace, value=value):
+                    response = self.change({'progress.' + workspace: value, 'accent': 'green'})
+                    self.assertEqual(response.status_code, 400)
+        self.assertEqual(UserPreferences.objects.count(), 0)
+
+    def test_progress_accepts_target_boundaries_and_real_leap_dates(self):
+        revision = 0
+        for target, deadline in [(1, '0001-01-01'), (500, '9999-12-31'), (24, '2000-02-29'),
+                                 (11, '2024-02-29'), (24, '2026-02-28')]:
+            with self.subTest(target=target, deadline=deadline):
+                goal = {'target': target, 'deadline': deadline}
+                response = self.change({'progress.drill': goal}, {'progress.drill': revision})
+                self.assertEqual(response.status_code, 200)
+                self.assertEqual(response.data['values']['progress.drill'], goal)
+                revision = response.data['field_revisions']['progress.drill']
+
     def test_sidebar_manifest_normalization_and_workspace_atomicity(self):
         config = {'order': ['progress', 'selected-heatmap'],
                   'hidden': list(SIDEBAR_IDS['drill']), 'collapsed_groups': ['tools']}

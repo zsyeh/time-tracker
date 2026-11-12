@@ -1,0 +1,31 @@
+{
+  "real_postgres_http": true,
+  "cases": [
+    {
+      "case": "account-isolation-cross-device-and-first-paint",
+      "pass": true
+    },
+    {
+      "case": "saved-filter-real-server-roundtrip",
+      "pass": true
+    },
+    {
+      "case": "sidebar-pin-and-order-cross-device",
+      "pass": true
+    },
+    {
+      "case": "daily-goal-and-deadline-real-server-two-device-roundtrip",
+      "pass": true
+    },
+    {
+      "case": "offline-edit-online-resume",
+      "pass": true
+    },
+    {
+      "case": "seven-viewports-rotation-five-fonts",
+      "pass": true
+    }
+  ],
+  "errors": [],
+  "pass": true
+}

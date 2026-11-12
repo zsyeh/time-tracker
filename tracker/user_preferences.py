@@ -7,6 +7,7 @@ race on PostgreSQL and SQLite; field revisions avoid unrelated-setting conflicts
 import json
 import re
 from copy import deepcopy
+from datetime import date
 
 from django.utils import timezone
 from django.utils.cache import patch_vary_headers
@@ -80,6 +81,8 @@ def preference_defaults():
         'practice.mastered_auto_next': True,
         'practice.drill.copy_mode': 'off', 'practice.ei.copy_mode': 'off',
         'filters.drill': [], 'filters.ei': [],
+        'progress.drill': {'target': 24, 'deadline': '2026-11-21'},
+        'progress.ei': {'target': 11, 'deadline': '2026-11-21'},
     }
     for workspace, ids in SIDEBAR_IDS.items():
         first_tool = 4 if workspace in ('timer', 'ei') else 3
@@ -164,6 +167,21 @@ def _presets(value, workspace, key):
     return result
 
 
+def _goal_settings(value, key):
+    if not isinstance(value, dict) or set(value) != {'target', 'deadline'}:
+        _invalid('Progress settings require target and deadline only.', key)
+    target, deadline = value['target'], value['deadline']
+    if type(target) is not int or not 1 <= target <= 500:
+        _invalid('Daily workload target must be an integer from 1 to 500.', key)
+    if not isinstance(deadline, str) or not re.fullmatch(r'[0-9]{4}-[0-9]{2}-[0-9]{2}', deadline):
+        _invalid('Deadline must be a calendar date in YYYY-MM-DD format.', key)
+    try:
+        date.fromisoformat(deadline)
+    except ValueError:
+        _invalid('Deadline must be a valid calendar date.', key)
+    return {'target': target, 'deadline': deadline}
+
+
 def _value(key, value):
     if key in ENUM_FIELDS:
         if not isinstance(value, str) or value not in ENUM_FIELDS[key]:
@@ -177,6 +195,8 @@ def _value(key, value):
         return _sidebar(value, key.split('.')[1], key)
     if key in ('filters.drill', 'filters.ei'):
         return _presets(value, key.split('.')[1], key)
+    if key in ('progress.drill', 'progress.ei'):
+        return _goal_settings(value, key)
     _invalid('Unknown preference key.', key)
 
 

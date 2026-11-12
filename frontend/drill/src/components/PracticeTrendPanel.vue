@@ -2,6 +2,7 @@
 import { typeText } from '../lib/examTypes'
 import { uiText } from '../lib/uiText'
 import { uiLanguage } from '../lib/uiPreferences'
+import { useAccountPreferences } from '../../../shared/preferences/store'
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import * as echarts from 'echarts/core'
 import { BarChart, LineChart } from 'echarts/charts'
@@ -31,8 +32,8 @@ type TrendPayload = {
 
 const isEi = runtimeWorkspace === 'ei'
 const workspaceHint = isEi ? 'ei' : 'drill'
-const settingsKey = `practice.trend.settings.v2.${workspaceHint}`
-const legacySettingsKey = `practice.trend.settings.v1.${workspaceHint}`
+const preferences = useAccountPreferences()
+const progressKey = `progress.${workspaceHint}` as const
 const displayedTypes:Array<'small'|'large'>=isEi?[]:['small','large']
 const rangeDays = ref(30), dailyTarget = ref(isEi ? 11 : 24), deadline = ref('2026-11-21')
 const customTarget = ref(dailyTarget.value), data = ref<TrendPayload|null>(null)
@@ -77,18 +78,15 @@ function scenarioStatus(scenario:Scenario){
 }
 
 function loadSettings(){
-  try{
-    const current=localStorage.getItem(settingsKey)
-    const saved=JSON.parse(current||localStorage.getItem(legacySettingsKey)||'null')
-    if(saved&&Number(saved.target)>=1&&Number(saved.target)<=500)dailyTarget.value=Number(saved.target)
-    if(saved&&/^\d{4}-\d{2}-\d{2}$/.test(String(saved.deadline||''))){
-      deadline.value=!current&&saved.deadline==='2026-11-22'?'2026-11-21':saved.deadline
-    }
-    customTarget.value=dailyTarget.value
-  }catch{/* defaults */}
+  // Only the authenticated account store supplies persistent goals. Legacy
+  // browser keys are imported explicitly from Settings, never across accounts.
+  const saved=preferences.values[progressKey]
+  dailyTarget.value=saved.target
+  deadline.value=saved.deadline
+  customTarget.value=saved.target
 }
 
-function persistSettings(){try{localStorage.setItem(settingsKey,JSON.stringify({target:dailyTarget.value,deadline:deadline.value}))}catch{/* optional local preference cache */}}
+function persistSettings(){preferences.set(progressKey,{target:dailyTarget.value,deadline:deadline.value})}
 
 function chartOption():EChartsCoreOption{
   const payload=data.value!,palette=chartPalette(),{text,border,surface,primary,accent}=palette,average=palette.comparison,todayColor=palette.accent
@@ -120,9 +118,13 @@ async function load(silent=false){const sequence=++loadSequence;if(silent)refres
 function setRange(value:number){if(rangeDays.value===value)return;rangeDays.value=value;void load()}
 function setTarget(value:number){dailyTarget.value=value;customTarget.value=value;persistSettings();void load(true)}
 function applyCustomTarget(){setTarget(Math.max(1,Math.min(500,Math.round(Number(customTarget.value)||dailyTarget.value))))}
-function changeDeadline(){persistSettings();void load(true)}
+function changeDeadline(){
+  const date=new Date(`${deadline.value}T00:00:00Z`)
+  if(!/^\d{4}-\d{2}-\d{2}$/.test(deadline.value)||!Number.isFinite(date.getTime())||date.toISOString().slice(0,10)!==deadline.value){loadSettings();return}
+  persistSettings();void load(true)
+}
 function externalRefresh(){void load(true)}
-function storageChanged(event:StorageEvent){if(event.key===practiceTrendStoragePulse)externalRefresh();if(event.key===settingsKey||event.key===legacySettingsKey){loadSettings();externalRefresh()}}
+function storageChanged(event:StorageEvent){if(event.key===practiceTrendStoragePulse)externalRefresh()}
 function visibilityChanged(){if(document.visibilityState==='visible'){resizeChart();externalRefresh()}}
 
 onMounted(()=>{
@@ -158,6 +160,15 @@ onUnmounted(()=>{
   document.removeEventListener('visibilitychange',visibilityChanged)
 })
 watch(chartElement,()=>{observeChartElement();void renderChart()},{flush:'post'})
+
+// Primitive sources ignore unrelated preferences and same-value server ack
+// clones. A local action updates refs before store.set, so it fetches only once.
+watch([()=>preferences.values[progressKey].target,()=>preferences.values[progressKey].deadline],()=>{
+  const saved=preferences.values[progressKey]
+  if(saved.target===dailyTarget.value&&saved.deadline===deadline.value)return
+  loadSettings()
+  if(mounted)void load(true)
+})
 
 watch(uiLanguage, () => { void renderChart() })
 </script>

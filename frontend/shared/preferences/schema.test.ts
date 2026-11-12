@@ -60,6 +60,40 @@ describe('account preferences boundary validation', () => {
     expect(validPreference('sidebar.drill', { order: ['progress'], hidden: [], collapsed_groups: ['tools'] })).toBe(true)
   })
 
+  it('preserves progress defaults independently per workspace and snapshot', () => {
+    const first = preferenceDefaults()
+    expect(first['progress.drill']).toEqual({ target: 24, deadline: '2026-11-21' })
+    expect(first['progress.ei']).toEqual({ target: 11, deadline: '2026-11-21' })
+    first['progress.drill'].target = 40
+    expect(first['progress.ei'].target).toBe(11)
+    expect(preferenceDefaults()['progress.drill'].target).toBe(24)
+    expect(validSnapshot(snapshot())).toBe(true)
+  })
+
+  it('accepts integer workload limits and valid calendar dates without timezone coercion', () => {
+    for (const key of ['progress.drill', 'progress.ei']) {
+      for (const target of [1, 11, 24, 500]) {
+        for (const deadline of ['0001-01-01', '2000-02-29', '2024-02-29', '2026-02-28', '9999-12-31']) {
+          expect(validPreference(key, { target, deadline }), `${key} ${target} ${deadline}`).toBe(true)
+        }
+      }
+    }
+    expect(validPreference('progress.timer', { target: 24, deadline: '2026-11-21' })).toBe(false)
+  })
+
+  it('rejects malformed goals, impossible dates and arbitrary progress logic fields', () => {
+    const goal = { target: 24, deadline: '2026-11-21' }
+    const invalid: unknown[] = [null, [], {}, { target: 24 }, { deadline: goal.deadline }, { ...goal, total: 963 }, { ...goal, formula: 'override' }]
+    invalid.push(...[0, -1, 501, true, false, 1.5, '24', null, NaN, Infinity].map(target => ({ ...goal, target })))
+    invalid.push(...[null, 20261121, '', '2026-2-01', '2026-02-29', '1900-02-29', '2026-04-31', '2026-00-01', '2026-13-01', '2026-01-00', '0000-01-01', '10000-01-01', '2026-11-21T00:00:00Z', '2026-11-21\n', ' 2026-11-21', '２０２６-１１-２１'].map(deadline => ({ ...goal, deadline })))
+    for (const key of ['progress.drill', 'progress.ei']) {
+      for (const value of invalid) expect(validPreference(key, value), JSON.stringify(value)).toBe(false)
+    }
+    const corrupt = snapshot()
+    corrupt.values['progress.ei'].deadline = '2026-02-29'
+    expect(validSnapshot(corrupt)).toBe(false)
+  })
+
   it('accepts educational saved queries with API-aligned Unicode character lengths', () => {
     expect(validPreference('filters.drill', preset({ q: '隐函数 Fourier \\frac{x}{y}', document: '12', status: 'unattempted', collection: 'selected', marker: 'rusty', sort: 'relevance' }))).toBe(true)
     expect(validPreference('filters.ei', preset({ collection: 'core_selected', q: 'RS触发器' }))).toBe(true)

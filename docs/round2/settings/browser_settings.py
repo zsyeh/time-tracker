@@ -38,7 +38,7 @@ def preferences_fixture():
     values = {'appearance': 'system', 'accent': 'blue', 'font': 'small', 'language': 'en',
               'practice.next_mode': 'sequential', 'practice.review_auto_next': False,
               'practice.mastered_auto_next': True, 'practice.drill.copy_mode': 'off',
-              'practice.ei.copy_mode': 'off', 'filters.drill': [], 'filters.ei': []}
+              'practice.ei.copy_mode': 'off', 'filters.drill': [], 'filters.ei': [], 'progress.drill': {'target': 24, 'deadline': '2026-11-21'}, 'progress.ei': {'target': 11, 'deadline': '2026-11-21'}}
     for workspace, ids in SIDEBAR_IDS.items():
         values['sidebar.' + workspace] = {'order': list(ids), 'hidden': ids[3 if workspace == 'drill' else 4:],
                                           'collapsed_groups': []}

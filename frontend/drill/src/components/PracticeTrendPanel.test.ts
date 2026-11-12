@@ -5,6 +5,8 @@ import { createApp, nextTick, type App } from 'vue'
 import PracticeTrendPanel from './PracticeTrendPanel.vue'
 import { api } from '../lib/api'
 import { uiLanguage } from '../lib/uiPreferences'
+import { accountPreferences } from '../../../shared/preferences/store'
+import { preferenceDefaults } from '../../../shared/preferences/schema'
 const runtime=vi.hoisted(()=>({workspace:'drill'}))
 vi.mock('../lib/runtimePath',()=>({get runtimeWorkspace(){return runtime.workspace}}))
 const chartMocks=vi.hoisted(()=>({setOption:vi.fn(),resize:vi.fn(),dispose:vi.fn(),init:vi.fn()}))
@@ -58,7 +60,7 @@ it('observes the asynchronously created chart and responds to orientation, viewp
   expect(observers[0]!.disconnect).toHaveBeenCalledOnce();expect(chartMocks.dispose).toHaveBeenCalledOnce()
   const final=chartMocks.resize.mock.calls.length;window.dispatchEvent(new Event('orientationchange'));viewport.dispatchEvent(new Event('resize'));await settle();expect(chartMocks.resize).toHaveBeenCalledTimes(final)
 })
-it('keeps settings changes working when storage is full and switches labels with the language',async()=>{
+it('keeps account goal changes usable when storage is full and switches labels with the language',async()=>{
   vi.mocked(api).mockResolvedValue(payload());await mount()
   vi.spyOn(Storage.prototype,'setItem').mockImplementation(()=>{throw new Error('quota')})
   const original=[...host.querySelectorAll<HTMLButtonElement>('.deadline-control button')].find(button=>button.textContent!.includes('11/22'))!
@@ -95,15 +97,13 @@ it('keeps the EI plan separate from actual full-bank coverage and does not assig
   expect(primary).not.toContain('Small questions')
   expect(host.textContent).toContain('Planned question target reached')
 })
-it.each([
-  ['practice.trend.settings.v1.drill','2026-11-22','2026-11-21'],
-  ['practice.trend.settings.v1.drill','2026-11-20','2026-11-20'],
-  ['practice.trend.settings.v2.drill','2026-11-22','2026-11-22'],
-])('migrates legacy default dates while preserving custom/current settings (%s %s)',async(key,saved,expected)=>{
-  localStorage.setItem(key,JSON.stringify({target:42,deadline:saved}))
+it.each(['practice.trend.settings.v1.drill','practice.trend.settings.v2.drill'])('does not automatically import or delete unscoped browser goals (%s)',async(key)=>{
+  const legacy=JSON.stringify({target:42,deadline:'2026-11-22'})
+  localStorage.setItem(key,legacy)
   vi.mocked(api).mockResolvedValue(payload());await mount()
-  expect(vi.mocked(api).mock.calls[0]![0]).toContain(`deadline=${expected}`)
-  expect(vi.mocked(api).mock.calls[0]![0]).toContain('target=42')
+  expect(vi.mocked(api).mock.calls[0]![0]).toContain('deadline=2026-11-21')
+  expect(vi.mocked(api).mock.calls[0]![0]).toContain('target=24')
+  expect(localStorage.getItem(key)).toBe(legacy)
 })
 it('renders selected coverage and independent small/large daily requirements from the server goal',async()=>{
   const value=payload()
@@ -140,4 +140,81 @@ it('redraws the same data on accent changes without fetching or losing date sett
   expect(host.querySelector('.chart-data tbody tr')?.textContent).toContain('2026-11-11')
   expect(host.querySelector<HTMLDetailsElement>('.chart-data')?.open).toBe(false)
   expect(host.textContent).not.toContain('FORECAST')
+})
+
+
+function mockGoalResponses(){
+  vi.mocked(api).mockImplementation(async(url)=>{
+    const query=new URL(String(url),'http://fixture').searchParams
+    const value=payload()
+    value.daily_target=Number(query.get('target'))
+    value.prediction.deadline=query.get('deadline')!
+    return value as never
+  })
+}
+
+it('loads the bound account goal and keeps date ranges local to this panel',async()=>{
+  accountPreferences.set('progress.drill',{target:42,deadline:'2026-12-03'})
+  mockGoalResponses();await mount()
+  expect(api).toHaveBeenCalledTimes(1)
+  expect(vi.mocked(api).mock.calls[0]![0]).toContain('target=42&deadline=2026-12-03')
+  expect(host.querySelector<HTMLInputElement>('.deadline-control input')!.value).toBe('2026-12-03')
+  const range=[...host.querySelectorAll<HTMLButtonElement>('.range-switch button')].find(button=>button.textContent!.includes('7'))
+  expect(range).toBeDefined()
+  range!.click();await settle()
+  expect(vi.mocked(api).mock.calls.at(-1)![0]).toContain('days=7&target=42&deadline=2026-12-03')
+  expect(accountPreferences.values['progress.drill']).toEqual({target:42,deadline:'2026-12-03'})
+  const cached=JSON.parse(localStorage.getItem('learning.preferences.v1.component-test-account')!)
+  expect(cached.pending['progress.drill'].value).toEqual({target:42,deadline:'2026-12-03'})
+  expect(cached.pending['progress.drill'].value).not.toHaveProperty('days')
+})
+
+it('saves each local target or date change with exactly one trend request and preserves query semantics',async()=>{
+  mockGoalResponses();await mount();vi.mocked(api).mockClear()
+  const input=host.querySelector<HTMLInputElement>('.trend-controls input[type=number]')!
+  input.value='43';input.dispatchEvent(new Event('input'));input.dispatchEvent(new Event('change'));await settle()
+  expect(api).toHaveBeenCalledTimes(1)
+  expect(vi.mocked(api).mock.calls[0]![0]).toContain('days=30&target=43&deadline=2026-11-21')
+  expect(accountPreferences.values['progress.drill']).toEqual({target:43,deadline:'2026-11-21'})
+  vi.mocked(api).mockClear()
+  const date=host.querySelector<HTMLInputElement>('.deadline-control input')!
+  date.value='2026-12-05';date.dispatchEvent(new Event('input'));date.dispatchEvent(new Event('change'));await settle()
+  expect(api).toHaveBeenCalledTimes(1)
+  expect(vi.mocked(api).mock.calls[0]![0]).toContain('days=30&target=43&deadline=2026-12-05')
+  expect(accountPreferences.values['progress.drill']).toEqual({target:43,deadline:'2026-12-05'})
+})
+
+it('applies a remote goal to every mounted panel once without fetching on unrelated or equal-value snapshots',async()=>{
+  mockGoalResponses();await mount()
+  const other=document.createElement('div');document.body.append(other)
+  const second=createApp(PracticeTrendPanel);second.mount(other);await settle();vi.mocked(api).mockClear()
+  try{
+    const remote={schema_version:1 as const,revision:1,values:{...preferenceDefaults(),'progress.drill':{target:39,deadline:'2026-12-06'}},field_revisions:{'progress.drill':1}}
+    await accountPreferences.bind('component-test-account',remote);await settle()
+    expect(api).toHaveBeenCalledTimes(2)
+    for(const element of [host,other])expect(element.querySelector<HTMLInputElement>('.deadline-control input')!.value).toBe('2026-12-06')
+    for(const [url] of vi.mocked(api).mock.calls)expect(url).toContain('target=39&deadline=2026-12-06')
+    vi.mocked(api).mockClear()
+    await accountPreferences.bind('component-test-account',structuredClone(remote));await settle()
+    accountPreferences.set('accent','pink');await settle()
+    expect(api).not.toHaveBeenCalled()
+  }finally{second.unmount();other.remove()}
+})
+
+it('uses the independent EI account goal default and leaves the Drill goal untouched',async()=>{
+  runtime.workspace='ei';mockGoalResponses();await mount()
+  expect(vi.mocked(api).mock.calls[0]![0]).toContain('target=11&deadline=2026-11-21')
+  const input=host.querySelector<HTMLInputElement>('.trend-controls input[type=number]')!
+  input.value='19';input.dispatchEvent(new Event('input'));input.dispatchEvent(new Event('change'));await settle()
+  expect(accountPreferences.values['progress.ei']).toEqual({target:19,deadline:'2026-11-21'})
+  expect(accountPreferences.values['progress.drill']).toEqual({target:24,deadline:'2026-11-21'})
+})
+
+it('restores the account date when a date input is cleared instead of syncing an invalid goal',async()=>{
+  mockGoalResponses();await mount();vi.mocked(api).mockClear()
+  const date=host.querySelector<HTMLInputElement>('.deadline-control input')!
+  date.value='';date.dispatchEvent(new Event('input'));date.dispatchEvent(new Event('change'));await settle()
+  expect(date.value).toBe('2026-11-21')
+  expect(accountPreferences.values['progress.drill']).toEqual({target:24,deadline:'2026-11-21'})
+  expect(api).not.toHaveBeenCalled()
 })

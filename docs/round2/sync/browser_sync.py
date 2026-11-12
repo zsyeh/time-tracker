@@ -51,6 +51,21 @@ async def main():
   assert await check.locator('input[type=checkbox]').is_checked()
   value=(await (await a.request.get(BASE+'/api/user-preferences/')).json())['values']['sidebar.drill'];assert value['order'][2]=='practice' and 'practice' not in value['hidden'],value
   report['cases'].append({'case':'sidebar-pin-and-order-cross-device','pass':True})
+  # Daily workload target and deadline are account preferences, not device state.
+  await a.goto(BASE+'/drill/progress',wait_until='networkidle')
+  await a.locator('.trend-controls input[type=number]').fill('37')
+  await a.locator('.trend-controls input[type=number]').press('Tab')
+  await a.locator('.deadline-control input').fill('2026-12-05')
+  await a.locator('.deadline-control input').press('Tab')
+  await a.wait_for_timeout(1200)
+  assert (await (await a.request.get(BASE+'/api/user-preferences/')).json())['values']['progress.drill']=={'target':37,'deadline':'2026-12-05'}
+  await b.goto(BASE+'/drill/progress',wait_until='networkidle')
+  assert await b.locator('.trend-controls input[type=number]').input_value()=='37'
+  assert await b.locator('.deadline-control input').input_value()=='2026-12-05'
+  assert (await (await other.request.get(BASE+'/api/user-preferences/')).json())['values']['progress.drill']=={'target':24,'deadline':'2026-11-21'}
+  await a.screenshot(path=str(OUT/'progress-account-goal.png'),full_page=False)
+  report['cases'].append({'case':'daily-goal-and-deadline-real-server-two-device-roundtrip','pass':True})
+  await a.goto(BASE+'/drill/settings',wait_until='networkidle')
   # Offline optimistic edit, restart/cache survives, online retries.
   await contexts[0].set_offline(True);await a.get_by_label('全局字体大小',exact=True).select_option('large');await a.wait_for_timeout(1000)
   assert await a.evaluate('document.documentElement.dataset.fontSize')=='large'
