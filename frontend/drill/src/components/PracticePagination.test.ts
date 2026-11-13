@@ -69,3 +69,15 @@ it('keeps first/last controls in native keyboard focus order and supports form s
  host.querySelector<HTMLFormElement>('form')!.requestSubmit();await nextTick()
  expect(changes).toEqual([[5,'bottom']])
 })
+
+it('keeps navigation-restored focus read-only until an explicit editing gesture', async () => {
+ mount({ page: 1, totalPages: 20, count: 480, loading: false })
+ const input = host.querySelector<HTMLInputElement>('input')!
+ expect(input.readOnly).toBe(true); expect(input.inputMode).toBe('none')
+ input.focus(); expect(input.readOnly).toBe(true)
+ input.dispatchEvent(new Event('pointerdown', { bubbles: true }))
+ expect(input.readOnly).toBe(false); expect(input.inputMode).toBe('numeric')
+ input.blur(); await nextTick(); expect(input.readOnly).toBe(true)
+ input.focus(); input.dispatchEvent(new KeyboardEvent('keydown', { key: '2', bubbles: true }))
+ expect(input.readOnly).toBe(false)
+})

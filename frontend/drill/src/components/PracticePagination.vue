@@ -3,9 +3,19 @@ import { computed, ref, watch } from 'vue'
 import { typeText } from '../lib/examTypes'
 const props = withDefaults(defineProps<{ page: number; totalPages: number; count: number; loading?: boolean; position: 'top'|'bottom' }>(), { loading: false })
 const emit = defineEmits<{ change: [page: number, position: 'top'|'bottom'] }>()
-const draft = ref(String(props.page)), invalid = ref(false)
+const draft = ref(String(props.page)), invalid = ref(false), editing = ref(false)
+const pageInput = ref<HTMLInputElement | null>(null)
+function beginEditing(event: Event) {
+  const input = event.currentTarget as HTMLInputElement
+  // Change synchronously inside the gesture, before the browser focuses the field.
+  input.readOnly = false; input.inputMode = 'numeric'; editing.value = true
+}
+function editingKey(event: KeyboardEvent) {
+  if (event.key.length === 1 || ['Backspace', 'Delete'].includes(event.key)) beginEditing(event)
+}
+function endEditing() { editing.value = false; if (pageInput.value) { pageInput.value.readOnly = true; pageInput.value.inputMode = 'none' } }
 const unavailable = computed(() => props.loading || props.totalPages < 1)
-watch(() => props.page, value => { draft.value = String(value); invalid.value = false })
+watch(() => props.page, value => { draft.value = String(value); invalid.value = false; endEditing() })
 function go(page: number) {
   if (unavailable.value || !Number.isSafeInteger(page) || page < 1 || page > props.totalPages) return
   invalid.value = false
@@ -16,6 +26,7 @@ function jump() {
   const value = Number(draft.value)
   if (!/^\d+$/.test(draft.value.trim()) || !Number.isSafeInteger(value) || value < 1 || value > props.totalPages) { invalid.value = true; return }
   go(value)
+  pageInput.value?.blur(); endEditing()
 }
 </script>
 <template>
@@ -26,7 +37,7 @@ function jump() {
     <button class="page-next" type="button" :disabled="unavailable || page >= totalPages" @click="go(page + 1)">{{ typeText('下一页', 'Next') }}</button>
     <button class="page-last" type="button" :aria-label="typeText('末页', 'Last page')" :disabled="unavailable || page >= totalPages" @click="go(totalPages)">{{ typeText('末页', 'Last') }}</button>
     <form class="page-jump" novalidate @submit.prevent="jump">
-      <label>{{ typeText('跳至', 'Go to') }} <input v-model="draft" type="text" inputmode="numeric" pattern="[0-9]*" :disabled="unavailable" :aria-label="typeText('目标页码', 'Page number')" :aria-invalid="invalid" /></label>
+      <label>{{ typeText('跳至', 'Go to') }} <input ref="pageInput" v-model="draft" type="text" :readonly="!editing" :inputmode="editing ? 'numeric' : 'none'" autocomplete="off" autocorrect="off" :spellcheck="false" @pointerdown="beginEditing" @keydown="editingKey" @blur="endEditing" pattern="[0-9]*" :disabled="unavailable" :aria-label="typeText('目标页码', 'Page number')" :aria-invalid="invalid" /></label>
       <button type="submit" :disabled="unavailable">{{ typeText('前往', 'Go') }}</button>
       <span v-if="invalid" class="page-error" role="alert">{{ typeText('请输入页码', 'Enter a page from') }} 1–{{ totalPages }}</span>
     </form>
