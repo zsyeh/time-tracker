@@ -37,7 +37,7 @@ function jump() {
     <button class="page-next" type="button" :disabled="unavailable || page >= totalPages" @click="go(page + 1)">{{ typeText('下一页', 'Next') }}</button>
     <button class="page-last" type="button" :aria-label="typeText('末页', 'Last page')" :disabled="unavailable || page >= totalPages" @click="go(totalPages)">{{ typeText('末页', 'Last') }}</button>
     <form class="page-jump" novalidate @submit.prevent="jump">
-      <label>{{ typeText('跳至', 'Go to') }} <input ref="pageInput" v-model="draft" type="text" :readonly="!editing" :inputmode="editing ? 'numeric' : 'none'" autocomplete="off" autocorrect="off" :spellcheck="false" @pointerdown="beginEditing" @keydown="editingKey" @blur="endEditing" pattern="[0-9]*" :disabled="unavailable" :aria-label="typeText('目标页码', 'Page number')" :aria-invalid="invalid" /></label>
+      <label>{{ typeText('跳至', 'Go to') }} <input class="ui-field" ref="pageInput" v-model="draft" type="text" :readonly="!editing" :inputmode="editing ? 'numeric' : 'none'" autocomplete="off" autocorrect="off" :spellcheck="false" @pointerdown="beginEditing" @keydown="editingKey" @blur="endEditing" pattern="[0-9]*" :disabled="unavailable" :aria-label="typeText('目标页码', 'Page number')" :aria-invalid="invalid" /></label>
       <button type="submit" :disabled="unavailable">{{ typeText('前往', 'Go') }}</button>
       <span v-if="invalid" class="page-error" role="alert">{{ typeText('请输入页码', 'Enter a page from') }} 1–{{ totalPages }}</span>
     </form>

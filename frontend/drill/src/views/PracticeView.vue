@@ -267,7 +267,7 @@ onUnmounted(() => {
   <section ref="rootElement" class="page practice-page">
     <header class="page-header practice-header">
       <div><h1>{{ isEi ? t('electronicInformation') : t('questionBank') }}</h1><p>{{ catalog.summary.practiceable_count.toLocaleString() }} {{ uiText('道可练习题') }} <RouterLink class="practice-progress-link" to="/progress">{{ typeText('学习进度', 'Learning progress') }} →</RouterLink></p></div>
-      <button class="preview-all" type="button" :disabled="loading || !questions?.count" @click="previewAll">{{ typeText('全局预览', 'Preview all') }}</button>
+      <button class="preview-all ui-button ui-button--secondary" type="button" :disabled="loading || !questions?.count" @click="previewAll">{{ typeText('全局预览', 'Preview all') }}</button>
       <button class="primary-action" :disabled="loading || !(lastQuestionUuid || questions?.results.length)" @click="openQuestion(lastQuestionUuid || questions!.results[0].uuid)">{{ lastQuestionUuid ? t('resumeLast') : t('openNext') }} <span aria-hidden="true">→</span></button>
     </header>
     <div class="practice-toolbar">
