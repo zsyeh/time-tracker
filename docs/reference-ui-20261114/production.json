@@ -1,0 +1,41 @@
+{
+  "backup-start": "2026-11-14T00:47:00+08:00",
+  "backup-end": "2026-11-14T00:47:02+08:00",
+  "verify-exit": "0",
+  "build-start": "2026-11-14T00:52:53+08:00",
+  "build-end": "2026-11-14T00:54:41+08:00",
+  "build-exit": "0",
+  "deploy-start": "2026-11-14T00:55:09+08:00",
+  "deploy-end": "2026-11-14T00:55:35+08:00",
+  "deploy-exit": "0",
+  "deployed-image": "time-tracker-ha:20261114-reference-menu-19ef771 sha256:045a6eb7d54190d7d5542c83fd8a4994af64be4d301439caf4b9d961ae12de83 healthy",
+  "queue_result": "success",
+  "web_active": "active",
+  "login_status": "200",
+  "static_checks": [
+    {
+      "url": "/static/app/assets/index-pz1OjZlA.js",
+      "status": 200,
+      "sha256": "3da3030f97a90581e90342073c36abbb7d8e7ad72cf247739758d29da9492649",
+      "matches_local_build": true
+    },
+    {
+      "url": "/static/app/assets/index-LGYiRFOq.css",
+      "status": 200,
+      "sha256": "762ae9a0473e236ce84058a69fd481d8fe268444eab97b378bceb3200eb0f416",
+      "matches_local_build": true
+    },
+    {
+      "url": "/static/drill/assets/index-BQYNdskh.js",
+      "status": 200,
+      "sha256": "60b3dcb602164d3ccc25af99adb6f9c7aa4cc52710ae79d0eacca9200a7e33ae",
+      "matches_local_build": true
+    },
+    {
+      "url": "/static/drill/assets/index-DnR0PIxZ.css",
+      "status": 200,
+      "sha256": "9184d2ab56d6f05bdef863191f266d1ed32c3a03d6c37aee04a651d7d34a7a68",
+      "matches_local_build": true
+    }
+  ]
+}

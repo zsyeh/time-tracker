@@ -1,0 +1,23 @@
+{
+  "overflow": false,
+  "width": 254,
+  "labelHeight": 164.875,
+  "desktopPresetFocus": "INPUT",
+  "questionWidths": [
+    {
+      "width": 390,
+      "overflow": false,
+      "navHeight": 45
+    },
+    {
+      "width": 1180,
+      "overflow": false,
+      "navHeight": 43
+    },
+    {
+      "width": 820,
+      "overflow": false,
+      "navHeight": 45
+    }
+  ]
+}

@@ -1,0 +1,122 @@
+[
+  {
+    "workspace": "drill",
+    "width": 390,
+    "scheme": "light",
+    "menu": {
+      "left": 8,
+      "right": 280,
+      "top": 8,
+      "bottom": 528,
+      "overflow": false,
+      "language": "Tools / 工具\n⌄\nPractice\nProblem-solving skills\nActivity\nBook Check-ins\nKnowledge\nBuild Paper\nFavorites\nNext Time\nBook Feel\nCorrections\nCustomize sidebar",
+      "focus": "A"
+    },
+    "pageErrors": []
+  },
+  {
+    "workspace": "drill",
+    "width": 390,
+    "scheme": "dark",
+    "menu": {
+      "left": 8,
+      "right": 280,
+      "top": 8,
+      "bottom": 528,
+      "overflow": false,
+      "language": "Tools / 工具\n⌄\nPractice\nProblem-solving skills\nActivity\nBook Check-ins\nKnowledge\nBuild Paper\nFavorites\nNext Time\nBook Feel\nCorrections\nCustomize sidebar",
+      "focus": "A"
+    },
+    "pageErrors": []
+  },
+  {
+    "workspace": "drill",
+    "width": 820,
+    "scheme": "light",
+    "menu": {
+      "left": 8,
+      "right": 280,
+      "top": 360,
+      "bottom": 880,
+      "overflow": false,
+      "language": "Tools / 工具\n⌄\nPractice\nProblem-solving skills\nActivity\nBook Check-ins\nKnowledge\nBuild Paper\nFavorites\nNext Time\nBook Feel\nCorrections\nCustomize sidebar",
+      "focus": "A"
+    },
+    "pageErrors": []
+  },
+  {
+    "workspace": "drill",
+    "width": 820,
+    "scheme": "dark",
+    "menu": {
+      "left": 8,
+      "right": 280,
+      "top": 360,
+      "bottom": 880,
+      "overflow": false,
+      "language": "Tools / 工具\n⌄\nPractice\nProblem-solving skills\nActivity\nBook Check-ins\nKnowledge\nBuild Paper\nFavorites\nNext Time\nBook Feel\nCorrections\nCustomize sidebar",
+      "focus": "A"
+    },
+    "pageErrors": []
+  },
+  {
+    "workspace": "ei",
+    "width": 1180,
+    "scheme": "light",
+    "menu": {
+      "left": 8,
+      "right": 280,
+      "top": 8,
+      "bottom": 528,
+      "overflow": false,
+      "language": "Tools / 工具\n⌄\nPractice\nProblem-solving skills\nSelected circuits\nSelected signals\n892 daily formulas\nSelected analog electronics\nSelected digital electronics\nSelected communications\nSelected PDF page log\nActivity\nBook Check-ins\nKnowledge\nBuild Paper\nFavorites\nNext Time\nBook Feel\nCorrections\nCustomize sidebar",
+      "focus": "A"
+    },
+    "pageErrors": []
+  },
+  {
+    "workspace": "ei",
+    "width": 1180,
+    "scheme": "dark",
+    "menu": {
+      "left": 8,
+      "right": 280,
+      "top": 8,
+      "bottom": 528,
+      "overflow": false,
+      "language": "Tools / 工具\n⌄\nPractice\nProblem-solving skills\nSelected circuits\nSelected signals\n892 daily formulas\nSelected analog electronics\nSelected digital electronics\nSelected communications\nSelected PDF page log\nActivity\nBook Check-ins\nKnowledge\nBuild Paper\nFavorites\nNext Time\nBook Feel\nCorrections\nCustomize sidebar",
+      "focus": "A"
+    },
+    "pageErrors": []
+  },
+  {
+    "workspace": "drill",
+    "width": 1440,
+    "scheme": "light",
+    "menu": {
+      "left": 8,
+      "right": 280,
+      "top": 320,
+      "bottom": 786,
+      "overflow": false,
+      "language": "Tools / 工具\n⌄\nPractice\nProblem-solving skills\nActivity\nBook Check-ins\nKnowledge\nBuild Paper\nFavorites\nNext Time\nBook Feel\nCorrections\nCustomize sidebar",
+      "focus": "A"
+    },
+    "pageErrors": []
+  },
+  {
+    "workspace": "drill",
+    "width": 1440,
+    "scheme": "dark",
+    "menu": {
+      "left": 8,
+      "right": 280,
+      "top": 320,
+      "bottom": 786,
+      "overflow": false,
+      "language": "Tools / 工具\n⌄\nPractice\nProblem-solving skills\nActivity\nBook Check-ins\nKnowledge\nBuild Paper\nFavorites\nNext Time\nBook Feel\nCorrections\nCustomize sidebar",
+      "focus": "A"
+    },
+    "pageErrors": []
+  }
+]
