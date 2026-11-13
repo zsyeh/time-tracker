@@ -227,7 +227,6 @@ class Question(models.Model):
             ),
         ]
         indexes = [
-            models.Index(fields=('document', 'question_order'), name='drill_question_order_idx'),
             models.Index(fields=('similarity_topic', 'question_order'), name='drill_question_similar_idx'),
         ]
 
@@ -512,6 +511,8 @@ class QuestionAttempt(models.Model):
         ordering = ('-created_at',)
         indexes = [
             models.Index(fields=('user', 'question'), name='drill_attempt_user_q_idx'),
+            models.Index(fields=('user', 'question', '-created_at', '-id'),
+                         include=('result',), name='drill_attempt_latest_idx'),
             models.Index(fields=('user', 'created_at'), name='drill_attempt_user_time_idx'),
             models.Index(fields=('user', 'outcome', 'created_at'), name='drill_attempt_diag_idx'),
         ]

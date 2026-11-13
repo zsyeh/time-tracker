@@ -55,17 +55,21 @@ def workspace_questions(request):
 
 def question_progress(queryset, user, *, include_latest=True):
     queryset = with_exam_type(queryset)
-    latest = QuestionAttempt.objects.filter(
+    attempts = QuestionAttempt.objects.filter(
         user=user,
         question_id=OuterRef('pk'),
-    ).order_by('-created_at', '-pk')
+    )
+    latest = attempts.order_by('-created_at', '-pk')
+    counts = attempts.order_by().values('question_id').annotate(
+        completed=Count('pk', filter=Q(result__in=('done', 'correct', 'review'))),
+        changes=Count('pk'),
+    )
     user_state = QuestionUserState.objects.filter(user=user, question_id=OuterRef('pk'))
     queryset = queryset.annotate(
-        attempt_count=Count(
-            'attempts',
-            filter=Q(attempts__user=user, attempts__result__in=('done', 'correct', 'review')),
-        ),
-        state_change_count=Count('attempts', filter=Q(attempts__user=user)),
+        # Keep the page/detail lookup narrow. Joining attempts here forced a
+        # GROUP BY of every Question field, including large prompt/answer text.
+        attempt_count=Coalesce(Subquery(counts.values('completed')[:1]), Value(0)),
+        state_change_count=Coalesce(Subquery(counts.values('changes')[:1]), Value(0)),
         is_favorite=Exists(user_state.filter(is_favorite=True)),
         review_later=Exists(user_state.filter(review_later=True)),
         saved_note=Subquery(user_state.values('note')[:1]),

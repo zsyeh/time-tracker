@@ -18,7 +18,7 @@ from .views import (
 
 
 @override_settings(SECURE_SSL_REDIRECT=False, ALLOWED_HOSTS=['drill.test', 'ei.test'],
-                   DRILL_HOSTS={'drill.test'}, EI_HOSTS={'ei.test'})
+                   DRILL_HOSTS={'drill.test'}, EI_HOSTS={'ei.test'}, DRILL_SEARCH_BACKEND='legacy')
 class NavigationQueryTests(TestCase):
     @classmethod
     def setUpTestData(cls):
@@ -52,6 +52,29 @@ class NavigationQueryTests(TestCase):
         request = Request(APIRequestFactory().get('/', params or {}, HTTP_HOST=host))
         request._user = self.user
         return request
+
+    def test_progress_counts_reset_and_other_users_without_changing_latest_state(self):
+        question = self.questions[0]
+        stamp = timezone.now()
+        for result in ('done', 'correct', 'review', 'reset'):
+            QuestionAttempt.objects.create(user=self.user, question=question,
+                                           result=result, created_at=stamp)
+        summary = question_progress(Question.objects.filter(pk=question.pk), self.user).get()
+        self.assertEqual(summary.attempt_count, 3)
+        self.assertEqual(summary.state_change_count, 4)
+        self.assertEqual(summary.latest_result, 'reset')
+        self.assertEqual(summary.latest_attempted_at, stamp)
+        other = question_progress(Question.objects.filter(pk=question.pk), self.other).get()
+        self.assertEqual(other.attempt_count, 1)
+        self.assertEqual(other.state_change_count, 1)
+        self.assertEqual(other.latest_result, 'correct')
+
+    def test_progress_returns_zero_counts_for_questions_without_own_attempts(self):
+        summary = question_progress(Question.objects.filter(pk=self.questions[0].pk), self.user).get()
+        self.assertEqual(summary.attempt_count, 0)
+        self.assertEqual(summary.state_change_count, 0)
+        self.assertIsNone(summary.latest_result)
+        self.assertIsNone(summary.latest_attempted_at)
 
     def test_bounded_neighbors_equal_original_materialized_order_and_fallback(self):
         # Covers ordering across books, hidden current question,
