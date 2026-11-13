@@ -1,0 +1,20 @@
+
+ RUN  v3.2.6 /work/frontend
+
+ ✓ drill/src/lib/questionEntryCopy.test.ts (4 tests) 7ms
+ ✓ drill/src/lib/imageClipboard.test.ts (10 tests) 23ms
+ ✓ drill/src/views/QuestionRecord.test.ts (12 tests) 81ms
+ ✓ drill/src/views/QuestionPreviewNavigation.test.ts (11 tests) 155ms
+
+ Test Files  4 passed (4)
+      Tests  37 passed (37)
+   Start at  08:41:47
+   Duration  1.89s (transform 557ms, setup 0ms, collect 2.28s, tests 266ms, environment 2.23s, prepare 479ms)
+
+
+> personal-learning-os@3.0.0 build:drill
+> vue-tsc --noEmit -p tsconfig.drill.json && vite build --config vite.drill.config.ts
+
+drill/src/lib/questionEntryCopy.test.ts(17,105): error TS2322: Type '(value: QuestionDetail | PromiseLike<QuestionDetail>) => void' is not assignable to type '(value: unknown) => void'.
+  Types of parameters 'value' and 'value' are incompatible.
+    Type 'unknown' is not assignable to type 'QuestionDetail | PromiseLike<QuestionDetail>'.

@@ -1,0 +1,21 @@
+{
+  "entry_copies_once": true,
+  "next_adds_one_not_two": true,
+  "preview_entry_adds_one": true,
+  "copies": [
+    {
+      "type": "image/png",
+      "size": 172562
+    },
+    {
+      "type": "image/png",
+      "size": 176420
+    },
+    {
+      "type": "image/png",
+      "size": 176420
+    }
+  ],
+  "errors": [],
+  "clipboard_write": "instrumented, real PNG generation; not physical OS clipboard"
+}

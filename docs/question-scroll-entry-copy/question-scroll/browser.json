@@ -1,0 +1,15 @@
+{
+  "physical_safari": false,
+  "current_uuid": "61af9093-8322-51db-99af-82c093532760",
+  "next_matches_existing_button": true,
+  "source": "navigation",
+  "mode": "sequential",
+  "status": {
+    "state": "review",
+    "text": "\u5f85\u590d\u4e60",
+    "color": "rgb(128, 89, 0)",
+    "dot": "rgb(128, 89, 0)"
+  },
+  "return_to_original_question": true,
+  "errors": []
+}

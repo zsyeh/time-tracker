@@ -1,0 +1,40 @@
+{
+  "releases": {
+    "question-scroll": {
+      "backup-start.txt": "2026-11-13T16:30:33+08:00",
+      "backup-end.txt": "2026-11-13T16:30:38+08:00",
+      "verify-exit.txt": "0",
+      "previous-image-name.txt": "time-tracker-ha:20261113-page-keyboard-834798e",
+      "previous-image-id.txt": "sha256:887223a338622a8100887738d58edb0146d2ec645586acecc8d4c66d99fbab8c",
+      "deploy-start.txt": "2026-11-13T16:37:11+08:00",
+      "deploy-end.txt": "2026-11-13T16:37:33+08:00",
+      "deploy-exit.txt": "0",
+      "deployed-image.txt": "time-tracker-ha:20261113-question-scroll-44a8603 sha256:27b749f28c2535538a128610cf3151304de3e53db2b3cecb1990ef80aa1be764 healthy"
+    },
+    "entry-copy": {
+      "backup-start.txt": "2026-11-13T16:41:47+08:00",
+      "backup-end.txt": "2026-11-13T16:41:51+08:00",
+      "verify-exit.txt": "0",
+      "previous-image-name.txt": "time-tracker-ha:20261113-question-scroll-44a8603",
+      "previous-image-id.txt": "sha256:27b749f28c2535538a128610cf3151304de3e53db2b3cecb1990ef80aa1be764",
+      "deploy-start.txt": "2026-11-13T16:46:07+08:00",
+      "deploy-end.txt": "2026-11-13T16:47:12+08:00",
+      "deploy-exit.txt": "0",
+      "deployed-image.txt": "time-tracker-ha:20261113-entry-copy-0d23177 sha256:0a6eb50124f5f158d0fc869e23dbf6c4dc306a37b754f2bf1a54d78b934fefdb healthy"
+    }
+  },
+  "assets": [
+    {
+      "asset": "/static/drill/assets/index-ByebPj82.js",
+      "status": 200,
+      "sha256": "03ff05f685a0d87a74bd1cd95222e55f439be76314d5575c7b66b800afc164b1",
+      "matches_build": true
+    },
+    {
+      "asset": "/static/drill/assets/index-DD7qgySE.css",
+      "status": 200,
+      "sha256": "98e5bc8cf1fd98383e8ac2868ebd12133af63b37d0c2ae1ac356c97cf0e4666f",
+      "matches_build": true
+    }
+  ]
+}

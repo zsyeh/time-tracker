@@ -1,0 +1,22 @@
+{
+  "sequential": {
+    "count": 2372,
+    "next_matches_current_practice": true,
+    "overdue_field_present": true
+  },
+  "review": {
+    "count": 1,
+    "next_matches_current_practice": true,
+    "overdue_field_present": true
+  },
+  "overdue": {
+    "count": 1,
+    "next_matches_current_practice": true,
+    "overdue_field_present": true
+  },
+  "unattempted": {
+    "count": 363,
+    "next_matches_current_practice": true,
+    "overdue_field_present": true
+  }
+}
