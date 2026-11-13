@@ -1,0 +1,35 @@
+{
+  "physical_safari": false,
+  "cases": [
+    {
+      "workspace": "drill",
+      "initial": {
+        "readonly": true,
+        "mode": "none",
+        "focused": false
+      },
+      "restored": {
+        "readonly": true,
+        "mode": "none"
+      },
+      "explicit_tap_jump_page3": true,
+      "after_submit_blurred": true,
+      "refresh_no_editing": true
+    },
+    {
+      "workspace": "ei",
+      "initial": {
+        "readonly": true,
+        "mode": "none",
+        "focused": false
+      },
+      "restored": {
+        "readonly": true,
+        "mode": "none"
+      },
+      "explicit_tap_jump_page3": true,
+      "after_submit_blurred": true,
+      "refresh_no_editing": true
+    }
+  ]
+}
