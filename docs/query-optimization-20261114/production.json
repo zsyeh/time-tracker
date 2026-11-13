@@ -1,0 +1,22 @@
+{
+  "backup-start": "2026-11-14T01:04:11+08:00",
+  "backup-end": "2026-11-14T01:04:20+08:00",
+  "verify-exit": "0",
+  "build-start": "2026-11-14T01:21:04+08:00",
+  "build-end": "2026-11-14T01:21:06+08:00",
+  "build-exit": "0",
+  "migration-start": "2026-11-14T01:23:02+08:00",
+  "migration-end": "2026-11-14T01:23:09+08:00",
+  "deploy-start": "2026-11-14T01:23:09+08:00",
+  "deploy-end": "2026-11-14T01:23:26+08:00",
+  "deploy-exit": "0",
+  "deployed-image": "time-tracker-ha:20261114-query-opt-811d82b sha256:75ba434a02a17adcd613aee197224b4a7e124cebb0b062e14762fc8e94682cc1 healthy",
+  "disk": {
+    "total": 41882943488,
+    "used": 29884026880,
+    "free": 10063179776
+  },
+  "rollback_scripts_valid": true,
+  "queue_result": "success",
+  "login_status": "200"
+}

@@ -1,0 +1,12 @@
+[
+  {
+    "relname": "drill_question_document_order_unique",
+    "indisvalid": true,
+    "bytes": 630784
+  },
+  {
+    "relname": "drill_attempt_latest_idx",
+    "indisvalid": true,
+    "bytes": 98304
+  }
+]

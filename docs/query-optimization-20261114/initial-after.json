@@ -1,0 +1,1484 @@
+{
+  "drill-detail": {
+    "samples": 5,
+    "p50_ms": 83.31,
+    "p95_ms": 88.984,
+    "sql_count": [
+      27,
+      27,
+      27,
+      27,
+      27
+    ],
+    "sql_total_ms": [
+      34.119,
+      30.123,
+      30.432,
+      28.437,
+      33.732
+    ],
+    "payload_hashes": [
+      "05663d33d06d091cef95b59947a178630acb1da1405f7fb229dece7193f3b110",
+      "05663d33d06d091cef95b59947a178630acb1da1405f7fb229dece7193f3b110",
+      "05663d33d06d091cef95b59947a178630acb1da1405f7fb229dece7193f3b110",
+      "05663d33d06d091cef95b59947a178630acb1da1405f7fb229dece7193f3b110",
+      "05663d33d06d091cef95b59947a178630acb1da1405f7fb229dece7193f3b110"
+    ],
+    "slow_query_plans": [
+      {
+        "sql_ms": 5.02,
+        "plan_execution_ms": 0.353,
+        "planning_ms": 1.029,
+        "nodes": [
+          {
+            "Node Type": "Limit",
+            "Actual Rows": 1,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Nested Loop",
+            "Actual Rows": 1,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Nested Loop",
+            "Actual Rows": 1,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Nested Loop",
+            "Actual Rows": 1,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Nested Loop",
+            "Actual Rows": 1,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Index Scan",
+            "Relation Name": "drill_question",
+            "Index Name": "drill_question_uuid_key",
+            "Actual Rows": 1,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Seq Scan",
+            "Relation Name": "drill_questiondocument",
+            "Actual Rows": 4,
+            "Actual Loops": 1,
+            "Rows Removed by Filter": 5
+          },
+          {
+            "Node Type": "Index Scan",
+            "Relation Name": "drill_questionexamtype",
+            "Index Name": "drill_questionexamtype_question_id_key",
+            "Actual Rows": 1,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Index Scan",
+            "Relation Name": "drill_questiontopic",
+            "Index Name": "drill_questiontopic_pkey",
+            "Actual Rows": 1,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Index Scan",
+            "Relation Name": "drill_questiontopic",
+            "Index Name": "drill_questiontopic_pkey",
+            "Actual Rows": 1,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Limit",
+            "Actual Rows": 1,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Aggregate",
+            "Actual Rows": 1,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Index Only Scan",
+            "Relation Name": "drill_questionattempt",
+            "Index Name": "drill_attempt_latest_idx",
+            "Actual Rows": 9,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Limit",
+            "Actual Rows": 1,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Aggregate",
+            "Actual Rows": 1,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Index Only Scan",
+            "Relation Name": "drill_questionattempt",
+            "Index Name": "drill_attempt_latest_idx",
+            "Actual Rows": 9,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Index Scan",
+            "Relation Name": "drill_questionuserstate",
+            "Index Name": "drill_questionuserstate_question_id_528420bc",
+            "Actual Rows": 0,
+            "Actual Loops": 1,
+            "Rows Removed by Filter": 0
+          },
+          {
+            "Node Type": "Index Scan",
+            "Relation Name": "drill_questionuserstate",
+            "Index Name": "drill_questionuserstate_question_id_528420bc",
+            "Actual Rows": 0,
+            "Actual Loops": 1,
+            "Rows Removed by Filter": 0
+          },
+          {
+            "Node Type": "Limit",
+            "Actual Rows": 0,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Index Scan",
+            "Relation Name": "drill_questionuserstate",
+            "Index Name": "drill_questionuserstate_question_id_528420bc",
+            "Actual Rows": 0,
+            "Actual Loops": 1,
+            "Rows Removed by Filter": 0
+          }
+        ]
+      },
+      {
+        "sql_ms": 3.717,
+        "plan_execution_ms": 1.638,
+        "planning_ms": 0.404,
+        "nodes": [
+          {
+            "Node Type": "Limit",
+            "Actual Rows": 1,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Incremental Sort",
+            "Actual Rows": 1,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Nested Loop",
+            "Actual Rows": 10,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Index Scan",
+            "Relation Name": "drill_questiondocument",
+            "Index Name": "drill_questiondocument_pkey",
+            "Actual Rows": 2,
+            "Actual Loops": 1,
+            "Rows Removed by Filter": 0
+          },
+          {
+            "Node Type": "Bitmap Heap Scan",
+            "Relation Name": "drill_question",
+            "Actual Rows": 5,
+            "Actual Loops": 2,
+            "Rows Removed by Filter": 178
+          },
+          {
+            "Node Type": "BitmapAnd",
+            "Actual Rows": 0,
+            "Actual Loops": 2
+          },
+          {
+            "Node Type": "Bitmap Index Scan",
+            "Index Name": "drill_question_document_id_3b76eb04",
+            "Actual Rows": 902,
+            "Actual Loops": 2
+          },
+          {
+            "Node Type": "Bitmap Index Scan",
+            "Index Name": "drill_question_source_category_edb6d61a_like",
+            "Actual Rows": 5006,
+            "Actual Loops": 2
+          },
+          {
+            "Node Type": "Bitmap Index Scan",
+            "Index Name": "drill_question_is_practiceable_1cd02f4f",
+            "Actual Rows": 9946,
+            "Actual Loops": 2
+          },
+          {
+            "Node Type": "Limit",
+            "Actual Rows": 0,
+            "Actual Loops": 250
+          },
+          {
+            "Node Type": "Index Only Scan",
+            "Relation Name": "drill_questionattempt",
+            "Index Name": "drill_attempt_latest_idx",
+            "Actual Rows": 0,
+            "Actual Loops": 250
+          },
+          {
+            "Node Type": "Limit",
+            "Actual Rows": 1,
+            "Actual Loops": 115
+          },
+          {
+            "Node Type": "Index Only Scan",
+            "Relation Name": "drill_questionattempt",
+            "Index Name": "drill_attempt_latest_idx",
+            "Actual Rows": 1,
+            "Actual Loops": 115
+          }
+        ]
+      }
+    ],
+    "response_bytes": 3095
+  },
+  "ei-detail": {
+    "samples": 5,
+    "p50_ms": 89.531,
+    "p95_ms": 96.315,
+    "sql_count": [
+      22,
+      22,
+      22,
+      22,
+      22
+    ],
+    "sql_total_ms": [
+      51.44,
+      47.577,
+      42.615,
+      38.048,
+      34.599
+    ],
+    "payload_hashes": [
+      "693cc7c70f4fee8d221874d044c0114354f98c316eb4b7bec56e566b00c70a3f",
+      "693cc7c70f4fee8d221874d044c0114354f98c316eb4b7bec56e566b00c70a3f",
+      "693cc7c70f4fee8d221874d044c0114354f98c316eb4b7bec56e566b00c70a3f",
+      "693cc7c70f4fee8d221874d044c0114354f98c316eb4b7bec56e566b00c70a3f",
+      "693cc7c70f4fee8d221874d044c0114354f98c316eb4b7bec56e566b00c70a3f"
+    ],
+    "slow_query_plans": [
+      {
+        "sql_ms": 6.728,
+        "plan_execution_ms": 8.817,
+        "planning_ms": 0.432,
+        "nodes": [
+          {
+            "Node Type": "Limit",
+            "Actual Rows": 0,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Incremental Sort",
+            "Actual Rows": 0,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Nested Loop",
+            "Actual Rows": 0,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Index Scan",
+            "Relation Name": "drill_questiondocument",
+            "Index Name": "drill_questiondocument_pkey",
+            "Actual Rows": 13,
+            "Actual Loops": 1,
+            "Rows Removed by Filter": 10
+          },
+          {
+            "Node Type": "Materialize",
+            "Actual Rows": 7,
+            "Actual Loops": 13
+          },
+          {
+            "Node Type": "Bitmap Heap Scan",
+            "Relation Name": "drill_question",
+            "Actual Rows": 7,
+            "Actual Loops": 1,
+            "Rows Removed by Filter": 4304
+          },
+          {
+            "Node Type": "BitmapAnd",
+            "Actual Rows": 0,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Bitmap Index Scan",
+            "Index Name": "drill_question_source_category_edb6d61a_like",
+            "Actual Rows": 4575,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Bitmap Index Scan",
+            "Index Name": "drill_question_is_practiceable_1cd02f4f",
+            "Actual Rows": 9946,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Limit",
+            "Actual Rows": 0,
+            "Actual Loops": 4310
+          },
+          {
+            "Node Type": "Index Only Scan",
+            "Relation Name": "drill_questionattempt",
+            "Index Name": "drill_attempt_latest_idx",
+            "Actual Rows": 0,
+            "Actual Loops": 4310
+          },
+          {
+            "Node Type": "Limit",
+            "Actual Rows": 1,
+            "Actual Loops": 23
+          },
+          {
+            "Node Type": "Index Only Scan",
+            "Relation Name": "drill_questionattempt",
+            "Index Name": "drill_attempt_latest_idx",
+            "Actual Rows": 1,
+            "Actual Loops": 23
+          }
+        ]
+      },
+      {
+        "sql_ms": 6.538,
+        "plan_execution_ms": 10.39,
+        "planning_ms": 0.592,
+        "nodes": [
+          {
+            "Node Type": "Limit",
+            "Actual Rows": 1,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Incremental Sort",
+            "Actual Rows": 1,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Nested Loop",
+            "Actual Rows": 19,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Index Scan",
+            "Relation Name": "drill_questiondocument",
+            "Index Name": "drill_questiondocument_pkey",
+            "Actual Rows": 9,
+            "Actual Loops": 1,
+            "Rows Removed by Filter": 1
+          },
+          {
+            "Node Type": "Materialize",
+            "Actual Rows": 74,
+            "Actual Loops": 9
+          },
+          {
+            "Node Type": "Bitmap Heap Scan",
+            "Relation Name": "drill_question",
+            "Actual Rows": 83,
+            "Actual Loops": 1,
+            "Rows Removed by Filter": 3665
+          },
+          {
+            "Node Type": "BitmapAnd",
+            "Actual Rows": 0,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Bitmap Index Scan",
+            "Index Name": "drill_question_source_category_edb6d61a_like",
+            "Actual Rows": 4575,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Bitmap Index Scan",
+            "Index Name": "drill_question_is_practiceable_1cd02f4f",
+            "Actual Rows": 9946,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "BitmapOr",
+            "Actual Rows": 0,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Bitmap Index Scan",
+            "Index Name": "drill_question_document_id_3b76eb04",
+            "Actual Rows": 7094,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Bitmap Index Scan",
+            "Index Name": "drill_question_document_order_unique",
+            "Actual Rows": 49,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Bitmap Index Scan",
+            "Index Name": "drill_question_document_order_unique",
+            "Actual Rows": 1,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Limit",
+            "Actual Rows": 0,
+            "Actual Loops": 3747
+          },
+          {
+            "Node Type": "Index Only Scan",
+            "Relation Name": "drill_questionattempt",
+            "Index Name": "drill_attempt_latest_idx",
+            "Actual Rows": 0,
+            "Actual Loops": 3747
+          },
+          {
+            "Node Type": "Limit",
+            "Actual Rows": 1,
+            "Actual Loops": 284
+          },
+          {
+            "Node Type": "Index Only Scan",
+            "Relation Name": "drill_questionattempt",
+            "Index Name": "drill_attempt_latest_idx",
+            "Actual Rows": 1,
+            "Actual Loops": 284
+          }
+        ]
+      }
+    ],
+    "response_bytes": 3456
+  },
+  "drill-selected-detail": {
+    "samples": 5,
+    "p50_ms": 79.592,
+    "p95_ms": 97.329,
+    "sql_count": [
+      16,
+      16,
+      16,
+      16,
+      16
+    ],
+    "sql_total_ms": [
+      36.548,
+      35.235,
+      35.559,
+      40.071,
+      33.066
+    ],
+    "payload_hashes": [
+      "8e147adfd3b716a228b4a79b3576c4ef8b856c53c6c7c886d2f4a429c2fedf6b",
+      "8e147adfd3b716a228b4a79b3576c4ef8b856c53c6c7c886d2f4a429c2fedf6b",
+      "8e147adfd3b716a228b4a79b3576c4ef8b856c53c6c7c886d2f4a429c2fedf6b",
+      "8e147adfd3b716a228b4a79b3576c4ef8b856c53c6c7c886d2f4a429c2fedf6b",
+      "8e147adfd3b716a228b4a79b3576c4ef8b856c53c6c7c886d2f4a429c2fedf6b"
+    ],
+    "slow_query_plans": [
+      {
+        "sql_ms": 6.651,
+        "plan_execution_ms": 11.073,
+        "planning_ms": 0.448,
+        "nodes": [
+          {
+            "Node Type": "Sort",
+            "Actual Rows": 963,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Hash Join",
+            "Actual Rows": 963,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Seq Scan",
+            "Relation Name": "drill_question",
+            "Actual Rows": 8677,
+            "Actual Loops": 1,
+            "Rows Removed by Filter": 604
+          },
+          {
+            "Node Type": "Hash",
+            "Actual Rows": 10,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Seq Scan",
+            "Relation Name": "drill_questiondocument",
+            "Actual Rows": 10,
+            "Actual Loops": 1,
+            "Rows Removed by Filter": 13
+          },
+          {
+            "Node Type": "Limit",
+            "Actual Rows": 1,
+            "Actual Loops": 963
+          },
+          {
+            "Node Type": "Index Only Scan",
+            "Relation Name": "drill_questionattempt",
+            "Index Name": "drill_attempt_latest_idx",
+            "Actual Rows": 1,
+            "Actual Loops": 963
+          }
+        ]
+      },
+      {
+        "sql_ms": 4.851,
+        "plan_execution_ms": 4.091,
+        "planning_ms": 0.482,
+        "nodes": [
+          {
+            "Node Type": "Limit",
+            "Actual Rows": 1,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Incremental Sort",
+            "Actual Rows": 1,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Nested Loop",
+            "Actual Rows": 3,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Index Scan",
+            "Relation Name": "drill_questiondocument",
+            "Index Name": "drill_questiondocument_pkey",
+            "Actual Rows": 6,
+            "Actual Loops": 1,
+            "Rows Removed by Filter": 13
+          },
+          {
+            "Node Type": "Bitmap Heap Scan",
+            "Relation Name": "drill_question",
+            "Actual Rows": 0,
+            "Actual Loops": 6,
+            "Rows Removed by Filter": 167
+          },
+          {
+            "Node Type": "BitmapAnd",
+            "Actual Rows": 0,
+            "Actual Loops": 6
+          },
+          {
+            "Node Type": "Bitmap Index Scan",
+            "Index Name": "drill_question_document_id_3b76eb04",
+            "Actual Rows": 503,
+            "Actual Loops": 6
+          },
+          {
+            "Node Type": "BitmapOr",
+            "Actual Rows": 0,
+            "Actual Loops": 5
+          },
+          {
+            "Node Type": "Bitmap Index Scan",
+            "Index Name": "drill_question_document_id_3b76eb04",
+            "Actual Rows": 4257,
+            "Actual Loops": 5
+          },
+          {
+            "Node Type": "Bitmap Index Scan",
+            "Index Name": "drill_question_document_order_unique",
+            "Actual Rows": 690,
+            "Actual Loops": 5
+          },
+          {
+            "Node Type": "Bitmap Index Scan",
+            "Index Name": "drill_question_document_order_unique",
+            "Actual Rows": 1,
+            "Actual Loops": 5
+          },
+          {
+            "Node Type": "Bitmap Index Scan",
+            "Index Name": "drill_question_is_practiceable_1cd02f4f",
+            "Actual Rows": 9946,
+            "Actual Loops": 2
+          },
+          {
+            "Node Type": "Limit",
+            "Actual Rows": 1,
+            "Actual Loops": 51
+          },
+          {
+            "Node Type": "Index Only Scan",
+            "Relation Name": "drill_questionattempt",
+            "Index Name": "drill_attempt_latest_idx",
+            "Actual Rows": 1,
+            "Actual Loops": 51
+          },
+          {
+            "Node Type": "Limit",
+            "Actual Rows": 1,
+            "Actual Loops": 5
+          },
+          {
+            "Node Type": "Index Only Scan",
+            "Relation Name": "drill_questionattempt",
+            "Index Name": "drill_attempt_latest_idx",
+            "Actual Rows": 1,
+            "Actual Loops": 5
+          }
+        ]
+      }
+    ],
+    "response_bytes": 3170
+  },
+  "drill-list": {
+    "samples": 5,
+    "p50_ms": 41.139,
+    "p95_ms": 45.045,
+    "sql_count": [
+      7,
+      7,
+      7,
+      7,
+      7
+    ],
+    "sql_total_ms": [
+      18.348,
+      24.952,
+      16.748,
+      25.359,
+      24.774
+    ],
+    "payload_hashes": [
+      "985627b4c55503a7169574dbf63d3863f859b6864b28e37f5d5566a92c9306b2",
+      "985627b4c55503a7169574dbf63d3863f859b6864b28e37f5d5566a92c9306b2",
+      "985627b4c55503a7169574dbf63d3863f859b6864b28e37f5d5566a92c9306b2",
+      "985627b4c55503a7169574dbf63d3863f859b6864b28e37f5d5566a92c9306b2",
+      "985627b4c55503a7169574dbf63d3863f859b6864b28e37f5d5566a92c9306b2"
+    ],
+    "slow_query_plans": [
+      {
+        "sql_ms": 15.009,
+        "plan_execution_ms": 15.945,
+        "planning_ms": 0.507,
+        "nodes": [
+          {
+            "Node Type": "Aggregate",
+            "Actual Rows": 4,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Hash Join",
+            "Actual Rows": 5847,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Hash Join",
+            "Actual Rows": 5847,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Seq Scan",
+            "Relation Name": "drill_question",
+            "Actual Rows": 8677,
+            "Actual Loops": 1,
+            "Rows Removed by Filter": 604
+          },
+          {
+            "Node Type": "Hash",
+            "Actual Rows": 10,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Seq Scan",
+            "Relation Name": "drill_questiondocument",
+            "Actual Rows": 10,
+            "Actual Loops": 1,
+            "Rows Removed by Filter": 13
+          },
+          {
+            "Node Type": "Hash",
+            "Actual Rows": 8635,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Seq Scan",
+            "Relation Name": "drill_questionexamtype",
+            "Actual Rows": 8635,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Hash Join",
+            "Actual Rows": 5847,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Hash Join",
+            "Actual Rows": 5847,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "CTE Scan",
+            "Actual Rows": 5847,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Hash",
+            "Actual Rows": 681,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Subquery Scan",
+            "Actual Rows": 681,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Unique",
+            "Actual Rows": 681,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Merge Join",
+            "Actual Rows": 844,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Index Only Scan",
+            "Relation Name": "drill_questionattempt",
+            "Index Name": "drill_attempt_latest_idx",
+            "Actual Rows": 1336,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Sort",
+            "Actual Rows": 5885,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "CTE Scan",
+            "Actual Rows": 5847,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Hash",
+            "Actual Rows": 3124,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Index Only Scan",
+            "Relation Name": "drill_questionsearchdocument",
+            "Index Name": "drill_search_metadata_only",
+            "Actual Rows": 3124,
+            "Actual Loops": 1
+          }
+        ]
+      },
+      {
+        "sql_ms": 8.263,
+        "plan_execution_ms": 1.346,
+        "planning_ms": 1.068,
+        "nodes": [
+          {
+            "Node Type": "Incremental Sort",
+            "Actual Rows": 24,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Nested Loop",
+            "Actual Rows": 24,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Merge Join",
+            "Actual Rows": 24,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Sort",
+            "Actual Rows": 24,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Hash Join",
+            "Actual Rows": 24,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Bitmap Heap Scan",
+            "Relation Name": "drill_question",
+            "Actual Rows": 24,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Bitmap Index Scan",
+            "Index Name": "drill_question_pkey",
+            "Actual Rows": 24,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Hash",
+            "Actual Rows": 1458,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Seq Scan",
+            "Relation Name": "drill_questiontopic",
+            "Actual Rows": 1458,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Sort",
+            "Actual Rows": 1,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Seq Scan",
+            "Relation Name": "drill_questiondocument",
+            "Actual Rows": 23,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Index Scan",
+            "Relation Name": "drill_questionexamtype",
+            "Index Name": "drill_questionexamtype_question_id_key",
+            "Actual Rows": 1,
+            "Actual Loops": 24
+          },
+          {
+            "Node Type": "Limit",
+            "Actual Rows": 0,
+            "Actual Loops": 24
+          },
+          {
+            "Node Type": "Aggregate",
+            "Actual Rows": 0,
+            "Actual Loops": 24
+          },
+          {
+            "Node Type": "Index Only Scan",
+            "Relation Name": "drill_questionattempt",
+            "Index Name": "drill_attempt_latest_idx",
+            "Actual Rows": 0,
+            "Actual Loops": 24
+          },
+          {
+            "Node Type": "Limit",
+            "Actual Rows": 0,
+            "Actual Loops": 24
+          },
+          {
+            "Node Type": "Aggregate",
+            "Actual Rows": 0,
+            "Actual Loops": 24
+          },
+          {
+            "Node Type": "Index Only Scan",
+            "Relation Name": "drill_questionattempt",
+            "Index Name": "drill_attempt_latest_idx",
+            "Actual Rows": 0,
+            "Actual Loops": 24
+          },
+          {
+            "Node Type": "Bitmap Heap Scan",
+            "Relation Name": "drill_questionuserstate",
+            "Actual Rows": 107,
+            "Actual Loops": 1,
+            "Rows Removed by Filter": 1
+          },
+          {
+            "Node Type": "Bitmap Index Scan",
+            "Index Name": "drill_questionuserstate_is_favorite_97339dbc",
+            "Actual Rows": 114,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Index Scan",
+            "Relation Name": "drill_questionuserstate",
+            "Index Name": "drill_questionuserstate_review_later_576769f8",
+            "Actual Rows": 14,
+            "Actual Loops": 1,
+            "Rows Removed by Filter": 0
+          },
+          {
+            "Node Type": "Limit",
+            "Actual Rows": 1,
+            "Actual Loops": 24
+          },
+          {
+            "Node Type": "Index Scan",
+            "Relation Name": "drill_questionuserstate",
+            "Index Name": "drill_questionuserstate_question_id_528420bc",
+            "Actual Rows": 1,
+            "Actual Loops": 24,
+            "Rows Removed by Filter": 1
+          },
+          {
+            "Node Type": "Limit",
+            "Actual Rows": 0,
+            "Actual Loops": 24
+          },
+          {
+            "Node Type": "Index Only Scan",
+            "Relation Name": "drill_questionattempt",
+            "Index Name": "drill_attempt_latest_idx",
+            "Actual Rows": 0,
+            "Actual Loops": 24
+          },
+          {
+            "Node Type": "Limit",
+            "Actual Rows": 0,
+            "Actual Loops": 24
+          },
+          {
+            "Node Type": "Index Only Scan",
+            "Relation Name": "drill_questionattempt",
+            "Index Name": "drill_attempt_latest_idx",
+            "Actual Rows": 0,
+            "Actual Loops": 24
+          }
+        ]
+      }
+    ],
+    "response_bytes": 15262
+  },
+  "drill-search": {
+    "samples": 5,
+    "p50_ms": 140.869,
+    "p95_ms": 144.472,
+    "sql_count": [
+      8,
+      8,
+      8,
+      8,
+      8
+    ],
+    "sql_total_ms": [
+      112.281,
+      120.145,
+      123.403,
+      111.757,
+      116.013
+    ],
+    "payload_hashes": [
+      "3eda0f96071b14c1855d13489c539922ccaac93e851337dab6bc396a93d9ca47",
+      "3eda0f96071b14c1855d13489c539922ccaac93e851337dab6bc396a93d9ca47",
+      "3eda0f96071b14c1855d13489c539922ccaac93e851337dab6bc396a93d9ca47",
+      "3eda0f96071b14c1855d13489c539922ccaac93e851337dab6bc396a93d9ca47",
+      "3eda0f96071b14c1855d13489c539922ccaac93e851337dab6bc396a93d9ca47"
+    ],
+    "slow_query_plans": [
+      {
+        "sql_ms": 57.74,
+        "plan_execution_ms": 52.467,
+        "planning_ms": 0.58,
+        "nodes": [
+          {
+            "Node Type": "Limit",
+            "Actual Rows": 24,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Sort",
+            "Actual Rows": 24,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Nested Loop",
+            "Actual Rows": 1335,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Hash Join",
+            "Actual Rows": 1335,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Nested Loop",
+            "Actual Rows": 1335,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Aggregate",
+            "Actual Rows": 1392,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "CTE Scan",
+            "Actual Rows": 1392,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Index Scan",
+            "Relation Name": "drill_questionsearchdocument",
+            "Index Name": "drill_questionsearchdocument_workspace_4260c2a9",
+            "Actual Rows": 1392,
+            "Actual Loops": 1,
+            "Rows Removed by Filter": 5000
+          },
+          {
+            "Node Type": "Index Scan",
+            "Relation Name": "drill_question",
+            "Index Name": "drill_question_pkey",
+            "Actual Rows": 1,
+            "Actual Loops": 1392,
+            "Rows Removed by Filter": 0
+          },
+          {
+            "Node Type": "Hash",
+            "Actual Rows": 10,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Seq Scan",
+            "Relation Name": "drill_questiondocument",
+            "Actual Rows": 10,
+            "Actual Loops": 1,
+            "Rows Removed by Filter": 13
+          },
+          {
+            "Node Type": "Index Scan",
+            "Relation Name": "drill_questionsearchdocument",
+            "Index Name": "drill_questionsearchdocument_pkey",
+            "Actual Rows": 1,
+            "Actual Loops": 1335
+          },
+          {
+            "Node Type": "Subquery Scan",
+            "Actual Rows": 1,
+            "Actual Loops": 1335
+          },
+          {
+            "Node Type": "Result",
+            "Actual Rows": 1,
+            "Actual Loops": 1335
+          }
+        ]
+      },
+      {
+        "sql_ms": 52.631,
+        "plan_execution_ms": 53.097,
+        "planning_ms": 1.316,
+        "nodes": [
+          {
+            "Node Type": "Aggregate",
+            "Actual Rows": 4,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Nested Loop",
+            "Actual Rows": 1335,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Nested Loop",
+            "Actual Rows": 1335,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Hash Join",
+            "Actual Rows": 1335,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Nested Loop",
+            "Actual Rows": 1335,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Aggregate",
+            "Actual Rows": 1392,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "CTE Scan",
+            "Actual Rows": 1392,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Index Scan",
+            "Relation Name": "drill_questionsearchdocument",
+            "Index Name": "drill_questionsearchdocument_workspace_4260c2a9",
+            "Actual Rows": 1392,
+            "Actual Loops": 1,
+            "Rows Removed by Filter": 5000
+          },
+          {
+            "Node Type": "Index Scan",
+            "Relation Name": "drill_question",
+            "Index Name": "drill_question_pkey",
+            "Actual Rows": 1,
+            "Actual Loops": 1392,
+            "Rows Removed by Filter": 0
+          },
+          {
+            "Node Type": "Hash",
+            "Actual Rows": 10,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Seq Scan",
+            "Relation Name": "drill_questiondocument",
+            "Actual Rows": 10,
+            "Actual Loops": 1,
+            "Rows Removed by Filter": 13
+          },
+          {
+            "Node Type": "Index Scan",
+            "Relation Name": "drill_questionexamtype",
+            "Index Name": "drill_questionexamtype_question_id_key",
+            "Actual Rows": 1,
+            "Actual Loops": 1335
+          },
+          {
+            "Node Type": "Index Scan",
+            "Relation Name": "drill_questionsearchdocument",
+            "Index Name": "drill_questionsearchdocument_pkey",
+            "Actual Rows": 1,
+            "Actual Loops": 1335
+          },
+          {
+            "Node Type": "Hash Join",
+            "Actual Rows": 1335,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "CTE Scan",
+            "Actual Rows": 1335,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Hash",
+            "Actual Rows": 145,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Subquery Scan",
+            "Actual Rows": 145,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Unique",
+            "Actual Rows": 145,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Sort",
+            "Actual Rows": 166,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Hash Join",
+            "Actual Rows": 166,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "CTE Scan",
+            "Actual Rows": 1335,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Hash",
+            "Actual Rows": 1336,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Seq Scan",
+            "Relation Name": "drill_questionattempt",
+            "Actual Rows": 1336,
+            "Actual Loops": 1,
+            "Rows Removed by Filter": 55
+          }
+        ]
+      }
+    ],
+    "response_bytes": 20704
+  },
+  "drill-selected-heatmap": {
+    "samples": 5,
+    "p50_ms": 119.826,
+    "p95_ms": 221.497,
+    "sql_count": [
+      6,
+      6,
+      6,
+      6,
+      6
+    ],
+    "sql_total_ms": [
+      87.561,
+      58.125,
+      64.353,
+      48.333,
+      97.617
+    ],
+    "payload_hashes": [
+      "ab1d4c4a21a3affc6dc1e631a82b0bce234fd6342857112fbf6956bd1f162940",
+      "ab1d4c4a21a3affc6dc1e631a82b0bce234fd6342857112fbf6956bd1f162940",
+      "ab1d4c4a21a3affc6dc1e631a82b0bce234fd6342857112fbf6956bd1f162940",
+      "ab1d4c4a21a3affc6dc1e631a82b0bce234fd6342857112fbf6956bd1f162940",
+      "ab1d4c4a21a3affc6dc1e631a82b0bce234fd6342857112fbf6956bd1f162940"
+    ],
+    "slow_query_plans": [
+      {
+        "sql_ms": 47.43,
+        "plan_execution_ms": 6.309,
+        "planning_ms": 3.641,
+        "nodes": [
+          {
+            "Node Type": "Aggregate",
+            "Actual Rows": 1,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Hash Join",
+            "Actual Rows": 567,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Hash Join",
+            "Actual Rows": 963,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Seq Scan",
+            "Relation Name": "drill_question",
+            "Actual Rows": 8677,
+            "Actual Loops": 1,
+            "Rows Removed by Filter": 604
+          },
+          {
+            "Node Type": "Hash",
+            "Actual Rows": 10,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Seq Scan",
+            "Relation Name": "drill_questiondocument",
+            "Actual Rows": 10,
+            "Actual Loops": 1,
+            "Rows Removed by Filter": 13
+          },
+          {
+            "Node Type": "Hash",
+            "Actual Rows": 567,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Seq Scan",
+            "Relation Name": "drill_questionattempt",
+            "Actual Rows": 567,
+            "Actual Loops": 1,
+            "Rows Removed by Filter": 824
+          }
+        ]
+      },
+      {
+        "sql_ms": 15.123,
+        "plan_execution_ms": 6.938,
+        "planning_ms": 0.478,
+        "nodes": [
+          {
+            "Node Type": "Sort",
+            "Actual Rows": 963,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Hash Join",
+            "Actual Rows": 963,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Nested Loop",
+            "Actual Rows": 963,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Hash Join",
+            "Actual Rows": 963,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Seq Scan",
+            "Relation Name": "drill_question",
+            "Actual Rows": 8677,
+            "Actual Loops": 1,
+            "Rows Removed by Filter": 604
+          },
+          {
+            "Node Type": "Hash",
+            "Actual Rows": 10,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Seq Scan",
+            "Relation Name": "drill_questiondocument",
+            "Actual Rows": 10,
+            "Actual Loops": 1,
+            "Rows Removed by Filter": 13
+          },
+          {
+            "Node Type": "Index Scan",
+            "Relation Name": "drill_questionexamtype",
+            "Index Name": "drill_questionexamtype_question_id_key",
+            "Actual Rows": 1,
+            "Actual Loops": 963
+          },
+          {
+            "Node Type": "Hash",
+            "Actual Rows": 1458,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Seq Scan",
+            "Relation Name": "drill_questiontopic",
+            "Actual Rows": 1458,
+            "Actual Loops": 1
+          }
+        ]
+      }
+    ],
+    "response_bytes": 307792
+  },
+  "ei-heatmap": {
+    "samples": 5,
+    "p50_ms": 294.835,
+    "p95_ms": 359.711,
+    "sql_count": [
+      6,
+      6,
+      6,
+      6,
+      6
+    ],
+    "sql_total_ms": [
+      90.865,
+      91.751,
+      127.171,
+      170.541,
+      85.279
+    ],
+    "payload_hashes": [
+      "b8d39eaa31d1fdb09b77dc03a22029cc150fa913f4a4dfc8938b10fae1f236bf",
+      "b8d39eaa31d1fdb09b77dc03a22029cc150fa913f4a4dfc8938b10fae1f236bf",
+      "b8d39eaa31d1fdb09b77dc03a22029cc150fa913f4a4dfc8938b10fae1f236bf",
+      "b8d39eaa31d1fdb09b77dc03a22029cc150fa913f4a4dfc8938b10fae1f236bf",
+      "b8d39eaa31d1fdb09b77dc03a22029cc150fa913f4a4dfc8938b10fae1f236bf"
+    ],
+    "slow_query_plans": [
+      {
+        "sql_ms": 19.742,
+        "plan_execution_ms": 4.91,
+        "planning_ms": 5.199,
+        "nodes": [
+          {
+            "Node Type": "Sort",
+            "Actual Rows": 492,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Hash Join",
+            "Actual Rows": 492,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Seq Scan",
+            "Relation Name": "drill_questionattempt",
+            "Actual Rows": 492,
+            "Actual Loops": 1,
+            "Rows Removed by Filter": 899
+          },
+          {
+            "Node Type": "Hash",
+            "Actual Rows": 2830,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Hash Join",
+            "Actual Rows": 2830,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Seq Scan",
+            "Relation Name": "drill_question",
+            "Actual Rows": 8677,
+            "Actual Loops": 1,
+            "Rows Removed by Filter": 604
+          },
+          {
+            "Node Type": "Hash",
+            "Actual Rows": 13,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Seq Scan",
+            "Relation Name": "drill_questiondocument",
+            "Actual Rows": 13,
+            "Actual Loops": 1,
+            "Rows Removed by Filter": 10
+          }
+        ]
+      },
+      {
+        "sql_ms": 17.026,
+        "plan_execution_ms": 4.436,
+        "planning_ms": 5.33,
+        "nodes": [
+          {
+            "Node Type": "Aggregate",
+            "Actual Rows": 1,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Hash Join",
+            "Actual Rows": 231,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Seq Scan",
+            "Relation Name": "drill_questionattempt",
+            "Actual Rows": 231,
+            "Actual Loops": 1,
+            "Rows Removed by Filter": 1160
+          },
+          {
+            "Node Type": "Hash",
+            "Actual Rows": 2830,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Hash Join",
+            "Actual Rows": 2830,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Seq Scan",
+            "Relation Name": "drill_question",
+            "Actual Rows": 8677,
+            "Actual Loops": 1,
+            "Rows Removed by Filter": 604
+          },
+          {
+            "Node Type": "Hash",
+            "Actual Rows": 13,
+            "Actual Loops": 1
+          },
+          {
+            "Node Type": "Seq Scan",
+            "Relation Name": "drill_questiondocument",
+            "Actual Rows": 13,
+            "Actual Loops": 1,
+            "Rows Removed by Filter": 10
+          }
+        ]
+      }
+    ],
+    "response_bytes": 892795
+  }
+}

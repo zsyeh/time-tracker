@@ -73,3 +73,5 @@
 - 仅改Drill组件且Python依赖/后端/共享Timer未变时，可从当前明确生产image构建不可变frontend overlay：只带完整Drill dist、改动源文件和revision标签，再collectstatic；不重复归档整个仓库。834798e发布包约1.5MB；保留原image/配置回滚，不在运行容器内热改文件。
 
 - 2026-11-14实证：共享导航弹层Teleport后可能脱离sidebar的focus样式；最终构建前检查展开弹层在实际宿主中的焦点色、长标签、触屏键盘焦点，以及原生输入是否接入主题。复用 `shared/ui/overlayInteraction.test.ts` 与既有本地fixture，避免重复搭环境。40相关用例+两前端构建36.82秒；远端镜像构建108秒单独记为发布耗时，不能用本地gate时长冒充上线时长。[研究落地及计时](../docs/reference-ui-20261114/README.md)。
+
+- 2026-11-14数据库实证：先在同一RR READ ONLY快照交替测原/候选查询，量CPU/ORM与SQL总耗时；不要仅因GROUP BY减少就上线。先前关联计数实验因额外ORM开销撤回，最终保留原计数与状态复用。search已有read_snapshot时不得另包默认RC事务；性能前后用同一探针，额外JSON规范化会改变GC/负载，不能混作延迟基线。宿主release的回滚脚本必须实际test -x/sh -n，overlay路径不等同宿主入口；空迁移计划可能缩进，解析先strip。最终43局部用例、索引正反向、生产证据见[报告](../docs/query-optimization-20261114/README.md)。
