@@ -46,11 +46,11 @@ with override_settings(ALLOWED_HOSTS=['drill.test','ei.test'],DRILL_HOSTS={'dril
    elapsed=(time.perf_counter()-start)*1000
    assert response.status_code==200,(label,response.status_code)
    if n:
-    samples.append(round(elapsed,3));sqlcounts.append(len(executed));sqltimes.append(round(sum(x[0] for x in executed),3));payloads.append(hashlib.sha256(response.content).hexdigest())
+    samples.append(round(elapsed,3));sqlcounts.append(len(executed));sqltimes.append(round(sum(x[0] for x in executed),3));payloads.append(hashlib.sha256(json.dumps(json.loads(response.content),sort_keys=True,ensure_ascii=False).encode()).hexdigest())
    if n==5:
-    for ms,sql,params in sorted(executed,reverse=True,key=lambda x:x[0])[:2]:
+    for ms,sql,sql_params in sorted(executed,reverse=True,key=lambda x:x[0])[:2]:
      with connection.cursor() as cursor:
-      cursor.execute('EXPLAIN (ANALYZE,BUFFERS,FORMAT JSON) '+sql,params);plan=cursor.fetchone()[0][0]
+      cursor.execute('EXPLAIN (ANALYZE,BUFFERS,FORMAT JSON) '+sql,sql_params);plan=cursor.fetchone()[0][0]
      nodes=[]
      def walk(node):
       nodes.append({k:node[k] for k in ['Node Type','Relation Name','Index Name','Actual Rows','Actual Loops','Rows Removed by Filter'] if k in node})

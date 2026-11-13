@@ -76,6 +76,26 @@ class NavigationQueryTests(TestCase):
         self.assertIsNone(summary.latest_result)
         self.assertIsNone(summary.latest_attempted_at)
 
+    def test_detail_reuses_user_state_without_leaking_another_accounts_note(self):
+        question = self.questions[0]
+        QuestionUserState.objects.create(user=self.other, question=question,
+            is_favorite=True, review_later=True, note='Other account private note')
+        client = APIClient(HTTP_HOST='drill.test')
+        client.force_authenticate(self.user)
+        empty = client.get(f'/api/drill/questions/{question.uuid}/')
+        self.assertEqual(empty.status_code, 200)
+        self.assertIsNone(empty.data['saved_note'])
+        self.assertFalse(empty.data['is_favorite'])
+        self.assertFalse(empty.data['review_later'])
+        QuestionUserState.objects.create(user=self.user, question=question,
+            is_favorite=True, review_later=True, note='Own note')
+        owned = client.get(f'/api/drill/questions/{question.uuid}/')
+        self.assertEqual(owned.status_code, 200)
+        self.assertEqual(owned.data['saved_note'], 'Own note')
+        self.assertEqual(owned.data['note'], 'Own note')
+        self.assertTrue(owned.data['is_favorite'])
+        self.assertTrue(owned.data['review_later'])
+
     def test_bounded_neighbors_equal_original_materialized_order_and_fallback(self):
         # Covers ordering across books, hidden current question,
         # reset/other-user states, type/search/unattempted filters and both workspaces.

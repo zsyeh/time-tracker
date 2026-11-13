@@ -53,27 +53,26 @@ def workspace_questions(request):
     return with_exam_type(Question.objects.filter(document__workspace=request_workspace(request)))
 
 
-def question_progress(queryset, user, *, include_latest=True):
+def question_progress(queryset, user, *, include_latest=True, include_user_state=True):
     queryset = with_exam_type(queryset)
-    attempts = QuestionAttempt.objects.filter(
+    latest = QuestionAttempt.objects.filter(
         user=user,
         question_id=OuterRef('pk'),
-    )
-    latest = attempts.order_by('-created_at', '-pk')
-    counts = attempts.order_by().values('question_id').annotate(
-        completed=Count('pk', filter=Q(result__in=('done', 'correct', 'review'))),
-        changes=Count('pk'),
-    )
-    user_state = QuestionUserState.objects.filter(user=user, question_id=OuterRef('pk'))
+    ).order_by('-created_at', '-pk')
     queryset = queryset.annotate(
-        # Keep the page/detail lookup narrow. Joining attempts here forced a
-        # GROUP BY of every Question field, including large prompt/answer text.
-        attempt_count=Coalesce(Subquery(counts.values('completed')[:1]), Value(0)),
-        state_change_count=Coalesce(Subquery(counts.values('changes')[:1]), Value(0)),
-        is_favorite=Exists(user_state.filter(is_favorite=True)),
-        review_later=Exists(user_state.filter(review_later=True)),
-        saved_note=Subquery(user_state.values('note')[:1]),
+        attempt_count=Count(
+            'attempts',
+            filter=Q(attempts__user=user, attempts__result__in=('done', 'correct', 'review')),
+        ),
+        state_change_count=Count('attempts', filter=Q(attempts__user=user)),
     )
+    if include_user_state:
+        user_state = QuestionUserState.objects.filter(user=user, question_id=OuterRef('pk'))
+        queryset = queryset.annotate(
+            is_favorite=Exists(user_state.filter(is_favorite=True)),
+            review_later=Exists(user_state.filter(review_later=True)),
+            saved_note=Subquery(user_state.values('note')[:1]),
+        )
     if include_latest:
         queryset = queryset.annotate(
             latest_result=Subquery(latest.values('result')[:1]),
@@ -884,7 +883,7 @@ class DrillQuestionDetailView(APIView):
                 workspace_questions(request).select_related(
                     'document', 'topic', 'similarity_topic', 'exam_type',
                 ).prefetch_related(Prefetch('assets', queryset=assets)),
-                request.user, include_latest=False,
+                request.user, include_latest=False, include_user_state=False,
             ),
             uuid=question_uuid,
         )
@@ -913,6 +912,11 @@ class DrillQuestionDetailView(APIView):
         user_state = QuestionUserState.objects.filter(
             user=request.user, question=question,
         ).first()
+        # Detail already needs this full state for note/version. Reuse it instead
+        # of separately querying favorite, review-later and note in its SELECT.
+        question.is_favorite = user_state.is_favorite if user_state else False
+        question.review_later = user_state.review_later if user_state else False
+        question.saved_note = user_state.note if user_state else None
         review_plan = QuestionReviewPlan.objects.filter(
             user=request.user, question=question,
         ).first()
