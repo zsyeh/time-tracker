@@ -25,7 +25,7 @@ import { runtimeWorkspace, withWorkspacePrefix } from '../lib/runtimePath'
 import { buildClipboardPng, copyImagesToClipboard, downloadImageBlob, shareImageBlob } from '../lib/imageClipboard'
 import { useUiPreferences } from '../lib/uiPreferences'
 import { usePracticePreferences } from '../lib/practicePreferences'
-import { parseListContext, previewLocation, previewQuestionLocation, type PreviewPage } from '../lib/listContext'
+import { buildListContext, parseListContext, previewLocation, previewQuestionLocation, type PreviewPage } from '../lib/listContext'
 import { getPreviewAnchor, getPreviewSession } from '../lib/collectionPreview'
 
 const props = defineProps<{ uuid: string }>()
@@ -69,6 +69,19 @@ async function loadPreviewNavigation(signal?: AbortSignal, allowRemoved = false)
   } catch (reason) {
     if (sequence === previewNavigationSequence && !signal?.aborted) previewNavigationError.value = (reason as Error).name === 'AbortError' ? '题单导航暂不可用，请重试题单。作答保存不受影响。' : (reason as Error).message
   } finally { window.clearTimeout(timeout); signal?.removeEventListener('abort', cancel) }
+}
+
+function openScrollingPreview() {
+  if (!question.value) return
+  if (previewContext.value) {
+    void router.push(previewLocation(previewContext.value, typeof route.query.entry === 'string' ? route.query.entry : undefined, props.uuid))
+    return
+  }
+  const context = buildListContext('navigation', {
+    ...navigationQuery(), navigation_anchor: props.uuid, navigation_mode: effectiveNextMode.value,
+    navigation_from: String(route.query.from || ''),
+  }, route.fullPath)
+  void router.push(previewLocation(context, undefined, props.uuid))
 }
 
 const errorOptions: Array<{ code: ErrorCode; label: string; group: string }> = [
@@ -1451,6 +1464,7 @@ onBeforeRouteLeave(() => {
       </header>
 
       <div class="question-save-actions" :aria-label="uiText('题目工具')">
+        <button type="button" class="question-scroll-preview" @click="openScrollingPreview">{{ uiText("滚动预览") }}</button>
         <button type="button" :aria-pressed="question.is_favorite" :class="{ active: question.is_favorite }" :disabled="stateSaving" @click="saveUserState({ is_favorite: !question.is_favorite })"><b>{{ question.is_favorite ? '★' : '☆' }}</b>{{ question.is_favorite ? uiText("已收藏") : uiText("收藏") }}</button>
         <button type="button" :disabled="shareState === 'sharing'" @click="shareQuestion"><b>↗</b>{{ shareState === 'sharing' ? uiText("正在生成…") : shareState === 'copied' ? uiText("链接已复制 ✓") : uiText("复制分享链接") }}</button>
         <button type="button" :aria-pressed="question.review_later" :class="{ active: question.review_later }" :disabled="stateSaving" @click="saveUserState({ review_later: !question.review_later })"><b>↻</b>{{ question.review_later ? uiText("已加入下次复习") : uiText("加入下次复习") }}</button>

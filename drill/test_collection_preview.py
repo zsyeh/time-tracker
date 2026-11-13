@@ -55,6 +55,54 @@ class CollectionPreviewTests(TestCase):
         return QuestionAsset.objects.create(question=question, source_id=source_id, position=position,
             asset_type=kind, sha256=f'{source_id:064x}', image_data=b'BINARY_MUST_NOT_LOAD', width=640, height=960)
 
+    def test_navigation_preview_matches_existing_next_and_wrap_order(self):
+        anchor = self.items[102]
+        data = self.get('navigation', navigation_anchor=str(anchor.uuid)).data
+        ids = [row['question_uuid'] for row in data['results']]
+        self.assertEqual(ids[:4], [str(self.items[n].uuid) for n in [102, 103, 104, 0]])
+        detail = self.client.get(f'/api/drill/questions/{anchor.uuid}/').data
+        self.assertEqual(ids[1], detail['sequential_next_question_uuid'])
+        self.assertEqual(data['located'], None)
+        self.assertEqual(data['count'], 105)
+
+    def test_navigation_review_modes_and_status_use_latest_attempt_age(self):
+        anchor, old, recent, reset = self.items[:4]
+        a = QuestionAttempt.objects.create(user=self.owner, question=old, result='review')
+        QuestionAttempt.objects.filter(pk=a.pk).update(created_at=timezone.now() - datetime.timedelta(days=6))
+        QuestionAttempt.objects.create(user=self.owner, question=recent, result='review')
+        QuestionAttempt.objects.create(user=self.owner, question=reset, result='review')
+        QuestionAttempt.objects.create(user=self.owner, question=reset, result='reset')
+        for mode, expected in [('overdue', old), ('review', recent)]:
+            data = self.get('navigation', navigation_anchor=str(anchor.uuid), navigation_mode=mode).data
+            self.assertEqual([row['question_uuid'] for row in data['results']], [str(anchor.uuid), str(expected.uuid)])
+            self.assertEqual(data['results'][1]['review_overdue'], mode == 'overdue')
+            detail = self.client.get(f'/api/drill/questions/{anchor.uuid}/').data
+            self.assertEqual(str(expected.uuid), detail['next_overdue_review_uuid' if mode == 'overdue' else 'next_review_uuid'])
+        data = self.get('navigation', navigation_anchor=str(anchor.uuid), navigation_mode='unattempted').data
+        self.assertEqual(data['results'][1]['question_uuid'], str(reset.uuid))
+        self.assertNotIn(str(old.uuid), [row['question_uuid'] for row in data['results']])
+
+    def test_navigation_favorites_retains_list_order_without_wrapping(self):
+        for q in self.items[:3]:
+            QuestionUserState.objects.create(user=self.owner, question=q, is_favorite=True)
+        anchor = self.items[1]
+        data = self.get('navigation', navigation_anchor=str(anchor.uuid), navigation_from='collection', collection='favorite').data
+        self.assertEqual([row['question_uuid'] for row in data['results']], [str(q.uuid) for q in reversed(self.items[:3])])
+        detail = self.client.get(f'/api/drill/questions/{anchor.uuid}/', {'from':'collection','collection':'favorite'}).data
+        self.assertEqual(data['results'][2]['question_uuid'], detail['sequential_next_question_uuid'])
+
+    def test_navigation_selected_unattempted_missing_anchor_starts_at_first_eligible(self):
+        anchor = self.items[50]
+        params = {'collection': 'selected', 'type_group': 'large'}
+        data = self.get('navigation', navigation_anchor=str(anchor.uuid), navigation_mode='unattempted', **params).data
+        detail = self.client.get(f'/api/drill/questions/{anchor.uuid}/', params).data
+        self.assertEqual(data['results'][1]['question_uuid'], detail['next_unattempted_question_uuid'])
+        self.assertEqual(data['results'][1]['question_uuid'], str(self.items[1].uuid))
+
+    def test_navigation_rejects_invalid_modes_and_cross_workspace_anchor(self):
+        self.get('navigation', expected=400, navigation_anchor=str(self.items[0].uuid), navigation_mode='anything')
+        self.get('navigation', expected=404, host='ei.test', navigation_anchor=str(self.items[0].uuid))
+
     def test_50_batch_and_practice_page_metadata_are_compatible(self):
         first = self.get().data
         second = self.get(offset=50, collection_version=first['collection_version']).data

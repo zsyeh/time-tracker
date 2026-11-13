@@ -4,6 +4,7 @@ Every request reads one snapshot: ordered thin identities, its version, and at
 most 50 hydrated previews. No persisted collection, duplicated learning state,
 cross-user cache, answer text or image binary is introduced.
 """
+import datetime
 import hashlib
 import json
 import uuid
@@ -30,7 +31,7 @@ from .search.service import order_question_scope, question_list_scope, read_snap
 
 PAGE_SIZE = 50
 SOURCES = {'practice', 'heatmap', 'attempts', 'notes', 'favorite', 'review_later',
-           'selected', 'diagnostics', 'paper', 'errata'}
+           'selected', 'diagnostics', 'paper', 'errata', 'navigation'}
 # Controls change the requested window, never the collection identity. Unknown
 # filters remain bound into the version too, so a context cannot be reused under
 # a different URL silently. Only existing adapters define filter semantics.
@@ -139,11 +140,81 @@ def _selected_entries(request):
     return [entry for _bucket, entry in rows]
 
 
+def _navigation_entries(request, workspace):
+    """One finite pass through the existing Next button order, without writes."""
+    from urllib.parse import parse_qs, urlsplit
+    from .views import (workspace_questions, navigation_queryset,
+                        insight_filtered_querysets, SELECTED_COLLECTIONS, filter_collection)
+    params = request.query_params
+    mode = params.get('navigation_mode', 'sequential')
+    if mode not in {'sequential', 'review', 'overdue', 'unattempted'}:
+        raise ValidationError({'navigation_mode': 'Unknown next-question mode.'})
+    anchor = get_object_or_404(Question.objects.only('pk', 'uuid', 'document_id', 'question_order',
+        'source_category'), uuid=_uuid(params.get('navigation_anchor'), 'navigation_anchor'),
+        document__workspace=workspace)
+    origin = params.get('navigation_from', '')
+    ordered_ids = None
+    if origin == 'collection' and params.get('collection') in {'favorite', 'review_later'}:
+        flag = 'is_favorite' if params['collection'] == 'favorite' else 'review_later'
+        ordered_ids = list(QuestionUserState.objects.filter(user=request.user,
+            question__is_practiceable=True, question__document__workspace=workspace,
+            **{flag: True}).order_by('-updated_at', '-pk').values_list('question_id', flat=True))
+    elif origin == 'insight':
+        path = urlsplit(params.get('insight_return', ''))
+        if path.path == '/insight' and not path.netloc and not path.scheme:
+            filters = {key: values[-1] for key, values in parse_qs(path.query).items()}
+            filtered = insight_filtered_querysets(request, filters)
+            if not isinstance(filtered, Response) and params.get('insight_list') in {'attempts', 'notes'}:
+                ordered_ids = list(dict.fromkeys(filtered[0 if params['insight_list'] == 'attempts' else 1]
+                    .values_list('question_id', flat=True)))
+    if ordered_ids is not None:
+        queryset = workspace_questions(request).filter(pk__in=ordered_ids, is_practiceable=True)
+    elif mode == 'unattempted':
+        queryset = navigation_queryset(anchor, request)
+    else:
+        queryset = workspace_questions(request).filter(is_practiceable=True)
+        queryset = (filter_collection(queryset, request) if params.get('collection') in SELECTED_COLLECTIONS
+                    else queryset.filter(source_category=anchor.source_category))
+        queryset = filter_exam_type(queryset, params)
+    latest = QuestionAttempt.objects.filter(user=request.user, question_id=OuterRef('pk')).order_by('-created_at', '-pk')
+    rows = list(queryset.annotate(_result=Subquery(latest.values('result')[:1]),
+        _at=Subquery(latest.values('created_at')[:1])).order_by('document_id', 'question_order', 'pk')
+        .values_list('pk', 'uuid', 'document_id', 'question_order', '_result', '_at'))
+    cutoff = timezone.now() - datetime.timedelta(days=5)
+    def eligible(row):
+        if row[0] == anchor.pk or mode == 'sequential': return True
+        if mode == 'unattempted': return row[4] in (None, 'reset')
+        return row[4] == 'review' and row[5] is not None and ((row[5] <= cutoff) if mode == 'overdue' else (row[5] > cutoff))
+    if ordered_ids is not None:
+        by_id = {row[0]: row for row in rows}
+        rows = [by_id[pk] for pk in ordered_ids if pk in by_id]
+        if anchor.pk not in by_id:
+            rows = []  # Legacy list navigation has no next when the current item left the list.
+        rows = [row for row in rows if eligible(row)]
+        if mode == 'unattempted' and rows:
+            index = next(i for i, row in enumerate(rows) if row[0] == anchor.pk)
+            rows = rows[index:] + rows[:index]
+    else:
+        key = (anchor.document_id, anchor.question_order, anchor.pk)
+        selected_missing = (mode == 'unattempted' and params.get('collection') in SELECTED_COLLECTIONS
+                            and not any(row[0] == anchor.pk for row in rows))
+        rows = [row for row in rows if row[0] != anchor.pk and eligible(row)]
+        if not selected_missing:
+            rows = ([row for row in rows if (row[2], row[3], row[0]) > key]
+                    + [row for row in rows if (row[2], row[3], row[0]) <= key])
+        rows.insert(0, (anchor.pk, anchor.uuid, anchor.document_id, anchor.question_order, None, None))
+    if not rows:
+        rows = [(anchor.pk, anchor.uuid, anchor.document_id, anchor.question_order, None, None)]
+    return [Entry(f'question:{row[1]}', row[0], str(row[1]), row[0]) for row in rows]
+
+
 def _entries(request, source, workspace):
     """Reuse source membership/order; never turn history rows into unique UUIDs."""
     params = request.query_params
     search_version = None
-    if source == 'practice':
+    if source == 'navigation':
+        entries = _navigation_entries(request, workspace)
+    elif source == 'practice':
         queryset, plan, _state, search_version, hybrid, sort = question_list_scope(request)
         entries = _question_entries(order_question_scope(filter_exam_type(queryset, params), plan, hybrid, sort))
     elif source == 'heatmap':
@@ -246,10 +317,11 @@ def _hydrate(request, source, workspace, entries, offset):
     # Explicit metadata-only fields. Neither current nor revision answers are
     # read, and image_data is excluded from every asset query below.
     questions = {row['id']: row for row in Question.objects.filter(pk__in=ids,
-        document__workspace=workspace).annotate(_latest=Subquery(latest.values('result')[:1])).values(
+        document__workspace=workspace).annotate(_latest=Subquery(latest.values('result')[:1]),
+        _latest_at=Subquery(latest.values('created_at')[:1])).values(
         'id', 'uuid', 'source_label', 'display_label', 'prompt_text', 'latex_text',
         'document__title', 'document__display_title', 'similarity_topic__title',
-        'similarity_topic__display_title', 'topic__title', 'topic__display_title', '_latest')}
+        'similarity_topic__display_title', 'topic__title', 'topic__display_title', '_latest', '_latest_at')}
     state_fields = ['question_id', 'is_favorite', 'review_later']
     if source in {'attempts', 'notes'}:
         state_fields.append('note')
@@ -293,7 +365,10 @@ def _hydrate(request, source, workspace, entries, offset):
                 'document': question['document__display_title'] or question['document__title'],
                 'topic': question['similarity_topic__display_title'] or question['similarity_topic__title']
                          or question['topic__display_title'] or question['topic__title'] or '',
-                'state': _state(question['_latest']), 'is_favorite': state.get('is_favorite', False),
+                'state': _state(question['_latest']),
+                'review_overdue': question['_latest'] == 'review' and question['_latest_at'] is not None
+                    and question['_latest_at'] <= timezone.now() - datetime.timedelta(days=5),
+                'is_favorite': state.get('is_favorite', False),
                 'review_later': state.get('review_later', False),
                 'preview': {'question_markdown': question['prompt_text'] or question['latex_text'],
                             'assets': assets[entry.question_id], 'source_page': entry.question_id in source_pages}}

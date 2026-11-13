@@ -72,3 +72,15 @@ it('does not substitute a different Attempt with the same UUID when the requeste
  expect(scope.previewNavigation.value).toBeNull()
  expect(scope.previewNavigationError.value).toContain('不在当前题单')
 })
+
+it('opens scrolling preview at the current question with the configured next mode',()=>{
+ const push=vi.fn();const route={fullPath:'/practice/current?document=3',query:{document:'3'}}
+ const scope={question:ref({uuid:'current'}),previewContext:ref(null),route,props:{uuid:'current'},router:{push},navigationQuery:()=>({document:'3',type_group:'small'}),effectiveNextMode:ref('overdue'),buildListContext,previewLocation}
+ handler('function openScrollingPreview()', '\nconst errorOptions:', 'openScrollingPreview',scope)()
+ const target=push.mock.calls[0][0];expect(target.query.question).toBe('current');const list=JSON.parse(target.query.list);expect(list.source).toBe('navigation');expect(list.query).toMatchObject({navigation_anchor:'current',navigation_mode:'overdue',document:'3',type_group:'small'});expect(list.returnTo).toBe(route.fullPath)
+})
+it('reuses an existing preview list including duplicate entry identity',()=>{
+ const push=vi.fn();const scope={question:ref({uuid:'same-question'}),previewContext:ref(context),route:{query:{entry:'attempt:12'}},props:{uuid:'same-question'},router:{push},previewLocation}
+ handler('function openScrollingPreview()', '\nconst errorOptions:', 'openScrollingPreview',scope)()
+ expect(push).toHaveBeenCalledWith(previewLocation(context,'attempt:12','same-question'))
+})

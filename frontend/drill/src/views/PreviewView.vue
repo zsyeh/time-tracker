@@ -103,7 +103,7 @@ onBeforeUnmount(() => { save(); destroyed = true; generation++; rangeLoader.disp
 <template>
  <section class="collection-preview" :data-cached-metadata="session?.cachedCount ?? 0">
   <header class="collection-preview-toolbar">
-   <div class="collection-preview-heading"><button type="button" @click="returnToList">返回题单</button><h1>题单预览</h1></div>
+   <div class="collection-preview-heading"><button type="button" @click="returnToList">{{ context?.source === 'navigation' ? '返回做题' : '返回题单' }}</button><h1>题单预览</h1></div>
    <form v-if="count" class="preview-position" @submit.prevent="go"><label for="preview-position">第</label><input id="preview-position" v-model="jump" type="number" inputmode="numeric" min="1" :max="count" aria-label="定位到题单中的第几题" /><span>/ {{ count }}</span><button type="submit">定位</button></form>
   </header>
   <p v-if="notice" class="preview-notice" role="status">{{ noticeText }}</p>

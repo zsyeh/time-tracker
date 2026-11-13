@@ -14,3 +14,9 @@ it('offers one question-level zoom action outside all original scans, including 
  host.querySelector<HTMLButtonElement>('.preview-open')!.click();expect(open).toHaveBeenCalledWith(item)
  app.unmount();host.remove()
 })
+
+it.each([['mastered',false,'mastered','已掌握'],['review',false,'review','待复习'],['review',true,'overdue','逾期复习'],['unattempted',false,'unattempted','未做']] as const)('renders %s overdue=%s with an explicit semantic status and label',(state,review_overdue,status,label)=>{
+ const item:PreviewItem={entry_id:'question:one',question_uuid:'one',index:0,label:'题目',document:'题册',topic:'',state,review_overdue,preview:{question_markdown:'',assets:[]}}
+ const host=document.createElement('div');document.body.append(host);const app=createApp(PreviewQuestionRow,{item,pipeline:{} as PreviewImagePipeline,scroller:null});app.mount(host)
+ const badge=host.querySelector('.preview-mastery-status')!;expect(badge.getAttribute('data-status')).toBe(status);expect(badge.textContent).toContain(label);expect(badge.querySelector('[aria-hidden="true"]')).not.toBeNull();app.unmount();host.remove()
+})
