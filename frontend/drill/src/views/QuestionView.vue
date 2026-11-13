@@ -26,6 +26,7 @@ import { buildClipboardPng, copyImagesToClipboard, downloadImageBlob, shareImage
 import { useUiPreferences } from '../lib/uiPreferences'
 import { usePracticePreferences } from '../lib/practicePreferences'
 import { buildListContext, parseListContext, previewLocation, previewQuestionLocation, type PreviewPage } from '../lib/listContext'
+import { armQuestionEntryCopy, takeQuestionEntryCopy } from '../lib/questionEntryCopy'
 import { getPreviewAnchor, getPreviewSession } from '../lib/collectionPreview'
 
 const props = defineProps<{ uuid: string }>()
@@ -419,6 +420,20 @@ function startPageTurnCopy(target: Promise<string>): boolean {
   }
   return true
 }
+
+let initialEntryCopyChecked = false
+watch(() => question.value?.uuid, uuid => {
+  if (!uuid || initialEntryCopyChecked) return
+  initialEntryCopyChecked = true
+  const task = takeQuestionEntryCopy(uuid) || armQuestionEntryCopy(uuid, route.query)
+  if (!task) return
+  const sequence = pageTurnCopySequence
+  void task.result.then(result => {
+    if (props.uuid !== uuid || sequence !== pageTurnCopySequence) return
+    pageTurnCopyFailed.value = !result.copied
+    pageTurnCopyMessage.value = result.message
+  })
+})
 
 async function shareQuestion() {
   if (shareState.value === 'sharing') return

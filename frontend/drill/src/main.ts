@@ -34,6 +34,7 @@ import NotFoundView from './views/NotFoundView.vue'
 import { initializeUiPreferences } from './lib/uiPreferences'
 import { routerBase } from './lib/runtimePath'
 import './styles.css'
+import { armQuestionEntryCopy } from './lib/questionEntryCopy'
 
 const router = createRouter({
   history: createWebHistory(routerBase),
@@ -76,6 +77,10 @@ const router = createRouter({
     if (_to.name === 'practice' || (_to.name === 'question' && _from.name === 'question')) return false
     return savedPosition || { top: 0 }
   },
+})
+
+router.beforeEach((to, from) => {
+  if (to.name === 'question' && from.name !== 'question' && typeof to.params.uuid === 'string') armQuestionEntryCopy(to.params.uuid, to.query)
 })
 
 initializeUiPreferences()
