@@ -1,0 +1,34 @@
+[
+  {
+    "workspace": "drill",
+    "width": 1180,
+    "scheme": "dark",
+    "modalBounds": {
+      "x": 360,
+      "y": 267.46875,
+      "width": 460,
+      "height": 285.0625
+    },
+    "fullScreen": true,
+    "realSessionApiStatus": 200,
+    "settingsPersisted": true,
+    "cancelDoesNotStartTimer": true,
+    "pageErrors": []
+  },
+  {
+    "workspace": "ei",
+    "width": 390,
+    "scheme": "light",
+    "modalBounds": {
+      "x": 16.296875,
+      "y": 253.46875,
+      "width": 357.390625,
+      "height": 337.0625
+    },
+    "fullScreen": false,
+    "realSessionApiStatus": 200,
+    "settingsPersisted": true,
+    "cancelDoesNotStartTimer": true,
+    "pageErrors": []
+  }
+]

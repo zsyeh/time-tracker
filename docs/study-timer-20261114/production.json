@@ -1,0 +1,13 @@
+{
+  "production": "https://47.95.10.128",
+  "syntheticOwner": true,
+  "physicalSafari": false,
+  "errors": [],
+  "forbiddenWrites": [],
+  "modes": {
+    "drill": "remind",
+    "ei": "remind"
+  },
+  "fullScreenReminder": true,
+  "cancel": true
+}
