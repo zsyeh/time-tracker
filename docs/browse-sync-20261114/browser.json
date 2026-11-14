@@ -1,0 +1,13 @@
+{
+  "serverSaved": true,
+  "newDevice": {
+    "small": true,
+    "unattempted": true,
+    "formatColours": false,
+    "listRequests": 1
+  },
+  "heatmapSmall": true,
+  "deepLinkWins": true,
+  "clearedChoiceSurvivesRefresh": true,
+  "pageErrors": []
+}
