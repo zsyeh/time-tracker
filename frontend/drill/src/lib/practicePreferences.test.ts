@@ -21,3 +21,10 @@ it('shares the account saved copy scale across Drill and EI',async()=>{
  expect(drill.imageCopyScale.value).toBe(1);drill.imageCopyScale.value=3.5
  expect(ei.imageCopyScale.value).toBe(3.5);expect(store.values['practice.image_copy_scale']).toBe(3.5)
 })
+
+it('keeps timer guard modes account-synced and independent for Drill and EI', async()=>{
+ const store=await setup();const {usePracticePreferences}=await import('./practicePreferences');const drill=usePracticePreferences('drill'),ei=usePracticePreferences('ei')
+ expect(drill.studyTimerMode.value).toBe('remind');expect(ei.studyTimerMode.value).toBe('remind')
+ drill.studyTimerMode.value='off';ei.studyTimerMode.value='auto_start'
+ expect(store.values['practice.drill.study_timer_mode']).toBe('off');expect(store.values['practice.ei.study_timer_mode']).toBe('auto_start')
+})

@@ -10,6 +10,7 @@ export const sidebarIds = {
 export type SidebarConfig = { order: string[]; hidden: string[]; collapsed_groups: string[] }
 export type FilterPreset = { id: string; name: string; query: Record<string,string> }
 export type GoalSettings = { target: number; deadline: string }
+export type StudyTimerMode = 'remind' | 'auto_start' | 'off'
 export type PreferenceValues = {
   appearance: Appearance; accent: Accent; font: FontSize; language: 'en'|'zh-CN'|'ja'
   'sidebar.timer': SidebarConfig; 'sidebar.drill': SidebarConfig; 'sidebar.ei': SidebarConfig
@@ -19,6 +20,7 @@ export type PreferenceValues = {
   'practice.next_mode': 'sequential'|'overdue'|'review'|'unattempted'
   'practice.review_auto_next': boolean; 'practice.mastered_auto_next': boolean
   'practice.drill.copy_mode': 'off'|'link'|'image'; 'practice.ei.copy_mode': 'off'|'link'|'image'
+  'practice.drill.study_timer_mode': StudyTimerMode; 'practice.ei.study_timer_mode': StudyTimerMode
 }
 export type PreferenceKey = keyof PreferenceValues
 export type PreferenceSnapshot = { schema_version: 1; revision: number; values: PreferenceValues; field_revisions: Partial<Record<PreferenceKey,number>>; updated_at?: string|null }
@@ -31,6 +33,7 @@ export function preferenceDefaults(): PreferenceValues {
     'sidebar.timer':defaultSidebar('timer'),'sidebar.drill':defaultSidebar('drill'),'sidebar.ei':defaultSidebar('ei'),
     'practice.image_copy_scale':1,'filters.drill':[],'filters.ei':[],'practice.next_mode':'sequential','practice.review_auto_next':false,'practice.mastered_auto_next':true,
     'practice.drill.copy_mode':'off','practice.ei.copy_mode':'off',
+    'practice.drill.study_timer_mode':'remind','practice.ei.study_timer_mode':'remind',
     'progress.drill':{ target:24, deadline:'2026-11-21' }, 'progress.ei':{ target:11, deadline:'2026-11-21' } }
 }
 /** Unknown future fields may coexist, but every field this client renders must be valid. */
@@ -53,6 +56,8 @@ const preferenceEnums: Partial<Record<PreferenceKey, readonly string[]>> = {
   'practice.next_mode': ['sequential', 'overdue', 'review', 'unattempted'],
   'practice.drill.copy_mode': ['off', 'link', 'image'],
   'practice.ei.copy_mode': ['off', 'link', 'image'],
+  'practice.drill.study_timer_mode': ['remind', 'auto_start', 'off'],
+  'practice.ei.study_timer_mode': ['remind', 'auto_start', 'off'],
 }
 const filterEnums: Record<string, readonly string[]> = {
   source_category: ['past_exam', 'adapted_exam', 'mock_exam', 'workbook', 'competition', 'other_practice', 'unclassified'],

@@ -371,6 +371,20 @@ class UserPreferencesAPITests(TestCase):
         self.assertEqual(row.values['future.safe'], 'keep')
         self.assertEqual(row.field_revisions['future.safe'], 1)
 
+    def test_study_timer_modes_are_workspace_and_account_bound(self):
+        self.assertEqual(self.client.get(URL).data['values']['practice.drill.study_timer_mode'], 'remind')
+        changed = self.change({'practice.drill.study_timer_mode': 'off', 'practice.ei.study_timer_mode': 'auto_start'})
+        self.assertEqual(changed.status_code, 200)
+        self.assertEqual(self.client.get(URL).data['values']['practice.ei.study_timer_mode'], 'auto_start')
+        second = APIClient(); second.force_authenticate(self.user)
+        self.assertEqual(second.get(URL).data['values']['practice.drill.study_timer_mode'], 'off')
+        self.assertEqual(second.get(URL).data['values']['practice.ei.study_timer_mode'], 'auto_start')
+        self.client.force_login(self.other)
+        self.assertEqual(self.client.get(URL).data['values']['practice.drill.study_timer_mode'], 'remind')
+        self.assertEqual(self.client.get(URL).data['values']['practice.ei.study_timer_mode'], 'remind')
+        self.assertEqual(self.change({'practice.drill.study_timer_mode': 'invalid'}).status_code, 400)
+        self.assertEqual(self.change({'practice.ei.study_timer_mode': True}).status_code, 400)
+
     def test_custom_image_copy_scale_sync_is_account_bound_and_validated(self):
         legacy = preference_defaults()
         legacy.pop('practice.image_copy_scale')

@@ -16,6 +16,7 @@ function setup() {
     writeLocal:vi.fn(),cacheNoteDraft:vi.fn(),
     ApiError,timingRecoveryResult:ref(null),timerFailureMessage:()=> 'Timing not connected; answer not submitted',
     saving: ref(false), question: ref({ uuid: 'q', state_version: 7 }), props: { uuid: 'q' },
+    studyTimerMode: ref('off'), studyTimerGuard: ref(null),
     diagnosisSaveTimer: 0, diagnosisSaveSequence: 0, operationSequence: 0,
     practiceTimer: timer, note: ref('note'), masteredAutoNext: ref(false), reviewAutoNext: ref(false),
     previewNavigation: ref({}), previewContext: ref(null), isPreviewEntry: ref(false), previewNavigationError: ref(''), previewNavigationTask: Promise.resolve(),
@@ -189,4 +190,17 @@ it('saves the answer before awaiting a slow preview-navigation read',async()=>{
  expect(goToNext).not.toHaveBeenCalled()
  complete();await pending
  expect(goToNext).toHaveBeenCalledWith('sequential',false)
+})
+
+it('cancels a timer reminder before preparing or saving an attempt',async()=>{
+ const {scope,timer,record}=setup();scope.studyTimerMode.value='remind'
+ scope.studyTimerGuard.value={ensure:vi.fn().mockResolvedValue(false)}
+ await record('correct')
+ expect(scope.post).not.toHaveBeenCalled();expect(timer.prepareSubmission).not.toHaveBeenCalled();expect(scope.saving.value).toBe(false)
+})
+it('saves a review after the timer guard allows it',async()=>{
+ const {scope,timer,record}=setup();scope.studyTimerMode.value='remind'
+ const ensure=vi.fn().mockResolvedValue(true);scope.studyTimerGuard.value={ensure}
+ await record('review')
+ expect(ensure).toHaveBeenCalledOnce();expect(timer.prepareSubmission).toHaveBeenCalledOnce();expect(scope.post).toHaveBeenCalledOnce()
 })

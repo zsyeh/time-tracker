@@ -28,6 +28,7 @@ import { usePracticePreferences } from '../lib/practicePreferences'
 import { buildListContext, parseListContext, previewLocation, previewQuestionLocation, type PreviewPage } from '../lib/listContext'
 import { armQuestionEntryCopy, takeQuestionEntryCopy } from '../lib/questionEntryCopy'
 import { getPreviewAnchor, getPreviewSession } from '../lib/collectionPreview'
+import StudyTimerGuard from '../components/StudyTimerGuard.vue'
 
 const props = defineProps<{ uuid: string }>()
 const { t } = useUiPreferences()
@@ -341,7 +342,8 @@ const pageTurnCopyMessage = ref('')
 const pageTurnCopyFailed = ref(false)
 const clipboardImage = ref<Blob | null>(null)
 const actionFeedback = ref('')
-const { nextMode, pageTurnCopyMode, reviewAutoNext, masteredAutoNext, imageCopyScale } = usePracticePreferences()
+const { nextMode, pageTurnCopyMode, reviewAutoNext, masteredAutoNext, imageCopyScale, studyTimerMode } = usePracticePreferences()
+const studyTimerGuard = ref<InstanceType<typeof StudyTimerGuard> | null>(null)
 const effectiveNextMode = computed(() => isPreviewEntry.value ? 'sequential' : nextMode.value)
 watch([() => props.uuid, imageCopyScale], () => { clipboardImage.value = null; imageCopyState.value = 'idle'; imageCopyMessage.value = '' }, { flush: 'sync' })
 const autoCopyLink = computed({
@@ -944,6 +946,10 @@ async function record(result: 'correct' | 'review' | 'reset', omitTiming = false
   }
   try {
     const pendingBody=roundTimer?.state.pendingAttempt
+    if (!pendingBody && result !== 'reset' && studyTimerMode.value !== 'off') {
+      if (!await studyTimerGuard.value?.ensure()) return
+      if (props.uuid !== uuid || sequence !== operationSequence) return
+    }
     if(pendingBody&&pendingBody.result!==result){
       error.value=typeText('上次作答结果尚未确认，请先点击“重试上次作答”。','The previous answer is not confirmed. Retry the previous submission first.')
       return
@@ -1442,6 +1448,7 @@ onBeforeRouteLeave(() => {
 
 <template>
   <section class="page question-page">
+    <StudyTimerGuard ref="studyTimerGuard" :workspace="runtimeWorkspace" v-model:mode="studyTimerMode" :context="props.uuid" />
     <FullscreenReader ref="questionReader" hide-trigger :controls="readerControls" :content-key="readerDocument.key" :title="readerDocument.title" :images="readerDocument.images" :markdown="readerDocument.markdown" :prepare="prepareReader" :pending="readerNavigating && readerDocument.uuid !== props.uuid" :syncing="readerNavigating && readerDocument.uuid === props.uuid" :retryable="!question && !!error && pendingFullscreenTarget === props.uuid" @retry="load" @action="readerAction" @closed="readerClosed">
       <template #recovery>
         <div v-if="timerSyncStatus==='offline'||timerSyncStatus==='conflict'||timingRecoveryResult||pendingAttemptResult" class="timing-recovery in-reader" role="status">

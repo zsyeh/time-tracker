@@ -50,6 +50,8 @@ ENUM_FIELDS = {
     'practice.next_mode': ('sequential', 'overdue', 'review', 'unattempted'),
     'practice.drill.copy_mode': ('off', 'link', 'image'),
     'practice.ei.copy_mode': ('off', 'link', 'image'),
+    'practice.drill.study_timer_mode': ('remind', 'auto_start', 'off'),
+    'practice.ei.study_timer_mode': ('remind', 'auto_start', 'off'),
 }
 BOOL_FIELDS = ('practice.review_auto_next', 'practice.mastered_auto_next')
 FILTER_ENUMS = {
@@ -81,6 +83,7 @@ def preference_defaults():
         'practice.next_mode': 'sequential', 'practice.review_auto_next': False,
         'practice.mastered_auto_next': True,
         'practice.drill.copy_mode': 'off', 'practice.ei.copy_mode': 'off',
+        'practice.drill.study_timer_mode': 'remind', 'practice.ei.study_timer_mode': 'remind',
         'practice.image_copy_scale': 1,
         'filters.drill': [], 'filters.ei': [],
         'progress.drill': {'target': 24, 'deadline': '2026-11-21'},

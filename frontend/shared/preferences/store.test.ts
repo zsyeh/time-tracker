@@ -267,12 +267,15 @@ it('does not discard the account or optimistic retry queue for an ordinary CSRF/
 it('upgrades a 14-field account cache without losing an offline pending edit', async () => {
   const old = copy(snapshot()) as any
   delete old.values['progress.drill']; delete old.values['progress.ei']; delete old.values['practice.image_copy_scale']
+  delete old.values['practice.drill.study_timer_mode']; delete old.values['practice.ei.study_timer_mode']
   localStorage.setItem('learning.preferences.v1.account-a', JSON.stringify({ snapshot: old,
     pending: { font: { value: 'large', base: 0, serial: 42 } } }))
   const remote = server(), store = factory(remote.transport)
   await store.bind('account-a', snapshot())
   expect(store.values.font).toBe('large'); expect(store.pendingCount.value).toBe(1)
   expect(store.values['progress.drill']).toEqual({ target: 24, deadline: '2026-11-21' })
+  expect(store.values['practice.drill.study_timer_mode']).toBe('remind')
+  expect(store.values['practice.ei.study_timer_mode']).toBe('remind')
   await store.flush()
   expect(remote.calls[0]?.patch?.changes).toEqual({ font: 'large' })
   expect(store.pendingCount.value).toBe(0)
