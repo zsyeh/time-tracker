@@ -7,7 +7,7 @@ import { formatColours, typeGroups, typeLabel, typeText, type TypeStats } from '
 const visibleGroups = typeGroups.filter((key) => isEi || key === 'small' || key === 'large')
 const props = defineProps<{ modelValue: string; stats?: TypeStats }>()
 const emit = defineEmits<{ 'update:modelValue': [value: string]; practice: [] }>()
-const { remember } = useBrowsePreferences()
+const { remember, filters } = useBrowsePreferences()
 function select(value: string) {
   remember({ type_group: value, exam_type: '' })
   emit('update:modelValue', value)
@@ -18,6 +18,9 @@ function practice() {
 }
 watch(() => props.modelValue, (value) => {
   if (value && !visibleGroups.some((key) => key === value)) emit('update:modelValue', '')
+  // Adopt a previously selected URL/local value once on upgrade. A later deep
+  // link must not silently overwrite an established account default.
+  else if (value && filters.value.type_group === undefined) remember({ type_group: value })
 }, { immediate: true })
 </script>
 <template>
