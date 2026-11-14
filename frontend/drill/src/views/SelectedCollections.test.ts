@@ -8,6 +8,8 @@ import AnalogSelectedView from './AnalogSelectedView.vue'
 import DigitalSelectedView from './DigitalSelectedView.vue'
 import CommunicationSelectedView from './CommunicationSelectedView.vue'
 import { api } from '../lib/api'
+import { accountPreferences } from '../../../shared/preferences/store'
+import { preferenceDefaults } from '../../../shared/preferences/schema'
 vi.mock('../lib/api', () => ({ api: vi.fn() }))
 vi.mock('../components/ExamTypeControls.vue', () => ({ default: { template: '<div />' } }))
 vi.mock('../components/HeatmapProgress.vue', () => ({ default: { template: '<div />' } }))
@@ -16,8 +18,8 @@ const progress = { total: 2, attempted: 1, mastered: 1, unattempted: 1 }
 const payload = { title: 'Selected', basis: '', progress, ready_count: 2, inventory_count: 2, selected_count: 2, review_count: 0, excluded_count: 0, review_items: [], groups: [{ key: 'test', title: 'Test group', rank: 1, tier: 'advanced', focus: 'Original focus', progress, questions: [item, { ...item, uuid: 'q-2', label: 'Original question 2', state: 'unattempted' }] }] }
 let app: App | undefined
 let host: HTMLDivElement
-beforeEach(() => { vi.clearAllMocks(); host = document.createElement('div'); document.body.append(host); vi.mocked(api).mockResolvedValue(payload) })
-afterEach(() => { app?.unmount(); app = undefined; host.remove() })
+beforeEach(async () => { await accountPreferences.bind('selected-owner',{schema_version:1,revision:0,values:preferenceDefaults(),field_revisions:{}}); vi.clearAllMocks(); host = document.createElement('div'); document.body.append(host); vi.mocked(api).mockResolvedValue(payload) })
+afterEach(() => { app?.unmount(); accountPreferences.reset(true); accountPreferences.dispose(); app = undefined; host.remove() })
 async function settle() { await nextTick(); await Promise.resolve(); await nextTick(); await new Promise(resolve => setTimeout(resolve, 0)) }
 const cases: Array<[string, Component]> = [['circuit', CircuitSelectedView], ['signal', SignalSelectedView], ['analog', AnalogSelectedView], ['digital', DigitalSelectedView], ['communication', CommunicationSelectedView]]
 it.each(cases)('%s keeps the collection filters, source order, labeled/matrix modes and direct start', async (kind, component) => {

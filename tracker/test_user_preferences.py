@@ -371,6 +371,22 @@ class UserPreferencesAPITests(TestCase):
         self.assertEqual(row.values['future.safe'], 'keep')
         self.assertEqual(row.field_revisions['future.safe'], 1)
 
+    def test_last_browse_choices_sync_and_remain_account_bound(self):
+        changed = self.change({'browse.drill.filters': {'type_group': 'small', 'favorite': ''},
+                               'browse.format_colours': False, 'browse.original_labels': False})
+        self.assertEqual(changed.status_code, 200)
+        second = APIClient(); second.force_authenticate(self.user)
+        values = second.get(URL).data['values']
+        self.assertEqual(values['browse.drill.filters'], {'type_group': 'small', 'favorite': ''})
+        self.assertEqual(values['browse.ei.filters'], {})
+        self.assertFalse(values['browse.format_colours'])
+        self.assertFalse(values['browse.original_labels'])
+        for bad in ({'page': '3'}, {'q': 'private'}, {'type_group': 'bad'}, {'favorite': True}, {'favorite': '2'}):
+            self.assertEqual(self.change({'browse.drill.filters': bad}).status_code, 400)
+        self.client.force_login(self.other)
+        self.assertEqual(self.client.get(URL).data['values']['browse.drill.filters'], {})
+        self.assertTrue(self.client.get(URL).data['values']['browse.format_colours'])
+
     def test_study_timer_modes_are_workspace_and_account_bound(self):
         self.assertEqual(self.client.get(URL).data['values']['practice.drill.study_timer_mode'], 'remind')
         changed = self.change({'practice.drill.study_timer_mode': 'off', 'practice.ei.study_timer_mode': 'auto_start'})

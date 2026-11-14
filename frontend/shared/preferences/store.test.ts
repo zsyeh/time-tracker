@@ -268,6 +268,7 @@ it('upgrades a 14-field account cache without losing an offline pending edit', a
   const old = copy(snapshot()) as any
   delete old.values['progress.drill']; delete old.values['progress.ei']; delete old.values['practice.image_copy_scale']
   delete old.values['practice.drill.study_timer_mode']; delete old.values['practice.ei.study_timer_mode']
+  for (const key of ['browse.drill.filters','browse.ei.filters','browse.format_colours','browse.original_labels']) delete old.values[key]
   localStorage.setItem('learning.preferences.v1.account-a', JSON.stringify({ snapshot: old,
     pending: { font: { value: 'large', base: 0, serial: 42 } } }))
   const remote = server(), store = factory(remote.transport)

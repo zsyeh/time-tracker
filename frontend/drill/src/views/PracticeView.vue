@@ -18,9 +18,11 @@ import { clearPracticeFilters, countPracticeFilters, normalizePracticeQuery, ser
 import { learningUserId } from '../../../shared/foregroundTimer'
 import { highlightCodepoints } from '../../../shared/search/highlight'
 import { uiText } from '../lib/uiText'
+import { useBrowsePreferences } from '../lib/browsePreferences'
 
 const router = useRouter()
 const route = useRoute()
+const browse = useBrowsePreferences()
 const ownerPath = route.path
 const rootElement = ref<HTMLElement | null>(null)
 const { t } = useUiPreferences()
@@ -240,7 +242,7 @@ onMounted(async () => {
     catalog.value = cachedCatalog() || await fetchCatalog()
     if (!queryKey.value) {
       const saved = readState('latest')
-      if (saved?.query && Date.now() - Number(saved.updatedAt) < 30 * 86400000) await router.replace({ query: normalizePracticeQuery(saved.query) })
+      if (saved?.query && Date.now() - Number(saved.updatedAt) < 30 * 86400000) await router.replace({ query: normalizePracticeQuery(browse.restore(route.query, saved.query)) })
       else {
         // Legacy global state is only imported when its document belongs to this workspace.
         try {
@@ -252,6 +254,13 @@ onMounted(async () => {
           }
         } catch { /* Ignore old or restricted browser storage. */ }
       }
+      // Resolve account defaults before the first list fetch, avoiding an
+      // unfiltered request followed by a second filtered request.
+      if (!Object.keys(route.query).length) {
+        const query = normalizePracticeQuery(browse.restore(route.query))
+        if (Object.keys(query).length) await router.replace({ query })
+      }
+      browse.remember(normalizePracticeQuery(route.query))
     }
     ready.value = true
     await loadQuestions(true)

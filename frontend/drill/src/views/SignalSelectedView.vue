@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { uiText } from '../lib/uiText'
+import { useBrowsePreferences } from '../lib/browsePreferences'
 import { typeText } from '../lib/examTypes'
 import { buildListContext, previewLocation } from '../lib/listContext'
 import SelectedCollectionLayout from '../components/SelectedCollectionLayout.vue'
@@ -22,8 +23,9 @@ const data = ref<Payload | null>(null)
 const loading = ref(false)
 const error = ref('')
 const labels = { core: '核心必练', advanced: '进阶必过', foundation: '基础巩固', cross: '交叉选练' } as Record<string, string>
-const showLabels = ref(true)
-const filters = computed(() => signalFilters(route.query))
+const browse = useBrowsePreferences()
+const { showLabels } = browse
+const filters = computed(() => signalFilters(browse.restore(route.query)))
 let sequence = 0
 async function load() {
   const current = ++sequence
@@ -39,6 +41,7 @@ async function load() {
   finally { if (current === sequence) loading.value = false }
 }
 function change(key: string, value: string) {
+  browse.remember({ [key]: value })
   const query = { ...filters.value, [key]: value }
   if (!value) delete query[key]
   void router.replace({ path: '/signal-selected', query })
@@ -59,8 +62,8 @@ function start(group?: Group) {
 }
 watch(() => route.fullPath, load)
 onMounted(() => {
-  if (!Object.keys(filters.value).length && !route.query.all) {
-    void router.replace({ path: '/signal-selected', query: { tier: 'core' } })
+  if (!Object.keys(route.query).length && !route.query.all) {
+    void router.replace({ path: '/signal-selected', query: { ...filters.value, tier: 'core' } })
   } else void load()
 })
 </script>

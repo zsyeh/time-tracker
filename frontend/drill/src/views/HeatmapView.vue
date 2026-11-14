@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { uiText } from '../lib/uiText'
+import { useBrowsePreferences } from '../lib/browsePreferences'
 import { buildListContext, previewLocation } from '../lib/listContext'
 import { learningUserId } from '../../../shared/foregroundTimer'
 import { runtimeWorkspace } from '../lib/runtimePath'
@@ -86,7 +87,9 @@ interface HeatmapPayload {
 
 const router = useRouter()
 const route = useRoute()
-const typeGroup = ref(String(route.query.type_group || ''))
+const browse = useBrowsePreferences()
+const initialBrowse = browse.restore(route.query)
+const typeGroup = ref(String(initialBrowse.type_group || ''))
 const course = ref(String(route.query.course || ''))
 const material = ref(String(route.query.material || 'ready'))
 // API snapshots are immutable; thousands of cell records do not need deep proxies.
@@ -328,6 +331,7 @@ function persistFilters() {
   void router.replace({ query })
 }
 watch(quickState, persistFilters)
+watch(typeGroup, value => browse.remember({ type_group: value, exam_type: '' }))
 watch([scope, mode, course, material, typeGroup], () => {
   selectedTopic.value = null
   selectedQuestion.value = null

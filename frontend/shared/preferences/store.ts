@@ -17,7 +17,7 @@ function readCache(id:string) {
     // a corrupt existing field or invent missing pre-existing required fields.
     if (cached?.snapshot?.values && typeof cached.snapshot.values === 'object' && !Array.isArray(cached.snapshot.values)) {
       const values = { ...cached.snapshot.values }
-      for (const key of ['progress.drill', 'progress.ei', 'practice.image_copy_scale', 'practice.drill.study_timer_mode', 'practice.ei.study_timer_mode'] as const) {
+      for (const key of ['progress.drill', 'progress.ei', 'practice.image_copy_scale', 'practice.drill.study_timer_mode', 'practice.ei.study_timer_mode', 'browse.drill.filters', 'browse.ei.filters', 'browse.format_colours', 'browse.original_labels'] as const) {
         if (!Object.prototype.hasOwnProperty.call(values, key)) values[key] = preferenceDefaults()[key]
       }
       return { ...cached, snapshot: { ...cached.snapshot, values } }

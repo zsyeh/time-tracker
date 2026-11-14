@@ -1,6 +1,6 @@
 import { uiLanguage } from './uiPreferences'
-import { ref } from 'vue'
-export const formatColours = ref(true)
+import { useBrowsePreferences } from './browsePreferences'
+export const { formatColours } = useBrowsePreferences()
 
 export type ExamType = 'choice' | 'fill' | 'judgment' | 'short_answer' | 'large' | 'unknown'
 export type TypeStats = Record<string, { total: number; attempted: number; mastered: number; review: number }>

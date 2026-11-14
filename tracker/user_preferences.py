@@ -53,7 +53,8 @@ ENUM_FIELDS = {
     'practice.drill.study_timer_mode': ('remind', 'auto_start', 'off'),
     'practice.ei.study_timer_mode': ('remind', 'auto_start', 'off'),
 }
-BOOL_FIELDS = ('practice.review_auto_next', 'practice.mastered_auto_next')
+BOOL_FIELDS = ('practice.review_auto_next', 'practice.mastered_auto_next', 'browse.format_colours', 'browse.original_labels')
+BROWSE_FILTER_KEYS = {'type_group', 'exam_type', 'status', 'source_category', 'favorite', 'review_later', 'marker', 'include_structure'}
 FILTER_ENUMS = {
     'source_category': ('past_exam', 'adapted_exam', 'mock_exam', 'workbook',
                         'competition', 'other_practice', 'unclassified'),
@@ -84,6 +85,8 @@ def preference_defaults():
         'practice.mastered_auto_next': True,
         'practice.drill.copy_mode': 'off', 'practice.ei.copy_mode': 'off',
         'practice.drill.study_timer_mode': 'remind', 'practice.ei.study_timer_mode': 'remind',
+        'browse.drill.filters': {}, 'browse.ei.filters': {},
+        'browse.format_colours': True, 'browse.original_labels': True,
         'practice.image_copy_scale': 1,
         'filters.drill': [], 'filters.ei': [],
         'progress.drill': {'target': 24, 'deadline': '2026-11-21'},
@@ -188,6 +191,13 @@ def _goal_settings(value, key):
 
 
 def _value(key, value):
+    if key in ('browse.drill.filters', 'browse.ei.filters'):
+        if not isinstance(value, dict) or set(value) - BROWSE_FILTER_KEYS:
+            _invalid('Only global filter choices can be remembered.', key)
+        result = _filter_query(value, key.split('.')[1], key)
+        # Explicit cleared choices must override an older device's local state.
+        result.update({name: '' for name, raw in value.items() if not raw.strip()})
+        return result
     if key == 'practice.image_copy_scale':
         if type(value) not in (int, float) or not 1 <= value <= 8 or not math.isfinite(value):
             _invalid('Image copy scale must be a finite number from 1 to 8.', key)

@@ -1,11 +1,21 @@
 <script setup lang="ts">
 import { watch } from 'vue'
 import { runtimeWorkspace } from '../lib/runtimePath'
+import { useBrowsePreferences } from '../lib/browsePreferences'
 const isEi = runtimeWorkspace === 'ei'
 import { formatColours, typeGroups, typeLabel, typeText, type TypeStats } from '../lib/examTypes'
 const visibleGroups = typeGroups.filter((key) => isEi || key === 'small' || key === 'large')
 const props = defineProps<{ modelValue: string; stats?: TypeStats }>()
 const emit = defineEmits<{ 'update:modelValue': [value: string]; practice: [] }>()
+const { remember } = useBrowsePreferences()
+function select(value: string) {
+  remember({ type_group: value, exam_type: '' })
+  emit('update:modelValue', value)
+}
+function practice() {
+  remember({ type_group: 'small', exam_type: '' })
+  emit('practice')
+}
 watch(() => props.modelValue, (value) => {
   if (value && !visibleGroups.some((key) => key === value)) emit('update:modelValue', '')
 }, { immediate: true })
@@ -13,13 +23,13 @@ watch(() => props.modelValue, (value) => {
 <template>
   <section class="exam-type-controls" :aria-label="typeText('题型筛选与分析', 'Format filters and analysis')">
     <div class="exam-type-toolbar">
-      <label>{{ typeText('题型', 'Format') }}<select :value="modelValue" @change="emit('update:modelValue', ($event.target as HTMLSelectElement).value)"><option value="">{{ typeLabel('all') }}</option><option v-for="key in visibleGroups" :key="key" :value="key">{{ typeLabel(key) }}</option></select></label>
-      <button type="button" class="exam-small-entry" @click="emit('practice')">{{ typeText('小题专练 →', 'Short questions →') }}</button>
+      <label>{{ typeText('题型', 'Format') }}<select :value="modelValue" @change="select(($event.target as HTMLSelectElement).value)"><option value="">{{ typeLabel('all') }}</option><option v-for="key in visibleGroups" :key="key" :value="key">{{ typeLabel(key) }}</option></select></label>
+      <button type="button" class="exam-small-entry" @click="practice">{{ typeText('小题专练 →', 'Short questions →') }}</button>
       <label><input v-model="formatColours" type="checkbox" />{{ typeText('题型分色预览', 'Highlight formats') }}</label>
       <small>{{ isEi ? typeText('小题含选择、填空、判断；简答单列。色点表示题型，原掌握颜色保留。', 'Short questions: choice, fill in and true / false. Short answers are separate. Dots show format; existing colours show mastery.') : typeText('小题含选择、填空；大题单列。色点表示题型，原掌握颜色保留。', 'Short questions: choice and fill in. Worked solutions are separate. Dots show format; existing colours show mastery.') }}</small>
     </div>
     <div v-if="stats" class="exam-type-stats">
-      <button v-for="key in visibleGroups" :key="key" type="button" :class="[`exam-${key}`, { active: modelValue === key }]" :aria-pressed="modelValue === key" @click="emit('update:modelValue', modelValue === key ? '' : key)">
+      <button v-for="key in visibleGroups" :key="key" type="button" :class="[`exam-${key}`, { active: modelValue === key }]" :aria-pressed="modelValue === key" @click="select(modelValue === key ? '' : key)">
         <strong>{{ typeLabel(key) }} · {{ stats[key]?.total || 0 }} <span v-if="modelValue === key" aria-hidden="true">✓</span></strong>
         <span>{{ typeText('已做', 'Attempted') }} {{ stats[key]?.attempted || 0 }} · {{ typeText('掌握', 'Mastered') }} {{ stats[key]?.mastered || 0 }} · {{ typeText('待复习', 'Review') }} {{ stats[key]?.review || 0 }}</span>
         <span>{{ typeText('覆盖率', 'Coverage') }} {{ stats[key]?.total ? Math.round((stats[key]?.attempted || 0) * 100 / stats[key]!.total) : 0 }}% · {{ typeText('已做掌握率', 'Mastery of attempted') }} {{ stats[key]?.attempted ? Math.round((stats[key]?.mastered || 0) * 100 / stats[key]!.attempted) + '%' : '—' }}</span>

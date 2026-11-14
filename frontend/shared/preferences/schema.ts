@@ -11,6 +11,8 @@ export type SidebarConfig = { order: string[]; hidden: string[]; collapsed_group
 export type FilterPreset = { id: string; name: string; query: Record<string,string> }
 export type GoalSettings = { target: number; deadline: string }
 export type StudyTimerMode = 'remind' | 'auto_start' | 'off'
+export const browseFilterKeys = ['type_group','exam_type','status','source_category','favorite','review_later','marker','include_structure'] as const
+export type BrowseFilters = Partial<Record<typeof browseFilterKeys[number], string>>
 export type PreferenceValues = {
   appearance: Appearance; accent: Accent; font: FontSize; language: 'en'|'zh-CN'|'ja'
   'sidebar.timer': SidebarConfig; 'sidebar.drill': SidebarConfig; 'sidebar.ei': SidebarConfig
@@ -21,6 +23,8 @@ export type PreferenceValues = {
   'practice.review_auto_next': boolean; 'practice.mastered_auto_next': boolean
   'practice.drill.copy_mode': 'off'|'link'|'image'; 'practice.ei.copy_mode': 'off'|'link'|'image'
   'practice.drill.study_timer_mode': StudyTimerMode; 'practice.ei.study_timer_mode': StudyTimerMode
+  'browse.drill.filters': BrowseFilters; 'browse.ei.filters': BrowseFilters
+  'browse.format_colours': boolean; 'browse.original_labels': boolean
 }
 export type PreferenceKey = keyof PreferenceValues
 export type PreferenceSnapshot = { schema_version: 1; revision: number; values: PreferenceValues; field_revisions: Partial<Record<PreferenceKey,number>>; updated_at?: string|null }
@@ -34,6 +38,7 @@ export function preferenceDefaults(): PreferenceValues {
     'practice.image_copy_scale':1,'filters.drill':[],'filters.ei':[],'practice.next_mode':'sequential','practice.review_auto_next':false,'practice.mastered_auto_next':true,
     'practice.drill.copy_mode':'off','practice.ei.copy_mode':'off',
     'practice.drill.study_timer_mode':'remind','practice.ei.study_timer_mode':'remind',
+    'browse.drill.filters':{},'browse.ei.filters':{},'browse.format_colours':true,'browse.original_labels':true,
     'progress.drill':{ target:24, deadline:'2026-11-21' }, 'progress.ei':{ target:11, deadline:'2026-11-21' } }
 }
 /** Unknown future fields may coexist, but every field this client renders must be valid. */
@@ -139,6 +144,10 @@ function validGoalSettings(value: unknown): value is GoalSettings {
 }
 /** Validate both server snapshots and queued/offline values before they reach render. */
 export function validPreference(key: string, value: unknown): boolean {
+  if (key === 'browse.drill.filters' || key === 'browse.ei.filters') return record(value)
+    && Object.keys(value).every(name => (browseFilterKeys as readonly string[]).includes(name))
+    && validFilterQuery(value, key.includes('.drill.') ? 'drill' : 'ei')
+  if (key === 'browse.format_colours' || key === 'browse.original_labels') return typeof value === 'boolean'
   if (own(preferenceEnums, key)) return typeof value === 'string' && preferenceEnums[key as PreferenceKey]!.includes(value)
   if (key === 'practice.image_copy_scale') return typeof value === 'number' && Number.isFinite(value) && value >= 1 && value <= 8
   if (key === 'practice.review_auto_next' || key === 'practice.mastered_auto_next') return typeof value === 'boolean'

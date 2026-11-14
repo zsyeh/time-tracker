@@ -1,11 +1,13 @@
 import { computed, onScopeDispose, ref, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { normalizePracticeQuery, serializePracticeQuery, type PracticeQuery } from '../../../shared/search/queryState'
+import { useBrowsePreferences } from '../lib/browsePreferences'
 
 /** The URL owns the applied query. Input drafts never launch requests during IME. */
 export function usePracticeQuery(invalidate: () => void) {
   const route = useRoute()
   const router = useRouter()
+  const { remember } = useBrowsePreferences()
   const applied = computed(() => normalizePracticeQuery(route.query))
   const draft = ref(applied.value.q || '')
   const composing = ref(false)
@@ -18,6 +20,7 @@ export function usePracticeQuery(invalidate: () => void) {
   const ownerPath = route.path
   function apply(patch: PracticeQuery, mode: 'push' | 'replace' = 'push', resetPage = true) {
     if (disposed || route.path !== ownerPath) return
+    remember(patch)
     invalidate()
     pending = normalizePracticeQuery({ ...(pending || applied.value), ...patch, ...(resetPage ? { page: '', index_version: '' } : {}) })
     pendingMode = mode

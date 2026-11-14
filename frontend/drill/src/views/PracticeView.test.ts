@@ -3,6 +3,8 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { createApp, nextTick, type App } from 'vue'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import PracticeView from './PracticeView.vue'
+import { accountPreferences } from '../../../shared/preferences/store'
+import { preferenceDefaults } from '../../../shared/preferences/schema'
 import { api, ApiError } from '../lib/api'
 import { cachedCatalog, cachedQuestionPage, prefetchQuestion } from '../lib/workspace'
 vi.mock('../lib/api', () => ({ api: vi.fn(), ApiError: class extends Error { constructor(public status: number, message: string) { super(message) } } }))
@@ -12,7 +14,7 @@ const question = { uuid: 'q-1', question_order: 1, display_label: 'Derivative', 
 let app: App | undefined
 let host: HTMLDivElement
 beforeEach(() => { vi.clearAllMocks(); sessionStorage.clear(); localStorage.clear(); host = document.createElement('div'); document.body.append(host); vi.mocked(cachedCatalog).mockReturnValue(catalog as never); vi.stubGlobal('scrollTo', vi.fn()); vi.stubGlobal('requestAnimationFrame', (callback: FrameRequestCallback) => { callback(0); return 1 }); vi.mocked(api).mockResolvedValue({ count: 1, results: [question], previous: null, next: null }) })
-afterEach(() => { app?.unmount(); app = undefined; host.remove(); vi.unstubAllGlobals(); vi.useRealTimers() })
+afterEach(() => { app?.unmount(); accountPreferences.reset(true); accountPreferences.dispose(); app = undefined; host.remove(); vi.unstubAllGlobals(); vi.useRealTimers() })
 async function flush() { await nextTick(); await Promise.resolve(); await nextTick(); await new Promise(resolve => setTimeout(resolve, 0)) }
 async function mount(url: string) {
  const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/practice', component: PracticeView }, { path: '/practice/:uuid', component: { template: '<div />' } }, { path: '/progress', component: { template: '<div />' } }, { path: '/preview', component: { template: '<div />' } }] })
@@ -212,4 +214,20 @@ it('pins pagination to the restored cached generation when a pending search draf
  input.value='unsent';input.dispatchEvent(new Event('input',{bubbles:true}));await nextTick()
  host.querySelector<HTMLButtonElement>('[data-page-position=bottom] .page-next')!.click();await flush()
  expect(router.currentRoute.value.query).toMatchObject({q:'导数',page:'2',index_version:'cache:7'})
+})
+
+it('uses account remembered small questions before the first and only list request', async()=>{
+ await accountPreferences.bind('browse-view', {schema_version:1,revision:0,values:{...preferenceDefaults(),'browse.drill.filters':{type_group:'small',favorite:'1'}},field_revisions:{}})
+ const router=await mount('/practice')
+ await vi.waitFor(()=>expect(host.querySelector('.question-row')).not.toBeNull())
+ expect(router.currentRoute.value.query).toMatchObject({type_group:'small',favorite:'1'})
+ expect(vi.mocked(api).mock.calls.filter(([url])=>String(url).startsWith('/api/drill/questions/?'))).toHaveLength(1)
+ expect(String(vi.mocked(api).mock.calls[0]?.[0])).toContain('type_group=small')
+})
+it('does not inject a remembered type into an explicit search/deep link',async()=>{
+ await accountPreferences.bind('browse-view', {schema_version:1,revision:0,values:{...preferenceDefaults(),'browse.drill.filters':{type_group:'small'}},field_revisions:{}})
+ const router=await mount('/practice?q=Fourier')
+ expect(router.currentRoute.value.query.type_group).toBeUndefined()
+ expect(String(vi.mocked(api).mock.calls[0]?.[0])).not.toContain('type_group=')
+ expect(accountPreferences.values['browse.drill.filters'].type_group).toBe('small')
 })

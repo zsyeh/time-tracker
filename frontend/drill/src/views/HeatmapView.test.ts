@@ -3,6 +3,8 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { createApp, nextTick, type App } from 'vue'
 import { createMemoryHistory, createRouter } from 'vue-router'
 import HeatmapView from './HeatmapView.vue'
+import { accountPreferences } from '../../../shared/preferences/store'
+import { preferenceDefaults } from '../../../shared/preferences/schema'
 import { api } from '../lib/api'
 
 vi.mock('../lib/api', () => ({ api: vi.fn() }))
@@ -32,7 +34,7 @@ beforeEach(() => {
   vi.stubGlobal('scrollTo', vi.fn())
   HTMLElement.prototype.scrollIntoView = vi.fn()
 })
-afterEach(() => { app?.unmount(); app = undefined; host.remove(); vi.unstubAllGlobals() })
+afterEach(() => { app?.unmount(); accountPreferences.reset(true); accountPreferences.dispose(); app = undefined; host.remove(); vi.unstubAllGlobals() })
 
 it('keeps the core heatmap selection and scroll position after opening a question', async () => {
   const router = createRouter({ history: createMemoryHistory(), routes: [
@@ -219,4 +221,14 @@ it('restores the historical total-first overview and locator beside the state fi
   expect(host.querySelector('.heatmap-overview .heatmap-next')).toBeNull()
   expect(host.querySelector('.heatmap-actions .heatmap-state-filters')).not.toBeNull()
   expect(host.querySelector('.heatmap-actions > .heatmap-next')).not.toBeNull()
+})
+
+it('loads remembered small questions immediately without fetching an unfiltered heatmap',async()=>{
+ await accountPreferences.bind('browse-heatmap',{schema_version:1,revision:0,values:{...preferenceDefaults(),'browse.drill.filters':{type_group:'small'}},field_revisions:{}})
+ const router=createRouter({history:createMemoryHistory(),routes:[{path:'/selected-heatmap',component:HeatmapView}]})
+ await router.push('/selected-heatmap');app=createApp(HeatmapView,{selectedOnly:true});app.use(router).mount(host)
+ await vi.waitFor(()=>expect(host.querySelector('[data-question-uuid="q-1"]')).not.toBeNull())
+ expect(vi.mocked(api).mock.calls).toHaveLength(1)
+ expect(String(vi.mocked(api).mock.calls[0]?.[0])).toContain('type_group=small')
+ expect(host.querySelector<HTMLSelectElement>('.exam-type-toolbar select')?.value).toBe('small')
 })
