@@ -1648,3 +1648,17 @@ R2-01先基线/复现 → R2-02搜索及题目 → R2-03热力图性能与旧视
 | FT-08 | 替换旧入口，删除两套旧试卷，保留回滚 | `PaperView.vue`删除、现有`/paper`重定向、版本模板迁移及私有发布清理脚本 | 旧图像/学习状态不删除；发布结果见本轮报告 |
 
 依赖：FT-01/02/03 → FT-04/05；FT-06/07独立依赖固定题单；FT-08清理必须等有效备份和新镜像健康。此次单Agent按共享文件所有权实施，无跨Agent覆盖。部署、验证、备份与回滚唯一台账：`docs/focus-training-20261121/README.md`。
+
+## 追加：2026-11-21 考试模式后续增量（EX，不覆盖既有矩阵）
+
+|需求|决策/真实文件|测试/证据|状态|
+|---|---|---|---|
+|EX-01 入口叫考试模式|`lib/uiPreferences.ts`、`shared/preferences/labels.ts`|构建与线上界面|已发布|
+|EX-02 全屏隐藏答案入口|`views/PaperExamView.vue`|fullscreen-no-answer-button.json；EI线上截图|已发布|
+|EX-03 收藏与本人删除套卷|`drill/views.py`、`PapersView.vue`、`PaperExamView.vue`|owner隔离/不删学习数据单测，线上收藏|已发布|
+|EX-04 不导出答案PDF按钮|`PaperExamView.vue`、`PaperReviewView.vue`|编译及页面按钮检查，后台旧接口保持兼容|已发布|
+|EX-05 私有自评小题满分/大题双宽输入/备注/总分|`models.py`、0043、serializers/views、`PaperSelfEvaluation.vue`|self-evaluation-browser.json与后续EI线上验证；无Attempt写入单测|已发布|
+|EX-06 EI考纲组卷|0044、`ei_paper.py`、`paper_generator.py`、`PaperNewView.vue`|原考纲180min150分，12局部测试及线上30题真实数据|已发布|
+|EX-07 workspace/owner/分享隐私隔离|serializers/views/sharing/PDF|Drill不可读EI套卷，原图不展示OCR，自评分/备注不公开|已发布|
+
+EX-06训练题数不冒充官方题数；配额和稀缺题源、实测时延、两份新增迁移、安全回滚及未测实机项详见 `docs/focus-training-20261121/README.md`。服务器Docker维护获得用户另行明确批准，不扩展为一般故障可无条件重启数据库的授权。

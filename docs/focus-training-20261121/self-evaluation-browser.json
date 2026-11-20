@@ -1,0 +1,24 @@
+[
+  {
+    "viewport": [
+      390,
+      844
+    ],
+    "small_toggle": true,
+    "large_double_width": true,
+    "score_and_note_refresh": true,
+    "no_overflow": true,
+    "errors": []
+  },
+  {
+    "viewport": [
+      1180,
+      820
+    ],
+    "small_toggle": true,
+    "large_double_width": true,
+    "score_and_note_refresh": true,
+    "no_overflow": true,
+    "errors": []
+  }
+]

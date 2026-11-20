@@ -1,0 +1,35 @@
+{
+  "generate_ms_single_sample": 379,
+  "checks": [
+    {
+      "viewport": [
+        390,
+        844
+      ],
+      "scheme": "light",
+      "real_question_and_answer_images": true,
+      "favorite": true,
+      "fullscreen_no_answer_button": true,
+      "self_score_refresh": true,
+      "no_overflow": true,
+      "pageerrors": []
+    },
+    {
+      "viewport": [
+        1180,
+        820
+      ],
+      "scheme": "dark",
+      "real_question_and_answer_images": true,
+      "favorite": true,
+      "fullscreen_no_answer_button": true,
+      "self_score_refresh": true,
+      "no_overflow": true,
+      "pageerrors": []
+    },
+    {
+      "public_ei_domain_share": 200,
+      "private_note_absent": true
+    }
+  ]
+}
