@@ -121,6 +121,8 @@ def paper_item_payload(item, *, review, latest_result=None, image_only=False, us
         'position': item.position,
         'score': float(item.score),
         'user_answer': item.user_answer,
+        'self_score': float(item.self_score) if item.self_score is not None else None,
+        'self_note': item.self_note,
         'result': item.result,
         'time_spent_seconds': item.time_spent_seconds,
         'question': {
@@ -852,11 +854,16 @@ class DrillPaperItemView(APIView):
         serializer.is_valid(raise_exception=True)
         with transaction.atomic():
             item = get_object_or_404(
-                ExamPaperItem.objects.select_for_update().select_related('paper'),
+                ExamPaperItem.objects.select_for_update().select_related('paper', 'section'),
                 paper__uuid=paper_uuid,
                 paper__user=request.user,
                 position=position,
             )
+            score = serializer.validated_data.get('self_score')
+            if score is not None and (score > item.score or (
+                item.section.question_type in ('single_choice', 'fill_blank') and score not in (0, item.score)
+            )):
+                return Response({'detail': '小题只能取0分或满分；大题分数不能超过该题满分。'}, status=400)
             previous_result = item.result
             for field, value in serializer.validated_data.items():
                 setattr(item, field, value)
@@ -871,6 +878,8 @@ class DrillPaperItemView(APIView):
         return Response({
             'position': item.position,
             'user_answer': item.user_answer,
+            'self_score': float(item.self_score) if item.self_score is not None else None,
+            'self_note': item.self_note,
             'result': item.result,
             'time_spent_seconds': item.time_spent_seconds,
             'submitted_at': item.submitted_at,

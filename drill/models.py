@@ -933,6 +933,8 @@ class ExamPaperItem(models.Model):
     position = models.PositiveSmallIntegerField()
     score = models.DecimalField(max_digits=5, decimal_places=2)
     selected_fingerprint = models.CharField(max_length=64)
+    self_score = models.DecimalField(max_digits=5, decimal_places=2, null=True, blank=True)
+    self_note = models.TextField(blank=True)
     user_answer = models.TextField(blank=True)
     result = models.CharField(max_length=16, choices=RESULT_CHOICES, default='unanswered', db_index=True)
     time_spent_seconds = models.PositiveIntegerField(null=True, blank=True)
@@ -943,6 +945,10 @@ class ExamPaperItem(models.Model):
         constraints = [
             models.UniqueConstraint(fields=('paper', 'position'), name='drill_paper_item_position_unique'),
             models.UniqueConstraint(fields=('paper', 'question'), name='drill_paper_item_question_unique'),
+            models.CheckConstraint(
+                check=models.Q(self_score__isnull=True) | (models.Q(self_score__gte=0) & models.Q(self_score__lte=models.F('score'))),
+                name='drill_paper_item_self_score_range',
+            ),
         ]
         indexes = [models.Index(fields=('paper', 'position'), name='drill_paper_item_order_idx')]
 

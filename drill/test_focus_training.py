@@ -97,3 +97,30 @@ class FocusTrainingTests(TestCase):
         self.assertTrue(QuestionUserState.objects.get(user=self.user,question=q).is_favorite)
         self.assertEqual(QuestionAttempt.objects.filter(user=self.user,question=q).count(),1)
         self.assertFalse(DrillContentShare.objects.filter(pk=share.pk).exists())
+
+    def test_self_evaluation_is_private_validated_and_does_not_create_attempt(self):
+        from rest_framework.test import APIRequestFactory, force_authenticate
+        from .views import DrillPaperItemView
+        q = self.question(1)
+        paper = PaperGenerator().generate(user=self.user,blueprint=self.bp)
+        item = paper.items.get()
+        factory = APIRequestFactory()
+        def patch(user, values):
+            request = factory.patch('/',values,format='json',HTTP_HOST='drill.ehzsy.site')
+            request.workspace='drill';force_authenticate(request,user=user)
+            return DrillPaperItemView.as_view()(request,paper_uuid=paper.uuid,position=1)
+        other = get_user_model().objects.create_user('self-score-other')
+        self.assertEqual(patch(other,{'self_score':5}).status_code,404)
+        for value in [-1,3,6]:
+            self.assertEqual(patch(self.user,{'self_score':value}).status_code,400)
+        response = patch(self.user,{'self_score':5,'self_note':'PRIVATE SELF REVIEW'})
+        self.assertEqual(response.status_code,200)
+        self.assertEqual(response.data['self_score'],5)
+        item.refresh_from_db();self.assertEqual(item.self_note,'PRIVATE SELF REVIEW')
+        self.assertEqual(QuestionAttempt.objects.filter(user=self.user).count(),0)
+        self.assertEqual(patch(self.user,{'self_score':0}).status_code,200)
+        item.section.question_type='solution';item.section.save(update_fields=['question_type'])
+        self.assertEqual(patch(self.user,{'self_score':'2.5'}).status_code,200)
+        share, token, _ = DrillContentShare.get_or_issue(owner=self.user,workspace='drill',paper=paper)
+        request = RequestFactory().get('/',HTTP_HOST='drill.ehzsy.site')
+        self.assertNotIn('PRIVATE SELF REVIEW',str(public_share_context(request,share,token)))

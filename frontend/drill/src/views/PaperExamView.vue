@@ -115,6 +115,7 @@ onUnmounted(() => { window.clearInterval(timer); window.clearTimeout(noteTimer);
     </header>
     <nav v-if="paper" class="training-tools" aria-label="题单工具">
       <RouterLink :to="previewLocation(context)">整卷预览</RouterLink>
+      <RouterLink :to="`/papers/${uuid}/review?mode=self`">自评</RouterLink>
       <a :href="withWorkspacePrefix(`/api/drill/papers/${uuid}/pdf/questions/`)">试卷 PDF</a>
       <button :disabled="sharing" @click="sharePaper">{{ sharing ? '生成分享…' : copied ? '分享链接已复制' : '分享整卷' }}</button>
     </nav>

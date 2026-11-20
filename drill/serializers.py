@@ -214,6 +214,8 @@ class ExamPaperStatusSerializer(serializers.Serializer):
 
 
 class ExamPaperItemUpdateSerializer(serializers.Serializer):
+    self_score = serializers.DecimalField(required=False, allow_null=True, min_value=0, max_digits=5, decimal_places=2)
+    self_note = serializers.CharField(required=False, allow_blank=True, max_length=10000)
     user_answer = serializers.CharField(required=False, allow_blank=True, max_length=10000)
     result = serializers.ChoiceField(
         choices=('unanswered', 'correct', 'incorrect', 'review'), required=False,

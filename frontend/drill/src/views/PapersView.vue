@@ -48,6 +48,7 @@ onMounted(async () => {
         <div class="paper-history-progress"><strong>{{ paper.answered_count }}/{{ paper.question_count }}</strong><small>{{ paper.status.replace('_', ' ') }}</small></div>
         <div class="paper-history-actions">
           <RouterLink :to="`/papers/${paper.uuid}`">开始训练</RouterLink>
+          <RouterLink :to="`/papers/${paper.uuid}/review?mode=self`">自评</RouterLink>
           <RouterLink :to="`/papers/${paper.uuid}/review`">整卷查看</RouterLink>
           <button type="button" :disabled="!!deleting" @click="deletePaper(paper.uuid)">{{ deleting === paper.uuid ? '删除中…' : '删除' }}</button>
         </div>

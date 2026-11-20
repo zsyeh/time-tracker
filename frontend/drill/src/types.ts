@@ -335,6 +335,8 @@ export interface ExamPaperQuestion {
 }
 
 export interface ExamPaperItem {
+  self_score?: number | null
+  self_note?: string
   id?: number
   position: number
   score: number
