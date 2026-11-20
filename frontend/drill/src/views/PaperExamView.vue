@@ -122,7 +122,7 @@ onUnmounted(() => { window.clearInterval(timer); window.clearTimeout(noteTimer);
         <button :disabled="index === paper.items.length - 1" @click="move(index + 1)">下一题</button>
       </footer>
       <FullscreenReader ref="reader" hide-trigger :title="`第 ${item.position} 题 · ${answer ? '答案' : '题目'}`" :images="images" :content-key="`${item.position}-${answer}`">
-        <template #actions><button :disabled="index === 0" @click="move(index - 1)">上一题</button><button :disabled="index === paper.items.length - 1" @click="move(index + 1)">下一题</button><button @click="answer = !answer">{{ answer ? '题目' : '答案' }}</button></template>
+        <template #actions><button :disabled="index === 0" @click="move(index - 1)">上一题</button><button :disabled="index === paper.items.length - 1" @click="move(index + 1)">下一题</button></template>
       </FullscreenReader>
     </template>
   </section>
