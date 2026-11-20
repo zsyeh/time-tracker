@@ -1,0 +1,22 @@
+[
+  {
+    "mode": "standard",
+    "count": 22,
+    "generate_ms": 2760
+  },
+  {
+    "mode": "intensive",
+    "count": 33,
+    "generate_ms": 1699
+  },
+  {
+    "pdf": "questions",
+    "bytes": 869698,
+    "render_ms": 719
+  },
+  {
+    "pdf": "solutions",
+    "bytes": 4532908,
+    "render_ms": 2142
+  }
+]

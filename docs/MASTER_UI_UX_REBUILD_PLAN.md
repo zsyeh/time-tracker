@@ -1631,3 +1631,20 @@ R2-01先基线/复现 → R2-02搜索及题目 → R2-03热力图性能与旧视
 ### 34.7 2026-11-14：全端题型与勾选记忆 BROWSE-01–05
 
 保留原 R01–R16 及此前矩阵。BROWSE-01 题型跨页面/设备记忆；02 常用筛选及显示勾选；03 显式取消、升级继承和 URL 上下文优先；04 既有账号同步/隔离/离线/500ms 合并、首次列表仅一请求；05 无迁移、旧93c418e回滚。[字段、真实文件、测试、浏览器证据、部署与回滚](browse-sync-20261114/README.md)。最终代码 b496ae2，21:28:08已部署并健康，线上双浏览器恢复/单请求验证通过；不改变题库、诊断/作答数据或成熟做题 UX。
+
+## 追加：2026-11-21 数学二固定题单训练（FT，不覆盖既有矩阵）
+
+用户最终约束覆盖早期考试设想：不交卷、不锁答案，题干/答案/PDF只用原始贴图，允许跳标准练习；整卷分享聚合原单题域名链接；授权删除旧试卷且留备份。
+
+| ID | 需求 / 决策 | 真实代码 | 验收 / 状态 |
+|---|---|---|---|
+| FT-01 | 3h22题、4h33题，硬性高数/线代配额 | `drill/migrations/0042_focus_training_blueprints.py`, `drill/paper_generator.py` | 新训练单测配额、时长、总数通过 |
+| FT-02 | 不展示混乱OCR，缺题/缺答图不入候选 | `paper_generator.py`, `views.py`, `PaperQuestionContent.vue`, `PaperReviewView.vue`, `paper_pdf.py` | 图像候选检查、API/分享去OCR、真实图像解码通过 |
+| FT-03 | Agent/Web同POST创建，排除不放宽 | `drill/serializers.py`, `drill/views.py`, `PaperNewView.vue` | 已掌握/待复习/近期排除，短缺400与无半套记录通过 |
+| FT-04 | 无交卷，答案随看，单题/全屏/备注/倒计时恢复 | `PaperExamView.vue`, `FullscreenReader.vue` | 两视口真实图片浏览器通过，实体Safari未测 |
+| FT-05 | 正确Item ID、既有题单顺序、标准练习返回 | `views.py`, `PaperExamView.vue`, 既有`listContext.ts` | item.id回归、标准练习进入/返回通过 |
+| FT-06 | 域名分享聚合，私有备注隔离 | `drill/sharing.py`, `DrillPaperShareView`, `templates/drill/public_share.html` | 单题canonical域名、无私人备注，原内容分享用例通过 |
+| FT-07 | A4原图PDF与长图连续分页 | `drill/paper_pdf.py` | PDF生成通过；不新增OCR/公式重排依赖 |
+| FT-08 | 替换旧入口，删除两套旧试卷，保留回滚 | `PaperView.vue`删除、现有`/paper`重定向、版本模板迁移及私有发布清理脚本 | 旧图像/学习状态不删除；发布结果见本轮报告 |
+
+依赖：FT-01/02/03 → FT-04/05；FT-06/07独立依赖固定题单；FT-08清理必须等有效备份和新镜像健康。此次单Agent按共享文件所有权实施，无跨Agent覆盖。部署、验证、备份与回滚唯一台账：`docs/focus-training-20261121/README.md`。
