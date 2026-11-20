@@ -105,6 +105,7 @@ defineExpose({ open, close, isOpen: computed(() => opened.value) })
       <template v-if="opened">
         <header class="reader-toolbar" :class="{ 'has-practice-controls': controls }">
           <strong>{{ title }}</strong>
+          <slot name="actions" />
           <ReaderPracticeActions v-if="controls" :controls="controls" @action="emit('action', $event)" />
           <span v-if="images.length > 1" class="reader-count">{{ page }} / {{ images.length }}</span>
           <div class="reader-zoom">

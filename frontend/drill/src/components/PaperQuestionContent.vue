@@ -7,7 +7,7 @@ defineProps<{ question: ExamPaperQuestion }>()
 
 <template>
   <div class="paper-question-content">
-    <p v-if="!question.question_assets.length && question.prompt_text" class="paper-question-text">{{ question.prompt_text }}</p>
+    <p v-if="!question.question_assets.length" class="paper-question-text">暂无题目贴图</p>
     <div v-if="question.question_assets.length" class="paper-question-assets">
       <img
         v-for="asset in question.question_assets"

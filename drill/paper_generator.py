@@ -35,12 +35,14 @@ class PaperGenerator:
 
     MASTERED_RESULTS = ('done', 'correct')
 
-    def generate(self, *, user, blueprint, seed=None, include_mastered=False, cooldown_days=None):
+    def generate(self, *, user, blueprint, seed=None, include_mastered=False, cooldown_days=None,
+                 exclude_review=False, document_ids=None, topic_ids=None):
         if not isinstance(blueprint, ExamBlueprint) or not blueprint.is_active:
             raise PaperGenerationError('The selected blueprint is not active.')
         seed = seed if seed is not None else secrets.randbits(63)
         if seed < 0 or seed >= 2 ** 63:
             raise PaperGenerationError('Seed must be between 0 and 2^63-1.')
+        image_only = blueprint.code.startswith("math2-focus-")
         rng = random.Random(seed)
         sections = list(blueprint.sections.all().order_by('order'))
         if not sections:
@@ -64,6 +66,13 @@ class PaperGenerator:
             candidates = [
                 question for question in candidate_cache[section.question_type]
                 if question.pk not in selected_ids
+                and (not image_only or (question.has_readable_question_crop and question.has_answer_crop))
+                and (not exclude_review or (
+                    question.latest_result_for_paper != 'review' and not question.paper_review_later
+                ))
+                and (not document_ids or question.document_id in document_ids)
+                and (not topic_ids or question.topic_id in topic_ids or question.similarity_topic_id in topic_ids)
+                and self.matches_area(question, section.chapter_weights.get('$subject_area'))
             ]
             if len(candidates) < section.question_count:
                 raise PaperGenerationError(
@@ -108,6 +117,19 @@ class PaperGenerator:
                 for position, (section, question) in enumerate(selected, 1)
             ])
         return paper
+
+    @staticmethod
+    def matches_area(question, area):
+        if not area:
+            return True
+        # Only catalog titles are consulted; never infer the subject from OCR.
+        title = question.document.display_title or question.document.title
+        linear = '线性代数' in title or '线代' in title
+        if area == 'linear':
+            return linear
+        return not linear and any(label in title for label in (
+            '极限', '微分', '积分', '微分方程', '高数', '高等数学',
+        ))
 
     def candidate_pool(
         self, *, user, blueprint, question_type, include_mastered,

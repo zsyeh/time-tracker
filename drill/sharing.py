@@ -113,12 +113,21 @@ def public_share_context(request, share, raw_token):
             'open_path': public_app_path(request, share.workspace, f'/practice/{question.uuid}'),
         }
 
-    revision_assets = QuestionRevisionAsset.objects.select_related('asset').order_by('position')
+    revision_assets = QuestionRevisionAsset.objects.select_related('asset').only(
+        'revision_id', 'position', 'asset_type', 'asset__id', 'asset__width', 'asset__height',
+    ).order_by('position')
     paper_items = ExamPaperItem.objects.filter(paper=share.paper).select_related(
-        'question_revision',
+        'question_revision', 'question',
     ).prefetch_related(Prefetch(
         'question_revision__revision_assets', queryset=revision_assets,
     )).order_by('position')
+    links = {}
+    for link in DrillContentShare.objects.filter(
+        question_id__in=paper_items.values('question_id'), is_canonical=True,
+        is_active=True, revoked_at__isnull=True, workspace=share.workspace,
+    ).select_related('owner'):
+        links[link.question_id] = public_share_url(request, share.workspace, link.recover_token())
+    image_only = share.paper.blueprint.code.startswith('math2-focus-')
     items = []
     for paper_item in paper_items:
         revision = paper_item.question_revision
@@ -127,15 +136,17 @@ def public_share_context(request, share, raw_token):
         answer_assets = [link.asset for link in assets if link.asset_type == 'answer_crop']
         items.append({
             'position': paper_item.position,
+            'share_url': links.get(paper_item.question_id, ''),
+            'practice_path': public_app_path(request, share.workspace, f'/practice/{paper_item.question.uuid}'),
             'label': f'Question {paper_item.position:02d}',
             'document': revision.document_title,
             'topic': revision.topic_title,
-            'prompt_text': '' if question_assets else revision.prompt_text,
-            'latex_text': '' if question_assets else revision.latex_text,
+            'prompt_text': '' if image_only or question_assets else revision.prompt_text,
+            'latex_text': '' if image_only or question_assets else revision.latex_text,
             'question_assets': [
                 _asset_payload(request, share.workspace, raw_token, asset) for asset in question_assets
             ],
-            'answer_markdown': revision.answer_markdown,
+            'answer_markdown': '' if image_only else revision.answer_markdown,
             'answer_assets': [
                 _asset_payload(request, share.workspace, raw_token, asset) for asset in answer_assets
             ],
@@ -146,7 +157,7 @@ def public_share_context(request, share, raw_token):
         'subtitle': f'{len(items)} questions · {share.paper.blueprint.total_score} points',
         'workspace': share.workspace,
         'items': items,
-        'open_path': public_app_path(request, share.workspace, f'/papers/{share.paper.uuid}/review'),
+        'open_path': public_app_path(request, share.workspace, '/papers/new'),
     }
 
 
@@ -159,6 +170,8 @@ def share_markdown(context):
             '### Question',
             '',
         ])
+        if item.get('share_url'):
+            lines.extend([f"[Open shared question]({item['share_url']})", ''])
         if item['prompt_text']:
             lines.extend([item['prompt_text'], ''])
         if item['latex_text'] and item['latex_text'] != item['prompt_text']:

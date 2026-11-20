@@ -102,7 +102,7 @@ def paper_queryset(user):
     )
 
 
-def paper_item_payload(item, *, review, latest_result=None):
+def paper_item_payload(item, *, review, latest_result=None, image_only=False):
     question = item.question
     revision = item.question_revision
     revision_assets = list(revision.revision_assets.all())
@@ -117,6 +117,7 @@ def paper_item_payload(item, *, review, latest_result=None):
         for link in revision_assets if link.asset_type == 'question_crop'
     ]
     payload = {
+        'id': item.pk,
         'position': item.position,
         'score': float(item.score),
         'user_answer': item.user_answer,
@@ -143,7 +144,7 @@ def paper_item_payload(item, *, review, latest_result=None):
     }
     if review:
         payload['question'].update({
-            'answer_markdown': revision.answer_markdown,
+            'answer_markdown': '' if image_only else revision.answer_markdown,
             'answer_source': revision.answer_source,
             'answer_assets': [
                 {
@@ -193,6 +194,7 @@ def exam_paper_payload(paper, *, review=False):
             paper_item_payload(
                 item,
                 review=review,
+                image_only=paper.blueprint.code.startswith('math2-focus-'),
                 latest_result=latest_by_question.get(item.question_id),
             )
             for item in items
@@ -754,6 +756,9 @@ class DrillPaperListCreateView(APIView):
                 seed=values.get('seed'),
                 include_mastered=values['include_mastered'],
                 cooldown_days=values.get('cooldown_days'),
+                exclude_review=values.get('exclude_review', False),
+                document_ids=values.get('document_ids'),
+                topic_ids=values.get('topic_ids'),
             )
         except PaperGenerationError as error:
             return Response({
@@ -818,6 +823,9 @@ class DrillPaperShareView(APIView):
             workspace=workspace,
             paper=paper,
         )
+        for item in paper.items.select_related('question').order_by('position'):
+            DrillContentShare.get_or_issue(owner=request.user, workspace=workspace, question=item.question)
+
         share_url = public_share_url(request, workspace, raw_token)
         return Response({
             'share_url': share_url,

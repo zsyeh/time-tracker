@@ -26,8 +26,8 @@ onMounted(async () => {
 <template>
   <section class="page papers-page">
     <header class="page-header">
-      <div><h1>Paper history</h1><p>Every generated paper keeps its question set and order.</p></div>
-      <RouterLink class="primary-action" to="/papers/new">New paper <b>→</b></RouterLink>
+      <div><h1>专注训练题单</h1><p>固定题目和顺序 · 全贴图 · 随时查看答案与分享</p></div>
+      <RouterLink class="primary-action" to="/papers/new">新建训练 <b>→</b></RouterLink>
     </header>
     <p v-if="error" class="error-state">{{ uiText(error) }}</p>
     <div class="paper-history-list">
@@ -36,11 +36,11 @@ onMounted(async () => {
         <div><strong>{{ paper.title }}</strong><small>{{ formatDate(paper.created_at) }} · {{ paper.question_count }} questions · {{ paper.duration_minutes }} min</small></div>
         <div class="paper-history-progress"><strong>{{ paper.answered_count }}/{{ paper.question_count }}</strong><small>{{ paper.status.replace('_', ' ') }}</small></div>
         <div class="paper-history-actions">
-          <RouterLink :to="`/papers/${paper.uuid}`">Open</RouterLink>
-          <RouterLink :to="`/papers/${paper.uuid}/review`">Review</RouterLink>
+          <RouterLink :to="`/papers/${paper.uuid}`">开始训练</RouterLink>
+          <RouterLink :to="`/papers/${paper.uuid}/review`">整卷查看</RouterLink>
         </div>
       </article>
-      <div v-if="!loading && !papers.length" class="empty-state">No papers yet. Generate one when you are ready to work.</div>
+      <div v-if="!loading && !papers.length" class="empty-state">暂无题单，创建一套开始训练。</div>
     </div>
   </section>
 </template>

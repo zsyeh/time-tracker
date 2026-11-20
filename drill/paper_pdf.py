@@ -40,7 +40,7 @@ class PaperPdfRenderer:
 
     def cover_page(self):
         page = self.document.new_page(width=A4[0], height=A4[1])
-        page.insert_text((MARGIN, 120), self.paper.blueprint.title, fontsize=20, fontname='helv')
+        page.insert_text((MARGIN, 120), self.paper.blueprint.title, fontsize=20, fontname='china-s')
         subtitle = (
             f'{self.paper.blueprint.duration_minutes} minutes  |  '
             f'{self.paper.blueprint.total_score} points  |  '
@@ -96,14 +96,59 @@ class PaperPdfRenderer:
                 page, y = self.new_content_page(item, f'{label} · continued')
         return page, y
 
+    def image_question_pages(self, item, assets=None, label='Question'):
+        if assets is None:
+            assets = [link.asset for link in item.question_revision.revision_assets.all()
+                      if link.asset_type == 'question_crop']
+        page = getattr(self, '_question_page', None)
+        y = getattr(self, '_question_y', 56)
+        if page is None or y > A4[1] - MARGIN - 140 or item.question_revision.question_type == 'solution':
+            page, y = self.new_content_page(item, label)
+        else:
+            page.insert_text((MARGIN, y + 12), f'{item.position}. {label}', fontsize=10)
+            y += 24
+        for asset in assets:
+            width = min(CONTENT_WIDTH, asset.width)
+            height = asset.height * width / asset.width
+            full_height = A4[1] - MARGIN - 56
+            if height <= full_height and y + height > A4[1] - MARGIN:
+                page, y = self.new_content_page(item, f'{label} continued')
+            if height <= A4[1] - MARGIN - y:
+                page.insert_image(pymupdf.Rect(MARGIN, y, MARGIN + width, y + height), stream=bytes(asset.image_data))
+                y += height + 12
+            else:
+                # Split at page boundaries without omitting or shrinking any image region.
+                source = pymupdf.open()
+                image_page = source.new_page(width=width, height=height)
+                image_page.insert_image(image_page.rect, stream=bytes(asset.image_data))
+                offset = 0.0
+                while offset < height:
+                    available = A4[1] - MARGIN - y
+                    if available < 80:
+                        page, y = self.new_content_page(item, f'{label} continued')
+                        available = A4[1] - MARGIN - y
+                    piece = min(available, height - offset)
+                    page.show_pdf_page(pymupdf.Rect(MARGIN, y, MARGIN + width, y + piece), source, 0,
+                                       clip=pymupdf.Rect(0, offset, width, offset + piece))
+                    y += piece
+                    offset += piece
+                source.close()
+                y += 12
+        y += 120 if item.question_revision.question_type == 'solution' else 24
+        self._question_page, self._question_y = page, y
+
     def question_pages(self, item):
+        if self.paper.blueprint.code.startswith('math2-focus-'):
+            if self.solutions:
+                self._question_page = None
+            return self.image_question_pages(item)
         revision = item.question_revision
         assets = [
             link.asset for link in revision.revision_assets.all()
             if link.asset_type == 'question_crop'
         ]
         page, y = self.add_assets(item, assets, 'Question')
-        if not assets:
+        if not assets and not self.paper.blueprint.code.startswith('math2-focus-'):
             y = self.add_text(page, y, revision.prompt_text or revision.source_label)
         if not self.solutions:
             answer_height = 34 if revision.question_type == 'single_choice' else (
@@ -118,18 +163,24 @@ class PaperPdfRenderer:
                 )
 
     def solution_pages(self, item):
+        if self.paper.blueprint.code.startswith('math2-focus-'):
+            self._question_page = None
+            return self.image_question_pages(item, assets=[
+                link.asset for link in item.question_revision.revision_assets.all()
+                if link.asset_type == 'answer_crop'
+            ], label='Answer / explanation')
         revision = item.question_revision
         assets = [
             link.asset for link in revision.revision_assets.all()
             if link.asset_type == 'answer_crop'
         ]
         page, y = self.add_assets(item, assets, 'Answer / explanation')
-        if revision.answer_markdown:
+        if revision.answer_markdown and not self.paper.blueprint.code.startswith('math2-focus-'):
             if y > A4[1] - 180:
                 page, y = self.new_content_page(item, 'Explanation · continued')
             self.add_text(page, y, plain_markdown(revision.answer_markdown), fontsize=8.5)
         elif not assets:
-            self.add_text(page, y, 'No source answer is currently available.')
+            self.add_text(page, y, 'No source answer image is currently available.')
 
 
 def render_paper_pdf(paper, *, solutions=False):

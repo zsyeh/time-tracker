@@ -333,6 +333,7 @@ export interface ExamPaperQuestion {
 }
 
 export interface ExamPaperItem {
+  id?: number
   position: number
   score: number
   user_answer: string
