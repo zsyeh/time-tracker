@@ -199,7 +199,7 @@ class PaperGenerateSerializer(serializers.Serializer):
 class ExamPaperCreateSerializer(serializers.Serializer):
     blueprint = serializers.SlugRelatedField(
         slug_field='code',
-        queryset=ExamBlueprint.objects.filter(is_active=True, subject='math2'),
+        queryset=ExamBlueprint.objects.filter(is_active=True, subject__in=('math2', 'ei')),
     )
     seed = serializers.IntegerField(min_value=0, max_value=2 ** 63 - 1, required=False)
     include_mastered = serializers.BooleanField(required=False, default=False)
@@ -207,6 +207,13 @@ class ExamPaperCreateSerializer(serializers.Serializer):
     document_ids = serializers.ListField(child=serializers.IntegerField(min_value=1), required=False, max_length=100)
     topic_ids = serializers.ListField(child=serializers.IntegerField(min_value=1), required=False, max_length=200)
     cooldown_days = serializers.IntegerField(min_value=0, max_value=365, required=False)
+
+
+    def validate_blueprint(self, blueprint):
+        subject = 'ei' if self.context.get('workspace') == 'ei' else 'math2'
+        if blueprint.subject != subject:
+            raise serializers.ValidationError('该模板不属于当前题库。')
+        return blueprint
 
 
 class ExamPaperStatusSerializer(serializers.Serializer):

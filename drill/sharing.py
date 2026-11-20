@@ -127,7 +127,7 @@ def public_share_context(request, share, raw_token):
         is_active=True, revoked_at__isnull=True, workspace=share.workspace,
     ).select_related('owner'):
         links[link.question_id] = public_share_url(request, share.workspace, link.recover_token())
-    image_only = share.paper.blueprint.code.startswith('math2-focus-')
+    image_only = share.paper.blueprint.code.startswith(('math2-focus-', 'ei-focus-'))
     items = []
     for paper_item in paper_items:
         revision = paper_item.question_revision

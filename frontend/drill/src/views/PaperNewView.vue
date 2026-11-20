@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { runtimeWorkspace } from '../lib/runtimePath'
 import { uiText } from '../lib/uiText'
 import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
@@ -45,10 +46,10 @@ onMounted(async () => {
 
 <template>
   <section class="page paper-new-page">
-    <header class="page-header"><div><h1>数学二 · 专注训练</h1><p>按高数 / 线代固定配额组卷，全部使用题干和答案贴图。可随时看答案或进入标准练习。</p></div><RouterLink class="quiet-link" to="/papers">训练题单</RouterLink></header>
+    <header class="page-header"><div><h1>{{ runtimeWorkspace === 'ei' ? '电子信息' : '数学二' }} · 考试模式</h1><p>{{ runtimeWorkspace === 'ei' ? '依据 892 考纲：180 分钟、150 分，五科各 30 分。30 题为训练配置，非考纲规定题数。' : '按高数 / 线代固定配额组卷。' }} 全部使用题干和答案贴图，可随时看答案或进入标准练习。</p></div><RouterLink class="quiet-link" to="/papers">训练题单</RouterLink></header>
     <div class="blueprint-grid">
       <button v-for="blueprint in blueprints" :key="blueprint.code" type="button" :class="{ selected: selected === blueprint.code }" :aria-pressed="selected === blueprint.code" @click="selected = blueprint.code">
-        <span>{{ blueprint.mode === 'standard' ? '22 题 · 标准训练' : '33 题 · 强化训练' }}</span><h2>{{ blueprint.title }}</h2>
+        <span>{{ blueprint.question_count }} 题 · {{ blueprint.mode === 'standard' ? '标准训练' : '强化训练' }}</span><h2>{{ blueprint.title }}</h2>
         <p>{{ blueprint.duration_minutes }} 分钟 · {{ blueprint.total_score }} 分 · {{ blueprint.question_count }} {{ uiText("questions") }}</p>
         <ul><li v-for="section in blueprint.sections" :key="`${blueprint.code}-${section.title}`">{{ section.title }} · {{ section.question_count }} 题</li></ul>
       </button>
@@ -69,7 +70,7 @@ onMounted(async () => {
 
 <style scoped>
 .generation-filters { display:flex; flex-wrap:wrap; gap:8px 16px; } .generation-hint { color:var(--text-secondary); font-size:13px; line-height:1.6; }
-.blueprint-grid { display: grid; grid-template-columns: repeat(2, 1fr); border:0; border-radius:0; background:transparent; gap:12px; }
+.blueprint-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr)); border:0; border-radius:0; background:transparent; gap:12px; }
 .blueprint-grid > button { min-height:180px; padding:16px; border:0; border-radius:8px; color: var(--text-primary); background: transparent; text-align: left; cursor: pointer; }
 .blueprint-grid > button:first-child { border-left: 0; }
 .blueprint-grid > button:hover { background: var(--bg-surface-hover); }

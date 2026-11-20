@@ -42,7 +42,7 @@ class PaperGenerator:
         seed = seed if seed is not None else secrets.randbits(63)
         if seed < 0 or seed >= 2 ** 63:
             raise PaperGenerationError('Seed must be between 0 and 2^63-1.')
-        image_only = blueprint.code.startswith("math2-focus-")
+        image_only = blueprint.code.startswith(("math2-focus-", "ei-focus-"))
         rng = random.Random(seed)
         sections = list(blueprint.sections.all().order_by('order'))
         if not sections:
@@ -54,17 +54,19 @@ class PaperGenerator:
         selected = []
         candidate_cache = {}
         for section in sections:
-            if section.question_type not in candidate_cache:
-                candidate_cache[section.question_type] = self.candidate_pool(
+            cache_key = (section.question_type, section.chapter_weights.get('$exam_type'))
+            if cache_key not in candidate_cache:
+                candidate_cache[cache_key] = self.candidate_pool(
                     user=user,
                     blueprint=blueprint,
                     question_type=section.question_type,
+                    exam_type=section.chapter_weights.get('$exam_type'),
                     include_mastered=include_mastered,
                     cooldown_days=cooldown,
                     excluded_ids=set(),
                 )
             candidates = [
-                question for question in candidate_cache[section.question_type]
+                question for question in candidate_cache[cache_key]
                 if question.pk not in selected_ids
                 and (not image_only or (question.has_readable_question_crop and question.has_answer_crop))
                 and (not exclude_review or (
@@ -73,6 +75,7 @@ class PaperGenerator:
                 and (not document_ids or question.document_id in document_ids)
                 and (not topic_ids or question.topic_id in topic_ids or question.similarity_topic_id in topic_ids)
                 and self.matches_area(question, section.chapter_weights.get('$subject_area'))
+                and (not section.chapter_weights.get('$course') or question.paper_course == section.chapter_weights['$course'])
             ]
             if len(candidates) < section.question_count:
                 raise PaperGenerationError(
@@ -133,8 +136,12 @@ class PaperGenerator:
 
     def candidate_pool(
         self, *, user, blueprint, question_type, include_mastered,
-        cooldown_days, excluded_ids,
+        cooldown_days, excluded_ids, exam_type=None,
     ):
+        if blueprint.subject == "ei":
+            from .ei_paper import ei_candidate_pool
+            return ei_candidate_pool(user=user, question_type=question_type, exam_type=exam_type,
+                include_mastered=include_mastered, cooldown_days=cooldown_days, excluded_ids=excluded_ids)
         trusted_type = (
             Q(question_type_human_verified=True)
             | Q(

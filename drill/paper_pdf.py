@@ -102,7 +102,7 @@ class PaperPdfRenderer:
                       if link.asset_type == 'question_crop']
         page = getattr(self, '_question_page', None)
         y = getattr(self, '_question_y', 56)
-        if page is None or y > A4[1] - MARGIN - 140 or item.question_revision.question_type == 'solution':
+        if page is None or y > A4[1] - MARGIN - 140 or item.section.question_type == 'solution':
             page, y = self.new_content_page(item, label)
         else:
             page.insert_text((MARGIN, y + 12), f'{item.position}. {label}', fontsize=10)
@@ -134,11 +134,11 @@ class PaperPdfRenderer:
                     offset += piece
                 source.close()
                 y += 12
-        y += 120 if item.question_revision.question_type == 'solution' else 24
+        y += 120 if item.section.question_type == 'solution' else 24
         self._question_page, self._question_y = page, y
 
     def question_pages(self, item):
-        if self.paper.blueprint.code.startswith('math2-focus-'):
+        if self.paper.blueprint.code.startswith(('math2-focus-', 'ei-focus-')):
             if self.solutions:
                 self._question_page = None
             return self.image_question_pages(item)
@@ -148,7 +148,7 @@ class PaperPdfRenderer:
             if link.asset_type == 'question_crop'
         ]
         page, y = self.add_assets(item, assets, 'Question')
-        if not assets and not self.paper.blueprint.code.startswith('math2-focus-'):
+        if not assets and not self.paper.blueprint.code.startswith(('math2-focus-', 'ei-focus-')):
             y = self.add_text(page, y, revision.prompt_text or revision.source_label)
         if not self.solutions:
             answer_height = 34 if revision.question_type == 'single_choice' else (
@@ -163,7 +163,7 @@ class PaperPdfRenderer:
                 )
 
     def solution_pages(self, item):
-        if self.paper.blueprint.code.startswith('math2-focus-'):
+        if self.paper.blueprint.code.startswith(('math2-focus-', 'ei-focus-')):
             self._question_page = None
             return self.image_question_pages(item, assets=[
                 link.asset for link in item.question_revision.revision_assets.all()
@@ -175,7 +175,7 @@ class PaperPdfRenderer:
             if link.asset_type == 'answer_crop'
         ]
         page, y = self.add_assets(item, assets, 'Answer / explanation')
-        if revision.answer_markdown and not self.paper.blueprint.code.startswith('math2-focus-'):
+        if revision.answer_markdown and not self.paper.blueprint.code.startswith(('math2-focus-', 'ei-focus-')):
             if y > A4[1] - 180:
                 page, y = self.new_content_page(item, 'Explanation · continued')
             self.add_text(page, y, plain_markdown(revision.answer_markdown), fontsize=8.5)

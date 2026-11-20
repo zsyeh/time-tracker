@@ -137,7 +137,7 @@ def paper_item_payload(item, *, review, latest_result=None, image_only=False, us
             'source_label': revision.source_label,
             'document': revision.document_title,
             'topic': revision.topic_title,
-            'question_type': revision.question_type,
+            'question_type': item.section.question_type if image_only else revision.question_type,
             # Cropped source images are authoritative in papers. Do not duplicate
             # noisy OCR beside them; text remains available for image-less records.
             'prompt_text': '' if question_assets else revision.prompt_text,
@@ -202,7 +202,7 @@ def exam_paper_payload(paper, *, review=False):
                 item,
                 review=review,
                 user_state=states.get(item.question_id),
-                image_only=paper.blueprint.code.startswith('math2-focus-'),
+                image_only=paper.blueprint.code.startswith(('math2-focus-', 'ei-focus-')),
                 latest_result=latest_by_question.get(item.question_id),
             )
             for item in items
@@ -688,10 +688,8 @@ class DrillPaperGenerateView(APIView):
 
 class DrillBlueprintListView(APIView):
     def get(self, request):
-        if request_workspace(request) != 'drill':
-            raise Http404
         blueprints = ExamBlueprint.objects.filter(
-            subject='math2', is_active=True,
+            subject='ei' if request_workspace(request) == 'ei' else 'math2', is_active=True,
         ).prefetch_related('sections').order_by('mode', '-version')
         return Response({
             'results': [
@@ -722,9 +720,7 @@ class DrillBlueprintListView(APIView):
 
 class DrillPaperListCreateView(APIView):
     def get(self, request):
-        if request_workspace(request) != 'drill':
-            raise Http404
-        papers = ExamPaper.objects.filter(user=request.user).select_related('blueprint').annotate(
+        papers = ExamPaper.objects.filter(user=request.user, blueprint__subject='ei' if request_workspace(request) == 'ei' else 'math2').select_related('blueprint').annotate(
             question_count=Count('items'),
             answered_count=Count('items', filter=~Q(items__result='unanswered')),
             correct_count=Count('items', filter=Q(items__result='correct')),
@@ -752,9 +748,7 @@ class DrillPaperListCreateView(APIView):
         ]})
 
     def post(self, request):
-        if request_workspace(request) != 'drill':
-            raise Http404
-        serializer = ExamPaperCreateSerializer(data=request.data)
+        serializer = ExamPaperCreateSerializer(data=request.data, context={'workspace': request_workspace(request)})
         serializer.is_valid(raise_exception=True)
         values = serializer.validated_data
         try:
@@ -781,9 +775,7 @@ class DrillPaperListCreateView(APIView):
 
 class DrillPaperDetailView(APIView):
     def get_object(self, request, paper_uuid):
-        if request_workspace(request) != 'drill':
-            raise Http404
-        return get_object_or_404(paper_queryset(request.user), uuid=paper_uuid)
+        return get_object_or_404(paper_queryset(request.user), uuid=paper_uuid, blueprint__subject='ei' if request_workspace(request) == 'ei' else 'math2')
 
     def get(self, request, paper_uuid):
         return Response(exam_paper_payload(self.get_object(request, paper_uuid)))
@@ -815,9 +807,7 @@ class DrillPaperDetailView(APIView):
 
 class DrillPaperReviewView(APIView):
     def get(self, request, paper_uuid):
-        if request_workspace(request) != 'drill':
-            raise Http404
-        paper = get_object_or_404(paper_queryset(request.user), uuid=paper_uuid)
+        paper = get_object_or_404(paper_queryset(request.user), uuid=paper_uuid, blueprint__subject='ei' if request_workspace(request) == 'ei' else 'math2')
         return Response(exam_paper_payload(paper, review=True))
 
 
@@ -848,8 +838,6 @@ class DrillPaperShareView(APIView):
 
 class DrillPaperItemView(APIView):
     def patch(self, request, paper_uuid, position):
-        if request_workspace(request) != 'drill':
-            raise Http404
         serializer = ExamPaperItemUpdateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         with transaction.atomic():
@@ -857,6 +845,7 @@ class DrillPaperItemView(APIView):
                 ExamPaperItem.objects.select_for_update().select_related('paper', 'section'),
                 paper__uuid=paper_uuid,
                 paper__user=request.user,
+                paper__blueprint__subject='ei' if request_workspace(request) == 'ei' else 'math2',
                 position=position,
             )
             score = serializer.validated_data.get('self_score')
@@ -888,12 +877,12 @@ class DrillPaperItemView(APIView):
 
 class DrillPaperPdfView(APIView):
     def get(self, request, paper_uuid, kind):
-        if request_workspace(request) != 'drill' or kind not in ('questions', 'solutions'):
+        if kind not in ('questions', 'solutions'):
             raise Http404
-        paper = get_object_or_404(paper_queryset(request.user), uuid=paper_uuid)
+        paper = get_object_or_404(paper_queryset(request.user), uuid=paper_uuid, blueprint__subject='ei' if request_workspace(request) == 'ei' else 'math2')
         pdf = render_paper_pdf(paper, solutions=kind == 'solutions')
         response = HttpResponse(pdf, content_type='application/pdf')
-        response['Content-Disposition'] = f'attachment; filename="math2-{paper.uuid}-{kind}.pdf"'
+        response['Content-Disposition'] = f'attachment; filename="{paper.blueprint.subject}-{paper.uuid}-{kind}.pdf"'
         response['Cache-Control'] = 'private, no-store'
         response['X-Content-Type-Options'] = 'nosniff'
         return response
