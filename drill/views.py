@@ -102,7 +102,7 @@ def paper_queryset(user):
     )
 
 
-def paper_item_payload(item, *, review, latest_result=None, image_only=False):
+def paper_item_payload(item, *, review, latest_result=None, image_only=False, user_state=None):
     question = item.question
     revision = item.question_revision
     revision_assets = list(revision.revision_assets.all())
@@ -124,6 +124,8 @@ def paper_item_payload(item, *, review, latest_result=None, image_only=False):
         'result': item.result,
         'time_spent_seconds': item.time_spent_seconds,
         'question': {
+            'is_favorite': bool((user_state or {}).get('is_favorite', False)),
+            'state_version': (user_state or {}).get('version', 1),
             'uuid': str(question.uuid),
             'revision_uuid': str(revision.uuid),
             'revision_number': revision.number,
@@ -167,6 +169,9 @@ def paper_item_payload(item, *, review, latest_result=None, image_only=False):
 def exam_paper_payload(paper, *, review=False):
     items = list(paper.items.all())
     latest_by_question = {}
+    states = {row['question_id']: row for row in QuestionUserState.objects.filter(
+        user=paper.user, question_id__in=[item.question_id for item in items],
+    ).values('question_id', 'is_favorite', 'version')} if review and items else {}
     if review and items:
         attempts = QuestionAttempt.objects.filter(
             user=paper.user,
@@ -194,6 +199,7 @@ def exam_paper_payload(paper, *, review=False):
             paper_item_payload(
                 item,
                 review=review,
+                user_state=states.get(item.question_id),
                 image_only=paper.blueprint.code.startswith('math2-focus-'),
                 latest_result=latest_by_question.get(item.question_id),
             )
@@ -779,6 +785,11 @@ class DrillPaperDetailView(APIView):
 
     def get(self, request, paper_uuid):
         return Response(exam_paper_payload(self.get_object(request, paper_uuid)))
+
+    def delete(self, request, paper_uuid):
+        paper = self.get_object(request, paper_uuid)
+        paper.delete()
+        return Response(status=status.HTTP_204_NO_CONTENT)
 
     def patch(self, request, paper_uuid):
         serializer = ExamPaperStatusSerializer(data=request.data)

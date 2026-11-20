@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { api } from '../lib/api'
+import { api, ApiError } from '../lib/api'
+import { patchQuestionState } from '../lib/workspace'
 import PaperQuestionContent from '../components/PaperQuestionContent.vue'
 import FullscreenReader from '../components/FullscreenReader.vue'
 import type { ExamPaper } from '../types'
@@ -20,6 +21,7 @@ const answer = ref(false)
 const sharing = ref(false)
 const copied = ref(false)
 const saving = ref(0)
+const favoriteSaving = ref(false)
 const reader = ref<InstanceType<typeof FullscreenReader> | null>(null)
 let timer = 0
 let noteTimer = 0
@@ -63,6 +65,26 @@ function flag() {
   if (!item.value.user_answer.startsWith('不会做：')) item.value.user_answer = `不会做：${item.value.user_answer}`
   void save()
 }
+async function toggleFavorite() {
+  const question = item.value?.question
+  if (!question || favoriteSaving.value) return
+  favoriteSaving.value = true
+  try {
+    const state = await api<{ is_favorite: boolean; version: number }>(`/api/drill/questions/${question.uuid}/state/`, {
+      method: 'POST', body: JSON.stringify({ is_favorite: !question.is_favorite, version: question.state_version || 1 }),
+    })
+    question.is_favorite = state.is_favorite
+    question.state_version = state.version
+    patchQuestionState(question.uuid, { is_favorite: state.is_favorite, state_version: state.version })
+    error.value = ''
+  } catch (reason) {
+    if (reason instanceof ApiError && reason.status === 409) {
+      question.is_favorite = !!reason.body.is_favorite
+      question.state_version = Number(reason.body.version) || 1
+    }
+    error.value = (reason as Error).message
+  } finally { favoriteSaving.value = false }
+}
 async function sharePaper() {
   if (sharing.value) return
   sharing.value = true
@@ -94,7 +116,6 @@ onUnmounted(() => { window.clearInterval(timer); window.clearTimeout(noteTimer);
     <nav v-if="paper" class="training-tools" aria-label="题单工具">
       <RouterLink :to="previewLocation(context)">整卷预览</RouterLink>
       <a :href="withWorkspacePrefix(`/api/drill/papers/${uuid}/pdf/questions/`)">试卷 PDF</a>
-      <a :href="withWorkspacePrefix(`/api/drill/papers/${uuid}/pdf/solutions/`)">答案 PDF</a>
       <button :disabled="sharing" @click="sharePaper">{{ sharing ? '生成分享…' : copied ? '分享链接已复制' : '分享整卷' }}</button>
     </nav>
     <p v-if="error" class="error-state" role="alert">{{ error }} <button @click="save()">重试保存</button></p>
@@ -105,6 +126,7 @@ onUnmounted(() => { window.clearInterval(timer); window.clearTimeout(noteTimer);
           <button @click="answer = !answer">{{ answer ? '返回题目' : '查看答案' }}</button>
           <button @click="reader?.open()">全屏查看</button>
           <RouterLink :to="practiceLocation()" @click="save()">标准练习 →</RouterLink>
+          <button :aria-pressed="!!item.question.is_favorite" :disabled="favoriteSaving" @click="toggleFavorite">{{ item.question.is_favorite ? '已收藏' : '收藏' }}</button>
           <button @click="flag">标记不会做</button>
         </div>
         <PaperQuestionContent v-if="!answer" :question="item.question" />
@@ -122,7 +144,7 @@ onUnmounted(() => { window.clearInterval(timer); window.clearTimeout(noteTimer);
         <button :disabled="index === paper.items.length - 1" @click="move(index + 1)">下一题</button>
       </footer>
       <FullscreenReader ref="reader" hide-trigger :title="`第 ${item.position} 题 · ${answer ? '答案' : '题目'}`" :images="images" :content-key="`${item.position}-${answer}`">
-        <template #actions><button :disabled="index === 0" @click="move(index - 1)">上一题</button><button :disabled="index === paper.items.length - 1" @click="move(index + 1)">下一题</button></template>
+        <template #actions><button :disabled="index === 0" @click="move(index - 1)">上一题</button><button :disabled="index === paper.items.length - 1" @click="move(index + 1)">下一题</button><button :aria-pressed="!!item.question.is_favorite" :disabled="favoriteSaving" @click="toggleFavorite">{{ item.question.is_favorite ? '已收藏' : '收藏' }}</button></template>
       </FullscreenReader>
     </template>
   </section>

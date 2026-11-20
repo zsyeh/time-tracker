@@ -316,6 +316,8 @@ export interface ExamBlueprint {
 }
 
 export interface ExamPaperQuestion {
+  is_favorite?: boolean
+  state_version?: number
   uuid: string
   display_label: string
   source_label: string

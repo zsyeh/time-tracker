@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.db.models import Sum
 from django.test import RequestFactory
 import pymupdf
-from .models import ExamBlueprint, ExamBlueprintSection, QuestionDocument, Question, QuestionAsset, QuestionAttempt, ExamPaper, DrillContentShare
+from .models import ExamBlueprint, ExamBlueprintSection, QuestionDocument, Question, QuestionAsset, QuestionAttempt, ExamPaper, DrillContentShare, QuestionUserState
 from .paper_generator import PaperGenerator, PaperGenerationError
 from .paper_pdf import render_paper_pdf
 from .sharing import public_share_context, share_markdown
@@ -45,7 +45,10 @@ class FocusTrainingTests(TestCase):
         paper = PaperGenerator().generate(user=self.user, blueprint=self.bp, include_mastered=True)
         self.assertEqual(list(paper.items.values_list('question_id',flat=True)),[expected.pk])
         self.assertEqual(QuestionAttempt.objects.count(),0)
+        QuestionUserState.objects.create(user=self.user, question=expected, is_favorite=True, version=3)
         payload = exam_paper_payload(paper_queryset(self.user).get(pk=paper.pk),review=True)
+        self.assertTrue(payload['items'][0]['question']['is_favorite'])
+        self.assertEqual(payload['items'][0]['question']['state_version'], 3)
         self.assertEqual(payload['items'][0]['id'],paper.items.get().pk)
         self.assertEqual(payload['items'][0]['question']['prompt_text'],'')
         self.assertEqual(payload['items'][0]['question']['answer_markdown'],'')
@@ -73,3 +76,24 @@ class FocusTrainingTests(TestCase):
         self.assertNotIn('PRIVATE NOTE',str(context))
         self.assertNotIn('NOISY',share_markdown(context))
         self.assertEqual(context['items'][0]['practice_path'],f'/drill/practice/{q.uuid}')
+
+    def test_delete_is_owner_only_and_preserves_questions_and_learning(self):
+        from rest_framework.test import APIRequestFactory, force_authenticate
+        from .views import DrillPaperDetailView
+        q = self.question(1)
+        paper = PaperGenerator().generate(user=self.user, blueprint=self.bp)
+        QuestionUserState.objects.create(user=self.user, question=q, is_favorite=True)
+        QuestionAttempt.objects.create(user=self.user, question=q, result='correct')
+        share, _, _ = DrillContentShare.get_or_issue(owner=self.user, workspace='drill', paper=paper)
+        other = get_user_model().objects.create_user('focus-other-owner')
+        factory = APIRequestFactory()
+        for user, expected in [(other,404),(self.user,204)]:
+            request = factory.delete(f'/api/drill/papers/{paper.uuid}/', HTTP_HOST='drill.ehzsy.site')
+            request.workspace = 'drill'
+            force_authenticate(request,user=user)
+            response = DrillPaperDetailView.as_view()(request,paper_uuid=paper.uuid)
+            self.assertEqual(response.status_code,expected)
+        self.assertTrue(Question.objects.filter(pk=q.pk).exists())
+        self.assertTrue(QuestionUserState.objects.get(user=self.user,question=q).is_favorite)
+        self.assertEqual(QuestionAttempt.objects.filter(user=self.user,question=q).count(),1)
+        self.assertFalse(DrillContentShare.objects.filter(pk=share.pk).exists())

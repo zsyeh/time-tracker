@@ -6,10 +6,21 @@ import type { ExamPaperSummary } from '../types'
 
 const papers = ref<ExamPaperSummary[]>([])
 const loading = ref(true)
+const deleting = ref('')
 const error = ref('')
 
 function formatDate(value: string) {
   return new Intl.DateTimeFormat(undefined, { dateStyle: 'medium', timeStyle: 'short' }).format(new Date(value))
+}
+
+async function deletePaper(uuid: string) {
+  if (deleting.value || !window.confirm('删除这套试卷？整卷分享链接将失效，原题、收藏和作答记录不受影响。')) return
+  deleting.value = uuid
+  try {
+    await api(`/api/drill/papers/${uuid}/`, { method: 'DELETE' })
+    papers.value = papers.value.filter(paper => paper.uuid !== uuid)
+  } catch (reason) { error.value = (reason as Error).message }
+  finally { deleting.value = '' }
 }
 
 onMounted(async () => {
@@ -38,6 +49,7 @@ onMounted(async () => {
         <div class="paper-history-actions">
           <RouterLink :to="`/papers/${paper.uuid}`">开始训练</RouterLink>
           <RouterLink :to="`/papers/${paper.uuid}/review`">整卷查看</RouterLink>
+          <button type="button" :disabled="!!deleting" @click="deletePaper(paper.uuid)">{{ deleting === paper.uuid ? '删除中…' : '删除' }}</button>
         </div>
       </article>
       <div v-if="!loading && !papers.length" class="empty-state">暂无题单，创建一套开始训练。</div>
@@ -56,6 +68,7 @@ onMounted(async () => {
 .paper-history-row small { color: var(--text-tertiary); font-size:13px; }
 .paper-history-progress { text-align: right; }
 .paper-history-actions { display: flex !important; grid-auto-flow: column; gap:8px !important; }
+.paper-history-actions button { padding:6px 8px; min-height:44px; border:0; border-radius:var(--radius-sm); color:var(--text-secondary); background:transparent; cursor:pointer; font:inherit; }
 .paper-history-actions a { padding: 6px 8px; border:0; border-radius: var(--radius-sm); color: var(--text-secondary); background: transparent; text-decoration: none; font-size:13px; cursor: pointer; }
 .paper-history-actions a:hover { border-color: var(--border-default); color: var(--text-primary); background: var(--bg-surface-hover); }
 @media (max-width: 700px) {
