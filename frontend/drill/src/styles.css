@@ -433,6 +433,12 @@ html:has(.drill-shell.question-route), body:has(.drill-shell.question-route) {
     height: 100%; overflow: hidden; overscroll-behavior: none;
   }
 .drill-shell.question-route { height: 100vh; height: 100dvh; min-height: 0; overflow: hidden; }
+/* VisualViewport is separate from 100dvh on iPadOS keyboard open/Enter. */
+.drill-shell.question-route.practice-keyboard-viewport {
+    position: fixed; top: var(--practice-visible-top); left: 0; right: 0;
+    height: var(--practice-visible-height);
+  }
+.question-route.practice-keyboard-viewport .drill-sidebar { height: 100%; }
 .question-route > main { height: 100%; min-height: 0; overflow: hidden; }
 .question-route .drill-sidebar { height: 100vh; height: 100dvh; min-height: 0; }
 .question-route .question-page.page {

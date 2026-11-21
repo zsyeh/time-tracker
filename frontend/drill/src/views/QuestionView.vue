@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { installPracticeKeyboardViewport } from '../lib/practiceKeyboardViewport'
 import { uiText } from '../lib/uiText'
 import { ForegroundTimer, learningUserId, readLocal, writeLocal, type TimingSyncResult } from '../../../shared/foregroundTimer'
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
@@ -1409,7 +1410,9 @@ function refreshAfterPageRestore(event: PageTransitionEvent) {
   void load()
 }
 
+let removeKeyboardViewport: (() => void) | undefined
 onMounted(() => {
+  removeKeyboardViewport = installPracticeKeyboardViewport()
   window.addEventListener('pageshow', refreshAfterPageRestore)
   document.addEventListener('visibilitychange', learningVisibility)
   window.addEventListener('pagehide', persistLearningBoundary)
@@ -1419,6 +1422,7 @@ onMounted(() => {
   void load()
 })
 onUnmounted(() => {
+  removeKeyboardViewport?.()
   window.removeEventListener('pageshow', refreshAfterPageRestore)
   document.removeEventListener('visibilitychange', learningVisibility)
   window.removeEventListener('pagehide', persistLearningBoundary)
