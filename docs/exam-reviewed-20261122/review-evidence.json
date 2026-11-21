@@ -1,0 +1,156 @@
+{
+  "paper_uuid": "f2ab8798-0526-4a18-89af-802af6e664ae",
+  "original_unchanged": true,
+  "items": 30,
+  "score": 150,
+  "attempts_unchanged": true,
+  "errata": [
+    {
+      "id": 92,
+      "question_id": 6244,
+      "status": "resolved"
+    },
+    {
+      "id": 91,
+      "question_id": 5806,
+      "status": "resolved"
+    },
+    {
+      "id": 90,
+      "question_id": 6999,
+      "status": "open"
+    },
+    {
+      "id": 89,
+      "question_id": 6193,
+      "status": "resolved"
+    },
+    {
+      "id": 88,
+      "question_id": 5838,
+      "status": "resolved"
+    },
+    {
+      "id": 87,
+      "question_id": 5833,
+      "status": "resolved"
+    },
+    {
+      "id": 86,
+      "question_id": 5835,
+      "status": "resolved"
+    },
+    {
+      "id": 85,
+      "question_id": 8508,
+      "status": "resolved"
+    },
+    {
+      "id": 84,
+      "question_id": 6953,
+      "status": "resolved"
+    },
+    {
+      "id": 83,
+      "question_id": 6927,
+      "status": "resolved"
+    },
+    {
+      "id": 82,
+      "question_id": 5875,
+      "status": "resolved"
+    },
+    {
+      "id": 81,
+      "question_id": 6248,
+      "status": "resolved"
+    },
+    {
+      "id": 80,
+      "question_id": 5708,
+      "status": "resolved"
+    },
+    {
+      "id": 79,
+      "question_id": 6236,
+      "status": "resolved"
+    },
+    {
+      "id": 78,
+      "question_id": 7079,
+      "status": "resolved"
+    },
+    {
+      "id": 77,
+      "question_id": 7844,
+      "status": "resolved"
+    },
+    {
+      "id": 76,
+      "question_id": 6041,
+      "status": "resolved"
+    },
+    {
+      "id": 75,
+      "question_id": 6234,
+      "status": "resolved"
+    },
+    {
+      "id": 74,
+      "question_id": 6521,
+      "status": "resolved"
+    },
+    {
+      "id": 73,
+      "question_id": 6346,
+      "status": "resolved"
+    },
+    {
+      "id": 72,
+      "question_id": 8912,
+      "status": "resolved"
+    },
+    {
+      "id": 71,
+      "question_id": 8885,
+      "status": "resolved"
+    },
+    {
+      "id": 70,
+      "question_id": 4935,
+      "status": "resolved"
+    },
+    {
+      "id": 69,
+      "question_id": 2848,
+      "status": "resolved"
+    },
+    {
+      "id": 68,
+      "question_id": 2801,
+      "status": "resolved"
+    },
+    {
+      "id": 67,
+      "question_id": 6450,
+      "status": "resolved"
+    },
+    {
+      "id": 66,
+      "question_id": 6568,
+      "status": "resolved"
+    },
+    {
+      "id": 65,
+      "question_id": 3051,
+      "status": "resolved"
+    },
+    {
+      "id": 64,
+      "question_id": 5795,
+      "status": "resolved"
+    }
+  ],
+  "resolved": 28,
+  "open": 1
+}

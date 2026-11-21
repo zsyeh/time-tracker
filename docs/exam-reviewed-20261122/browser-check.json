@@ -1,0 +1,26 @@
+[
+  {
+    "width": 390,
+    "height": 844,
+    "theme": "light",
+    "status": 200,
+    "items": 30,
+    "single_question_links": 30,
+    "answers_collapsed": true,
+    "sampled_images_decoded": true,
+    "horizontal_overflow": false,
+    "elapsed_ms": 8465
+  },
+  {
+    "width": 1180,
+    "height": 820,
+    "theme": "dark",
+    "status": 200,
+    "items": 30,
+    "single_question_links": 30,
+    "answers_collapsed": true,
+    "sampled_images_decoded": true,
+    "horizontal_overflow": false,
+    "elapsed_ms": 14908
+  }
+]

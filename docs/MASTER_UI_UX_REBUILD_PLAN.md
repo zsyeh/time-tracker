@@ -1662,3 +1662,15 @@ R2-01先基线/复现 → R2-02搜索及题目 → R2-03热力图性能与旧视
 |EX-07 workspace/owner/分享隐私隔离|serializers/views/sharing/PDF|Drill不可读EI套卷，原图不展示OCR，自评分/备注不公开|已发布|
 
 EX-06训练题数不冒充官方题数；配额和稀缺题源、实测时延、两份新增迁移、安全回滚及未测实机项详见 `docs/focus-training-20261121/README.md`。服务器Docker维护获得用户另行明确批准，不扩展为一般故障可无条件重启数据库的授权。
+
+## 2026-11-22 增量：考试换题、EI 复核卷与勘误（保留原矩阵）
+
+|需求 ID|需求/决策|真实代码/任务|验证与状态|
+|---|---|---|---|
+|EX-REPLACE-01|Drill/EI 更换本题；同科同型同分，继承原筛选|`drill/paper_generator.py`、`views.py`、`urls.py`、`models.py`、`0045_paper_generation_options.py`|537d80f 上线；21 后端相关测试，实际 12 次换题；已分享卷返回409保护固定分享|
+|EX-REPLACE-02|UI确认、保存备注、旧请求防护、全屏可换|`frontend/drill/src/views/PaperExamView.vue`、`components/PaperSelfEvaluation.vue`|4前端相关用例、类型与构建通过；无全局学习状态写入|
+|EI-REVIEW-01|真实考纲组卷、逐图审查、不采用OCR题干|既有EI模板/API、固定QuestionRevision|30题150分180分钟，五科各30分；30题为训练配置而非考纲规定；原卷使用中，保留并交付独立复核卷|
+|EI-REVIEW-02|裁切及勘误，保留原二进制、修订与回滚|QuestionAsset、QuestionRevision、QuestionErratum、既有题型修改API|64–92共29项，28resolved，#90源PDF缺图仍open且已换出；26项批处理、3分类、#92回滚只读验证通过|
+|EI-REVIEW-03|域名整卷分享及验收|既有DrillContentShare、public_share_url|公开页200、30单题链接，390浅色/1180深色无溢出；真机Safari未测|
+
+完整施工结果、证据、迁移0045、备份、数据与应用回滚入口：[本轮报告](exam-reviewed-20261122/README.md)。后续继续工作先读此报告，不重新生成或覆盖用户已开始的旧卷。此轮续做严格未开Subagent。
