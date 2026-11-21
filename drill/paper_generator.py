@@ -1,6 +1,7 @@
 """Deterministic, explainable Mathematics II paper generation."""
 
 import datetime
+import copy
 import random
 import secrets
 from dataclasses import dataclass
@@ -12,7 +13,7 @@ from django.utils import timezone
 
 from .models import (
     ExamBlueprint, ExamPaper, ExamPaperItem, Question, QuestionAttempt,
-    QuestionAsset, QuestionMarker, QuestionRevision, QuestionUserState,
+    QuestionAsset, QuestionErratum, QuestionMarker, QuestionRevision, QuestionUserState,
 )
 
 
@@ -65,18 +66,9 @@ class PaperGenerator:
                     cooldown_days=cooldown,
                     excluded_ids=set(),
                 )
-            candidates = [
-                question for question in candidate_cache[cache_key]
-                if question.pk not in selected_ids
-                and (not image_only or (question.has_readable_question_crop and question.has_answer_crop))
-                and (not exclude_review or (
-                    question.latest_result_for_paper != 'review' and not question.paper_review_later
-                ))
-                and (not document_ids or question.document_id in document_ids)
-                and (not topic_ids or question.topic_id in topic_ids or question.similarity_topic_id in topic_ids)
-                and self.matches_area(question, section.chapter_weights.get('$subject_area'))
-                and (not section.chapter_weights.get('$course') or question.paper_course == section.chapter_weights['$course'])
-            ]
+            candidates = self.filter_for_section(candidate_cache[cache_key], section,
+                excluded_ids=selected_ids, image_only=image_only, exclude_review=exclude_review,
+                document_ids=document_ids, topic_ids=topic_ids)
             if len(candidates) < section.question_count:
                 raise PaperGenerationError(
                     f'Not enough eligible {section.get_question_type_display().lower()} questions '
@@ -106,6 +98,9 @@ class PaperGenerator:
                 blueprint=blueprint,
                 seed=seed,
                 mode=blueprint.mode,
+                generation_options={'version': 1, 'include_mastered': include_mastered,
+                    'exclude_review': exclude_review, 'cooldown_days': cooldown,
+                    'document_ids': document_ids, 'topic_ids': topic_ids},
             )
             ExamPaperItem.objects.bulk_create([
                 ExamPaperItem(
@@ -120,6 +115,66 @@ class PaperGenerator:
                 for position, (section, question) in enumerate(selected, 1)
             ])
         return paper
+
+    def filter_for_section(self, candidates, section, *, excluded_ids, image_only,
+                           exclude_review=False, document_ids=None, topic_ids=None):
+        return [
+                question for question in candidates
+                if question.pk not in excluded_ids
+                and (not image_only or (question.has_readable_question_crop and question.has_answer_crop))
+                and (not exclude_review or (
+                    question.latest_result_for_paper != 'review' and not question.paper_review_later
+                ))
+                and (not document_ids or question.document_id in document_ids)
+                and (not topic_ids or question.topic_id in topic_ids or question.similarity_topic_id in topic_ids)
+                and self.matches_area(question, section.chapter_weights.get('$subject_area'))
+                and (not section.chapter_weights.get('$course') or question.paper_course == section.chapter_weights['$course'])
+            ]
+
+    def replace_item(self, *, paper, item, question_uuid=None):
+        """Caller must hold the paper row lock throughout selection and saving."""
+        options = dict(paper.generation_options or {})
+        known_options = options.get('version') == 1
+        filters = options if known_options else {'include_mastered': True, 'cooldown_days': 0}
+        history = list(options.get('replacement_history', []))
+        excluded = set(paper.items.values_list('question_id', flat=True))
+        excluded.update(Question.objects.filter(uuid__in=[entry['previous_question_uuid'] for entry in history]).values_list('pk', flat=True))
+        candidates = self.candidate_pool(
+            user=paper.user, blueprint=paper.blueprint, question_type=item.section.question_type,
+            exam_type=item.section.chapter_weights.get('$exam_type'),
+            include_mastered=filters.get('include_mastered', True),
+            cooldown_days=filters.get('cooldown_days', 0), excluded_ids=excluded)
+        candidates = self.filter_for_section(candidates, item.section, excluded_ids=excluded,
+            image_only=paper.blueprint.code.startswith(('math2-focus-', 'ei-focus-')),
+            exclude_review=filters.get('exclude_review', False),
+            document_ids=filters.get('document_ids'), topic_ids=filters.get('topic_ids'))
+        if question_uuid is not None:
+            candidates = [q for q in candidates if q.uuid == question_uuid]
+        if not candidates:
+            raise PaperGenerationError('没有符合原筛选条件且未在本卷出现过的替换题。',
+                                       section=item.section.title, required=1, available=0)
+        section = copy.copy(item.section)
+        section.question_count = 1
+        selected = self.choose_for_section(candidates, section, paper.mode, random.SystemRandom())[0]
+        previous_uuid, previous_revision = str(item.question.uuid), str(item.question_revision.uuid)
+        revision = QuestionRevision.capture(selected)
+        item.question, item.question_revision = selected, revision
+        item.selected_fingerprint = selected.fingerprint
+        item.self_score, item.self_note, item.user_answer = None, '', ''
+        item.result, item.time_spent_seconds, item.submitted_at = 'unanswered', None, None
+        item.save(update_fields=('question', 'question_revision', 'selected_fingerprint',
+            'self_score', 'self_note', 'user_answer', 'result', 'time_spent_seconds', 'submitted_at'))
+        history.append({'position': item.position, 'previous_question_uuid': previous_uuid,
+            'previous_revision_uuid': previous_revision, 'question_uuid': str(selected.uuid),
+            'revision_uuid': str(revision.uuid), 'replaced_at': timezone.now().isoformat()})
+        options['replacement_history'] = history
+        paper.generation_options = options
+        paper.save(update_fields=('generation_options',))
+        result = {'position': item.position, 'previous_question_uuid': previous_uuid,
+                  'question_uuid': str(selected.uuid)}
+        if not known_options:
+            result['warning'] = '旧试卷未保存完整生成条件；本次使用宽松筛选（包含已掌握、待复习题，不限制近期、题册或知识点）。题型、科目、题图和勘误限制仍然生效。'
+        return result
 
     @staticmethod
     def matches_area(question, area):
@@ -173,6 +228,7 @@ class PaperGenerator:
             user=user, question_id=OuterRef('pk'),
         ).order_by('-created_at', '-pk')
         state = QuestionUserState.objects.filter(user=user, question_id=OuterRef('pk'))
+        unresolved = QuestionErratum.objects.filter(question_id=OuterRef('pk'), status__in=('open', 'reviewing'))
         readable_question_crop = QuestionAsset.objects.filter(
             question_id=OuterRef('pk'), asset_type='question_crop', height__gte=120,
         )
@@ -215,6 +271,7 @@ class PaperGenerator:
             # practice, but quarantine it from timed papers until recropped.
             source_label__contains='大观',
         ).select_related('document', 'similarity_topic').annotate(
+            unresolved_paper_erratum=Exists(unresolved),
             has_readable_question_crop=Exists(readable_question_crop),
             has_any_question_crop=Exists(any_question_crop),
             has_answer_crop=Exists(answer_crop),
@@ -235,6 +292,7 @@ class PaperGenerator:
                 filter=Q(paper_items__paper__user=user),
             ),
         ).filter(
+            Q(unresolved_paper_erratum=False),
             Q(has_readable_question_crop=True)
             | Q(has_any_question_crop=False, paper_prompt_length__gte=24),
         ).filter(

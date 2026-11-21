@@ -37,7 +37,7 @@ from .diagnostics import (
 from .sharing import public_share_url
 from .notes import MAX_QUESTION_NOTE_LENGTH, merge_note_values
 from .serializers import (
-    ExamPaperCreateSerializer, ExamPaperItemUpdateSerializer,
+    ExamPaperCreateSerializer, ExamPaperItemUpdateSerializer, ExamPaperItemReplaceSerializer,
     ExamPaperStatusSerializer, PaperGenerateSerializer, QuestionAttemptCreateSerializer,
     QuestionMarkerSelectionSerializer, QuestionSummarySerializer, QuestionTimingSerializer,
     QuestionUserStateSerializer,
@@ -812,9 +812,10 @@ class DrillPaperReviewView(APIView):
 
 
 class DrillPaperShareView(APIView):
+    @transaction.atomic
     def post(self, request, paper_uuid):
         paper = get_object_or_404(
-            ExamPaper.objects.select_related('blueprint'),
+            ExamPaper.objects.select_for_update(of=('self',)).select_related('blueprint'),
             uuid=paper_uuid,
             user=request.user,
         )
@@ -836,18 +837,51 @@ class DrillPaperShareView(APIView):
         }, status=status.HTTP_201_CREATED if created else status.HTTP_200_OK)
 
 
+class DrillPaperItemReplaceView(APIView):
+    def post(self, request, paper_uuid, position):
+        serializer = ExamPaperItemReplaceSerializer(data=request.data)
+        serializer.is_valid(raise_exception=True)
+        with transaction.atomic():
+            # Every position on this paper shares one lock, including share creation.
+            paper = get_object_or_404(
+                ExamPaper.objects.select_for_update(of=('self',)).select_related('blueprint', 'user'),
+                uuid=paper_uuid, user=request.user,
+                blueprint__subject='ei' if request_workspace(request) == 'ei' else 'math2')
+            item = get_object_or_404(paper.items.select_related('section', 'question', 'question_revision'), position=position)
+            if item.question.uuid != serializer.validated_data['expected_question_uuid']:
+                return Response({'detail': '本题已被更换，请刷新试卷后重试。', 'code': 'stale_paper_item'}, status=409)
+            if paper.public_shares.filter(is_active=True, revoked_at__isnull=True).exists():
+                return Response({'detail': '为保持已分享试卷的题目与顺序不变，不能更换本题；请使用新试卷操作。',
+                                 'code': 'paper_already_shared'}, status=409)
+            try:
+                replacement = PaperGenerator().replace_item(paper=paper, item=item,
+                    question_uuid=serializer.validated_data.get('question_uuid'))
+            except PaperGenerationError as error:
+                return Response({'detail': str(error), 'section': error.section,
+                                 'required': error.required, 'available': error.available}, status=400)
+            payload = exam_paper_payload(paper_queryset(request.user).get(pk=paper.pk), review=True)
+            payload['replacement'] = replacement
+        return Response(payload)
+
+
 class DrillPaperItemView(APIView):
     def patch(self, request, paper_uuid, position):
         serializer = ExamPaperItemUpdateSerializer(data=request.data)
         serializer.is_valid(raise_exception=True)
+        expected_question_uuid = serializer.validated_data.pop('expected_question_uuid', None)
         with transaction.atomic():
+            paper = get_object_or_404(
+                ExamPaper.objects.select_for_update(), uuid=paper_uuid, user=request.user,
+                blueprint__subject='ei' if request_workspace(request) == 'ei' else 'math2')
             item = get_object_or_404(
                 ExamPaperItem.objects.select_for_update().select_related('paper', 'section'),
-                paper__uuid=paper_uuid,
+                paper=paper,
                 paper__user=request.user,
                 paper__blueprint__subject='ei' if request_workspace(request) == 'ei' else 'math2',
                 position=position,
             )
+            if expected_question_uuid is not None and item.question.uuid != expected_question_uuid:
+                return Response({'detail': '本题已被更换，请刷新试卷后重试。', 'code': 'stale_paper_item'}, status=409)
             score = serializer.validated_data.get('self_score')
             if score is not None and (score > item.score or (
                 item.section.question_type in ('single_choice', 'fill_blank') and score not in (0, item.score)

@@ -22,7 +22,7 @@ function persist(item: ExamPaperItem, update: Update) {
   chain = chain.then(async () => {
     const patch = { ...failed.get(position), ...update }
     try {
-      await api(`/api/drill/papers/${props.uuid}/items/${position}/`, { method: 'PATCH', body: JSON.stringify(patch) })
+      await api(`/api/drill/papers/${props.uuid}/items/${position}/`, { method: 'PATCH', body: JSON.stringify({ ...patch, expected_question_uuid: item.question.uuid }) })
       failed.delete(position)
       if (!failed.size) error.value = ''
     } catch (reason) {

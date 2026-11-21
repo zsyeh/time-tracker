@@ -221,6 +221,7 @@ class ExamPaperStatusSerializer(serializers.Serializer):
 
 
 class ExamPaperItemUpdateSerializer(serializers.Serializer):
+    expected_question_uuid = serializers.UUIDField(required=False)
     self_score = serializers.DecimalField(required=False, allow_null=True, min_value=0, max_digits=5, decimal_places=2)
     self_note = serializers.CharField(required=False, allow_blank=True, max_length=10000)
     user_answer = serializers.CharField(required=False, allow_blank=True, max_length=10000)
@@ -230,6 +231,11 @@ class ExamPaperItemUpdateSerializer(serializers.Serializer):
     time_spent_seconds = serializers.IntegerField(min_value=0, max_value=10800, required=False, allow_null=True)
 
     def validate(self, attrs):
-        if not attrs:
+        if not any(key != 'expected_question_uuid' for key in attrs):
             raise serializers.ValidationError('Provide an answer, result, or time spent.')
         return attrs
+
+
+class ExamPaperItemReplaceSerializer(serializers.Serializer):
+    expected_question_uuid = serializers.UUIDField()
+    question_uuid = serializers.UUIDField(required=False)

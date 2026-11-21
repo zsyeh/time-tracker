@@ -30,6 +30,7 @@ from .views import (
     DrillPaperGenerateView,
     DrillPaperDetailView,
     DrillPaperItemView,
+    DrillPaperItemReplaceView,
     DrillPaperListCreateView,
     DrillPaperPdfView,
     DrillPaperReviewView,
@@ -86,6 +87,8 @@ urlpatterns = [
         DrillPaperPdfView.as_view(),
         name='drill_paper_pdf',
     ),
+    path('papers/<uuid:paper_uuid>/items/<int:position>/replace/',
+         DrillPaperItemReplaceView.as_view(), name='drill_paper_item_replace'),
     path(
         'papers/<uuid:paper_uuid>/items/<int:position>/',
         DrillPaperItemView.as_view(),

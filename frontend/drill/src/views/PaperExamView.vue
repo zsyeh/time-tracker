@@ -22,10 +22,13 @@ const sharing = ref(false)
 const copied = ref(false)
 const saving = ref(0)
 const favoriteSaving = ref(false)
+const replacing = ref(false)
+const replaceError = ref('')
+const replacementNotice = ref('')
 const reader = ref<InstanceType<typeof FullscreenReader> | null>(null)
 let timer = 0
 let noteTimer = 0
-let saveChain = Promise.resolve()
+let saveChain = Promise.resolve(true)
 const item = computed(() => paper.value?.items[index.value] || null)
 const context = computed(() => buildListContext('paper', { paper: props.uuid }, `/papers/${props.uuid}?position=${index.value + 1}`))
 const remaining = computed(() => {
@@ -37,7 +40,8 @@ const images = computed(() => (answer.value ? item.value?.question.answer_assets
 function practiceLocation() {
   return item.value ? previewQuestionLocation(context.value, { entry_id: `paper:${item.value.id}`, question_uuid: item.value.question.uuid, index: index.value }) : '/papers'
 }
-function save(entry = item.value) {
+function save(entry = item.value, flush = false) {
+  if (replacing.value && !flush) return saveChain
   window.clearTimeout(noteTimer)
   if (!entry) return saveChain
   const position = entry.position
@@ -45,29 +49,32 @@ function save(entry = item.value) {
   saving.value++
   saveChain = saveChain.then(async () => {
     try {
-      await api(`/api/drill/papers/${props.uuid}/items/${position}/`, { method: 'PATCH', body: JSON.stringify({ user_answer }) })
+      await api(`/api/drill/papers/${props.uuid}/items/${position}/`, { method: 'PATCH', body: JSON.stringify({ user_answer, expected_question_uuid: entry.question.uuid }) })
       error.value = ''
-    } catch (reason) { error.value = `备注未保存，请重试：${(reason as Error).message}` }
+      return true
+    } catch (reason) { error.value = `备注未保存，请重试：${(reason as Error).message}`; return false }
     finally { saving.value-- }
   })
   return saveChain
 }
-function scheduleSave() { window.clearTimeout(noteTimer); noteTimer = window.setTimeout(() => { void save() }, 500) }
+function scheduleSave() { if (replacing.value) return; window.clearTimeout(noteTimer); noteTimer = window.setTimeout(() => { void save() }, 500) }
 async function move(next: number) {
-  if (!paper.value || next < 0 || next >= paper.value.items.length || next === index.value) return
+  if (replacing.value || !paper.value || next < 0 || next >= paper.value.items.length || next === index.value) return
   void save()
   index.value = next
   answer.value = false
+  replaceError.value = ''
+  replacementNotice.value = ''
   await router.replace({ query: { ...route.query, position: String(next + 1) } })
 }
 function flag() {
-  if (!item.value) return
+  if (replacing.value || !item.value) return
   if (!item.value.user_answer.startsWith('不会做：')) item.value.user_answer = `不会做：${item.value.user_answer}`
   void save()
 }
 async function toggleFavorite() {
   const question = item.value?.question
-  if (!question || favoriteSaving.value) return
+  if (!question || favoriteSaving.value || replacing.value) return
   favoriteSaving.value = true
   try {
     const state = await api<{ is_favorite: boolean; version: number }>(`/api/drill/questions/${question.uuid}/state/`, {
@@ -86,11 +93,29 @@ async function toggleFavorite() {
   } finally { favoriteSaving.value = false }
 }
 async function sharePaper() {
-  if (sharing.value) return
+  if (sharing.value || replacing.value) return
   sharing.value = true
   try { await createAndCopyShare(`/api/drill/papers/${props.uuid}/share/`); copied.value = true }
   catch (reason) { error.value = (reason as Error).message }
   finally { sharing.value = false }
+}
+async function replaceQuestion() {
+  const entry = item.value
+  if (!entry || replacing.value || sharing.value || favoriteSaving.value) return
+  if (!window.confirm('更换本题？该位置的备注和自评分会清空；原题的掌握状态、收藏和作答历史保持不变。')) return
+  replacing.value = true
+  replaceError.value = ''
+  try {
+    if (!await save(entry, true)) return
+    const updated = await api<ExamPaper & { replacement?: { warning?: string } }>(`/api/drill/papers/${props.uuid}/items/${entry.position}/replace/`, {
+      method: 'POST', body: JSON.stringify({ expected_question_uuid: entry.question.uuid }),
+    })
+    paper.value = updated
+    replacementNotice.value = updated.replacement?.warning || '已更换本题，原题的学习记录保持不变。'
+    answer.value = false
+    copied.value = false
+  } catch (reason) { replaceError.value = `更换失败：${(reason as Error).message}` }
+  finally { replacing.value = false }
 }
 onMounted(async () => {
   try {
@@ -117,18 +142,21 @@ onUnmounted(() => { window.clearInterval(timer); window.clearTimeout(noteTimer);
       <RouterLink :to="previewLocation(context)">整卷预览</RouterLink>
       <RouterLink :to="`/papers/${uuid}/review?mode=self`">自评</RouterLink>
       <a :href="withWorkspacePrefix(`/api/drill/papers/${uuid}/pdf/questions/`)">试卷 PDF</a>
-      <button :disabled="sharing" @click="sharePaper">{{ sharing ? '生成分享…' : copied ? '分享链接已复制' : '分享整卷' }}</button>
+      <button :disabled="sharing || replacing" @click="sharePaper">{{ sharing ? '生成分享…' : copied ? '分享链接已复制' : '分享整卷' }}</button>
     </nav>
-    <p v-if="error" class="error-state" role="alert">{{ error }} <button @click="save()">重试保存</button></p>
+    <p v-if="error" class="error-state" role="alert">{{ error }} <button :disabled="replacing" @click="save()">重试保存</button></p>
+    <p v-if="replaceError" class="error-state" role="alert">{{ replaceError }}</p>
+    <p v-if="replacementNotice" role="status">{{ replacementNotice }}</p>
     <template v-if="paper && item">
       <div class="training-content">
         <header class="question-heading"><strong>第 {{ item.position }} / {{ paper.items.length }} 题</strong><span>{{ item.question.document }}</span></header>
         <div class="question-actions">
           <button @click="answer = !answer">{{ answer ? '返回题目' : '查看答案' }}</button>
           <button @click="reader?.open()">全屏查看</button>
-          <RouterLink :to="practiceLocation()" @click="save()">标准练习 →</RouterLink>
-          <button :aria-pressed="!!item.question.is_favorite" :disabled="favoriteSaving" @click="toggleFavorite">{{ item.question.is_favorite ? '已收藏' : '收藏' }}</button>
-          <button @click="flag">标记不会做</button>
+          <RouterLink :to="practiceLocation()" :aria-disabled="replacing" :tabindex="replacing ? -1 : undefined" @click="replacing ? $event.preventDefault() : save()">标准练习 →</RouterLink>
+          <button :aria-pressed="!!item.question.is_favorite" :disabled="favoriteSaving || replacing" @click="toggleFavorite">{{ item.question.is_favorite ? '已收藏' : '收藏' }}</button>
+          <button :disabled="replacing" @click="flag">标记不会做</button>
+          <button :disabled="replacing || sharing || favoriteSaving" @click="replaceQuestion">{{ replacing ? '更换中…' : '更换本题' }}</button>
         </div>
         <PaperQuestionContent v-if="!answer" :question="item.question" />
         <div v-else class="training-answer">
@@ -136,16 +164,17 @@ onUnmounted(() => { window.clearInterval(timer); window.clearTimeout(noteTimer);
           <p v-if="!item.question.answer_assets?.length">暂无答案贴图</p>
         </div>
         <label class="training-note">疑难原因 / 备注 <small>{{ saving ? '保存中…' : '自动保存' }}</small>
-          <textarea v-model="item.user_answer" rows="3" placeholder="记录不会做的原因或训练备注" @input="scheduleSave" @blur="save()" />
+          <textarea v-model="item.user_answer" :disabled="replacing" rows="3" placeholder="记录不会做的原因或训练备注" @input="scheduleSave" @blur="save()" />
         </label>
       </div>
       <footer class="training-nav">
-        <button :disabled="index === 0" @click="move(index - 1)">上一题</button>
-        <div class="positions" aria-label="选择题号"><button v-for="(entry, n) in paper.items" :key="entry.position" :class="{ active: index === n, flagged: entry.user_answer.startsWith('不会做：') }" :aria-current="index === n ? 'step' : undefined" @click="move(n)">{{ entry.position }}</button></div>
-        <button :disabled="index === paper.items.length - 1" @click="move(index + 1)">下一题</button>
+        <button :disabled="replacing || index === 0" @click="move(index - 1)">上一题</button>
+        <div class="positions" aria-label="选择题号"><button v-for="(entry, n) in paper.items" :key="entry.position" :class="{ active: index === n, flagged: entry.user_answer.startsWith('不会做：') }" :aria-current="index === n ? 'step' : undefined" :disabled="replacing" @click="move(n)">{{ entry.position }}</button></div>
+        <button :disabled="replacing || index === paper.items.length - 1" @click="move(index + 1)">下一题</button>
       </footer>
-      <FullscreenReader ref="reader" hide-trigger :title="`第 ${item.position} 题 · ${answer ? '答案' : '题目'}`" :images="images" :content-key="`${item.position}-${answer}`">
-        <template #actions><button :disabled="index === 0" @click="move(index - 1)">上一题</button><button :disabled="index === paper.items.length - 1" @click="move(index + 1)">下一题</button><button :aria-pressed="!!item.question.is_favorite" :disabled="favoriteSaving" @click="toggleFavorite">{{ item.question.is_favorite ? '已收藏' : '收藏' }}</button></template>
+      <FullscreenReader ref="reader" hide-trigger :title="`第 ${item.position} 题 · ${answer ? '答案' : '题目'}`" :images="images" :content-key="`${item.question.uuid}-${answer}`">
+        <template #actions><button :disabled="replacing || index === 0" @click="move(index - 1)">上一题</button><button :disabled="replacing || index === paper.items.length - 1" @click="move(index + 1)">下一题</button><button :aria-pressed="!!item.question.is_favorite" :disabled="favoriteSaving || replacing" @click="toggleFavorite">{{ item.question.is_favorite ? '已收藏' : '收藏' }}</button><button :disabled="replacing || sharing || favoriteSaving" @click="replaceQuestion">{{ replacing ? '更换中…' : '更换本题' }}</button></template>
+        <template #recovery><p v-if="replaceError || error" class="replacement-feedback" role="alert">{{ replaceError || error }}</p></template>
       </FullscreenReader>
     </template>
   </section>
@@ -161,6 +190,8 @@ onUnmounted(() => { window.clearInterval(timer); window.clearTimeout(noteTimer);
 .training-tools { margin:8px 0; }
 .focus-training button,.training-tools a,.question-actions a { min-height:44px; display:inline-flex; align-items:center; padding:8px 12px; border:0; border-radius:var(--radius-control); background:transparent; color:var(--text-secondary); cursor:pointer; font:inherit; }
 .focus-training button:hover,.training-tools a:hover,.question-actions a:hover { background:var(--surface-hover); }
+.question-actions a[aria-disabled="true"] { opacity:.35; cursor:default; }
+.replacement-feedback { margin:0; padding:8px 12px; color:var(--text-primary); background:var(--bg-surface); }
 .focus-training button:disabled { opacity:.35; cursor:default; }
 .training-content { max-width:1000px; margin:0 auto; }
 .question-heading { display:flex; gap:12px; flex-wrap:wrap; padding:12px 0; }

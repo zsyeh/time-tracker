@@ -902,6 +902,7 @@ class ExamPaper(models.Model):
         related_name='papers',
     )
     seed = models.PositiveBigIntegerField()
+    generation_options = models.JSONField(default=dict, blank=True)
     mode = models.CharField(max_length=16, choices=ExamBlueprint.MODE_CHOICES)
     status = models.CharField(max_length=16, choices=STATUS_CHOICES, default='generated', db_index=True)
     created_at = models.DateTimeField(auto_now_add=True, db_index=True)
