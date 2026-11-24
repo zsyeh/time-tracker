@@ -4,6 +4,7 @@ import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from 'vu
 import { installStudyShortcuts } from '../lib/studyShortcuts'
 import { paperKeyboardMarks } from '../lib/paperKeyboardMarks'
 import { api } from '../lib/api'
+import { patchQuestionState } from '../lib/workspace'
 import { buildListContext, previewLocation } from '../lib/listContext'
 import FullscreenReader from './FullscreenReader.vue'
 import type { ExamPaper } from '../types'
@@ -50,7 +51,7 @@ async function fullscreen(answer=false) {
 async function favorite() {
   const q=item.value?.question;if(!q||favoriteSaving.value)return
   favoriteSaving.value=true
-  try {const state=await api<{is_favorite:boolean;version:number}>(`/api/drill/questions/${q.uuid}/state/`,{method:'POST',body:JSON.stringify({is_favorite:!q.is_favorite,version:q.state_version||1})});q.is_favorite=state.is_favorite;q.state_version=state.version;shortcutError.value=state.is_favorite?'已收藏':'已取消收藏'}
+  try {const state=await api<{is_favorite:boolean;version:number}>(`/api/drill/questions/${q.uuid}/state/`,{method:'POST',body:JSON.stringify({is_favorite:!q.is_favorite,version:q.state_version||1})});q.is_favorite=state.is_favorite;q.state_version=state.version;patchQuestionState(q.uuid,{is_favorite:state.is_favorite,state_version:state.version});shortcutError.value=state.is_favorite?'已收藏':'已取消收藏'}
   catch(reason){shortcutError.value=(reason as Error).message}finally{favoriteSaving.value=false}
 }
 let removeShortcuts:(()=>void)|undefined
@@ -88,12 +89,12 @@ function choose(n: number) {
     <MarkdownSection v-if="grading.conflicts.length" title="核对差异与证据" @rendered="overviewRendered" :source="grading.conflicts.map(v => `- ${v}`).join('\n')" />
     <p v-if="shortcutError" role="status">{{ shortcutError }}</p>
     <section class="question-review"><h2>逐题批阅</h2><nav class="question-grid" aria-label="选择批阅题目"><button v-for="g in grading.items" :key="g.position" type="button" :class="[g.status, { active:active === g.position }]" :aria-pressed="active === g.position" @click="choose(g.position)"><b>{{ g.position }}</b><span class="score-fraction">{{ g.earned }}/{{ g.maximum }}</span><small>{{ labels[g.status] }}</small></button></nav>
-      <div id="paper-review-detail" ref="detailElement" class="review-toolbar"><button type="button" :disabled="active === 1" @click="choose(active-1)">上一题</button><strong>第 {{ active }} / {{ paper.items.length }} 题 · {{ review ? labels[review.status] : '' }}</strong><b v-if="review" class="score-fraction">{{ review.earned }}/{{ review.maximum }}</b><button type="button" :disabled="active === paper.items.length" @click="choose(active+1)">下一题</button><RouterLink v-if="item" :to="`/practice/${item.question.uuid}?grading_return=${encodeURIComponent(route.fullPath)}`">标准 Practice ↗</RouterLink></div>
+      <div id="paper-review-detail" ref="detailElement" class="review-toolbar"><button type="button" :disabled="active === 1" @click="choose(active-1)">上一题</button><button v-if="item" type="button" :aria-pressed="!!item.question.is_favorite" :disabled="favoriteSaving || marks.busy.value" title="收藏 / 取消收藏 (F)" @click="favorite">{{ favoriteSaving ? '保存中…' : item.question.is_favorite ? '已收藏 (F)' : '收藏 (F)' }}</button><strong>第 {{ active }} / {{ paper.items.length }} 题 · {{ review ? labels[review.status] : '' }}</strong><b v-if="review" class="score-fraction">{{ review.earned }}/{{ review.maximum }}</b><button type="button" :disabled="active === paper.items.length" @click="choose(active+1)">下一题</button><RouterLink v-if="item" :to="`/practice/${item.question.uuid}?grading_return=${encodeURIComponent(route.fullPath)}`">标准 Practice ↗</RouterLink></div>
       <details v-if="item" :key="`question-${active}`" class="review-original-question" open><summary>原题图</summary><PaperQuestionContent :question="item.question" /></details>
       <details v-if="item" :key="`answer-${active}`" class="review-original-answer" open><summary>答案贴图</summary><div class="answer-images"><img v-for="asset in item.question.answer_assets" :key="asset.id" :src="withWorkspacePrefix(asset.url)" :width="asset.width" :height="asset.height" loading="lazy" decoding="async" alt="原始答案" /></div></details>
       <GradingReviewTable v-if="review" :key="active" :paper-uuid="paper.uuid" :review="review" @saved="Object.assign(review, $event)" @dirty="dirtyReview=$event" @busy="savingReview=$event" />
     </section>
-    <FullscreenReader ref="reader" hide-trigger :title="`第 ${active} 题 · ${readerAnswer ? '答案' : '题目'}`" :images="readerImages" :content-key="`${active}-${readerAnswer}`" />
+    <FullscreenReader ref="reader" hide-trigger :title="`第 ${active} 题 · ${readerAnswer ? '答案' : '题目'}`" :images="readerImages" :content-key="`${active}-${readerAnswer}`"><template #actions><button v-if="item" type="button" :aria-pressed="!!item.question.is_favorite" :disabled="favoriteSaving" @click="favorite">{{ favoriteSaving ? '保存中…' : item.question.is_favorite ? '已收藏 (F)' : '收藏 (F)' }}</button></template><template #recovery><p v-if="shortcutError" role="status">{{ shortcutError }}</p></template></FullscreenReader>
     <section><h2>五科学习薄弱点</h2><MarkdownSection v-for="(text, subject) in grading.weaknesses" :key="subject" :title="String(subject)" :source="text" :open="false" /></section>
     <MarkdownSection title="26 天复习安排与下一次考试用时" :source="grading.strategy" :open="false" />
   </section>

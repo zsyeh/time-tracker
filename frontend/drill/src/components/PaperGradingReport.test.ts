@@ -2,6 +2,7 @@
 import { createApp, defineComponent, h, nextTick, onMounted, type App } from 'vue'
 import { describe, it, expect, vi, afterEach } from 'vitest'
 import Report from './PaperGradingReport.vue'
+import { api } from '../lib/api'
 import type { ExamPaper } from '../types'
 const route = vi.hoisted(() => ({ query:{} as Record<string,string>, fullPath:'/papers/paper/review' }))
 const replace = vi.hoisted(() => vi.fn())
@@ -46,4 +47,19 @@ describe('paper grading report',()=>{
   expect(host.querySelector('.review-original-question')?.hasAttribute('open')).toBe(true)
   expect(host.querySelector('.review-original-answer')?.hasAttribute('open')).toBe(true)
  })
+})
+
+it('shows an immediately visible favorite state when F is pressed in question review',async()=>{
+ await setup('8')
+ vi.mocked(api).mockResolvedValueOnce({is_favorite:true,version:2})
+ document.dispatchEvent(new KeyboardEvent('keydown',{key:'f',bubbles:true,cancelable:true}))
+ for(let i=0;i<5;i++){await Promise.resolve();await nextTick()}
+ const favorite=host.querySelector<HTMLButtonElement>('.review-toolbar button[title]')!
+ expect(favorite.textContent).toBe('已收藏 (F)')
+ expect(favorite.getAttribute('aria-pressed')).toBe('true')
+ vi.mocked(api).mockResolvedValueOnce({is_favorite:false,version:3})
+ favorite.click()
+ for(let i=0;i<5;i++){await Promise.resolve();await nextTick()}
+ expect(favorite.textContent).toBe('收藏 (F)')
+ expect(favorite.getAttribute('aria-pressed')).toBe('false')
 })
