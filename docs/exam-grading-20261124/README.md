@@ -103,3 +103,18 @@ $D exec -e PYTHONPATH=/app time-tracker-ha-web python /tmp/rollback_grading.py /
 - 备份 `/var/snap/docker/common/time-tracker-ha/backups/exam-review-navigation-20261124`（verify-exit=0），不重复导出题库。
 - 回滚：`sh /var/snap/docker/common/time-tracker-ha/releases/exam-review-navigation-f946134/rollback.sh`，回到本次导航补修前5dc4bca；保留全部成绩和Note。
 - 本次有两次构建候选及一次线上补发，用于修复已实测的刷新偏移；不掩饰返工。最终线上证据见 `navigation-browser-check.json`、`navigation-question8-*.png`、`whole-review-*.png`。
+
+## 16:20增量：自动展开、可编辑批阅表、红色加粗分数
+
+- 应用 `691cdc4`，镜像 `time-tracker-ha:20261124-exam-grading-editor-691cdc4` healthy。无迁移、无原题/原答案/学习统计口径改动。
+- 选择题号时原题图、答案贴图均展开；按题号key重建details，因此手动收起本题后换题也会重新展开。保留已有约64px批阅区定位。
+- `GradingReviewTable.vue`：五行语义表格（我的作答、参考核对、批阅与需要掌握、复习优先级、核实情况），支持Markdown展示、编辑、保存、取消、失败保留草稿；未保存离开/切题确认，保存中阻止切走。
+- 表格下方及题目工具栏显示本题“得分/满分”。成绩总分、分科数值、题号格、整卷回顾、列表、自评均为红色黑体font-weight:800，Light #c62828 / Dark #ff8585；题号、正确错误状态颜色不混成红色。不改变分数计算与原小题点选、大题自评动作。
+- `PATCH /api/drill/papers/:uuid/items/:position/grading/`：账号/workspace隔离、题目UUID校验、只允许五个文本字段；每个修改字段附expected原值，冲突409，不覆盖其它设备新编辑。行锁、事务及edit_history保留改前/改后；不允许此接口改分或改题库标准答案。
+- 用户作答同步ExamPaperItem；批阅Note仅在精确命中本次导入段时同步到self_note与用户Note，保留其它手工笔记；复习优先级随此段同步。不自动改写五科薄弱点快照、掌握、收藏或计时。
+- 5后端用例通过（0.216秒），6前端用例通过，类型/生产构建通过（最终Vite7.02秒）。首轮测试发现“保存成功”反馈被dirty复位监听立即清除，已修复并重跑；无新增测试依赖。
+- 真实生产数据库执行编辑及409冲突验证后**事务回滚**，确认整个grading JSON恢复一致。两尺寸实际登录态CSRF PATCH使用相同原值验证，changed=false，没有添加测试批阅历史。
+- Chromium390浅色/1180深色：两组真实图片decode、五行表格、编辑取消、切题重新展开、score rgb/800字重、自评76.5/150、无横向溢出/JS错误均通过。原实际成绩/18待复习及Q5改判不变。实体Safari/PWA本轮未测。
+- 文件：`drill/exam_grading_views.py`、`drill/urls.py`、`drill/test_grading_editor.py`；前端GradingReviewTable及测试、PaperGradingReport及测试、PaperReviewView、PapersView、PaperSelfEvaluation、lib/examScores.css。
+- 用户备份：`/var/snap/docker/common/time-tracker-ha/backups/exam-grading-editor-20261124`，verify-exit=0。应用回滚：`sh /var/snap/docker/common/time-tracker-ha/releases/exam-grading-editor-691cdc4/rollback.sh`，回到f946134并保留新增私人编辑历史。没有数据库迁移，不反向清理用户修改。
+- 截图及结果：`editable-review-*.png`、`editor-browser-check.json`。临时验证Session已删除，不改已有Session。

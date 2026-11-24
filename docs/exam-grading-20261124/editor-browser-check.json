@@ -1,0 +1,44 @@
+[
+  {
+    "viewport": [
+      390,
+      844
+    ],
+    "scheme": "light",
+    "both_images_auto_open": true,
+    "decoded_original_images": true,
+    "switch_reopens_images": true,
+    "table_rows": 5,
+    "edit_and_cancel": true,
+    "authenticated_csrf_patch_noop": true,
+    "score_style": {
+      "color": "rgb(198, 40, 40)",
+      "weight": "800",
+      "family": "SimHei, \"PingFang SC\", \"Microsoft YaHei\", sans-serif"
+    },
+    "self_evaluation_fraction": "76.5/150",
+    "no_horizontal_overflow": true,
+    "pageerrors": []
+  },
+  {
+    "viewport": [
+      1180,
+      820
+    ],
+    "scheme": "dark",
+    "both_images_auto_open": true,
+    "decoded_original_images": true,
+    "switch_reopens_images": true,
+    "table_rows": 5,
+    "edit_and_cancel": true,
+    "authenticated_csrf_patch_noop": true,
+    "score_style": {
+      "color": "rgb(255, 133, 133)",
+      "weight": "800",
+      "family": "SimHei, \"PingFang SC\", \"Microsoft YaHei\", sans-serif"
+    },
+    "self_evaluation_fraction": "76.5/150",
+    "no_horizontal_overflow": true,
+    "pageerrors": []
+  }
+]
