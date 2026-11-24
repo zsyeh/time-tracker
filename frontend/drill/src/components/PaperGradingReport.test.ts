@@ -1,12 +1,12 @@
 // @vitest-environment jsdom
-import { createApp, defineComponent, h, nextTick, type App } from 'vue'
+import { createApp, defineComponent, h, nextTick, onMounted, type App } from 'vue'
 import { describe, it, expect, vi, afterEach } from 'vitest'
 import Report from './PaperGradingReport.vue'
 import type { ExamPaper } from '../types'
 const route = vi.hoisted(() => ({ query:{} as Record<string,string>, fullPath:'/papers/paper/review' }))
 const replace = vi.hoisted(() => vi.fn())
 vi.mock('vue-router', () => ({ useRoute:()=>route, useRouter:()=>({replace}) }))
-vi.mock('./MarkdownSection.vue', () => ({ default: defineComponent({props:['title','source'],setup:p=>()=>h('section',p.title+' '+p.source)}) }))
+vi.mock('./MarkdownSection.vue', () => ({ default: defineComponent({props:['title','source'],emits:['rendered'],setup:(p,{emit})=>{onMounted(()=>emit('rendered'));return ()=>h('section',p.title+' '+p.source)}}) }))
 const paper = {
  uuid:'paper', duration_minutes:180,
  items:[1,8].map(position => ({ position, question:{ uuid:`q${position}`, question_assets:[],answer_assets:[] } })),

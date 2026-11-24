@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { nextTick, ref, watch } from 'vue'
 
 const props = defineProps<{ source: string }>()
+const emit = defineEmits<{ rendered: [] }>()
 const html = ref('')
 const loading = ref(false)
 let version = 0
@@ -14,7 +15,11 @@ watch(() => props.source, async (source) => {
     const { renderMarkdown } = await import('../../../src/lib/markdown')
     if (current === version) html.value = renderMarkdown(source)
   } finally {
-    if (current === version) loading.value = false
+    if (current === version) {
+      loading.value = false
+      await nextTick()
+      emit('rendered')
+    }
   }
 }, { immediate: true })
 </script>

@@ -9,7 +9,14 @@ const props = defineProps<{ paper: ExamPaper }>()
 const route = useRoute(), router = useRouter()
 const active = ref(1)
 const detailElement = ref<HTMLElement | null>(null)
+let renderedOverview = 0
+function overviewRendered() {
+  renderedOverview++
+  if (route.query.question) void revealReview()
+}
 async function revealReview() {
+  // Above-the-anchor Markdown must finish layout before restoring a question.
+  if (renderedOverview < (grading.value.conflicts.length ? 2 : 1)) return
   await nextTick()
   detailElement.value?.scrollIntoView({ block: 'start', behavior: 'auto' })
 }
@@ -36,8 +43,8 @@ const detail = computed(() => review.value ? `**用户作答**\n\n${review.value
     <div class="score-track" role="meter" aria-label="试卷估分" :aria-valuenow="grading.score" :aria-valuemax="grading.maximum" :aria-valuemin="0"><i :style="{ width:`${grading.score / grading.maximum * 100}%` }" /></div>
     <p>实际用时 {{ grading.actual_duration_seconds / 60 }} / {{ paper.duration_minutes }} 分钟 · 时间利用率 {{ (grading.actual_duration_seconds / (paper.duration_minutes * 60) * 100).toFixed(2) }}% · 未分配逐题用时</p>
     <section class="subjects" aria-label="分学科得分图表"><div v-for="s in grading.subjects" :key="s.subject" class="subject"><span>{{ s.subject }}</span><div class="score-track" role="meter" :aria-label="s.subject" :aria-valuenow="s.score" :aria-valuemax="s.maximum" :aria-valuemin="0"><i :style="{ width:`${s.score / s.maximum * 100}%` }" /></div><b>{{ s.score }} / {{ s.maximum }}</b></div></section>
-    <MarkdownSection title="总体批阅与估分说明" :source="grading.summary" />
-    <MarkdownSection v-if="grading.conflicts.length" title="核对差异与证据" :source="grading.conflicts.map(v => `- ${v}`).join('\n')" />
+    <MarkdownSection title="总体批阅与估分说明" :source="grading.summary" @rendered="overviewRendered" />
+    <MarkdownSection v-if="grading.conflicts.length" title="核对差异与证据" @rendered="overviewRendered" :source="grading.conflicts.map(v => `- ${v}`).join('\n')" />
     <section class="question-review"><h2>逐题批阅</h2><nav class="question-grid" aria-label="选择批阅题目"><button v-for="g in grading.items" :key="g.position" type="button" :class="[g.status, { active:active === g.position }]" :aria-pressed="active === g.position" @click="choose(g.position)"><b>{{ g.position }}</b><span>{{ g.earned }}/{{ g.maximum }}</span><small>{{ labels[g.status] }}</small></button></nav>
       <div id="paper-review-detail" ref="detailElement" class="review-toolbar"><button type="button" :disabled="active === 1" @click="choose(active-1)">上一题</button><strong>第 {{ active }} / {{ paper.items.length }} 题 · {{ review ? labels[review.status] : '' }}</strong><button type="button" :disabled="active === paper.items.length" @click="choose(active+1)">下一题</button><RouterLink v-if="item" :to="`/practice/${item.question.uuid}?grading_return=${encodeURIComponent(route.fullPath)}`">标准 Practice ↗</RouterLink></div>
       <MarkdownSection title="本题批阅记录" :source="detail" />

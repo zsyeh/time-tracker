@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import MarkdownAnswer from './MarkdownAnswer.vue'
+defineEmits<{ rendered: [] }>()
 withDefaults(defineProps<{ title: string; source: string; open?: boolean }>(), { open: true })
 </script>
 <template>
   <details class="markdown-section" :open="open">
     <summary>{{ title }}</summary>
-    <MarkdownAnswer :source="source" />
+    <MarkdownAnswer :source="source" @rendered="$emit('rendered')" />
   </details>
 </template>
 <style scoped>
