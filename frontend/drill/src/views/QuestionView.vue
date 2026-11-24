@@ -1411,6 +1411,10 @@ function refreshAfterPageRestore(event: PageTransitionEvent) {
   void load()
 }
 
+function toggleKeyboardFullscreen() {
+  if (isReaderOpen()) questionReader.value?.close()
+  else return openReader(readerKind.value)
+}
 let removeStudyShortcuts: (() => void) | undefined
 let removeKeyboardViewport: (() => void) | undefined
 onMounted(() => {
@@ -1421,9 +1425,9 @@ onMounted(() => {
     review: () => record('review'), mastered: () => record('correct'),
     undo: () => question.value?.can_undo && undo(),
     preview: () => { questionReader.value?.close();openScrollingPreview() },
-    answer: () => { const original=question.value?.original_source?.has_answer && (question.value.answer_scope === 'source_paper' || (!question.value.has_answer && !question.value.answer_markdown));return openReader(original ? 'original' : 'answer') },
-    fullscreen: () => openReader('question'),
-    exit: () => { questionReader.value?.close();originalAnswerReader.value?.closeFullscreen() },
+    answer: () => readerAction('answer'),
+    fullscreen: toggleKeyboardFullscreen,
+    exit: toggleKeyboardFullscreen,
   }, { blocked: () => !question.value || saving.value || nextLoading.value || readerNavigating.value,
        error: reason => { error.value = (reason as Error).message } })
   removeKeyboardViewport = installPracticeKeyboardViewport()

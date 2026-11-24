@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
-import { createApp, defineComponent, h, nextTick, type App } from 'vue'
+import { createApp, defineComponent, h, nextTick, ref, type App } from 'vue'
 import PaperExamView from './PaperExamView.vue'
 import { api } from '../lib/api'
 
@@ -14,7 +14,7 @@ vi.mock('../lib/listContext', () => ({ buildListContext: () => ({}), previewLoca
 vi.mock('../components/PaperQuestionContent.vue', () => ({ default: defineComponent({ props: ['question'], setup: props => () => h('div', { class: 'test-question' }, props.question.uuid) }) }))
 vi.mock('../components/FullscreenReader.vue', () => ({ default: defineComponent({
   props: ['contentKey'],
-  setup: (props, { slots }) => () => h('aside', { class: 'test-reader', 'data-content-key': props.contentKey }, [slots.actions?.(), slots.recovery?.()]),
+  setup: (props, { slots, expose }) => { const isOpen=ref(false);expose({isOpen,open:()=>{isOpen.value=true},close:()=>{isOpen.value=false}});return () => h('aside', { class: 'test-reader', 'data-open':String(isOpen.value), 'data-content-key': props.contentKey }, [slots.actions?.(), slots.recovery?.()]) },
 }) }))
 let app: App | undefined
 let host: HTMLDivElement
@@ -130,4 +130,12 @@ it('blocks the answer shortcut and ordinary answer button before the exam ends',
   expect(host.textContent).toContain('考试未结束')
   expect(host.querySelector('.training-answer')).toBeNull()
   expect(button('查看答案')?.disabled).toBe(true)
+})
+
+it('uses either P or X to toggle fullscreen and repeated A to alternate question and answer', async () => {
+ await mount()
+ async function key(key:string){document.dispatchEvent(new KeyboardEvent('keydown',{key,bubbles:true,cancelable:true}));await settle()}
+ for (const k of ['p','p','x','x']) { const before=host.querySelector('.test-reader')!.getAttribute('data-open');await key(k);expect(host.querySelector('.test-reader')!.getAttribute('data-open')).not.toBe(before) }
+ await key('a');expect(host.querySelector('.training-answer')).not.toBeNull()
+ await key('a');expect(host.querySelector('.training-answer')).toBeNull()
 })

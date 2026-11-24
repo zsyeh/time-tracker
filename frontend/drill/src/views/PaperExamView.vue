@@ -77,9 +77,13 @@ async function move(next: number) {
 function markExam(kind: 'review'|'mastered') { if (!replacing.value) return marks.mark(kind) }
 function flag() { return markExam('review') }
 const undoMark=marks.undo
+function toggleKeyboardFullscreen() {
+  if (reader.value?.isOpen) reader.value.close()
+  else return reader.value?.open()
+}
 async function showAnswer(fullscreen=false) {
   if (!canRevealAnswers.value) { error.value='考试未结束，暂不能查看答案。';return }
-  answer.value=fullscreen ? true : !answer.value
+  answer.value=!answer.value
   if (fullscreen) { await nextTick();await reader.value?.open() }
 }
 async function endExam() {
@@ -142,7 +146,7 @@ onMounted(async () => {
     previous:()=>move(index.value-1),next:()=>move(index.value+1),favorite:toggleFavorite,
     review:()=>markExam('review'),mastered:()=>markExam('mastered'),undo:undoMark,
     preview:()=>{reader.value?.close();void save();return router.push(previewLocation(context.value))},
-    answer:()=>showAnswer(true),fullscreen:()=>reader.value?.open(),exit:()=>reader.value?.close(),
+    answer:()=>showAnswer(true),fullscreen:toggleKeyboardFullscreen,exit:toggleKeyboardFullscreen,
   },{blocked:()=>!paper.value || replacing.value || ending.value || markSaving.value,
      error:reason=>{error.value=(reason as Error).message}})
 

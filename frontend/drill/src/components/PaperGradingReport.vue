@@ -39,6 +39,10 @@ const shortcutError=ref(''),favoriteSaving=ref(false)
 const reader=ref<InstanceType<typeof FullscreenReader>|null>(null),readerAnswer=ref(false)
 const marks=paperKeyboardMarks(()=>item.value||null,()=>props.paper,reason=>{shortcutError.value=(reason as Error).message})
 const readerImages=computed(()=>(readerAnswer.value?item.value?.question.answer_assets:item.value?.question.question_assets)?.map(a=>({src:withWorkspacePrefix(a.url),width:a.width,height:a.height}))||[])
+function toggleKeyboardFullscreen() {
+  if (reader.value?.isOpen) reader.value.close()
+  else return fullscreen(readerAnswer.value)
+}
 async function fullscreen(answer=false) {
   if (answer && props.paper.status!=='completed') {shortcutError.value='考试未结束，暂不能查看答案。';return}
   readerAnswer.value=answer;await nextTick();await reader.value?.open()
@@ -53,7 +57,7 @@ let removeShortcuts:(()=>void)|undefined
 onMounted(()=>{removeShortcuts=installStudyShortcuts({
  previous:()=>choose(active.value-1),next:()=>choose(active.value+1),favorite,
  review:()=>marks.mark('review'),mastered:()=>marks.mark('mastered'),undo:marks.undo,
- fullscreen:()=>fullscreen(false),answer:()=>fullscreen(true),exit:()=>reader.value?.close(),
+ fullscreen:toggleKeyboardFullscreen,answer:()=>fullscreen(!readerAnswer.value),exit:toggleKeyboardFullscreen,
  preview:()=>{reader.value?.close();return router.push(previewLocation(buildListContext('paper',{paper:props.paper.uuid},route.fullPath)))},
 },{blocked:()=>editingReviewBlocked(),error:reason=>{shortcutError.value=(reason as Error).message}})})
 function editingReviewBlocked(){return dirtyReview.value||savingReview.value||marks.busy.value||favoriteSaving.value}
