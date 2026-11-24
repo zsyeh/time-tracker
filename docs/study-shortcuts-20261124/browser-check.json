@@ -1,0 +1,14 @@
+{
+  "exam_answers_locked_until_completed": true,
+  "exam_M_N_update_practice_only": true,
+  "undo_restores_previous_state": true,
+  "no_fabricated_duration": true,
+  "scores_unchanged": true,
+  "favorite_toggle": true,
+  "typing_guard": true,
+  "paper_arrows": true,
+  "grading_arrows": true,
+  "preview_navigation": true,
+  "practice_P_A_X": true,
+  "pageerrors": []
+}
