@@ -50,7 +50,7 @@ onMounted(async () => {
           <RouterLink v-if="paper.status !== 'completed' && !paper.has_grading" :to="`/papers/${paper.uuid}`">{{ paper.status === 'in_progress' ? '继续作答' : '开始作答' }}</RouterLink>
           <RouterLink v-else :to="`/papers/${paper.uuid}/review`">{{ paper.has_grading ? '批阅记录' : `${paper.earned_score} 分 · 查看记录` }}</RouterLink>
           <RouterLink :to="`/papers/${paper.uuid}/review?mode=self`">自评</RouterLink>
-          <RouterLink :to="`/papers/${paper.uuid}/review`">整卷查看</RouterLink>
+          <RouterLink :to="`/papers/${paper.uuid}/review?mode=all`">整卷回顾</RouterLink>
           <button type="button" :disabled="!!deleting" @click="deletePaper(paper.uuid)">{{ deleting === paper.uuid ? '删除中…' : '删除' }}</button>
         </div>
       </article>

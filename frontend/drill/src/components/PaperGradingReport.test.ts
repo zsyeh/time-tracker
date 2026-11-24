@@ -32,6 +32,8 @@ describe('paper grading report',()=>{
   await setup();host.querySelectorAll<HTMLButtonElement>('.question-grid button')[1].click();await nextTick()
   expect(replace).toHaveBeenCalledWith({query:{question:'8'}})
   expect(host.querySelector('.review-toolbar a')?.getAttribute('href')).toContain('/practice/q8')
+  expect(host.querySelector('#paper-review-detail')).not.toBeNull()
+  expect(host.querySelector('.report-links a:last-child')?.getAttribute('href')).toBe('/papers/paper/review?mode=all')
   expect(host.textContent).toContain('译码器定义')
  })
 })

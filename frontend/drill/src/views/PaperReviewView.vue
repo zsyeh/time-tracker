@@ -8,6 +8,7 @@ import { api } from '../lib/api'
 import PaperQuestionContent from '../components/PaperQuestionContent.vue'
 import PaperSelfEvaluation from '../components/PaperSelfEvaluation.vue'
 import PaperGradingReport from '../components/PaperGradingReport.vue'
+import MarkdownSection from '../components/MarkdownSection.vue'
 import type { ExamPaper, ExamPaperItem, PaperItemResult } from '../types'
 import { createAndCopyShare } from '../lib/share'
 import { withWorkspacePrefix } from '../lib/runtimePath'
@@ -47,15 +48,17 @@ onMounted(async () => {
 <template>
   <PaperSelfEvaluation v-if="route.query.mode === 'self'" :uuid="uuid" />
   <section v-else class="page paper-review-page">
-    <header v-if="!paper?.grading" class="page-header"><div><h1>{{ paper?.title || 'Paper review' }}</h1><p>Compare your work with the source answer and update the learning signal.</p></div><div class="paper-header-actions"><RouterLink :to="previewLocation(buildListContext('paper', { paper: uuid }, route.fullPath))">{{ uiText("全局预览") }}</RouterLink><button type="button" :disabled="shareState === 'sharing'" @click="sharePaper">{{ shareState === 'sharing' ? 'Creating…' : shareState === 'copied' ? uiText("Link copied ✓") : 'Share paper + answers' }}</button><a :href="withWorkspacePrefix(`/api/drill/papers/${uuid}/pdf/questions/`)">Question PDF</a><RouterLink :to="`/papers/${uuid}`">逐题训练</RouterLink></div></header>
+    <header v-if="!paper?.grading || route.query.mode === 'all'" class="page-header"><div><h1>{{ route.query.mode === 'all' ? '整卷回顾' : paper?.title || 'Paper review' }}</h1><p>Compare your work with the source answer and update the learning signal.</p></div><div class="paper-header-actions"><RouterLink v-if="paper?.grading" :to="`/papers/${uuid}/review`">分数与批阅记录</RouterLink><RouterLink :to="previewLocation(buildListContext('paper', { paper: uuid }, route.fullPath))">{{ uiText("全局预览") }}</RouterLink><button type="button" :disabled="shareState === 'sharing'" @click="sharePaper">{{ shareState === 'sharing' ? 'Creating…' : shareState === 'copied' ? uiText("Link copied ✓") : 'Share paper + answers' }}</button><a :href="withWorkspacePrefix(`/api/drill/papers/${uuid}/pdf/questions/`)">Question PDF</a><RouterLink :to="`/papers/${uuid}`">逐题训练</RouterLink></div></header>
     <p v-if="error" class="error-state">{{ uiText(error) }}</p>
-    <PaperGradingReport v-if="paper?.grading" :paper="paper" />
-    <article v-for="item in paper?.grading ? [] : paper?.items" :key="item.position" class="paper-review-item">
-      <header><span>{{ item.position }}</span><div><strong>{{ item.question.display_label }}</strong><small>{{ item.question.document }} · {{ item.question.topic }}</small></div><em>{{ item.score }} pts</em></header>
+    <PaperGradingReport v-if="paper?.grading && route.query.mode !== 'all'" :paper="paper" />
+    <article v-for="item in paper?.grading && route.query.mode !== 'all' ? [] : paper?.items" :key="item.position" class="paper-review-item">
+      <header><span>{{ item.position }}</span><div><strong>{{ item.question.display_label }}</strong><small>{{ item.question.document }} · {{ item.question.topic }}</small></div><em>{{ item.self_score != null ? `${item.self_score} / ` : '' }}{{ item.score }} pts</em></header>
       <PaperQuestionContent :question="item.question" />
       <section class="paper-your-answer"><span>Your answer</span><p>{{ item.user_answer || 'No answer recorded.' }}</p></section>
       <details class="paper-solution"><summary>查看答案贴图</summary><div v-if="item.question.answer_assets?.length" class="paper-question-assets"><img v-for="asset in item.question.answer_assets" :key="asset.id" :src="withWorkspacePrefix(asset.url)" :width="asset.width" :height="asset.height" loading="lazy" decoding="async" alt="Answer" /></div><p v-if="!item.question.answer_markdown && !item.question.answer_assets?.length">No source answer is currently available.</p></details>
-      <footer><span>Current: {{ item.question.mastery_state }}</span><div><button :class="{ selected: item.result === 'correct' }" @click="mark(item, 'correct')">Correct / mastered</button><button :class="{ selected: item.result === 'review' || item.result === 'incorrect' }" @click="mark(item, 'review')">{{ uiText("Needs review") }}</button></div></footer>
+      <MarkdownSection v-if="paper?.grading && item.self_note" title="本题批阅" :source="item.self_note" :open="false" />
+      <footer v-if="paper?.grading"><RouterLink :to="`/papers/${uuid}/review?question=${item.position}`">查看逐题批阅</RouterLink><RouterLink :to="`/practice/${item.question.uuid}`">标准 Practice ↗</RouterLink></footer>
+      <footer v-else><span>Current: {{ item.question.mastery_state }}</span><div><button :class="{ selected: item.result === 'correct' }" @click="mark(item, 'correct')">Correct / mastered</button><button :class="{ selected: item.result === 'review' || item.result === 'incorrect' }" @click="mark(item, 'review')">{{ uiText("Needs review") }}</button></div></footer>
     </article>
   </section>
 </template>
