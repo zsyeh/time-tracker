@@ -37,3 +37,55 @@
 `rollback_grading.py` 默认校验目标行与导入后快照完全一致；加 --apply 才恢复导入前考试/Note，删除本批新建状态/显式掌握行。发生新编辑会拒绝，避免覆盖后续用户操作。私有输入及before/after快照不得进Git。
 
 组卷/下次批阅提示词：[Agent工作流](AGENT_EXAM_WORKFLOW.md)。后续追加真实部署、导入计数和截图结果。
+
+## 最终生产结果
+
+- 应用：`5dc4bca`，镜像 `time-tracker-ha:20261124-exam-grading-5dc4bca` healthy。切换 **15:37:46–15:38:16（30秒）**；无数据库迁移。
+- 账号的原试卷/本次考试记录主键 **148**，UUID `f2ab8798-0526-4a18-89af-802af6e664ae`，直接复用，没有创建第二场考试。
+- [批阅记录（登录后）](https://47.95.10.128/ei/papers/f2ab8798-0526-4a18-89af-802af6e664ae/review?question=8)
+- 原30题条目均准确对应固定题目，30条更新；考试记录更新1条。待复习Note状态更新12条、新增6条；新建1条用户明确授权的Q5掌握动作（独立submission_key），不是把所有满分题自动判掌握。
+- 正确12、错误3、部分正确8、未完成7；18条非满分题设review_later，原有Note追加不覆盖（例如Q29原Note保留）。原手动掌握/收藏、TopicMastery均未批量重算或覆盖。
+- 70分钟仅存在本场grading总时长，30个逐题时间仍全为null；导入不创建学习Session、不把70分钟分给每题、不再制造30条全局QuestionAttempt。**因此普通历史次数仅增加用户明确要求的第5题掌握动作1次**；本场所有逐题作答保留于ExamPaperItem与批阅快照，通过考试批阅入口阅读，不冒充30次独立Practice提交。
+- 初始AI结果、第5题改判记录、五科学习漏洞与优先级、考纲边界、复习安排均已存数据库；原手写答题纸未提供，无法入库存档或独立核步骤分，已明示证据边界。
+- 同输入再次apply返回unchanged；没有第二份备份目录、第二组Note或重复掌握记录。浏览器检查后回滚脚本再只读校验，50行仍与导入后快照一致。
+
+|学科|估分 / 满分|
+|---|---:|
+|电路原理|13.5 / 30|
+|模拟电子技术|20.4 / 30|
+|数字电子技术|15.9 / 30|
+|信号与系统|14.1 / 30|
+|通信原理|12.6 / 30|
+|合计|76.5 / 150|
+
+## 实际浏览器与测试结果
+
+6个相关后端用例通过（0.253秒），2个前端用例通过（测试44ms、进程1.33秒），类型检查/最终Vite构建通过（Vite6.98秒）。最终受影响自动化验证在一分钟内；真实数据核对/导入/线上检查另计，不声称完整审题只需一分钟。
+
+生产登录态Chromium在390×844浅色、1180×820深色分别核验：76.5总分、5个学科meter、30个题号格、Markdown渲染、选择第8题、真实Practice跳转、浏览器返回保留question=8、试卷列表已变成绩/批阅入口、无横向溢出及JS错误。使用仅10分钟有效的隔离验证Session，检查后删除，不动已有登录Session。Safari/PWA真机本轮未测。
+
+证据：`browser-check.json`、`import-evidence.json`、两尺寸成绩和第8题截图。私有答案原始输入与前后行快照留服务器备份及本机私有目录，不进Git。
+
+## 精确回滚
+
+应用回滚（保留新批阅数据）：
+
+```sh
+sh /var/snap/docker/common/time-tracker-ha/releases/exam-grading-5dc4bca/rollback.sh
+```
+
+恢复537d80f应用/配置，不重启数据库、不drop字段、不改独立队列镜像。目标数据备份位于：
+`/var/snap/docker/common/time-tracker-ha/backups/exam-grading-20261124/import/{before,after,result}.json`，输入与验证另在父目录。
+
+如确实要撤销此次数据导入，在宿主执行：
+
+```sh
+D=/usr/local/bin/time-tracker-docker
+B=/var/snap/docker/common/time-tracker-ha/backups/exam-grading-20261124
+$D cp "$B/rollback_grading.py" time-tracker-ha-web:/tmp/rollback_grading.py
+$D cp "$B/import" time-tracker-ha-web:/tmp/grading-restore
+$D exec -e PYTHONPATH=/app time-tracker-ha-web python /tmp/rollback_grading.py /tmp/grading-restore
+# 全部验证一致，且用户确认要撤销数据后，才在同一命令末尾添加 --apply。
+```
+
+默认只读；出现后续真实编辑会拒绝，不能强制以旧快照覆盖。恢复只针对本次50行范围，不全库恢复。原题及原图不在变更范围。47仍余约11GiB。

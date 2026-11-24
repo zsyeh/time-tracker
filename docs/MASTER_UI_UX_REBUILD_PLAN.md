@@ -1674,3 +1674,15 @@ EX-06训练题数不冒充官方题数；配额和稀缺题源、实测时延、
 |EI-REVIEW-03|域名整卷分享及验收|既有DrillContentShare、public_share_url|公开页200、30单题链接，390浅色/1180深色无溢出；真机Safari未测|
 
 完整施工结果、证据、迁移0045、备份、数据与应用回滚入口：[本轮报告](exam-reviewed-20261122/README.md)。后续继续工作先读此报告，不重新生成或覆盖用户已开始的旧卷。此轮续做严格未开Subagent。
+
+## 2026-11-24 增量：892纸笔模拟批阅入库与Agent工作流
+
+|需求ID|任务/真实文件|实现与验收|
+|---|---|---|
+|EX-GRADE-01|`drill/exam_grading.py`、`management/commands/import_exam_grading.py`|私有命令按分享定位/所有权+题目UUID校验、原分值折算、事务与digest幂等；复用记录148，30条item；无迁移|
+|EX-GRADE-02|既有ExamPaper JSON、Item self_score/self_note、QuestionUserState|四态与原AI/改判并存；18题review_later/短Note；保留旧Note/收藏/人工掌握；不伪造逐题用时|
+|EX-GRADE-03|`PaperGradingReport.vue`、`MarkdownSection.vue`、`PaperReviewView.vue`、`PapersView.vue`、types及views payload|复用Timer Markdown渲染；分数/五科图、逐题/Practice/返回；已完成不再显示开始，鉴权数据不进入公开分享|
+|EX-GRADE-04|grading.weaknesses五科文本、`docs/exam-grading-20261124/AGENT_EXAM_WORKFLOW.md`|薄弱/待复习/新图/随机/均衡卷提示词；不做前端AI出卷；各场保留薄弱点快照以纵向比较|
+|EX-GRADE-05|`test_exam_grading.py`、`PaperGradingReport.test.ts`、rollback_grading.py|6后端/2前端、类型构建、线上两尺寸、同输入重放与50行回滚只读验证通过；真机Safari/PWA未测|
+
+第5题用户改判A，原图亦支持无效死端：保留原B答案与原0分AI记录，私有批阅满分并按用户明确指令已掌握；移除自启动个人漏洞。等权89.5，实际卷分值76.5，选择80%，均非官方成绩。完整结果、映射、计数和回滚见[本轮报告](exam-grading-20261124/README.md)。

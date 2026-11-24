@@ -1,0 +1,290 @@
+{
+  "paper_id": 148,
+  "paper_uuid": "f2ab8798-0526-4a18-89af-802af6e664ae",
+  "exam_date": "2026-11-24",
+  "score": 76.5,
+  "maximum": 150.0,
+  "counts": {
+    "correct": 12,
+    "partial": 8,
+    "incorrect": 3,
+    "incomplete": 7
+  },
+  "subjects": [
+    {
+      "score": 13.5,
+      "maximum": 30.0,
+      "subject": "电路原理"
+    },
+    {
+      "score": 20.4,
+      "maximum": 30.0,
+      "subject": "模拟电子技术"
+    },
+    {
+      "score": 15.9,
+      "maximum": 30.0,
+      "subject": "数字电子技术"
+    },
+    {
+      "score": 14.1,
+      "maximum": 30.0,
+      "subject": "信号与系统"
+    },
+    {
+      "score": 12.6,
+      "maximum": 30.0,
+      "subject": "通信原理"
+    }
+  ],
+  "review_flags": 18,
+  "states_created": 6,
+  "states_updated": 12,
+  "items_updated": 30,
+  "explicit_mastery_records_created": 1,
+  "timing_sessions_created_by_import": 0,
+  "identical_replay": "unchanged",
+  "rollback_verified_rows": 50,
+  "items": [
+    {
+      "position": 1,
+      "question_id": 6153,
+      "item_id": 2836,
+      "earned": 3.0,
+      "maximum": 3.0,
+      "status": "correct"
+    },
+    {
+      "position": 2,
+      "question_id": 6123,
+      "item_id": 2837,
+      "earned": 3.0,
+      "maximum": 3.0,
+      "status": "correct"
+    },
+    {
+      "position": 3,
+      "question_id": 7810,
+      "item_id": 2838,
+      "earned": 3.0,
+      "maximum": 3.0,
+      "status": "correct"
+    },
+    {
+      "position": 4,
+      "question_id": 6041,
+      "item_id": 2839,
+      "earned": 3.0,
+      "maximum": 3.0,
+      "status": "correct"
+    },
+    {
+      "position": 5,
+      "question_id": 6109,
+      "item_id": 2840,
+      "earned": 3.0,
+      "maximum": 3.0,
+      "status": "correct"
+    },
+    {
+      "position": 6,
+      "question_id": 7816,
+      "item_id": 2841,
+      "earned": 3.0,
+      "maximum": 3.0,
+      "status": "correct"
+    },
+    {
+      "position": 7,
+      "question_id": 6019,
+      "item_id": 2842,
+      "earned": 3.0,
+      "maximum": 3.0,
+      "status": "correct"
+    },
+    {
+      "position": 8,
+      "question_id": 7844,
+      "item_id": 2843,
+      "earned": 0.0,
+      "maximum": 3.0,
+      "status": "incorrect"
+    },
+    {
+      "position": 9,
+      "question_id": 8578,
+      "item_id": 2844,
+      "earned": 0.0,
+      "maximum": 3.0,
+      "status": "incomplete"
+    },
+    {
+      "position": 10,
+      "question_id": 6071,
+      "item_id": 2845,
+      "earned": 3.0,
+      "maximum": 3.0,
+      "status": "correct"
+    },
+    {
+      "position": 11,
+      "question_id": 7079,
+      "item_id": 2846,
+      "earned": 1.5,
+      "maximum": 3.0,
+      "status": "partial"
+    },
+    {
+      "position": 12,
+      "question_id": 7127,
+      "item_id": 2847,
+      "earned": 0.6,
+      "maximum": 3.0,
+      "status": "incomplete"
+    },
+    {
+      "position": 13,
+      "question_id": 6122,
+      "item_id": 2848,
+      "earned": 3.0,
+      "maximum": 3.0,
+      "status": "correct"
+    },
+    {
+      "position": 14,
+      "question_id": 6162,
+      "item_id": 2849,
+      "earned": 3.0,
+      "maximum": 3.0,
+      "status": "correct"
+    },
+    {
+      "position": 15,
+      "question_id": 6248,
+      "item_id": 2850,
+      "earned": 0.9,
+      "maximum": 3.0,
+      "status": "partial"
+    },
+    {
+      "position": 16,
+      "question_id": 6244,
+      "item_id": 2851,
+      "earned": 0.9,
+      "maximum": 3.0,
+      "status": "partial"
+    },
+    {
+      "position": 17,
+      "question_id": 6927,
+      "item_id": 2852,
+      "earned": 1.5,
+      "maximum": 3.0,
+      "status": "partial"
+    },
+    {
+      "position": 18,
+      "question_id": 7899,
+      "item_id": 2853,
+      "earned": 3.0,
+      "maximum": 3.0,
+      "status": "correct"
+    },
+    {
+      "position": 19,
+      "question_id": 7188,
+      "item_id": 2854,
+      "earned": 1.5,
+      "maximum": 3.0,
+      "status": "incomplete"
+    },
+    {
+      "position": 20,
+      "question_id": 8320,
+      "item_id": 2855,
+      "earned": 3.0,
+      "maximum": 3.0,
+      "status": "correct"
+    },
+    {
+      "position": 21,
+      "question_id": 5835,
+      "item_id": 2856,
+      "earned": 4.2,
+      "maximum": 6.0,
+      "status": "partial"
+    },
+    {
+      "position": 22,
+      "question_id": 5833,
+      "item_id": 2857,
+      "earned": 1.2,
+      "maximum": 6.0,
+      "status": "partial"
+    },
+    {
+      "position": 23,
+      "question_id": 6221,
+      "item_id": 2858,
+      "earned": 0.6,
+      "maximum": 6.0,
+      "status": "incorrect"
+    },
+    {
+      "position": 24,
+      "question_id": 5838,
+      "item_id": 2859,
+      "earned": 0.6,
+      "maximum": 6.0,
+      "status": "incomplete"
+    },
+    {
+      "position": 25,
+      "question_id": 6193,
+      "item_id": 2860,
+      "earned": 3.0,
+      "maximum": 6.0,
+      "status": "partial"
+    },
+    {
+      "position": 26,
+      "question_id": 7093,
+      "item_id": 2861,
+      "earned": 6.0,
+      "maximum": 12.0,
+      "status": "incomplete"
+    },
+    {
+      "position": 27,
+      "question_id": 6111,
+      "item_id": 2862,
+      "earned": 2.4,
+      "maximum": 12.0,
+      "status": "incorrect"
+    },
+    {
+      "position": 28,
+      "question_id": 7200,
+      "item_id": 2863,
+      "earned": 6.0,
+      "maximum": 12.0,
+      "status": "incomplete"
+    },
+    {
+      "position": 29,
+      "question_id": 5804,
+      "item_id": 2864,
+      "earned": 8.4,
+      "maximum": 12.0,
+      "status": "partial"
+    },
+    {
+      "position": 30,
+      "question_id": 6190,
+      "item_id": 2865,
+      "earned": 1.2,
+      "maximum": 12.0,
+      "status": "incomplete"
+    }
+  ]
+}
