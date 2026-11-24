@@ -346,6 +346,22 @@ export interface ExamPaperItem {
   question: ExamPaperQuestion
 }
 
+export interface ExamGrading {
+  title: string
+  exam_date: string
+  official: boolean
+  score: number
+  maximum: number
+  actual_duration_seconds: number
+  summary: string
+  strategy: string
+  conflicts: string[]
+  weaknesses: Record<string, string>
+  subjects: Array<{ subject: string; score: number; maximum: number }>
+  items: Array<{ position: number; question_uuid: string; status: string; user_answer: string;
+    reference: string; note: string; priority: string; verification: string; earned: number; maximum: number }>
+}
+
 export interface ExamPaper {
   uuid: string
   title: string
@@ -353,6 +369,7 @@ export interface ExamPaper {
   mode: PaperMode
   status: PaperStatus
   seed: number
+  grading?: ExamGrading | null
   duration_minutes: number
   total_score: number
   created_at: string
@@ -362,6 +379,8 @@ export interface ExamPaper {
 }
 
 export interface ExamPaperSummary {
+  has_grading?: boolean
+  grading_date?: string | null
   uuid: string
   title: string
   blueprint: string

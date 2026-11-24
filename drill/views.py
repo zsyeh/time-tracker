@@ -197,6 +197,7 @@ def exam_paper_payload(paper, *, review=False):
         'created_at': paper.created_at,
         'started_at': paper.started_at,
         'completed_at': paper.completed_at,
+        **({'grading': paper.generation_options.get('grading')} if review else {}),
         'items': [
             paper_item_payload(
                 item,
@@ -726,11 +727,12 @@ class DrillPaperListCreateView(APIView):
             correct_count=Count('items', filter=Q(items__result='correct')),
             time_spent_seconds=Sum('items__time_spent_seconds'),
             earned_score=Sum('items__score', filter=Q(items__result='correct')),
+            self_score_total=Sum('items__self_score'),
         )[:100]
         return Response({'results': [
             {
                 'uuid': str(paper.uuid),
-                'title': paper.blueprint.title,
+                'title': paper.generation_options.get('grading', {}).get('title', paper.blueprint.title),
                 'blueprint': paper.blueprint.code,
                 'mode': paper.mode,
                 'status': paper.status,
@@ -741,8 +743,10 @@ class DrillPaperListCreateView(APIView):
                 'question_count': paper.question_count,
                 'answered_count': paper.answered_count,
                 'correct_count': paper.correct_count,
-                'time_spent_seconds': paper.time_spent_seconds or 0,
-                'earned_score': float(paper.earned_score or 0),
+                'time_spent_seconds': paper.generation_options.get('grading', {}).get('actual_duration_seconds', paper.time_spent_seconds or 0),
+                'earned_score': paper.generation_options.get('grading', {}).get('score', float(paper.self_score_total if paper.self_score_total is not None else paper.earned_score or 0)),
+                'has_grading': bool(paper.generation_options.get('grading')),
+                'grading_date': paper.generation_options.get('grading', {}).get('exam_date'),
             }
             for paper in papers
         ]})

@@ -7,6 +7,7 @@ import { onMounted, ref } from 'vue'
 import { api } from '../lib/api'
 import PaperQuestionContent from '../components/PaperQuestionContent.vue'
 import PaperSelfEvaluation from '../components/PaperSelfEvaluation.vue'
+import PaperGradingReport from '../components/PaperGradingReport.vue'
 import type { ExamPaper, ExamPaperItem, PaperItemResult } from '../types'
 import { createAndCopyShare } from '../lib/share'
 import { withWorkspacePrefix } from '../lib/runtimePath'
@@ -46,9 +47,10 @@ onMounted(async () => {
 <template>
   <PaperSelfEvaluation v-if="route.query.mode === 'self'" :uuid="uuid" />
   <section v-else class="page paper-review-page">
-    <header class="page-header"><div><h1>{{ paper?.title || 'Paper review' }}</h1><p>Compare your work with the source answer and update the learning signal.</p></div><div class="paper-header-actions"><RouterLink :to="previewLocation(buildListContext('paper', { paper: uuid }, route.fullPath))">{{ uiText("全局预览") }}</RouterLink><button type="button" :disabled="shareState === 'sharing'" @click="sharePaper">{{ shareState === 'sharing' ? 'Creating…' : shareState === 'copied' ? uiText("Link copied ✓") : 'Share paper + answers' }}</button><a :href="withWorkspacePrefix(`/api/drill/papers/${uuid}/pdf/questions/`)">Question PDF</a><RouterLink :to="`/papers/${uuid}`">逐题训练</RouterLink></div></header>
+    <header v-if="!paper?.grading" class="page-header"><div><h1>{{ paper?.title || 'Paper review' }}</h1><p>Compare your work with the source answer and update the learning signal.</p></div><div class="paper-header-actions"><RouterLink :to="previewLocation(buildListContext('paper', { paper: uuid }, route.fullPath))">{{ uiText("全局预览") }}</RouterLink><button type="button" :disabled="shareState === 'sharing'" @click="sharePaper">{{ shareState === 'sharing' ? 'Creating…' : shareState === 'copied' ? uiText("Link copied ✓") : 'Share paper + answers' }}</button><a :href="withWorkspacePrefix(`/api/drill/papers/${uuid}/pdf/questions/`)">Question PDF</a><RouterLink :to="`/papers/${uuid}`">逐题训练</RouterLink></div></header>
     <p v-if="error" class="error-state">{{ uiText(error) }}</p>
-    <article v-for="item in paper?.items" :key="item.position" class="paper-review-item">
+    <PaperGradingReport v-if="paper?.grading" :paper="paper" />
+    <article v-for="item in paper?.grading ? [] : paper?.items" :key="item.position" class="paper-review-item">
       <header><span>{{ item.position }}</span><div><strong>{{ item.question.display_label }}</strong><small>{{ item.question.document }} · {{ item.question.topic }}</small></div><em>{{ item.score }} pts</em></header>
       <PaperQuestionContent :question="item.question" />
       <section class="paper-your-answer"><span>Your answer</span><p>{{ item.user_answer || 'No answer recorded.' }}</p></section>
