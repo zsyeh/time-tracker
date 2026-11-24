@@ -15,8 +15,9 @@ const paper = {
 
 let app: App | undefined
 let host: HTMLDivElement
-async function setup() {
- route.query={};replace.mockClear()
+async function setup(question?: string) {
+ route.query=question ? { question } : {};replace.mockClear()
+ HTMLElement.prototype.scrollIntoView = vi.fn()
  host=document.createElement('div');document.body.append(host)
  app=createApp(Report,{paper})
  app.component('RouterLink',defineComponent({props:['to'],setup:(p,{slots})=>()=>h('a',{href:p.to},slots.default?.())}))
@@ -24,6 +25,11 @@ async function setup() {
 }
 afterEach(()=>{app?.unmount();host?.remove()})
 describe('paper grading report',()=>{
+ it('reveals a deep-linked question after its asynchronously mounted detail exists',async()=>{
+  await setup('8');await nextTick()
+  expect(HTMLElement.prototype.scrollIntoView).toHaveBeenCalledWith({block:'start',behavior:'auto'})
+  expect(host.querySelector('.review-toolbar')?.textContent).toContain('第 8')
+ })
  it('shows unofficial weighted score and accessible subject charts',async()=>{
   await setup();expect(host.textContent).toContain('76.5');expect(host.textContent).toContain('非官方估分')
   expect(host.querySelectorAll('[role=meter]')).toHaveLength(2);expect(host.textContent).toContain('38.89%')

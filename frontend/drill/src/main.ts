@@ -73,7 +73,7 @@ const router = createRouter({
     { path: '/:pathMatch(.*)*', name: 'not-found', component: NotFoundView },
   ],
   scrollBehavior(_to, _from, savedPosition) {
-    if (_to.name === 'paper-review' && _to.query.mode !== 'all' && _to.query.mode !== 'self' && _to.query.question) return { el: '#paper-review-detail', top: 64 }
+    if (_to.name === 'paper-review' && _to.query.mode !== 'all' && _to.query.mode !== 'self' && _to.query.question) return false
     if (_to.name === 'preview') return { top: 0 }
     if (_to.name === 'practice' || (_to.name === 'question' && _from.name === 'question')) return false
     return savedPosition || { top: 0 }
