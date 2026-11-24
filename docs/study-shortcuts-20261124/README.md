@@ -64,3 +64,20 @@
 - 备份：`/var/snap/docker/common/time-tracker-ha/backups/study-shortcuts-20261124/`，`verify-exit.txt=0`。
 - 回滚：在47执行 `sh /var/snap/docker/common/time-tracker-ha/releases/study-shortcuts-0c3044d/rollback.sh`，恢复 `time-tracker-ha:20261124-exam-grading-editor-691cdc4`。脚本可执行、`sh -n`通过；只恢复应用/config，不用旧数据库覆盖发布后学习记录。
 - 保留旧镜像及旧哈希资源；未重启数据库、未变更无关队列。47剩余约11GiB。
+
+
+## 同日更正：P/X 双向切换与 A 内容切换（46d1059）
+
+用户澄清：P、X 都是“全屏 ↔ 非全屏”，A 是“原题 ↔ 答案”。三个页面（Practice、考试、逐题批阅）均已调整；关闭后重新进入保留当前阅读内容，A 不再连续显示同一答案。考试未结束继续拦截 A。
+
+- `46d1059`，镜像 `time-tracker-ha:20261124-keyboard-toggle-46d1059`；相关9用例、类型检查和构建通过（测试1.71秒，Vite7.13秒）。没有后端/数据库修改。
+- 本轮复用同日晚20:51通过校验的用户数据备份，另存当前服务配置；保留前一应用镜像0c3044d。回滚：`sh /var/snap/docker/common/time-tracker-ha/releases/keyboard-toggle-46d1059/rollback.sh`，不恢复旧数据库。
+
+
+### 最终补修与线上验收（34e10c8）
+
+- `fb5bd35` 修复浏览器排队的 native `close` 事件覆盖已重新打开阅读器的问题；7项阅读器用例和构建通过，含延迟close事件复现。`34e10c8` 为逐题批阅的 F 添加当前题工具栏及全屏内“收藏/已收藏(F)”按钮，收藏缓存同步，4项批阅组件用例及构建通过。
+- 最终生产镜像 `time-tracker-ha:20261124-review-favorite-34e10c8`，21:12:15开始切换，21:12:27 healthy。没有迁移或题库变更。
+- 线上临时隔离账号验证：Practice/考试/批阅分别连续 P/P/X/X、A/A往返，未结束考试A拦截，批阅F收藏/取消及全屏可见状态，均通过且无pageerror。测试采用英文/中文兼容的断言；最终锁定提示同时出现在页面与全屏恢复区，探针使用明确可见实例避免strict selector误报。证据 `toggle-favorite-browser-check.json`。
+- 回滚入口：`sh /var/snap/docker/common/time-tracker-ha/releases/review-favorite-34e10c8/rollback.sh`，回到本轮前0c3044d服务配置；不恢复旧数据库。脚本可执行且语法通过。
+- 本次按键澄清后的构建共3轮：基础语义、实测发现的原生close竞态、用户追加的收藏可见反馈；未跑全量后端或新增数据库备份，复用已校验用户备份并保存发布前服务配置。真机Safari仍未测。
