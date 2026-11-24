@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { paperKeyboardMarks } from '../lib/paperKeyboardMarks'
+import { installStudyShortcuts } from '../lib/studyShortcuts'
 import { api, ApiError } from '../lib/api'
 import { patchQuestionState } from '../lib/workspace'
 import PaperQuestionContent from '../components/PaperQuestionContent.vue'
@@ -23,6 +25,9 @@ const copied = ref(false)
 const saving = ref(0)
 const favoriteSaving = ref(false)
 const replacing = ref(false)
+const ending = ref(false)
+const canRevealAnswers = computed(() => paper.value?.status === 'completed')
+let removeShortcuts: (() => void) | undefined
 const replaceError = ref('')
 const replacementNotice = ref('')
 const reader = ref<InstanceType<typeof FullscreenReader> | null>(null)
@@ -30,6 +35,8 @@ let timer = 0
 let noteTimer = 0
 let saveChain = Promise.resolve(true)
 const item = computed(() => paper.value?.items[index.value] || null)
+const marks=paperKeyboardMarks(()=>item.value,()=>paper.value,reason=>{error.value=(reason as Error).message})
+const markSaving=marks.busy,markHistory=marks.history
 const context = computed(() => buildListContext('paper', { paper: props.uuid }, `/papers/${props.uuid}?position=${index.value + 1}`))
 const remaining = computed(() => {
   if (!paper.value?.started_at) return (paper.value?.duration_minutes || 0) * 60
@@ -67,10 +74,23 @@ async function move(next: number) {
   replacementNotice.value = ''
   await router.replace({ query: { ...route.query, position: String(next + 1) } })
 }
-function flag() {
-  if (replacing.value || !item.value) return
-  if (!item.value.user_answer.startsWith('不会做：')) item.value.user_answer = `不会做：${item.value.user_answer}`
-  void save()
+function markExam(kind: 'review'|'mastered') { if (!replacing.value) return marks.mark(kind) }
+function flag() { return markExam('review') }
+const undoMark=marks.undo
+async function showAnswer(fullscreen=false) {
+  if (!canRevealAnswers.value) { error.value='考试未结束，暂不能查看答案。';return }
+  answer.value=fullscreen ? true : !answer.value
+  if (fullscreen) { await nextTick();await reader.value?.open() }
+}
+async function endExam() {
+  if (!paper.value || ending.value || replacing.value || !window.confirm('结束本次考试并解锁答案？不会自动计算分数。')) return
+  ending.value=true
+  try {
+    if (!await save()) return
+    await api(`/api/drill/papers/${props.uuid}/`,{method:'PATCH',body:JSON.stringify({action:'complete'})})
+    paper.value=await api<ExamPaper>(`/api/drill/papers/${props.uuid}/review/`)
+  } catch(reason) {error.value=`结束或加载失败，请刷新核对：${(reason as Error).message}`}
+  finally {ending.value=false}
 }
 async function toggleFavorite() {
   const question = item.value?.question
@@ -118,6 +138,14 @@ async function replaceQuestion() {
   finally { replacing.value = false }
 }
 onMounted(async () => {
+  removeShortcuts=installStudyShortcuts({
+    previous:()=>move(index.value-1),next:()=>move(index.value+1),favorite:toggleFavorite,
+    review:()=>markExam('review'),mastered:()=>markExam('mastered'),undo:undoMark,
+    preview:()=>{reader.value?.close();void save();return router.push(previewLocation(context.value))},
+    answer:()=>showAnswer(true),fullscreen:()=>reader.value?.open(),exit:()=>reader.value?.close(),
+  },{blocked:()=>!paper.value || replacing.value || ending.value || markSaving.value,
+     error:reason=>{error.value=(reason as Error).message}})
+
   try {
     paper.value = await api<ExamPaper>(`/api/drill/papers/${props.uuid}/review/`)
     index.value = Math.max(0, Math.min(paper.value.items.length - 1, (Number(route.query.position) || 1) - 1))
@@ -128,7 +156,7 @@ onMounted(async () => {
     timer = window.setInterval(() => { now.value = Date.now() }, 1000)
   } catch (reason) { error.value = (reason as Error).message }
 })
-onUnmounted(() => { window.clearInterval(timer); window.clearTimeout(noteTimer); if (item.value) void save(item.value) })
+onUnmounted(() => { removeShortcuts?.();window.clearInterval(timer); window.clearTimeout(noteTimer); if (item.value) void save(item.value) })
 </script>
 
 <template>
@@ -136,11 +164,12 @@ onUnmounted(() => { window.clearInterval(timer); window.clearTimeout(noteTimer);
     <header class="training-header">
       <RouterLink to="/papers">← 专注训练</RouterLink>
       <strong>{{ paper?.title || '加载题单…' }}</strong>
-      <span class="countdown" role="timer">{{ remaining ? clock : '计时结束，可继续训练' }}</span>
+      <span class="countdown" role="timer">{{ canRevealAnswers ? '考试已结束' : remaining ? clock : '计时结束，可继续训练' }}</span>
     </header>
     <nav v-if="paper" class="training-tools" aria-label="题单工具">
       <RouterLink :to="previewLocation(context)">整卷预览</RouterLink>
-      <RouterLink :to="`/papers/${uuid}/review?mode=self`">自评</RouterLink>
+      <RouterLink v-if="canRevealAnswers" :to="`/papers/${uuid}/review?mode=self`">自评</RouterLink>
+      <button v-else :disabled="ending || replacing" @click="endExam">{{ ending ? '正在结束…' : '结束考试并解锁答案' }}</button>
       <a :href="withWorkspacePrefix(`/api/drill/papers/${uuid}/pdf/questions/`)">试卷 PDF</a>
       <button :disabled="sharing || replacing" @click="sharePaper">{{ sharing ? '生成分享…' : copied ? '分享链接已复制' : '分享整卷' }}</button>
     </nav>
@@ -151,11 +180,11 @@ onUnmounted(() => { window.clearInterval(timer); window.clearTimeout(noteTimer);
       <div class="training-content">
         <header class="question-heading"><strong>第 {{ item.position }} / {{ paper.items.length }} 题</strong><span>{{ item.question.document }}</span></header>
         <div class="question-actions">
-          <button @click="answer = !answer">{{ answer ? '返回题目' : '查看答案' }}</button>
+          <button :disabled="!canRevealAnswers" @click="showAnswer()">{{ answer ? '返回题目' : '查看答案' }}</button>
           <button @click="reader?.open()">全屏查看</button>
-          <RouterLink :to="practiceLocation()" :aria-disabled="replacing" :tabindex="replacing ? -1 : undefined" @click="replacing ? $event.preventDefault() : save()">标准练习 →</RouterLink>
+          <RouterLink v-if="canRevealAnswers" :to="practiceLocation()" :aria-disabled="replacing" :tabindex="replacing ? -1 : undefined" @click="replacing ? $event.preventDefault() : save()">标准练习 →</RouterLink>
           <button :aria-pressed="!!item.question.is_favorite" :disabled="favoriteSaving || replacing" @click="toggleFavorite">{{ item.question.is_favorite ? '已收藏' : '收藏' }}</button>
-          <button :disabled="replacing" @click="flag">标记不会做</button>
+          <button :disabled="replacing || markSaving" @click="flag">待复习 (N)</button><button :disabled="replacing || markSaving" @click="markExam('mastered')">掌握 (M)</button><button :disabled="markSaving || !markHistory.length" @click="undoMark">撤销标记 (U)</button>
           <button :disabled="replacing || sharing || favoriteSaving" @click="replaceQuestion">{{ replacing ? '更换中…' : '更换本题' }}</button>
         </div>
         <PaperQuestionContent v-if="!answer" :question="item.question" />
@@ -169,7 +198,7 @@ onUnmounted(() => { window.clearInterval(timer); window.clearTimeout(noteTimer);
       </div>
       <footer class="training-nav">
         <button :disabled="replacing || index === 0" @click="move(index - 1)">上一题</button>
-        <div class="positions" aria-label="选择题号"><button v-for="(entry, n) in paper.items" :key="entry.position" :class="{ active: index === n, flagged: entry.user_answer.startsWith('不会做：') }" :aria-current="index === n ? 'step' : undefined" :disabled="replacing" @click="move(n)">{{ entry.position }}</button></div>
+        <div class="positions" aria-label="选择题号"><button v-for="(entry, n) in paper.items" :key="entry.position" :class="{ active: index === n, flagged: entry.question.mastery_state === 'review' || entry.user_answer.startsWith('不会做：') }" :aria-current="index === n ? 'step' : undefined" :disabled="replacing" @click="move(n)">{{ entry.position }}</button></div>
         <button :disabled="replacing || index === paper.items.length - 1" @click="move(index + 1)">下一题</button>
       </footer>
       <FullscreenReader ref="reader" hide-trigger :title="`第 ${item.position} 题 · ${answer ? '答案' : '题目'}`" :images="images" :content-key="`${item.question.uuid}-${answer}`">

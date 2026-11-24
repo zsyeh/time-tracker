@@ -102,7 +102,7 @@ def paper_queryset(user):
     )
 
 
-def paper_item_payload(item, *, review, latest_result=None, image_only=False, user_state=None):
+def paper_item_payload(item, *, review, latest_result=None, image_only=False, user_state=None, answers_allowed=True):
     question = item.question
     revision = item.question_revision
     revision_assets = list(revision.revision_assets.all())
@@ -148,7 +148,7 @@ def paper_item_payload(item, *, review, latest_result=None, image_only=False, us
     }
     if review:
         payload['question'].update({
-            'answer_markdown': '' if image_only else revision.answer_markdown,
+            'answer_markdown': '' if image_only or not answers_allowed else revision.answer_markdown,
             'answer_source': revision.answer_source,
             'answer_assets': [
                 {
@@ -158,7 +158,7 @@ def paper_item_payload(item, *, review, latest_result=None, image_only=False, us
                     'height': link.asset.height,
                     'position': link.position,
                 }
-                for link in revision_assets if link.asset_type == 'answer_crop'
+                for link in revision_assets if link.asset_type == 'answer_crop' and answers_allowed
             ],
             'mastery_state': (
                 'mastered' if latest_result in ('done', 'correct')
@@ -202,6 +202,7 @@ def exam_paper_payload(paper, *, review=False):
             paper_item_payload(
                 item,
                 review=review,
+                answers_allowed=paper.status == 'completed',
                 user_state=states.get(item.question_id),
                 image_only=paper.blueprint.code.startswith(('math2-focus-', 'ei-focus-')),
                 latest_result=latest_by_question.get(item.question_id),
@@ -1585,6 +1586,10 @@ class DrillQuestionAttemptView(APIView):
                     {'detail': '没有可以撤销的题目状态变更。'},
                     status=status.HTTP_409_CONFLICT,
                 )
+            expected_id = request.query_params.get('expected_attempt_id')
+            if expected_id is not None and str(latest.pk) != expected_id:
+                return Response({'detail': '题目已在其他页面更新，未撤销新的记录。'},
+                                status=status.HTTP_409_CONFLICT)
             latest.delete()
             rebuild_review_plan(request.user, question)
             if request_workspace(request) == 'ei':

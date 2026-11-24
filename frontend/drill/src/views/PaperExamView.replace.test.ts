@@ -20,7 +20,7 @@ let app: App | undefined
 let host: HTMLDivElement
 function paper(question = 'old-2', note = '原备注') {
   return {
-    uuid: 'paper-1', title: '考试', started_at: new Date().toISOString(), duration_minutes: 180,
+    uuid: 'paper-1', title: '考试', status: 'completed', started_at: new Date().toISOString(), duration_minutes: 180,
     items: [1, 2, 3].map(position => ({ position, user_answer: position === 2 ? note : '', self_score: position === 2 ? 3 : null,
       question: { uuid: position === 2 ? question : `old-${position}`, question_assets: [], answer_assets: [], document: '题册' },
     })),
@@ -121,4 +121,13 @@ it('does not save or replace when confirmation is cancelled', async () => {
   await mount(); button('更换本题').click(); await settle()
   expect(vi.mocked(api).mock.calls).toHaveLength(1)
   expect(host.querySelector('.test-question')?.textContent).toBe('old-2')
+})
+
+it('blocks the answer shortcut and ordinary answer button before the exam ends', async () => {
+  vi.mocked(api).mockImplementation(async path => path.endsWith('/review/') ? { ...paper(), status:'in_progress' } : undefined)
+  await mount()
+  document.dispatchEvent(new KeyboardEvent('keydown',{key:'a',bubbles:true,cancelable:true}));await settle()
+  expect(host.textContent).toContain('考试未结束')
+  expect(host.querySelector('.training-answer')).toBeNull()
+  expect(button('查看答案')?.disabled).toBe(true)
 })

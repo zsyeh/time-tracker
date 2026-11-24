@@ -1,6 +1,11 @@
 <script setup lang="ts">
-import { computed, nextTick, ref, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue'
 import { onBeforeRouteLeave, onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router'
+import { installStudyShortcuts } from '../lib/studyShortcuts'
+import { paperKeyboardMarks } from '../lib/paperKeyboardMarks'
+import { api } from '../lib/api'
+import { buildListContext, previewLocation } from '../lib/listContext'
+import FullscreenReader from './FullscreenReader.vue'
 import type { ExamPaper } from '../types'
 import MarkdownSection from './MarkdownSection.vue'
 import PaperQuestionContent from './PaperQuestionContent.vue'
@@ -30,6 +35,29 @@ async function revealReview() {
 const grading = computed(() => props.paper.grading!)
 const item = computed(() => props.paper.items.find(i => i.position === active.value))
 const review = computed(() => grading.value.items.find(i => i.position === active.value))
+const shortcutError=ref(''),favoriteSaving=ref(false)
+const reader=ref<InstanceType<typeof FullscreenReader>|null>(null),readerAnswer=ref(false)
+const marks=paperKeyboardMarks(()=>item.value||null,()=>props.paper,reason=>{shortcutError.value=(reason as Error).message})
+const readerImages=computed(()=>(readerAnswer.value?item.value?.question.answer_assets:item.value?.question.question_assets)?.map(a=>({src:withWorkspacePrefix(a.url),width:a.width,height:a.height}))||[])
+async function fullscreen(answer=false) {
+  if (answer && props.paper.status!=='completed') {shortcutError.value='考试未结束，暂不能查看答案。';return}
+  readerAnswer.value=answer;await nextTick();await reader.value?.open()
+}
+async function favorite() {
+  const q=item.value?.question;if(!q||favoriteSaving.value)return
+  favoriteSaving.value=true
+  try {const state=await api<{is_favorite:boolean;version:number}>(`/api/drill/questions/${q.uuid}/state/`,{method:'POST',body:JSON.stringify({is_favorite:!q.is_favorite,version:q.state_version||1})});q.is_favorite=state.is_favorite;q.state_version=state.version;shortcutError.value=state.is_favorite?'已收藏':'已取消收藏'}
+  catch(reason){shortcutError.value=(reason as Error).message}finally{favoriteSaving.value=false}
+}
+let removeShortcuts:(()=>void)|undefined
+onMounted(()=>{removeShortcuts=installStudyShortcuts({
+ previous:()=>choose(active.value-1),next:()=>choose(active.value+1),favorite,
+ review:()=>marks.mark('review'),mastered:()=>marks.mark('mastered'),undo:marks.undo,
+ fullscreen:()=>fullscreen(false),answer:()=>fullscreen(true),exit:()=>reader.value?.close(),
+ preview:()=>{reader.value?.close();return router.push(previewLocation(buildListContext('paper',{paper:props.paper.uuid},route.fullPath)))},
+},{blocked:()=>editingReviewBlocked(),error:reason=>{shortcutError.value=(reason as Error).message}})})
+function editingReviewBlocked(){return dirtyReview.value||savingReview.value||marks.busy.value||favoriteSaving.value}
+onUnmounted(()=>removeShortcuts?.())
 const labels: Record<string,string> = { correct:'正确', incorrect:'错误', partial:'部分正确', incomplete:'未完成' }
 watch(() => route.query.question, value => {
   const n = Number(value); active.value = props.paper.items.some(i => i.position === n) ? n : 1
@@ -54,12 +82,14 @@ function choose(n: number) {
     <section class="subjects" aria-label="分学科得分图表"><div v-for="s in grading.subjects" :key="s.subject" class="subject"><span>{{ s.subject }}</span><div class="score-track" role="meter" :aria-label="s.subject" :aria-valuenow="s.score" :aria-valuemax="s.maximum" :aria-valuemin="0"><i :style="{ width:`${s.score / s.maximum * 100}%` }" /></div><b>{{ s.score }} / {{ s.maximum }}</b></div></section>
     <MarkdownSection title="总体批阅与估分说明" :source="grading.summary" @rendered="overviewRendered" />
     <MarkdownSection v-if="grading.conflicts.length" title="核对差异与证据" @rendered="overviewRendered" :source="grading.conflicts.map(v => `- ${v}`).join('\n')" />
+    <p v-if="shortcutError" role="status">{{ shortcutError }}</p>
     <section class="question-review"><h2>逐题批阅</h2><nav class="question-grid" aria-label="选择批阅题目"><button v-for="g in grading.items" :key="g.position" type="button" :class="[g.status, { active:active === g.position }]" :aria-pressed="active === g.position" @click="choose(g.position)"><b>{{ g.position }}</b><span class="score-fraction">{{ g.earned }}/{{ g.maximum }}</span><small>{{ labels[g.status] }}</small></button></nav>
       <div id="paper-review-detail" ref="detailElement" class="review-toolbar"><button type="button" :disabled="active === 1" @click="choose(active-1)">上一题</button><strong>第 {{ active }} / {{ paper.items.length }} 题 · {{ review ? labels[review.status] : '' }}</strong><b v-if="review" class="score-fraction">{{ review.earned }}/{{ review.maximum }}</b><button type="button" :disabled="active === paper.items.length" @click="choose(active+1)">下一题</button><RouterLink v-if="item" :to="`/practice/${item.question.uuid}?grading_return=${encodeURIComponent(route.fullPath)}`">标准 Practice ↗</RouterLink></div>
       <details v-if="item" :key="`question-${active}`" class="review-original-question" open><summary>原题图</summary><PaperQuestionContent :question="item.question" /></details>
       <details v-if="item" :key="`answer-${active}`" class="review-original-answer" open><summary>答案贴图</summary><div class="answer-images"><img v-for="asset in item.question.answer_assets" :key="asset.id" :src="withWorkspacePrefix(asset.url)" :width="asset.width" :height="asset.height" loading="lazy" decoding="async" alt="原始答案" /></div></details>
       <GradingReviewTable v-if="review" :key="active" :paper-uuid="paper.uuid" :review="review" @saved="Object.assign(review, $event)" @dirty="dirtyReview=$event" @busy="savingReview=$event" />
     </section>
+    <FullscreenReader ref="reader" hide-trigger :title="`第 ${active} 题 · ${readerAnswer ? '答案' : '题目'}`" :images="readerImages" :content-key="`${active}-${readerAnswer}`" />
     <section><h2>五科学习薄弱点</h2><MarkdownSection v-for="(text, subject) in grading.weaknesses" :key="subject" :title="String(subject)" :source="text" :open="false" /></section>
     <MarkdownSection title="26 天复习安排与下一次考试用时" :source="grading.strategy" :open="false" />
   </section>

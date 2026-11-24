@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { installStudyShortcuts } from '../lib/studyShortcuts'
 import { installPracticeKeyboardViewport } from '../lib/practiceKeyboardViewport'
 import { uiText } from '../lib/uiText'
 import { ForegroundTimer, learningUserId, readLocal, writeLocal, type TimingSyncResult } from '../../../shared/foregroundTimer'
@@ -1410,8 +1411,21 @@ function refreshAfterPageRestore(event: PageTransitionEvent) {
   void load()
 }
 
+let removeStudyShortcuts: (() => void) | undefined
 let removeKeyboardViewport: (() => void) | undefined
 onMounted(() => {
+  removeStudyShortcuts = installStudyShortcuts({
+    previous: goToPrevious,
+    next: () => goToNext(effectiveNextMode.value),
+    favorite: () => question.value && saveUserState({ is_favorite: !question.value.is_favorite }),
+    review: () => record('review'), mastered: () => record('correct'),
+    undo: () => question.value?.can_undo && undo(),
+    preview: () => { questionReader.value?.close();openScrollingPreview() },
+    answer: () => { const original=question.value?.original_source?.has_answer && (question.value.answer_scope === 'source_paper' || (!question.value.has_answer && !question.value.answer_markdown));return openReader(original ? 'original' : 'answer') },
+    fullscreen: () => openReader('question'),
+    exit: () => { questionReader.value?.close();originalAnswerReader.value?.closeFullscreen() },
+  }, { blocked: () => !question.value || saving.value || nextLoading.value || readerNavigating.value,
+       error: reason => { error.value = (reason as Error).message } })
   removeKeyboardViewport = installPracticeKeyboardViewport()
   window.addEventListener('pageshow', refreshAfterPageRestore)
   document.addEventListener('visibilitychange', learningVisibility)
@@ -1422,6 +1436,7 @@ onMounted(() => {
   void load()
 })
 onUnmounted(() => {
+  removeStudyShortcuts?.()
   removeKeyboardViewport?.()
   window.removeEventListener('pageshow', refreshAfterPageRestore)
   document.removeEventListener('visibilitychange', learningVisibility)
