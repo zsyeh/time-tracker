@@ -1,0 +1,28 @@
+[
+  {
+    "viewport": [
+      390,
+      844
+    ],
+    "question8_clicked_detail_top": 64.15625,
+    "reload_restores_detail": true,
+    "whole_paper_items": 30,
+    "report_and_list_whole_review_entries": true,
+    "whole_to_question8_anchor": true,
+    "score_unchanged": 76.5,
+    "pageerrors": []
+  },
+  {
+    "viewport": [
+      1180,
+      820
+    ],
+    "question8_clicked_detail_top": 63.96875,
+    "reload_restores_detail": true,
+    "whole_paper_items": 30,
+    "report_and_list_whole_review_entries": true,
+    "whole_to_question8_anchor": true,
+    "score_unchanged": 76.5,
+    "pageerrors": []
+  }
+]

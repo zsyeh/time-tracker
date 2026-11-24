@@ -89,3 +89,17 @@ $D exec -e PYTHONPATH=/app time-tracker-ha-web python /tmp/rollback_grading.py /
 ```
 
 默认只读；出现后续真实编辑会拒绝，不能强制以旧快照覆盖。恢复只针对本次50行范围，不全库恢复。原题及原图不在变更范围。47仍余约11GiB。
+
+## 16:06补修：题号点击定位与整卷回顾
+
+用户反馈“点击题号回到顶部，整卷回顾找不到”。真实原因：全局Router把review查询变化按普通路由滚顶；列表“整卷查看”仍指向同一批阅总览，批阅组件又隐藏了原整卷列表。
+
+- review题号变化保留路由滚动控制，组件等上方Markdown实际渲染并nextTick后，再对真实批阅区scrollIntoView，使用scroll-margin-top:64px。无任意延时、无自动聚焦、无键盘弹出。
+- 首个候选已修复点击，但真实线上刷新探针发现Markdown异步布局仍导致偏移，补充rendered事件后再恢复，不把第一次候选称作最终通过。
+- 成绩页与试卷列表均有“整卷回顾”，指向 `/papers/:uuid/review?mode=all`，恢复完整30题、用户答案、分数、原始答案贴图与折叠批阅；可从某题返回逐题批阅或标准Practice。只读回顾不显示会误写掌握的批量标记操作。
+- 最终应用 `f946134`（前序修复提交1eeafdf、50a4b00），镜像 `time-tracker-ha:20261124-review-navigation-f946134` healthy。仅前端，无数据库写入/迁移，不修改76.5分、18待复习Note及第5题改判。
+- 3个定向前端用例通过（进程约1秒），类型/最终Vite构建通过（7.02秒）；生产390×844和1180×820实测：点击8题内容距顶64.16px/63.97px，刷新也恢复，成绩页/列表两入口均显示30题，整卷返回8题定位正确，无JS错误。
+- 原验收只断言URL与选中题号，遗漏“真实内容是否出现在视口”；本次改成实际DOM坐标断言+刷新+真实入口检查。Safari/PWA实体机仍未测。
+- 备份 `/var/snap/docker/common/time-tracker-ha/backups/exam-review-navigation-20261124`（verify-exit=0），不重复导出题库。
+- 回滚：`sh /var/snap/docker/common/time-tracker-ha/releases/exam-review-navigation-f946134/rollback.sh`，回到本次导航补修前5dc4bca；保留全部成绩和Note。
+- 本次有两次构建候选及一次线上补发，用于修复已实测的刷新偏移；不掩饰返工。最终线上证据见 `navigation-browser-check.json`、`navigation-question8-*.png`、`whole-review-*.png`。
