@@ -111,3 +111,18 @@ it('keeps modal overlays inside the native dialog and returns focus to the origi
   dialog.querySelector<HTMLButtonElement>('.reader-close')!.click(); await flush()
   expect(document.activeElement).toBe(trigger)
 })
+
+it('ignores a queued native close event after a rapid reopen', async()=>{
+ const {dialog}=await mount()
+ const trigger=host.querySelector<HTMLButtonElement>('button')!
+ trigger.click();await flush()
+ dialog.close=function(){this.open=false}
+ dialog.querySelector<HTMLButtonElement>('.reader-close')!.click();await flush()
+ trigger.click();await flush()
+ dialog.dispatchEvent(new Event('close'));await flush()
+ expect(dialog.open).toBe(true)
+ expect(document.body.style.overflow).toBe('hidden')
+ expect(dialog.querySelectorAll('img')).toHaveLength(2)
+ dialog.querySelector<HTMLButtonElement>('.reader-close')!.click();await flush()
+ expect(document.body.style.overflow).toBe('')
+})

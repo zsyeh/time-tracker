@@ -59,6 +59,8 @@ async function loadContent() {
   } finally { if (sequence === loadSequence) loading.value = false }
 }
 function close() { dialog.value?.close(); restore() }
+// Native close events are queued; a previous close must not reset a reopened reader.
+function nativeClosed() { if (!dialog.value?.open) restore() }
 async function setZoom(value: number) {
   const root = scroller.value
   const document = root?.querySelector<HTMLElement>('.reader-document')
@@ -101,7 +103,7 @@ defineExpose({ open, close, isOpen: computed(() => opened.value) })
     <svg width="15" height="15" viewBox="0 0 20 20" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M7 3H3v4m10-4h4v4M3 13v4h4m10-4v4h-4" /></svg>
   </button>
   <Teleport to="body">
-    <dialog ref="dialog" class="fullscreen-reader" :aria-label="title" @close="restore" @keydown="keyboard">
+    <dialog ref="dialog" class="fullscreen-reader" :aria-label="title" @close="nativeClosed" @keydown="keyboard">
       <template v-if="opened">
         <header class="reader-toolbar" :class="{ 'has-practice-controls': controls }">
           <strong>{{ title }}</strong>
