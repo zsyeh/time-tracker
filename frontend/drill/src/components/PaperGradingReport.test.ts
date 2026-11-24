@@ -5,7 +5,9 @@ import Report from './PaperGradingReport.vue'
 import type { ExamPaper } from '../types'
 const route = vi.hoisted(() => ({ query:{} as Record<string,string>, fullPath:'/papers/paper/review' }))
 const replace = vi.hoisted(() => vi.fn())
-vi.mock('vue-router', () => ({ useRoute:()=>route, useRouter:()=>({replace}) }))
+vi.mock('../lib/api',()=>({api:vi.fn()}))
+vi.mock('./MarkdownAnswer.vue',()=>({default:defineComponent({props:['source'],setup:p=>()=>h('div',p.source)})}))
+vi.mock('vue-router', () => ({ useRoute:()=>route, useRouter:()=>({replace}), onBeforeRouteLeave:vi.fn(), onBeforeRouteUpdate:vi.fn() }))
 vi.mock('./MarkdownSection.vue', () => ({ default: defineComponent({props:['title','source'],emits:['rendered'],setup:(p,{emit})=>{onMounted(()=>emit('rendered'));return ()=>h('section',p.title+' '+p.source)}}) }))
 const paper = {
  uuid:'paper', duration_minutes:180,
@@ -41,5 +43,7 @@ describe('paper grading report',()=>{
   expect(host.querySelector('#paper-review-detail')).not.toBeNull()
   expect(host.querySelector('.report-links a:last-child')?.getAttribute('href')).toBe('/papers/paper/review?mode=all')
   expect(host.textContent).toContain('译码器定义')
+  expect(host.querySelector('.review-original-question')?.hasAttribute('open')).toBe(true)
+  expect(host.querySelector('.review-original-answer')?.hasAttribute('open')).toBe(true)
  })
 })

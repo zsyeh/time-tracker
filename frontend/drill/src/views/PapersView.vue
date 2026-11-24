@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import '../lib/examScores.css'
 import { uiText } from '../lib/uiText'
 import { onMounted, ref } from 'vue'
 import { api } from '../lib/api'
@@ -45,7 +46,7 @@ onMounted(async () => {
       <article v-for="paper in papers" :key="paper.uuid" class="paper-history-row">
         <span class="paper-mode">{{ paper.mode }}</span>
         <div><strong>{{ paper.title }}</strong><small>{{ formatDate(paper.created_at) }} · {{ paper.question_count }} questions · {{ paper.duration_minutes }} min</small></div>
-        <div class="paper-history-progress"><strong>{{ paper.has_grading ? `${paper.earned_score} / ${paper.total_score} 分` : `${paper.answered_count}/${paper.question_count}` }}</strong><small>{{ paper.status.replace('_', ' ') }}</small></div>
+        <div class="paper-history-progress"><strong :class="{ 'score-fraction': paper.has_grading }">{{ paper.has_grading ? `${paper.earned_score} / ${paper.total_score} 分` : `${paper.answered_count}/${paper.question_count}` }}</strong><small>{{ paper.status.replace('_', ' ') }}</small></div>
         <div class="paper-history-actions">
           <RouterLink v-if="paper.status !== 'completed' && !paper.has_grading" :to="`/papers/${paper.uuid}`">{{ paper.status === 'in_progress' ? '继续作答' : '开始作答' }}</RouterLink>
           <RouterLink v-else :to="`/papers/${paper.uuid}/review`">{{ paper.has_grading ? '批阅记录' : `${paper.earned_score} 分 · 查看记录` }}</RouterLink>
@@ -61,6 +62,7 @@ onMounted(async () => {
 
 
 <style scoped>
+.paper-history-progress .score-fraction { color:var(--score-ink, #c62828); font-family:SimHei,"PingFang SC","Microsoft YaHei",sans-serif; font-weight:800; font-size:16px; }
 .paper-history-list { min-width:0; border:0; border-top:1px solid var(--border-subtle); border-radius:0; background:transparent; }
 .paper-history-row { min-height: 66px; padding: 11px 14px; border-bottom: 1px solid var(--border-subtle); display: grid; grid-template-columns: 80px minmax(0, 1fr) 90px auto; align-items: center; gap: 14px; }
 .paper-history-row:last-child { border-bottom: 0; }

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import '../lib/examScores.css'
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { api } from '../lib/api'
 import type { ExamPaper, ExamPaperItem } from '../types'
@@ -72,15 +73,15 @@ onUnmounted(flushNote)
   <section class="page paper-self-evaluation">
     <header class="evaluation-header">
       <div><RouterLink to="/papers">← 我的套卷</RouterLink><h1>自评</h1><p>{{ paper?.title }}</p></div>
-      <div class="evaluation-total" aria-live="polite"><strong>{{ Number(total.toFixed(2)) }}</strong><span> / {{ maximum }} 分</span></div>
+      <div class="evaluation-total" aria-live="polite"><strong>{{ Number(total.toFixed(2)) }}/{{ maximum }}</strong><span> 分</span></div>
     </header>
     <p class="evaluation-help">小题点选得满分，再点取消；未选为 0 分。大题填写得分，点击题框可记备注。</p>
     <p class="save-status" role="status">{{ pending ? '保存中…' : error ? '' : '自动保存到账号' }}</p>
     <p v-if="error" role="alert" class="error-state">{{ error }} <button @click="retry">重试保存</button></p>
     <div v-if="paper" class="score-grid" aria-label="试卷逐题自评">
       <template v-for="item in paper.items" :key="item.position">
-        <button v-if="isSmall(item)" class="score-box small" :class="{ checked: item.self_score === item.score, selected: activePosition === item.position }" :aria-pressed="item.self_score === item.score" :aria-label="`第${item.position}题，${item.self_score || 0}/${item.score}分`" @click="toggle(item)"><span>{{ item.position }}</span><small>{{ item.self_score === item.score ? '✓' : '—' }}</small></button>
-        <div v-else class="score-box large" :class="{ selected: activePosition === item.position }" @click="select(item)"><label :for="`self-score-${item.position}`">{{ item.position }}<small> / {{ item.score }}</small></label><input :id="`self-score-${item.position}`" :value="item.self_score ?? ''" type="number" inputmode="decimal" min="0" :max="item.score" step="0.5" placeholder="0" :aria-label="`第${item.position}题得分，满分${item.score}分`" @change="updateScore(item, ($event.target as HTMLInputElement).value)" @focus="select(item)" /></div>
+        <button v-if="isSmall(item)" class="score-box small" :class="{ checked: item.self_score === item.score, selected: activePosition === item.position }" :aria-pressed="item.self_score === item.score" :aria-label="`第${item.position}题，${item.self_score || 0}/${item.score}分`" @click="toggle(item)"><span>{{ item.position }}</span><small class="score-value">{{ item.self_score ?? 0 }}/{{ item.score }}</small></button>
+        <div v-else class="score-box large" :class="{ selected: activePosition === item.position }" @click="select(item)"><label :for="`self-score-${item.position}`">{{ item.position }}</label><input :id="`self-score-${item.position}`" :value="item.self_score ?? ''" type="number" inputmode="decimal" min="0" :max="item.score" step="0.5" placeholder="0" :aria-label="`第${item.position}题得分，满分${item.score}分`" @change="updateScore(item, ($event.target as HTMLInputElement).value)" @focus="select(item)" /><span class="score-value">/{{ item.score }}</span></div>
       </template>
     </div>
     <section v-if="active" class="evaluation-note">
@@ -114,4 +115,6 @@ onUnmounted(flushNote)
 .evaluation-note header { display:flex; justify-content:space-between; gap:12px; align-items:center; margin-bottom:8px; }
 .evaluation-note textarea { box-sizing:border-box; width:100%; padding:12px; font:inherit; color:var(--text-primary); background:var(--surface-subtle); border:1px solid var(--border-subtle); border-radius:var(--radius-control); resize:vertical; }
 @media(max-width:700px) { .score-grid { grid-template-columns:repeat(6,minmax(0,1fr)); } .evaluation-total strong { font-size:30px; } .evaluation-header { gap:8px; } .score-box { padding:4px; min-height:64px; } .score-box.large { gap:4px; } .evaluation-note header { font-size:13px; } }
+
+.evaluation-total strong, .score-box input, .score-box .score-value { color:var(--score-ink); font-family:SimHei,"PingFang SC","Microsoft YaHei",sans-serif; font-weight:800; }
 </style>

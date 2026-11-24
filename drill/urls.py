@@ -1,4 +1,5 @@
 from django.urls import path
+from .exam_grading_views import PaperGradingItemView
 from .search.suggestions import QuestionSearchSuggestionsView
 from .exam_type_views import QuestionExamTypeView
 from .learning_shares import manage_learning_shares, revoke_learning_share
@@ -80,6 +81,7 @@ urlpatterns = [
     path('papers/blueprints/', DrillBlueprintListView.as_view(), name='drill_blueprints'),
     path('papers/', DrillPaperListCreateView.as_view(), name='drill_papers'),
     path('papers/<uuid:paper_uuid>/', DrillPaperDetailView.as_view(), name='drill_paper_detail'),
+    path('papers/<uuid:paper_uuid>/items/<int:position>/grading/', PaperGradingItemView.as_view(), name='paper_grading_item'),
     path('papers/<uuid:paper_uuid>/review/', DrillPaperReviewView.as_view(), name='drill_paper_review'),
     path('papers/<uuid:paper_uuid>/share/', DrillPaperShareView.as_view(), name='drill_paper_share'),
     path(

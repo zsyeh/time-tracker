@@ -1,0 +1,4 @@
+/* Scores only: keep question numbering and mastery status colors unchanged. */
+.paper-review-page, .papers-page, .paper-self-evaluation { --score-ink:#c62828; }
+[data-color-scheme="dark"] .paper-review-page, [data-color-scheme="dark"] .papers-page, [data-color-scheme="dark"] .paper-self-evaluation { --score-ink:#ff8585; }
+

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import '../lib/examScores.css'
 import { uiText } from '../lib/uiText'
 import { useRoute } from 'vue-router'
 import { buildListContext, previewLocation } from '../lib/listContext'
@@ -52,7 +53,7 @@ onMounted(async () => {
     <p v-if="error" class="error-state">{{ uiText(error) }}</p>
     <PaperGradingReport v-if="paper?.grading && route.query.mode !== 'all'" :paper="paper" />
     <article v-for="item in paper?.grading && route.query.mode !== 'all' ? [] : paper?.items" :key="item.position" class="paper-review-item">
-      <header><span>{{ item.position }}</span><div><strong>{{ item.question.display_label }}</strong><small>{{ item.question.document }} · {{ item.question.topic }}</small></div><em>{{ item.self_score != null ? `${item.self_score} / ` : '' }}{{ item.score }} pts</em></header>
+      <header><span>{{ item.position }}</span><div><strong>{{ item.question.display_label }}</strong><small>{{ item.question.document }} · {{ item.question.topic }}</small></div><em :class="{ 'score-fraction': item.self_score != null }">{{ item.self_score != null ? `${item.self_score} / ` : '' }}{{ item.score }} pts</em></header>
       <PaperQuestionContent :question="item.question" />
       <section class="paper-your-answer"><span>Your answer</span><p>{{ item.user_answer || 'No answer recorded.' }}</p></section>
       <details class="paper-solution"><summary>查看答案贴图</summary><div v-if="item.question.answer_assets?.length" class="paper-question-assets"><img v-for="asset in item.question.answer_assets" :key="asset.id" :src="withWorkspacePrefix(asset.url)" :width="asset.width" :height="asset.height" loading="lazy" decoding="async" alt="Answer" /></div><p v-if="!item.question.answer_markdown && !item.question.answer_assets?.length">No source answer is currently available.</p></details>
@@ -65,6 +66,7 @@ onMounted(async () => {
 
 
 <style scoped>
+.paper-review-item > header em.score-fraction { color:var(--score-ink, #c62828); font-family:SimHei,"PingFang SC","Microsoft YaHei",sans-serif; font-weight:800; font-size:16px; }
 .paper-header-actions a { color: var(--text-secondary); text-decoration: none; font-size: 12px; }
 .paper-header-actions a:hover { color: var(--text-primary); }
 .paper-header-actions a, .paper-header-actions button { padding: 6px 8px; border:0; border-radius: var(--radius-sm); color: var(--text-secondary); background: transparent; text-decoration: none; font-size: 12px; cursor: pointer; }
