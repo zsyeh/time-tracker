@@ -14,11 +14,11 @@ async function mount(prepare?: () => Promise<void>) {
   host = document.createElement('div'); document.body.append(host)
   const opened = vi.fn()
   app = createApp(FullscreenReader, { title: 'Question', prepare, images: [{ src: '/first', width: 600, height: 900 }, { src: '/second', width: 600, height: 900 }], onOpened: opened })
-  app.mount(host); await flush()
+  const vm = app.mount(host) as unknown as { showFeedback:(message:string)=>void;flashShortcut:(action:'favorite'|'review')=>void }; await flush()
   const dialog = document.querySelector<HTMLDialogElement>('.fullscreen-reader')!
   dialog.showModal = function () { this.open = true }
   dialog.close = function () { this.open = false; this.dispatchEvent(new Event('close')) }
-  return { dialog, opened }
+  return { dialog, opened, vm }
 }
 it('opens a modal with ordered pages, locks background scrolling and restores it on close', async () => {
   const { dialog, opened } = await mount()
@@ -125,4 +125,25 @@ it('ignores a queued native close event after a rapid reopen', async()=>{
  expect(dialog.querySelectorAll('img')).toHaveLength(2)
  dialog.querySelector<HTMLButtonElement>('.reader-close')!.click();await flush()
  expect(document.body.style.overflow).toBe('')
+})
+
+it('expires repeated success and shortcut feedback without changing the reader layout', async () => {
+ const {dialog,vm}=await mount()
+ host.querySelector('button')!.click();await flush();vi.useFakeTimers()
+ try {
+  vm.showFeedback('Added to favorites');await flush()
+  expect(dialog.querySelector('.reader-toast')?.textContent).toBe('Added to favorites')
+  await vi.advanceTimersByTimeAsync(800);vm.showFeedback('Added to favorites')
+  await vi.advanceTimersByTimeAsync(700);await flush()
+  expect(dialog.querySelector('.reader-toast')?.textContent).toBe('Added to favorites')
+  await vi.advanceTimersByTimeAsync(800);await flush()
+  expect(dialog.querySelector('.reader-toast')).toBeNull()
+  vm.flashShortcut('favorite');await flush()
+  expect(dialog.querySelector('.reader-toast')?.textContent).toBe('F')
+  await vi.advanceTimersByTimeAsync(750);await flush()
+  expect(dialog.querySelector('.reader-toast')).toBeNull()
+  vm.showFeedback('Saved');await flush()
+  dialog.querySelector<HTMLButtonElement>('.reader-close')!.click();await flush()
+  expect(dialog.querySelector('.reader-toast')).toBeNull()
+ } finally {vi.useRealTimers()}
 })

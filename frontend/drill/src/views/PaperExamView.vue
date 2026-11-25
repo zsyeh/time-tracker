@@ -104,6 +104,7 @@ async function toggleFavorite() {
     const state = await api<{ is_favorite: boolean; version: number }>(`/api/drill/questions/${question.uuid}/state/`, {
       method: 'POST', body: JSON.stringify({ is_favorite: !question.is_favorite, version: question.state_version || 1 }),
     })
+    reader.value?.showFeedback(state.is_favorite ? '已收藏' : '已取消收藏')
     question.is_favorite = state.is_favorite
     question.state_version = state.version
     patchQuestionState(question.uuid, { is_favorite: state.is_favorite, state_version: state.version })
@@ -148,6 +149,7 @@ onMounted(async () => {
     preview:()=>{reader.value?.close();void save();return router.push(previewLocation(context.value))},
     answer:()=>showAnswer(true),fullscreen:toggleKeyboardFullscreen,exit:toggleKeyboardFullscreen,
   },{blocked:()=>!paper.value || replacing.value || ending.value || markSaving.value,
+     feedback:action=>reader.value?.flashShortcut(action),
      error:reason=>{error.value=(reason as Error).message}})
 
   try {
@@ -187,7 +189,7 @@ onUnmounted(() => { removeShortcuts?.();window.clearInterval(timer); window.clea
           <button :disabled="!canRevealAnswers" @click="showAnswer()">{{ answer ? '返回题目' : '查看答案' }}</button>
           <button @click="reader?.open()">全屏查看</button>
           <RouterLink v-if="canRevealAnswers" :to="practiceLocation()" :aria-disabled="replacing" :tabindex="replacing ? -1 : undefined" @click="replacing ? $event.preventDefault() : save()">标准练习 →</RouterLink>
-          <button :aria-pressed="!!item.question.is_favorite" :disabled="favoriteSaving || replacing" @click="toggleFavorite">{{ item.question.is_favorite ? '已收藏' : '收藏' }}</button>
+          <button data-action="favorite" :aria-pressed="!!item.question.is_favorite" :disabled="favoriteSaving || replacing" @click="toggleFavorite">{{ item.question.is_favorite ? '已收藏' : '收藏' }}</button>
           <button :disabled="replacing || markSaving" @click="flag">待复习 (N)</button><button :disabled="replacing || markSaving" @click="markExam('mastered')">掌握 (M)</button><button :disabled="markSaving || !markHistory.length" @click="undoMark">撤销标记 (U)</button>
           <button :disabled="replacing || sharing || favoriteSaving" @click="replaceQuestion">{{ replacing ? '更换中…' : '更换本题' }}</button>
         </div>
@@ -206,7 +208,7 @@ onUnmounted(() => { removeShortcuts?.();window.clearInterval(timer); window.clea
         <button :disabled="replacing || index === paper.items.length - 1" @click="move(index + 1)">下一题</button>
       </footer>
       <FullscreenReader ref="reader" hide-trigger :title="`第 ${item.position} 题 · ${answer ? '答案' : '题目'}`" :images="images" :content-key="`${item.question.uuid}-${answer}`">
-        <template #actions><button :disabled="replacing || index === 0" @click="move(index - 1)">上一题</button><button :disabled="replacing || index === paper.items.length - 1" @click="move(index + 1)">下一题</button><button :aria-pressed="!!item.question.is_favorite" :disabled="favoriteSaving || replacing" @click="toggleFavorite">{{ item.question.is_favorite ? '已收藏' : '收藏' }}</button><button :disabled="replacing || sharing || favoriteSaving" @click="replaceQuestion">{{ replacing ? '更换中…' : '更换本题' }}</button></template>
+        <template #actions><button :disabled="replacing || index === 0" @click="move(index - 1)">上一题</button><button :disabled="replacing || index === paper.items.length - 1" @click="move(index + 1)">下一题</button><button data-action="favorite" :aria-pressed="!!item.question.is_favorite" :disabled="favoriteSaving || replacing" @click="toggleFavorite">{{ item.question.is_favorite ? '已收藏' : '收藏' }}</button><button :disabled="replacing || sharing || favoriteSaving" @click="replaceQuestion">{{ replacing ? '更换中…' : '更换本题' }}</button></template>
         <template #recovery><p v-if="replaceError || error" class="replacement-feedback" role="alert">{{ replaceError || error }}</p></template>
       </FullscreenReader>
     </template>

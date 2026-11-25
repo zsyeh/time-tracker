@@ -27,3 +27,12 @@ it('unregisters on leaving the page and ignores already handled events',()=>{
  const event=new KeyboardEvent('keydown',{key:'f',bubbles:true,cancelable:true});event.preventDefault();document.body.dispatchEvent(event)
  remove();key('f');expect(favorite).not.toHaveBeenCalled()
 })
+
+it('only flashes accepted commands and never lets feedback interrupt the action',()=>{
+ const favorite=vi.fn(),feedback=vi.fn(()=>{throw new Error('animation unavailable')})
+ remove=installStudyShortcuts({favorite},{feedback})
+ const input=document.createElement('input');document.body.append(input);key('f',input)
+ expect(feedback).not.toHaveBeenCalled()
+ expect(()=>key('f')).not.toThrow()
+ expect(favorite).toHaveBeenCalledOnce();expect(feedback).toHaveBeenCalledWith('favorite')
+})

@@ -3,6 +3,7 @@ import { computed, nextTick, onBeforeUnmount, ref, watch } from 'vue'
 import MarkdownAnswer from './MarkdownAnswer.vue'
 import ReaderPracticeActions from './ReaderPracticeActions.vue'
 import type { ReaderPracticeAction, ReaderPracticeControls } from '../lib/readerPractice'
+import type { StudyShortcut } from '../lib/studyShortcuts'
 import { typeText } from '../lib/examTypes'
 
 type Page = { src: string; width?: number; height?: number }
@@ -13,6 +14,31 @@ const scroller = ref<HTMLElement | null>(null)
 const opened = ref(false)
 const loading = ref(false)
 const loadError = ref('')
+const toast = ref(''), shortcut = ref('')
+let toastTimer = 0, shortcutTimer = 0
+function clearFeedback() {
+  window.clearTimeout(toastTimer); window.clearTimeout(shortcutTimer)
+  toast.value = ''; shortcut.value = ''
+}
+function showFeedback(message: string) {
+  window.clearTimeout(toastTimer)
+  if (!opened.value || !message) return
+  toast.value = message
+  toastTimer = window.setTimeout(() => { toast.value = '' }, 1200)
+}
+function flashShortcut(action: StudyShortcut) {
+  if (!opened.value) return
+  const keys: Record<StudyShortcut, string> = { previous:'←',next:'→',favorite:'F',review:'N',mastered:'M',undo:'U',answer:'A',preview:'Q',fullscreen:'P',exit:'X' }
+  shortcut.value = keys[action]
+  window.clearTimeout(shortcutTimer)
+  shortcutTimer = window.setTimeout(() => { shortcut.value = '' }, 420)
+  const button = dialog.value?.querySelector<HTMLButtonElement>(`[data-action="${action}"]`)
+  if (button?.animate && !window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) {
+    button.getAnimations().forEach(animation => animation.cancel())
+    button.animate([{ backgroundColor:'transparent' },{ backgroundColor:'rgba(128,128,128,.18)' },{ backgroundColor:'transparent' }], {duration:420,easing:'ease-in-out'})
+  }
+}
+watch(() => props.controls?.feedback, message => { if (message) showFeedback(message) })
 const zoom = ref(100)
 const page = ref(1)
 const failed = ref<Record<number, boolean>>({})
@@ -27,6 +53,7 @@ watch(() => props.contentKey, () => {
   if (scroller.value) { scroller.value.scrollTop = 0; scroller.value.scrollLeft = 0 }
 }, { flush: 'post' })
 function restore() {
+  clearFeedback()
   loadSequence += 1
   const wasOpen = opened.value
   opened.value = false
@@ -94,8 +121,8 @@ function src(item: Page, index: number) {
   return item.src + (retry ? `${item.src.includes('?') ? '&' : '?'}reader_retry=${retry}` : '')
 }
 function retry(index: number) { retries.value[index] = (retries.value[index] || 0) + 1; failed.value[index] = false }
-onBeforeUnmount(() => { if (dialog.value?.open) dialog.value.close(); if (previousOverflow !== null) restore() })
-defineExpose({ open, close, isOpen: computed(() => opened.value) })
+onBeforeUnmount(() => { clearFeedback(); if (dialog.value?.open) dialog.value.close(); if (previousOverflow !== null) restore() })
+defineExpose({ open, close, showFeedback, flashShortcut, isOpen: computed(() => opened.value) })
 </script>
 
 <template>
@@ -118,7 +145,8 @@ defineExpose({ open, close, isOpen: computed(() => opened.value) })
           </div>
           <button type="button" class="reader-close" autofocus :aria-label="typeText('关闭全屏', 'Close full screen')" @click="close">✕</button>
         </header>
-        <p v-if="controls?.error || controls?.feedback" class="reader-feedback" :class="{ error: controls?.error }" :role="controls?.error ? 'alert' : 'status'">{{ controls?.error || controls?.feedback }}</p>
+        <p v-if="controls?.error" class="reader-feedback error" role="alert">{{ controls.error }}</p>
+        <Transition name="reader-toast"><p v-if="toast || shortcut" class="reader-toast" :class="{ 'is-key': !toast }" role="status" aria-live="polite">{{ toast || shortcut }}</p></Transition>
         <slot name="recovery" />
         <div class="reader-overlay-host" data-overlay-host />
         <div ref="scroller" class="reader-scroll" tabindex="0" :aria-busy="pending || syncing || loading" @scroll.passive="trackPage">
@@ -168,7 +196,13 @@ defineExpose({ open, close, isOpen: computed(() => opened.value) })
 .reader-document figcaption { margin-top: 4px; }
 .reader-markdown { max-width: none; margin: 0 auto; padding: 16px; }
 .reader-retry { width: 100%; min-height: 100px; border: 1px dashed var(--border-default); border-radius: 6px; color: var(--text-primary); background: var(--bg-surface); cursor: pointer; }
-.reader-feedback { flex: none; margin: 0; padding: 8px 12px; color: var(--success); background: var(--bg-surface); font-size: 13px; }
+.reader-toast { position:absolute; z-index:5; left:50%; bottom:calc(env(safe-area-inset-bottom) + 20px); transform:translateX(-50%); width:max-content; max-width:calc(100% - 32px); margin:0; padding:8px 12px; border-radius:8px; color:var(--text-primary); background:var(--surface-elevated, var(--bg-surface)); box-shadow:0 2px 12px #0002; font-size:13px; line-height:1.4; pointer-events:none; }
+.reader-toast.is-key { color:var(--text-secondary); font-size:12px; min-width:28px; text-align:center; }
+.reader-toast-enter-active { transition:opacity 100ms ease-out; }
+.reader-toast-leave-active { transition:opacity 160ms ease-in; }
+.reader-toast-enter-from, .reader-toast-leave-to { opacity:0; }
+@media(prefers-reduced-motion:reduce) { .reader-toast-enter-active, .reader-toast-leave-active { transition:none; } }
+.reader-feedback { flex: none; margin: 0; padding: 8px 12px; color: var(--text-primary); background: var(--bg-surface); font-size: 13px; }
 .reader-feedback.error { color: var(--danger); }
 @media (pointer: coarse) { .fullscreen-trigger { width: 44px; min-height: 44px; } .reader-toolbar button, .reader-toolbar .reader-close { min-width: 44px; min-height: 44px; } }
 @media (max-width: 640px) {

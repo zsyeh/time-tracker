@@ -1038,8 +1038,8 @@ async function record(result: 'correct' | 'review' | 'reset', omitTiming = false
     diagnosisSaveState.value = result === 'correct' || result === 'review' ? 'saved' : 'idle'
     if (result === 'correct' || result === 'review') {
       window.clearTimeout(actionFeedbackTimer)
-      actionFeedback.value = result === 'correct' ? '已保存：掌握状态与本轮诊断' : '已保存：待复习状态与本轮诊断'
-      actionFeedbackTimer = window.setTimeout(() => { actionFeedback.value = '' }, 1800)
+      actionFeedback.value = result === 'correct' ? typeText('已标记掌握', 'Marked mastered') : typeText('已标记待复习', 'Marked for review')
+      actionFeedbackTimer = window.setTimeout(() => { actionFeedback.value = '' }, 1200)
     }
     noteSaveState.value = response.note_conflict ? 'error' : 'idle'
     if(noteToPreserve!==null){note.value=noteToPreserve;cacheNoteDraft()}
@@ -1219,6 +1219,11 @@ async function saveUserState(update: Partial<Pick<UserStateResponse, 'is_favorit
     question.value.is_favorite = response.is_favorite
     question.value.review_later = response.review_later
     question.value.state_version = response.version
+    if (update.is_favorite !== undefined) {
+      window.clearTimeout(actionFeedbackTimer)
+      actionFeedback.value = response.is_favorite ? typeText('已收藏', 'Added to favorites') : typeText('已取消收藏', 'Removed from favorites')
+      actionFeedbackTimer = window.setTimeout(() => { actionFeedback.value = '' }, 1200)
+    }
   } catch (reason) {
     if (props.uuid !== uuid) return
     if (reason instanceof ApiError && reason.status === 409 && question.value) {
@@ -1440,6 +1445,7 @@ onMounted(() => {
     fullscreen: toggleKeyboardFullscreen,
     exit: toggleKeyboardFullscreen,
   }, { blocked: () => !question.value || saving.value || nextLoading.value || readerNavigating.value,
+       feedback: action => questionReader.value?.flashShortcut(action),
        error: reason => { error.value = (reason as Error).message } })
   removeKeyboardViewport = installPracticeKeyboardViewport()
   window.addEventListener('pageshow', refreshAfterPageRestore)
@@ -1493,7 +1499,7 @@ onBeforeRouteLeave(() => {
               </div>
       </template>
     </FullscreenReader>
-    <p v-if="actionFeedback" class="action-feedback" role="status">✓ {{ uiText(actionFeedback) }}</p>
+    <Transition name="action-toast"><p v-if="actionFeedback" class="action-feedback" role="status">{{ uiText(actionFeedback) }}</p></Transition>
     <p v-if="pageTurnCopyMessage" class="page-turn-copy-feedback" :class="{ error: pageTurnCopyFailed }" role="status">{{ uiText(pageTurnCopyMessage) }}</p>
     <nav class="question-topbar" :aria-label="uiText('题目导航')">
       <slot name="navigation" />
@@ -1725,6 +1731,10 @@ onBeforeRouteLeave(() => {
 .page-turn-settings-grid label:has(input:checked) { color: var(--text-primary); background: var(--surface-selected, var(--bg-surface-active)); }
 .page-turn-settings-grid input { flex: none; width: 16px; height: 16px; margin: 0; accent-color: var(--accent); }
 .page-turn-settings > small { color: var(--text-secondary); font-size: 12px; line-height: 1.4; }
+.action-toast-enter-active { transition:opacity 100ms ease-out; }
+.action-toast-leave-active { transition:opacity 160ms ease-in; }
+.action-toast-enter-from, .action-toast-leave-to { opacity:0; }
+@media(prefers-reduced-motion:reduce) { .action-toast-enter-active, .action-toast-leave-active { transition:none; } }
 .action-feedback { position: fixed; left: 50%; bottom: calc(env(safe-area-inset-bottom) + 16px); z-index: 80; max-width: calc(100vw - 24px); margin: 0; padding: 12px 16px; transform: translateX(-50%); border: 1px solid var(--border-subtle); border-radius: 8px; color: var(--text-primary); background: var(--surface-elevated, var(--bg-surface)); box-shadow: 0 4px 16px #0002; font-size: 14px; pointer-events: none; }
 .asset-load-error { display: flex; align-items: center; justify-content: center; flex-wrap: wrap; gap: 12px; min-height: 110px; padding: 16px; border: 1px dashed var(--danger); border-radius: 6px; color: var(--danger); background: var(--bg-surface); }
 .asset-load-error button { min-height: 44px; padding: 8px 12px; border: 0; border-radius: 6px; color: var(--text-primary); background: var(--surface-hover, var(--bg-sidebar)); cursor: pointer; }
