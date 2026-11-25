@@ -1,0 +1,43 @@
+{
+  "paper_id": 156,
+  "paper_uuid": "59cfd094-f5b6-4e46-b400-b020fc56ba43",
+  "created": true,
+  "count": 57,
+  "idempotent": true,
+  "preview_batches": [
+    50,
+    7
+  ],
+  "ordered": true,
+  "neighbor_verified_index": 30,
+  "account_isolation": true,
+  "learning_and_original_exam_unchanged": true,
+  "description": "首轮模拟纠错后的八模块专练；建议总投入约5小时，可按掌握情况提前结束，不是限时考试。\n1–6 场效应管：识别JFET/NMOS/PMOS及增强/耗尽型，写出工作区条件；含组合判断与静态点。目标15题，原图及答案检查后只有6道合适题，缺9道，不用BJT题凑数。\n7–16 放大电路频率响应：先判断低频/高频及电容作用，再求等效电阻、时间常数与截止频率。\n17–22 四种系统响应：标明初始状态与输入的贡献，区分自然/强迫分量，不能把自由响应简单等同于零输入响应。\n23–30 动态电路：每题写全初值、终值、时间常数与t>0完整响应，不停在0+。\n31–36 微分方程与初始条件：从特解、齐次项和约束确定未知量，含初始条件反求。\n37–46 傅里叶级数与对称性：优先只判直流、正弦/余弦及奇偶次谐波；长题的完整积分和后续系统计算选做，不要求20分钟算完所有小问。\n47–51 耦合电感与变压器：同名端、参考方向、阻抗折算与谐振应用；包含理想变压器巩固题。\n52–57 计数器与奈奎斯特：前3题状态/清零时序，后3题频谱平移或时域抽样，明确RB与带宽的区别。\n本套57道独立题目，多小问不拆算题量。含少量原模拟题作纠错复核；不修改原考试分数，不因推送自动标记掌握、待复习或计入做题。",
+  "errata": [
+    {
+      "question_id": 5673,
+      "erratum_id": 93,
+      "created": true
+    },
+    {
+      "question_id": 5865,
+      "erratum_id": 94,
+      "created": true
+    },
+    {
+      "question_id": 5703,
+      "erratum_id": 95,
+      "created": true
+    },
+    {
+      "question_id": 5881,
+      "erratum_id": 96,
+      "created": true
+    },
+    {
+      "question_id": 5883,
+      "erratum_id": 97,
+      "created": true
+    }
+  ]
+}

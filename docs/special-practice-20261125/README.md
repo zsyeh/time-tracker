@@ -7,7 +7,7 @@
 - Agent CLI 推送固定顺序题单，幂等且工作区/账号隔离。开始专练直接复用 QuestionView 全部成熟功能、原答案和学习状态；本卷顺序上一/下一、滚动预览、返回题单正常。不新建作答协议、不引入考试倒计时/答案锁；推送不计入作答。当前显示最近100份题单。
 - 复用 ExamPaper/Item 做成员关系容器，专用 inactive weak blueprint（版本30000）；不进入原考试列表，不新建数据库表或迁移。首次真实推送按工作区创建容器模板与固定成员，题目内容不改。
 - 实际接入文件：`drill/special_practice.py`、`push_special_practice.py`、`drill/urls.py`/`views.py`，前端 `SpecialPracticeView.vue`、App/main/listContext；服务端SPA/PWA白名单与前后端sidebar manifest/labels，现有共享偏好模型保持不变。
-- Agent后续使用：[推送工作流](AGENT_WORKFLOW.md)。用户复盘：[2026-11-25](POST_REVIEW_20261125.md)。未自动选取或推送66道题。
+- Agent后续使用：[推送工作流](AGENT_WORKFLOW.md)。用户复盘：[2026-11-25](POST_REVIEW_20261125.md)。首次交付未自动选题；随后用户授权组题，已推送[首轮57题八模块专练](first-review-set/README.md)，不把题量不足凑成66题。
 
 ## 复盘入库
 
