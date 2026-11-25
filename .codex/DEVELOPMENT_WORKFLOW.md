@@ -88,3 +88,8 @@
 - 2026-11-24批阅导航实证：URL与选中题号正确不足以证明跳转正常，必须断言目标内容真实视口坐标；同时检查刷新/异步Markdown布局，以及“整卷回顾”等入口实际展示的内容集合。由内容渲染完成事件+nextTick定位真实锚点，不用任意延时掩盖加载时序。先做这一条浏览器纵切，避免先发布后发现滚顶/假入口。
 
 - 2026-11-25侧栏新增ID：统一更新server SIDEBAR_IDS、shared schema/labels，旧账号配置归一化要补入新ID；共享schema变化需同时构建Drill与Timer。生成的appearance-bootstrap除两份dist还需复制到staticfiles/tracker/ui及gzip，登录/管理模板使用该路径；不可只更新源文件。HTML bootstrap测试不能与Vite清空同一dist并行；借用TestCase fixture用module导入，避免发现并误跑整套旧测试类。PG PositiveSmallInteger实际smallint上限32767，保留版本号不能用60000。
+
+## 6. 编号等小型可见信息变更（2026-11-25复盘）
+
+- 先检查普通/compact/mobile/fullscreen下的隐藏规则；编号不要只放进已被隐藏的eyebrow或strong。先确认实际CSS可见，再发布一次。
+- CSS用精确区块编辑，避免替换reader-count等子串时误生成更高优先级隐藏规则。函数测试通过不能代替普通页与小屏全屏的可见性截图；失败后只复测失败路径。
