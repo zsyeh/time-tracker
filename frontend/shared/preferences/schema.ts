@@ -4,8 +4,8 @@ export const fontScales = { compact: .9, small: .95, default: 1, large: 1.05, 'e
 export type FontSize = keyof typeof fontScales
 export const sidebarIds = {
   timer: ['today','trends','sessions','issues','subject-math','subject-english','subject-major','subject-training'],
-  drill: ['selected-heatmap','insight','progress','practice','diagnostics','activity','book-activity','heatmap','papers','favorites','review-later','feel','errata'],
-  ei: ['core-heatmap','insight','progress','cockpit','practice','diagnostics','circuit-selected','signal-selected','signal-formulas','analog-selected','digital-selected','communication-selected','selected-pdf-pages','activity','book-activity','heatmap','papers','favorites','review-later','feel','errata'],
+  drill: ['selected-heatmap','insight','progress','special-practice','practice','diagnostics','activity','book-activity','heatmap','papers','favorites','review-later','feel','errata'],
+  ei: ['core-heatmap','insight','progress','cockpit','special-practice','practice','diagnostics','circuit-selected','signal-selected','signal-formulas','analog-selected','digital-selected','communication-selected','selected-pdf-pages','activity','book-activity','heatmap','papers','favorites','review-later','feel','errata'],
 } as const
 export type SidebarConfig = { order: string[]; hidden: string[]; collapsed_groups: string[] }
 export type FilterPreset = { id: string; name: string; query: Record<string,string> }
@@ -30,7 +30,7 @@ export type PreferenceKey = keyof PreferenceValues
 export type PreferenceSnapshot = { schema_version: 1; revision: number; values: PreferenceValues; field_revisions: Partial<Record<PreferenceKey,number>>; updated_at?: string|null }
 export function defaultSidebar(workspace: Workspace): SidebarConfig {
   const ids = [...sidebarIds[workspace]]
-  return { order: ids, hidden: ids.slice(workspace === 'drill' ? 3 : 4), collapsed_groups: [] }
+  return { order: ids, hidden: ids.slice(workspace === 'drill' ? 3 : 4).filter(id=>id!=='special-practice'), collapsed_groups: [] }
 }
 export function preferenceDefaults(): PreferenceValues {
   return { appearance:'system', accent:'blue', font:'small', language:'en',

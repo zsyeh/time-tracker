@@ -31,10 +31,10 @@ MAX_REVISION = 2 ** 53 - 1  # Keep JSON integers exact for browser clients.
 SIDEBAR_IDS = {
     'timer': ('today', 'trends', 'sessions', 'issues', 'subject-math',
               'subject-english', 'subject-major', 'subject-training'),
-    'drill': ('selected-heatmap', 'insight', 'progress', 'practice', 'diagnostics',
+    'drill': ('selected-heatmap', 'insight', 'progress', 'special-practice', 'practice', 'diagnostics',
               'activity', 'book-activity', 'heatmap', 'papers', 'favorites',
               'review-later', 'feel', 'errata'),
-    'ei': ('core-heatmap', 'insight', 'progress', 'cockpit', 'practice', 'diagnostics',
+    'ei': ('core-heatmap', 'insight', 'progress', 'cockpit', 'special-practice', 'practice', 'diagnostics',
            'circuit-selected', 'signal-selected', 'signal-formulas', 'analog-selected',
            'digital-selected', 'communication-selected', 'selected-pdf-pages',
            'activity', 'book-activity', 'heatmap', 'papers', 'favorites',
@@ -95,7 +95,7 @@ def preference_defaults():
     for workspace, ids in SIDEBAR_IDS.items():
         first_tool = 4 if workspace in ('timer', 'ei') else 3
         defaults['sidebar.' + workspace] = {
-            'order': list(ids), 'hidden': list(ids[first_tool:]), 'collapsed_groups': [],
+            'order': list(ids), 'hidden': [item for item in ids[first_tool:] if item != 'special-practice'], 'collapsed_groups': [],
         }
     return defaults
 

@@ -722,7 +722,7 @@ class DrillBlueprintListView(APIView):
 
 class DrillPaperListCreateView(APIView):
     def get(self, request):
-        papers = ExamPaper.objects.filter(user=request.user, blueprint__subject='ei' if request_workspace(request) == 'ei' else 'math2').select_related('blueprint').annotate(
+        papers = ExamPaper.objects.filter(user=request.user, blueprint__subject='ei' if request_workspace(request) == 'ei' else 'math2').exclude(blueprint__code__startswith='special-practice-').select_related('blueprint').annotate(
             question_count=Count('items'),
             answered_count=Count('items', filter=~Q(items__result='unanswered')),
             correct_count=Count('items', filter=Q(items__result='correct')),

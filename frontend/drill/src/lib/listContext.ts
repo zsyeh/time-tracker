@@ -9,7 +9,7 @@ export type PreviewPage={count:number;offset:number;limit:50;has_more:boolean;co
 export type PreviewAnchor=PreviewNeighbor & {offset:number;collection_version:string;scrollTop?:number}
 const filterKeys=new Set(['unattempted','past_exam','search_version','document','topic','source_category','type_group','exam_type','q','sort','status','favorite','review_later','marker','include_structure','collection','bucket','tier','kind','combined','state','scope','course','material','mode','start','end','error','has_note','queue','paper','paper_uuid','all','navigation_anchor','navigation_mode','navigation_from','insight_return','insight_list'])
 export function safeListReturn(value:unknown){
- if(typeof value!=='string'||value.length>4096||/[\u0000-\u001f]/.test(value)||!/^\/(?:practice|favorites|review-later|insight|heatmap|selected-heatmap|core-heatmap|circuit-selected|signal-selected|analog-selected|digital-selected|communication-selected|diagnostic-queue|diagnostics|cockpit|errata|papers|feel)(?:[/?#]|$)/.test(value))return '/practice'
+ if(typeof value!=='string'||value.length>4096||/[\u0000-\u001f]/.test(value)||!/^\/(?:practice|special-practice|favorites|review-later|insight|heatmap|selected-heatmap|core-heatmap|circuit-selected|signal-selected|analog-selected|digital-selected|communication-selected|diagnostic-queue|diagnostics|cockpit|errata|papers|feel)(?:[/?#]|$)/.test(value))return '/practice'
  return value
 }
 export function buildListContext(source:ListSource,query:Record<string,unknown>,returnTo:string):ListContext{

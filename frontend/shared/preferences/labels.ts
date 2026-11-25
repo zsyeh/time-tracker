@@ -1,4 +1,5 @@
 export const navigationLabels:Record<string,[string,string]>={
+ 'special-practice':['Targeted practice','专练模式'],
  today:['Today','今日'],trends:['Trends','学习趋势'],sessions:['Sessions','学习记录'],issues:['Issues','问题'],
  'subject-math':['Mathematics','数学'],'subject-english':['English','英语'],'subject-major':['Major / 892','专业课 / 892'],'subject-training':['Politics','政治'],
  'selected-heatmap':['Selected heatmap','严选题热力图'],'core-heatmap':['Core heatmap','五科核心热力图'],insight:['History','历史记录'],progress:['Learning progress','学习进度'],cockpit:['892 overview','892 总览'],practice:['Question bank','Practice 题库'],diagnostics:['Problem-solving analysis','解题能力'],

@@ -28,6 +28,7 @@ const primary=computed(()=>[
  {to:isEi?'/core-heatmap':'/selected-heatmap',label:isEi?uiText('五科核心热力图'):t('selectedHeatmap'),icon:Grid},
  {to:'/insight',label:t('insight'),icon:Clock},
  {to:'/progress',label:uiText('学习进度'),icon:TrendCharts},
+ {to:'/special-practice',label:uiText('专练模式'),icon:Collection},
  ...(isEi?[{to:'/cockpit',label:uiText('892 总览'),icon:DataAnalysis}]:[]),
 ])
 const secondary=computed(()=>[

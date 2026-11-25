@@ -12,6 +12,7 @@ from .signal_formula_review_views import SignalFormulaReviewView
 from .practice_trend_views import PracticeTrendView
 from .pdf_page_status_views import PdfPageStatusView
 from .collection_preview import CollectionPreviewView
+from .special_practice import SpecialPracticeView
 from .diagnostic_views import (
     AttemptDiagnosisView, DiagnosticDashboardView, DiagnosticQuestionListView, ReviewPlanView,
 )
@@ -70,6 +71,7 @@ urlpatterns = [
     path('progress/', DrillProgressView.as_view(), name='drill_progress'),
     path('heatmap/', DrillHeatmapView.as_view(), name='drill_heatmap'),
     path('heatmap/activity/', DrillActivityHeatmapView.as_view(), name='drill_activity_heatmap'),
+    path('special-practice/', SpecialPracticeView.as_view(), name='special_practice'),
     path('collections/', DrillCollectionView.as_view(), name='drill_collections'),
     path('errata/', DrillErratumView.as_view(), name='drill_errata'),
     path('cockpit/', EiCockpitView.as_view(), name='ei_cockpit'),

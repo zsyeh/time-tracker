@@ -8,6 +8,7 @@ import HeatmapView from './views/HeatmapView.vue'
 import ActivityView from './views/ActivityView.vue'
 import BookActivityView from './views/BookActivityView.vue'
 import PracticeView from './views/PracticeView.vue'
+import SpecialPracticeView from './views/SpecialPracticeView.vue'
 import PreviewView from './views/PreviewView.vue'
 import QuestionView from './views/QuestionView.vue'
 import PapersView from './views/PapersView.vue'
@@ -41,6 +42,7 @@ const router = createRouter({
   routes: [
     { path: '/', redirect: '/practice' },
     { path: '/preview', name: 'preview', component: PreviewView },
+    { path: '/special-practice', name: 'special-practice', component: SpecialPracticeView },
     { path: '/practice', name: 'practice', component: PracticeView },
     { path: '/progress', name: 'progress', component: ProgressView },
     { path: '/settings', name: 'settings', component: SettingsView },
