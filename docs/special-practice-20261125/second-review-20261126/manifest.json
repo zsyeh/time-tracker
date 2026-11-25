@@ -1,0 +1,300 @@
+{
+  "title": "892 第二轮漏洞修补 · 知识复测与新考点覆盖",
+  "key": "ei-second-review-20261126-v1",
+  "source_uuid": "59cfd094-f5b6-4e46-b400-b020fc56ba43",
+  "groups": [
+    {
+      "title": "旧知识复测",
+      "items": [
+        {
+          "position": 1,
+          "source_position": 13,
+          "optional": false,
+          "id": 6240,
+          "uuid": "884b6322-0d8a-5e08-9be6-6c61fbda18b5",
+          "doc": "892 · 模电例题精解",
+          "topic": "频率响应计算",
+          "label": "例4.3.4",
+          "original_exam": false
+        },
+        {
+          "position": 2,
+          "source_position": 16,
+          "optional": false,
+          "id": 5878,
+          "uuid": "b3ba322f-22a5-5412-a675-b7b7f4ab3be0",
+          "doc": "892 · 模拟电子技术",
+          "topic": "课后题 · 第 4 章",
+          "label": "课后题 4-6",
+          "original_exam": false
+        },
+        {
+          "position": 3,
+          "source_position": 15,
+          "optional": false,
+          "id": 5876,
+          "uuid": "c54b437f-9843-581d-8bc0-ccc1a1916978",
+          "doc": "892 · 模拟电子技术",
+          "topic": "课后题 · 第 4 章",
+          "label": "课后题 4-4",
+          "original_exam": false
+        },
+        {
+          "position": 4,
+          "source_position": 18,
+          "optional": false,
+          "id": 7196,
+          "uuid": "cc17933f-783e-55e1-8adf-1e853eb42f70",
+          "doc": "892 · 信号课后题",
+          "topic": "连续时间与离散时间系统的时域分析",
+          "label": "课后题 2-6",
+          "original_exam": false
+        },
+        {
+          "position": 5,
+          "source_position": 19,
+          "optional": false,
+          "id": 7197,
+          "uuid": "feec3b06-537d-59cd-b408-2e5393abd8bd",
+          "doc": "892 · 信号课后题",
+          "topic": "连续时间与离散时间系统的时域分析",
+          "label": "课后题 2-7",
+          "original_exam": false
+        },
+        {
+          "position": 6,
+          "source_position": 21,
+          "optional": false,
+          "id": 7201,
+          "uuid": "37c783d3-38eb-5860-8ac1-17e909241378",
+          "doc": "892 · 信号课后题",
+          "topic": "连续时间与离散时间系统的时域分析",
+          "label": "课后题 2-12",
+          "original_exam": false
+        }
+      ]
+    },
+    {
+      "title": "动态电路、微分方程与系统响应",
+      "items": [
+        {
+          "position": 7,
+          "source_position": 22,
+          "optional": false,
+          "id": 7204,
+          "uuid": "7fe77ad9-0709-59ae-846b-d3a099fa8cfd",
+          "doc": "892 · 信号课后题",
+          "topic": "连续时间与离散时间系统的时域分析",
+          "label": "课后题 2-20",
+          "original_exam": false
+        },
+        {
+          "position": 8,
+          "source_position": 24,
+          "optional": false,
+          "id": 7094,
+          "uuid": "8123fa00-b495-5d0b-abe0-4cd40a778b36",
+          "doc": "892 · 电路课后题",
+          "topic": "动态电路的时域分析",
+          "label": "课后题 7-7",
+          "original_exam": false
+        },
+        {
+          "position": 9,
+          "source_position": 31,
+          "optional": false,
+          "id": 7194,
+          "uuid": "5d3f5f54-43c1-5f3f-b061-e8da5e5070f2",
+          "doc": "892 · 信号课后题",
+          "topic": "连续时间与离散时间系统的时域分析",
+          "label": "课后题 2-4",
+          "original_exam": false
+        },
+        {
+          "position": 10,
+          "source_position": 34,
+          "optional": false,
+          "id": 8369,
+          "uuid": "cd5bc759-4728-5370-ab92-cae68d513e26",
+          "doc": "中科院历年真题 · 859信号与系统（部分超纲）",
+          "topic": "连续时间系统微分方程模型",
+          "label": "2010年 · 第2题",
+          "original_exam": false
+        },
+        {
+          "position": 11,
+          "source_position": 36,
+          "optional": false,
+          "id": 5486,
+          "uuid": "fa1e466f-a8a5-5ab3-a0df-f23b4df7280d",
+          "doc": "892 · 信号与系统",
+          "topic": "课后题 · 第 2 章",
+          "label": "课后题 2-9",
+          "original_exam": false
+        }
+      ]
+    },
+    {
+      "title": "傅里叶级数与谐波分析",
+      "items": [
+        {
+          "position": 12,
+          "source_position": 38,
+          "optional": false,
+          "id": 7208,
+          "uuid": "81648940-3f5f-5297-ad90-78bf896140df",
+          "doc": "892 · 信号课后题",
+          "topic": "傅里叶变换及其应用",
+          "label": "课后题 3-4",
+          "original_exam": false
+        },
+        {
+          "position": 13,
+          "source_position": 43,
+          "optional": false,
+          "id": 7213,
+          "uuid": "869d64d0-933b-5aec-b29c-7da937c35e98",
+          "doc": "892 · 信号课后题",
+          "topic": "傅里叶变换及其应用",
+          "label": "课后题 3-10",
+          "original_exam": false
+        },
+        {
+          "position": 14,
+          "source_position": 44,
+          "optional": false,
+          "id": 7214,
+          "uuid": "0e0f1c32-4fb0-5e45-8317-17054bc279ea",
+          "doc": "892 · 信号课后题",
+          "topic": "傅里叶变换及其应用",
+          "label": "课后题 3-12",
+          "original_exam": false
+        }
+      ]
+    },
+    {
+      "title": "电路、数电与通信",
+      "items": [
+        {
+          "position": 15,
+          "source_position": 47,
+          "optional": false,
+          "id": 7166,
+          "uuid": "46dfae15-e314-5cc5-88ff-7fb12016f134",
+          "doc": "892 · 电路课后题",
+          "topic": "正弦稳态电路分析",
+          "label": "课后题 10-17",
+          "original_exam": false
+        },
+        {
+          "position": 16,
+          "source_position": 51,
+          "optional": false,
+          "id": 7176,
+          "uuid": "4c25dcce-fdb1-5677-88f9-393ae3418fc3",
+          "doc": "892 · 电路课后题",
+          "topic": "正弦稳态电路分析",
+          "label": "课后题 11-13",
+          "original_exam": false
+        },
+        {
+          "position": 17,
+          "source_position": 53,
+          "optional": false,
+          "id": 7883,
+          "uuid": "a8482e6c-f867-5040-9407-bc8f18dc512c",
+          "doc": "中科院历年真题 · 电子线路（数电·模电，部分超纲）",
+          "topic": "同步时序逻辑电路分析流程",
+          "label": "2011年 · 第8题",
+          "original_exam": false
+        },
+        {
+          "position": 18,
+          "source_position": 54,
+          "optional": false,
+          "id": 6963,
+          "uuid": "f6ce97c0-6709-5327-bd1a-c83066e65618",
+          "doc": "892 · 数电课后题",
+          "topic": "时序逻辑电路分析与设计",
+          "label": "课后题 6.26",
+          "original_exam": false
+        },
+        {
+          "position": 19,
+          "source_position": 56,
+          "optional": false,
+          "id": 5817,
+          "uuid": "3599f43c-5b5a-5a99-a09b-1aa9befd1b22",
+          "doc": "892 · 通信原理",
+          "topic": "无码间串扰的基带传输条件",
+          "label": "课后题 5-21",
+          "original_exam": false
+        },
+        {
+          "position": 20,
+          "source_position": 57,
+          "optional": false,
+          "id": 5818,
+          "uuid": "9d51cabb-3765-5453-8484-7a78a233f1a5",
+          "doc": "892 · 通信原理",
+          "topic": "无码间串扰的基带传输条件",
+          "label": "课后题 5-22",
+          "original_exam": false
+        }
+      ]
+    },
+    {
+      "title": "选做",
+      "items": [
+        {
+          "position": 21,
+          "source_position": 35,
+          "optional": true,
+          "id": 8545,
+          "uuid": "50bdf2eb-d62a-5660-a518-f10eb2abe68b",
+          "doc": "中科院历年真题 · 859信号与系统（部分超纲）",
+          "topic": "连续时间系统微分方程模型",
+          "label": "2017年 · 1·选择8",
+          "original_exam": false
+        },
+        {
+          "position": 22,
+          "source_position": 37,
+          "optional": true,
+          "id": 7207,
+          "uuid": "2d524c54-b4a5-56c3-8539-c75744fb7b2e",
+          "doc": "892 · 信号课后题",
+          "topic": "傅里叶变换及其应用",
+          "label": "课后题 3-3",
+          "original_exam": false
+        },
+        {
+          "position": 23,
+          "source_position": 45,
+          "optional": true,
+          "id": 7215,
+          "uuid": "8f514997-e2ce-5e3d-becc-4bee4a8b50be",
+          "doc": "892 · 信号课后题",
+          "topic": "傅里叶变换及其应用",
+          "label": "课后题 3-13",
+          "original_exam": false
+        },
+        {
+          "position": 24,
+          "source_position": 52,
+          "optional": true,
+          "id": 6961,
+          "uuid": "c191d394-73de-5de1-a2cc-85174f7e7865",
+          "doc": "892 · 数电课后题",
+          "topic": "时序逻辑电路分析与设计",
+          "label": "课后题 6.12",
+          "original_exam": false
+        }
+      ]
+    }
+  ],
+  "paper_id": 160,
+  "uuid": "97d06798-cb87-4304-a1f2-79d067b66670",
+  "required_count": 20,
+  "optional_count": 4
+}
