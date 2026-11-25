@@ -41,6 +41,17 @@ const isPreviewEntry = computed(() => route.query.from === 'preview')
 const previewContext = computed(() => isPreviewEntry.value ? parseListContext(route.query.list) : null)
 const previewNavigation = ref<PreviewPage | null>(null)
 const previewNavigationError = ref('')
+const specialPracticeLabel = computed(() => {
+  const context = previewContext.value
+  if (context?.source !== 'paper' || context.returnTo.split(/[?#]/)[0] !== '/special-practice') return ''
+  const page = previewNavigation.value
+  const located = page?.located?.question_uuid === props.uuid ? page.located : null
+  const raw = route.query.position
+  const index = located?.index ?? (typeof raw === 'string' && /^\d+$/.test(raw) ? Number(raw) : -1)
+  if (!Number.isSafeInteger(index) || index < 0) return ''
+  const total = located && page && page.count > index ? ` / ${page.count}` : ''
+  return typeText(`专练 · 第 ${index + 1}${total} 题`, `Training · Question ${index + 1}${total}`)
+})
 let previewNavigationSequence = 0
 let previewNavigationTask: Promise<void> = Promise.resolve()
 async function loadPreviewNavigation(signal?: AbortSignal, allowRemoved = false) {
@@ -1472,7 +1483,7 @@ onBeforeRouteLeave(() => {
 <template>
   <section class="page question-page">
     <StudyTimerGuard ref="studyTimerGuard" :workspace="runtimeWorkspace" v-model:mode="studyTimerMode" :context="props.uuid" />
-    <FullscreenReader ref="questionReader" hide-trigger :controls="readerControls" :content-key="readerDocument.key" :title="readerDocument.title" :images="readerDocument.images" :markdown="readerDocument.markdown" :prepare="prepareReader" :pending="readerNavigating && readerDocument.uuid !== props.uuid" :syncing="readerNavigating && readerDocument.uuid === props.uuid" :retryable="!question && !!error && pendingFullscreenTarget === props.uuid" @retry="load" @action="readerAction" @closed="readerClosed">
+    <FullscreenReader ref="questionReader" hide-trigger :controls="readerControls" :content-key="readerDocument.key" :title="[readerDocument.uuid === props.uuid ? specialPracticeLabel : '', readerDocument.title].filter(Boolean).join(' · ')" :images="readerDocument.images" :markdown="readerDocument.markdown" :prepare="prepareReader" :pending="readerNavigating && readerDocument.uuid !== props.uuid" :syncing="readerNavigating && readerDocument.uuid === props.uuid" :retryable="!question && !!error && pendingFullscreenTarget === props.uuid" @retry="load" @action="readerAction" @closed="readerClosed">
       <template #recovery>
         <div v-if="timerSyncStatus==='offline'||timerSyncStatus==='conflict'||timingRecoveryResult||pendingAttemptResult" class="timing-recovery in-reader" role="status">
                 <button type="button" :disabled="saving||timerReconnecting" @click="reconnectQuestionTimer">{{ timerReconnecting?typeText('连接中…','Connecting…'):typeText('重新连接计时','Reconnect timer') }}</button>
@@ -1504,7 +1515,7 @@ onBeforeRouteLeave(() => {
     <div v-if="loading" class="question-skeleton">{{ uiText("正在加载题目…") }}</div>
     <template v-else-if="question">
       <header class="question-header">
-        <div><span class="eyebrow">{{ question.document }} · {{ String(question.question_order).padStart(4, '0') }}</span><h1>{{ question.display_label || `${typeText('题目', 'Question')} ${question.question_order}` }}</h1><p>{{ question.breadcrumbs.map((item) => item.title).join(' / ') }}</p><div class="question-badges"><ExamTypeEditor :key="question.uuid" :question="question" @saved="(patch) => { if (question) { Object.assign(question, patch); patchQuestionState(question.uuid, patch) } }" /><span class="source-badge" :class="`category-${question.source_category}`">{{ question.source_category_label }}</span><span v-if="question.record_kind === 'grouped'" class="source-badge">{{ uiText("组合题源节选") }}</span></div><p v-if="question.pdf_pages" class="pdf-page-reference">{{ uiText("PDF 绝对页码 · 题目册") }} {{ question.pdf_pages.question }} {{ uiText("· 答案册") }} {{ question.pdf_pages.answer }} {{ uiText("· 题答对照册") }} {{ question.pdf_pages.paired }}</p></div>
+        <div><span class="eyebrow"><span v-if="specialPracticeLabel" class="special-practice-position">{{ specialPracticeLabel }} · </span>{{ question.document }} · {{ String(question.question_order).padStart(4, '0') }}</span><h1>{{ question.display_label || `${typeText('题目', 'Question')} ${question.question_order}` }}</h1><p>{{ question.breadcrumbs.map((item) => item.title).join(' / ') }}</p><div class="question-badges"><ExamTypeEditor :key="question.uuid" :question="question" @saved="(patch) => { if (question) { Object.assign(question, patch); patchQuestionState(question.uuid, patch) } }" /><span class="source-badge" :class="`category-${question.source_category}`">{{ question.source_category_label }}</span><span v-if="question.record_kind === 'grouped'" class="source-badge">{{ uiText("组合题源节选") }}</span></div><p v-if="question.pdf_pages" class="pdf-page-reference">{{ uiText("PDF 绝对页码 · 题目册") }} {{ question.pdf_pages.question }} {{ uiText("· 答案册") }} {{ question.pdf_pages.answer }} {{ uiText("· 题答对照册") }} {{ question.pdf_pages.paired }}</p></div>
         <div class="attempt-counter"><span>{{ uiText("当前状态") }}</span><strong class="state-name" :class="question.review_overdue ? 'text-overdue' : `text-${question.state}`">{{ question.review_overdue ? uiText("复习已到期") : question.state === 'mastered' ? uiText("已掌握") : question.state === 'review' ? uiText("待复习") : uiText("未开始") }}</strong><small>{{ uiText("已记录") }} {{ question.attempt_count }} {{ uiText("次作答") }}</small><small v-if="question.last_time_spent_seconds !== null" class="last-solving-time">{{ uiText("上次用时 ·") }} {{ formatRecordedDuration(question.last_time_spent_seconds) }}</small></div>
       </header>
 
@@ -1521,7 +1532,7 @@ onBeforeRouteLeave(() => {
           <p v-if="question.source_review_warning" role="note" class="source-review-warning">{{ question.source_review_warning }}</p>
           <p v-if="question.original_source" class="source-original-link"><RouterLink :to="{ path: `/practice/${question.original_source.uuid}`, query: { ...(previewContext ? {} : questionRouteQuery()), view: 'original' } }">{{ uiText("查看完整原卷／原页（原始题图已保留） ↗") }}</RouterLink></p>
           <nav v-if="question.source_context" class="source-tracking-toolbar" :aria-label="uiText('当前小题掌握情况')">
-            <strong>{{ question.display_label }}</strong>
+            <strong>{{ specialPracticeLabel ? specialPracticeLabel + ' · ' : '' }}{{ question.display_label }}</strong>
             <button @click="sourceViewer?.scrollToCurrent()">{{ uiText("定位本题") }}</button>
           </nav>
           <div class="asset-toolbar question-asset-toolbar">

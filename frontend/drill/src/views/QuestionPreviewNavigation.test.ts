@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { expect, it, vi } from 'vitest'
 import ts from 'typescript'
+import { computed } from 'vue'
 import source from './QuestionView.vue?raw'
 import { buildListContext, previewLocation, previewQuestionLocation } from '../lib/listContext'
 const ref = <T>(value:T) => ({value})
@@ -83,4 +84,25 @@ it('reuses an existing preview list including duplicate entry identity',()=>{
  const push=vi.fn();const scope={question:ref({uuid:'same-question'}),previewContext:ref(context),route:{query:{entry:'attempt:12'}},props:{uuid:'same-question'},router:{push},previewLocation}
  handler('function openScrollingPreview()', '\nconst errorOptions:', 'openScrollingPreview',scope)()
  expect(push).toHaveBeenCalledWith(previewLocation(context,'attempt:12','same-question'))
+})
+
+it('shows the special collection ordinal in normal and fullscreen views without using source question numbers',()=>{
+ const scope={previewContext:ref(buildListContext('paper',{paper:'p1'},'/special-practice')),previewNavigation:ref<any>(null),props:{uuid:'q1'},route:{query:{position:'7'}},computed,typeText:(zh:string)=>zh}
+ const label=handler('const specialPracticeLabel = computed(', '\nlet previewNavigationSequence', 'specialPracticeLabel',scope)
+ expect(label.value).toBe('专练 · 第 8 题')
+ scope.previewNavigation.value={count:57,located:{question_uuid:'q1',index:7}}
+ // A plain-ref harness creates a fresh computed after each transition.
+ const read=()=>handler('const specialPracticeLabel = computed(', '\nlet previewNavigationSequence', 'specialPracticeLabel',scope).value
+ expect(read()).toBe('专练 · 第 8 / 57 题')
+ scope.props.uuid='q2';scope.route.query.position='8'
+ expect(read()).toBe('专练 · 第 9 题')
+ scope.previewNavigation.value={count:57,located:{question_uuid:'q2',index:8}}
+ expect(read()).toBe('专练 · 第 9 / 57 题')
+ scope.previewContext.value=buildListContext('paper',{paper:'exam'},'/papers/exam/review')
+ expect(read()).toBe('')
+ scope.previewContext.value=buildListContext('paper',{paper:'p1'},'/special-practice')
+ scope.previewNavigation.value=null;scope.route.query.position='-1'
+ expect(read()).toBe('')
+ expect(source).toContain('class="special-practice-position"')
+ expect(source).toContain('readerDocument.uuid === props.uuid ? specialPracticeLabel')
 })
