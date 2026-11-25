@@ -1,0 +1,36 @@
+{
+  "results": [
+    {
+      "viewport": "desktop",
+      "width": 1440,
+      "height": 1000,
+      "no_overflow": true,
+      "six_progress_bars": true
+    },
+    {
+      "viewport": "ipad-landscape",
+      "width": 1180,
+      "height": 820,
+      "no_overflow": true,
+      "six_progress_bars": true
+    },
+    {
+      "viewport": "ipad-portrait",
+      "width": 820,
+      "height": 1180,
+      "no_overflow": true,
+      "six_progress_bars": true
+    },
+    {
+      "viewport": "iphone",
+      "width": 390,
+      "height": 844,
+      "no_overflow": true,
+      "six_progress_bars": true
+    }
+  ],
+  "pause_resume": true,
+  "surplus_not_transferred": true,
+  "pageerrors": [],
+  "environment": "isolated PostgreSQL + candidate image, Chromium; not physical Safari"
+}
