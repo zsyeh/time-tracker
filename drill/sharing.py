@@ -127,7 +127,8 @@ def public_share_context(request, share, raw_token):
         is_active=True, revoked_at__isnull=True, workspace=share.workspace,
     ).select_related('owner'):
         links[link.question_id] = public_share_url(request, share.workspace, link.recover_token())
-    image_only = share.paper.blueprint.code.startswith(('math2-focus-', 'ei-focus-'))
+    special = share.paper.generation_options.get('special_practice') if share.paper.blueprint.code.startswith('special-practice-') else None
+    image_only = bool(special) or share.paper.blueprint.code.startswith(('math2-focus-', 'ei-focus-'))
     items = []
     for paper_item in paper_items:
         revision = paper_item.question_revision
@@ -153,11 +154,11 @@ def public_share_context(request, share, raw_token):
         })
     return {
         'kind': 'paper',
-        'title': share.paper.blueprint.title,
-        'subtitle': f'{len(items)} questions · {share.paper.blueprint.total_score} points',
+        'title': special['title'] if special else share.paper.blueprint.title,
+        'subtitle': f'{len(items)} questions · 专练题单' if special else f'{len(items)} questions · {share.paper.blueprint.total_score} points',
         'workspace': share.workspace,
         'items': items,
-        'open_path': public_app_path(request, share.workspace, '/papers/new'),
+        'open_path': public_app_path(request, share.workspace, '/special-practice' if special else '/papers/new'),
     }
 
 

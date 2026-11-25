@@ -6,7 +6,7 @@ from . import test_focus_training
 from .special_practice import push_special_practice
 from .models import ExamPaper,QuestionAttempt
 
-@override_settings(DRILL_HOSTS=['testserver'])
+@override_settings(DRILL_HOSTS=['testserver'], SECURE_SSL_REDIRECT=False)
 class SpecialPracticeTests(TestCase):
     setUp=test_focus_training.FocusTrainingTests.setUp
     question=test_focus_training.FocusTrainingTests.question
@@ -41,3 +41,28 @@ class SpecialPracticeTests(TestCase):
         self.client.force_login(get_user_model().objects.create_user('special-other'))
         self.assertEqual(self.client.get('/api/drill/special-practice/').json()['results'],[])
         self.assertEqual(self.client.get('/api/drill/collection-preview/',{'source':'paper','paper':str(paper.uuid)}).status_code,404)
+
+    def test_special_collection_uses_existing_share_without_private_learning_data(self):
+        from .models import DrillContentShare
+        from .sharing import public_share_context,share_markdown
+        from django.test import RequestFactory
+        a,b=self.question(1),self.question(2)
+        paper,_=self.push([str(b.uuid),str(a.uuid)])
+        self.client.force_login(self.user)
+        url=f'/api/drill/papers/{paper.uuid}/share/'
+        response=self.client.post(url,{},content_type='application/json')
+        self.assertEqual(response.status_code,201)
+        self.assertEqual(self.client.post(url,{},content_type='application/json').status_code,200)
+        share=DrillContentShare.objects.get(paper=paper)
+        req=RequestFactory().get('/',HTTP_HOST='testserver')
+        context=public_share_context(req,share,share.recover_token())
+        self.assertEqual(context['title'],'导数专项')
+        self.assertEqual(context['subtitle'],'2 questions · 专练题单')
+        self.assertEqual(context['open_path'],'/special-practice')
+        self.assertEqual([v['practice_path'] for v in context['items']],[f'/practice/{b.uuid}',f'/practice/{a.uuid}'])
+        markdown=share_markdown(context)
+        self.assertNotIn('NOISY',markdown)
+        self.assertIn('Answer image',markdown)
+        self.assertEqual(QuestionAttempt.objects.count(),0)
+        self.client.force_login(get_user_model().objects.create_user('no-share-access'))
+        self.assertEqual(self.client.post(url,{},content_type='application/json').status_code,404)
