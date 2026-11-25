@@ -1690,3 +1690,7 @@ EX-06训练题数不冒充官方题数；配额和稀缺题源、实测时延、
 ## 增量执行记录：2026-11-24 桌面学习快捷键
 
 追加 KEY-01–KEY-05，不覆盖此前需求矩阵；生产应用提交 `0c3044d`，已上线且healthy。10个键统一输入保护，Practice复用成熟动作；考试/逐题批阅保持本卷顺序。用户明确要求考试M/N同步Practice状态但不改分数，因此复用Attempt且不记录逐题耗时；U带expected attempt ID防止撤销其他页面的新操作。考试未结束的私有响应过滤答案，结束确认后解锁。无Schema迁移，旧镜像691cdc4与用户数据备份保留。真实文件→测试→线上证据及回滚详见 [KEY完整追踪表](study-shortcuts-20261124/README.md)。
+
+## 增量：2026-11-25 专练模式
+
+SP-01侧栏独立入口→App/main、服务SPA/PWA白名单、前后端sidebar schema；SP-02 Agent固定题单→special_practice.py/push_special_practice命令，私有事务幂等；SP-03标准Practice顺序/预览→既有paper ListContext；SP-04数据保护→专练模板不进考试列表、不新增作答、不改题库。7前端/4后端与两应用构建、双工作区线上闭环已通过。用户最新复盘以独立post_review保存，不混同考试得分。完整追踪与证据见[本轮记录](special-practice-20261125/README.md)，保留此前需求矩阵。

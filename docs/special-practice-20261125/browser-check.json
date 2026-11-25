@@ -1,0 +1,23 @@
+{
+  "results": [
+    {
+      "workspace": "drill",
+      "sidebar_entry": true,
+      "normal_practice": true,
+      "fixed_next_order": true,
+      "preview_return": true,
+      "mobile_no_overflow": true,
+      "refresh_200": true
+    },
+    {
+      "workspace": "ei",
+      "sidebar_entry": true,
+      "normal_practice": true,
+      "fixed_next_order": true,
+      "preview_return": true,
+      "mobile_no_overflow": true,
+      "refresh_200": true
+    }
+  ],
+  "pageerrors": []
+}
