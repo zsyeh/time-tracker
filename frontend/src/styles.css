@@ -493,9 +493,10 @@ kbd { margin-left: auto; padding: 0; border: 0; color: var(--text-tertiary); bac
 .focus-panel { gap: 14px; }
 .focus-panel > div:first-child { width: 100%; }
 .hidden-timer { flex: 1; }
-.subject-actions { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
+.subject-actions { width: 100%; min-width: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .subject-button { min-width: 0; }
-.preset-shortcuts { width: 100%; display: grid; grid-template-columns: 1fr 1fr; }
+.preset-shortcuts { width: 100%; min-width: 0; display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.preset-shortcuts > button { min-width: 0; width: 100%; }
 .chart-panel { padding: 12px 8px 6px; }
 .chart-toolbar { padding-inline: 4px; align-items: flex-start; flex-direction: column; gap: 8px; }
 .chart-toolbar > b { display: none; }
