@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
+import SprintProgressPanel from '../components/SprintProgressPanel.vue'
 import ActiveSession from '../components/ActiveSession.vue'
 import HeatmapGrid from '../components/HeatmapGrid.vue'
 import PageHeader from '../components/layout/PageHeader.vue'
@@ -11,7 +12,8 @@ const emit = defineEmits<{ changed: [] }>()
 
 const { language, t } = useUiPreferences()
 const subjectLabels = computed<Record<string, string>>(() => ({ math: t('mathematics'), english: t('english'), major: t('major'), training: t('training') }))
-const todayMinutes = computed(() => props.overview?.today.minutes || 0)
+const todayMinutes = computed(() => props.overview?.sprint_progress?.today.actual_minutes ?? props.overview?.today.minutes ?? 0)
+const displayedSubjectTotals = computed(() => props.overview?.sprint_progress?.today.subjects.map(row=>({subject:row.subject,minutes:Math.floor(row.actual_minutes)})) ?? props.overview?.today_subject_totals ?? [])
 const dailyTargetMinutes = computed(() => props.overview?.daily_target.minutes || 480)
 const dailyTargetHours = computed(() => props.overview?.daily_target.hours || 8)
 const mathMinutes = computed(() => props.overview?.today_subject_totals.find((item) => item.subject === 'math')?.minutes || 0)
@@ -19,13 +21,13 @@ const mathTargetMinutes = computed(() => props.overview?.subject_targets.math.mi
 const mathTargetHours = computed(() => props.overview?.subject_targets.math.hours || 4)
 const mathHours = computed(() => `${Math.floor(mathMinutes.value / 60)}h ${mathMinutes.value % 60}m`)
 const mathProgress = computed(() => Math.min(100, Math.round(mathMinutes.value / mathTargetMinutes.value * 100)))
-const todayHours = computed(() => `${Math.floor(todayMinutes.value / 60)}h ${todayMinutes.value % 60}m`)
+const todayHours = computed(() => `${Math.floor(todayMinutes.value / 60)}h ${Math.floor(todayMinutes.value % 60)}m`)
 const todayProgress = computed(() => Math.min(100, Math.round(todayMinutes.value / dailyTargetMinutes.value * 100)))
 const targetRemaining = computed(() => {
   const minutes = Math.max(0, dailyTargetMinutes.value - todayMinutes.value)
   return minutes ? t('remaining', { value: `${Math.floor(minutes / 60)}h ${minutes % 60}m` }) : t('complete')
 })
-const maxTodaySubject = computed(() => Math.max(1, ...(props.overview?.today_subject_totals.map((item) => item.minutes) || [])))
+const maxTodaySubject = computed(() => Math.max(1, ...(displayedSubjectTotals.value.map((item) => item.minutes) || [])))
 const todayLabel = computed(() => props.overview?.calendar.today
   ? new Intl.DateTimeFormat(language.value, { month: 'short', day: 'numeric', timeZone: 'Asia/Shanghai' }).format(new Date(`${props.overview.calendar.today}T12:00:00+08:00`))
   : t('today'))
@@ -52,7 +54,8 @@ function scrollToSession() {
       <span v-if="overview.private_display.study_room_code">{{ t('studyRoom') }} · <b>{{ overview.private_display.study_room_code }}</b></span>
     </div>
 
-    <section v-if="overview" class="today-section daily-progress-section" aria-labelledby="daily-progress-title">
+    <SprintProgressPanel v-if="overview" :progress="overview.sprint_progress" :today="overview.calendar.today" @changed="emit('changed')" />
+    <section v-if="overview && !overview.sprint_progress" class="today-section daily-progress-section" aria-labelledby="daily-progress-title">
       <header class="section-toolbar"><div><h2 id="daily-progress-title">{{ t('dailyProgress') }}</h2><span>{{ t('completedOnly') }}</span></div><span>{{ targetRemaining }}</span></header>
       <div class="today-overview-grid">
         <div class="daily-progress-block"><div class="daily-progress-main"><div><strong>{{ todayHours }}</strong><span>/ {{ dailyTargetHours }}h</span></div><b>{{ todayProgress }}%</b></div><div class="daily-progress-track" role="progressbar" :aria-label="`${dailyTargetHours} hour study target`" aria-valuemin="0" aria-valuemax="100" :aria-valuenow="todayProgress"><i :style="{ width: `${todayProgress}%` }" /></div><p>{{ todayProgress >= 100 ? t('targetComplete') : t('toTarget', { value: targetRemaining }) }}</p><div class="math-target-progress"><div><span>{{ t('mathDailyMinimum') }}</span><b>{{ mathHours }} / ≥{{ mathTargetHours }}h</b></div><div class="daily-progress-track subject-math" role="progressbar" :aria-label="`${mathTargetHours} hour mathematics target`" aria-valuemin="0" aria-valuemax="100" :aria-valuenow="mathProgress"><i :style="{ width: `${mathProgress}%` }" /></div></div></div>
@@ -68,13 +71,13 @@ function scrollToSession() {
 
     <section id="session-control" class="today-section session-control-section" aria-labelledby="session-control-title">
       <header class="section-toolbar"><div><h2 id="session-control-title">{{ t('session') }}</h2><span>{{ overview?.active_session ? t('inProgress') : t('chooseTask') }}</span></div></header>
-      <ActiveSession :session="overview?.active_session || null" :shortcuts="overview?.task_shortcuts || []" @changed="emit('changed')" />
+      <ActiveSession :sprint-enabled="!!overview?.sprint_progress" :session="overview?.active_session || null" :shortcuts="overview?.task_shortcuts || []" @changed="emit('changed')" />
     </section>
 
     <section v-if="overview" class="today-section today-subject-section" aria-labelledby="today-subject-title">
       <header class="section-toolbar"><div><h2 id="today-subject-title">{{ t('subjects') }}</h2><span>{{ t('today') }}</span></div><span>{{ todayHours }} {{ t('total').toLocaleLowerCase() }}</span></header>
       <div class="today-subject-list">
-        <article v-for="item in overview.today_subject_totals" :key="item.subject" :class="`subject-${item.subject}`">
+        <article v-for="item in displayedSubjectTotals" :key="item.subject" :class="`subject-${item.subject}`">
           <i class="subject-dot" /><strong>{{ subjectLabels[item.subject] }}</strong><span>{{ item.minutes }}m</span><div><i :style="{ width: `${item.minutes / maxTodaySubject * 100}%` }" /></div>
         </article>
       </div>

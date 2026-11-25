@@ -5,6 +5,7 @@ from django.utils import timezone
 
 from .models import TaskPreset, TimeLog
 from .runtime_settings import runtime_config
+from .time_intervals import study_seconds_between
 
 
 FIVE_HOUR_MINUTES = 300
@@ -71,7 +72,7 @@ def build_dashboard_overview(user, days=180, config=None):
             start_time__gte=boundary,
         ).only(
             'id', 'user_id', 'category', 'task_path', 'start_time', 'end_time',
-            'status', 'efficiency_grade', 'encrypted_summary',
+            'status', 'efficiency_grade', 'encrypted_summary', 'pause_intervals',
         ).prefetch_related('tags').order_by('start_time')
     )
     active = TimeLog.objects.filter(user=user, status='running').prefetch_related('tags').first()
@@ -286,7 +287,8 @@ def serialize_session(session, now=None):
         'learning_mode': session.learning_mode,
         'start_time': _local(session.start_time).isoformat(),
         'end_time': _local(session.end_time).isoformat() if session.end_time else None,
-        'duration_minutes': max(0, int((end - session.start_time).total_seconds() / 60)),
+        'duration_minutes': session.duration_minutes if session.end_time else study_seconds_between(session,session.start_time,end)//60,
+        'is_paused': session.is_paused,
         'efficiency_grade': session.efficiency_grade,
         'efficiency_coefficient': session.efficiency_coefficient,
         'credited_duration_minutes': (

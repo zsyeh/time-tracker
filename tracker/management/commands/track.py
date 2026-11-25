@@ -50,7 +50,7 @@ class Command(BaseCommand):
                 return
 
             end_time = timezone.now()
-            discard_reason = session_discard_reason(active_log.start_time, end_time)
+            discard_reason = session_discard_reason(active_log.start_time, end_time, user=active_log.user)
             if discard_reason:
                 active_log.delete()
                 limit = (

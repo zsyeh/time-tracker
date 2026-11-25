@@ -80,6 +80,7 @@ COLLECTIONS = {
 def preference_defaults():
     """Return an independent copy; never share mutable defaults across users."""
     defaults = {
+        'timer.goal_plan': {'mode': 'standard', 'start_date': '2026-11-26'},
         'appearance': 'system', 'accent': 'blue', 'font': 'small', 'language': 'en',
         'practice.next_mode': 'sequential', 'practice.review_auto_next': False,
         'practice.mastered_auto_next': True,
@@ -191,6 +192,16 @@ def _goal_settings(value, key):
 
 
 def _value(key, value):
+    if key == 'timer.goal_plan':
+        if not isinstance(value, dict) or set(value) != {'mode','start_date'} or value['mode'] not in ('standard','sprint20'):
+            _invalid('Expected standard or sprint20 and a start date.', key)
+        try:
+            if not isinstance(value['start_date'], str) or not re.fullmatch(r'\d{4}-\d{2}-\d{2}', value['start_date']):
+                raise ValueError()
+            date.fromisoformat(value['start_date'])
+        except (ValueError, TypeError):
+            _invalid('Start date must be a valid calendar date.', key)
+        return dict(value)
     if key in ('browse.drill.filters', 'browse.ei.filters'):
         if not isinstance(value, dict) or set(value) - BROWSE_FILTER_KEYS:
             _invalid('Only global filter choices can be remembered.', key)

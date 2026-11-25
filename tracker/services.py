@@ -51,7 +51,7 @@ def start_session(user, subject, **metadata):
             user=user,
             status='running',
         ).first()
-        if active and is_long_session(active.start_time, now):
+        if active and is_long_session(active.start_time, now, user=user):
             active.delete()
             active = None
         if active:
@@ -82,15 +82,29 @@ def start_session(user, subject, **metadata):
     return session, False
 
 
+def session_limits(user):
+    from .sprint_goals import sprint_enabled
+    unlimited = sprint_enabled(user)
+    return {'minimum_minutes':0 if unlimited else MINIMUM_SESSION_MINUTES,'maximum_hours':None if unlimited else MAXIMUM_SESSION_HOURS}
+
+
 def is_short_session(start_time, end_time):
     return (end_time - start_time).total_seconds() < MINIMUM_SESSION_MINUTES * 60
 
 
-def is_long_session(start_time, end_time):
+def is_long_session(start_time, end_time, user=None):
+    if user is not None:
+        from .sprint_goals import sprint_enabled
+        if sprint_enabled(user):
+            return False
     return (end_time - start_time).total_seconds() > MAXIMUM_SESSION_HOURS * 60 * 60
 
 
-def session_discard_reason(start_time, end_time):
+def session_discard_reason(start_time, end_time, user=None):
+    if user is not None:
+        from .sprint_goals import sprint_enabled
+        if sprint_enabled(user):
+            return None
     if is_short_session(start_time, end_time):
         return 'shorter_than_minimum'
     if is_long_session(start_time, end_time):
@@ -104,7 +118,7 @@ def finish_session(session, reflection):
         if locked.status != 'running':
             return locked, False, None
         end_time = timezone.now()
-        discard_reason = session_discard_reason(locked.start_time, end_time)
+        discard_reason = session_discard_reason(locked.start_time, end_time, user=locked.user)
         if discard_reason:
             locked.delete()
             return None, True, discard_reason
@@ -114,6 +128,9 @@ def finish_session(session, reflection):
         if not str(reflection.get('title', '')).strip() and locked.task_path:
             reflection['title'] = locked.task_path.split(' › ')[-1].strip()
 
+        if locked.is_paused:
+            locked.pause_intervals = [dict(p) for p in locked.pause_intervals]
+            locked.pause_intervals[-1]['end'] = end_time.isoformat()
         locked.end_time = end_time
         locked.status = 'completed'
         for field in (

@@ -20,6 +20,7 @@ from .models import TimeLog
 from .learning_log import sync_session_note
 from .services import (
     MAXIMUM_SESSION_HOURS,
+    session_limits,
     MINIMUM_SESSION_MINUTES,
     get_service_user,
     is_long_session,
@@ -100,7 +101,7 @@ def _serialize_log(log: TimeLog, now: Optional[datetime.datetime] = None) -> Dic
         'category_label': CATEGORY_LABELS.get(log.category, log.category),
         'start_time': _local(log.start_time).isoformat(),
         'end_time': _local(log.end_time).isoformat() if log.end_time else None,
-        'duration_minutes': None if active else max(0, int(elapsed.total_seconds() / 60)),
+        'duration_minutes': None if active else log.duration_minutes,
         'efficiency_grade': log.efficiency_grade,
         'efficiency_coefficient': log.efficiency_coefficient,
         'credited_duration_minutes': None if active else log.credited_duration_minutes,
@@ -131,6 +132,7 @@ def get_tracker_status() -> Dict[str, Any]:
     today_start = local_now.replace(hour=0, minute=0, second=0, microsecond=0)
     week_start = today_start - datetime.timedelta(days=(today_start.weekday() + 1) % 7)
     owner = get_service_user()
+    limits = session_limits(owner)
     completed = TimeLog.objects.filter(user=owner, status='completed')
     today_logs = list(completed.filter(start_time__gte=today_start))
     week_logs = list(completed.filter(start_time__gte=week_start))
@@ -141,7 +143,7 @@ def get_tracker_status() -> Dict[str, Any]:
         'today': {
             'minutes': sum(log.credited_duration_minutes for log in today_logs),
             'sessions': len(today_logs),
-            'target_minutes': settings.TRACKER_DAILY_TARGET_MINUTES,
+            'target_minutes': 681 if limits['maximum_hours'] is None else settings.TRACKER_DAILY_TARGET_MINUTES,
         },
         'week': {
             'minutes': sum(log.credited_duration_minutes for log in week_logs),
@@ -155,10 +157,10 @@ def get_tracker_status() -> Dict[str, Any]:
         'rules': {
             'manual_finish_required': True,
             'automatic_expiry': False,
-            'minimum_session_minutes': MINIMUM_SESSION_MINUTES,
-            'maximum_session_hours': MAXIMUM_SESSION_HOURS,
-            'short_sessions_are_discarded': True,
-            'overlong_sessions_are_discarded': True,
+            'minimum_session_minutes': limits['minimum_minutes'],
+            'maximum_session_hours': limits['maximum_hours'],
+            'short_sessions_are_discarded': limits['minimum_minutes'] > 0,
+            'overlong_sessions_are_discarded': limits['maximum_hours'] is not None,
         },
     }
 
@@ -215,7 +217,7 @@ def _discard_stale_active(now: datetime.datetime, owner) -> Optional[int]:
         user=owner,
         status='running',
     ).order_by('start_time').first()
-    if active and is_long_session(active.start_time, now):
+    if active and is_long_session(active.start_time, now, user=owner):
         discarded_id = active.pk
         active.delete()
         return discarded_id
@@ -272,7 +274,7 @@ def stop_task(title: str = '', details: str = '', efficiency_grade: str = 'A') -
         ).order_by('start_time').first()
         if not active:
             raise ValueError('No active task.')
-        discard_reason = session_discard_reason(active.start_time, now)
+        discard_reason = session_discard_reason(active.start_time, now, user=owner)
         if discard_reason:
             discarded_id = active.pk
             active.delete()

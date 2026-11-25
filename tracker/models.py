@@ -170,6 +170,7 @@ class TimeLog(EncryptedAtRestMixin, models.Model):
         related_name='sessions',
     )
     task_path = models.TextField(blank=True)
+    pause_intervals = models.JSONField(default=list, blank=True)
     tags = models.ManyToManyField(StudyTag, blank=True, related_name='sessions')
     chapter = models.CharField(max_length=200, blank=True)
     topic = models.CharField(max_length=200, blank=True)
@@ -248,16 +249,18 @@ class TimeLog(EncryptedAtRestMixin, models.Model):
     @property
     def duration_minutes(self):
         """计算离散时间差，返回标量分钟数"""
-        if self.end_time:
-            delta = self.end_time - self.start_time
-            return int(delta.total_seconds() / 60)
-        return 0
+        return self.duration_seconds // 60
 
     @property
     def duration_seconds(self):
         if not self.end_time:
             return 0
-        return max(0, int((self.end_time - self.start_time).total_seconds()))
+        from .time_intervals import study_seconds_between
+        return study_seconds_between(self, self.start_time, self.end_time)
+
+    @property
+    def is_paused(self):
+        return bool(self.status == 'running' and self.pause_intervals and self.pause_intervals[-1].get('end') is None)
 
     @property
     def efficiency_coefficient(self):

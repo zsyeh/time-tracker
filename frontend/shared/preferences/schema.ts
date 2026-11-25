@@ -14,6 +14,7 @@ export type StudyTimerMode = 'remind' | 'auto_start' | 'off'
 export const browseFilterKeys = ['type_group','exam_type','status','source_category','favorite','review_later','marker','include_structure'] as const
 export type BrowseFilters = Partial<Record<typeof browseFilterKeys[number], string>>
 export type PreferenceValues = {
+  'timer.goal_plan': {mode:'standard'|'sprint20';start_date:string}
   appearance: Appearance; accent: Accent; font: FontSize; language: 'en'|'zh-CN'|'ja'
   'sidebar.timer': SidebarConfig; 'sidebar.drill': SidebarConfig; 'sidebar.ei': SidebarConfig
   'filters.drill': FilterPreset[]; 'filters.ei': FilterPreset[]
@@ -33,7 +34,7 @@ export function defaultSidebar(workspace: Workspace): SidebarConfig {
   return { order: ids, hidden: ids.slice(workspace === 'drill' ? 3 : 4).filter(id=>id!=='special-practice'), collapsed_groups: [] }
 }
 export function preferenceDefaults(): PreferenceValues {
-  return { appearance:'system', accent:'blue', font:'small', language:'en',
+  return { 'timer.goal_plan':{mode:'standard',start_date:'2026-11-26'}, appearance:'system', accent:'blue', font:'small', language:'en',
     'sidebar.timer':defaultSidebar('timer'),'sidebar.drill':defaultSidebar('drill'),'sidebar.ei':defaultSidebar('ei'),
     'practice.image_copy_scale':1,'filters.drill':[],'filters.ei':[],'practice.next_mode':'sequential','practice.review_auto_next':false,'practice.mastered_auto_next':true,
     'practice.drill.copy_mode':'off','practice.ei.copy_mode':'off',
@@ -144,6 +145,7 @@ function validGoalSettings(value: unknown): value is GoalSettings {
 }
 /** Validate both server snapshots and queued/offline values before they reach render. */
 export function validPreference(key: string, value: unknown): boolean {
+  if (key === 'timer.goal_plan') return record(value) && Object.keys(value).length===2 && ['standard','sprint20'].includes(String(value.mode)) && typeof value.start_date==='string' && /^\d{4}-\d{2}-\d{2}$/.test(value.start_date) && !Number.isNaN(Date.parse(value.start_date)) && new Date(value.start_date).toISOString().slice(0,10)===value.start_date
   if (key === 'browse.drill.filters' || key === 'browse.ei.filters') return record(value)
     && Object.keys(value).every(name => (browseFilterKeys as readonly string[]).includes(name))
     && validFilterQuery(value, key.includes('.drill.') ? 'drill' : 'ei')

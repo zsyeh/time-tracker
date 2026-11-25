@@ -61,6 +61,7 @@ from .serializers import (
 )
 from .services import (
     MAXIMUM_SESSION_HOURS,
+    session_limits,
     MINIMUM_SESSION_MINUTES,
     ActiveSessionConflict,
     abandon_session,
@@ -338,8 +339,7 @@ class SessionFinishView(APIView):
                 'changed': changed,
                 'discarded': True,
                 'discard_reason': discard_reason,
-                'minimum_minutes': MINIMUM_SESSION_MINUTES,
-                'maximum_hours': MAXIMUM_SESSION_HOURS,
+                **session_limits(request.user),
                 'session': None,
             })
         github_note = (
@@ -351,11 +351,32 @@ class SessionFinishView(APIView):
             'changed': changed,
             'discarded': False,
             'discard_reason': None,
-            'minimum_minutes': MINIMUM_SESSION_MINUTES,
-            'maximum_hours': MAXIMUM_SESSION_HOURS,
+            **session_limits(request.user),
             'session': StudySessionSerializer(session).data,
             'github_note': github_note,
         })
+
+
+class SessionPauseView(APIView):
+    @transaction.atomic
+    def post(self, request, pk):
+        from .sprint_goals import sprint_enabled
+        if not sprint_enabled(request.user):
+            return Response({'detail':'Pause is available in sprint mode.'},status=400)
+        action = request.data.get('action')
+        if action not in ('pause','resume'):
+            return Response({'detail':'action must be pause or resume'},status=400)
+        session = get_object_or_404(TimeLog.objects.select_for_update(),pk=pk,user=request.user,status='running')
+        intervals = [dict(p) for p in session.pause_intervals]
+        now = timezone.now().isoformat()
+        if action == 'pause' and not session.is_paused:
+            intervals.append({'start':now,'end':None})
+        elif action == 'resume' and session.is_paused:
+            intervals[-1]['end'] = now
+        if intervals != session.pause_intervals:
+            session.pause_intervals = intervals
+            session.save(update_fields=['pause_intervals','updated_at'])
+        return Response(StudySessionSerializer(session).data)
 
 
 class SessionAbandonView(APIView):
@@ -543,7 +564,7 @@ class DashboardOverviewView(APIView):
         math_visualization_enabled = SiteConfiguration.math_visualization_is_enabled()
         # Keep a payload schema version in the key so a zero-downtime frontend
         # deployment never receives an older cached response shape.
-        cache_key = f'dashboard-overview:v9:{request.user.pk}:{days}:{version}:{config["fingerprint"]}:{int(math_visualization_enabled)}'
+        cache_key = f'dashboard-overview:v10:{request.user.pk}:{days}:{version}:{config["fingerprint"]}:{int(math_visualization_enabled)}'
         payload = cache.get(cache_key)
         cache_outcome = 'hit' if payload is not None else 'miss'
         if payload is None:
@@ -552,6 +573,13 @@ class DashboardOverviewView(APIView):
                 'math_visualization': math_visualization_enabled,
             }
             cache.set(cache_key, payload, timeout=60)
+        from .sprint_goals import build_sprint_progress, goal_config
+        plan = goal_config(request.user)
+        payload = dict(payload)
+        payload['sprint_progress'] = build_sprint_progress(request.user,config=plan)
+        if payload['sprint_progress']:
+            payload['daily_target'] = {'minutes':681,'hours':11.35}
+            payload['subject_targets'] = {row['subject']:{'minutes':row['target_minutes'],'hours':row['target_minutes']/60} for row in payload['sprint_progress']['today']['subjects']}
         response = Response(payload)
         if hasattr(request, 'loadtest_capability'):
             response['X-Load-Test-Cache'] = cache_outcome

@@ -89,8 +89,15 @@ watch(sidebarCollapsed, (value) => {
   try { sessionStorage.setItem('learning-os.sidebar.window.v2.'+(preferences.userId.value||'session'), String(value)) } catch { /* Storage may be unavailable. */ }
 })
 
-onMounted(() => window.addEventListener('learning-os-open-math-lab', openMathLab))
+let progressPoll=0,progressRefreshing=false
+async function refreshSprintProgress(){
+ if(progressRefreshing||document.visibilityState==='hidden'||route.name!=='today'||(!overview.value?.sprint_progress&&preferences.values['timer.goal_plan'].mode!=='sprint20'))return
+ progressRefreshing=true
+ try{const data=await api<Overview>('/api/dashboard/overview/?days=180');overview.value=data}catch{/* Keep the last progress while offline. */}finally{progressRefreshing=false}
+}
+onMounted(() => {window.addEventListener('learning-os-open-math-lab', openMathLab);progressPoll=window.setInterval(refreshSprintProgress,30000)})
 onBeforeUnmount(() => {
+  window.clearInterval(progressPoll)
   stopRecovery?.()
   window.removeEventListener('learning-os-open-math-lab', openMathLab)
   if (mathLabDialog.value?.open) mathLabDialog.value.close()

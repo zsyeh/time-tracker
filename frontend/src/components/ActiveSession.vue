@@ -7,7 +7,7 @@ import type { CompletionOptions, EfficiencyGrade, StudySession, Subject, TaskPre
 import MarkdownPreview from './MarkdownPreview.vue'
 import { useUiPreferences } from '../lib/uiPreferences'
 
-const props = defineProps<{ session: StudySession | null; shortcuts?: TaskShortcut[] }>()
+const props = defineProps<{ session: StudySession | null; shortcuts?: TaskShortcut[]; sprintEnabled?: boolean }>()
 const { t } = useUiPreferences()
 const emit = defineEmits<{ changed: [] }>()
 const finishOpen = ref(false)
@@ -131,10 +131,17 @@ function toggleTag(tagId: number) {
   else form.tag_ids.push(tagId)
 }
 
+async function togglePause() {
+  if (!props.session || saving.value) return
+  saving.value=true
+  try { await post(`/api/sessions/${props.session.id}/pause/`,{action:props.session.is_paused?'resume':'pause'});emit('changed') }
+  catch(reason){ElMessage.error((reason as Error).message)}finally{saving.value=false}
+}
+
 async function prepareFinish() {
   if (!props.session) return
   const elapsed = Date.now() - new Date(props.session.start_time).getTime()
-  if (elapsed < 25 * 60 * 1000 || elapsed > 12 * 60 * 60 * 1000) {
+  if (!props.sprintEnabled && (elapsed < 25 * 60 * 1000 || elapsed > 12 * 60 * 60 * 1000)) {
     saving.value = true
     try {
       const result = await post<{ discarded: boolean; discard_reason: string | null }>(`/api/sessions/${props.session.id}/finish/`, {})
@@ -195,8 +202,8 @@ async function abandon() {
   <section class="focus-panel" :class="{ active: session }">
     <template v-if="session">
       <div><span class="pulse-dot" /><span class="eyebrow">{{ t('sessionInProgress') }}</span><h2>{{ session.task_path || session.subject_label }}</h2><p>{{ session.task_path ? session.subject_label : session.topic || session.chapter || t('startRecorded') }}<span v-if="session.disturbance_count" class="active-disturbance-count"> · {{ session.disturbance_count }} {{ t('disturbances').toLocaleLowerCase() }}</span></p></div>
-      <div class="hidden-timer" aria-label="Active duration hidden"><span>{{ t('timerHidden') }}</span><small>{{ t('visibleAfter') }}</small></div>
-      <div class="active-actions"><el-button plain @click="abandon">{{ t('discard') }}</el-button><el-button type="primary" @click="prepareFinish">{{ t('finishReview') }}</el-button></div>
+      <div class="hidden-timer" aria-label="Active duration hidden"><span>{{ t('timerHidden') }}</span><small>{{ sprintEnabled ? '结束后显示实际净时长 · 无时长上限' : t('visibleAfter') }}</small></div>
+      <div class="active-actions"><el-button v-if="sprintEnabled" :disabled="saving" @click="togglePause">{{ session.is_paused ? '继续学习' : '暂停休息' }}</el-button><span v-if="session.is_paused" role="status">已暂停 · 休息不计时</span><el-button plain @click="abandon">{{ t('discard') }}</el-button><el-button type="primary" @click="prepareFinish">{{ t('finishReview') }}</el-button></div>
     </template>
     <template v-else>
       <div><span class="eyebrow">{{ t('startSession') }}</span><h2>{{ t('selectTask') }}</h2><p>{{ t('automaticStart') }}</p></div>

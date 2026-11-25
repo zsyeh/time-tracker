@@ -153,7 +153,7 @@ def _record_disturbance(raw_token):
             return token, None, 'no_active_session', False
 
         now = timezone.now()
-        if is_long_session(session.start_time, now):
+        if is_long_session(session.start_time, now, user=token.user):
             session.delete()
             return token, None, 'stale_session_discarded', False
 

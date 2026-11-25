@@ -43,6 +43,7 @@ export interface CompletionOptions {
 }
 
 export interface StudySessionSummary {
+  is_paused?: boolean
   id: number
   uuid: string
   subject: Subject
@@ -91,7 +92,14 @@ export interface HeatmapDay {
   is_exam_day: boolean
 }
 
+export interface SprintProgress {
+ name:string;start_date:string;end_date:string;days:number;day_index:number;daily_target_minutes:number;updated_at:string
+ today:{credited_minutes:number;actual_minutes:number;extra_minutes:number;completion_percent:number;remaining_minutes:number;complete:boolean;subjects:Array<{subject:Subject;label:string;target_minutes:number;actual_minutes:number;base_minutes:number;extra_minutes:number;remaining_minutes:number;completion_percent:number;task:string}>}
+ cumulative:{target_minutes:number;credited_minutes:number;actual_minutes:number;extra_minutes:number;completion_percent:number;completed_days:number}
+}
+
 export interface Overview {
+  sprint_progress?: SprintProgress | null
   server_time: string
   range_days: number
   features: { math_visualization: boolean }

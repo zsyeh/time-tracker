@@ -166,6 +166,7 @@ class StudySessionSerializer(serializers.ModelSerializer):
             'efficiency_coefficient',
             'credited_duration_minutes',
             'status',
+            'is_paused',
             'learning_mode',
             'difficulty',
             'energy_level',
