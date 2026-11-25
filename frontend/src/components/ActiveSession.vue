@@ -229,7 +229,7 @@ async function abandon() {
   <el-dialog v-model="finishOpen" :title="t('completeSession')" width="min(760px, 94vw)" destroy-on-close>
     <el-form label-position="top" class="review-form simple-review">
       <div class="efficiency-assessment">
-        <div><span>{{ t('efficiencyAssessment') }}</span><small>{{ t('creditedFormula') }}</small></div>
+        <div><span>{{ t('efficiencyAssessment') }}</span><small>{{ sprintEnabled ? '冲刺目标按实际净时长计算；效率等级仅用于原有历史统计' : t('creditedFormula') }}</small></div>
         <div class="efficiency-options" role="radiogroup" aria-label="Efficiency grade">
           <button
             v-for="item in efficiencyGrades"
@@ -247,7 +247,7 @@ async function abandon() {
       <el-form-item :label="t('markdownOptional')"><el-input v-model="form.details" type="textarea" :rows="14" placeholder="Optional Markdown. TeX formulas support $...$, $$...$$, \(...\), and \[...\]." /></el-form-item>
       <MarkdownPreview :source="form.details" />
       <div v-if="completionOptions.tags.length" class="completion-tags"><span>TAGS</span><button v-for="tag in completionOptions.tags" :key="tag.id" type="button" :class="{ selected: form.tag_ids.includes(tag.id) }" @click="toggleTag(tag.id)">#{{ tag.name }}</button></div>
-      <p class="minimum-note">{{ t('emptyAllowed') }}</p>
+      <p class="minimum-note">{{ sprintEnabled ? '标题与笔记可留空；短任务和超额学习均保留，暂停与休息不计时。' : t('emptyAllowed') }}</p>
     </el-form>
     <template #footer><el-button @click="finishOpen = false">{{ t('continueSession') }}</el-button><el-button type="primary" :loading="saving" @click="finish">{{ t('saveFinish') }}</el-button></template>
   </el-dialog>
