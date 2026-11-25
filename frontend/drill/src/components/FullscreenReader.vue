@@ -6,7 +6,7 @@ import type { ReaderPracticeAction, ReaderPracticeControls } from '../lib/reader
 import { typeText } from '../lib/examTypes'
 
 type Page = { src: string; width?: number; height?: number }
-const props = defineProps<{ title: string; images: Page[]; markdown?: string; prepare?: () => Promise<void>; controls?: ReaderPracticeControls; hideTrigger?: boolean; contentKey?: string; pending?: boolean; syncing?: boolean; retryable?: boolean }>()
+const props = defineProps<{ title: string; positionLabel?: string; images: Page[]; markdown?: string; prepare?: () => Promise<void>; controls?: ReaderPracticeControls; hideTrigger?: boolean; contentKey?: string; pending?: boolean; syncing?: boolean; retryable?: boolean }>()
 const emit = defineEmits<{ opened: []; closed: []; action: [action: ReaderPracticeAction]; retry: [] }>()
 const dialog = ref<HTMLDialogElement | null>(null)
 const scroller = ref<HTMLElement | null>(null)
@@ -107,6 +107,7 @@ defineExpose({ open, close, isOpen: computed(() => opened.value) })
       <template v-if="opened">
         <header class="reader-toolbar" :class="{ 'has-practice-controls': controls }">
           <strong>{{ title }}</strong>
+          <span v-if="positionLabel" class="reader-position">{{ positionLabel }}</span>
           <slot name="actions" />
           <ReaderPracticeActions v-if="controls" :controls="controls" @action="emit('action', $event)" />
           <span v-if="images.length > 1" class="reader-count">{{ page }} / {{ images.length }}</span>
@@ -149,6 +150,7 @@ defineExpose({ open, close, isOpen: computed(() => opened.value) })
 .fullscreen-reader::backdrop { background: #0009; }
 .reader-toolbar { flex: none; display: flex; align-items: center; gap: 8px; min-height: 48px; padding: max(4px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) 4px max(10px, env(safe-area-inset-left)); border-bottom: 1px solid var(--border-subtle); background: var(--bg-surface); }
 .reader-toolbar strong { min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
+.reader-position { display: none; }
 .reader-count { flex: none; color: var(--text-secondary); font-size: 12px; font-variant-numeric: tabular-nums; }
 .reader-zoom { display: flex; flex: none; gap: 4px; }
 .reader-toolbar button { min-width: 32px; min-height: 32px; padding: 4px 8px; border: 0; border-radius: 6px; color: var(--text-primary); background: transparent; font-size: 13px; cursor: pointer; }
@@ -173,8 +175,10 @@ defineExpose({ open, close, isOpen: computed(() => opened.value) })
   .reader-toolbar { flex-wrap: wrap; }
   .reader-toolbar.has-practice-controls { gap: 4px; }
   .has-practice-controls > strong { display: none; }
+  .reader-position { display: block; flex: 1 0 100%; font-size: 12px; line-height: 1.2; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
   .has-practice-controls .reader-zoom > button:first-child, .has-practice-controls .reader-zoom > button:last-child { display: none; }
   .has-practice-controls .reader-zoom { margin-left: auto; }
-  .has-practice-controls .reader-count { flex-basis: 100%; order: 1; text-align: center; }
+  .has-practice-controls .reader-position { display: none; }
+.reader-count { flex-basis: 100%; order: 1; text-align: center; }
 }
 </style>
