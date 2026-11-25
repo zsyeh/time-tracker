@@ -178,7 +178,6 @@ defineExpose({ open, close, isOpen: computed(() => opened.value) })
   .reader-position { display: block; flex: 1 0 100%; font-size: 12px; line-height: 1.2; color: var(--text-secondary); font-variant-numeric: tabular-nums; }
   .has-practice-controls .reader-zoom > button:first-child, .has-practice-controls .reader-zoom > button:last-child { display: none; }
   .has-practice-controls .reader-zoom { margin-left: auto; }
-  .has-practice-controls .reader-position { display: none; }
-.reader-count { flex-basis: 100%; order: 1; text-align: center; }
+  .has-practice-controls .reader-count { flex-basis: 100%; order: 1; text-align: center; }
 }
 </style>
