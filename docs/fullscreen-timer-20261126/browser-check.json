@@ -1,0 +1,36 @@
+{
+  "checks": [
+    {
+      "workspace": "drill",
+      "width": 1180,
+      "timer_visible": true,
+      "close_visible": true,
+      "no_timer_close_overlap": true
+    },
+    {
+      "workspace": "drill",
+      "width": 390,
+      "timer_visible": true,
+      "close_visible": true,
+      "no_timer_close_overlap": true
+    },
+    {
+      "workspace": "ei",
+      "width": 1180,
+      "timer_visible": true,
+      "close_visible": true,
+      "no_timer_close_overlap": true
+    },
+    {
+      "workspace": "ei",
+      "width": 390,
+      "timer_visible": true,
+      "close_visible": true,
+      "no_timer_close_overlap": true
+    }
+  ],
+  "reopen_preserves_timer": true,
+  "timer_ticks": true,
+  "pageerrors": [],
+  "physical_safari_tested": false
+}
