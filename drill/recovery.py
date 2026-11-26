@@ -3,6 +3,7 @@ import datetime as dt
 import math
 import logging
 import re
+import uuid
 from urllib.parse import parse_qsl, urlsplit
 from django.db import transaction
 from django.contrib.auth import get_user_model
@@ -116,6 +117,24 @@ def timing_request(user, question, data):
                     recovery__protocol=2, recovery__finalized=False).order_by('-created_at').first()
             if timer and (timer.recovery or {}).get('finalized'):
                 return payload(timer, now)
+            if timer and data.get('time_basis') == 'wall_v1' and not _live(timer, now) and wall_elapsed_ms(timer, now) > WALL_MAX_MS:
+                old_recovery = dict(timer.recovery or {})
+                old_recovery.update(finalized=True, duration_excluded_reason='over_30_minutes',
+                                    lease_until=old_recovery.get('lease_until') or now.isoformat())
+                timer.recovery = old_recovery
+                if not timer.stopped_at:
+                    timer.stopped_at = now
+                timer.save(update_fields=['recovery', 'stopped_at'])
+                if state.active_timer_id == timer.pk:
+                    state.active_timer = None
+                    state.save(update_fields=['active_timer'])
+                fresh_key = data['timing_key']
+                if str(fresh_key) == str(timer.client_key) or QuestionTimingSession.objects.filter(client_key=fresh_key).exists():
+                    fresh_key = uuid.uuid4()
+                timer = QuestionTimingSession.objects.create(user=user, question=question,
+                    client_key=fresh_key, starts_at=now+dt.timedelta(seconds=5),
+                    recovery={'protocol': 2, 'elapsed_ms': 0, 'countdown_ms': 5000,
+                              'sequence': 0, 'finalized': False, 'replaced_stale_timer_id': timer.pk})
             active = state.active_timer
             # Shared browser storage is not proof that an older document died.
             # Never transfer a still-live lease to a different document owner.
@@ -137,9 +156,9 @@ def timing_request(user, question, data):
                          countdown_ms=min(5000, max(0, math.ceil((timer.starts_at-now).total_seconds()*1000))))
                 timer.recovery = r
             previous_owner = r.get('owner')
-            local_base_valid = previous_owner in (None, str(data['owner'])) or (
+            local_base_valid = not r.get('replaced_stale_timer_id') and (previous_owner in (None, str(data['owner'])) or (
                 previous_owner == str(data.get('resume_owner'))
-                and r.get('elapsed_ms', 0) == data.get('base_elapsed_ms'))
+                and r.get('elapsed_ms', 0) == data.get('base_elapsed_ms')))
             if local_base_valid and state.active_timer_id == timer.pk and _live(timer, now) and data.get('sequence', 0) <= r.get('sequence', 0):
                 if data.get('time_basis') == 'wall_v1':
                     timer.save(update_fields=['recovery'])

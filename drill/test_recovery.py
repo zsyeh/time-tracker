@@ -307,14 +307,38 @@ class WallTimingTests(TestCase):
         self.assertEqual(result.status_code,201,result.content)
         self.assertEqual(result.json()['time_spent_seconds'],1800)
 
-    def test_more_than_thirty_minutes_omits_duration_but_keeps_attempt_and_retry(self):
-        self.wall_claim();self.tick(1805.001);self.wall_claim(2)
-        submission=str(uuid.uuid4());result=self.attempt(submission,sequence=4,elapsed=10)
+    def test_more_than_thirty_minutes_live_round_omits_duration_but_keeps_attempt_and_retry(self):
+        self.wall_claim()
+        for _ in range(60):
+            self.tick(30)
+            self.call('checkpoint', seq=QuestionTimingSession.objects.get(client_key=self.key).recovery['sequence']+1, elapsed=0)
+        self.tick(5.001)
+        self.wall_claim(QuestionTimingSession.objects.get(client_key=self.key).recovery['sequence']+1)
+        submission=str(uuid.uuid4());result=self.attempt(submission,sequence=100,elapsed=10)
         self.assertEqual(result.status_code,201,result.content)
         self.assertIsNone(result.json()['time_spent_seconds'])
         self.assertEqual(QuestionTimingSession.objects.get(client_key=self.key).recovery['duration_excluded_reason'],'over_30_minutes')
-        self.assertEqual(self.attempt(submission,sequence=4,elapsed=10).status_code,200)
+        self.assertEqual(self.attempt(submission,sequence=100,elapsed=10).status_code,200)
         self.assertEqual(QuestionAttempt.objects.count(),1)
+
+    def test_stale_paused_round_over_thirty_minutes_starts_fresh_wall_round_on_claim(self):
+        self.call();self.tick(10);self.call('pause',2,5000)
+        self.tick(1805)
+        r=self.wall_claim(3)
+        self.assertEqual(r.status_code,200,r.content)
+        body=r.json()
+        self.assertNotEqual(body['timing_key'],self.key)
+        self.assertEqual(body['elapsed_ms'],0)
+        self.assertEqual(body['countdown_ms'],5000)
+        self.assertFalse(body['local_base_valid'])
+        old_timer=QuestionTimingSession.objects.get(client_key=self.key)
+        self.assertTrue(old_timer.recovery['finalized'])
+        self.assertEqual(old_timer.recovery['duration_excluded_reason'],'over_30_minutes')
+        self.key=body['timing_key']
+        self.tick(25)
+        result=self.attempt(sequence=body['sequence']+1,elapsed=20000)
+        self.assertEqual(result.status_code,201,result.content)
+        self.assertEqual(result.json()['time_spent_seconds'],20)
 
     def test_unfinished_foreground_round_upgrades_without_resetting_original_start(self):
         self.call();self.tick(65);self.call('checkpoint',2,30000)
