@@ -1,0 +1,45 @@
+{
+  "checks": [
+    {
+      "width": 390,
+      "overflow": false,
+      "top": [
+        "0 / 9590%",
+        "0 / 9590%",
+        "959 / 959100%",
+        "0 / 9590%"
+      ],
+      "chapters": 7,
+      "complete": true,
+      "clipped": false
+    },
+    {
+      "width": 820,
+      "overflow": false,
+      "top": [
+        "0 / 9590%",
+        "0 / 9590%",
+        "959 / 959100%",
+        "0 / 9590%"
+      ],
+      "chapters": 7,
+      "complete": true,
+      "clipped": false
+    },
+    {
+      "width": 1180,
+      "overflow": false,
+      "top": [
+        "0 / 9590%",
+        "0 / 9590%",
+        "959 / 959100%",
+        "0 / 9590%"
+      ],
+      "chapters": 7,
+      "complete": true,
+      "clipped": false
+    }
+  ],
+  "errors": [],
+  "physical_safari_tested": false
+}
