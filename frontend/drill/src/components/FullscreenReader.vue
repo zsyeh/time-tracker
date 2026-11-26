@@ -135,6 +135,7 @@ defineExpose({ open, close, showFeedback, flashShortcut, isOpen: computed(() => 
         <header class="reader-toolbar" :class="{ 'has-practice-controls': controls }">
           <strong>{{ title }}</strong>
           <span v-if="positionLabel" class="reader-position">{{ positionLabel }}</span>
+          <span v-if="$slots.timer" class="reader-timer" role="timer"><slot name="timer" /></span>
           <slot name="actions" />
           <ReaderPracticeActions v-if="controls" :controls="controls" @action="emit('action', $event)" />
           <span v-if="images.length > 1" class="reader-count">{{ page }} / {{ images.length }}</span>
@@ -179,6 +180,7 @@ defineExpose({ open, close, showFeedback, flashShortcut, isOpen: computed(() => 
 .reader-toolbar { flex: none; display: flex; align-items: center; gap: 8px; min-height: 48px; padding: max(4px, env(safe-area-inset-top)) max(10px, env(safe-area-inset-right)) 4px max(10px, env(safe-area-inset-left)); border-bottom: 1px solid var(--border-subtle); background: var(--bg-surface); }
 .reader-toolbar strong { min-width: 0; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: 14px; }
 .reader-position { display: none; }
+.reader-timer { flex: none; min-width: 4ch; white-space: nowrap; color: var(--text-secondary); font-size: 13px; font-variant-numeric: tabular-nums; }
 .reader-count { flex: none; color: var(--text-secondary); font-size: 12px; font-variant-numeric: tabular-nums; }
 .reader-zoom { display: flex; flex: none; gap: 4px; }
 .reader-toolbar button { min-width: 32px; min-height: 32px; padding: 4px 8px; border: 0; border-radius: 6px; color: var(--text-primary); background: transparent; font-size: 13px; cursor: pointer; }

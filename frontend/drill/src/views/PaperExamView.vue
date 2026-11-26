@@ -208,6 +208,7 @@ onUnmounted(() => { removeShortcuts?.();window.clearInterval(timer); window.clea
         <button :disabled="replacing || index === paper.items.length - 1" @click="move(index + 1)">下一题</button>
       </footer>
       <FullscreenReader ref="reader" hide-trigger :title="`第 ${item.position} 题 · ${answer ? '答案' : '题目'}`" :images="images" :content-key="`${item.question.uuid}-${answer}`">
+        <template #timer><span :title="canRevealAnswers ? '考试已结束' : '考试剩余时间'">{{ canRevealAnswers ? '已结束' : clock }}</span></template>
         <template #actions><button :disabled="replacing || index === 0" @click="move(index - 1)">上一题</button><button :disabled="replacing || index === paper.items.length - 1" @click="move(index + 1)">下一题</button><button data-action="favorite" :aria-pressed="!!item.question.is_favorite" :disabled="favoriteSaving || replacing" @click="toggleFavorite">{{ item.question.is_favorite ? '已收藏' : '收藏' }}</button><button :disabled="replacing || sharing || favoriteSaving" @click="replaceQuestion">{{ replacing ? '更换中…' : '更换本题' }}</button></template>
         <template #recovery><p v-if="replaceError || error" class="replacement-feedback" role="alert">{{ replaceError || error }}</p></template>
       </FullscreenReader>

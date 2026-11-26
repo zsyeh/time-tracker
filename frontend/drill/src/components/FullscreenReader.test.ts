@@ -90,7 +90,8 @@ it('exposes recovery actions inside the open modal without changing ordinary too
   ]):null})})
   app.mount(host);await flush()
   const dialog=document.querySelector<HTMLDialogElement>('.fullscreen-reader')!
-  dialog.showModal=function(){this.open=true};dialog.close=function(){this.open=false;this.dispatchEvent(new Event('close'))}
+  dialog.showModal=function(){this.open=true}
+  dialog.close=function(){this.open=false;this.dispatchEvent(new Event('close'))}
   host.querySelector('button')!.click();await flush()
   expect(dialog.querySelector('.test-recovery')).toBeNull()
   const ordinaryButtons=dialog.querySelectorAll('.reader-toolbar button').length
@@ -146,4 +147,19 @@ it('expires repeated success and shortcut feedback without changing the reader l
   dialog.querySelector<HTMLButtonElement>('.reader-close')!.click();await flush()
   expect(dialog.querySelector('.reader-toast')).toBeNull()
  } finally {vi.useRealTimers()}
+})
+
+it('keeps the supplied timer visible and reactive inside the open fullscreen toolbar',async()=>{
+  const state=reactive({time:'1:23',key:'question-a'})
+  host=document.createElement('div');document.body.append(host)
+  app=createApp({render:()=>h(FullscreenReader,{title:'Question',contentKey:state.key,images:[]},{timer:()=>state.time})});app.mount(host);await flush()
+  const dialog=document.querySelector<HTMLDialogElement>('.fullscreen-reader')!
+  dialog.showModal=function(){this.open=true}
+  dialog.close=function(){this.open=false}
+  host.querySelector('button')!.click();await flush()
+  const timer=dialog.querySelector('[role="timer"]')!
+  expect(timer.textContent).toBe('1:23')
+  state.time='1:24';await flush();expect(timer.textContent).toBe('1:24')
+  state.key='question-b';state.time='0:00';await flush()
+  expect(dialog.open).toBe(true);expect(dialog.querySelector('[role="timer"]')).toBe(timer);expect(timer.textContent).toBe('0:00')
 })
