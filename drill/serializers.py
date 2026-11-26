@@ -158,6 +158,7 @@ class QuestionUserStateSerializer(serializers.Serializer):
 
 
 class QuestionTimingSerializer(serializers.Serializer):
+    time_basis = serializers.ChoiceField(choices=('wall_v1',), required=False)
     action = serializers.ChoiceField(choices=('begin', 'cancel', 'claim', 'checkpoint', 'pause'), default='begin')
     protocol = serializers.IntegerField(required=False, min_value=2, max_value=2)
     owner = serializers.UUIDField(required=False)

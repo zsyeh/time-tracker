@@ -151,3 +151,22 @@ it('does not reuse the cloned sessionStorage owner identity',async()=>{
   const t=timer();await t.activate()
   expect(t.state.owner).not.toBe('cloned-other-window-owner')
 })
+
+it('wall-time mode includes hidden and suspended intervals and requests server-authoritative timing',async()=>{
+  let wall=1000000;vi.spyOn(Date,'now').mockImplementation(()=>wall)
+  const request=vi.fn(async<T>(_url:string,options?:RequestInit)=>{
+    const sent=JSON.parse(String(options?.body))
+    return {protocol:2,timing_key:sent.key||sent.timing_key,owner:sent.owner,sequence:sent.sequence,
+      time_basis:'wall_v1',elapsed_ms:Math.max(0,wall-1000000),countdown_ms:0,finalized:false,local_base_valid:true} as T
+  })
+  const t=new ForegroundTimer('wall-user','drill','wall-q',request,()=>{},true)
+  await t.activate();expect(JSON.parse(String(request.mock.calls[0][1]?.body)).time_basis).toBe('wall_v1')
+  wall+=20000;now+=20000;t.tick();expect(t.state.elapsedMs).toBe(20000)
+  await t.pause();vi.spyOn(document,'visibilityState','get').mockReturnValue('hidden')
+  wall+=10*60000;now+=10*60000;t.tick();expect(t.state.elapsedMs).toBe(620000)
+  vi.spyOn(document,'visibilityState','get').mockReturnValue('visible');await t.activate()
+  expect(t.state.elapsedMs).toBe(620000)
+  const restored=new ForegroundTimer('wall-user','drill','wall-q',request,()=>{},true);await restored.activate()
+  expect(restored.state.elapsedMs).toBe(620000)
+  restored.finish();wall+=60000;now+=60000;restored.tick();expect(restored.state.elapsedMs).toBe(620000)
+})

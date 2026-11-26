@@ -278,3 +278,55 @@ class RecoveryAccountAffinityTests(TestCase):
         self.assertEqual(self.client.get('/api/auth/session/',HTTP_X_LEARNING_USER_ID=str(old.pk)).json()['user']['id'],new.pk)
         self.client.logout()
         self.assertIn(self.client.get('/api/learning/recovery/',HTTP_X_LEARNING_USER_ID=str(old.pk)).status_code,(401,403))
+
+
+@override_settings(SECURE_SSL_REDIRECT=False, ALLOWED_HOSTS=['testserver'])
+class WallTimingTests(TestCase):
+    setUp = RecoveryTests.setUp
+    tick = RecoveryTests.tick
+    call = RecoveryTests.call
+    attempt = RecoveryTests.attempt
+
+    def wall_claim(self, sequence=1):
+        return self.client.post(f'/api/drill/questions/{self.q.uuid}/timing/',
+            {'protocol':2,'action':'claim','time_basis':'wall_v1','timing_key':self.key,
+             'owner':self.owner,'sequence':sequence,'elapsed_ms':0,'countdown_ms':0},content_type='application/json')
+
+    def test_background_gap_counts_from_server_start_even_if_client_reports_less(self):
+        self.wall_claim();self.tick(10);self.call('pause',2,5000)
+        self.tick(590);r=self.wall_claim(3)
+        self.assertEqual(r.json()['elapsed_ms'],595000)
+        result=self.attempt(sequence=5,elapsed=1000)
+        self.assertEqual(result.status_code,201,result.content)
+        self.assertEqual(result.json()['time_spent_seconds'],595)
+        self.assertEqual(QuestionTimingSession.objects.get(client_key=self.key).recovery['time_basis'],'wall_v1')
+
+    def test_exact_thirty_minutes_is_included(self):
+        self.wall_claim();self.tick(1805);self.wall_claim(2)
+        result=self.attempt(sequence=4,elapsed=0)
+        self.assertEqual(result.status_code,201,result.content)
+        self.assertEqual(result.json()['time_spent_seconds'],1800)
+
+    def test_more_than_thirty_minutes_omits_duration_but_keeps_attempt_and_retry(self):
+        self.wall_claim();self.tick(1805.001);self.wall_claim(2)
+        submission=str(uuid.uuid4());result=self.attempt(submission,sequence=4,elapsed=10)
+        self.assertEqual(result.status_code,201,result.content)
+        self.assertIsNone(result.json()['time_spent_seconds'])
+        self.assertEqual(QuestionTimingSession.objects.get(client_key=self.key).recovery['duration_excluded_reason'],'over_30_minutes')
+        self.assertEqual(self.attempt(submission,sequence=4,elapsed=10).status_code,200)
+        self.assertEqual(QuestionAttempt.objects.count(),1)
+
+    def test_unfinished_foreground_round_upgrades_without_resetting_original_start(self):
+        self.call();self.tick(65);self.call('checkpoint',2,30000)
+        before=QuestionTimingSession.objects.get(client_key=self.key).starts_at
+        self.tick(30);r=self.wall_claim(3)
+        self.assertEqual(r.json()['elapsed_ms'],90000)
+        timer=QuestionTimingSession.objects.get(client_key=self.key)
+        self.assertEqual(timer.starts_at,before)
+        self.assertEqual(timer.recovery['previous_foreground_elapsed_ms'],30000)
+
+    def test_client_clock_cannot_inflate_saved_wall_time(self):
+        self.wall_claim();self.tick(15)
+        result=self.attempt(sequence=3,elapsed=43200000)
+        self.assertEqual(result.status_code,201,result.content)
+        self.assertEqual(result.json()['time_spent_seconds'],10)

@@ -204,3 +204,12 @@ it('saves a review after the timer guard allows it',async()=>{
  await record('review')
  expect(ensure).toHaveBeenCalledOnce();expect(timer.prepareSubmission).toHaveBeenCalledOnce();expect(scope.post).toHaveBeenCalledOnce()
 })
+it('shows an excluded wall-time round as untimed even when an older timed attempt exists',async()=>{
+  const {scope,timer,record}=setup()
+  Object.assign(timer.state,{timeBasis:'wall_v1'})
+  scope.post.mockResolvedValue(Object.assign({note_conflict:false},{time_spent_seconds:null,last_time_spent_seconds:60}))
+  await record('review')
+  expect(scope.timingOmitted.value).toBe(true)
+  expect(timer.finish).toHaveBeenCalledOnce()
+  expect(scope.error.value).toBe('')
+})

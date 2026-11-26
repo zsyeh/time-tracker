@@ -14,6 +14,7 @@ from .models import LearningRecoveryState, Question, QuestionTimingSession
 
 LEASE_SECONDS = 45
 MAX_MS = 43200000
+WALL_MAX_MS = 30 * 60 * 1000
 logger = logging.getLogger(__name__)
 TIMING_CONFLICT_REASONS = frozenset(('owner_mismatch', 'lease_expired', 'stale_sequence',
     'active_timer_mismatch', 'timing_round_missing', 'timing_round_mismatch',
@@ -58,9 +59,16 @@ def _live(timer, now):
     r = timer.recovery or {}
     return not r.get('finalized') and r.get('lease_until', '') > now.isoformat()
 
+def wall_elapsed_ms(timer, now):
+    return min(MAX_MS, max(0, int((now - timer.starts_at).total_seconds() * 1000)))
+
+
 def payload(timer, now):
-    r = timer.recovery or {}
-    return {'protocol': 2, 'timing_key': str(timer.client_key), 'server_now': now,
+    r = dict(timer.recovery or {})
+    if r.get('time_basis') == 'wall_v1' and not r.get('finalized'):
+        r['elapsed_ms'] = wall_elapsed_ms(timer, now)
+        r['countdown_ms'] = min(5000, max(0, math.ceil((timer.starts_at - now).total_seconds() * 1000)))
+    return {'protocol': 2, 'time_basis': r.get('time_basis', 'foreground_v2'), 'timing_key': str(timer.client_key), 'server_now': now,
             'starts_at': timer.starts_at, 'elapsed_ms': r.get('elapsed_ms', 0),
             'countdown_ms': r.get('countdown_ms', 5000), 'sequence': r.get('sequence', 0),
             'lease_until': r.get('lease_until'), 'owner': r.get('owner'),
@@ -76,6 +84,11 @@ def _checkpoint(timer, data, now):
     # Absolute cumulative snapshots, never additive deltas. Retries/out-of-order
     # requests do not renew a lease or change duration.
     if seq > r.get('sequence', 0):
+        if r.get('time_basis') == 'wall_v1':
+            r.update(elapsed_ms=wall_elapsed_ms(timer, now), countdown_ms=min(5000, max(0, math.ceil((timer.starts_at-now).total_seconds()*1000))),
+                     sequence=seq, checkpoint_at=now.isoformat(), lease_until=(now+dt.timedelta(seconds=LEASE_SECONDS)).isoformat())
+            timer.recovery = r
+            return
         last = dt.datetime.fromisoformat(r['checkpoint_at'])
         ceiling = r.get('elapsed_ms', 0) + max(0, int((now-last).total_seconds()*1000)) + 2000
         requested = data.get('elapsed_ms', r.get('elapsed_ms', 0))
@@ -117,11 +130,19 @@ def timing_request(user, question, data):
             if not (timer.recovery or {}).get('protocol') == 2:
                 raise timing_conflict('timing_protocol_mismatch', timer)
             r = dict(timer.recovery)
+            if data.get('time_basis') == 'wall_v1':
+                if r.get('time_basis') != 'wall_v1':
+                    r['previous_foreground_elapsed_ms'] = r.get('elapsed_ms', 0)
+                r.update(time_basis='wall_v1', elapsed_ms=wall_elapsed_ms(timer, now),
+                         countdown_ms=min(5000, max(0, math.ceil((timer.starts_at-now).total_seconds()*1000))))
+                timer.recovery = r
             previous_owner = r.get('owner')
             local_base_valid = previous_owner in (None, str(data['owner'])) or (
                 previous_owner == str(data.get('resume_owner'))
                 and r.get('elapsed_ms', 0) == data.get('base_elapsed_ms'))
             if local_base_valid and state.active_timer_id == timer.pk and _live(timer, now) and data.get('sequence', 0) <= r.get('sequence', 0):
+                if data.get('time_basis') == 'wall_v1':
+                    timer.save(update_fields=['recovery'])
                 return {**payload(timer, now), 'local_base_valid': True}
             r.update(sequence=max(r.get('sequence', 0)+1, data.get('sequence', 0)), owner=str(data['owner']), checkpoint_at=r.get('checkpoint_at', now.isoformat()) if local_base_valid else now.isoformat(),
                      lease_until=(now+dt.timedelta(seconds=LEASE_SECONDS)).isoformat())
@@ -224,11 +245,19 @@ def finish_timing(user, question, key, data):
         raise timing_conflict('stale_sequence', timer, state=state, owner=data.get('timing_owner'))
     _checkpoint(timer, {'owner': data.get('timing_owner'), 'sequence': data.get('timing_sequence', 0),
                         'elapsed_ms': data.get('timing_elapsed_ms', 0)}, now)
+    if timer.recovery.get('time_basis') == 'wall_v1':
+        timer.recovery['elapsed_ms'] = wall_elapsed_ms(timer, now)
     timer.recovery.update(finalized=True, lease_until=now.isoformat())
     timer.stopped_at = now
     timer.save(update_fields=['recovery', 'stopped_at'])
     state.active_timer = None
     state.save(update_fields=['active_timer'])
+    if timer.recovery.get('time_basis') == 'wall_v1':
+        if timer.recovery['elapsed_ms'] > WALL_MAX_MS:
+            timer.recovery['duration_excluded_reason'] = 'over_30_minutes'
+            timer.save(update_fields=['recovery'])
+            return None
+        return timer.recovery['elapsed_ms'] // 1000 or None
     value = timer.recovery['elapsed_ms'] // 1000
     return value if 1 <= value <= 43200 else None
 

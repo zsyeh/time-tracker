@@ -1,9 +1,10 @@
-/** Existing question timing API, protocol 2. No background wall-time accounting. */
+/** Existing question timing API, protocol 2; server-authoritative wall-time is opt-in. */
 export type TimerSnapshot = {
+  timeBasis?: 'wall_v1'; wallStartMs?: number;
   key: string; elapsedMs: number; countdownMs: number; sequence: number; acknowledged: number;
   submissionKey: string | null; pendingAttempt?: Record<string, unknown>; finalized: boolean; owner: string; ackOwner?: string; claimed: boolean
 }
-export type TimingReply = { local_base_valid?: boolean; protocol: number; timing_key: string; elapsed_ms: number; countdown_ms: number; sequence: number; owner: string; finalized: boolean }
+export type TimingReply = { time_basis?: string; local_base_valid?: boolean; protocol: number; timing_key: string; elapsed_ms: number; countdown_ms: number; sequence: number; owner: string; finalized: boolean }
 export type TimingIssue = {
   reason: string; can_reclaim: boolean; lease_retry_after?: number;
   lease_live?: boolean; owner_matches?: boolean; active_matches?: boolean
@@ -44,7 +45,7 @@ export class ForegroundTimer {
   private retryAfter = 0
   readonly storageKey: string
   constructor(readonly user: string, readonly workspace: string, readonly uuid: string,
-              private request: Request, private changed: () => void = () => {}) {
+              private request: Request, private changed: () => void = () => {}, readonly wallTime = false) {
     this.storageKey = `learning.timer.v2.${user}.${workspace}.${uuid}`
     const saved = readLocal<TimerSnapshot>(this.storageKey)
     this.state = saved && (!saved.finalized || Boolean(saved.pendingAttempt && saved.submissionKey)) && /^[0-9a-f-]{36}$/i.test(saved.key) && Number.isFinite(saved.elapsedMs) && saved.elapsedMs >= 0 && saved.elapsedMs <= 43200000 && Number.isFinite(saved.countdownMs) && saved.countdownMs >= 0 && saved.countdownMs <= 5000 && Number.isSafeInteger(saved.sequence) ? saved : this.fresh()
@@ -61,11 +62,7 @@ export class ForegroundTimer {
   tick(now = performance.now()) {
     const delta = Math.max(0, now-this.last); this.last = now
     // Frozen/suspended processes do not earn a large invisible interval.
-    if (this.visible && !this.state.finalized && delta <= 15000) {
-      const ready = Math.min(this.state.countdownMs, delta)
-      this.state.countdownMs -= ready
-      this.state.elapsedMs = Math.min(43200000, this.state.elapsedMs + delta-ready)
-    }
+    this.accrue(delta)
     if (now-this.savedAt >= 5000) this.persist()
     if (!this.disposed && !this.submitting && !this.state.finalized && now-this.syncedAt >= 15000 && now >= this.retryAfter && document.visibilityState !== 'hidden') {
       this.syncedAt = now
@@ -89,7 +86,7 @@ export class ForegroundTimer {
         let reply: TimingReply
         try { reply = await this.request<TimingReply>(`/api/drill/questions/${this.uuid}/timing/`, {
           method: 'POST', keepalive, signal: controller.signal, body: JSON.stringify({ protocol: 2, action, timing_key: sent.key,
-            owner: sent.owner, resume_owner: sent.ackOwner || sent.owner, base_elapsed_ms: sent.acknowledged, sequence: sent.sequence, elapsed_ms: Math.floor(sent.elapsedMs), countdown_ms: Math.ceil(sent.countdownMs) }),
+            ...(this.wallTime ? { time_basis: 'wall_v1' } : {}), owner: sent.owner, resume_owner: sent.ackOwner || sent.owner, base_elapsed_ms: sent.acknowledged, sequence: sent.sequence, elapsed_ms: Math.floor(sent.elapsedMs), countdown_ms: Math.ceil(sent.countdownMs) }),
         }) } finally { clearTimeout(timeout) }
         if (this.state.finalized) return { status: 'success', finalized: true }
         if (reply.protocol !== 2) throw Object.assign(new Error('Incompatible timing protocol'), { status: 400, body: { reason: 'incompatible_protocol' } })
@@ -111,6 +108,11 @@ export class ForegroundTimer {
           this.state.claimed = true
           this.visible = !this.disposed && document.visibilityState !== 'hidden'
           this.last = performance.now()
+        }
+        if (reply.time_basis === 'wall_v1') {
+          this.state.timeBasis = 'wall_v1'
+          this.state.wallStartMs = Date.now() + (reply.countdown_ms > 0 ? reply.countdown_ms : -reply.elapsed_ms)
+          this.state.elapsedMs = reply.elapsed_ms; this.state.countdownMs = reply.countdown_ms
         }
         if (reply.finalized) {
           if(this.state.elapsedMs>reply.elapsed_ms)writeLocal(this.storageKey+'.conflict',{...this.state})
@@ -177,9 +179,17 @@ export class ForegroundTimer {
   archiveOmittedRound() { writeLocal(this.storageKey + '.omitted', { ...this.state }) }
   private tickWithoutSync() {
     const now = performance.now(), delta = Math.max(0, now-this.last); this.last = now
-    if (this.visible && !this.state.finalized && delta <= 15000) {
+    this.accrue(delta)
+  }
+  private accrue(delta: number) {
+    if (this.state.finalized) return
+    if (this.state.timeBasis === 'wall_v1' && Number.isFinite(this.state.wallStartMs)) {
+      const elapsed = Date.now() - this.state.wallStartMs!
+      this.state.countdownMs = Math.min(5000, Math.max(0, -elapsed))
+      this.state.elapsedMs = Math.min(43200000, Math.max(0, elapsed))
+    } else if (this.visible && delta <= 15000) {
       const ready = Math.min(this.state.countdownMs, delta); this.state.countdownMs -= ready
-      this.state.elapsedMs = Math.min(43200000, this.state.elapsedMs+delta-ready)
+      this.state.elapsedMs = Math.min(43200000, this.state.elapsedMs + delta - ready)
     }
   }
   activate() { this.pauseRequested = false; this.last = performance.now(); return this.sync('claim') }

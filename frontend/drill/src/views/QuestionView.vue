@@ -631,7 +631,7 @@ function resetQuestionTimer() {
   window.clearInterval(questionTimerInterval)
   if (practiceTimer) void practiceTimer.dispose()
   roundDraftReady = false
-  practiceTimer = new ForegroundTimer(learningUserId, runtimeWorkspace, props.uuid, api, renderTimer)
+  practiceTimer = new ForegroundTimer(learningUserId, runtimeWorkspace, props.uuid, api, renderTimer, true)
   renderTimer()
   questionTimerInterval = window.setInterval(updateQuestionTimer, 500)
 }
@@ -904,6 +904,7 @@ interface StateResponse {
   is_favorite: boolean
   review_later: boolean
   review_overdue: boolean
+  time_spent_seconds?: number | null
   last_time_spent_seconds: number | null
   last_timed_at: string | null
   latest_diagnosis?: QuestionDetail['latest_diagnosis']
@@ -1024,7 +1025,8 @@ async function record(result: 'correct' | 'review' | 'reset', omitTiming = false
     roundTimer?.finish()
     if (sequence !== operationSequence) return
     timingRecoveryResult.value=null
-    timingOmitted.value=omitTiming&&response.last_time_spent_seconds==null
+    const savedRoundSeconds=response.time_spent_seconds!==undefined?response.time_spent_seconds:response.last_time_spent_seconds
+    timingOmitted.value=savedRoundSeconds==null&&(omitTiming||roundTimer?.state.timeBasis==='wall_v1')
     if (result === 'correct' || result === 'review') {
       timingFinalized.value = true
       window.clearInterval(questionTimerInterval)
@@ -1634,7 +1636,7 @@ onBeforeRouteLeave(() => {
                 <button v-if="timingRecoveryResult" type="button" :disabled="saving||timerReconnecting" @click="record(timingRecoveryResult,true)">{{ typeText('不记录本次用时，保存作答','Save answer without duration') }}</button>
                 <small v-if="timingIssueReason">{{ typeText('计时状态','Timing status') }}: {{ timingIssueReason }}</small>
               </div>
-              <small v-if="timerSyncStatus === 'offline' || timerSyncStatus === 'conflict'" class="note-draft-hint">{{ timerSyncStatus === 'conflict' ? typeText('计时同步冲突；本地进度已保留', 'Timing sync conflict; local progress retained') : typeText('离线计时已保存在本机', 'Offline timing saved on this device') }}</small><div class="question-timer" :class="{ active: !timingCountdown && !timingFinalized, saved: timingFinalized }"><span>{{ timingOmitted ? typeText("本次未记录用时","Duration omitted") : timingFinalized ? uiText("计时已保存") : timingCountdown ? uiText("计时准备") : uiText("本题用时") }}</span><strong>{{ timingOmitted ? '—' : timingFinalized || !timingCountdown ? formattedQuestionTime : `${timingCountdown} ${typeText('秒后开始', 'seconds until start')}` }}</strong></div>
+              <small v-if="timerSyncStatus === 'offline' || timerSyncStatus === 'conflict'" class="note-draft-hint">{{ timerSyncStatus === 'conflict' ? typeText('计时同步冲突；本地进度已保留', 'Timing sync conflict; local progress retained') : typeText('离线计时已保存在本机', 'Offline timing saved on this device') }}</small><div class="question-timer" :title="typeText('从开始到提交计时，切后台继续；超过30分钟本次用时不计','Elapsed time includes background time; rounds over 30 minutes are excluded')" :class="{ active: !timingCountdown && !timingFinalized, saved: timingFinalized }"><span>{{ timingOmitted ? typeText("本次未记录用时","Duration omitted") : timingFinalized ? uiText("计时已保存") : timingCountdown ? uiText("计时准备") : uiText("本题用时") }}</span><strong>{{ timingOmitted ? '—' : timingFinalized || !timingCountdown ? formattedQuestionTime : `${timingCountdown} ${typeText('秒后开始', 'seconds until start')}` }}</strong></div><small class="note-draft-hint">{{ typeText('切后台继续计时 · 超过30分钟不计本次用时','Background time included · Over 30 minutes excluded') }}</small>
               <NoteVisibility :note="note" :question-key="props.uuid">
               <p v-if="note && !noteOpen" class="note-preview" role="button" tabindex="0" @click="noteOpen = true" @keydown.enter="noteOpen = true">{{ note }}</p>
               <details class="note-field" :open="noteOpen" @toggle="toggleNote"><summary><span>{{ uiText("题目笔记 Note") }}</span><small>{{ noteSaveState === 'saving' ? uiText("保存中…") : noteSaveState === 'saved' ? uiText("已保存") : noteSaveState === 'error' ? uiText("保存失败") : noteSaveState === 'dirty' ? uiText("未保存") : note ? uiText("展开编辑") : uiText("添加笔记") }}</small></summary><textarea v-model="note" maxlength="20000" :placeholder="uiText('记录公式、错误原因、修正方法或下次检查点')" @input="cacheNoteDraft" /><span class="note-controls"><small class="note-draft-hint">{{ noteSaveState === 'saving' ? uiText("保存中…") : noteSaveState === 'saved' ? uiText("已保存到服务器") : noteSaveState === 'error' ? typeText('保存失败，请重试；离开页面前确认已保存。', 'Save failed. Retry and confirm it is saved before leaving this page.') : noteSaveState === 'dirty' ? uiText("未保存") : uiText("停止输入 5 秒后自动保存") }}</small><button type="button" class="save-note" :disabled="noteSaveState === 'saving'" @click="saveNote">{{ noteSaveState === 'saving' ? uiText("保存中…") : noteSaveState === 'error' ? uiText("重试保存") : uiText("保存笔记") }}</button></span></details>

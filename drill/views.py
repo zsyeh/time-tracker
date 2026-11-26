@@ -1537,7 +1537,7 @@ class DrillQuestionAttemptView(APIView):
                 omitted_timer.save(update_fields=['recovery'])
             if recovered_timer:
                 completed_timer = QuestionTimingSession.objects.get(user=request.user, question=question, client_key=timing_key)
-                completed_timer.recovery = {**completed_timer.recovery, 'attempt_id': attempt.pk, 'time_basis': 'foreground_v2'}
+                completed_timer.recovery = {**completed_timer.recovery, 'attempt_id': attempt.pk, 'time_basis': completed_timer.recovery.get('time_basis', 'foreground_v2')}
                 completed_timer.save(update_fields=['recovery'])
             primary_error = serializer.validated_data.get('primary_error')
             QuestionAttemptError.objects.bulk_create([
