@@ -99,6 +99,7 @@ export interface SprintProgress {
 }
 
 export interface Overview {
+  sprint_available?: boolean
   sprint_progress?: SprintProgress | null
   server_time: string
   range_days: number

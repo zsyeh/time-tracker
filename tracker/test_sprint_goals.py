@@ -13,7 +13,7 @@ from .time_intervals import study_seconds_between
 @override_settings(SECURE_SSL_REDIRECT=False)
 class SprintGoalTests(TestCase):
     def setUp(self):
-        self.u=get_user_model().objects.create_user('sprint-fixture')
+        self.u=get_user_model().objects.create_user('eh')
         self.day=datetime.date(2026,11,26)
         self.now=timezone.make_aware(datetime.datetime(2026,11,26,23,0))
         self.config={'mode':'sprint20','start_date':self.day.isoformat()}
@@ -73,8 +73,25 @@ class SprintGoalTests(TestCase):
         self.assertEqual(c.post(url,{'action':'resume'},format='json').status_code,200)
         l.refresh_from_db();self.assertFalse(l.is_paused)
         other=get_user_model().objects.create_user('sprint-other');UserPreferences.objects.create(user=other,values={'timer.goal_plan':self.config});c.force_authenticate(other)
-        self.assertEqual(c.post(url,{'action':'pause'},format='json').status_code,404)
+        self.assertEqual(c.post(url,{'action':'pause'},format='json').status_code,400)
     def test_configuration_validation(self):
         self.assertEqual(_value('timer.goal_plan',self.config),self.config)
         from rest_framework.exceptions import ValidationError
         with self.assertRaises(ValidationError):_value('timer.goal_plan',{'mode':'sprint20','start_date':'2026-02-30'})
+
+    def test_sprint_is_available_only_to_eh_even_with_saved_configuration(self):
+        from .sprint_goals import sprint_enabled
+        other=get_user_model().objects.create_user('sprint-not-eh')
+        UserPreferences.objects.create(user=other,values={'timer.goal_plan':self.config})
+        self.assertFalse(sprint_enabled(other))
+        self.assertIsNone(build_sprint_progress(other,self.now,config=self.config))
+
+    def test_task_presets_do_not_add_home_buttons_and_are_idempotent(self):
+        from django.core.management import call_command
+        from .models import TaskPreset
+        from io import StringIO
+        for _ in range(2):
+            call_command('configure_sprint20',username='eh',start_date=self.day.isoformat(),stdout=StringIO())
+        self.assertEqual(TaskPreset.objects.filter(user=self.u).count(),16)
+        self.assertFalse(TaskPreset.objects.filter(user=self.u,is_home_shortcut=True).exists())
+        self.assertEqual(TimeLog.objects.filter(user=self.u).count(),0)

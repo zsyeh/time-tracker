@@ -16,6 +16,8 @@ class Command(BaseCommand):
 
     @transaction.atomic
     def handle(self, *args, **options):
+        if options['username'] != 'eh':
+            raise CommandError('The sprint plan is available only for account eh.')
         try:
             start = datetime.date.fromisoformat(options['start_date']).isoformat()
             user = get_user_model().objects.select_for_update().get(username=options['username'], is_active=True)
@@ -31,9 +33,12 @@ class Command(BaseCommand):
         def task(subject, name, parent=None, extra=False):
             row = next((p for p in tasks if p.subject == subject and p.parent_id == (parent.pk if parent else None) and p.name == name), None)
             if row is None:
-                row = TaskPreset.objects.create(user=user, subject=subject, name=name, parent=parent, is_home_shortcut=parent is None and not extra)
+                row = TaskPreset.objects.create(user=user, subject=subject, name=name, parent=parent, is_home_shortcut=False)
                 tasks.append(row)
                 created.append(row.pk)
+            if row.is_home_shortcut:
+                row.is_home_shortcut = False
+                row.save(update_fields=['is_home_shortcut', 'updated_at'])
             if extra:
                 row.tags.add(extra_tag)
             return row

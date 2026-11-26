@@ -54,7 +54,7 @@ function scrollToSession() {
       <span v-if="overview.private_display.study_room_code">{{ t('studyRoom') }} · <b>{{ overview.private_display.study_room_code }}</b></span>
     </div>
 
-    <SprintProgressPanel v-if="overview" :progress="overview.sprint_progress" :today="overview.calendar.today" @changed="emit('changed')" />
+    <SprintProgressPanel v-if="overview?.sprint_available" :progress="overview.sprint_progress" :today="overview.calendar.today" @changed="emit('changed')" />
     <section v-if="overview && !overview.sprint_progress" class="today-section daily-progress-section" aria-labelledby="daily-progress-title">
       <header class="section-toolbar"><div><h2 id="daily-progress-title">{{ t('dailyProgress') }}</h2><span>{{ t('completedOnly') }}</span></div><span>{{ targetRemaining }}</span></header>
       <div class="today-overview-grid">

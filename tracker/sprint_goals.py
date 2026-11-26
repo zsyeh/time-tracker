@@ -11,7 +11,13 @@ SUBJECTS = [('math','数学二',300,'Selected 严选题30道'),('major','892专�
 EXTRA_TAG = '冲刺额外任务'
 
 
+def sprint_available(user):
+    return bool(user and user.is_authenticated and user.username == 'eh')
+
+
 def goal_config(user):
+    if not sprint_available(user):
+        return {'mode': 'standard', 'start_date': '2026-11-26'}
     return preferences_snapshot(user)['values']['timer.goal_plan']
 
 
@@ -21,7 +27,7 @@ def sprint_enabled(user):
 
 def build_sprint_progress(user, now=None, config=None):
     config = config or goal_config(user)
-    if config['mode'] != 'sprint20':
+    if not sprint_available(user) or config['mode'] != 'sprint20':
         return None
     now = now or timezone.now()
     today = timezone.localtime(now).date()

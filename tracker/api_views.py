@@ -573,7 +573,8 @@ class DashboardOverviewView(APIView):
                 'math_visualization': math_visualization_enabled,
             }
             cache.set(cache_key, payload, timeout=60)
-        from .sprint_goals import build_sprint_progress, goal_config
+        from .sprint_goals import build_sprint_progress, goal_config, sprint_available
+        payload['sprint_available'] = sprint_available(request.user)
         plan = goal_config(request.user)
         payload = dict(payload)
         payload['sprint_progress'] = build_sprint_progress(request.user,config=plan)
