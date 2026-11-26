@@ -212,13 +212,12 @@ it('updates memoized cached cells and preview from a fresh server snapshot', asy
 })
 
 
-it('restores the historical total-first overview and locator beside the state filters', async () => {
+it('keeps the locator beside the state filters below the selected progress summary', async () => {
   const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/selected-heatmap', component: HeatmapView }] })
   await router.push('/selected-heatmap')
   app = createApp(HeatmapView, { selectedOnly: true }); app.use(router).mount(host)
-  await vi.waitFor(() => expect(host.querySelector('.heatmap-overview strong')?.textContent).toBe('1'))
-  expect(host.querySelector('.heatmap-overview')?.firstElementChild?.tagName).toBe('STRONG')
-  expect(host.querySelector('.heatmap-overview .heatmap-next')).toBeNull()
+  await vi.waitFor(() => expect(host.querySelectorAll('.heatmap-summary-overview dd')).toHaveLength(4))
+  expect(host.querySelector('.heatmap-summary-overview .heatmap-next')).toBeNull()
   expect(host.querySelector('.heatmap-actions .heatmap-state-filters')).not.toBeNull()
   expect(host.querySelector('.heatmap-actions > .heatmap-next')).not.toBeNull()
 })
@@ -231,4 +230,23 @@ it('loads remembered small questions immediately without fetching an unfiltered 
  expect(vi.mocked(api).mock.calls).toHaveLength(1)
  expect(String(vi.mocked(api).mock.calls[0]?.[0])).toContain('type_group=small')
  expect(host.querySelector<HTMLSelectElement>('.exam-type-toolbar select')?.value).toBe('small')
+})
+
+
+it('shows counts and percentages against the filtered total for selected questions and each chapter', async () => {
+  vi.mocked(api).mockResolvedValue({ ...payload, question_count: 8,
+    statistics: { attempted_question_count: 6, mastered_question_count: 4, review_question_count: 2 },
+    groups: [{ ...payload.groups[0], questions: [question, { ...question, uuid: 'q-2' }],
+      statistics: { attempted_question_count: 1, mastered_question_count: 0, review_question_count: 1 } }],
+  })
+  const router = createRouter({ history: createMemoryHistory(), routes: [{ path: '/selected-heatmap', component: HeatmapView }] })
+  await router.push('/selected-heatmap')
+  app = createApp(HeatmapView, { selectedOnly: true }); app.use(router).mount(host)
+  await vi.waitFor(() => expect(host.querySelectorAll('.heatmap-progress-summary')).toHaveLength(2))
+  const rows = (selector: string) => [...host.querySelectorAll(`${selector} dd`)].map(item => item.textContent)
+  expect(rows('.heatmap-summary-overview')).toEqual(['6 / 875%', '4 / 850%', '2 / 825%', '2 / 825%'])
+  expect(rows('.heatmap-book-header')).toEqual(['1 / 250%', '0 / 20%', '1 / 250%', '1 / 250%'])
+  vi.mocked(api).mockResolvedValue({ ...payload, question_count: 0, groups: [], statistics: { attempted_question_count: 0, mastered_question_count: 0, review_question_count: 0 } })
+  app.unmount(); app = createApp(HeatmapView, { selectedOnly: true }); app.use(router).mount(host)
+  await vi.waitFor(() => expect(rows('.heatmap-summary-overview')).toEqual(['0 / 00%', '0 / 00%', '0 / 00%', '0 / 00%']))
 })

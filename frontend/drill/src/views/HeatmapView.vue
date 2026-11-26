@@ -9,6 +9,7 @@ import { useRoute, useRouter, type LocationQueryRaw } from 'vue-router'
 import { api } from '../lib/api'
 import { cachedHeatmap, storeHeatmap } from '../lib/workspace'
 import { useUiPreferences } from '../lib/uiPreferences'
+import HeatmapProgressSummary from '../components/HeatmapProgressSummary.vue'
 import ExamTypeControls from '../components/ExamTypeControls.vue'
 import ExamTypeBadge from '../components/ExamTypeBadge.vue'
 import { formatColours, typeText, type TypeStats } from '../lib/examTypes'
@@ -392,7 +393,8 @@ onUnmounted(() => {
     <p v-if="error" class="error-state">{{ uiText(error) }}</p>
     <div v-else-if="loading" class="question-skeleton">{{ uiText('正在加载热力图…') }}</div>
     <template v-else-if="data">
-      <div class="heatmap-overview" :aria-label="typeText('当前范围进度', 'Current progress')"><strong>{{ data.question_count }}</strong><span>{{ uiText('题') }}</span><span>{{ uiText('已做') }} <b>{{ data.statistics.attempted_question_count }}</b></span><span>{{ uiText('已掌握') }} <b>{{ data.statistics.mastered_question_count }}</b></span></div>
+      <HeatmapProgressSummary v-if="props.selectedOnly && !props.coreOnly" class="heatmap-summary-overview" :total="data.question_count" :statistics="data.statistics" />
+      <div v-else class="heatmap-overview" :aria-label="typeText('当前范围进度', 'Current progress')"><strong>{{ data.question_count }}</strong><span>{{ uiText('题') }}</span><span>{{ uiText('已做') }} <b>{{ data.statistics.attempted_question_count }}</b></span><span>{{ uiText('已掌握') }} <b>{{ data.statistics.mastered_question_count }}</b></span></div>
       <div v-if="mode === 'questions'" class="heatmap-actions">
         <div class="heatmap-state-filters" role="group" :aria-label="uiText('按题目状态高亮')">
           <button v-for="state in (['all', 'unattempted', 'review', 'mastered', 'overdue'] as const)" v-show="state !== 'overdue' || hasOverdue" :key="state" type="button" :class="{ active: quickState === state }" :aria-pressed="quickState === state" @click="quickState = state">{{ state === 'all' ? uiText('全部') : state === 'unattempted' ? uiText('未做') : state === 'review' ? uiText('待复习') : state === 'mastered' ? uiText('已掌握') : uiText('逾期') }}</button>
@@ -404,7 +406,8 @@ onUnmounted(() => {
       <section v-for="group in data.groups" :key="group.document_id" class="heatmap-group" :data-document-id="group.document_id">
         <header class="heatmap-book-header">
           <div class="heatmap-book-title"><h2>{{ group.document }}</h2><small>{{ mode === 'topics' ? `${group.topics.length} 个考点` : `${group.questions.length} 题` }}</small></div>
-          <div class="heatmap-book-stats"><strong>{{ group.statistics.coverage_percent }}%</strong><span>{{ uiText('已覆盖') }} {{ group.statistics.attempted_question_count }} {{ uiText('题') }}</span></div>
+          <HeatmapProgressSummary v-if="props.selectedOnly && !props.coreOnly" :total="group.questions.length || group.topics.reduce((total, topic) => total + topic.question_count, 0)" :statistics="group.statistics" />
+          <div v-else class="heatmap-book-stats"><strong>{{ group.statistics.coverage_percent }}%</strong><span>{{ uiText('已覆盖') }} {{ group.statistics.attempted_question_count }} {{ uiText('题') }}</span></div>
         </header>
         <div v-if="mode === 'topics'" class="topic-heatmap">
           <button
@@ -501,6 +504,7 @@ onUnmounted(() => {
   .heatmap-page :deep(.exam-type-toolbar select) { min-width: 0; max-width: 100%; }
   .heatmap-page :deep(.exam-type-toolbar > label:nth-of-type(2)) { grid-column: 1/-1; }
 }
+.heatmap-summary-overview { margin-bottom: 12px; }
 .heatmap-overview { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 12px; margin: 0 0 8px; color: var(--text-secondary); font-size: 13px; }
 .heatmap-overview strong { color: var(--text-primary); font-size: 24px; font-weight: 650; line-height: 1; }
 .heatmap-overview span:nth-of-type(n+2) { margin-left: 8px; }
