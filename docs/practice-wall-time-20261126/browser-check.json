@@ -1,0 +1,30 @@
+{
+  "checks": [
+    {
+      "workspace": "drill",
+      "background_visibility": "visible",
+      "before_seconds": 1,
+      "after_seconds": 4,
+      "server_mode": "wall_v1",
+      "fullscreen_timer_visible": true,
+      "tab_switch_interval_included": true
+    },
+    {
+      "workspace": "ei",
+      "background_visibility": "visible",
+      "before_seconds": 1,
+      "after_seconds": 4,
+      "server_mode": "wall_v1",
+      "fullscreen_timer_visible": true,
+      "tab_switch_interval_included": true
+    }
+  ],
+  "pageerrors": [],
+  "physical_safari_tested": false,
+  "actual_renderer_freeze": {
+    "seconds": 16.2,
+    "before": "0:51",
+    "after": "1:08",
+    "elapsed_preserved": true
+  }
+}
